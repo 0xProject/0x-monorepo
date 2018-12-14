@@ -17,6 +17,12 @@ interface HighlightInterface {
 
 const highlights: HighlightInterface[] = [
     {
+        logo: '/images/@next/press/logo-forbes.png',
+        title: 'Forbes',
+        text: '0x Instant is aiming to aid businesses and developers such as news sites, crypto wallets, dApps or price trackers to monetize or add a new revenue stream to their existing pipeline.',
+        href: '#',
+    },
+    {
         logo: '/images/@next/press/logo-venturebeat.png',
         title: 'VentureBeat',
         text: '0x leads the way for ‘tokenization’ of the world, and collectible game items are next',
@@ -25,7 +31,7 @@ const highlights: HighlightInterface[] = [
     {
         logo: '/images/@next/press/logo-fortune.png',
         title: 'Fortune',
-        text: 'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a blockchain. ',
+        text: 'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a <blockchain className=""></blockchain>',
         href: '#',
     },
     {
@@ -42,7 +48,7 @@ export const NextAboutPress = () => (
         description={
             <>
                 <Paragraph marginBottom="60px">
-                    Want to write about 0x? Get in touch, or download our press kit.
+                    Want to write about 0x? <a href="#">Get in touch</a>, or <a href="#">download our press kit</a>.
                 </Paragraph>
 
                 {_.map(highlights, (highlight, index) => (

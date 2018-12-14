@@ -74,6 +74,11 @@ const useCaseSlides = [
         title: 'Decentralized Loans',
         description: 'Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.',
     },
+    {
+        icon: 'stableTokens',
+        title: 'Stable Tokens',
+        description: 'Novel economic constructs such as stable coins require efficient, liquid markets to succeed. 0x will facilitate the underlying economic mechanisms that allow these tokens to remain stable.',
+    },
 ];
 
 export class NextWhy extends React.PureComponent {
@@ -82,7 +87,7 @@ export class NextWhy extends React.PureComponent {
             <SiteWrap theme="dark">
                 <Hero
                     title="The exchange layer for the crypto economy"
-                    description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens."
+                    description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."
                     actions={
                         <Button
                             href="/docs"
@@ -102,25 +107,25 @@ export class NextWhy extends React.PureComponent {
                     <Definition
                         title="Support for all Ethereum Standards"
                         titleSize="small"
-                        description="0x Protocol facilitates the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets. Additional ERC standards can be added to the protocol..."
+                        description="0x Protocol facitilites the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets."
                         icon="supportForAllEthereumStandards"
                         iconSize="large"
                         isInline={true}
                     />
 
                     <Definition
-                        title="Shared Networked Liquidity"
+                        title="Networked Liquidity"
                         titleSize="small"
-                        description="0x is building a layer of networked liquidity that will lower the barriers to entry. By enabling businesses to tap into a shared pool of digital assets, it will create a more stable financial system."
+                        description="0x is lowering the barrier to entry by building a layer of networked liquidity that allows businesses to tap into a shared pool of digital assets."
                         icon="networkedLiquidity"
                         iconSize="large"
                         isInline={true}
                     />
 
                     <Definition
-                        title="Support for all Ethereum Standards"
+                        title="Flexible Integration"
                         titleSize="small"
-                        description="Relayers are businesses around the world that utilize 0x to integrate exchange functionality into a wide variety of products including order books, games, and digital art marketplaces."
+                        description="0x is a modular system that enables businesses and projects, known as relayers, to easily add exchange functionality to any product experience."
                         icon="flexibleIntegration"
                         iconSize="large"
                         isInline={true}
@@ -139,7 +144,7 @@ export class NextWhy extends React.PureComponent {
                     <Column width="55%" maxWidth="826px">
                         <Column width="100%" maxWidth="560px" padding="0 30px 0 0">
                             <SectionWrap id="benefits">
-                                <SectionTitle size="medium" marginBottom="60px">What 0x offers</SectionTitle>
+                                <SectionTitle size="medium" marginBottom="60px" isNoBorder={true}>What 0x offers</SectionTitle>
 
                                 {_.map(offersData, (item, index) => (
                                     <Definition

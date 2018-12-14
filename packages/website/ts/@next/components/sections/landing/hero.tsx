@@ -10,7 +10,7 @@ export const SectionLandingHero = () => (
     <Hero
         title="Powering Decentralized Exchange"
         isLargeTitle={true}
-        description="0x is the best solution for adding exchange functionality to your business."
+        description="0x is an open protocol that enables the peer-to-peer exchange of assets on the Ethereum blockchain."
         figure={<LandingAnimation image={<HeroAnimation />} />}
         actions={<HeroActions />}
     />

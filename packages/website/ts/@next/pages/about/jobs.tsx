@@ -40,7 +40,7 @@ const positions: PositionInterface[] = [
 export const NextAboutJobs = () => (
     <AboutPageLayout
         title="Join Us in Our Mission"
-        description="To create a tokenized world where all value can flow freely. We are powering a growing ecosystem of decentralized applications and solving novel challenges to make our technology intuitive, flexible, and accessible to all. Read more about our mission, and join us in building financial infrastructure upon which the exchange of anything of value will take place."
+        description="To create a tokenized world where all value can flow freely. We are growing an ecosystem of businesses and projects by solving difficult challenges to make our technology intuitive, flexible, and accessible to all. Join us in building infrastructure upon which the exchange of all assets will take place."
         linkLabel="Our mission and values"
         linkUrl="/mission"
     >
@@ -51,7 +51,7 @@ export const NextAboutJobs = () => (
                     </Heading>
 
                     <Paragraph>
-                        We're a highly technical team with varied backgrounds in engineering, science, business, finance, and research. While the core team is headquartered in San Francisco, there are 30+ teams building on 0x and hundreds of thousands of participants behind our efforts globally. We're passionate about open-source software and decentralized technology's potential to act as an equalizing force in the world.
+                        We're a highly technical team with varied backgrounds in engineering, science, business, finance, and research. While the Core Team is headquartered in San Francisco, there are 30+ teams building on 0x and hundreds of thousands of participants behind our efforts worldwide. We're passionate about open-source software and decentralized technology's potential to act as an equalizing force in the world.
                     </Paragraph>
                 </Column>
 

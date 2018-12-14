@@ -24,14 +24,13 @@ const values = [
     {
         title: 'Focus on long-term Impact',
         description: 'We anticipate that over time, awareness of the fundamentally disruptive nature of frictionless global exchange will cause some to see this technology as a threat. There will be setbacks, some will claim that this technology is too disruptive, and we will face adversity. Persistence and a healthy long-term focus will see us through these battles.',
-        icon: 'long-term-impact',
     },
 ];
 
 export const NextAboutMission = () => (
     <AboutPageLayout
         title="Creating a tokenized world where all value can flow freely."
-        description="0x Protocol is an important infrastructure layer for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past."
+        description="0x is important infrastructure for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past."
         linkLabel="Our mission and values"
         linkUrl="#"
     >

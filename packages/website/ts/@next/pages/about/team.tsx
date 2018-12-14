@@ -18,7 +18,7 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/@next/team/willw.jpg',
         name: 'Will Warren',
-        title: 'co-founder & ceo',
+        title: 'co-founder & CEO',
     },
     {
         imageUrl: '/images/@next/team/amirb.jpg',

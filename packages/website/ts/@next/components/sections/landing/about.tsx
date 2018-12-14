@@ -26,10 +26,7 @@ export const SectionLandingAbout = () => (
             isMuted={1}
             padding={['large', 0, 'default', 0]}
         >
-            0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based
-            tokens. Anyone in the world can use 0x to service a wide variety of markets
-            ranging from gaming items to financial instruments to assets that could have
-            near existed before.
+            Anyone in the world can use 0x to service a wide variety of markets ranging from gaming items to financial instruments to assets that could have near existed before.
         </Paragraph>
 
         <Button
