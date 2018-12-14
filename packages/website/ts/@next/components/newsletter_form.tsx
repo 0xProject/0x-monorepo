@@ -3,14 +3,10 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-interface Props {
-}
-
 interface InputProps {
     isSubmitted: boolean;
     name: string;
     label: string;
-    type: string;
 }
 
 interface ArrowProps {
@@ -18,7 +14,7 @@ interface ArrowProps {
 }
 
 const Input: React.ReactNode = React.forwardRef((props: InputProps, ref) => {
-    const { name, label, type } = props;
+    const { name, label } = props;
     const id = `input-${name}`;
 
     return (
@@ -40,7 +36,7 @@ export class NewsletterForm extends React.Component {
         return (
             <StyledForm onSubmit={this._onSubmitAsync.bind(this)}>
                 <InputWrapper>
-                    <Input isSubmitted={isSubmitted} name="email" type="email" label="Email Address" ref={this.emailInput} required />
+                    <Input isSubmitted={isSubmitted} name="email" type="email" label="Email Address" ref={this.emailInput} required={true} />
 
                     <SubmitButton>
                         <Arrow isSubmitted={isSubmitted} width="22" height="17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,11 +67,8 @@ export class NewsletterForm extends React.Component {
                 },
                 body: JSON.stringify({ email, referrer }),
             });
-            const json = await response.json();
-
-            console.log(response.json());
         } catch (e) {
-            console.log(e);
+           // dosomething
         }
     }
 }
