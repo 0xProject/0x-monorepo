@@ -45,7 +45,7 @@ export const NextAboutMission = () => (
 
         <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
             <Column>
-                <Heading size="medium">
+                <Heading size="medium" maxWidth="226px">
                     Core Values
                 </Heading>
             </Column>
@@ -69,6 +69,7 @@ export const NextAboutMission = () => (
 
 const StyledDefinition = styled(Definition)`
     & + & {
+        margin-top: 30px;
         padding-top: 30px;
         border-top: 1px solid #eaeaea;
     }
