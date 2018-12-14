@@ -77,7 +77,7 @@ export class Next0xInstant extends React.Component<Props> {
                 <Hero
                     title="Introducing 0x Instant"
                     description="A free and flexible way to offer simple crypto purchasing in any app or website"
-                    actions={<Button href="#">Get Started</Button>}
+                    actions={<Button href="#configurator">Get Started</Button>}
                 />
 
                 <Section isFullWidth={true} isPadded={false} padding="30px 0">
@@ -106,9 +106,9 @@ export class Next0xInstant extends React.Component<Props> {
                     ))}
                 </Section>
 
-                <ConfiguratorSection maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
-                <Heading>0x Instant Configurator</Heading>
-                <Configurator />
+                <ConfiguratorSection id="configurator" maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
+                    <Heading>0x Instant Configurator</Heading>
+                    <Configurator />
                 </ConfiguratorSection>
 
                 <Banner
