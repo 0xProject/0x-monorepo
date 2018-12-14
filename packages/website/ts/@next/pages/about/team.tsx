@@ -141,7 +141,7 @@ const team: TeamMember[] = [
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/xiannyN.jpg',
+        imageUrl: '/images/@next/team/xianny.jpg',
         name: 'Xianny Ng',
         title: 'engineer',
     },
