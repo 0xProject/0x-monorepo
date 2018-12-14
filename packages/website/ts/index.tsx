@@ -101,31 +101,24 @@ render(
                     <Provider store={store}>
                         <div>
                             <Switch>
+                                {/* Next (new site) routes */}
+                                <Route exact path="/" component={NextLanding as any} />
+                                <Route exact path={WebsitePaths.Why} component={NextWhy as any} />
+                                <Route exact path={WebsitePaths.Instant} component={Next0xInstant as any} />
+                                <Route exact path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
+                                <Route exact path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
+                                <Route exact path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
+                                <Route exact path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
+                                <Route exact path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
                                 {/*
                                   Note(ez): We remove/replace all old routes with next routes
                                   once we're ready to put a ring on it. for now let's keep em there for reference
                                 */}
-                                <Route exact={true} path="/" component={Landing as any} />
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                                <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
-                                <Route path={WebsitePaths.Instant} component={Instant as any} />
-                                <Route path={WebsitePaths.Careers} component={Jobs as any} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
-                                <Route path={WebsitePaths.About} component={About as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-
-
-                                {/* Next (new site) routes */}
-                                <Route exact path="/next" component={NextLanding as any} />
-                                <Route exact path="/next/why" component={NextWhy as any} />
-                                <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
-                                <Route exact path="/next/launch-kit" component={NextLaunchKit as any} />
-                                <Route exact path="/next/ecosystem-program" component={NextEcosystem as any} />
-                                <Route exact path="/next/about/mission" component={NextAboutMission as any} />
-                                <Route exact path="/next/about/team" component={NextAboutTeam as any} />
-                                <Route exact path="/next/about/press" component={NextAboutPress as any} />
-                                <Route exact path="/next/about/jobs" component={NextAboutJobs as any} />
 
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
