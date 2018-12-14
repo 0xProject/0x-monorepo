@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import styled from 'styled-components';
 
 import {Hero} from 'ts/@next/components/hero';
 
@@ -112,7 +111,3 @@ const HeroActions = () => (
         </Button>
     </>
 );
-
-interface SectionProps {
-    isNotRelative?: boolean;
-}
