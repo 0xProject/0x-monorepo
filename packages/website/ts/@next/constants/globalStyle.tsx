@@ -105,6 +105,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
     a, button {
         text-decoration: none;
         font-family: inherit;
+        outline: none;
     }
 
     svg + p,
