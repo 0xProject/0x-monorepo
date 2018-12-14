@@ -16,10 +16,10 @@ const navData = [
             description: 'Build on the 0x protocol',
             url: '#',
         },
-        {
-            title: 'Extensions',
-            url: '#',
-        },
+        // {
+        //     title: 'Extensions',
+        //     url: '#',
+        // },
 ];
 
 export const DropdownProducts = () => (
