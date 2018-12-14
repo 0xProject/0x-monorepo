@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 export interface WrapProps {
     bgColor?: string;
+    id?: string;
     offsetTop?: string;
     maxWidth?: string;
     wrapWidth?: string;
