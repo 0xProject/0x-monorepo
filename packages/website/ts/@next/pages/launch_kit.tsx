@@ -46,7 +46,7 @@ export class NextLaunchKit extends React.PureComponent {
                     isFullWidth={false}
                     title="0x Launch Kit"
                     description="Launch a relayer in under a minute"
-                    figure={<Icon name="launchKit_versionB" size="hero" margin={['small', 0, 'small', 0]} />}
+                    figure={<Icon name="launchKit" size="hero" margin={['small', 0, 'small', 0]} />}
                     actions={<HeroActions/>}
                 />
 

@@ -14,5 +14,5 @@
 <rect width="39" height="18" transform="matrix(1 0 0 -1 84 79)" stroke="#00AE99" stroke-width="3"/>
 <rect width="39" height="18" transform="matrix(1 0 0 -1 155 79)" stroke="#00AE99" stroke-width="3"/>
 <path d="M217 94V61H250M217 94L250 61M217 94H250V61M217 94V241.125M250 61H333M333 61H343V251H217V241.125M333 61V241.125H217" stroke="#00AE99" stroke-width="3"/>
-<path d="M276.5 252L217.5 343H343L276.5 252Z" stroke="#00AE99" stroke-width="3"/>
+<path d="M275.825 252L218 343H341L275.825 252Z" stroke="#00AE99" stroke-width="3"/>
 </svg>
