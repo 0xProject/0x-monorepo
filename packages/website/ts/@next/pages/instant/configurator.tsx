@@ -2,26 +2,21 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 import { CodeDemo } from 'ts/@next/pages/instant/code_demo';
 import { ConfigGenerator } from 'ts/@next/pages/instant/config_generator';
-import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
-import { Heading, Paragraph } from 'ts/@next/components/text';
-import { WebsitePaths } from 'ts/types';
+
 import { Link } from 'ts/@next/components/link';
+import { Column, FlexWrap } from 'ts/@next/components/newLayout';
+import { Heading } from 'ts/@next/components/text';
+import { WebsitePaths } from 'ts/types';
 
 import { ZeroExInstantBaseConfig } from '../../../../../instant/src/types';
-
-export interface ConfiguratorProps {
-    hash: string;
-}
 
 export interface ConfiguratorState {
     instantConfig: ZeroExInstantBaseConfig;
 }
 
-export class Configurator extends React.Component<ConfiguratorProps> {
+export class Configurator extends React.Component {
     public state: ConfiguratorState = {
         instantConfig: {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
@@ -33,7 +28,6 @@ export class Configurator extends React.Component<ConfiguratorProps> {
         },
     };
     public render(): React.ReactNode {
-        const { hash } = this.props;
         const codeToDisplay = this._generateCodeDemoCode();
         return (
             <FlexWrap
