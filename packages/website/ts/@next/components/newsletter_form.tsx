@@ -30,7 +30,7 @@ const Input: React.ReactNode = React.forwardRef((props: InputProps, ref) => {
 });
 
 export class NewsletterForm extends React.Component {
-    public emailInput = React.createRef();
+    public emailInput = React.createRef<HTMLInputElement>();
     public state = {
         isSubmitted: false,
     };
@@ -58,7 +58,7 @@ export class NewsletterForm extends React.Component {
         e.preventDefault();
 
         const email = this.emailInput.current.value;
-        const referrer = "https://0xproject.com/";
+        const referrer = 'https://0xproject.com/';
 
         this.setState({ isSubmitted: true });
 
