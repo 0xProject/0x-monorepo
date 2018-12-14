@@ -102,7 +102,7 @@ export interface AssetBuyerOpts {
 }
 
 /**
- * Possible errors thrown by an AssetBuyer instance or associated static methods.
+ * Possible error messages thrown by an AssetBuyer instance or associated static methods.
  */
 export enum AssetBuyerError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
@@ -115,16 +115,6 @@ export enum AssetBuyerError {
     AssetUnavailable = 'ASSET_UNAVAILABLE',
     SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
     TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
-}
-
-export class InsufficientAssetLiquidityError extends Error {
-    public amountAvailableToFill: BigNumber;
-    constructor(amountAvailableToFill: BigNumber) {
-        super(AssetBuyerError.InsufficientAssetLiquidity);
-        this.amountAvailableToFill = amountAvailableToFill;
-        // Setting prototype so instanceof works.  See https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
-        Object.setPrototypeOf(this, InsufficientAssetLiquidityError.prototype);
-    }
 }
 
 export interface OrdersAndFillableAmounts {

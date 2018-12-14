@@ -113,7 +113,11 @@ export const assetUtils = {
     assetBuyerErrorMessage: (asset: ERC20Asset, error: Error): string | undefined => {
         if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
-            if (error instanceof InsufficientAssetLiquidityError) {
+            if (
+                error instanceof InsufficientAssetLiquidityError &&
+                error.amountAvailableToFill &&
+                error.amountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)
+            ) {
                 const unitAmountAvailableToFill = Web3Wrapper.toUnitAmount(
                     error.amountAvailableToFill,
                     asset.metaData.decimals,

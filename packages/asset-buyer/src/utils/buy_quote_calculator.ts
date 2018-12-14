@@ -1,16 +1,10 @@
 import { marketUtils, SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import {
-    AssetBuyerError,
-    BuyQuote,
-    BuyQuoteInfo,
-    InsufficientAssetLiquidityError,
-    OrdersAndFillableAmounts,
-} from '../types';
+import { InsufficientAssetLiquidityError } from '../errors';
+import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
 
 import { orderUtils } from './order_utils';
 
@@ -53,7 +47,11 @@ export const buyQuoteCalculator = {
                 .div(multiplerNeededWithSlippage)
                 .round(0, BigNumber.ROUND_DOWN);
 
-            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
+            throw new InsufficientAssetLiquidityError(
+                amountAvailableToFillConsideringSlippage.gt(constants.ZERO_AMOUNT)
+                    ? amountAvailableToFillConsideringSlippage
+                    : undefined,
+            );
         }
         // if we are not buying ZRX:
         // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)

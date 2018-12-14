@@ -67,87 +67,125 @@ describe('buyQuoteCalculator', () => {
                 ],
             };
         });
-        it('should throw if not enough maker asset liquidity (multiple orders)', () => {
-            // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
-            const errorFunction = () => {
-                buyQuoteCalculator.calculate(
-                    ordersAndFillableAmounts,
-                    smallFeeOrderAndFillableAmount,
-                    new BigNumber(500),
-                    0,
-                    0,
-                    false,
-                );
-            };
-            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(400));
-        });
-        it('should throw if not enough maker asset liquidity (multiple orders with 20% slippage)', () => {
-            // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
-            const errorFunction = () => {
-                buyQuoteCalculator.calculate(
-                    ordersAndFillableAmounts,
-                    smallFeeOrderAndFillableAmount,
-                    new BigNumber(500),
-                    0,
-                    0.2,
-                    false,
-                );
-            };
-            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(333));
-        });
-        it('should throw if not enough maker asset liquidity (multiple orders with 5% slippage)', () => {
-            // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
-            const errorFunction = () => {
-                buyQuoteCalculator.calculate(
-                    ordersAndFillableAmounts,
-                    smallFeeOrderAndFillableAmount,
-                    new BigNumber(600),
-                    0,
-                    0.05,
-                    false,
-                );
-            };
-            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(380));
-        });
-        it('should throw if not enough maker asset liquidity (partially filled order)', () => {
-            const firstOrderAndFillableAmount: OrdersAndFillableAmounts = {
-                orders: [firstOrder],
-                remainingFillableMakerAssetAmounts: [firstRemainingFillAmount],
-            };
-
-            const errorFunction = () => {
-                buyQuoteCalculator.calculate(
-                    firstOrderAndFillableAmount,
-                    smallFeeOrderAndFillableAmount,
-                    new BigNumber(201),
-                    0,
-                    0,
-                    false,
-                );
-            };
-            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(200));
-        });
-        it('should throw if not enough maker asset liquidity (completely fillable order)', () => {
-            const completelyFillableOrder = orderFactory.createSignedOrderFromPartial({
-                makerAssetAmount: new BigNumber(123),
-                takerAssetAmount: new BigNumber(100),
-                takerFee: new BigNumber(200),
+        describe('InsufficientLiquidityError', () => {
+            it('should throw if not enough maker asset liquidity (multiple orders)', () => {
+                // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        ordersAndFillableAmounts,
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(500),
+                        0,
+                        0,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(400));
             });
-            const completelyFillableOrdersAndFillableAmount: OrdersAndFillableAmounts = {
-                orders: [completelyFillableOrder],
-                remainingFillableMakerAssetAmounts: [completelyFillableOrder.makerAssetAmount],
-            };
-            const errorFunction = () => {
-                buyQuoteCalculator.calculate(
-                    completelyFillableOrdersAndFillableAmount,
-                    smallFeeOrderAndFillableAmount,
-                    new BigNumber(124),
-                    0,
-                    0,
-                    false,
-                );
-            };
-            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(123));
+            it('should throw if not enough maker asset liquidity (multiple orders with 20% slippage)', () => {
+                // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        ordersAndFillableAmounts,
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(500),
+                        0,
+                        0.2,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(333));
+            });
+            it('should throw if not enough maker asset liquidity (multiple orders with 5% slippage)', () => {
+                // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        ordersAndFillableAmounts,
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(600),
+                        0,
+                        0.05,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(380));
+            });
+            it('should throw if not enough maker asset liquidity (partially filled order)', () => {
+                const firstOrderAndFillableAmount: OrdersAndFillableAmounts = {
+                    orders: [firstOrder],
+                    remainingFillableMakerAssetAmounts: [firstRemainingFillAmount],
+                };
+
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        firstOrderAndFillableAmount,
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(201),
+                        0,
+                        0,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(200));
+            });
+            it('should throw if not enough maker asset liquidity (completely fillable order)', () => {
+                const completelyFillableOrder = orderFactory.createSignedOrderFromPartial({
+                    makerAssetAmount: new BigNumber(123),
+                    takerAssetAmount: new BigNumber(100),
+                    takerFee: new BigNumber(200),
+                });
+                const completelyFillableOrdersAndFillableAmount: OrdersAndFillableAmounts = {
+                    orders: [completelyFillableOrder],
+                    remainingFillableMakerAssetAmounts: [completelyFillableOrder.makerAssetAmount],
+                };
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        completelyFillableOrdersAndFillableAmount,
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(124),
+                        0,
+                        0,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(123));
+            });
+            it('should throw with 1 amount available if no slippage', () => {
+                const smallOrder = orderFactory.createSignedOrderFromPartial({
+                    makerAssetAmount: new BigNumber(1),
+                    takerAssetAmount: new BigNumber(1),
+                    takerFee: new BigNumber(0),
+                });
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        { orders: [smallOrder], remainingFillableMakerAssetAmounts: [smallOrder.makerAssetAmount] },
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(600),
+                        0,
+                        0,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(1));
+            });
+            it('should throw without amount available to fill if amount rounds to 0', () => {
+                const smallOrder = orderFactory.createSignedOrderFromPartial({
+                    makerAssetAmount: new BigNumber(1),
+                    takerAssetAmount: new BigNumber(1),
+                    takerFee: new BigNumber(0),
+                });
+                const errorFunction = () => {
+                    buyQuoteCalculator.calculate(
+                        { orders: [smallOrder], remainingFillableMakerAssetAmounts: [smallOrder.makerAssetAmount] },
+                        smallFeeOrderAndFillableAmount,
+                        new BigNumber(600),
+                        0,
+                        0.2,
+                        false,
+                    );
+                };
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, undefined);
+            });
         });
         it('should not throw if order is fillable', () => {
             expect(() =>
