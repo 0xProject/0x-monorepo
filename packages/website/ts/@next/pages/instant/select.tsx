@@ -1,11 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
-import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
-import {Heading, Paragraph} from 'ts/@next/components/text';
-
 export interface SelectItemConfig {
     label: string;
     value?: string;
@@ -49,14 +44,6 @@ const StyledSelect = styled.select`
     font-size: 1rem;
     width: 100%;
     padding: 20px 20px 20px 20px;
-`;
-
-const SelectAllButton = styled.button`
-    appearance: none;
-    border: 0;
-    font-size: 0.777777778rem;
-    display: block;
-    opacity: 0.75;
 `;
 
 const Caret = styled.svg`
