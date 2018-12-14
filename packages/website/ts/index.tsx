@@ -121,7 +121,7 @@ render(
                                 <Route exact path="/next/why" component={NextWhy as any} />
                                 <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
                                 <Route exact path="/next/launch-kit" component={NextLaunchKit as any} />
-                                <Route exact path="/next/ecosystem" component={NextEcosystem as any} />
+                                <Route exact path="/next/ecosystem-program" component={NextEcosystem as any} />
                                 <Route exact path="/next/about/mission" component={NextAboutMission as any} />
                                 <Route exact path="/next/about/team" component={NextAboutTeam as any} />
                                 <Route exact path="/next/about/press" component={NextAboutPress as any} />
