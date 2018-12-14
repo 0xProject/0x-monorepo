@@ -1,45 +1,6 @@
 import * as React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
-const moveUp = keyframes`
-    0% { transform: translate3d(0, 0, 0) }
-    25% { transform: translate3d(0, -7%, 0) }
-    50% { transform: translate3d(0, -7%, 0) }
-    100% { transform: translate3d(0, 0, 0) }
-`;
-
-const moveLeft = keyframes`
-    0% { transform: translate3d(0, 0, 0) }
-    25% { transform: translate3d(-7%, 0, 0) }
-    50% { transform: translate3d(-7%, 0, 0) }
-    100% { transform: translate3d(0, 0, 0) }
-`;
-
-const moveDiag = keyframes`
-    0% { transform: translate3d(0, 0, 0) }
-    25% { transform: translate3d(5%, 5%, 0) }
-    50% { transform: translate3d(5%, 5%, 0) }
-    100% { transform: translate3d(0, 0, 0) }
-`;
-
-const moveRight = keyframes`
-    0% { transform: translate3d(0, 0, 0) }
-    25% { transform: translate3d(7%, 0, 0) }
-    50% { transform: translate3d(7%, 0, 0) }
-    100% { transform: translate3d(0, 0, 0) }
-`;
-
-const spin = keyframes`
-    0% { transform: rotate(0deg) }
-    50% { transform: rotate(0deg) }
-    100% { transform: rotate(90deg) }
-`;
-
-const moveIn = keyframes`
-    0% { opacity: 0; transform: scale(1.7) rotate(-30deg) }
-    100% { opacity: 1; transform: scale(1)  rotate(0deg) }
-`;
-
 export const HeroAnimation = () => (
     <Image width="404" height="404" viewBox="0 0 404 404" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="404" height="404">
@@ -57,29 +18,73 @@ export const HeroAnimation = () => (
     </Image>
 );
 
+const moveUp = keyframes`
+    0% { transform: translate3d(0, 0, 0) }
+    45% { transform: translate3d(0, 0, 0) }
+    55% { transform: translate3d(0, -7%, 0) }
+    85% { transform: translate3d(0, -7%, 0) }
+    100% { transform: translate3d(0, 0, 0) }
+`;
+
+const moveLeft = keyframes`
+    0% { transform: translate3d(0, 0, 0) }
+    45% { transform: translate3d(0, 0, 0) }
+    55% { transform: translate3d(-7%, 0, 0) }
+    85% { transform: translate3d(-7%, 0, 0) }
+    100% { transform: translate3d(0, 0, 0) }
+`;
+
+const moveDiag = keyframes`
+    0% { transform: translate3d(0, 0, 0) }
+    45% { transform: translate3d(0, 0, 0) }
+    55% { transform: translate3d(5%, 5%, 0) }
+    85% { transform: translate3d(5%, 5%, 0) }
+    100% { transform: translate3d(0, 0, 0) }
+`;
+
+const moveRight = keyframes`
+    0% { transform: translate3d(0, 0, 0) }
+    45% { transform: translate3d(0, 0, 0) }
+    55% { transform: translate3d(7%, 0, 0) }
+    85% { transform: translate3d(7%, 0, 0) }
+    100% { transform: translate3d(0, 0, 0) }
+`;
+
+const spin = keyframes`
+    0% { transform: rotate(0deg) }
+    65% { transform: rotate(0deg) }
+    85% { transform: rotate(90deg) }
+    100% { transform: rotate(90deg) }
+`;
+
+const moveIn = keyframes`
+    0% { opacity: 0; transform: scale(1.7) rotate(-30deg) }
+    100% { opacity: 1; transform: scale(1)  rotate(0deg) }
+`;
+
 const Image = styled.svg`
     opacity: 0;
     transform: scale(1.5) rotate(-30deg);
-    animation: ${moveIn} 3s forwards;
+    animation: ${moveIn} 2s forwards;
 `;
 
 const TopCircle = styled.circle`
-    animation: ${moveUp} 3s -1.5s infinite;
+    animation: ${moveUp} 4s -2.85s infinite;
 `;
 const LeftCircle = styled.circle`
-    animation: ${moveLeft} 3s -1.5s infinite;
+    animation: ${moveLeft} 4s -2.85s infinite;
 `;
 const Oblong = styled.path`
-    animation: ${moveLeft} 3s -1.5s infinite;
+    animation: ${moveLeft} 4s -2.85s infinite;
 `;
 const Square = styled.path`
-    animation: ${moveDiag} 3s -1.5s infinite;
+    animation: ${moveDiag} 4s -2.85s infinite;
 `;
 const Rectangle = styled.path`
-    animation: ${moveRight} 3s -1.5s infinite;
+    animation: ${moveRight} 4s -2.85s infinite;
 `;
 
 const Logo = styled.path`
-    animation: ${spin} 3s infinite;
+    animation: ${spin} 4s -2.65s infinite;
     transform-origin: 202px 202.7px;
 `;
