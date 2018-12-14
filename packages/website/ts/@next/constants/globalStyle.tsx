@@ -50,6 +50,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --smallIcon: 75px;
             --mediumIcon: 85px;
             --largeIcon: 145px;
+            --heroIcon: 282px;
         }
     }
 

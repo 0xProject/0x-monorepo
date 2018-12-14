@@ -5,7 +5,7 @@ import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
 
 interface IconProps extends PaddingInterface {
     name: string;
-    size?: 'small' | 'medium' | 'large' | number;
+    size?: 'small' | 'medium' | 'large' | 'hero' | number;
 }
 
 export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
