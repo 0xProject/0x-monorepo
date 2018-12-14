@@ -3,6 +3,9 @@ import * as React from 'react';
 import {BlockIconLink} from 'ts/@next/components/blockIconLink';
 import {Section} from 'ts/@next/components/newLayout';
 
+import {AnimatedChatIcon} from 'ts/@next/components/animatedChatIcon';
+import {AnimatedCompassIcon} from 'ts/@next/components/animatedCompassIcon';
+
 interface Props {
     onContactClick?: () => void;
 }
@@ -16,13 +19,13 @@ export const SectionLandingCta = (props: Props) => (
         flexBreakpoint="900px"
     >
         <BlockIconLink
-            icon="getStarted"
+            iconComponent={<AnimatedCompassIcon />}
             title="Ready to build on 0x?"
             linkLabel="Get Started"
             linkUrl="https://0xproject.com/docs"
         />
         <BlockIconLink
-            icon="getInTouch"
+            iconComponent={<AnimatedChatIcon />}
             title="Want help from the 0x team?"
             linkLabel="Get in Touch"
             linkAction={props.onContactClick}

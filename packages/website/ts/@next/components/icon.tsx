@@ -5,20 +5,33 @@ import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
 
 interface IconProps extends PaddingInterface {
     name: string;
+    component?: React.ReactNode;
     size?: 'small' | 'medium' | 'large' | 'hero' | number;
 }
 
 export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
-    const IconSVG = Loadable({
-        loader: () => import(/* webpackChunkName: "icon" */`ts/@next/icons/illustrations/${props.name}.svg`),
-        loading: () => 'Loading',
-    });
+    if (props.name && !props.component) {
+        const IconSVG = Loadable({
+            loader: () => import(/* webpackChunkName: "icon" */`ts/@next/icons/illustrations/${props.name}.svg`),
+            loading: () => 'Loading',
+        });
 
-    return (
-        <StyledIcon {...props}>
-            <IconSVG />
-        </StyledIcon>
-    );
+        return (
+            <StyledIcon {...props}>
+                <IconSVG />
+            </StyledIcon>
+        );
+    }
+
+    if (props.component) {
+        return (
+            <StyledIcon {...props}>
+                {props.component}
+            </StyledIcon>
+        );
+    }
+
+    return null;
 };
 
 export const InlineIconWrap = styled.div<IconProps>`

@@ -29,18 +29,17 @@ export class NextLanding extends React.Component<Props> {
                 <SectionLandingHero />
                 <SectionLandingAbout />
                 <SectionLandingClients />
-                <SectionLandingCta onContactClick={this._onOpenContactModal.bind(this)} />
-                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal.bind(this)} />
+                <SectionLandingCta onContactClick={this._onOpenContactModal} />
+                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
             </SiteWrap>
         );
     }
 
-    private _onOpenContactModal(e: Event): void {
-        e.preventDefault();
+    private _onOpenContactModal = (): void => {
         this.setState({ isContactModalOpen: true });
     }
 
-    private _onDismissContactModal(): void {
+    private _onDismissContactModal = (): void => {
         this.setState({ isContactModalOpen: false });
     }
 }

@@ -1,41 +1,72 @@
 import * as React from 'react';
+import {withRouter} from 'react-router-dom';
 import styled from 'styled-components';
 
 import {Button} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/icon';
 
 interface Props {
-    icon: string;
+    icon?: string;
+    iconComponent?: React.ReactNode;
     title: string;
     linkLabel: string;
     linkUrl?: string;
     linkAction?: () => void;
 }
 
-export const BlockIconLink = (props: Props) => (
-    <Wrap>
-        <div>
-            <Icon
-                name={props.icon}
-                size="large"
-                margin={[0, 0, 'default', 0]}
-            />
+class BaseComponent extends React.PureComponent<Props> {
+    public onClick = (): void => {
+        const {
+            linkAction,
+            linkUrl,
+        } = this.props;
 
-            <Title>
-                {props.title}
-            </Title>
+        if (linkAction) {
+            linkAction();
+        } else {
+            this.props.history.push(linkUrl);
+        }
+    }
 
-            <Button
-                isWithArrow={true}
-                isTransparent={true}
-                href={props.linkUrl}
-                onClick={props.linkAction}
-            >
-                {props.linkLabel}
-            </Button>
-        </div>
-    </Wrap>
-);
+    public render(): React.ReactNode {
+        const {
+            icon,
+            iconComponent,
+            linkUrl,
+            linkAction,
+            title,
+            linkLabel,
+        } = this.props;
+
+        return (
+            <Wrap onClick={this.onClick}>
+                <div>
+                    <Icon
+                        name={icon}
+                        component={iconComponent}
+                        size="large"
+                        margin={[0, 0, 'default', 0]}
+                    />
+
+                    <Title>
+                        {title}
+                    </Title>
+
+                    <Button
+                        isWithArrow={true}
+                        isTransparent={true}
+                        href={linkUrl}
+                        onClick={linkAction}
+                    >
+                        {linkLabel}
+                    </Button>
+                </div>
+            </Wrap>
+        );
+    }
+}
+
+export const BlockIconLink = withRouter(BaseComponent);
 
 const Wrap = styled.div`
     width: calc(50% - 15px);
@@ -46,6 +77,12 @@ const Wrap = styled.div`
     align-items: center;
     text-align: center;
     background-color: ${props => props.theme.lightBgColor};
+    cursor: pointer;
+
+    a,
+    button {
+        pointer-events: none;
+    }
 
     @media (max-width: 900px) {
         width: 100%;
