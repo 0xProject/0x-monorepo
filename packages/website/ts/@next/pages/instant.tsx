@@ -13,6 +13,7 @@ import {Section, SectionProps} from 'ts/@next/components/newLayout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 import { Configurator } from 'ts/@next/pages/instant/configurator';
+import { ModalContact } from '../components/modals/modal_contact';
 
 const featuresData = [
     {
@@ -58,58 +59,82 @@ const featuresData = [
     },
 ];
 
-export const Next0xInstant = () => (
-    <SiteWrap>
-        <Hero
-            title="Introducing 0x Instant"
-            description="A free and flexible way to offer simple crypto purchasing in any app or website"
-            actions={<Button href="#">Get Started</Button>}
-        />
+interface Props {
+    theme: {
+        bgColor: string;
+        textColor: string;
+        linkColor: string;
+    };
+}
 
-        <Section isFullWidth={true} isPadded={false} padding="30px 0">
-          <MarqueeWrap>
-              <div>
-                  {[...Array(18)].map((item, index) => (
-                    <Card key={`card-${index}`} index={index}>
-                      <img src={`/images/@next/0x-instant/widget-${(index % 6) + 1}.png`} />
-                    </Card>
-                  ))}
-              </div>
-          </MarqueeWrap>
-        </Section>
-
-        <Section>
-            {_.map(featuresData, (item, index) => (
-                <Definition
-                    key={`definition-${index}`}
-                    icon={item.icon}
-                    title={item.title}
-                    description={item.description}
-                    isInlineIcon={true}
-                    iconSize={240}
-                    actions={item.links}
+export class Next0xInstant extends React.Component<Props> {
+    public state = {
+        isContactModalOpen: false,
+    };
+    public render(): React.ReactNode {
+        return  (
+            <SiteWrap>
+                <Hero
+                    title="Introducing 0x Instant"
+                    description="A free and flexible way to offer simple crypto purchasing in any app or website"
+                    actions={<Button href="#">Get Started</Button>}
                 />
-            ))}
-        </Section>
 
-        <ConfiguratorSection maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
-          <Heading>0x Instant Configurator</Heading>
-          <Configurator />
-        </ConfiguratorSection>
+                <Section isFullWidth={true} isPadded={false} padding="30px 0">
+                <MarqueeWrap>
+                    <div>
+                        {[...Array(18)].map((item, index) => (
+                            <Card key={`card-${index}`} index={index}>
+                            <img src={`/images/@next/0x-instant/widget-${(index % 6) + 1}.png`} />
+                            </Card>
+                        ))}
+                    </div>
+                </MarqueeWrap>
+                </Section>
 
-        <Banner
-            heading="Need more flexibility?"
-            subline="Dive into our docs, or contact us if needed"
-            mainCta={{ text: 'Explore the Docs', href: '/docs' }}
-            secondaryCta={{ text: 'Get in Touch', href: '/contact' }}
-        />
+                <Section>
+                    {_.map(featuresData, (item, index) => (
+                        <Definition
+                            key={`definition-${index}`}
+                            icon={item.icon}
+                            title={item.title}
+                            description={item.description}
+                            isInlineIcon={true}
+                            iconSize={240}
+                            actions={item.links}
+                        />
+                    ))}
+                </Section>
 
-        <Section maxWidth="1170px" isPadded={false} padding="60px 0">
-              <Paragraph size="small" isMuted={0.5}>Disclaimer: The laws and regulations applicable to the use and exchange of digital assets and blockchain-native tokens, including through any software developed using the licensed work created by ZeroEx Intl. (the “Work”), vary by jurisdiction. As set forth in the Apache License, Version 2.0 applicable to the Work, developers are “solely responsible for determining the appropriateness of using or redistributing the Work,” which includes responsibility for ensuring compliance with any such applicable laws and regulations.</Paragraph>
-              <Paragraph size="small" isMuted={0.5}>See the Apache License, Version 2.0 for the specific language governing all applicable permissions and limitations.</Paragraph>
-        </Section>
-    </SiteWrap>
-);
+                <ConfiguratorSection maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
+                <Heading>0x Instant Configurator</Heading>
+                <Configurator />
+                </ConfiguratorSection>
+
+                <Banner
+                    heading="Need more flexibility?"
+                    subline="Dive into our docs, or contact us if needed"
+                    mainCta={{ text: 'Explore the Docs', href: '/docs' }}
+                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
+                />
+                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
+
+                <Section maxWidth="1170px" isPadded={false} padding="60px 0">
+                    <Paragraph size="small" isMuted={0.5}>Disclaimer: The laws and regulations applicable to the use and exchange of digital assets and blockchain-native tokens, including through any software developed using the licensed work created by ZeroEx Intl. (the “Work”), vary by jurisdiction. As set forth in the Apache License, Version 2.0 applicable to the Work, developers are “solely responsible for determining the appropriateness of using or redistributing the Work,” which includes responsibility for ensuring compliance with any such applicable laws and regulations.</Paragraph>
+                    <Paragraph size="small" isMuted={0.5}>See the Apache License, Version 2.0 for the specific language governing all applicable permissions and limitations.</Paragraph>
+                </Section>
+            </SiteWrap>
+        );
+    }
+
+    public _onOpenContactModal = (): void => {
+        this.setState({ isContactModalOpen: true });
+    }
+
+    public _onDismissContactModal = (): void => {
+        this.setState({ isContactModalOpen: false });
+    }
+}
 
 // scroll animation calc is simply (imageWidth * totalRepetitions) / 2
 // img width is 370px

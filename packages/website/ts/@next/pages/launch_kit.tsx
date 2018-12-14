@@ -10,6 +10,7 @@ import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 
 import {Section} from 'ts/@next/components/newLayout';
+import { ModalContact } from '../components/modals/modal_contact';
 
 const offersData = [
     {
@@ -31,7 +32,10 @@ const offersData = [
     },
 ];
 
-export class NextLaunchKit extends React.PureComponent {
+export class NextLaunchKit extends React.Component {
+    public state = {
+        isContactModalOpen: false,
+    };
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
@@ -94,10 +98,19 @@ export class NextLaunchKit extends React.PureComponent {
                     heading="Need more flexibility?"
                     subline="Dive into our docs, or contact us if needed"
                     mainCta={{ text: 'Get Started', href: '/docs' }}
-                    secondaryCta={{ text: 'Get in Touch', href: '/contact' }}
+                    secondaryCta={{ text: 'Get in Touch', href: this._onOpenContactModal.bind(this) }}
                 />
+                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
             </SiteWrap>
         );
+    }
+
+    public _onOpenContactModal = (): void => {
+        this.setState({ isContactModalOpen: true });
+    }
+
+    public _onDismissContactModal = (): void => {
+        this.setState({ isContactModalOpen: false });
     }
 }
 

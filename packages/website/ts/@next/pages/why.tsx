@@ -7,12 +7,13 @@ import {Hero} from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Slide, Slider } from 'ts/@next/components/slider/slider';
-import { Heading } from 'ts/@next/components/text';
-
 import {Definition} from 'ts/@next/components/definition';
 import {Column, Section, WrapSticky} from 'ts/@next/components/newLayout';
+import { SiteWrap } from 'ts/@next/components/siteWrap';
+import { Slide, Slider } from 'ts/@next/components/slider/slider';
+
+import { ModalContact } from '../components/modals/modal_contact';
+import { Heading } from 'ts/@next/components/text';
 
 const offersData = [
     {
@@ -78,7 +79,10 @@ const useCaseSlides = [
     },
 ];
 
-export class NextWhy extends React.PureComponent {
+export class NextWhy extends React.Component {
+    public state = {
+        isContactModalOpen: false,
+    };
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
@@ -191,10 +195,19 @@ export class NextWhy extends React.PureComponent {
                 heading="Ready to get started?"
                 subline="Dive into our docs, or contact us if needed"
                 mainCta={{ text: 'Get Started', href: '/docs' }}
-                secondaryCta={{ text: 'Get in Touch', href: '/contact' }}
+                secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
               />
+              <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
             </SiteWrap>
         );
+    }
+
+    public _onOpenContactModal = (): void => {
+        this.setState({ isContactModalOpen: true });
+    }
+
+    public _onDismissContactModal = (): void => {
+        this.setState({ isContactModalOpen: false });
     }
 }
 

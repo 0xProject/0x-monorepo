@@ -17,7 +17,8 @@ interface Props {
 
 interface CTAButton {
     text: string;
-    href: string;
+    href?: string;
+    onClick?: () => void;
 }
 
 interface BorderProps {
@@ -64,6 +65,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                     {secondaryCta &&
                         <Button
                             href={secondaryCta.href}
+                            onClick={secondaryCta.onClick}
                             isTransparent={true}
                         >
                             {secondaryCta.text}
