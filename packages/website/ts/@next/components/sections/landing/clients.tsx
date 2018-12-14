@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-import {Heading, Paragraph} from 'ts/@next/components/text';
+import {Heading} from 'ts/@next/components/text';
 
 import {Section, WrapGrid} from 'ts/@next/components/newLayout';
 

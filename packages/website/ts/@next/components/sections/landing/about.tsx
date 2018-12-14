@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import {Button} from 'ts/@next/components/button';
 import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
 import {Column, FlexWrap, Section} from 'ts/@next/components/newLayout';
-import {Heading, Paragraph} from 'ts/@next/components/text';
+import {Paragraph} from 'ts/@next/components/text';
 
 interface FigureProps {
     value: string;

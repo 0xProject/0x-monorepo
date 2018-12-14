@@ -2,8 +2,6 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 interface LinkInterface {
     color?: string;
     children?: Node | string;

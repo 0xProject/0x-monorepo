@@ -5,7 +5,7 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Logo } from 'ts/@next/components/logo';
-import { Column, ColumnProps, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
+import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
 import { NewsletterForm } from 'ts/@next/components/newsletter_form';
 
 interface LinkInterface {

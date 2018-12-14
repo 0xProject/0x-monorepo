@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link as ReactRouterLink, NavLink as ReactRouterNavLink } from 'react-router-dom';
+import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ThemeInterface } from 'ts/@next/components/siteWrap';
@@ -33,14 +33,14 @@ export const Button = (props: ButtonInterface) => {
     } = props;
     let linkElem;
 
-    if (props.href) { linkElem = 'a'; }
-    if (props.to) { linkElem = ReactRouterLink; }
+    if (href) { linkElem = 'a'; }
+    if (to) { linkElem = ReactRouterLink; }
 
     const Component = linkElem ? ButtonBase.withComponent(linkElem) : ButtonBase;
 
     return (
         <Component {...props}>
-            {props.children}
+            {children}
 
             { isWithArrow &&
                 <svg width="16" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">

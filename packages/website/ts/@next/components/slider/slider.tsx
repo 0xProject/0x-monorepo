@@ -1,11 +1,11 @@
 import * as React from 'react';
-import Flickity from 'react-flickity-component'
+import Flickity from 'react-flickity-component';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
 import { Icon } from 'ts/@next/components/icon';
-import { Paragraph, Heading } from 'ts/@next/components/text';
+import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface SliderProps {
 }
@@ -25,7 +25,7 @@ const flickityOptions = {
 };
 
 export const Slide: React.StatelessComponent<SlideProps> = (props: SlideProps) => {
-    const { heading, text, href, icon } = props;
+    const { heading, text, icon } = props;
 
     return (
         <StyledSlide>
@@ -122,12 +122,6 @@ const StyledSlider = styled.div`
             fill: #fff;
         }
     }
-`;
-
-const SliderInner = styled.div`
-    position: absolute;
-    display: flex;
-    width: 100%;
 `;
 
 const StyledSlide = styled.div`

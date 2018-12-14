@@ -12,7 +12,6 @@ import { Logo } from 'ts/@next/components/logo';
 import { MobileNav } from 'ts/@next/components/mobileNav';
 import { FlexWrap } from 'ts/@next/components/newLayout';
 import { ThemeInterface } from 'ts/@next/components/siteWrap';
-import { Paragraph } from 'ts/@next/components/text';
 
 interface HeaderProps {
     location?: Location;
@@ -32,11 +31,6 @@ interface NavItem {
 interface DropdownWrapInterface {
     width?: number;
 }
-
-const mobileProductLinks = [
-    { url: '/next/0x-instant', text: '0x Instant' },
-    { url: '/next/launch-kit', text: '0x Launch Kit' },
-];
 
 const navItems: NavItem[] = [
     {

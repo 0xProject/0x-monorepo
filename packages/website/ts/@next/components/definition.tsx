@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
-import { Paragraph, Heading } from 'ts/@next/components/text';
+import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface Action {
     label: string;

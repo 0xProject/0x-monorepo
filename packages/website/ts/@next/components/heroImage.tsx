@@ -1,8 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
-
 interface Props {
     image: React.ReactNode;
 }
