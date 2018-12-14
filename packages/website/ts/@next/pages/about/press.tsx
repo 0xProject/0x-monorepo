@@ -4,9 +4,8 @@ import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
 import { Button } from 'ts/@next/components/button';
-import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
-import { Separator } from 'ts/@next/components/separator';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Column, FlexWrap } from 'ts/@next/components/newLayout';
+import { Paragraph } from 'ts/@next/components/text';
 
 interface HighlightInterface {
     logo: string;

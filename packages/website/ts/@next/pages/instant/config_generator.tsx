@@ -18,7 +18,7 @@ import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 // New components
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Heading } from 'ts/@next/components/text';
 import { Select, SelectItemConfig } from 'ts/@next/pages/instant/select';
 
 import { assetMetaDataMap } from '../../../../../instant/src/data/asset_meta_data_map';

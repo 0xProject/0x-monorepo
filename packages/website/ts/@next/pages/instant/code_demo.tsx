@@ -4,7 +4,6 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
-import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
 

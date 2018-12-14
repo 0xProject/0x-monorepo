@@ -3,9 +3,8 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Link } from 'ts/@next/components/link';
-import { Separator } from 'ts/@next/components/separator';
+import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface PositionInterface {

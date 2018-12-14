@@ -3,16 +3,13 @@ import * as React from 'react';
 import AnchorLink from 'react-anchor-link-smooth-scroll';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 import {Hero} from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
-import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Slide, Slider } from 'ts/@next/components/slider/slider';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Heading } from 'ts/@next/components/text';
 
 import {Definition} from 'ts/@next/components/definition';
 import {Column, Section, WrapSticky} from 'ts/@next/components/newLayout';
@@ -271,9 +268,4 @@ const ChapterLink = styled(AnchorLink)`
     &:active {
         opacity: 1;
     }
-`;
-
-const ChapterItemWrap = styled.div`
-    max-width: 560px;
-    margin-top: 60px;
 `;

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 export enum InputWidth {
     Half,
     Full,
@@ -13,10 +11,6 @@ interface InputProps {
     width?: InputWidth;
     label: string;
     type?: string;
-}
-
-interface LabelProps {
-    string: boolean;
 }
 
 export const Input = React.forwardRef((props: InputProps, ref) => {

@@ -4,11 +4,9 @@ import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
 import { Definition } from 'ts/@next/components/definition';
-import { Icon } from 'ts/@next/components/icon';
 import { Image } from 'ts/@next/components/image';
 import { Column, Section } from 'ts/@next/components/newLayout';
-import { Separator } from 'ts/@next/components/separator';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Heading } from 'ts/@next/components/text';
 
 const values = [
     {

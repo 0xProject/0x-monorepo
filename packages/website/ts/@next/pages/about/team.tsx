@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
+import { Column, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface TeamMember {
