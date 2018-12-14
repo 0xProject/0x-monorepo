@@ -1,5 +1,13 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Raise custom InsufficientAssetLiquidityError error with amountAvailableToFill attribute"
+            }
+        ]
+    },
+    {
         "version": "3.0.4",
         "changes": [
             {
