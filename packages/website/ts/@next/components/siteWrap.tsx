@@ -7,8 +7,6 @@ import { Footer } from 'ts/@next/components/footer';
 import { Header } from 'ts/@next/components/header';
 import { GlobalStyles } from 'ts/@next/constants/globalStyle';
 
-// Note(ez): We'll define the theme and provide it via a prop
-// e.g. theme dark/light/etc.
 interface Props {
     theme?: 'dark' | 'light' | 'gray';
     children: any;
@@ -22,7 +20,6 @@ interface MainProps {
     isNavToggled: boolean;
 }
 
-// we proabbly want to put this somewhere else (themes)
 export interface ThemeInterface {
     [key: string]: {
         bgColor: string;

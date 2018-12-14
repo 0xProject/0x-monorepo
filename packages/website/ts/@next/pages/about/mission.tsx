@@ -35,13 +35,14 @@ export const NextAboutMission = () => (
         linkLabel="Our mission and values"
         linkUrl="#"
     >
-        <Section isFullWidth={true}>
-            <Image
-                src="/images/@next/about/about-mission@2x.jpg"
-                height="372"
-                alt=""
-                isCentered={true}
-            />
+        <Section isFullWidth={true} isPadded={false}>
+            <FullWidthImage>
+                <Image
+                    src="/images/@next/about/about-office.png"
+                    alt="0x Offices"
+                    isCentered={true}
+                />
+            </FullWidthImage>
         </Section>
 
         <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
@@ -72,5 +73,24 @@ const StyledDefinition = styled(Definition)`
     & + & {
         padding-top: 30px;
         border-top: 1px solid #eaeaea;
+    }
+`;
+
+const FullWidthImage = styled.figure`
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    @media (min-width: 768px) {
+        height: 500px;
+    }
+
+    @media (max-width: 768px) {
+        height: 400px;
     }
 `;

@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Link as ReactRouterLink, NavLink as ReactRouterNavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { ThemeInterface } from 'ts/@next/components/siteWrap';
+
 import { colors } from 'ts/style/colors';
 
 interface ButtonInterface {
@@ -19,9 +21,7 @@ interface ButtonInterface {
     type?: string;
     to?: string;
     onClick?: () => any;
-    theme?: {
-        textColor: string;
-    };
+    theme: ThemeInterface;
 }
 
 export const Button = (props: ButtonInterface) => {

@@ -102,7 +102,6 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                             <NavItem
                                 key={`navlink-${index}`}
                                 link={link}
-                                index={index}
                             />
                         ))}
                     </NavLinks>
