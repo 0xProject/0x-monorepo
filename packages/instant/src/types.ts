@@ -176,6 +176,7 @@ export enum ProviderType {
     Mist = 'MIST',
     CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
+    TrustWallet = 'TRUST_WALLET',
     Fallback = 'FALLBACK',
 }
 
