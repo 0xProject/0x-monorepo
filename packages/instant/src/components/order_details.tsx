@@ -133,8 +133,16 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             }
             const pricePerTokenWei = this._pricePerTokenWei();
             if (pricePerTokenWei) {
-                const atPriceDisplay = <Text fontColor={ColorOption.lightGrey}>@ {this._displayAmount(baseCurrency, pricePerTokenWei)}</Text>;
-                numTokensWithSymbol = <React.Fragment>{numTokensWithSymbol} {atPriceDisplay}</React.Fragment>
+                const atPriceDisplay = (
+                    <Text fontColor={ColorOption.lightGrey}>
+                        @ {this._displayAmount(baseCurrency, pricePerTokenWei)}
+                    </Text>
+                );
+                numTokensWithSymbol = (
+                    <React.Fragment>
+                        {numTokensWithSymbol} {atPriceDisplay}
+                    </React.Fragment>
+                );
             }
             return numTokensWithSymbol;
         }
