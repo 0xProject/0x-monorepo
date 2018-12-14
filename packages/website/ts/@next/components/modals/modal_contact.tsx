@@ -99,7 +99,7 @@ export class ModalContact extends React.Component<Props> {
                             </ButtonRow>
                         </Form>
                         <Confirmation isSuccessful={isSuccessful}>
-                            <Icon name="checkmark" size="large" />
+                            <Icon name="rocketship" size="large" margin={[0, 0, 'default', 0]}  />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">Thanks for contacting us.</Heading>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>We'll get back to you soon. If you need quick support in the meantime, reach out to the 0x team on Discord.</Paragraph>
                             <Button onClick={this.props.onDismiss}>Done</Button>
@@ -199,4 +199,10 @@ const Confirmation = styled.div<FormProps>`
     transform: translateY(-50%);
     opacity: ${props => props.isSuccessful ? `1` : `0`};
     visibility: ${props => props.isSuccessful ? 'visible' : `hidden`};
+
+    p {
+        max-width: 492px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 `;
