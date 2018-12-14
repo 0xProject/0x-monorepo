@@ -20,25 +20,27 @@ interface MainProps {
     isNavToggled: boolean;
 }
 
+export interface ThemeValuesInterface {
+    bgColor: string;
+    darkBgColor?: string;
+    lightBgColor: string;
+    textColor: string;
+    paragraphColor: string;
+    linkColor: string;
+    mobileNavBgUpper: string;
+    mobileNavBgLower: string;
+    mobileNavColor: string;
+    dropdownBg: string;
+    dropdownButtonBg: string;
+    dropdownBorderColor?: string;
+    dropdownColor: string;
+    headerButtonBg: string;
+    footerBg: string;
+    footerColor: string;
+}
+
 export interface ThemeInterface {
-    [key: string]: {
-        bgColor: string;
-        darkBgColor?: string;
-        lightBgColor: string;
-        textColor: string;
-        paragraphColor: string;
-        linkColor: string;
-        mobileNavBgUpper: string;
-        mobileNavBgLower: string;
-        mobileNavColor: string;
-        dropdownBg: string;
-        dropdownButtonBg: string;
-        dropdownBorderColor?: string;
-        dropdownColor: string;
-        headerButtonBg: string;
-        footerBg: string;
-        footerColor: string;
-    };
+    [key: string]: ThemeValuesInterface;
 }
 
 const GLOBAL_THEMES: ThemeInterface = {

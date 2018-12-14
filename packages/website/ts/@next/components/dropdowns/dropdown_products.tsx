@@ -22,7 +22,7 @@ const navData = [
         // },
 ];
 
-export const DropdownProducts = () => (
+export const DropdownProducts: React.FunctionComponent<{}> = () => (
     <List>
         {_.map(navData, (item, index) => (
             <li key={`productLink-${index}`}>

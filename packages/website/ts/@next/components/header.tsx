@@ -11,16 +11,16 @@ import { Hamburger } from 'ts/@next/components/hamburger';
 import { Logo } from 'ts/@next/components/logo';
 import { MobileNav } from 'ts/@next/components/mobileNav';
 import { FlexWrap } from 'ts/@next/components/newLayout';
-import { ThemeInterface } from 'ts/@next/components/siteWrap';
+import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
 
 interface HeaderProps {
     location?: Location;
     isNavToggled?: boolean;
     toggleMobileNav?: () => void;
-    theme: ThemeInterface;
+    theme: ThemeValuesInterface;
 }
 
-interface NavItem {
+interface NavItemProps {
     url?: string;
     id?: string;
     text?: string;
@@ -32,7 +32,7 @@ interface DropdownWrapInterface {
     width?: number;
 }
 
-const navItems: NavItem[] = [
+const navItems: NavItemProps[] = [
     {
         id: 'why',
         url: '/next/why',
@@ -104,7 +104,7 @@ class HeaderBase extends React.Component<HeaderProps> {
 
 export const Header = withTheme(HeaderBase);
 
-const NavItem = (props: { link: NavItem; key: string }) => {
+const NavItem = (props: { link: NavItemProps; key: string }) => {
     const { link } = props;
     const Subnav = link.dropdownComponent;
 
@@ -116,7 +116,7 @@ const NavItem = (props: { link: NavItem; key: string }) => {
 
             {link.dropdownComponent &&
                 <DropdownWrap width={link.dropdownWidth}>
-                    {Subnav}
+                    <Subnav />
                 </DropdownWrap>
             }
         </LinkWrap>

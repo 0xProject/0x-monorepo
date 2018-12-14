@@ -30,6 +30,7 @@ export class ModalContact extends React.Component<Props> {
         isSuccessful: false,
         errors: {},
     };
+    public nameRef: React.RefObject<HTMLInputElement> = React.createRef();
     public constructor(props: Props) {
         super(props);
     }
@@ -54,6 +55,7 @@ export class ModalContact extends React.Component<Props> {
                                     label="Your name"
                                     type="text"
                                     width={InputWidth.Half}
+                                    ref={this.nameRef}
                                 />
                                 <Input
                                     name="email"

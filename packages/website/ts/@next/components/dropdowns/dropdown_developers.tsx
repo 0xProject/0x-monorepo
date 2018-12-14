@@ -5,11 +5,11 @@ import styled, {withTheme} from 'styled-components';
 
 import {Button} from 'ts/@next/components/button';
 import {Column, FlexWrap, WrapGrid} from 'ts/@next/components/newLayout';
+import {ThemeValuesInterface} from 'ts/@next/components/siteWrap';
 import {Heading} from 'ts/@next/components/text';
-import {GlobalStyle} from 'ts/@next/constants/globalStyle';
 
 interface Props {
-    theme: GlobalStyle;
+    theme: ThemeValuesInterface;
 }
 
 const introData = [
@@ -61,7 +61,7 @@ const linksData = [
     },
 ];
 
-export const DropdownDevelopers = withTheme((props: Props) => (
+export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((props: Props) => (
     <>
         <DropdownWrap>
             <div>

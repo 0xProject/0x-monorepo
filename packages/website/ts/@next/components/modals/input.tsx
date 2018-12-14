@@ -13,7 +13,11 @@ interface InputProps {
     type?: string;
 }
 
-export const Input = React.forwardRef((props: InputProps, ref) => {
+interface LabelProps {
+    string: boolean;
+}
+
+export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
     const { name, label, type } = props;
     const id = `input-${name}`;
     const componentType = type === 'textarea' ? 'textarea' : 'input';

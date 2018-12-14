@@ -6,6 +6,7 @@ import { colors } from 'ts/style/colors';
 interface InputProps {
     isSubmitted: boolean;
     name: string;
+    type: string;
     label: string;
 }
 
@@ -13,14 +14,14 @@ interface ArrowProps {
     isSubmitted: boolean;
 }
 
-const Input: React.ReactNode = React.forwardRef((props: InputProps, ref) => {
-    const { name, label } = props;
+const Input = React.forwardRef((props: InputProps, ref: React.Ref<HTMLInputElement>) => {
+    const { name, label, type } = props;
     const id = `input-${name}`;
 
     return (
         <InnerInputWrapper {...props}>
             <label className="visuallyHidden" htmlFor={id}>{label}</label>
-            <StyledInput ref={ref} id={id} placeholder={label} {...props} />
+            <StyledInput ref={ref} id={id} placeholder={label} type={type || 'text'} {...props} />
         </InnerInputWrapper>
     );
 });

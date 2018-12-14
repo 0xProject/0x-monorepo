@@ -75,8 +75,8 @@ export const Footer: React.StatelessComponent = () => (
             <FooterColumn width="55%">
                 <WrapGrid isCentered={false} isWrapped={true}>
                     {_.map(linkRows, (row: LinkRows, index) => (
-                        <MediaQuery minWidth={row.isOnMobile ? 0 : 768}>
-                            <FooterSectionWrap key={`fc-${index}`}>
+                        <MediaQuery minWidth={row.isOnMobile ? 0 : 768} key={`fc-${index}`}>
+                            <FooterSectionWrap>
                                 <RowHeading>
                                     {row.heading}
                                 </RowHeading>
