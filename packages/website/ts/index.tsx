@@ -9,7 +9,7 @@ import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Instant } from 'ts/containers/instant';
 import { Jobs } from 'ts/containers/jobs';
-import { Landing } from 'ts/containers/landing';
+import { Landing } from 'ts/containers/landing'; // Note(ez): When we're done we omit all old site imports
 import { LaunchKit } from 'ts/containers/launch_kit';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
@@ -19,6 +19,17 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
+
+// Next (new website) routes. We should rename them later
+import { NextAboutJobs } from 'ts/@next/pages/about/jobs';
+import { NextAboutMission } from 'ts/@next/pages/about/mission';
+import { NextAboutPress } from 'ts/@next/pages/about/press';
+import { NextAboutTeam } from 'ts/@next/pages/about/team';
+import { NextEcosystem } from 'ts/@next/pages/ecosystem';
+import { Next0xInstant } from 'ts/@next/pages/instant';
+import { NextLanding } from 'ts/@next/pages/landing';
+import { NextLaunchKit } from 'ts/@next/pages/launch_kit';
+import { NextWhy } from 'ts/@next/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -90,15 +101,25 @@ render(
                     <Provider store={store}>
                         <div>
                             <Switch>
-                                <Route exact={true} path="/" component={Landing as any} />
+                                {/* Next (new site) routes */}
+                                <Route exact path="/" component={NextLanding as any} />
+                                <Route exact path={WebsitePaths.Why} component={NextWhy as any} />
+                                <Route exact path={WebsitePaths.Instant} component={Next0xInstant as any} />
+                                <Route exact path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
+                                <Route exact path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
+                                <Route exact path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
+                                <Route exact path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
+                                <Route exact path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
+                                {/*
+                                  Note(ez): We remove/replace all old routes with next routes
+                                  once we're ready to put a ring on it. for now let's keep em there for reference
+                                */}
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                                <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
-                                <Route path={WebsitePaths.Instant} component={Instant as any} />
-                                <Route path={WebsitePaths.Careers} component={Jobs as any} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
-                                <Route path={WebsitePaths.About} component={About as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
+
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
                                     component={LazyZeroExJSDocumentation}
