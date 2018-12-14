@@ -76,7 +76,7 @@ contract MixinBalanceThresholdFilterCore is
         }
         emit ValidatedAddresses(addressesToValidate);
         
-        // All addresses are valid. Execute fillOrder.
+        // All addresses are valid. Execute exchange function.
         EXCHANGE.executeTransaction(
             salt,
             signerAddress,
