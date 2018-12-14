@@ -127,7 +127,7 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
 export const Header = withTheme(HeaderBase);
 
-const NavItem = (props: { link: NavItem; key: string }): React.ReactNode => {
+const NavItem = (props: { link: NavItem; key: string }) => {
     const { link } = props;
     const Subnav = link.dropdownComponent;
 
