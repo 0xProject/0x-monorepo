@@ -129,5 +129,6 @@ contract MixinBalanceThresholdFilterCore is
             revert("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR");
         }
         // solhint-enable expression-indent
+        return addressesToValidate;
     }
 }

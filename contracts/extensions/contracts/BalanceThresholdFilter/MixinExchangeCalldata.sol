@@ -50,6 +50,7 @@ contract MixinExchangeCalldata is
             let exchangeCalldataOffset := add(exchangeTxPtr, add(0x24, offset))
             value := calldataload(exchangeCalldataOffset)
         }
+        return value;
     }
 
     /// @dev Convenience function that skips the 4 byte selector when loading
@@ -61,6 +62,7 @@ contract MixinExchangeCalldata is
         returns (bytes32 value)
     {
         value = exchangeCalldataload(offset + 4);
+        return value;
     }
 
     /// @dev Extracts the maker address from an order stored in the Exchange calldata
