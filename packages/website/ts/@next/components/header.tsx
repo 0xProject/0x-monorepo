@@ -15,15 +15,10 @@ import { ThemeInterface } from 'ts/@next/components/siteWrap';
 import { Paragraph } from 'ts/@next/components/text';
 
 interface HeaderProps {
-    isOpen?: boolean;
     location?: Location;
     isNavToggled?: boolean;
     toggleMobileNav?: () => void;
     theme: ThemeInterface;
-}
-
-interface HeaderState {
-    isOpen: boolean;
 }
 
 interface NavItem {
@@ -75,23 +70,12 @@ const navItems: NavItem[] = [
     },
 ];
 
-class HeaderBase extends React.Component<HeaderProps, HeaderState> {
-    public state = {
-        isOpen: false,
-    };
-
-    public onMenuButtonClick = (): void => {
-        this.setState({
-            isOpen: !this.state.isOpen,
-        });
-    }
-
+class HeaderBase extends React.Component<HeaderProps> {
     public render(): React.ReactNode {
-        const { isOpen } = this.state;
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <StyledHeader isOpen={isOpen}>
+            <StyledHeader>
                 <HeaderWrap>
                     <ReactRouterLink to="/next">
                         <Logo />
@@ -116,7 +100,7 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                         </TradeButton>
                     </MediaQuery>
 
-                    <Hamburger isOpen={isOpen} onClick={toggleMobileNav}/>
+                    <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
                     <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
                 </HeaderWrap>
             </StyledHeader>
@@ -147,13 +131,6 @@ const NavItem = (props: { link: NavItem; key: string }) => {
 
 const StyledHeader = styled.header<HeaderProps>`
     padding: 30px;
-
-    @media (max-width: 800px) {
-        min-height: ${props => props.isOpen ? '385px' : '70px'};
-        overflow: hidden;
-        position: relative;
-        transition: min-height 0.25s ease-in-out;
-    }
 `;
 
 const LinkWrap = styled.li`
