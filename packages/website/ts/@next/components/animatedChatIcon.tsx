@@ -50,11 +50,6 @@ const fadeInOut = keyframes`
 const Bubble = styled.g`
     animation: ${scale} 4s infinite cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-origin: 50% 50%;
-
-    path,
-    circle {
-        fill: ${props => props.theme.lightBgColor};
-    }
 `;
 
 const Rays = styled.g`

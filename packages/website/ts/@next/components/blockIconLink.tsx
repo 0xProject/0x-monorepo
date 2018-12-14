@@ -76,6 +76,7 @@ const Wrap = styled.div`
     justify-content: center;
     align-items: center;
     text-align: center;
+    transition: background-color 0.25s;
     background-color: ${props => props.theme.lightBgColor};
     cursor: pointer;
 
@@ -87,6 +88,10 @@ const Wrap = styled.div`
     @media (max-width: 900px) {
         width: 100%;
         margin-top: 30px;
+    }
+
+    &:hover {
+        background-color: #002d28;
     }
 `;
 
