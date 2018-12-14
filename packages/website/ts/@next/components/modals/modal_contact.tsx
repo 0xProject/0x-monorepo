@@ -1,19 +1,12 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Link as RouterLink} from 'react-router-dom';
-import styled, {withTheme} from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import {
-    Dialog,
-    DialogOverlay,
-    DialogContent
-  } from "@reach/dialog";
-import "@reach/dialog/styles.css";
+import { DialogContent, DialogOverlay } from '@reach/dialog';
+import '@reach/dialog/styles.css';
 
 import {Button} from 'ts/@next/components/button';
-import {Column, Wrap, WrapGrid} from 'ts/@next/components/layout';
 import { Icon } from 'ts/@next/components/icon';
 import {Input, InputWidth} from 'ts/@next/components/modals/input';
 import {Heading, Paragraph} from 'ts/@next/components/text';
@@ -23,11 +16,6 @@ interface Props {
     theme?: GlobalStyle;
     isOpen?: boolean;
     onDismiss?: () => void;
-}
-
-interface FormProps {
-    isSuccessful?: boolean;
-    isSubmitting?: boolean;
 }
 
 export class ModalContact extends React.Component<Props> {
@@ -118,7 +106,6 @@ export class ModalContact extends React.Component<Props> {
 
         // const email = this.emailInput.current.value;
         const email = '';
-        const name = '';
         const projectOrCompany = '';
         const link = '';
         const comments = '';
@@ -135,7 +122,6 @@ export class ModalContact extends React.Component<Props> {
                 },
                 body: JSON.stringify({ email, projectOrCompany, link, comments }),
             });
-            const json = await response.json();
 
             this.setState({ ...this.state, isSuccessful: true });
         } catch (e) {
@@ -144,23 +130,6 @@ export class ModalContact extends React.Component<Props> {
     }
 }
 // Handle errors: {"errors":[{"location":"body","param":"name","msg":"Invalid value"},{"location":"body","param":"email","msg":"Invalid value"}]}
-
-const StyledWrap = styled(Wrap)`
-    padding-top: 20px;
-    margin-top: 30px;
-    position: relative;
-
-    &:before {
-        content: '';
-        width: 100%;
-        height: 1px;
-        background-color: ${props => props.theme.dropdownColor};
-        opacity: 0.15;
-        position: absolute;
-        top: 0;
-        left:0;
-    }
-`;
 
 const InputRow = styled.div`
     width: 100%;
