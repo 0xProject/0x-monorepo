@@ -1,10 +1,10 @@
 [
     {
-        "timestamp": 1544753227,
-        "version": "1.0.3",
+        "version": "1.1.0",
         "changes": [
             {
-                "note": "Added Balance Threshold Filter"
+                "note": "Added Balance Threshold Filter",
+                "pr": 1383
             }
         ]
     },
