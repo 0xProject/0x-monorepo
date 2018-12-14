@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
-import { Link as ReactRouterLink } from 'react-router-dom';
+import { NavLink as ReactRouterLink } from 'react-router-dom';
 import styled, { withTheme } from 'styled-components';
 
 import { Button } from 'ts/@next/components/button';
