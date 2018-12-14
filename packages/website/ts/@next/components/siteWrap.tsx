@@ -18,6 +18,10 @@ interface State {
     isMobileNavOpen: boolean;
 }
 
+interface MainProps {
+    isNavToggled: boolean;
+}
+
 // we proabbly want to put this somewhere else (themes)
 export interface ThemeInterface {
     [key: string]: {
@@ -32,6 +36,7 @@ export interface ThemeInterface {
         mobileNavColor: string;
         dropdownBg: string;
         dropdownButtonBg: string;
+        dropdownBorderColor?: string;
         dropdownColor: string;
         headerButtonBg: string;
         footerBg: string;
@@ -78,6 +83,9 @@ const GLOBAL_THEMES: ThemeInterface = {
         textColor: '#000000',
         paragraphColor: '#777777',
         linkColor: colors.brandDark,
+        mobileNavBgUpper: '#FFFFFF',
+        mobileNavBgLower: '#F3F6F4',
+        mobileNavColor: '#000000',
         dropdownBg: '#FFFFFF',
         dropdownButtonBg: '#F3F6F4',
         dropdownColor: '#003831',
@@ -114,10 +122,16 @@ export class SiteWrap extends React.Component<Props, State> {
                 <ThemeProvider theme={currentTheme}>
                     <>
                         <GlobalStyles />
-                        <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
+
+                        <Header
+                            isNavToggled={isMobileNavOpen}
+                            toggleMobileNav={this.toggleMobileNav}
+                        />
+
                         <Main isNavToggled={isMobileNavOpen}>
                             {children}
                         </Main>
+
                         <Footer/>
                     </>
                 </ThemeProvider>
@@ -126,7 +140,7 @@ export class SiteWrap extends React.Component<Props, State> {
     }
 }
 
-const Main = styled.main<{ isNavtoggled: boolean }>`
+const Main = styled.main<MainProps>`
     transition: transform 0.5s, opacity 0.5s;
     transform: translate3d(0, ${props => props.isNavToggled ? '357px' : 0}, 0);
     opacity: ${props => props.isNavToggled && '0.5'};
