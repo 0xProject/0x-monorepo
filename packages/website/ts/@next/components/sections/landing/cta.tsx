@@ -22,7 +22,7 @@ export const SectionLandingCta = (props: Props) => (
             iconComponent={<AnimatedCompassIcon />}
             title="Ready to build on 0x?"
             linkLabel="Get Started"
-            linkUrl="https://0xproject.com/docs"
+            linkUrl="https://0x.org/docs"
         />
         <BlockIconLink
             iconComponent={<AnimatedChatIcon />}

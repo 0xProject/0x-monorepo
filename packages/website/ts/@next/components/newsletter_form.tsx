@@ -55,12 +55,12 @@ export class NewsletterForm extends React.Component {
         e.preventDefault();
 
         const email = this.emailInput.current.value;
-        const referrer = 'https://0xproject.com/';
+        const referrer = 'https://0x.org/';
 
         this.setState({ isSubmitted: true });
 
         try {
-            const response = await fetch('https://website-api.0xproject.com/newsletter_subscriber/substack', {
+            const response = await fetch('https://website-api.0x.org/newsletter_subscriber/substack', {
                 method: 'post',
                 mode: 'cors',
                 headers: {

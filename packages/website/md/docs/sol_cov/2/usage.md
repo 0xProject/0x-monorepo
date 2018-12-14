@@ -1,4 +1,4 @@
-Sol-cov uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with ProviderEngine, please read the [Web3 Provider explained](https://0xproject.com/wiki#Web3-Provider-Explained) wiki article.
+Sol-cov uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with ProviderEngine, please read the [Web3 Provider explained](https://0x.org/wiki#Web3-Provider-Explained) wiki article.
 
 The CoverageSubprovider eavesdrops on the `eth_sendTransaction` and `eth_call` RPC calls and collects traces after each call using `debug_traceTransaction`. `eth_call`'s' don't generate traces - so we take a snapshot, re-submit it as a transaction, get the trace and then revert the snapshot.
 
@@ -8,7 +8,7 @@ In order to use `CoverageSubprovider` with your favorite framework you need to p
 
 ### Sol-compiler
 
-If you are generating your artifacts with [@0x/sol-compiler](https://0xproject.com/docs/sol-compiler) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
+If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
 
 ```typescript
 import { SolCompilerArtifactsAdapter } from '@0x/sol-cov';

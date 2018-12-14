@@ -60,7 +60,7 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'blog',
-        url: 'https://blog.0xproject.com/latest',
+        url: 'https://blog.0x.org/latest',
         text: 'Blog',
     },
 ];
@@ -89,7 +89,7 @@ class HeaderBase extends React.Component<HeaderProps> {
                         <TradeButton
                             bgColor={theme.headerButtonBg}
                             color="#ffffff"
-                            href="https://0xproject.com/portal"
+                            href="https://0x.org/portal"
                         >
                             Trade on 0x
                         </TradeButton>

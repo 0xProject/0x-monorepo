@@ -136,7 +136,7 @@ module.exports = (_env, argv) => {
                 new RollbarSourceMapPlugin({
                     accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
                     version: GIT_SHA,
-                    publicPath: 'https://0xproject.com/',
+                    publicPath: 'https://0x.org/',
                 }),
             ]);
         }

@@ -15,41 +15,41 @@ interface Props {
 const introData = [
     {
         label: 'Build a relayer',
-        url: 'https://0xproject.com/wiki#Build-A-Relayer',
+        url: 'https://0x.org/wiki#Build-A-Relayer',
     },
     {
         label: 'Develop on Ethereum',
-        url: 'https://0xproject.com/wiki#Ethereum-Development',
+        url: 'https://0x.org/wiki#Ethereum-Development',
     },
     {
         label: 'Make & take orders',
-        url: 'https://0xproject.com/wiki#Create,-Validate,-Fill-Order',
+        url: 'https://0x.org/wiki#Create,-Validate,-Fill-Order',
     },
     {
         label: 'Use networked liquidity',
-        url: 'https://0xproject.com/wiki#Find,-Submit,-Fill-Order-From-Relayer',
+        url: 'https://0x.org/wiki#Find,-Submit,-Fill-Order-From-Relayer',
     },
 ];
 
 const docsData = [
     {
         label: '0x.js',
-        url: 'https://0xproject.com/docs/0x.js',
+        url: 'https://0x.org/docs/0x.js',
     },
     {
         label: '0x Connect',
-        url: 'https://0xproject.com/docs/connect',
+        url: 'https://0x.org/docs/connect',
     },
     {
         label: 'Smart Contract',
-        url: 'https://0xproject.com/docs/contracts',
+        url: 'https://0x.org/docs/contracts',
     },
 ];
 
 const linksData = [
     {
         label: 'Wiki',
-        url: 'https://0xproject.com/wiki',
+        url: 'https://0x.org/wiki',
     },
     {
         label: 'Github',
@@ -135,7 +135,7 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
                 </Column>
             </StyledWrap>
 
-            <StyledLink to="https://0xproject.com/docs" bgColor={props.theme.dropdownButtonBg} isAccentColor={true} isNoBorder={true}>
+            <StyledLink to="https://0x.org/docs" bgColor={props.theme.dropdownButtonBg} isAccentColor={true} isNoBorder={true}>
                 View All Documentation
             </StyledLink>
         </DropdownWrap>

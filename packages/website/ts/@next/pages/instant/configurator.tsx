@@ -62,7 +62,7 @@ export class Configurator extends React.Component {
 <html>
     <head>
         <meta charset="utf-8" />
-        <script src="https://instant.0xproject.com/instant.js"></script>
+        <script src="https://instant.0x.org/instant.js"></script>
     </head>
     <body>
         <script>

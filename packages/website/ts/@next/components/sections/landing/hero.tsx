@@ -20,7 +20,7 @@ export const SectionLandingHero = () => (
 
 const HeroActions = () => (
     <>
-        <Button href="https://0xproject.com/docs" isInline={true}>
+        <Button href="https://0x.org/docs" isInline={true}>
             Get Started
         </Button>
 

@@ -2,7 +2,7 @@ import { ALink } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import { Key, WebsitePaths } from 'ts/types';
 
-const URL_FORUM = 'https://forum.0xproject.com';
+const URL_FORUM = 'https://forum.0x.org';
 const URL_ZEROEX_CHAT = 'https://discord.gg/d3FTX3M';
 
 export const constants = {
@@ -47,7 +47,7 @@ export const constants = {
     TAKER_FEE: new BigNumber(0),
     TESTNET_NAME: 'Kovan',
     NUMERAL_USD_FORMAT: '$0,0.00',
-    EMAIL_JOBS: 'jobs@0xproject.com',
+    EMAIL_JOBS: 'jobs@0x.org',
     PROJECT_URL_ETHFINEX: 'https://www.ethfinex.com/',
     PROJECT_URL_AMADEUS: 'http://amadeusrelay.org',
     PROJECT_URL_DDEX: 'https://ddex.io',
@@ -74,10 +74,10 @@ export const constants = {
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
     URL_APACHE_LICENSE: 'http://www.apache.org/licenses/LICENSE-2.0',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
-    URL_BLOG: 'https://blog.0xproject.com/latest',
-    URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
+    URL_BLOG: 'https://blog.0x.org/latest',
+    URL_DISCOURSE_FORUM: 'https://forum.0x.org',
     URL_FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
-    URL_TESTNET_FAUCET: 'https://faucet.0xproject.com',
+    URL_TESTNET_FAUCET: 'https://faucet.0x.org',
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_FORUM,
@@ -99,14 +99,14 @@ export const constants = {
     URL_WETH_IO: 'https://weth.io/',
     URL_ZEROEX_CHAT,
     URL_LAUNCH_KIT: 'https://github.com/0xProject/0x-launch-kit',
-    URL_LAUNCH_KIT_BLOG_POST: 'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585',
+    URL_LAUNCH_KIT_BLOG_POST: 'https://blog.0x.org/introducing-the-0x-launch-kit-4acdc3453585',
     URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
     URL_WEB3_DECODED_LOG_ENTRY_EVENT:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
     URL_WEB3_LOG_ENTRY_EVENT: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
     URL_WEB3_PROVIDER_DOCS: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
     URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
-    URL_MISSION_AND_VALUES_BLOG_POST: 'https://blog.0xproject.com/the-0x-mission-and-values-181a58706f9f',
+    URL_MISSION_AND_VALUES_BLOG_POST: 'https://blog.0x.org/the-0x-mission-and-values-181a58706f9f',
     DEVELOPER_TOPBAR_LINKS: [
         {
             title: Key.Wiki,

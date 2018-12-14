@@ -132,7 +132,7 @@ export class ModalContact extends React.Component<Props> {
         this.setState({ ...this.state, isSubmitting: true });
 
         try {
-            await fetch('https://website-api.0xproject.com/leads', {
+            await fetch('https://website-api.0x.org/leads', {
                 method: 'post',
                 mode: 'cors',
                 credentials: 'same-origin',

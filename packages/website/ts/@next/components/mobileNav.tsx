@@ -49,7 +49,7 @@ export class MobileNav extends React.PureComponent<Props> {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="https://blog.0xproject.com/latest">
+                                <Link to="https://blog.0x.org/latest">
                                     Blog
                                 </Link>
                             </li>
