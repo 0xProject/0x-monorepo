@@ -21,7 +21,7 @@ interface ButtonInterface {
     type?: string;
     to?: string;
     onClick?: () => any;
-    theme: ThemeInterface;
+    theme?: ThemeInterface;
 }
 
 export const Button = (props: ButtonInterface) => {

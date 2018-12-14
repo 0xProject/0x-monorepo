@@ -136,7 +136,7 @@ export class NextWhy extends React.PureComponent {
                     <Column width="55%" maxWidth="826px">
                         <Column width="100%" maxWidth="560px" padding="0 30px 0 0">
                             <SectionWrap id="benefits">
-                                <Heading size="medium" marginBottom="60px">What 0x offers</Heading>
+                                <SectionTitle size="medium" marginBottom="60px">What 0x offers</SectionTitle>
 
                                 {_.map(offersData, (item, index) => (
                                     <Definition
@@ -150,7 +150,7 @@ export class NextWhy extends React.PureComponent {
                             </SectionWrap>
 
                             <SectionWrap id="cases" isNotRelative={true}>
-                                <Heading size="medium" marginBottom="60px">Use Cases</Heading>
+                                <SectionTitle size="medium" marginBottom="60px">Use Cases</SectionTitle>
                                 <Slider>
                                     {_.map(useCaseSlides, (item, index) => (
                                         <Slide
@@ -164,7 +164,7 @@ export class NextWhy extends React.PureComponent {
                             </SectionWrap>
 
                             <SectionWrap id="functionality">
-                                <Heading size="medium" marginBottom="60px">Exchange Functionality</Heading>
+                                <SectionTitle size="medium" marginBottom="60px">Exchange Functionality</SectionTitle>
 
                                 {_.map(functionalityData, (item, index) => (
                                     <Definition
@@ -203,15 +203,6 @@ const SectionWrap = styled.div<SectionProps>`
         margin-top: 60px;
     }
 
-    & + &:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 1px;
-        background-color: #3d3d3d;
-    }
-
     @media (min-width: 768px) {
         & + &:before {
             width: 100vw;
@@ -223,6 +214,26 @@ const SectionWrap = styled.div<SectionProps>`
 
         & + &:before {
             width: 100%;
+        }
+    }
+`;
+
+const SectionTitle = styled(Heading)`
+    position: relative;
+
+    &:before {
+        content: '';
+        width: 100vw;
+        position: absolute;
+        top: -30px;
+        left: 0;
+        height: 1px;
+        background-color: #3d3d3d;
+    }
+
+    @media (max-width: 768px) {
+        &:before {
+            width: calc(100vw - 60px);
         }
     }
 `;
