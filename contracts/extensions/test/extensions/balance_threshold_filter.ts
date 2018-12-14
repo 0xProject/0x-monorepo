@@ -428,7 +428,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const txReceipt = await erc721TakerBalanceThresholdWrapper.batchFillOrdersNoThrowAsync(
                 orders,
                 validTakerAddress,
-                { takerAssetFillAmounts },
+                {
+                    takerAssetFillAmounts,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                },
             );
             // Assert validated addresses
             const expectedValidatedAddresseses = [
@@ -704,7 +710,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const txReceipt = await erc721TakerBalanceThresholdWrapper.fillOrderNoThrowAsync(
                 validSignedOrder,
                 validTakerAddress,
-                { takerAssetFillAmount },
+                {
+                    takerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                },
             );
             // Assert validated addresses
             const expectedValidatedAddresseses = [validSignedOrder.makerAddress, validTakerAddress];
@@ -963,7 +975,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const txReceipt = await erc721TakerBalanceThresholdWrapper.marketSellOrdersNoThrowAsync(
                 orders,
                 validTakerAddress,
-                { takerAssetFillAmount: cumulativeTakerAssetFillAmount },
+                {
+                    takerAssetFillAmount: cumulativeTakerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                },
             );
             // Assert validated addresses
             const expectedValidatedAddresseses = [
@@ -1163,7 +1181,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const txReceipt = await erc721TakerBalanceThresholdWrapper.marketBuyOrdersNoThrowAsync(
                 orders,
                 validTakerAddress,
-                { makerAssetFillAmount: cumulativeMakerAssetFillAmount },
+                {
+                    makerAssetFillAmount: cumulativeMakerAssetFillAmount,
+                    // HACK(albrow): We need to hardcode the gas estimate here because
+                    // the Geth gas estimator doesn't work with the way we use
+                    // delegatecall and swallow errors.
+                    gas: 600000,
+                },
             );
             // Assert validated addresses
             const expectedValidatedAddresseses = [
@@ -1493,7 +1517,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             // Cancel
             const txReceipt = await erc721MakerBalanceThresholdWrapper.batchCancelOrdersAsync(
                 validSignedOrders,
-                validSignedOrder.makerAddress,
+                validSignedOrders[0].makerAddress,
             );
             // Assert validated addresses
             const expectedValidatedAddresseses: string[] = [];
@@ -1560,7 +1584,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const cancelOrdersUpToThisSalt = new BigNumber(1);
             const txReceipt = await erc721MakerBalanceThresholdWrapper.cancelOrdersUpToAsync(
                 cancelOrdersUpToThisSalt,
-                validSignedOrder.makerAddress,
+                validSignedOrders[0].makerAddress,
             );
             // Assert validated addresses
             const expectedValidatedAddresseses: string[] = [];
