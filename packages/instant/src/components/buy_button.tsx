@@ -10,6 +10,7 @@ import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants'
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, Asset, ZeroExInstantError } from '../types';
 import { analytics } from '../util/analytics';
+import { errorReporter } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
@@ -82,13 +83,16 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             });
         } catch (e) {
             if (e instanceof Error) {
-                if (e.message === AssetBuyerError.SignatureRequestDenied) {
-                    analytics.trackBuySignatureDenied(buyQuote);
-                    this.props.onSignatureDenied(buyQuote);
-                    return;
-                } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
+                if (e.message === AssetBuyerError.TransactionValueTooLow) {
                     analytics.trackBuySimulationFailed(buyQuote);
                     this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
+                    return;
+                } else {
+                    if (e.message !== AssetBuyerError.SignatureRequestDenied) {
+                        errorReporter.report(e);
+                    }
+                    analytics.trackBuySignatureDenied(buyQuote);
+                    this.props.onSignatureDenied(buyQuote);
                     return;
                 }
             }
