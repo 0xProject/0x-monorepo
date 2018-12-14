@@ -5,6 +5,8 @@ import {addFadeInAnimation, fadeIn} from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
+    isLargeTitle?: boolean;
+    isFullWidth?: boolean;
     description: string;
     figure?: React.ReactNode;
     actions?: React.ReactNode;
@@ -12,7 +14,7 @@ interface Props {
 
 export const Hero = (props: Props) => (
     <Section>
-        <Wrap isCentered={!props.figure}>
+        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth}>
             {props.figure &&
                 <Content width="400px">
                     {props.figure}
@@ -20,7 +22,7 @@ export const Hero = (props: Props) => (
             }
 
             <Content width={props.figure ? '546px' : '678px'}>
-                <Title isLarge={props.figure}>
+                <Title isLarge={props.isLargeTitle}>
                     {props.title}
                 </Title>
 
@@ -46,12 +48,12 @@ const Section = styled.section`
     }
 `;
 
-const Wrap = styled.div<{ isCentered?: boolean }>`
+const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean }>`
     width: calc(100% - 60px);
     margin: 0 auto;
 
     @media (min-width: 768px) {
-        max-width: 1136px;
+        max-width: ${props => !props.isFullWidth ? '895px' : '1136px'};
         flex-direction: row-reverse;
         display: flex;
         align-items: center;
@@ -65,7 +67,7 @@ const Wrap = styled.div<{ isCentered?: boolean }>`
 `;
 
 const Title = styled.h1<{ isLarge?: any }>`
-    font-size: ${props => props.isLarge ? '80px' : '58px'};
+    font-size: ${props => props.isLarge ? '80px' : '50px'};
     font-weight: 300;
     line-height: 1.1;
     margin-bottom: 30px;

@@ -99,6 +99,7 @@ const TextWrap = styled.div<Props>`
     max-width: 560px;
 
     ul {
+        padding-top: 10px;
         padding-left: 1rem;
     }
 

@@ -9,6 +9,7 @@ import {HeroAnimation} from 'ts/@next/components/heroAnimation';
 export const SectionLandingHero = () => (
     <Hero
         title="Powering Decentralized Exchange"
+        isLargeTitle={true}
         description="0x is the best solution for adding exchange functionality to your business."
         figure={<LandingAnimation image={<HeroAnimation />} />}
         actions={<HeroActions />}
