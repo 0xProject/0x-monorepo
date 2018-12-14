@@ -99,23 +99,25 @@ export const NextAboutJobs = () => (
 );
 
 const Position = ({ position }) => (
-    <FlexWrap>
+    <PositionWrap>
         <Column width="30%">
-            <Heading size="small">{position.title}</Heading>
+            <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0"><a href={position.href}>{position.title}</a></Heading>
         </Column>
 
-        <StyledColumn width="50%">
-            <Paragraph isMuted={true}>{position.location}</Paragraph>
+        <StyledColumn width="50%" padding="0 40px 0 0">
+            <Paragraph isMuted={true} marginBottom="0">{position.location}</Paragraph>
         </StyledColumn>
 
         <Column width="20%">
-            <Paragraph><Link href={position.href}>Apply</Link></Paragraph>
+            <Paragraph marginBottom="0" textAlign="right"><Link href={position.href}>Apply</Link></Paragraph>
         </Column>
-    </FlexWrap>
+    </PositionWrap>
 );
 
 const BenefitsList = styled.ul`
     color: #000;
+    font-weight: 300;
+    line-height: 1.444444444;
     list-style: disc;
     columns: auto 2;
     column-gap: 80px;
@@ -136,4 +138,20 @@ const ImageWrap = styled.figure`
 
 const StyledColumn = styled(Column)`
     flex-shrink: 0;
+`;
+
+const PositionWrap = styled(FlexWrap)`
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    position: relative;
+
+    &:after {
+        content: '';
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 1px;
+        background-color: #E3E3E3;
+    }
 `;

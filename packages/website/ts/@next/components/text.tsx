@@ -5,6 +5,7 @@ import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
 interface BaseTextInterface extends PaddingInterface {
     size?: 'default' | 'medium' | 'large' | 'small' | number;
     isCentered?: boolean;
+    textAlign?: string;
 }
 
 interface HeadingProps extends BaseTextInterface {
@@ -23,6 +24,7 @@ interface ParagraphProps extends BaseTextInterface {
     isNoMargin?: boolean;
     marginBottom?: string; // maybe we should remove isNoMargin
     isMuted?: boolean | number;
+    fontWeight?: string | number;
 }
 
 const StyledHeading = styled.h1<HeadingProps>`
@@ -67,11 +69,12 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
 // for literally anything =
 export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => `var(--${props.size || 'default'}Paragraph)`};
+    font-weight: ${props => props.fontWeight || 300};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     color: ${props => props.color || props.theme.paragraphColor};
     opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
-    text-align: ${props => props.isCentered && 'center'};
+    text-align: ${props => props.textAlign ? props.textAlign  : props.isCentered && 'center'};
     line-height: 1.4;
 `;
 
