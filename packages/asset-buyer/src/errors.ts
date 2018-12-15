@@ -6,7 +6,13 @@ import { AssetBuyerError } from './types';
  * Error class representing insufficient asset liquidity
  */
 export class InsufficientAssetLiquidityError extends Error {
+    /**
+     * The amount availabe to fill (in base units) factoring in slippage.
+     */
     public amountAvailableToFill?: BigNumber;
+    /**
+     * @param amountAvailableToFill The amount availabe to fill (in base units) factoring in slippage
+     */
     constructor(amountAvailableToFill?: BigNumber) {
         super(AssetBuyerError.InsufficientAssetLiquidity);
         this.amountAvailableToFill = amountAvailableToFill;
