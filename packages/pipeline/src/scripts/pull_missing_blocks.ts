@@ -9,7 +9,7 @@ import { Web3Source } from '../data_sources/web3';
 import { Block } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseBlock } from '../parsers/web3';
-import { EXCHANGE_START_BLOCK, handleError, INFURA_ROOT_URL } from '../utils';
+import { handleError, INFURA_ROOT_URL } from '../utils';
 
 // Number of blocks to save at once.
 const BATCH_SAVE_SIZE = 1000;
@@ -37,7 +37,7 @@ interface MissingBlocksResponse {
 
 async function getAllMissingBlocksAsync(web3Source: Web3Source): Promise<void> {
     const blocksRepository = connection.getRepository(Block);
-    let fromBlock = EXCHANGE_START_BLOCK;
+    let fromBlock = 0;
     while (true) {
         const blockNumbers = await getMissingBlockNumbersAsync(fromBlock);
         if (blockNumbers.length === 0) {
