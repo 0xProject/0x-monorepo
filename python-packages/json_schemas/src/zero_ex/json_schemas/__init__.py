@@ -27,7 +27,9 @@ class _LocalRefResolver(jsonschema.RefResolver):
 
         # handle weird special cases
         _ref = _ref.replace("ECSignature", "EcSignature")
-        _ref = _ref.replace("Schema", "")
+        if _ref.endswith("Schema"):
+            # strip off the Schema suffix
+            _ref = _ref[:-6]
 
         return f"{snakecase(_ref)}_schema.json"
 
