@@ -1,7 +1,7 @@
 .. source for the sphinx-generated build/docs/web/index.html
 
-Python zero_ex.order_utils
-==========================
+Python zero_ex.json_schemas
+===========================
 
 .. toctree::
    :maxdepth: 2

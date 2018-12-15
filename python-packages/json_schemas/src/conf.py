@@ -46,7 +46,7 @@ html_static_path = ["doc_static"]
 # so a file named "default.css" will overwrite the builtin "default.css".
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "order_utilspydoc"
+htmlhelp_basename = "json_schemaspydoc"
 
 # -- Extension configuration:
 
