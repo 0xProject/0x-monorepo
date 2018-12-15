@@ -41,6 +41,18 @@ describe('format', () => {
         it('converts BigNumber(5.3014059295032) to the string `5.301 ETH`', () => {
             expect(format.ethUnitAmount(BIG_NUMBER_IRRATIONAL)).toBe('5.301 ETH');
         });
+        it('shows 1 significant digit when rounded amount would be 0', () => {
+            expect(format.ethUnitAmount(new BigNumber(0.00003))).toBe('0.00003 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.000034))).toBe('0.00003 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.000035))).toBe('0.00004 ETH');
+        });
+        it('shows < 0.00001 when hits threshold', () => {
+            expect(format.ethUnitAmount(new BigNumber(0.000011))).toBe('0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.00001))).toBe('0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.000009))).toBe('< 0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.0000000009))).toBe('< 0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0))).toBe('0 ETH');
+        });
         it('returns defaultText param when ethUnitAmount is not defined', () => {
             const defaultText = 'defaultText';
             expect(format.ethUnitAmount(undefined, 4, defaultText)).toBe(defaultText);
@@ -85,6 +97,12 @@ describe('format', () => {
         });
         it('correctly formats 5.3014059295032 ETH to usd according to some price', () => {
             expect(format.ethUnitAmountInUsd(BIG_NUMBER_IRRATIONAL, BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe('$13.43');
+        });
+        it('correctly formats amount that is less than 1 cent', () => {
+            expect(format.ethUnitAmountInUsd(new BigNumber(0.000001), BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe('<$0.01');
+        });
+        it('correctly formats exactly 1 cent', () => {
+            expect(format.ethUnitAmountInUsd(new BigNumber(0.0039), BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe('$0.01');
         });
         it('returns defaultText param when ethUnitAmountInUsd or ethUsdPrice is not defined', () => {
             const defaultText = 'defaultText';
