@@ -32,8 +32,8 @@ export enum InternalOrderWatcherError {
     WethNotInTokenRegistry = 'WETH_NOT_IN_TOKEN_REGISTRY',
 }
 
-export enum OrderWatcherAction {
-    // Actions initiated by the user.
+export enum OrderWatcherMethod {
+    // Methods initiated by the user.
     GetStats = 'GET_STATS',
     AddOrder = 'ADD_ORDER',
     RemoveOrder = 'REMOVE_ORDER',
@@ -46,16 +46,46 @@ export enum OrderWatcherAction {
 
 // Users have to create a json object of this format and attach it to
 // the data field of their WebSocket message to interact with the server.
-export interface WebSocketRequest {
-    action: OrderWatcherAction;
-    signedOrder?: SignedOrder;
-    orderHash?: string;
+export type WebSocketRequest = AddOrderRequest | RemoveOrderRequest | GetStatsRequest;
+
+interface AddOrderRequest {
+    id: string;
+    jsonrpc: string;
+    method: OrderWatcherMethod.AddOrder;
+    params: { signedOrder: SignedOrder };
+}
+
+interface RemoveOrderRequest {
+    id: string;
+    jsonrpc: string;
+    method: OrderWatcherMethod.RemoveOrder;
+    params: { orderHash: string };
+}
+
+interface GetStatsRequest {
+    id: string;
+    jsonrpc: string;
+    method: OrderWatcherMethod.GetStats;
 }
 
 // Users should expect a json object of this format in the data field
 // of the WebSocket messages that the server sends out.
-export interface WebSocketResponse {
-    action: OrderWatcherAction | null;
-    success: boolean;
-    result: any;
+export type WebSocketResponse = SuccessfulWebSocketResponse | ErrorWebSocketResponse;
+
+interface SuccessfulWebSocketResponse {
+    id: string | null; // id is null for UPDATE
+    jsonrpc: string;
+    method: OrderWatcherMethod;
+    result: OrderState | GetStatsResult | undefined; // result is undefined for ADD_ORDER and REMOVE_ORDER
+}
+
+interface ErrorWebSocketResponse {
+    id: null;
+    jsonrpc: string;
+    method: null;
+    error: string;
+}
+
+export interface GetStatsResult {
+    orderCount: number;
 }

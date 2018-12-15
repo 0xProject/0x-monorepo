@@ -41,8 +41,10 @@ describe.only('OrderWatcherWebSocket', async () => {
     let zrxTokenAddress: string;
     let signedOrder: SignedOrder;
     let orderHash: string;
-    let addOrderPayload: { action: string; signedOrder: SignedOrder };
-    let removeOrderPayload: { action: string; orderHash: string };
+    // Manually encode types rather than use /src/types to mimick real data that user
+    // would input. Otherwise we would be forced to use enums, which hide problems.
+    let addOrderPayload: { id: string; jsonrpc: string; method: string; params: { signedOrder: SignedOrder } };
+    let removeOrderPayload: { id: string; jsonrpc: string; method: string; params: { orderHash: string } };
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     // HACK: createFillableSignedOrderAsync is Promise-based, which forces us
@@ -88,12 +90,16 @@ describe.only('OrderWatcherWebSocket', async () => {
         );
         orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         addOrderPayload = {
-            action: 'ADD_ORDER',
-            signedOrder,
+            id: 'addOrderPayload',
+            jsonrpc: '2.0',
+            method: 'ADD_ORDER',
+            params: { signedOrder },
         };
         removeOrderPayload = {
-            action: 'REMOVE_ORDER',
-            orderHash,
+            id: 'removeOrderPayload',
+            jsonrpc: '2.0',
+            method: 'REMOVE_ORDER',
+            params: { orderHash },
         };
 
         // Prepare OrderWatcher WebSocket server
@@ -118,48 +124,75 @@ describe.only('OrderWatcherWebSocket', async () => {
 
     it('responds to getStats requests correctly', (done: any) => {
         const payload = {
-            action: 'GET_STATS',
+            id: 'getStats',
+            jsonrpc: '2.0',
+            method: 'GET_STATS',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(payload));
         wsClient.onmessage = (msg: any) => {
             const responseData = JSON.parse(msg.data);
-            expect(responseData.action).to.be.eq('GET_STATS');
-            expect(responseData.success).to.be.true();
+            expect(responseData.id).to.be.eq('getStats');
+            expect(responseData.jsonrpc).to.be.eq('2.0');
+            expect(responseData.method).to.be.eq('GET_STATS');
             expect(responseData.result.orderCount).to.be.eq(0);
             done();
         };
     });
 
-    it('throws an error when an invalid action is attempted', async () => {
-        const invalidActionPayload = {
-            action: 'BAD_ACTION',
+    it('throws an error when an invalid method is attempted', async () => {
+        const invalidMethodPayload = {
+            id: 'invalidMethodPayload',
+            jsonrpc: '2.0',
+            method: 'BAD_METHOD',
         };
-        wsClient.onopen = () => wsClient.send(JSON.stringify(invalidActionPayload));
+        wsClient.onopen = () => wsClient.send(JSON.stringify(invalidMethodPayload));
         const errorMsg = await _onMessageAsync(wsClient);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
-        expect(errorData.action).to.be.null;
-        expect(errorData.success).to.be.false();
-        expect(errorData.result).to.match(/^Error: Expected request to conform to schema/);
+        expect(errorData.id).to.be.null;
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.method).to.be.null;
+        expect(errorData.jsonrpc).to.be.eq('2.0');
+        expect(errorData.error).to.match(/^Error: Expected request to conform to schema/);
+    });
+
+    it('throws an error when jsonrpc field missing from request', async () => {
+        const noJsonRpcPayload = {
+            id: 'noJsonRpcPayload',
+            method: 'GET_STATS',
+        };
+        wsClient.onopen = () => wsClient.send(JSON.stringify(noJsonRpcPayload));
+        const errorMsg = await _onMessageAsync(wsClient);
+        const errorData = JSON.parse(errorMsg.data);
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.method).to.be.null;
+        expect(errorData.jsonrpc).to.be.eq('2.0');
+        expect(errorData.error).to.match(/^Error: Expected request to conform to schema/);
     });
 
     it('throws an error when we try to add an order without a signedOrder', async () => {
         const noSignedOrderAddOrderPayload = {
-            action: 'ADD_ORDER',
-            orderHash: '0x0',
+            id: 'noSignedOrderAddOrderPayload',
+            jsonrpc: '2.0',
+            method: 'ADD_ORDER',
+            orderHash: '0x7337e2f2a9aa2ed6afe26edc2df7ad79c3ffa9cf9b81a964f707ea63f5272355',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(noSignedOrderAddOrderPayload));
         const errorMsg = await _onMessageAsync(wsClient);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
-        expect(errorData.action).to.be.null;
-        expect(errorData.success).to.be.false();
-        expect(errorData.result).to.match(/^Error: Expected request to conform to schema/);
+        expect(errorData.id).to.be.null;
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.method).to.be.null;
+        expect(errorData.jsonrpc).to.be.eq('2.0');
+        expect(errorData.error).to.match(/^Error: Expected request to conform to schema/);
     });
 
     it('throws an error when we try to add a bad signedOrder', async () => {
         const invalidAddOrderPayload = {
-            action: 'ADD_ORDER',
+            id: 'invalidAddOrderPayload',
+            jsonrpc: '2.0',
+            method: 'ADD_ORDER',
             signedOrder: {
                 makerAddress: '0x0',
             },
@@ -168,27 +201,26 @@ describe.only('OrderWatcherWebSocket', async () => {
         const errorMsg = await _onMessageAsync(wsClient);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
-        expect(errorData.action).to.be.null;
-        expect(errorData.success).to.be.false();
-        expect(errorData.result).to.match(/^Error: Expected request to conform to schema/);
+        expect(errorData.id).to.be.null;
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.method).to.be.null;
+        expect(errorData.error).to.match(/^Error: Expected request to conform to schema/);
     });
 
     it('executes addOrder and removeOrder requests correctly', async () => {
         wsClient.onopen = () => wsClient.send(JSON.stringify(addOrderPayload));
         const addOrderMsg = await _onMessageAsync(wsClient);
         const addOrderData = JSON.parse(addOrderMsg.data);
-        expect(addOrderData.action).to.be.eq('ADD_ORDER');
-        expect(addOrderData.success).to.be.true();
-        expect((wsServer._orderWatcher as any)._orderByOrderHash).to.deep.include({
+        expect(addOrderData.method).to.be.eq('ADD_ORDER');
+        expect((wsServer as any)._orderWatcher._orderByOrderHash).to.deep.include({
             [orderHash]: signedOrder,
         });
 
         wsClient.send(JSON.stringify(removeOrderPayload));
         const removeOrderMsg = await _onMessageAsync(wsClient);
         const removeOrderData = JSON.parse(removeOrderMsg.data);
-        expect(removeOrderData.action).to.be.eq('REMOVE_ORDER');
-        expect(removeOrderData.success).to.be.true();
-        expect((wsServer._orderWatcher as any)._orderByOrderHash).to.not.deep.include({
+        expect(removeOrderData.method).to.be.eq('REMOVE_ORDER');
+        expect((wsServer as any)._orderWatcher._orderByOrderHash).to.not.deep.include({
             [orderHash]: signedOrder,
         });
     });
@@ -204,8 +236,7 @@ describe.only('OrderWatcherWebSocket', async () => {
         // Ensure that orderStateInvalid message is received.
         const orderWatcherUpdateMsg = await _onMessageAsync(wsClient);
         const orderWatcherUpdateData = JSON.parse(orderWatcherUpdateMsg.data);
-        expect(orderWatcherUpdateData.action).to.be.eq('UPDATE');
-        expect(orderWatcherUpdateData.success).to.be.true();
+        expect(orderWatcherUpdateData.method).to.be.eq('UPDATE');
         const invalidOrderState = orderWatcherUpdateData.result as OrderStateInvalid;
         expect(invalidOrderState.isValid).to.be.false();
         expect(invalidOrderState.orderHash).to.be.eq(orderHash);
@@ -227,7 +258,9 @@ describe.only('OrderWatcherWebSocket', async () => {
             takerAddress,
         );
         const nonZeroMakerFeeOrderPayload = {
-            action: 'ADD_ORDER',
+            id: 'nonZeroMakerFeeOrderPayload',
+            jsonrpc: '2.0',
+            method: 'ADD_ORDER',
             signedOrder: nonZeroMakerFeeSignedOrder,
         };
 

@@ -7,9 +7,10 @@ import * as WebSocket from 'websocket';
 
 import { webSocketRequestSchema, webSocketUtf8MessageSchema } from '../schemas/websocket_schemas';
 import {
+    GetStatsResult,
     OnOrderStateChangeCallback,
-    OrderWatcherAction,
     OrderWatcherConfig,
+    OrderWatcherMethod,
     WebSocketRequest,
     WebSocketResponse,
 } from '../types';
@@ -18,12 +19,13 @@ import { assert } from '../utils/assert';
 import { OrderWatcher } from './order_watcher';
 
 const DEFAULT_HTTP_PORT = 8080;
+const JSONRPC_VERSION = '2.0';
 
 // Wraps the OrderWatcher functionality in a WebSocket server. Motivations:
 // 1) Users can watch orders via non-typescript programs.
 // 2) Better encapsulation so that users can work
 export class OrderWatcherWebSocketServer {
-    public readonly _orderWatcher: OrderWatcher; // public for testing
+    private readonly _orderWatcher: OrderWatcher;
     private readonly _httpServer: http.Server;
     private readonly _connectionStore: Set<WebSocket.connection>;
     private readonly _wsServer: WebSocket.server;
@@ -66,7 +68,9 @@ export class OrderWatcherWebSocketServer {
             httpServer: this._httpServer,
             // Avoid setting autoAcceptConnections to true as it defeats all
             // standard cross-origin protection facilities built into the protocol
-            // and the browser. Also ensures that a request event is emitted by
+            // and the browser.
+            // Source: https://www.npmjs.com/package/websocket#server-example
+            // Also ensures that a request event is emitted by
             // the server whenever a new WebSocket request is made.
             autoAcceptConnections: false,
         });
@@ -76,7 +80,7 @@ export class OrderWatcherWebSocketServer {
             // machine by the same user. As such, no security checks are in place.
             const connection: WebSocket.connection = request.accept(null, request.origin);
             logUtils.log(`${new Date()} [Server] Accepted connection from origin ${request.origin}.`);
-            connection.on('message', await this._onMessageCallbackAsync.bind(this, connection));
+            connection.on('message', this._onMessageCallbackAsync.bind(this, connection));
             connection.on('close', this._onCloseCallback.bind(this, connection));
             this._connectionStore.add(connection);
         });
@@ -106,20 +110,25 @@ export class OrderWatcherWebSocketServer {
     }
 
     private async _onMessageCallbackAsync(connection: WebSocket.connection, message: any): Promise<void> {
-        const response: WebSocketResponse = {
-            action: null,
-            success: false,
-            result: null,
-        };
+        let response: WebSocketResponse;
         try {
             assert.doesConformToSchema('message', message, webSocketUtf8MessageSchema);
             const request: WebSocketRequest = JSON.parse(message.utf8Data);
             assert.doesConformToSchema('request', request, webSocketRequestSchema);
-            response.action = request.action;
-            response.success = true;
-            response.result = await this._routeRequestAsync(request);
+            assert.isString(request.jsonrpc, JSONRPC_VERSION);
+            response = {
+                id: request.id,
+                jsonrpc: JSONRPC_VERSION,
+                method: request.method,
+                result: await this._routeRequestAsync(request),
+            };
         } catch (err) {
-            response.result = err.toString();
+            response = {
+                id: null,
+                jsonrpc: JSONRPC_VERSION,
+                method: null,
+                error: err.toString(),
+            };
         }
         logUtils.log(`${new Date()} [Server] OrderWatcher output: ${JSON.stringify(response)}`);
         connection.sendUTF(JSON.stringify(response));
@@ -130,29 +139,28 @@ export class OrderWatcherWebSocketServer {
         logUtils.log(`${new Date()} [Server] Client ${connection.remoteAddress} disconnected.`);
     }
 
-    private async _routeRequestAsync(request: WebSocketRequest): Promise<any> {
-        logUtils.log(`${new Date()} [Server] Request received: ${request.action}`);
-        let result = null;
-        switch (request.action) {
-            case OrderWatcherAction.AddOrder: {
-                const signedOrder: SignedOrder = OrderWatcherWebSocketServer._parseSignedOrder(request.signedOrder);
+    private async _routeRequestAsync(request: WebSocketRequest): Promise<GetStatsResult | undefined> {
+        logUtils.log(`${new Date()} [Server] Request received: ${request.method}`);
+        switch (request.method) {
+            case OrderWatcherMethod.AddOrder: {
+                const signedOrder: SignedOrder = OrderWatcherWebSocketServer._parseSignedOrder(
+                    request.params.signedOrder,
+                );
                 await this._orderWatcher.addOrderAsync(signedOrder);
                 break;
             }
-            case OrderWatcherAction.RemoveOrder: {
-                const orderHash = request.orderHash || '_';
-                this._orderWatcher.removeOrder(orderHash);
+            case OrderWatcherMethod.RemoveOrder: {
+                this._orderWatcher.removeOrder(request.params.orderHash || 'undefined');
                 break;
             }
-            case OrderWatcherAction.GetStats: {
-                result = this._orderWatcher.getStats();
+            case OrderWatcherMethod.GetStats: {
+                return this._orderWatcher.getStats();
                 break;
             }
             default:
-                // Should never reach here. Should be caught by JSON schema check.
-                throw new Error(`[Server] Invalid request action: ${request.action}`);
+            // Should never reach here. Should be caught by JSON schema check.
         }
-        return result;
+        return undefined;
     }
 
     /**
@@ -163,9 +171,10 @@ export class OrderWatcherWebSocketServer {
     private _broadcastCallback(err: Error | null, orderState?: OrderState): void {
         this._connectionStore.forEach((connection: WebSocket.connection) => {
             const response: WebSocketResponse = {
-                action: OrderWatcherAction.Update,
-                success: true,
-                result: orderState || err,
+                id: null,
+                jsonrpc: JSONRPC_VERSION,
+                method: OrderWatcherMethod.Update,
+                result: orderState,
             };
             connection.sendUTF(JSON.stringify(response));
         });

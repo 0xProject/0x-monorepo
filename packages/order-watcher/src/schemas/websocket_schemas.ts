@@ -9,24 +9,53 @@ export const webSocketUtf8MessageSchema = {
 
 export const webSocketRequestSchema = {
     id: '/webSocketRequestSchema',
-    properties: {
-        action: { enum: ['GET_STATS', 'ADD_ORDER', 'REMOVE_ORDER'] },
-        signedOrder: { $ref: '/signedOrderSchema' },
-        orderHash: { type: 'string' },
-    },
-    anyOf: [
-        {
-            properties: { action: { enum: ['ADD_ORDER'] } },
+    type: 'object',
+    definitions: {
+        signedOrderParam: {
+            type: 'object',
+            properties: {
+                signedOrder: { $ref: '/signedOrderSchema' },
+            },
             required: ['signedOrder'],
         },
-        {
-            properties: { action: { enum: ['REMOVE_ORDER'] } },
+        orderHashParam: {
+            type: 'object',
+            properties: {
+                orderHash: { $ref: '/hexSchema' },
+            },
             required: ['orderHash'],
         },
+    },
+    oneOf: [
         {
-            properties: { action: { enum: ['GET_STATS'] } },
-            required: [],
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                jsonrpc: { type: 'string' },
+                method: { enum: ['ADD_ORDER'] },
+                params: { $ref: '#/definitions/signedOrderParam' },
+            },
+            required: ['id', 'jsonrpc', 'method', 'params'],
+        },
+        {
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                jsonrpc: { type: 'string' },
+                method: { enum: ['REMOVE_ORDER'] },
+                params: { $ref: '#/definitions/orderHashParam' },
+            },
+            required: ['id', 'jsonrpc', 'method', 'params'],
+        },
+        {
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                jsonrpc: { type: 'string' },
+                method: { enum: ['GET_STATS'] },
+                params: {},
+            },
+            required: ['id', 'jsonrpc', 'method'],
         },
     ],
-    type: 'object',
 };
