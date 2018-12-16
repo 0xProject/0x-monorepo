@@ -22,7 +22,6 @@ export class OrderWatcherWebSocketServer {
     private readonly _httpServer: http.Server;
     private readonly _connectionStore: Set<WebSocket.connection>;
     private readonly _wsServer: WebSocket.server;
-    private _jsonRpcRequestId: number;
     /**
      *  Recover types lost when the payload is stringified.
      */
@@ -55,7 +54,6 @@ export class OrderWatcherWebSocketServer {
         contractAddresses?: ContractAddresses,
         partialConfig?: Partial<OrderWatcherConfig>,
     ) {
-        this._jsonRpcRequestId = 1;
         this._orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, partialConfig);
         this._connectionStore = new Set();
         this._httpServer = http.createServer();
