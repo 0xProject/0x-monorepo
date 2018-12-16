@@ -83,7 +83,13 @@ interface ErrorWebSocketResponse {
     id: null;
     jsonrpc: string;
     method: null;
-    error: string;
+    error: JSONRPCError;
+}
+
+interface JSONRPCError {
+    code: number;
+    message: string;
+    data?: string | object;
 }
 
 export interface GetStatsResult {

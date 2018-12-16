@@ -10,7 +10,7 @@ import * as chai from 'chai';
 import 'mocha';
 import * as WebSocket from 'websocket';
 
-import { OrderWatcherWebSocketServer } from '../src/order_watcher/order_watcher_websocket';
+import { OrderWatcherWebSocketServer } from '../src/order_watcher/order_watcher_websocket_server';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -25,7 +25,7 @@ interface WsMessage {
     data: string;
 }
 
-describe.only('OrderWatcherWebSocket', async () => {
+describe.only('OrderWatcherWebSocketServer', async () => {
     let contractWrappers: ContractWrappers;
     let wsServer: OrderWatcherWebSocketServer;
     let wsClient: WebSocket.w3cwebsocket;

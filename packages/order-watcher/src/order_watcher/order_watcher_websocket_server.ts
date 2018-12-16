@@ -1,19 +1,12 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { OrderState, SignedOrder } from '@0x/types';
+import { OrderStateInvalid, OrderStateValid, SignedOrder } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 import * as http from 'http';
 import * as WebSocket from 'websocket';
 
 import { webSocketRequestSchema, webSocketUtf8MessageSchema } from '../schemas/websocket_schemas';
-import {
-    GetStatsResult,
-    OnOrderStateChangeCallback,
-    OrderWatcherConfig,
-    OrderWatcherMethod,
-    WebSocketRequest,
-    WebSocketResponse,
-} from '../types';
+import { GetStatsResult, OrderWatcherConfig, OrderWatcherMethod, WebSocketRequest, WebSocketResponse } from '../types';
 import { assert } from '../utils/assert';
 
 import { OrderWatcher } from './order_watcher';
@@ -29,6 +22,7 @@ export class OrderWatcherWebSocketServer {
     private readonly _httpServer: http.Server;
     private readonly _connectionStore: Set<WebSocket.connection>;
     private readonly _wsServer: WebSocket.server;
+    private _jsonRpcRequestId: number;
     /**
      *  Recover types lost when the payload is stringified.
      */
@@ -61,6 +55,7 @@ export class OrderWatcherWebSocketServer {
         contractAddresses?: ContractAddresses,
         partialConfig?: Partial<OrderWatcherConfig>,
     ) {
+        this._jsonRpcRequestId = 1;
         this._orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, partialConfig);
         this._connectionStore = new Set();
         this._httpServer = http.createServer();
@@ -87,8 +82,7 @@ export class OrderWatcherWebSocketServer {
 
         // Have the WebSocket server subscribe to the OrderWatcher to receive updates.
         // These updates are then broadcast to clients in the _connectionStore.
-        const broadcastCallback: OnOrderStateChangeCallback = this._broadcastCallback.bind(this);
-        this._orderWatcher.subscribe(broadcastCallback);
+        this._orderWatcher.subscribe(this._broadcastCallback.bind(this));
     }
 
     /**
@@ -168,14 +162,24 @@ export class OrderWatcherWebSocketServer {
      * we do not support clients subscribing to only a subset of orders. As such,
      * Client B will be notified of changes to an order that Client A added.
      */
-    private _broadcastCallback(err: Error | null, orderState?: OrderState): void {
+    private _broadcastCallback(err: Error | null, orderState?: OrderStateValid | OrderStateInvalid | undefined): void {
+        const method = OrderWatcherMethod.Update;
+        const response =
+            err === null
+                ? {
+                      jsonrpc: JSONRPC_VERSION,
+                      method,
+                      result: orderState,
+                  }
+                : {
+                      jsonrpc: JSONRPC_VERSION,
+                      method,
+                      error: {
+                          code: -32000,
+                          message: err.message,
+                      },
+                  };
         this._connectionStore.forEach((connection: WebSocket.connection) => {
-            const response: WebSocketResponse = {
-                id: null,
-                jsonrpc: JSONRPC_VERSION,
-                method: OrderWatcherMethod.Update,
-                result: orderState,
-            };
             connection.sendUTF(JSON.stringify(response));
         });
     }

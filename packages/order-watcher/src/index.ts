@@ -1,4 +1,5 @@
 export { OrderWatcher } from './order_watcher/order_watcher';
+export { OrderWatcherWebSocketServer } from './order_watcher/order_watcher_websocket_server';
 export { ExpirationWatcher } from './order_watcher/expiration_watcher';
 
 export {
