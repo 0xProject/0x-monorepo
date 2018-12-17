@@ -30,6 +30,7 @@ import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextLaunchKit } from 'ts/@next/pages/launch_kit';
 import { NextWhy } from 'ts/@next/pages/why';
+import { NextMarketMaker } from 'ts/@next/pages/market_maker';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -107,6 +108,7 @@ render(
                                 <Route exact path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact path={WebsitePaths.MarketMaker} component={NextMarketMaker as any} />
                                 <Route exact path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
                                 <Route exact path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
                                 <Route exact path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
