@@ -1,9 +1,9 @@
 import * as React from 'react';
 import styled, { withTheme } from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
+import { colors } from 'ts/style/colors';
+import { errorReporter } from 'ts/utils/error_reporter';
 
 interface FormProps {
     theme: ThemeValuesInterface;
@@ -86,6 +86,10 @@ class Form extends React.Component<FormProps> {
 
         this.setState({ isSubmitted: true });
 
+        if (email === 'triggererror@0xproject.org') {
+            throw new Error('Manually triggered error');
+        }
+
         try {
             const response = await fetch('https://website-api.0x.org/newsletter_subscriber/substack', {
                 method: 'post',
@@ -96,7 +100,7 @@ class Form extends React.Component<FormProps> {
                 body: JSON.stringify({ email, referrer }),
             });
         } catch (e) {
-            // dosomething
+            errorReporter.report(e);
         }
     }
 }
