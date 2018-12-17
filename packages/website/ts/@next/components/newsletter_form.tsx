@@ -3,7 +3,7 @@ import styled, { withTheme } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import {ThemeValuesInterface} from 'ts/@next/components/siteWrap';
+import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
 
 interface FormProps {
     theme: ThemeValuesInterface;
@@ -27,7 +27,9 @@ const Input = React.forwardRef((props: InputProps, ref: React.Ref<HTMLInputEleme
 
     return (
         <InnerInputWrapper {...props}>
-            <label className="visuallyHidden" htmlFor={id}>{label}</label>
+            <label className="visuallyHidden" htmlFor={id}>
+                {label}
+            </label>
             <StyledInput ref={ref} id={id} placeholder={label} type={type || 'text'} {...props} />
         </InnerInputWrapper>
     );
@@ -39,17 +41,34 @@ class Form extends React.Component<FormProps> {
         isSubmitted: false,
     };
     public render(): React.ReactNode {
-        const {isSubmitted} = this.state;
-        const {theme} = this.props;
+        const { isSubmitted } = this.state;
+        const { theme } = this.props;
 
         return (
             <StyledForm onSubmit={this._onSubmitAsync.bind(this)}>
                 <InputWrapper>
-                    <Input isSubmitted={isSubmitted} name="email" type="email" label="Email Address" ref={this.emailInput} required={true} textColor={theme.textColor} />
+                    <Input
+                        isSubmitted={isSubmitted}
+                        name="email"
+                        type="email"
+                        label="Email Address"
+                        ref={this.emailInput}
+                        required={true}
+                        textColor={theme.textColor}
+                    />
 
                     <SubmitButton>
-                        <Arrow isSubmitted={isSubmitted} width="22" height="17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13.066 0l-1.068 1.147 6.232 6.557H0v1.592h18.23l-6.232 6.557L13.066 17l8.08-8.5-8.08-8.5z" fill="#CBCBCB"/>
+                        <Arrow
+                            isSubmitted={isSubmitted}
+                            width="22"
+                            height="17"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M13.066 0l-1.068 1.147 6.232 6.557H0v1.592h18.23l-6.232 6.557L13.066 17l8.08-8.5-8.08-8.5z"
+                                fill="#CBCBCB"
+                            />
                         </Arrow>
                     </SubmitButton>
                     <SuccessText isSubmitted={isSubmitted}>🎉 Thank you for signing up!</SuccessText>
@@ -77,7 +96,7 @@ class Form extends React.Component<FormProps> {
                 body: JSON.stringify({ email, referrer }),
             });
         } catch (e) {
-           // dosomething
+            // dosomething
         }
     }
 }
@@ -92,7 +111,10 @@ const StyledForm = styled.form`
     margin-top: 27px;
 `;
 
-const StyledInput = styled.input<InputProps>`
+const StyledInput =
+    styled.input <
+    InputProps >
+    `
     appearance: none;
     background-color: transparent;
     border: 0;
@@ -112,7 +134,10 @@ const InputWrapper = styled.div`
     position: relative;
 `;
 
-const InnerInputWrapper = styled.div<ArrowProps>`
+const InnerInputWrapper =
+    styled.div <
+    ArrowProps >
+    `
     opacity: ${props => props.isSubmitted && 0};
     visibility: ${props => props.isSubmitted && 'hidden'};
     transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
@@ -143,7 +168,10 @@ const Text = styled.p`
     margin-top: 15px;
 `;
 
-const SuccessText = styled.p<ArrowProps>`
+const SuccessText =
+    styled.p <
+    ArrowProps >
+    `
     color: #B1B1B1;
     font-size: 1rem;
     font-weight: 300;
@@ -154,13 +182,16 @@ const SuccessText = styled.p<ArrowProps>`
     top: 0;
     text-align: left;
     right: 50px;
-    opacity: ${props => props.isSubmitted ? 1 : 0};
-    visibility: ${props => props.isSubmitted ? 'visible' : 'hidden'};
+    opacity: ${props => (props.isSubmitted ? 1 : 0)};
+    visibility: ${props => (props.isSubmitted ? 'visible' : 'hidden')};
     transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
     transition-delay: 0.55s;
 `;
 
-const Arrow = styled.svg<ArrowProps>`
+const Arrow =
+    styled.svg <
+    ArrowProps >
+    `
     transform: ${props => props.isSubmitted && `translateX(44px)`};
     transition: transform 0.25s ease-in-out;
 `;
