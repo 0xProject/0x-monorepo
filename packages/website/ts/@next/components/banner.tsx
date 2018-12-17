@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { colors } from 'ts/style/colors';
+
 import {Button} from 'ts/@next/components/button';
 import {ThemeInterface} from 'ts/@next/components/siteWrap';
 import {Paragraph} from 'ts/@next/components/text';
@@ -46,7 +48,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                 <CustomHeading>{heading}</CustomHeading>
 
                 {subline &&
-                    <Paragraph isMuted={0.5} isNoMargin={true}>
+                    <Paragraph color={colors.white} isMuted={0.5} isNoMargin={true}>
                         {subline}
                     </Paragraph>
                 }
@@ -55,6 +57,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                 <ButtonWrap>
                     {mainCta &&
                         <Button
+                            color={colors.white}
                             isTransparent={false}
                             href={mainCta.href}
                         >
@@ -64,6 +67,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
 
                     {secondaryCta &&
                         <Button
+                            color={colors.white}
                             href={secondaryCta.href}
                             onClick={secondaryCta.onClick}
                             isTransparent={true}
@@ -78,6 +82,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
 };
 
 const CustomSection = styled(Section)`
+    color: ${colors.white};
     margin-top: 30px;
 
     @media (max-width: 900px) {
