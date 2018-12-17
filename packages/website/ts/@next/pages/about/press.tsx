@@ -50,7 +50,7 @@ export const NextAboutPress = () => (
         title="Press Highlights"
         description={
             <>
-                <Paragraph marginBottom="60px">
+                <Paragraph size="medium" marginBottom="60px">
                     Want to write about 0x? <a href="#">Get in touch</a>, or <a href="#">download our press kit</a>.
                 </Paragraph>
 

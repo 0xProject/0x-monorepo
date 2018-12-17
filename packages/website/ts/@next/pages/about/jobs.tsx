@@ -43,7 +43,16 @@ const positions: PositionProps[] = [
 export const NextAboutJobs = () => (
     <AboutPageLayout
         title="Join Us in Our Mission"
-        description="To create a tokenized world where all value can flow freely. We are growing an ecosystem of businesses and projects by solving difficult challenges to make our technology intuitive, flexible, and accessible to all. Join us in building infrastructure upon which the exchange of all assets will take place."
+        description={
+            <>
+            <Paragraph size="medium">
+                To create a tokenized world where all value can flow freely.
+            </Paragraph>
+            <Paragraph size="medium">
+                We are growing an ecosystem of businesses and projects by solving difficult challenges to make our technology intuitive, flexible, and accessible to all. Join us in building infrastructure upon which the exchange of all assets will take place.
+            </Paragraph>
+            </>
+        }
         linkLabel="Our mission and values"
         linkUrl="/mission"
     >
