@@ -1,3 +1,4 @@
+import { utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
@@ -13,7 +14,11 @@ import { Section, SectionProps } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 import { Configurator } from 'ts/@next/pages/instant/configurator';
+import { WebsitePaths } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 import { ModalContact } from '../components/modals/modal_contact';
+
+const CONFIGURATOR_MIN_WIDTH_PX = 1050;
 
 const featuresData = [
     {
@@ -70,6 +75,15 @@ interface Props {
     };
 }
 
+export const getStartedClick = () => {
+    if (window.innerWidth < CONFIGURATOR_MIN_WIDTH_PX) {
+        utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
+    } else {
+        sharedUtils.setUrlHash('configurator');
+        sharedUtils.scrollToHash('configurator', '');
+    }
+};
+
 export class Next0xInstant extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
@@ -80,7 +94,7 @@ export class Next0xInstant extends React.Component<Props> {
                 <Hero
                     title="Introducing 0x Instant"
                     description="A free and flexible way to offer simple crypto purchasing in any app or website"
-                    actions={<Button href="#configurator">Get Started</Button>}
+                    actions={<Button onClick={getStartedClick}>Get Started</Button>}
                 />
 
                 <Section isFullWidth={true} isPadded={false} padding="30px 0">
@@ -181,7 +195,7 @@ const ConfiguratorSection =
     styled(Section) <
     SectionProps >
     `
-  @media (max-width: 1050px) {
+  @media (max-width: ${CONFIGURATOR_MIN_WIDTH_PX}px) {
       display: none;
   }
 `;
