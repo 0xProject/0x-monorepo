@@ -358,6 +358,7 @@ export enum WebsitePaths {
     AboutJobs = '/about/jobs',
     LaunchKit = '/launch-kit',
     Instant = '/instant',
+    Community = '/community',
     Ecosystem = '/ecosystem',
     MarketMaker = '/market-maker',
     Why = '/why',
