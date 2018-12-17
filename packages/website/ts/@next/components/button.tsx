@@ -19,52 +19,55 @@ interface ButtonInterface {
     isInline?: boolean;
     href?: string;
     type?: string;
+    target?: string;
     to?: string;
     onClick?: () => any;
     theme?: ThemeInterface;
+    useAnchorTag?: boolean;
 }
 
 export const Button = (props: ButtonInterface) => {
-    const {
-        children,
-        href,
-        isWithArrow,
-        to,
-    } = props;
+    const { children, href, isWithArrow, to, useAnchorTag, target } = props;
     let linkElem;
 
-    if (href) { linkElem = 'a'; }
-    if (to) { linkElem = ReactRouterLink; }
+    if (href || useAnchorTag) {
+        linkElem = 'a';
+    }
+    if (to) {
+        linkElem = ReactRouterLink;
+    }
 
     const Component = linkElem ? ButtonBase.withComponent(linkElem) : ButtonBase;
+    const targetProp = href && target ? { target } : {};
 
     return (
-        <Component {...props}>
+        <Component {...props} {...targetProp}>
             {children}
 
-            { isWithArrow &&
+            {isWithArrow && (
                 <svg width="16" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M4.484.246l.024 1.411 8.146.053L.817 13.547l.996.996L13.65 2.706l.052 8.146 1.412.024L15.045.315 4.484.246z"
-                    />
+                    <path d="M4.484.246l.024 1.411 8.146.053L.817 13.547l.996.996L13.65 2.706l.052 8.146 1.412.024L15.045.315 4.484.246z" />
                 </svg>
-            }
+            )}
         </Component>
     );
 };
 
-const ButtonBase = styled.button<ButtonInterface>`
+const ButtonBase =
+    styled.button <
+    ButtonInterface >
+    `
     appearance: none;
     border: 1px solid transparent;
     display: inline-block;
     background-color: ${props => props.bgColor || colors.brandLight};
     background-color: ${props => (props.isTransparent || props.isWithArrow) && 'transparent'};
-    border-color: ${props => (props.isTransparent && !props.isWithArrow) && 'rgba(255, 255, 255, .4)'};
-    color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
-    padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
+    border-color: ${props => props.isTransparent && !props.isWithArrow && 'rgba(255, 255, 255, .4)'};
+    color: ${props => (props.isAccentColor ? props.theme.linkColor : props.color || props.theme.textColor)};
+    padding: ${props => !props.isNoPadding && !props.isWithArrow && '18px 30px'};
     white-space: ${props => props.isWithArrow && 'nowrap'};
     text-align: center;
-    font-size: ${props => props.isWithArrow ? '20px' : '18px'};
+    font-size: ${props => (props.isWithArrow ? '20px' : '18px')};
     text-decoration: none;
     cursor: pointer;
     outline: none;
@@ -77,12 +80,12 @@ const ButtonBase = styled.button<ButtonInterface>`
     }
 
     path {
-        fill: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
+        fill: ${props => (props.isAccentColor ? props.theme.linkColor : props.color || props.theme.textColor)};
     }
 
     &:hover {
-        background-color: ${props => (!props.isTransparent && !props.isWithArrow) && '#04BEA8'};
-        border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#00AE99'};
+        background-color: ${props => !props.isTransparent && !props.isWithArrow && '#04BEA8'};
+        border-color: ${props => props.isTransparent && !props.isNoBorder && !props.isWithArrow && '#00AE99'};
 
         svg {
             transform: translate3d(2px, -2px, 0);
