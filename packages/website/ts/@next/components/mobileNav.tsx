@@ -70,8 +70,9 @@ const Wrap = styled.nav<{ isToggled: boolean }>`
     height: 357px;
     background-color: ${props => props.theme.mobileNavBgUpper};
     color: ${props => props.theme.mobileNavColor};
-    transition: transform 0.5s;
+    transition: ${props => props.isToggled ? 'visibility 0s, transform 0.5s' : 'visibility 0s 0.5s, transform 0.5s'};
     transform: translate3d(0, ${props => props.isToggled ? 0 : '-100%'}, 0);
+    visibility: ${props => !props.isToggled && 'hidden'};
     position: fixed;
     display: flex;
     flex-direction: column;

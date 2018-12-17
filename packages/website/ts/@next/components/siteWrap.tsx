@@ -145,6 +145,5 @@ export class SiteWrap extends React.Component<Props, State> {
 
 const Main = styled.main<MainProps>`
     transition: transform 0.5s, opacity 0.5s;
-    transform: translate3d(0, ${props => props.isNavToggled ? '357px' : 0}, 0);
     opacity: ${props => props.isNavToggled && '0.5'};
 `;
