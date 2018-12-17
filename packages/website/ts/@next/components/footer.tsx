@@ -160,10 +160,10 @@ const Link = styled(ReactRouterLink)`
     display: block;
     font-size: 16px;
     line-height: 20px;
-    transition: color 0.25s ease-in-out;
+    transition: opacity 0.25s;
     text-decoration: none;
 
     &:hover {
-        color: rgba(255, 255, 255, 1);
+        opacity: 0.8;
     }
 `;
