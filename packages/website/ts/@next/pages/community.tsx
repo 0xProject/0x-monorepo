@@ -12,12 +12,6 @@ import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
-interface BenefitProps {
-    title: string;
-    icon: string;
-    description: string;
-}
-
 interface EventProps {
     title: string;
     date: string;
@@ -25,57 +19,69 @@ interface EventProps {
     imageUrl: string;
 }
 
-const benefits: BenefitProps[] = [
-    {
-        icon: 'milestoneGrants',
-        title: 'Milestone Grants',
-        description: 'Receive non-dilutive capital ranging from $10,000 to $100,000, with grant sizes awarded based on the quality of your team, vision, execution, and community involvement.',
-    },
-    {
-        icon: 'vcIntroductions',
-        title: 'VC Introductions',
-        description: 'Connect with leading venture capital firms that could participate in your next funding round.',
-    },
-    {
-        icon: 'techSupport',
-        title: 'Technical Support',
-        description: 'Receive ongoing technical assistance from knowledgeable and responsive 0x developers.',
-    },
-    {
-        icon: 'recruitingSupport',
-        title: 'Recruiting Assistance',
-        description: 'Grow your team by accessing an exclusive pool of top engineering and business operations talent.',
-    },
-    {
-        icon: 'eficientDesign',
-        title: 'Marketing and Design Help',
-        description: 'Get strategic advice on product positioning, customer acquisition, and UI/UX design that can impact the growth of your business.',
-    },
-    {
-        icon: 'legalResources',
-        title: 'Legal Resources',
-        description: 'Access important legal resources that will help you navigate the regulatory landscape.',
-    },
-];
+interface CommunityLinkProps {
+    bgColor: string;
+    title?: string;
+    icon?: string;
+    url: string;
+}
 
 const events: EventProps[] = [
     {
         title: '0x London Meetup',
         date: 'October 20th 2018',
-        imageUrl: '/images/@next/events/event-sample.jpg',
+        imageUrl: '/images/@next/events/london.jpg',
         signupUrl: '#',
     },
     {
         title: '0x Berlin Meetup',
         date: 'October 20th 2018',
-        imageUrl: '/images/@next/events/event-sample.jpg',
+        imageUrl: '/images/@next/events/berlin.jpg',
         signupUrl: '#',
     },
     {
         title: '0x San Francisco Meetup',
         date: 'October 20th 2018',
-        imageUrl: '/images/@next/events/event-sample.jpg',
+        imageUrl: '/images/@next/events/sf.jpg',
         signupUrl: '#',
+    },
+];
+const communityLinks: CommunityLinkProps[] = [
+    {
+        bgColor: '#1DA1F2',
+        title: 'Twitter',
+        icon: 'social-twitter',
+        url: 'https://twitter.com/0xProject',
+    },
+    {
+        bgColor: '#FF4500',
+        title: 'Reddit',
+        icon: 'social-reddit',
+        url: 'https://twitter.com/0xProject',
+    },
+    {
+        bgColor: '#7289DA',
+        title: 'Twitter',
+        icon: 'social-discord',
+        url: 'https://twitter.com/0xProject',
+    },
+    {
+        bgColor: '#3B5998',
+        title: 'Facebook',
+        icon: 'social-fb',
+        url: 'https://twitter.com/0xProject',
+    },
+    {
+        bgColor: '#181717',
+        title: 'GitHub',
+        icon: 'social-github',
+        url: 'https://twitter.com/0xProject',
+    },
+    {
+        bgColor: '#003831',
+        title: 'Newsletter',
+        icon: 'social-newsletter',
+        url: 'https://twitter.com/0xProject',
     },
 ];
 
@@ -104,6 +110,20 @@ export class NextCommunity extends React.Component {
                             </Button>
                         </LinkWrap>
                     </Column>
+                </Section>
+
+                <Section isFullWidth={true}>
+                    <WrapGrid isTextCentered={true} isWrapped={true} isFullWidth={false} isCentered={false} maxWidth="1151px">
+                        {_.map(communityLinks, (link: CommunityLinkProps, index: number) => (
+                            <CommunityLink
+                                key={`cl-${index}`}
+                                icon={link.icon}
+                                title={link.title}
+                                bgColor={link.bgColor}
+                                url={link.url}
+                            />
+                        ))}
+                    </WrapGrid>
                 </Section>
 
                 <EventsWrapper bgColor={colors.backgroundLight} isFullWidth={true} isCentered={true} isTextCentered={true}>
@@ -166,6 +186,7 @@ export class NextCommunity extends React.Component {
 
 const Event: React.FunctionComponent<EventProps> = (event: EventProps) => (
     <StyledEvent>
+        <EventIcon name="logo-mark" size={30} margin={0} />
         <EventImage src={event.imageUrl} alt=""/>
         <EventContent>
             <Heading color={colors.white} size="small" marginBottom="0">
@@ -185,6 +206,15 @@ const Event: React.FunctionComponent<EventProps> = (event: EventProps) => (
     </StyledEvent>
 );
 
+const CommunityLink: React.FunctionComponent<CommunityLinkProps> = (props: CommunityLinkProps) => (
+    <StyledCommunityLink bgColor={props.bgColor} href={props.url}>
+        <CommunityIcon name={props.icon} size={44} margin={0} />
+        <CommunityTitle color={colors.white} isMuted={false} marginBottom="0">
+            {props.title}
+        </CommunityTitle>
+    </StyledCommunityLink>
+);
+
 // Events
 const EventsWrapper = styled(Section)`
     display: flex;
@@ -199,6 +229,13 @@ const StyledEvent = styled.div`
     text-align: left;
     height: 424px;
     margin-top: 130px;
+    position: relative;
+`;
+
+const EventIcon = styled(Icon)`
+    position: absolute;
+    top: 30px;
+    left: 30px;
 `;
 
 const EventImage = styled.img`
@@ -209,6 +246,29 @@ const EventImage = styled.img`
 
 const EventContent = styled.div`
     padding: 30px 30px;
+`;
+
+// Community Links
+const StyledCommunityLink = styled.a`
+    background-color: ${(props: CommunityLinkProps) => props.bgColor};
+    color: ${colors.white};
+    width: 175px;
+    height: 175px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`;
+
+const CommunityTitle = styled(Paragraph)`
+    font-size: 20px;
+    font-weight: 400;
+`;
+
+const CommunityIcon = styled(Icon)`
+    margin-bottom: 20px;
 `;
 
 // Misc
