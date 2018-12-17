@@ -109,6 +109,8 @@ const Section = styled.div<{ isDark?: boolean }>`
 `;
 
 const Grid = styled(WrapGrid)<WrapProps>`
+    justify-content: flex-start;
+
     li {
         width: 50%;
         flex-shrink: 0;
