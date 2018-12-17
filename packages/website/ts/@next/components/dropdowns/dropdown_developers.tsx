@@ -1,6 +1,6 @@
+import { Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import styled, { withTheme } from 'styled-components';
 
 import { Button } from 'ts/@next/components/button';
@@ -13,7 +13,13 @@ interface Props {
     theme: ThemeValuesInterface;
 }
 
-const introData = [
+interface LinkConfig {
+    label: string;
+    url: string;
+    shouldOpenInNewTab?: boolean;
+}
+
+const introData: LinkConfig[] = [
     {
         label: 'Build a relayer',
         url: `${WebsitePaths.Wiki}#Build-A-Relayer`,
@@ -32,7 +38,7 @@ const introData = [
     },
 ];
 
-const docsData = [
+const docsData: LinkConfig[] = [
     {
         label: '0x.js',
         url: WebsitePaths.ZeroExJs,
@@ -47,7 +53,7 @@ const docsData = [
     },
 ];
 
-const linksData = [
+const linksData: LinkConfig[] = [
     {
         label: 'Wiki',
         url: WebsitePaths.Wiki,
@@ -55,10 +61,12 @@ const linksData = [
     {
         label: 'Github',
         url: 'https://github.com/0xProject',
+        shouldOpenInNewTab: true,
     },
     {
         label: 'Protocol specification',
         url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md',
+        shouldOpenInNewTab: true,
     },
 ];
 
@@ -73,9 +81,9 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
                 <StyledGrid isCentered={false} isWrapped={true}>
                     {_.map(introData, (item, index) => (
                         <li>
-                            <RouterLink key={`introLink-${index}`} to={item.url}>
+                            <Link key={`introLink-${index}`} to={item.url}>
                                 {item.label}
-                            </RouterLink>
+                            </Link>
                         </li>
                     ))}
                 </StyledGrid>
@@ -90,7 +98,9 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
                     <ul>
                         {_.map(docsData, (item, index) => (
                             <li key={`docsLink-${index}`}>
-                                <RouterLink to={item.url}>{item.label}</RouterLink>
+                                <Link to={item.url} shouldOpenInNewTab={item.shouldOpenInNewTab}>
+                                    {item.label}
+                                </Link>
                             </li>
                         ))}
                     </ul>
@@ -104,7 +114,9 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
                     <ul>
                         {_.map(linksData, (item, index) => (
                             <li key={`usefulLink-${index}`}>
-                                <RouterLink to={item.url}>{item.label}</RouterLink>
+                                <Link to={item.url} shouldOpenInNewTab={item.shouldOpenInNewTab}>
+                                    {item.label}
+                                </Link>
                             </li>
                         ))}
                     </ul>
@@ -112,7 +124,7 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
             </StyledWrap>
 
             <StyledLink
-                to="https://0x.org/docs"
+                to={WebsitePaths.Docs}
                 bgColor={props.theme.dropdownButtonBg}
                 isAccentColor={true}
                 isNoBorder={true}
