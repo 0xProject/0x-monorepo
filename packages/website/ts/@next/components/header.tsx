@@ -89,7 +89,7 @@ class HeaderBase extends React.Component<HeaderProps> {
                         <TradeButton
                             bgColor={theme.headerButtonBg}
                             color="#ffffff"
-                            href="https://0x.org/portal"
+                            href="/portal"
                         >
                             Trade on 0x
                         </TradeButton>
