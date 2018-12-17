@@ -9695,7 +9695,6 @@ jss@^9.3.3, jss@^9.7.0:
 jump.js@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/jump.js/-/jump.js-1.0.1.tgz#0de2b1631ba9a1c2c6b8572ad277d877e8503600"
-  integrity sha1-DeKxYxupocLGuFcq0nfYd+hQNgA=
 
 just-extend@^1.1.27:
   version "1.1.27"
@@ -13225,9 +13224,9 @@ react-flickity-component@^3.1.0:
     react "^16.3.2"
     react-dom "^16.3.2"
 
-react-headroom@^2.2.4:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/react-headroom/-/react-headroom-2.2.4.tgz#e931bf5f91d0ea2c2fbf0f156a2b82d7db6cbe3b"
+react-headroom@2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/react-headroom/-/react-headroom-2.2.2.tgz#5ddea3bc87cd54be38f6f98c3fde4527e2a5fb0f"
   dependencies:
     prop-types "^15.5.8"
     raf "^3.3.0"
@@ -13371,7 +13370,6 @@ react-scroll@0xproject/react-scroll#pr-330-and-replace-state:
 react-scrollable-anchor@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/react-scrollable-anchor/-/react-scrollable-anchor-0.6.1.tgz#fd6e78026c744f76414053d06903b82adccb54d9"
-  integrity sha1-/W54Amx0T3ZBQFPQaQO4KtzLVNk=
   dependencies:
     jump.js "1.0.1"
     prop-types "^15.5.10"
