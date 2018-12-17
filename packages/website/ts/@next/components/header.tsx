@@ -4,6 +4,8 @@ import MediaQuery from 'react-responsive';
 import { NavLink as ReactRouterLink } from 'react-router-dom';
 import styled, { withTheme } from 'styled-components';
 
+import Headroom from 'react-headroom';
+
 import { Button } from 'ts/@next/components/button';
 import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
@@ -70,35 +72,37 @@ class HeaderBase extends React.Component<HeaderProps> {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <StyledHeader isNavToggled={isNavToggled}>
-                <HeaderWrap>
-                    <ReactRouterLink to={WebsitePaths.Home}>
-                        <Logo />
-                    </ReactRouterLink>
+            <Headroom>
+                <StyledHeader isNavToggled={isNavToggled}>
+                    <HeaderWrap>
+                        <ReactRouterLink to={WebsitePaths.Home}>
+                            <Logo />
+                        </ReactRouterLink>
 
-                    <NavLinks>
-                        {_.map(navItems, (link, index) => (
-                            <NavItem
-                                key={`navlink-${index}`}
-                                link={link}
-                            />
-                        ))}
-                    </NavLinks>
+                        <NavLinks>
+                            {_.map(navItems, (link, index) => (
+                                <NavItem
+                                    key={`navlink-${index}`}
+                                    link={link}
+                                />
+                            ))}
+                        </NavLinks>
 
-                    <MediaQuery minWidth={990}>
-                        <TradeButton
-                            bgColor={theme.headerButtonBg}
-                            color="#ffffff"
-                            href="/portal"
-                        >
-                            Trade on 0x
-                        </TradeButton>
-                    </MediaQuery>
+                        <MediaQuery minWidth={990}>
+                            <TradeButton
+                                bgColor={theme.headerButtonBg}
+                                color="#ffffff"
+                                href="/portal"
+                            >
+                                Trade on 0x
+                            </TradeButton>
+                        </MediaQuery>
 
-                    <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
-                    <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
-                </HeaderWrap>
-            </StyledHeader>
+                        <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
+                        <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                    </HeaderWrap>
+                </StyledHeader>
+            </Headroom>
         );
     }
 }
@@ -126,6 +130,7 @@ const NavItem = (props: { link: NavItemProps; key: string }) => {
 
 const StyledHeader = styled.header<HeaderProps>`
     padding: 30px;
+    background-color: ${props => props.theme.bgColor};
 `;
 
 const LinkWrap = styled.li`

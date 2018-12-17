@@ -109,9 +109,6 @@ export class SiteWrap extends React.Component<Props, State> {
     public toggleMobileNav = () => {
         this.setState({
             isMobileNavOpen: !this.state.isMobileNavOpen,
-        }, () => {
-            const overflow = this.state.isMobileNavOpen ? 'hidden' : 'auto';
-            document.documentElement.style.overflowY = overflow;
         });
     }
 
@@ -124,7 +121,7 @@ export class SiteWrap extends React.Component<Props, State> {
         const currentTheme = GLOBAL_THEMES[theme];
 
         return (
-            <Container isNavToggled={isMobileNavOpen}>
+            <>
                 <ThemeProvider theme={currentTheme}>
                     <>
                         <GlobalStyles />
@@ -141,19 +138,10 @@ export class SiteWrap extends React.Component<Props, State> {
                         <Footer/>
                     </>
                 </ThemeProvider>
-            </Container>
+            </>
         );
     }
 }
-
-const Container = styled.div`
-    width: 100vw;
-    height: 100%;
-    position: fixed;
-    overflow-x: hidden;
-    overflow-y: ${props => props.isNavToggled ? 'hidden' : 'auto'};
-    -webkit-overflow-scrolling: touch;
-`;
 
 const Main = styled.main<MainProps>`
     transition: transform 0.5s, opacity 0.5s;
