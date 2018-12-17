@@ -10,13 +10,22 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib ${npm_package_config_snapshot_name} *.zip",
         "lint": "tslint --format stylish --project .",
         "migrate:v2": "run-s build script:migrate:v2",
+        "migrate:v2:snapshot": "run-s build script:migrate:v2:snapshot",
         "script:migrate:v2": "node ./lib/migrate.js",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "script:migrate:v2:snapshot": "node ./lib/migrate_snapshot.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
+        "build:snapshot": "rm -rf ${npm_package_config_snapshot_name} && yarn migrate:v2:snapshot && zip -r \"$(git rev-parse HEAD).zip\" ${npm_package_config_snapshot_name}",
+        "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
+        "publish:snapshot": "aws s3 cp $(git rev-parse HEAD).zip ${npm_package_config_s3_snapshot_bucket}",
+        "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest"
     },
     "config": {
+        "s3_snapshot_bucket": "s3://testrpc-snapshots",
+        "docker_snapshot_name": "0xorg/ganache-cli",
+        "snapshot_name": "0x_ganache_snapshot",
         "postpublish": {
             "assets": []
         }
