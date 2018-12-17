@@ -10,7 +10,7 @@ import * as chai from 'chai';
 import 'mocha';
 import * as WebSocket from 'websocket';
 
-import { OrderWatcherWebSocketServer } from '../src/order_watcher/order_watcher_websocket_server';
+import { OrderWatcherWebSocketServer } from '../src/order_watcher/order_watcher_web_socket_server';
 import { AddOrderRequest, OrderWatcherMethod, RemoveOrderRequest } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
