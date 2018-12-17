@@ -78,7 +78,7 @@ class HeaderBase extends React.Component<HeaderProps> {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <Headroom onUnpin={this.onUnpin}>
+            <Headroom onUnpin={this.onUnpin} downTolerance={4} upTolerance={10}>
                 <StyledHeader isNavToggled={isNavToggled}>
                     <HeaderWrap>
                         <ReactRouterLink to={WebsitePaths.Home}>
