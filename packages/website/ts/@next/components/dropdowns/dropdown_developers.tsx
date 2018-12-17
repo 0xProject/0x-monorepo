@@ -8,6 +8,7 @@ import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
 import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
 import { Heading } from 'ts/@next/components/text';
 import { WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 interface Props {
     theme: ThemeValuesInterface;
@@ -60,12 +61,12 @@ const linksData: LinkConfig[] = [
     },
     {
         label: 'Github',
-        url: 'https://github.com/0xProject',
+        url: constants.URL_GITHUB_ORG,
         shouldOpenInNewTab: true,
     },
     {
         label: 'Protocol specification',
-        url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md',
+        url: constants.URL_PROTOCOL_SPECIFICATION,
         shouldOpenInNewTab: true,
     },
 ];

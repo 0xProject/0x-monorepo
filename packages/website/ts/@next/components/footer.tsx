@@ -1,3 +1,4 @@
+import { Link as SmartLink } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
@@ -8,11 +9,12 @@ import { Logo } from 'ts/@next/components/logo';
 import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
 import { NewsletterForm } from 'ts/@next/components/newsletter_form';
 import { WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 interface LinkInterface {
     text: string;
     url: string;
-    newWindow?: boolean;
+    shouldOpenInNewTab?: boolean;
 }
 
 interface LinkRows {
@@ -37,9 +39,9 @@ const linkRows: LinkRows[] = [
     {
         heading: 'Developers',
         links: [
-            { url: '#', text: 'Documentation' },
-            { url: '#', text: 'GitHub' },
-            { url: '#', text: 'Whitepaper' },
+            { url: WebsitePaths.Docs, text: 'Documentation' },
+            { url: constants.URL_GITHUB_ORG, text: 'GitHub', shouldOpenInNewTab: true },
+            { url: WebsitePaths.Whitepaper, text: 'Whitepaper', shouldOpenInNewTab: true },
         ],
     },
     {
@@ -57,10 +59,10 @@ const linkRows: LinkRows[] = [
         heading: 'Community',
         isOnMobile: true,
         links: [
-            { url: '#', text: 'Twitter' },
-            { url: '#', text: 'Rocket Chat' },
-            { url: '#', text: 'Facebook' },
-            { url: '#', text: 'Reddit' },
+            { url: constants.URL_TWITTER, text: 'Twitter', shouldOpenInNewTab: true },
+            { url: constants.URL_ZEROEX_CHAT, text: 'Discord Chat', shouldOpenInNewTab: true },
+            { url: constants.URL_FACEBOOK, text: 'Facebook', shouldOpenInNewTab: true },
+            { url: constants.URL_REDDIT, text: 'Reddit', shouldOpenInNewTab: true },
         ],
     },
 ];
@@ -78,9 +80,7 @@ export const Footer: React.StatelessComponent = () => (
                     {_.map(linkRows, (row: LinkRows, index) => (
                         <MediaQuery minWidth={row.isOnMobile ? 0 : 768} key={`fc-${index}`}>
                             <FooterSectionWrap>
-                                <RowHeading>
-                                    {row.heading}
-                                </RowHeading>
+                                <RowHeading>{row.heading}</RowHeading>
 
                                 <LinkList links={row.links} />
                             </FooterSectionWrap>
@@ -93,15 +93,15 @@ export const Footer: React.StatelessComponent = () => (
 );
 
 const LinkList = (props: LinkListProps) => (
-  <List>
-    {_.map(props.links, (link, index) => (
-      <li key={`fl-${index}`}>
-        <Link to={link.url}>
-          {link.text}
-        </Link>
-      </li>
-    ))}
-  </List>
+    <List>
+        {_.map(props.links, (link, index) => (
+            <li key={`fl-${index}`}>
+                <Link to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+                    {link.text}
+                </Link>
+            </li>
+        ))}
+    </List>
 );
 
 const FooterWrap = styled.footer`
@@ -154,7 +154,7 @@ const List = styled.ul`
     }
 `;
 
-const Link = styled(ReactRouterLink)`
+const Link = styled(SmartLink)`
     color: inherit;
     opacity: 0.5;
     display: block;

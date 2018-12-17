@@ -96,6 +96,7 @@ export const constants = {
     URL_SANDBOX: 'https://codesandbox.io/s/1qmjyp7p5j',
     URL_STANDARD_RELAYER_API_GITHUB: 'https://github.com/0xProject/standard-relayer-api/blob/master/README.md',
     URL_TWITTER: 'https://twitter.com/0xproject',
+    URL_FACEBOOK: 'https://www.facebook.com/0xProject/',
     URL_WETH_IO: 'https://weth.io/',
     URL_ZEROEX_CHAT,
     URL_LAUNCH_KIT: 'https://github.com/0xProject/0x-launch-kit',
