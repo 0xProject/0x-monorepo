@@ -70,7 +70,7 @@ class HeaderBase extends React.Component<HeaderProps> {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <StyledHeader>
+            <StyledHeader isNavToggled={isNavToggled}>
                 <HeaderWrap>
                     <ReactRouterLink to={WebsitePaths.Home}>
                         <Logo />
