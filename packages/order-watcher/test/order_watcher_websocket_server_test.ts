@@ -26,7 +26,7 @@ interface WsMessage {
     data: string;
 }
 
-describe.only('OrderWatcherWebSocketServer', async () => {
+describe('OrderWatcherWebSocketServer', async () => {
     let contractWrappers: ContractWrappers;
     let wsServer: OrderWatcherWebSocketServer;
     let wsClient: WebSocket.w3cwebsocket;
@@ -42,8 +42,6 @@ describe.only('OrderWatcherWebSocketServer', async () => {
     let zrxTokenAddress: string;
     let signedOrder: SignedOrder;
     let orderHash: string;
-    // Manually encode types rather than use /src/types to mimick real data that user
-    // would input. Otherwise we would be forced to use enums, which hide problems.
     let addOrderPayload: AddOrderRequest;
     let removeOrderPayload: RemoveOrderRequest;
     const decimals = constants.ZRX_DECIMALS;
@@ -104,15 +102,10 @@ describe.only('OrderWatcherWebSocketServer', async () => {
         };
 
         // Prepare OrderWatcher WebSocket server
-        const orderWatcherConfig = {};
-        const isVerbose = true;
-        wsServer = new OrderWatcherWebSocketServer(
-            provider,
-            networkId,
-            contractAddresses,
-            isVerbose,
-            orderWatcherConfig,
-        );
+        const orderWatcherConfig = {
+            isVerbose: true,
+        };
+        wsServer = new OrderWatcherWebSocketServer(provider, networkId, contractAddresses, orderWatcherConfig);
         wsServer.start();
     });
     after(async () => {

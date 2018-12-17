@@ -47,18 +47,20 @@ export class OrderWatcherWebSocketServer {
      *  @param networkId NetworkId to watch orders on.
      *  @param contractAddresses Optional contract addresses. Defaults to known
      *  addresses based on networkId.
-     *  @param partialConfig Optional configurations.
+     *  @param orderWatcherConfig OrderWatcher configurations. isVerbose sets the verbosity for the WebSocket server aswell.
      *  @param isVerbose Whether to enable verbose logging. Defaults to true.
      */
     constructor(
         provider: Provider,
         networkId: number,
         contractAddresses?: ContractAddresses,
-        isVerbose: boolean = true,
-        partialConfig?: Partial<OrderWatcherConfig>,
+        orderWatcherConfig?: Partial<OrderWatcherConfig>,
     ) {
-        this._isVerbose = isVerbose;
-        this._orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, partialConfig);
+        this._isVerbose =
+            orderWatcherConfig !== undefined && orderWatcherConfig.isVerbose !== undefined
+                ? orderWatcherConfig.isVerbose
+                : true;
+        this._orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, orderWatcherConfig);
         this._connectionStore = new Set();
         this._httpServer = http.createServer();
         this._wsServer = new WebSocket.server({
@@ -161,10 +163,10 @@ export class OrderWatcherWebSocketServer {
             }
             case OrderWatcherMethod.GetStats: {
                 return this._orderWatcher.getStats();
-                break;
             }
             default:
-            // Should never reach here. Should be caught by JSON schema check.
+                // Should never reach here. Should be caught by JSON schema check.
+                throw new Error(`Unexpected default case hit for request.method`);
         }
         return undefined;
     }
