@@ -68,11 +68,17 @@ const navItems: NavItemProps[] = [
 ];
 
 class HeaderBase extends React.Component<HeaderProps> {
+    public onUnpin = () => {
+        if (this.props.isNavToggled) {
+            this.props.toggleMobileNav();
+        }
+    }
+
     public render(): React.ReactNode {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <Headroom>
+            <Headroom onUnpin={this.onUnpin}>
                 <StyledHeader isNavToggled={isNavToggled}>
                     <HeaderWrap>
                         <ReactRouterLink to={WebsitePaths.Home}>
