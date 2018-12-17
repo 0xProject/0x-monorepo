@@ -105,11 +105,11 @@ describe.only('OrderWatcherWebSocketServer', async () => {
         // Prepare OrderWatcher WebSocket server
         const orderWatcherConfig = {};
         wsServer = new OrderWatcherWebSocketServer(provider, networkId, contractAddresses, orderWatcherConfig);
-        wsServer.listen();
+        wsServer.start();
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
-        wsServer.close();
+        wsServer.stop();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

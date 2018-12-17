@@ -49,21 +49,21 @@ export enum OrderWatcherMethod {
 export type WebSocketRequest = AddOrderRequest | RemoveOrderRequest | GetStatsRequest;
 
 interface AddOrderRequest {
-    id: string;
+    id: number;
     jsonrpc: string;
     method: OrderWatcherMethod.AddOrder;
     params: { signedOrder: SignedOrder };
 }
 
 interface RemoveOrderRequest {
-    id: string;
+    id: number;
     jsonrpc: string;
     method: OrderWatcherMethod.RemoveOrder;
     params: { orderHash: string };
 }
 
 interface GetStatsRequest {
-    id: string;
+    id: number;
     jsonrpc: string;
     method: OrderWatcherMethod.GetStats;
 }
@@ -73,14 +73,14 @@ interface GetStatsRequest {
 export type WebSocketResponse = SuccessfulWebSocketResponse | ErrorWebSocketResponse;
 
 interface SuccessfulWebSocketResponse {
-    id: string | null; // id is null for UPDATE
+    id: number;
     jsonrpc: string;
     method: OrderWatcherMethod;
     result: OrderState | GetStatsResult | undefined; // result is undefined for ADD_ORDER and REMOVE_ORDER
 }
 
 interface ErrorWebSocketResponse {
-    id: null;
+    id: number;
     jsonrpc: string;
     method: null;
     error: JSONRPCError;

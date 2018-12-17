@@ -1,3 +1,5 @@
+// TODO: Move these schemas to the `json-schemas` package and convert to JSON
+// Rename to `OrderWatcherWebSocketRequestSchema`, etc...
 export const webSocketUtf8MessageSchema = {
     id: '/webSocketUtf8MessageSchema',
     properties: {

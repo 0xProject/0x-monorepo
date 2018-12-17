@@ -40,7 +40,7 @@ Several environmental variables can be set to configure the server:
     and accept connections from. When this is not set, we default to 8080.
 
 **Requests**
-The server accepts three types of requests: `ADD_ORDER`, `REMOVE_ORDER` and `GET_STATS`. These mirror what the underlying OrderWatcher does. You can read more in the [wiki](https://0xproject.com/wiki#0x-OrderWatcher). Unlike the OrderWatcher, it does not expose any subscribe or unsubscribe functionality because the client implicitly subscribes and unsubscribes by connecting to the server.
+The server accepts three types of requests: `ADD_ORDER`, `REMOVE_ORDER` and `GET_STATS`. These mirror what the underlying OrderWatcher does. You can read more in the [wiki](https://0xproject.com/wiki#0x-OrderWatcher). Unlike the OrderWatcher, it does not expose any `subscribe` or `unsubscribe` functionality because the WebSocket server keeps a single subscription open for all clients.
 
 The first step for making a request is establishing a connection with the server. In Javascript:
 
@@ -58,9 +58,9 @@ wsClient = create_connection("ws://127.0.0.1:8080")
 
 With the connection established, you prepare the payload for your request. The payload is a json object with a format established by the [JSON RPC specification](https://www.jsonrpc.org/specification):
 
-*   `id`: All requests require you to specify a string as an id. When the server responds to the request, it provides an id as well to allow you to determine which request it is responding to.
+*   `id`: All requests require you to specify a numerical `id`. When the server responds to the request, the response will have the same `id` as the one supplied with your request.
 *   `jsonrpc`: This is always the string `'2.0'`.
-*   `method`: This specifies the OrderWatcher method you want to call. I.e., `'ADD_ORDER'`, `'REMOVE_ORDER'`, and `'GET_STATS'`.
+*   `method`: This specifies the OrderWatcher method you want to call. I.e., `'ADD_ORDER'`, `'REMOVE_ORDER'` or `'GET_STATS'`.
 *   `params`: These contain the parameters needed by OrderWatcher to execute the method you called. For `ADD_ORDER`, provide `{ signedOrder: <your signedOrder> }`. For `REMOVE_ORDER`, provide `{ orderHash: <your orderHash> }`. For `GET_STATS`, no parameters are needed, so you may leave this empty.
 
 Next, convert the payload to a string and send it through the connection.
@@ -68,7 +68,7 @@ In Javascript:
 
 ```
 const addOrderPayload = {
-    id: 'order32',
+    id: 1,
     jsonrpc: '2.0',
     method: 'ADD_ORDER',
     params: { signedOrder: <your signedOrder> },
@@ -81,7 +81,7 @@ In Python:
 ```
 import json
 remove_order_payload = {
-    'id': 'order33',
+    'id': 1,
     'jsonrpc': '2.0',
     'method': 'REMOVE_ORDER',
     'params': {'orderHash': '0x6edc16bf37fde79f5012088c33784c730e2f103d9ab1caf73060c386ad107b7e'},
@@ -90,13 +90,13 @@ wsClient.send(json.dumps(remove_order_payload));
 ```
 
 **Response**
-The server responds to all requests in a similar format. In the data field, you'll find another json object that has been converted into a string. This json object contains the following fields:
+The server responds to all requests in a similar format. In the data field, you'll find another object containing the following fields:
 
-*   `id`: The id corresponding to the request that the server is responding to. `UPDATE` responses are not based on any requests so the `id` field is `null`.
+*   `id`: The id corresponding to the request that the server is responding to. `UPDATE` responses are not based on any requests so the `id` field is omitted`.
 *   `jsonrpc`: Always `'2.0'`.
 *   `method`: The method the server is responding to. Eg. `ADD_ORDER`. When order states change the server may also initiate a response. In this case, method will be listed as `UPDATE`.
-*   `result`: This field varies based on the method. `UPDATE` responses contained the new order state. `GET_STATS` responses contain the current order count. When there are errors, this field is `null`.
-*   `error`: When there is an error executing a request, the error message is listed here. When the server responds successfully, this field is `null`.
+*   `result`: This field varies based on the method. `UPDATE` responses contain the new order state. `GET_STATS` responses contain the current order count. When there are errors, this field is omitted.
+*   `error`: When there is an error executing a request, the [JSON RPC](https://www.jsonrpc.org/specification) error object is listed here. When the server responds successfully, this field is omitted.
 
 In Javascript, the responses can be parsed using the `onmessage` callback:
 
