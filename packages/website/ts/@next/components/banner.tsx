@@ -137,4 +137,11 @@ const Border = styled.div<BorderProps>`
     top: ${props => !props.isBottom && 0 };
     bottom: ${props => props.isBottom && 0 };
     transform: translate(-112px);
+
+    @media (max-width: 768px) {
+        width: calc(100% + 82px);
+        height: 40px;
+        transform: translate(-41px);
+        background-size: auto 80px;
+    }
 `;
