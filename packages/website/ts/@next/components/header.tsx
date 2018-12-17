@@ -15,6 +15,7 @@ import { MobileNav } from 'ts/@next/components/mobileNav';
 import { FlexWrap } from 'ts/@next/components/newLayout';
 import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
 import { WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 interface HeaderProps {
     location?: Location;
@@ -61,7 +62,7 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'blog',
-        url: 'https://blog.0xproject.com/latest',
+        url: constants.URL_BLOG,
         shouldOpenInNewTab: true,
         text: 'Blog',
     },

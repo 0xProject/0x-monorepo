@@ -74,7 +74,7 @@ export const constants = {
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
     URL_APACHE_LICENSE: 'http://www.apache.org/licenses/LICENSE-2.0',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
-    URL_BLOG: 'https://blog.0x.org/latest',
+    URL_BLOG: 'https://blog.0xproject.com/latest',
     URL_DISCOURSE_FORUM: 'https://forum.0x.org',
     URL_FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
     URL_TESTNET_FAUCET: 'https://faucet.0x.org',
