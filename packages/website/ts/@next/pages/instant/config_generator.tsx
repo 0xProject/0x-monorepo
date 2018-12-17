@@ -64,7 +64,13 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         return (
             <Container minWidth="350px">
                 <ConfigGeneratorSection title="Liquidity Source">
-                    <Select id="" value={value.orderSource} items={this._generateItems()} onChange={this._handleSRASelection.bind(this)} />
+                    <Select
+                        includeEmpty={false}
+                        id=""
+                        value={value.orderSource}
+                        items={this._generateItems()}
+                        onChange={this._handleSRASelection.bind(this)}
+                    />
                 </ConfigGeneratorSection>
                 <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
@@ -257,7 +263,9 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                         <Container marginRight="10px">
                             <CheckMark isChecked={isSelected} color={colors.brandLight} />
                         </Container>
-                        <CheckboxText isSelected={isSelected}>{metaData.symbol.toUpperCase()} — {metaData.name}</CheckboxText>
+                        <CheckboxText isSelected={isSelected}>
+                            {metaData.symbol.toUpperCase()} — {metaData.name}
+                        </CheckboxText>
                     </Container>
                 ),
                 onClick: this._handleTokenClick.bind(this, assetData),
@@ -287,18 +295,9 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
         <Container marginBottom="10px" className="flex justify-between items-center">
             <Heading size="small" marginBottom="0" isFlex={true}>
                 <span>{title}</span>
-                {isOptional && (
-                    <OptionalText>
-                    {' '}
-                    Optional
-                    </OptionalText>
-                )}
+                {isOptional && <OptionalText> Optional</OptionalText>}
             </Heading>
-            {actionText && (
-                <OptionalAction onClick={onActionTextClick}>
-                    {actionText}
-                </OptionalAction>
-            )}
+            {actionText && <OptionalAction onClick={onActionTextClick}>{actionText}</OptionalAction>}
         </Container>
         {children}
     </Container>
@@ -319,10 +318,13 @@ interface CheckboxTextProps {
     isSelected?: boolean;
 }
 
-const CheckboxText = styled.span<CheckboxTextProps>`
+const CheckboxText =
+    styled.span <
+    CheckboxTextProps >
+    `
     font-size: 14px;
     line-height: 18px;
-    color: ${props => props.isSelected ? colors.brandDark : '#666666'}
+    color: ${props => (props.isSelected ? colors.brandDark : '#666666')}
 `;
 
 const OptionalAction = styled(OptionalText)`
