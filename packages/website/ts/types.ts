@@ -359,7 +359,7 @@ export enum WebsitePaths {
     LaunchKit = '/launch-kit',
     Instant = '/instant',
     Community = '/community',
-    Ecosystem = '/ecosystem',
+    Ecosystem = '/eap',
     MarketMaker = '/market-maker',
     Why = '/why',
     Whitepaper = '/pdfs/0x_white_paper.pdf',

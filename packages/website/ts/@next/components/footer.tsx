@@ -41,7 +41,7 @@ const linkRows: LinkRows[] = [
         links: [
             { url: WebsitePaths.Docs, text: 'Documentation' },
             { url: constants.URL_GITHUB_ORG, text: 'GitHub', shouldOpenInNewTab: true },
-            { url: WebsitePaths.Whitepaper, text: 'Whitepaper', shouldOpenInNewTab: true },
+            { url: constants.URL_PROTOCOL_SPECIFICATION, text: 'Protocol Spec', shouldOpenInNewTab: true },
         ],
     },
     {
@@ -51,7 +51,7 @@ const linkRows: LinkRows[] = [
             { url: WebsitePaths.AboutMission, text: 'Mission' },
             { url: WebsitePaths.AboutTeam, text: 'Team' },
             { url: WebsitePaths.AboutJobs, text: 'Jobs' },
-            { url: WebsitePaths.AboutPress, text: 'Press Kit' },
+            { url: WebsitePaths.AboutPress, text: 'Press' },
             { url: WebsitePaths.Ecosystem, text: 'Grant Program' },
         ],
     },
