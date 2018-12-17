@@ -107,13 +107,17 @@ export class NextLaunchKit extends React.Component {
 }
 
 const HeroActions = () => (
-    <>
+    <React.Fragment>
         <Button href="https://github.com/0xProject/0x-launch-kit" isInline={true}>
             Get Started
         </Button>
 
-        <Button to={WebsitePaths.Why} isTransparent={true} isInline={true}>
+        <Button
+            to={'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585'}
+            isTransparent={true}
+            isInline={true}
+        >
             Learn More
         </Button>
-    </>
+    </React.Fragment>
 );
