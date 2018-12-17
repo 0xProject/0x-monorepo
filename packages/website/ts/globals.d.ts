@@ -7,6 +7,7 @@ declare module 'reach__dialog';
 declare module 'react-flickity-component';
 declare module 'react-anchor-link-smooth-scroll';
 declare module 'react-responsive';
+declare module 'react-scrollable-anchor';
 
 declare module '*.json' {
     const json: any;
