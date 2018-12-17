@@ -64,7 +64,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         return (
             <Container minWidth="350px">
                 <ConfigGeneratorSection title="Liquidity Source">
-                    <Select id="" value={value.orderSource} items={this._generateItems()} />
+                    <Select id="" value={value.orderSource} items={this._generateItems()} onChange={this._handleSRASelection.bind(this)} />
                 </ConfigGeneratorSection>
                 <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
@@ -122,7 +122,8 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
         window.open(`${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`, '_blank');
     };
-    private readonly _handleSRASelection = (sraEndpoint: string) => {
+    private readonly _handleSRASelection = (event: Event) => {
+        const sraEndpoint = event.target.value;
         const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,
             orderSource: sraEndpoint,
