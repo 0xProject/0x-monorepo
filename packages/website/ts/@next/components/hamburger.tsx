@@ -53,7 +53,6 @@ const StyledHamburger = styled.button<Props>`
         ${props => props.isOpen && `
             opacity: 1;
             transform: rotate(45deg) translate(0, 1px);
-            background-color: #fff;
 
             &:nth-child(2) {
                 opacity: 0;
