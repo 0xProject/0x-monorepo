@@ -116,10 +116,21 @@ const TextWrap = styled.div<Props>`
 `;
 
 const LinkWrap = styled.div`
-    display: inline-flex;
     margin-top: 60px;
 
-    a + a {
-        margin-left: 60px;
+    @media (min-width: 768px) {
+        display: inline-flex;
+
+        a + a {
+            margin-left: 60px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        max-width: 250px;
+
+        a + a {
+            margin-top: 15px;
+        }
     }
 `;

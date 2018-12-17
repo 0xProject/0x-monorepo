@@ -11,27 +11,37 @@ interface InputProps {
     width?: InputWidth;
     label: string;
     type?: string;
+    errors?: ErrorProps;
+    isErrors?: boolean;
 }
 
 interface LabelProps {
     string: boolean;
 }
 
+interface ErrorProps {
+    [key: string]: string;
+}
+
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
-    const { name, label, type } = props;
+    const { name, label, type, errors } = props;
     const id = `input-${name}`;
     const componentType = type === 'textarea' ? 'textarea' : 'input';
+    const isErrors = errors.hasOwnProperty(name) && errors[name] !== null;
+    const errorMessage = isErrors ? errors[name] : null;
 
     return (
         <InputWrapper {...props}>
             <Label htmlFor={id}>{label}</Label>
-            <StyledInput as={componentType} ref={ref} id={id} placeholder={label} {...props} />
+            <StyledInput as={componentType} ref={ref} id={id} placeholder={label} isErrors={isErrors} {...props} />
+            {isErrors && <Error>{errorMessage}</Error>}
         </InputWrapper>
     );
 });
 
 Input.defaultProps = {
     width: InputWidth.Full,
+    errors: {},
 };
 
 const StyledInput = styled.input`
@@ -44,6 +54,9 @@ const StyledInput = styled.input`
     outline: none;
     width: 100%;
     min-height: ${props => props.type === 'textarea' && `120px`};
+
+    background-color: ${(props: InputProps) => props.isErrors && `#FDEDED`};
+    border-color: ${(props: InputProps) => props.isErrors && `#FD0000`};
 
     &::placeholder {
         color: #C3C3C3;
@@ -67,4 +80,16 @@ const Label = styled.label`
     line-height: 1.4em;
     margin-bottom: 10px;
     display: inline-block;
+`;
+
+const Error = styled.span`
+    color: #FD0000;
+    font-size: .833333333rem;
+    line-height: 1em;
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform: translateY(24px);
 `;

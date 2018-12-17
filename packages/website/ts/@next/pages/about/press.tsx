@@ -34,7 +34,7 @@ const highlights: HighlightProps[] = [
     {
         logo: '/images/@next/press/logo-fortune.png',
         title: 'Fortune',
-        text: 'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a <blockchain className=""></blockchain>',
+        text: 'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a blockchain.',
         href: '#',
     },
     {
@@ -50,7 +50,7 @@ export const NextAboutPress = () => (
         title="Press Highlights"
         description={
             <>
-                <Paragraph marginBottom="60px">
+                <Paragraph size="medium" marginBottom="60px">
                     Want to write about 0x? <a href="#">Get in touch</a>, or <a href="#">download our press kit</a>.
                 </Paragraph>
 

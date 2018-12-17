@@ -1,13 +1,20 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
+
+import {ThemeValuesInterface} from 'ts/@next/components/siteWrap';
+
+interface FormProps {
+    theme: ThemeValuesInterface;
+}
 
 interface InputProps {
     isSubmitted: boolean;
     name: string;
     type: string;
     label: string;
+    textColor: string;
 }
 
 interface ArrowProps {
@@ -26,18 +33,19 @@ const Input = React.forwardRef((props: InputProps, ref: React.Ref<HTMLInputEleme
     );
 });
 
-export class NewsletterForm extends React.Component {
+class Form extends React.Component<FormProps> {
     public emailInput = React.createRef<HTMLInputElement>();
     public state = {
         isSubmitted: false,
     };
     public render(): React.ReactNode {
         const {isSubmitted} = this.state;
+        const {theme} = this.props;
 
         return (
             <StyledForm onSubmit={this._onSubmitAsync.bind(this)}>
                 <InputWrapper>
-                    <Input isSubmitted={isSubmitted} name="email" type="email" label="Email Address" ref={this.emailInput} required={true} />
+                    <Input isSubmitted={isSubmitted} name="email" type="email" label="Email Address" ref={this.emailInput} required={true} textColor={theme.textColor} />
 
                     <SubmitButton>
                         <Arrow isSubmitted={isSubmitted} width="22" height="17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,6 +82,8 @@ export class NewsletterForm extends React.Component {
     }
 }
 
+export const NewsletterForm = withTheme(Form);
+
 const StyledForm = styled.form`
     appearance: none;
     border: 0;
@@ -82,12 +92,12 @@ const StyledForm = styled.form`
     margin-top: 27px;
 `;
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<InputProps>`
     appearance: none;
     background-color: transparent;
     border: 0;
     border-bottom: 1px solid #393939;
-    color: #fff;
+    color: ${props => props.textColor || '#fff'};
     font-size: 1.294117647rem;
     padding: 15px 0;
     outline: none;

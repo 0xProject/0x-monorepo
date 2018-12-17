@@ -24,6 +24,20 @@ interface FormProps {
     isSubmitting?: boolean;
 }
 
+interface ErrorResponseProps {
+    param: string;
+    location: string;
+    msg: string;
+}
+
+interface ErrorResponse {
+    errors: ErrorResponseProps[];
+}
+
+interface ErrorProps {
+    [key: string]: string;
+}
+
 export class ModalContact extends React.Component<Props> {
     public state = {
         isSubmitting: false,
@@ -40,7 +54,7 @@ export class ModalContact extends React.Component<Props> {
     }
     public render(): React.ReactNode {
         const {isOpen, onDismiss} = this.props;
-        const {isSuccessful} = this.state;
+        const {isSuccessful, errors} = this.state;
 
         return (
             <>
@@ -61,6 +75,7 @@ export class ModalContact extends React.Component<Props> {
                                     width={InputWidth.Half}
                                     ref={this.nameRef}
                                     required={true}
+                                    errors={errors}
                                 />
                                 <Input
                                     name="email"
@@ -68,6 +83,7 @@ export class ModalContact extends React.Component<Props> {
                                     type="email"
                                     ref={this.emailRef}
                                     required={true}
+                                    errors={errors}
                                     width={InputWidth.Half}
                                 />
                             </InputRow>
@@ -78,6 +94,7 @@ export class ModalContact extends React.Component<Props> {
                                     type="text"
                                     ref={this.companyProjectRef}
                                     required={true}
+                                    errors={errors}
                                 />
                             </InputRow>
                             <InputRow>
@@ -86,6 +103,7 @@ export class ModalContact extends React.Component<Props> {
                                     label="Do you have any documentation or a website?"
                                     type="text"
                                     ref={this.linkRef}
+                                    errors={errors}
                                 />
                             </InputRow>
                             <InputRow>
@@ -94,6 +112,7 @@ export class ModalContact extends React.Component<Props> {
                                     label="Anything else?"
                                     type="textarea"
                                     ref={this.commentsRef}
+                                    errors={errors}
                                 />
                             </InputRow>
                             <ButtonRow>
@@ -129,23 +148,41 @@ export class ModalContact extends React.Component<Props> {
         const link = this.linkRef.current.value;
         const comments = this.commentsRef.current.value;
 
-        this.setState({ ...this.state, isSubmitting: true });
+        this.setState({ ...this.state, errors: [], isSubmitting: true });
 
         try {
-            await fetch('https://website-api.0x.org/leads', {
+            const response = await fetch('https://website-api.0x.org/leads', {
                 method: 'post',
                 mode: 'cors',
                 credentials: 'same-origin',
                 headers: {
                     'content-type': 'application/json; charset=utf-8',
                 },
-                body: JSON.stringify({ name, email, projectOrCompany, link, comments }),
+                body: JSON.stringify(_.omitBy({ name, email, projectOrCompany, link, comments }, _.isEmpty)),
             });
+
+            if (!response.ok) {
+                const errorResponse: ErrorResponse = await response.json();
+                const errors = this._parseErrors(errorResponse.errors);
+                this.setState({ ...this.state, isSubmitting: false, errors });
+
+                throw new Error('Request failed');
+            }
 
             this.setState({ ...this.state, isSuccessful: true });
         } catch (e) {
-            this.setState({ ...this.state, errors: [] });
+            // Empty block
         }
+    }
+    private _parseErrors(errors: ErrorResponseProps[]): ErrorProps  {
+        return _
+            .reduce(errors, (hash: ErrorProps, error: ErrorResponseProps) => {
+                const { param, msg } = error;
+                const key = param;
+                hash[key] = msg;
+
+                return hash;
+            }, {});
     }
 }
 // Handle errors: {"errors":[{"location":"body","param":"name","msg":"Invalid value"},{"location":"body","param":"email","msg":"Invalid value"}]}

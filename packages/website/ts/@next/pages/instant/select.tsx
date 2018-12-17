@@ -12,12 +12,13 @@ interface SelectProps {
     id: string;
     items: SelectItemConfig[];
     emptyText?: string;
+    onChange?: () => void;
 }
 
-export const Select: React.FunctionComponent<SelectProps> = ({ value, id, items, emptyText }) => {
+export const Select: React.FunctionComponent<SelectProps> = ({ value, id, items, emptyText, onChange }) => {
     return (
         <Container>
-            <StyledSelect id={id}>
+            <StyledSelect id={id} onChange={onChange}>
                 <option value="">{emptyText}</option>
                 {items.map((item, index) => <option key={`${id}-item-${index}`} value={item.value} selected={item.value === value} onClick={item.onClick}>{item.label}</option>)}
             </StyledSelect>

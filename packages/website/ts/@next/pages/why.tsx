@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import AnchorLink from 'react-anchor-link-smooth-scroll';
+import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
+
 import styled from 'styled-components';
 
 import {Hero} from 'ts/@next/components/hero';
@@ -79,6 +80,8 @@ const useCaseSlides = [
     },
 ];
 
+configureAnchors({ offset: -60 });
+
 export class NextWhy extends React.Component {
     public state = {
         isContactModalOpen: false,
@@ -136,57 +139,63 @@ export class NextWhy extends React.Component {
               <Section maxWidth="1170px" isFlex={true} isFullWidth={true}>
                   <Column>
                       <NavStickyWrap offsetTop="130px">
-                          <ChapterLink offset="60" href="#benefits">Benefits</ChapterLink>
-                          <ChapterLink offset="60" href="#cases">Use Cases</ChapterLink>
-                          <ChapterLink offset="60" href="#functionality">Features</ChapterLink>
+                          <ChapterLink href="#benefits">Benefits</ChapterLink>
+                          <ChapterLink href="#cases">Use Cases</ChapterLink>
+                          <ChapterLink href="#functionality">Features</ChapterLink>
                       </NavStickyWrap>
                   </Column>
 
                     <Column width="55%" maxWidth="826px">
                         <Column width="100%" maxWidth="560px" padding="0 30px 0 0">
-                            <SectionWrap id="benefits">
-                                <SectionTitle size="medium" marginBottom="60px" isNoBorder={true}>What 0x offers</SectionTitle>
+                            <ScrollableAnchor id="benefits">
+                                <SectionWrap>
+                                    <SectionTitle size="medium" marginBottom="60px" isNoBorder={true}>What 0x offers</SectionTitle>
 
-                                {_.map(offersData, (item, index) => (
-                                    <Definition
-                                        key={`offers-${index}`}
-                                        icon={item.icon}
-                                        title={item.title}
-                                        titleSize="small"
-                                        description={item.description}
-                                        isWithMargin={true}
-                                    />
-                                ))}
-                            </SectionWrap>
-
-                            <SectionWrap id="cases" isNotRelative={true}>
-                                <SectionTitle size="medium" marginBottom="60px">Use Cases</SectionTitle>
-                                <Slider>
-                                    {_.map(useCaseSlides, (item, index) => (
-                                        <Slide
-                                            key={`useCaseSlide-${index}`}
-                                            heading={item.title}
-                                            text={item.description}
+                                    {_.map(offersData, (item, index) => (
+                                        <Definition
+                                            key={`offers-${index}`}
                                             icon={item.icon}
+                                            title={item.title}
+                                            titleSize="small"
+                                            description={item.description}
+                                            isWithMargin={true}
                                         />
                                     ))}
-                                </Slider>
-                            </SectionWrap>
+                                </SectionWrap>
+                            </ScrollableAnchor>
 
-                            <SectionWrap id="functionality">
-                                <SectionTitle size="medium" marginBottom="60px">Exchange Functionality</SectionTitle>
+                            <ScrollableAnchor id="cases">
+                                <SectionWrap isNotRelative={true}>
+                                    <SectionTitle size="medium" marginBottom="60px">Use Cases</SectionTitle>
+                                    <Slider>
+                                        {_.map(useCaseSlides, (item, index) => (
+                                            <Slide
+                                                key={`useCaseSlide-${index}`}
+                                                heading={item.title}
+                                                text={item.description}
+                                                icon={item.icon}
+                                            />
+                                        ))}
+                                    </Slider>
+                                </SectionWrap>
+                            </ScrollableAnchor>
 
-                                {_.map(functionalityData, (item, index) => (
-                                    <Definition
-                                        key={`functionality-${index}`}
-                                        icon={item.icon}
-                                        title={item.title}
-                                        titleSize="small"
-                                        description={item.description}
-                                        isWithMargin={true}
-                                    />
-                                ))}
-                            </SectionWrap>
+                            <ScrollableAnchor id="functionality">
+                                <SectionWrap>
+                                    <SectionTitle size="medium" marginBottom="60px">Exchange Functionality</SectionTitle>
+
+                                    {_.map(functionalityData, (item, index) => (
+                                        <Definition
+                                            key={`functionality-${index}`}
+                                            icon={item.icon}
+                                            title={item.title}
+                                            titleSize="small"
+                                            description={item.description}
+                                            isWithMargin={true}
+                                        />
+                                    ))}
+                                </SectionWrap>
+                            </ScrollableAnchor>
                         </Column>
                     </Column>
               </Section>
@@ -270,7 +279,7 @@ const NavStickyWrap = styled(WrapSticky)`
     }
 `;
 
-const ChapterLink = styled(AnchorLink)`
+const ChapterLink = styled.a`
     color: ${props => props.theme.textColor};
     font-size: 22px;
     margin-bottom: 25px;

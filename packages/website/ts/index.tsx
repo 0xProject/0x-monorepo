@@ -25,10 +25,12 @@ import { NextAboutJobs } from 'ts/@next/pages/about/jobs';
 import { NextAboutMission } from 'ts/@next/pages/about/mission';
 import { NextAboutPress } from 'ts/@next/pages/about/press';
 import { NextAboutTeam } from 'ts/@next/pages/about/team';
+import { NextCommunity } from 'ts/@next/pages/community';
 import { NextEcosystem } from 'ts/@next/pages/ecosystem';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextLaunchKit } from 'ts/@next/pages/launch_kit';
+import { NextMarketMaker } from 'ts/@next/pages/market_maker';
 import { NextWhy } from 'ts/@next/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -107,6 +109,8 @@ render(
                                 <Route exact path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact path={WebsitePaths.Community} component={NextCommunity as any} />
+                                <Route exact path={WebsitePaths.MarketMaker} component={NextMarketMaker as any} />
                                 <Route exact path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
                                 <Route exact path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
                                 <Route exact path={WebsitePaths.AboutPress} component={NextAboutPress as any} />

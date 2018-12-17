@@ -24,12 +24,12 @@ export class MobileNav extends React.PureComponent<Props> {
 
                         <ul>
                             <li>
-                                <Link to="#">
-                                    0x instant
+                                <Link to={WebsitePaths.Instant}>
+                                    0x Instant
                                 </Link>
                             </li>
                             <li>
-                                <Link to="#">
+                                <Link to={WebsitePaths.LaunchKit}>
                                     0x Launch Kit
                                 </Link>
                             </li>
@@ -49,9 +49,9 @@ export class MobileNav extends React.PureComponent<Props> {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="https://blog.0x.org/latest">
+                                <a href="https://blog.0x.org/latest" target="_blank">
                                     Blog
-                                </Link>
+                                </a>
                             </li>
                         </Grid>
                     </Section>
@@ -70,8 +70,9 @@ const Wrap = styled.nav<{ isToggled: boolean }>`
     height: 357px;
     background-color: ${props => props.theme.mobileNavBgUpper};
     color: ${props => props.theme.mobileNavColor};
-    transition: transform 0.5s;
+    transition: ${props => props.isToggled ? 'visibility 0s, transform 0.5s' : 'visibility 0s 0.5s, transform 0.5s'};
     transform: translate3d(0, ${props => props.isToggled ? 0 : '-100%'}, 0);
+    visibility: ${props => !props.isToggled && 'hidden'};
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -109,6 +110,8 @@ const Section = styled.div<{ isDark?: boolean }>`
 `;
 
 const Grid = styled(WrapGrid)<WrapProps>`
+    justify-content: flex-start;
+
     li {
         width: 50%;
         flex-shrink: 0;

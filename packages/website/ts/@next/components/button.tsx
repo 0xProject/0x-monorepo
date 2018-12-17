@@ -62,6 +62,7 @@ const ButtonBase = styled.button<ButtonInterface>`
     border-color: ${props => (props.isTransparent && !props.isWithArrow) && 'rgba(255, 255, 255, .4)'};
     color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
+    white-space: ${props => props.isWithArrow && 'nowrap'};
     text-align: center;
     font-size: ${props => props.isWithArrow ? '20px' : '18px'};
     text-decoration: none;
