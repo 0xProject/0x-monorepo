@@ -118,7 +118,7 @@ export class NextLaunchKit extends React.Component {
 
 const HeroActions = () => (
     <>
-        <Button href="https://0x.org/docs" isInline={true}>
+        <Button href="https://github.com/0xProject/0x-launch-kit" isInline={true}>
             Get Started
         </Button>
 
