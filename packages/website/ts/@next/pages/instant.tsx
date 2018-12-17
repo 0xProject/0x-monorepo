@@ -20,6 +20,15 @@ import { ModalContact } from '../components/modals/modal_contact';
 
 const CONFIGURATOR_MIN_WIDTH_PX = 1050;
 
+export const getStartedClick = () => {
+    if (window.innerWidth < CONFIGURATOR_MIN_WIDTH_PX) {
+        utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
+    } else {
+        sharedUtils.setUrlHash('configurator');
+        sharedUtils.scrollToHash('configurator', '');
+    }
+};
+
 const featuresData = [
     {
         title: 'Support ERC-20 and ERC-721 tokens',
@@ -29,7 +38,8 @@ const featuresData = [
         links: [
             {
                 label: 'Get Started',
-                url: '#',
+                onClick: getStartedClick,
+                useAnchorTag: true,
             },
             {
                 label: 'Explore the Docs',
@@ -74,15 +84,6 @@ interface Props {
         linkColor: string;
     };
 }
-
-export const getStartedClick = () => {
-    if (window.innerWidth < CONFIGURATOR_MIN_WIDTH_PX) {
-        utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
-    } else {
-        sharedUtils.setUrlHash('configurator');
-        sharedUtils.scrollToHash('configurator', '');
-    }
-};
 
 export class Next0xInstant extends React.Component<Props> {
     public state = {
