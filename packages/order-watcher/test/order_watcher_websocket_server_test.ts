@@ -105,7 +105,14 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
         // Prepare OrderWatcher WebSocket server
         const orderWatcherConfig = {};
-        wsServer = new OrderWatcherWebSocketServer(provider, networkId, contractAddresses, orderWatcherConfig);
+        const isVerbose = true;
+        wsServer = new OrderWatcherWebSocketServer(
+            provider,
+            networkId,
+            contractAddresses,
+            isVerbose,
+            orderWatcherConfig,
+        );
         wsServer.start();
     });
     after(async () => {

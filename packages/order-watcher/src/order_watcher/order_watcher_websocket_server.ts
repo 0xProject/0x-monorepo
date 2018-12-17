@@ -22,6 +22,7 @@ export class OrderWatcherWebSocketServer {
     private readonly _httpServer: http.Server;
     private readonly _connectionStore: Set<WebSocket.connection>;
     private readonly _wsServer: WebSocket.server;
+    private readonly _isVerbose: boolean;
     /**
      *  Recover types lost when the payload is stringified.
      */
@@ -47,13 +48,16 @@ export class OrderWatcherWebSocketServer {
      *  @param contractAddresses Optional contract addresses. Defaults to known
      *  addresses based on networkId.
      *  @param partialConfig Optional configurations.
+     *  @param isVerbose Whether to enable verbose logging. Defaults to true.
      */
     constructor(
         provider: Provider,
         networkId: number,
         contractAddresses?: ContractAddresses,
+        isVerbose: boolean = true,
         partialConfig?: Partial<OrderWatcherConfig>,
     ) {
+        this._isVerbose = isVerbose;
         this._orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, partialConfig);
         this._connectionStore = new Set();
         this._httpServer = http.createServer();
@@ -72,7 +76,7 @@ export class OrderWatcherWebSocketServer {
             // Designed for usage pattern where client and server are run on the same
             // machine by the same user. As such, no security checks are in place.
             const connection: WebSocket.connection = request.accept(null, request.origin);
-            logUtils.log(`${new Date()} [Server] Accepted connection from origin ${request.origin}.`);
+            this._log(`${new Date()} [Server] Accepted connection from origin ${request.origin}.`);
             connection.on('message', this._onMessageCallbackAsync.bind(this, connection));
             connection.on('close', this._onCloseCallback.bind(this, connection));
             this._connectionStore.add(connection);
@@ -90,7 +94,7 @@ export class OrderWatcherWebSocketServer {
 
         const port = process.env.ORDER_WATCHER_HTTP_PORT || DEFAULT_HTTP_PORT;
         this._httpServer.listen(port, () => {
-            logUtils.log(`${new Date()} [Server] Listening on port ${port}`);
+            this._log(`${new Date()} [Server] Listening on port ${port}`);
         });
     }
 
@@ -101,6 +105,12 @@ export class OrderWatcherWebSocketServer {
     public stop(): void {
         this._httpServer.close();
         this._orderWatcher.unsubscribe();
+    }
+
+    private _log(...args: any[]): void {
+        if (this._isVerbose) {
+            logUtils.log(...args);
+        }
     }
 
     private async _onMessageCallbackAsync(connection: WebSocket.connection, message: any): Promise<void> {
@@ -126,17 +136,17 @@ export class OrderWatcherWebSocketServer {
                 error: err.toString(),
             };
         }
-        logUtils.log(`${new Date()} [Server] OrderWatcher output: ${JSON.stringify(response)}`);
+        this._log(`${new Date()} [Server] OrderWatcher output: ${JSON.stringify(response)}`);
         connection.sendUTF(JSON.stringify(response));
     }
 
     private _onCloseCallback(connection: WebSocket.connection): void {
         this._connectionStore.delete(connection);
-        logUtils.log(`${new Date()} [Server] Client ${connection.remoteAddress} disconnected.`);
+        this._log(`${new Date()} [Server] Client ${connection.remoteAddress} disconnected.`);
     }
 
     private async _routeRequestAsync(request: WebSocketRequest): Promise<GetStatsResult | undefined> {
-        logUtils.log(`${new Date()} [Server] Request received: ${request.method}`);
+        this._log(`${new Date()} [Server] Request received: ${request.method}`);
         switch (request.method) {
             case OrderWatcherMethod.AddOrder: {
                 const signedOrder: SignedOrder = OrderWatcherWebSocketServer._parseSignedOrder(
