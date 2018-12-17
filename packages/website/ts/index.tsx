@@ -191,7 +191,7 @@ render(
                                     path={`${WebsiteLegacyPaths.Deployer}/:version?`}
                                     component={LazySolCompilerDocumentation}
                                 />
-                                <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
+                                <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>

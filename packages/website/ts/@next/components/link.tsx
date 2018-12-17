@@ -13,6 +13,7 @@ interface LinkInterface {
     theme?: {
         textColor: string;
     };
+    shouldOpenInNewTab?: boolean;
 }
 
 export const Link = (props: LinkInterface) => {

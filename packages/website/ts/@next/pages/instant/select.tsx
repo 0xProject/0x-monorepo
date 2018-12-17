@@ -12,23 +12,43 @@ interface SelectProps {
     id: string;
     items: SelectItemConfig[];
     emptyText?: string;
-    onChange?: () => void;
+    onChange?: (ev: React.ChangeEvent<HTMLSelectElement>) => void;
+    includeEmpty: boolean;
 }
 
-export const Select: React.FunctionComponent<SelectProps> = ({ value, id, items, emptyText, onChange }) => {
+export const Select: React.FunctionComponent<SelectProps> = ({
+    value,
+    id,
+    items,
+    includeEmpty,
+    emptyText,
+    onChange,
+}) => {
     return (
         <Container>
             <StyledSelect id={id} onChange={onChange}>
-                <option value="">{emptyText}</option>
-                {items.map((item, index) => <option key={`${id}-item-${index}`} value={item.value} selected={item.value === value} onClick={item.onClick}>{item.label}</option>)}
+                {includeEmpty && <option value="">{emptyText}</option>}
+                {items.map((item, index) => (
+                    <option
+                        key={`${id}-item-${index}`}
+                        value={item.value}
+                        selected={item.value === value}
+                        onClick={item.onClick}
+                    >
+                        {item.label}
+                    </option>
+                ))}
             </StyledSelect>
-            <Caret width="12" height="7" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 1L6 6 1 1" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></Caret>
+            <Caret width="12" height="7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 1L6 6 1 1" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </Caret>
         </Container>
     );
 };
 
 Select.defaultProps = {
     emptyText: 'Select...',
+    includeEmpty: true,
 };
 
 const Container = styled.div`

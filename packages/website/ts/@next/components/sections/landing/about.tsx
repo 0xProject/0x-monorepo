@@ -1,10 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import {Button} from 'ts/@next/components/button';
-import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
-import {Column, FlexWrap, Section} from 'ts/@next/components/newLayout';
-import {Paragraph} from 'ts/@next/components/text';
+import { Button } from 'ts/@next/components/button';
+import { Icon, InlineIconWrap } from 'ts/@next/components/icon';
+import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
+import { Paragraph } from 'ts/@next/components/text';
 
 interface FigureProps {
     value: string;
@@ -20,20 +20,12 @@ export const SectionLandingAbout = () => (
             <Icon name="descriptionBolt" size="small" />
         </InlineIconWrap>
 
-        <Paragraph
-            size="large"
-            isCentered={true}
-            isMuted={1}
-            padding={['large', 0, 'default', 0]}
-        >
-            Anyone in the world can use 0x to service a wide variety of markets ranging from gaming items to financial instruments to assets that could have never existed before.
+        <Paragraph size="large" isCentered={true} isMuted={1} padding={['large', 0, 'default', 0]}>
+            Anyone in the world can use 0x to service a wide variety of markets ranging from gaming items to financial
+            instruments to assets that could have never existed before.
         </Paragraph>
 
-        <Button
-            href="#"
-            isWithArrow={true}
-            isAccentColor={true}
-        >
+        <Button href="#" isWithArrow={true} isAccentColor={true}>
             Discover how developers use 0x
         </Button>
 
@@ -46,32 +38,19 @@ export const SectionLandingAbout = () => (
         />
 
         <FlexWrap as="dl">
-            <Figure
-                value="873,435"
-                description="Number of Transactions"
-            />
+            <Figure value="166,976" description="Total Transactions" />
 
-            <Figure
-                value="$203M"
-                description="Total Volume"
-            />
+            <Figure value="$216M" description="Total Volume" />
 
-            <Figure
-                value="227,372"
-                description="Number of Relayers"
-            />
+            <Figure value="30+" description="Total Projects" />
         </FlexWrap>
     </Section>
 );
 
 const Figure = (props: FigureProps) => (
     <Column padding="0 30px">
-        <FigureValue>
-            {props.value}
-        </FigureValue>
-        <FigureDescription>
-            {props.description}
-        </FigureDescription>
+        <FigureValue>{props.value}</FigureValue>
+        <FigureDescription>{props.description}</FigureDescription>
     </Column>
 );
 
