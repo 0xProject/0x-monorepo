@@ -17,7 +17,7 @@ interface LinkInterface {
 }
 
 export const Link = (props: LinkInterface) => {
-    const { children, isNoArrow, href, target } = props;
+    const { children, isNoArrow, href } = props;
 
     return (
         <StyledLink to={href} {...props}>
