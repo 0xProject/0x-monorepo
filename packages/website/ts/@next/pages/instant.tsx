@@ -43,7 +43,7 @@ const featuresData = [
             },
             {
                 label: 'Explore the Docs',
-                url: '#',
+                url: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
             },
         ],
     },
@@ -55,7 +55,7 @@ const featuresData = [
         links: [
             {
                 label: 'Learn about affiliate fees',
-                url: '#',
+                url: `${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`,
             },
         ],
     },
@@ -67,11 +67,7 @@ const featuresData = [
         links: [
             {
                 label: 'Explore AssetBuyer',
-                url: '#',
-            },
-            {
-                label: 'Learn about liquidity',
-                url: '#',
+                url: `${WebsitePaths.Docs}/asset-buyer`,
             },
         ],
     },
@@ -137,7 +133,7 @@ export class Next0xInstant extends React.Component<Props> {
                 <Banner
                     heading="Need more flexibility?"
                     subline="Dive into our docs, or contact us if needed"
-                    mainCta={{ text: 'Explore the Docs', href: '/docs' }}
+                    mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.Wiki}#Get-Started-With-Instant` }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
