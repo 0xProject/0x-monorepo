@@ -59,7 +59,7 @@ export class NextLaunchKit extends React.Component {
                         title="Networked Liquidity Pool"
                         titleSize="small"
                         description="Tap into and share liquidity with other relayers"
-                        icon="supportForAllEthereumStandards"
+                        icon="networkedLiquidity"
                         iconSize="medium"
                         isInline={true}
                     />
