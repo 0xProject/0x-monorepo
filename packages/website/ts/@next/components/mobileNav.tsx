@@ -24,12 +24,12 @@ export class MobileNav extends React.PureComponent<Props> {
 
                         <ul>
                             <li>
-                                <Link to="#">
-                                    0x instant
+                                <Link to={WebsitePaths.Instant}>
+                                    0x Instant
                                 </Link>
                             </li>
                             <li>
-                                <Link to="#">
+                                <Link to={WebsitePaths.LaunchKit}>
                                     0x Launch Kit
                                 </Link>
                             </li>
@@ -49,9 +49,9 @@ export class MobileNav extends React.PureComponent<Props> {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="https://blog.0x.org/latest">
+                                <a href="https://blog.0x.org/latest" target="_blank">
                                     Blog
-                                </Link>
+                                </a>
                             </li>
                         </Grid>
                     </Section>
