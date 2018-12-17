@@ -30,8 +30,8 @@
 @font-face {
     font-family: 'Formular';
     font-weight: 300;
-    src: url('/fonts/formular/3822A0_0_0.eot');
-    src: url('/fonts/formular/3822A0_0_0.eot?#iefix') format('embedded-opentype'), url('/fonts/formular/3822A0_0_0.woff2') format('woff2'), url('/fonts/formular/3822A0_0_0.woff') format('woff'), url('/fonts/formular/3822A0_0_0.ttf') format('truetype');
+    src: url('../fonts/Formular-Light.woff2');
+    src: url('../fonts/Formular-Light.woff2') format('woff2'), url('../fonts/Formular-Light.woff') format('woff');
     font-display: swap;
 }
 
@@ -39,7 +39,7 @@
 @font-face {
     font-family: 'Formular';
     font-weight: 400;
-    src: url('/fonts/formular/3822A0_1_0.eot');
-    src: url('/fonts/formular/3822A0_1_0.eot?#iefix') format('embedded-opentype'), url('/fonts/formular/3822A0_1_0.woff2') format('woff2'), url('/fonts/formular/3822A0_1_0.woff') format('woff'), url('/fonts/formular/3822A0_1_0.ttf') format('truetype');
+    src: url('../fonts/Formular-Regular.woff2');
+    src: url('../fonts/Formular-Regular.woff2') format('woff2'), url('../fonts/Formular-Regular.woff') format('woff');
     font-display: swap;
 }
