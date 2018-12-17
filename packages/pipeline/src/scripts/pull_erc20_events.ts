@@ -49,8 +49,6 @@ const tokensToGetApprovalEvents: Token[] = [
     const provider = web3Factory.getRpcProvider({
         rpcUrl: INFURA_ROOT_URL,
     });
-    provider.stop();
-    (provider as any)._ready.go();
     const endBlock = await calculateEndBlockAsync(provider);
     for (const token of tokensToGetApprovalEvents) {
         await getAndSaveApprovalEventsAsync(provider, token, endBlock);
