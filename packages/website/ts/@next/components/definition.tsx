@@ -55,6 +55,7 @@ export const Definition = (props: Props) => (
                             isWithArrow={true}
                             isAccentColor={true}
                             useAnchorTag={item.useAnchorTag}
+                            target="_blank"
                         >
                             {item.label}
                         </Button>

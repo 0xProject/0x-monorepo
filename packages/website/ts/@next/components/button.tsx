@@ -19,6 +19,7 @@ interface ButtonInterface {
     isInline?: boolean;
     href?: string;
     type?: string;
+    target?: string;
     to?: string;
     onClick?: () => any;
     theme?: ThemeInterface;
@@ -26,7 +27,7 @@ interface ButtonInterface {
 }
 
 export const Button = (props: ButtonInterface) => {
-    const { children, href, isWithArrow, to, useAnchorTag } = props;
+    const { children, href, isWithArrow, to, useAnchorTag, target } = props;
     let linkElem;
 
     if (href || useAnchorTag) {
@@ -37,9 +38,10 @@ export const Button = (props: ButtonInterface) => {
     }
 
     const Component = linkElem ? ButtonBase.withComponent(linkElem) : ButtonBase;
+    const targetProp = href && target ? { target } : {};
 
     return (
-        <Component {...props}>
+        <Component {...props} {...targetProp}>
             {children}
 
             {isWithArrow && (

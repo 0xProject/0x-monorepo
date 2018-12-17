@@ -30,19 +30,16 @@ export class Configurator extends React.Component {
     public render(): React.ReactNode {
         const codeToDisplay = this._generateCodeDemoCode();
         return (
-            <FlexWrap
-                isFlex={true}
-            >
+            <FlexWrap isFlex={true}>
                 <Column width="442px" padding="0 70px 0 0">
                     <ConfigGenerator value={this.state.instantConfig} onConfigChange={this._handleConfigChange} />
                 </Column>
                 <Column width="100%">
                     <HeadingWrapper>
-                        <Heading size="small" marginBottom="15px">Code Snippet</Heading>
-                        <Link
-                            href={`${WebsitePaths.Wiki}#Get-Started-With-Instant`}
-                            isBlock={true}
-                        >
+                        <Heading size="small" marginBottom="15px">
+                            Code Snippet
+                        </Heading>
+                        <Link href={`${WebsitePaths.Wiki}#Get-Started-With-Instant`} isBlock={true} target="_blank">
                             Explore the Docs
                         </Link>
                     </HeadingWrapper>
