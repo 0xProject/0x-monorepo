@@ -34,7 +34,7 @@ const highlights: HighlightProps[] = [
     {
         logo: '/images/@next/press/logo-fortune.png',
         title: 'Fortune',
-        text: 'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a <blockchain className=""></blockchain>',
+        text: 'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a blockchain.',
         href: '#',
     },
     {
