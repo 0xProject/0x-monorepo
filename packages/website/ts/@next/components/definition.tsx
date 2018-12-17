@@ -7,7 +7,9 @@ import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface Action {
     label: string;
-    url: string;
+    url?: string;
+    onClick?: () => void;
+    useAnchorTag?: boolean;
 }
 
 interface Props {
@@ -46,7 +48,14 @@ export const Definition = (props: Props) => (
             {props.actions && (
                 <LinkWrap>
                     {props.actions.map((item, index) => (
-                        <Button key={`dlink-${index}`} href={item.url} isWithArrow={true} isAccentColor={true}>
+                        <Button
+                            key={`dlink-${index}`}
+                            href={item.url}
+                            onClick={item.onClick}
+                            isWithArrow={true}
+                            isAccentColor={true}
+                            useAnchorTag={item.useAnchorTag}
+                        >
                             {item.label}
                         </Button>
                     ))}
