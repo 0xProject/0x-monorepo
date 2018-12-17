@@ -100,4 +100,8 @@ export class Configurator extends React.Component {
 const HeadingWrapper = styled.div`
     display: flex;
     justify-content: space-between;
+
+    a {
+        transform: translateY(-8px);
+    }
 `;

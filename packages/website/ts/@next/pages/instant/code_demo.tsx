@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
-import { Button } from 'ts/components/ui/button';
+import { Button } from 'ts/@next/components/button';
 import { Container } from 'ts/components/ui/container';
 import { styled } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
@@ -161,9 +161,9 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
             <Container position="relative" height="100%">
                 <Container position="absolute" top="10px" right="10px" zIndex={zIndex.overlay - 1}>
                     <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
-                        <Button fontSize="14px">
-                            <b>{copyButtonText}</b>
-                        </Button>
+                        <StyledButton>
+                            {copyButtonText}
+                        </StyledButton>
                     </CopyToClipboard>
                 </Container>
                 <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
@@ -176,3 +176,10 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
         this.setState({ didCopyCode: true });
     };
 }
+
+const StyledButton = styled(Button)`
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 9px 21px 7px;
+`;
