@@ -1,5 +1,5 @@
+import { Link as SmartLink } from '@0x/react-shared';
 import * as React from 'react';
-import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface LinkInterface {
@@ -16,16 +16,19 @@ interface LinkInterface {
 }
 
 export const Link = (props: LinkInterface) => {
-    const {
-        children,
-        isNoArrow,
-        href,
-    } = props;
+    const { children, isNoArrow, href } = props;
 
     return (
         <StyledLink to={href} {...props}>
             {children}
-            {!isNoArrow && <svg width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.484 5.246l.023 1.411 8.147.053L4.817 18.547l.996.996L17.65 7.706l.052 8.146 1.411.024-.068-10.561-10.561-.069z" fill="currentColor"/></svg>}
+            {!isNoArrow && (
+                <svg width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M8.484 5.246l.023 1.411 8.147.053L4.817 18.547l.996.996L17.65 7.706l.052 8.146 1.411.024-.068-10.561-10.561-.069z"
+                        fill="currentColor"
+                    />
+                </svg>
+            )}
         </StyledLink>
     );
 };
@@ -39,7 +42,10 @@ export const LinkWrap = styled.div`
     }
 `;
 
-const StyledLink = styled(ReactRouterLink)<LinkInterface>`
+const StyledLink =
+    styled(SmartLink) <
+    LinkInterface >
+    `
     display: ${props => !props.isBlock && 'inline-flex'};
     color: ${props => props.color || props.theme.linkColor};
     text-align: center;

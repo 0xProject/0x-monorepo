@@ -1,8 +1,8 @@
+import { Link } from '@0x/react-shared';
 import _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
-import { NavLink as ReactRouterLink } from 'react-router-dom';
-import styled, { withTheme } from 'styled-components';
+import styled, { css, withTheme } from 'styled-components';
 
 import Headroom from 'react-headroom';
 
@@ -29,6 +29,7 @@ interface NavItemProps {
     text?: string;
     dropdownWidth?: number;
     dropdownComponent?: React.ReactNode;
+    shouldOpenInNewTab?: boolean;
 }
 
 interface DropdownWrapInterface {
@@ -43,14 +44,12 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'products',
-        url: '#',
         text: 'Products',
         dropdownComponent: DropdownProducts,
         dropdownWidth: 280,
     },
     {
         id: 'developers',
-        url: '#',
         text: 'Developers',
         dropdownComponent: DropdownDevelopers,
         dropdownWidth: 480,
@@ -62,7 +61,8 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'blog',
-        url: 'https://blog.0x.org/latest',
+        url: 'https://blog.0xproject.com/latest',
+        shouldOpenInNewTab: true,
         text: 'Blog',
     },
 ];
@@ -72,7 +72,7 @@ class HeaderBase extends React.Component<HeaderProps> {
         if (this.props.isNavToggled) {
             this.props.toggleMobileNav();
         }
-    }
+    };
 
     public render(): React.ReactNode {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
@@ -81,25 +81,16 @@ class HeaderBase extends React.Component<HeaderProps> {
             <Headroom onUnpin={this.onUnpin} downTolerance={4} upTolerance={10}>
                 <StyledHeader isNavToggled={isNavToggled}>
                     <HeaderWrap>
-                        <ReactRouterLink to={WebsitePaths.Home}>
+                        <Link to={WebsitePaths.Home}>
                             <Logo />
-                        </ReactRouterLink>
+                        </Link>
 
                         <NavLinks>
-                            {_.map(navItems, (link, index) => (
-                                <NavItem
-                                    key={`navlink-${index}`}
-                                    link={link}
-                                />
-                            ))}
+                            {_.map(navItems, (link, index) => <NavItem key={`navlink-${index}`} link={link} />)}
                         </NavLinks>
 
                         <MediaQuery minWidth={990}>
-                            <TradeButton
-                                bgColor={theme.headerButtonBg}
-                                color="#ffffff"
-                                href="/portal"
-                            >
+                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" href="/portal">
                                 Trade on 0x
                             </TradeButton>
                         </MediaQuery>
@@ -118,23 +109,30 @@ export const Header = withTheme(HeaderBase);
 const NavItem = (props: { link: NavItemProps; key: string }) => {
     const { link } = props;
     const Subnav = link.dropdownComponent;
-
+    const linkElement = _.isUndefined(link.url) ? (
+        <StyledAnchor href="#">{link.text}</StyledAnchor>
+    ) : (
+        <StyledNavLink to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+            {link.text}
+        </StyledNavLink>
+    );
     return (
         <LinkWrap>
-            <StyledNavLink to={link.url}>
-                {link.text}
-            </StyledNavLink>
+            {linkElement}
 
-            {link.dropdownComponent &&
+            {link.dropdownComponent && (
                 <DropdownWrap width={link.dropdownWidth}>
                     <Subnav />
                 </DropdownWrap>
-            }
+            )}
         </LinkWrap>
     );
 };
 
-const StyledHeader = styled.header<HeaderProps>`
+const StyledHeader =
+    styled.header <
+    HeaderProps >
+    `
     padding: 30px;
     background-color: ${props => props.theme.bgColor};
 `;
@@ -157,9 +155,7 @@ const LinkWrap = styled.li`
     }
 `;
 
-const StyledNavLink = styled(ReactRouterLink).attrs({
-    activeStyle: { opacity: 1 },
-})`
+const linkStyles = css`
     color: ${props => props.theme.textColor};
     opacity: 0.5;
     transition: opacity 0.35s;
@@ -171,15 +167,25 @@ const StyledNavLink = styled(ReactRouterLink).attrs({
     }
 `;
 
-const HeaderWrap = styled(FlexWrap)`
-  justify-content: space-between;
-  align-items: center;
+const StyledNavLink = styled(Link).attrs({
+    activeStyle: { opacity: 1 },
+})`
+    ${linkStyles};
+`;
 
-  @media (max-width: 800px) {
-      padding-top: 0;
-      display: flex;
-      padding-bottom: 0;
-  }
+const StyledAnchor = styled.a`
+    ${linkStyles};
+`;
+
+const HeaderWrap = styled(FlexWrap)`
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 800px) {
+        padding-top: 0;
+        display: flex;
+        padding-bottom: 0;
+    }
 `;
 
 const NavLinks = styled.ul`
@@ -192,7 +198,10 @@ const NavLinks = styled.ul`
     }
 `;
 
-const DropdownWrap = styled.div<DropdownWrapInterface>`
+const DropdownWrap =
+    styled.div <
+    DropdownWrapInterface >
+    `
     width: ${props => props.width || 280}px;
     padding: 15px 0;
     border: 1px solid transparent;
