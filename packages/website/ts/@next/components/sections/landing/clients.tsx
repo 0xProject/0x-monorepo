@@ -18,39 +18,40 @@ interface StyledProjectInterface {
 const projects: ProjectLogo[] = [
     {
         name: 'Radar Relay',
-        imageUrl: 'images/@next/clients/client-radar.png',
+        imageUrl: 'images/@next/clients/radar-relay.svg',
         persistOnMobile: true,
     },
     {
         name: 'Paradex',
-        imageUrl: 'images/@next/clients/client-paradex.png',
+        imageUrl: 'images/@next/clients/paradex.svg',
         persistOnMobile: true,
     },
     {
-        name: 'The Ocean X',
-        imageUrl: 'images/@next/clients/client-oceanx.png',
+        name: 'Star Bit Ex',
+        imageUrl: 'images/@next/clients/starbitex.svg',
     },
     {
-        name: 'Decent EX',
-        imageUrl: 'images/@next/clients/client-decent.png',
-    },
-    {
-        name: 'dEX',
-        imageUrl: 'images/@next/clients/client-dex.png',
+        name: 'LedgerDex',
+        imageUrl: 'images/@next/clients/ledgerdex.svg',
     },
     {
         name: 'OpenRelay',
-        imageUrl: 'images/@next/clients/client-openrelay.png',
+        imageUrl: 'images/@next/clients/openrelay.svg',
         persistOnMobile: true,
     },
     {
-        name: 'Amadeus',
-        imageUrl: 'images/@next/clients/client-amadeus.png',
+        name: 'Bamboo Relay',
+        imageUrl: 'images/@next/clients/bamboo.svg',
         persistOnMobile: true,
     },
     {
-        name: 'DDEX',
-        imageUrl: 'images/@next/clients/client-ddex.png',
+        name: 'Shark Relay',
+        imageUrl: 'images/@next/clients/sharkrelay.svg',
+        persistOnMobile: true,
+    },
+    {
+        name: 'dEX',
+        imageUrl: 'images/@next/clients/ercdex.svg',
         persistOnMobile: true,
     },
 ];
