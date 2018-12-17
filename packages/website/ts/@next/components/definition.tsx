@@ -25,11 +25,7 @@ interface Props {
 
 export const Definition = (props: Props) => (
     <Wrap {...props}>
-        <Icon
-            name={props.icon}
-            size={props.iconSize || 'medium'}
-            margin={[0, 0, 'default', 0]}
-        />
+        <Icon name={props.icon} size={props.iconSize || 'medium'} margin={[0, 0, 'default', 0]} />
 
         <TextWrap {...props}>
             <Heading
@@ -42,34 +38,28 @@ export const Definition = (props: Props) => (
             </Heading>
 
             {typeof props.description === 'string' ? (
-                <Paragraph isMuted={true}>
-                    {props.description}
-                </Paragraph>
+                <Paragraph isMuted={true}>{props.description}</Paragraph>
             ) : (
-                <>
-                    {props.description}
-                </>
+                <>{props.description}</>
             )}
 
-            {props.actions &&
+            {props.actions && (
                 <LinkWrap>
                     {props.actions.map((item, index) => (
-                        <Button
-                            key={`dlink-${index}`}
-                            href={item.url}
-                            isWithArrow={true}
-                            isAccentColor={true}
-                        >
+                        <Button key={`dlink-${index}`} href={item.url} isWithArrow={true} isAccentColor={true}>
                             {item.label}
                         </Button>
                     ))}
                 </LinkWrap>
-            }
+            )}
         </TextWrap>
     </Wrap>
 );
 
-const Wrap = styled.div<Props>`
+const Wrap =
+    styled.div <
+    Props >
+    `
     max-width: ${props => props.isInline && '354px'};
 
     & + & {
@@ -78,7 +68,7 @@ const Wrap = styled.div<Props>`
     }
 
     @media (min-width: 768px) {
-        width: ${props => props.isInline ? 'calc(33.3333% - 30px)' : '100%'};
+        width: ${props => (props.isInline ? 'calc(33.3333% - 30px)' : '100%')};
         display: ${props => props.isInlineIcon && 'flex'};
         justify-content: ${props => props.isInlineIcon && 'space-between'};
         align-items: ${props => props.isInlineIcon && 'center'};
@@ -94,7 +84,10 @@ const Wrap = styled.div<Props>`
     }
 `;
 
-const TextWrap = styled.div<Props>`
+const TextWrap =
+    styled.div <
+    Props >
+    `
     width: 100%;
     max-width: 560px;
 
