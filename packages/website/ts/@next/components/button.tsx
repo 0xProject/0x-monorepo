@@ -22,13 +22,14 @@ interface ButtonInterface {
     to?: string;
     onClick?: () => any;
     theme?: ThemeInterface;
+    useAnchorTag?: boolean;
 }
 
 export const Button = (props: ButtonInterface) => {
-    const { children, href, isWithArrow, to } = props;
+    const { children, href, isWithArrow, to, useAnchorTag } = props;
     let linkElem;
 
-    if (href) {
+    if (href || useAnchorTag) {
         linkElem = 'a';
     }
     if (to) {
