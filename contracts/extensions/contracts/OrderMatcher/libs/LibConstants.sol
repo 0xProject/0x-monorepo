@@ -23,9 +23,12 @@ import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 
 contract LibConstants {
 
-    bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
-    bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
+    // bytes4(keccak256("transfer(address,uint256)"))
+    bytes4 constant internal ERC20_TRANSFER_SELECTOR = 0xa9059cbb;
+    // bytes4(keccak256("ERC20Token(address)"))
+    bytes4 constant internal ERC20_DATA_ID = 0xf47261b0;
+    // bytes4(keccak256("ERC721Token(address,uint256)"))
+    bytes4 constant internal ERC721_DATA_ID = 0x02571792;
  
      // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;

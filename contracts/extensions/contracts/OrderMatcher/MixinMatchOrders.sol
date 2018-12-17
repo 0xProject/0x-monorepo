@@ -126,23 +126,23 @@ contract MixinMatchOrders is
                 // | 420                       |         |   10. salt                                  |
                 // | 452                       |         |   11. offset to leftMakerAssetData (*)      |
                 // | 484                       |         |   12. offset to leftTakerAssetData (*)      |
+                // | 516                       | 32      | leftMakerAssetData Length                   |
+                // | 548                       | a       | leftMakerAssetData Contents                 |
+                // | 548 + a                   | 32      | leftTakerAssetData Length                   |
+                // | 580 + a                   | b       | leftTakerAssetData Contents                 |
                 // |                           | 12 * 32 | rightOrder:                                 |
-                // | 516                       |         |   1.  senderAddress                         |
-                // | 548                       |         |   2.  makerAddress                          |
-                // | 580                       |         |   3.  takerAddress                          |
-                // | 612                       |         |   4.  feeRecipientAddress                   |
-                // | 644                       |         |   5.  makerAssetAmount                      |
-                // | 676                       |         |   6.  takerAssetAmount                      |
-                // | 708                       |         |   7.  makerFeeAmount                        |
-                // | 740                       |         |   8.  takerFeeAmount                        |
-                // | 772                       |         |   9.  expirationTimeSeconds                 |
-                // | 804                       |         |   10. salt                                  |
-                // | 836                       |         |   11. offset to rightMakerAssetData (*)     |
-                // | 868                       |         |   12. offset to rightTakerAssetData (*)     |
-                // | 900                       | 32      | leftMakerAssetData Length                   |
-                // | 932                       | a       | leftMakerAssetData Contents                 |
-                // | 932 + a                   | 32      | leftTakerAssetData Length                   |
-                // | 964 + a                   | b       | leftTakerAssetData Contents                 |
+                // | 580 + a + b               |         |   1.  senderAddress                         |
+                // | 612 + a + b               |         |   2.  makerAddress                          |
+                // | 644 + a + b               |         |   3.  takerAddress                          |
+                // | 676 + a + b               |         |   4.  feeRecipientAddress                   |
+                // | 708 + a + b               |         |   5.  makerAssetAmount                      |
+                // | 740 + a + b               |         |   6.  takerAssetAmount                      |
+                // | 772 + a + b               |         |   7.  makerFeeAmount                        |
+                // | 804 + a + b               |         |   8.  takerFeeAmount                        |
+                // | 836 + a + b               |         |   9.  expirationTimeSeconds                 |
+                // | 868 + a + b               |         |   10. salt                                  |
+                // | 900 + a + b               |         |   11. offset to rightMakerAssetData (*)     |
+                // | 932 + a + b               |         |   12. offset to rightTakerAssetData (*)     |
                 // | 964 + a + b               | 32      | rightMakerAssetData Length                  |
                 // | 996 + a + b               | c       | rightMakerAssetData Contents                |
                 // | 996 + a + b + c           | 32      | rightTakerAssetData Length                  |
@@ -159,7 +159,7 @@ contract MixinMatchOrders is
                     0,               // transfer 0 wei
                     0,               // input starts at 0
                     calldatasize(),  // length of input
-                    0,               // write output over output
+                    0,               // write output over input
                     288              // length of output is 288 bytes
                 )
 
@@ -183,18 +183,18 @@ contract MixinMatchOrders is
                 // | 224                       |         |   8. right.takerFeePaid                     |
                 // | 256                       |         |   9. leftMakerAssetSpreadAmount             |
                 // |                           | 12 * 32 | rightOrder:                                 |
-                // | 516                       |         |   1.  senderAddress                         |
-                // | 548                       |         |   2.  makerAddress                          |
-                // | 580                       |         |   3.  takerAddress                          |
-                // | 612                       |         |   4.  feeRecipientAddress                   |
-                // | 644                       |         |   5.  makerAssetAmount                      |
-                // | 676                       |         |   6.  takerAssetAmount                      |
-                // | 708                       |         |   7.  makerFeeAmount                        |
-                // | 740                       |         |   8.  takerFeeAmount                        |
-                // | 772                       |         |   9.  expirationTimeSeconds                 |
-                // | 804                       |         |   10. salt                                  |
-                // | 836                       |         |   11. offset to rightMakerAssetData (*)     |
-                // | 868                       |         |   12. offset to rightTakerAssetData (*)     |
+                // | 580 + a + b               |         |   1.  senderAddress                         |
+                // | 612 + a + b               |         |   2.  makerAddress                          |
+                // | 644 + a + b               |         |   3.  takerAddress                          |
+                // | 676 + a + b               |         |   4.  feeRecipientAddress                   |
+                // | 708 + a + b               |         |   5.  makerAssetAmount                      |
+                // | 740 + a + b               |         |   6.  takerAssetAmount                      |
+                // | 772 + a + b               |         |   7.  makerFeeAmount                        |
+                // | 804 + a + b               |         |   8.  takerFeeAmount                        |
+                // | 836 + a + b               |         |   9.  expirationTimeSeconds                 |
+                // | 868 + a + b               |         |   10. salt                                  |
+                // | 900 + a + b               |         |   11. offset to rightMakerAssetData (*)     |
+                // | 932 + a + b               |         |   12. offset to rightTakerAssetData (*)     |
 
                 let rightOrderStart := add(calldataload(36), 4)
 
@@ -208,29 +208,29 @@ contract MixinMatchOrders is
 
                     // | Offset                    | Length  | Contents                                    |
                     // |---------------------------|---------|-------------------------------------------- |
-                    // | 416                       | 4       | `fillOrder` function selector               |
+                    // | 480 + a + b               | 4       | `fillOrder` function selector               |
                     // |                           | 3 * 32  | function parameters:                        |
-                    // | 420                       |         |   1. offset to rightOrder (*)               |
-                    // | 452                       |         |   2. takerAssetFillAmount                   |
-                    // | 484                       |         |   3. offset to rightSignature (*)           |
+                    // | 484 + a + b               |         |   1. offset to rightOrder (*)               |
+                    // | 516 + a + b               |         |   2. takerAssetFillAmount                   |
+                    // | 548 + a + b               |         |   3. offset to rightSignature (*)           |
                     // |                           | 12 * 32 | rightOrder:                                 |
-                    // | 516                       |         |   1.  senderAddress                         |
-                    // | 548                       |         |   2.  makerAddress                          |
-                    // | 580                       |         |   3.  takerAddress                          |
-                    // | 612                       |         |   4.  feeRecipientAddress                   |
-                    // | 644                       |         |   5.  makerAssetAmount                      |
-                    // | 676                       |         |   6.  takerAssetAmount                      |
-                    // | 708                       |         |   7.  makerFeeAmount                        |
-                    // | 740                       |         |   8.  takerFeeAmount                        |
-                    // | 772                       |         |   9.  expirationTimeSeconds                 |
-                    // | 804                       |         |   10. salt                                  |
-                    // | 836                       |         |   11. offset to rightMakerAssetData (*)     |
-                    // | 868                       |         |   12. offset to rightTakerAssetData (*)     |
-                    // | 900                       | 32      | rightMakerAssetData Length                  |
-                    // | 932                       | a       | rightMakerAssetData Contents                |
-                    // | 932 + a                   | 32      | rightTakerAssetData Length                  |
-                    // | 964                       | b       | rightTakerAssetData Contents                |
-                    // | 964 + b                   | 32      | rightSignature Length (always 0)            |
+                    // | 580 + a + b               |         |   1.  senderAddress                         |
+                    // | 612 + a + b               |         |   2.  makerAddress                          |
+                    // | 644 + a + b               |         |   3.  takerAddress                          |
+                    // | 676 + a + b               |         |   4.  feeRecipientAddress                   |
+                    // | 708 + a + b               |         |   5.  makerAssetAmount                      |
+                    // | 740 + a + b               |         |   6.  takerAssetAmount                      |
+                    // | 772 + a + b               |         |   7.  makerFeeAmount                        |
+                    // | 804 + a + b               |         |   8.  takerFeeAmount                        |
+                    // | 836 + a + b               |         |   9.  expirationTimeSeconds                 |
+                    // | 868 + a + b               |         |   10. salt                                  |
+                    // | 900 + a + b               |         |   11. offset to rightMakerAssetData (*)     |
+                    // | 932 + a + b               |         |   12. offset to rightTakerAssetData (*)     |
+                    // | 964 + a + b               | 32      | rightMakerAssetData Length                  |
+                    // | 996 + a + b               | c       | rightMakerAssetData Contents                |
+                    // | 996 + a + b + c           | 32      | rightTakerAssetData Length                  |
+                    // | 1028 + a + b + c          | d       | rightTakerAssetData Contents                |
+                    // | 1028 + a + b + c + d      | 32      | rightSignature Length (always 0)            |
 
                     // We assume that `leftOrder.makerAssetData == rightOrder.takerAssetData` and `leftOrder.takerAssetData == rightOrder.makerAssetData`
                     // `EXCHANGE.matchOrders` already makes this assumption, so it is likely
