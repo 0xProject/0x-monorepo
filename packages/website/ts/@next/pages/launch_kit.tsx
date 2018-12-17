@@ -100,7 +100,7 @@ export class NextLaunchKit extends React.Component {
                     heading="Need more flexibility?"
                     subline="Dive into our docs, or contact us if needed"
                     mainCta={{ text: 'Get Started', href: '/docs' }}
-                    secondaryCta={{ text: 'Get in Touch', href: this._onOpenContactModal.bind(this) }}
+                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
             </SiteWrap>
