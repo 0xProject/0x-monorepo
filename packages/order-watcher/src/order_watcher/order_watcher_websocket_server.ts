@@ -1,11 +1,11 @@
 import { ContractAddresses } from '@0x/contract-addresses';
+import { schemas } from '@0x/json-schemas';
 import { OrderStateInvalid, OrderStateValid, SignedOrder } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 import * as http from 'http';
 import * as WebSocket from 'websocket';
 
-import { webSocketRequestSchema, webSocketUtf8MessageSchema } from '../schemas/websocket_schemas';
 import { GetStatsResult, OrderWatcherConfig, OrderWatcherMethod, WebSocketRequest, WebSocketResponse } from '../types';
 import { assert } from '../utils/assert';
 
@@ -105,9 +105,9 @@ export class OrderWatcherWebSocketServer {
 
     private async _onMessageCallbackAsync(connection: WebSocket.connection, message: any): Promise<void> {
         let response: WebSocketResponse;
-        assert.doesConformToSchema('message', message, webSocketUtf8MessageSchema);
+        assert.doesConformToSchema('message', message, schemas.orderWatcherWebSocketUtf8MessageSchema);
         const request: WebSocketRequest = JSON.parse(message.utf8Data);
-        assert.doesConformToSchema('request', request, webSocketRequestSchema);
+        assert.doesConformToSchema('request', request, schemas.orderWatcherWebSocketRequestSchema);
         assert.isString(request.jsonrpc, JSON_RPC_VERSION);
         try {
             response = {
