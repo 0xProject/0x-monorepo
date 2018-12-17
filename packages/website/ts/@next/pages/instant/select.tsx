@@ -12,14 +12,22 @@ interface SelectProps {
     id: string;
     items: SelectItemConfig[];
     emptyText?: string;
-    onChange?: () => void;
+    onChange?: (ev: React.ChangeEvent<HTMLSelectElement>) => void;
+    includeEmpty: boolean;
 }
 
-export const Select: React.FunctionComponent<SelectProps> = ({ value, id, items, emptyText, onChange }) => {
+export const Select: React.FunctionComponent<SelectProps> = ({
+    value,
+    id,
+    items,
+    includeEmpty,
+    emptyText,
+    onChange,
+}) => {
     return (
         <Container>
             <StyledSelect id={id} onChange={onChange}>
-                <option value="">{emptyText}</option>
+                {includeEmpty && <option value="">{emptyText}</option>}
                 {items.map((item, index) => (
                     <option
                         key={`${id}-item-${index}`}
@@ -40,6 +48,7 @@ export const Select: React.FunctionComponent<SelectProps> = ({ value, id, items,
 
 Select.defaultProps = {
     emptyText: 'Select...',
+    includeEmpty: true,
 };
 
 const Container = styled.div`
