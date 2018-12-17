@@ -21,7 +21,7 @@
         {
             "type": "object",
             "properties": {
-                "id": { "type": "string" },
+                "id": { "type": "number" },
                 "jsonrpc": { "type": "string" },
                 "method": { "enum": ["ADD_ORDER"] },
                 "params": { "$ref": "#/definitions/signedOrderParam" }
@@ -31,7 +31,7 @@
         {
             "type": "object",
             "properties": {
-                "id": { "type": "string" },
+                "id": { "type": "number" },
                 "jsonrpc": { "type": "string" },
                 "method": { "enum": ["REMOVE_ORDER"] },
                 "params": { "$ref": "#/definitions/orderHashParam" }
@@ -41,7 +41,7 @@
         {
             "type": "object",
             "properties": {
-                "id": { "type": "string" },
+                "id": { "type": "number" },
                 "jsonrpc": { "type": "string" },
                 "method": { "enum": ["GET_STATS"] },
                 "params": {}

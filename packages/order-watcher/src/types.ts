@@ -48,21 +48,21 @@ export enum OrderWatcherMethod {
 // the data field of their WebSocket message to interact with the server.
 export type WebSocketRequest = AddOrderRequest | RemoveOrderRequest | GetStatsRequest;
 
-interface AddOrderRequest {
+export interface AddOrderRequest {
     id: number;
     jsonrpc: string;
     method: OrderWatcherMethod.AddOrder;
     params: { signedOrder: SignedOrder };
 }
 
-interface RemoveOrderRequest {
+export interface RemoveOrderRequest {
     id: number;
     jsonrpc: string;
     method: OrderWatcherMethod.RemoveOrder;
     params: { orderHash: string };
 }
 
-interface GetStatsRequest {
+export interface GetStatsRequest {
     id: number;
     jsonrpc: string;
     method: OrderWatcherMethod.GetStats;
@@ -72,21 +72,21 @@ interface GetStatsRequest {
 // of the WebSocket messages that the server sends out.
 export type WebSocketResponse = SuccessfulWebSocketResponse | ErrorWebSocketResponse;
 
-interface SuccessfulWebSocketResponse {
+export interface SuccessfulWebSocketResponse {
     id: number;
     jsonrpc: string;
     method: OrderWatcherMethod;
     result: OrderState | GetStatsResult | undefined; // result is undefined for ADD_ORDER and REMOVE_ORDER
 }
 
-interface ErrorWebSocketResponse {
-    id: number;
+export interface ErrorWebSocketResponse {
+    id: number | null;
     jsonrpc: string;
     method: null;
     error: JSONRPCError;
 }
 
-interface JSONRPCError {
+export interface JSONRPCError {
     code: number;
     message: string;
     data?: string | object;

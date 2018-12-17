@@ -105,20 +105,22 @@ export class OrderWatcherWebSocketServer {
 
     private async _onMessageCallbackAsync(connection: WebSocket.connection, message: any): Promise<void> {
         let response: WebSocketResponse;
-        assert.doesConformToSchema('message', message, schemas.orderWatcherWebSocketUtf8MessageSchema);
-        const request: WebSocketRequest = JSON.parse(message.utf8Data);
-        assert.doesConformToSchema('request', request, schemas.orderWatcherWebSocketRequestSchema);
-        assert.isString(request.jsonrpc, JSON_RPC_VERSION);
+        let id: number | null = null;
         try {
+            assert.doesConformToSchema('message', message, schemas.orderWatcherWebSocketUtf8MessageSchema);
+            const request: WebSocketRequest = JSON.parse(message.utf8Data);
+            id = request.id;
+            assert.doesConformToSchema('request', request, schemas.orderWatcherWebSocketRequestSchema);
+            assert.isString(request.jsonrpc, JSON_RPC_VERSION);
             response = {
-                id: request.id,
+                id,
                 jsonrpc: JSON_RPC_VERSION,
                 method: request.method,
                 result: await this._routeRequestAsync(request),
             };
         } catch (err) {
             response = {
-                id: request.id,
+                id,
                 jsonrpc: JSON_RPC_VERSION,
                 method: null,
                 error: err.toString(),

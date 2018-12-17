@@ -11,6 +11,7 @@ import 'mocha';
 import * as WebSocket from 'websocket';
 
 import { OrderWatcherWebSocketServer } from '../src/order_watcher/order_watcher_websocket_server';
+import { AddOrderRequest, OrderWatcherMethod, RemoveOrderRequest } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -43,8 +44,8 @@ describe.only('OrderWatcherWebSocketServer', async () => {
     let orderHash: string;
     // Manually encode types rather than use /src/types to mimick real data that user
     // would input. Otherwise we would be forced to use enums, which hide problems.
-    let addOrderPayload: { id: string; jsonrpc: string; method: string; params: { signedOrder: SignedOrder } };
-    let removeOrderPayload: { id: string; jsonrpc: string; method: string; params: { orderHash: string } };
+    let addOrderPayload: AddOrderRequest;
+    let removeOrderPayload: RemoveOrderRequest;
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     // HACK: createFillableSignedOrderAsync is Promise-based, which forces us
@@ -90,15 +91,15 @@ describe.only('OrderWatcherWebSocketServer', async () => {
         );
         orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         addOrderPayload = {
-            id: 'addOrderPayload',
+            id: 1,
             jsonrpc: '2.0',
-            method: 'ADD_ORDER',
+            method: OrderWatcherMethod.AddOrder,
             params: { signedOrder },
         };
         removeOrderPayload = {
-            id: 'removeOrderPayload',
+            id: 1,
             jsonrpc: '2.0',
-            method: 'REMOVE_ORDER',
+            method: OrderWatcherMethod.RemoveOrder,
             params: { orderHash },
         };
 
@@ -124,14 +125,14 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
     it('responds to getStats requests correctly', (done: any) => {
         const payload = {
-            id: 'getStats',
+            id: 1,
             jsonrpc: '2.0',
             method: 'GET_STATS',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(payload));
         wsClient.onmessage = (msg: any) => {
             const responseData = JSON.parse(msg.data);
-            expect(responseData.id).to.be.eq('getStats');
+            expect(responseData.id).to.be.eq(1);
             expect(responseData.jsonrpc).to.be.eq('2.0');
             expect(responseData.method).to.be.eq('GET_STATS');
             expect(responseData.result.orderCount).to.be.eq(0);
@@ -141,7 +142,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
     it('throws an error when an invalid method is attempted', async () => {
         const invalidMethodPayload = {
-            id: 'invalidMethodPayload',
+            id: 1,
             jsonrpc: '2.0',
             method: 'BAD_METHOD',
         };
@@ -158,7 +159,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
     it('throws an error when jsonrpc field missing from request', async () => {
         const noJsonRpcPayload = {
-            id: 'noJsonRpcPayload',
+            id: 1,
             method: 'GET_STATS',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(noJsonRpcPayload));
@@ -172,7 +173,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
     it('throws an error when we try to add an order without a signedOrder', async () => {
         const noSignedOrderAddOrderPayload = {
-            id: 'noSignedOrderAddOrderPayload',
+            id: 1,
             jsonrpc: '2.0',
             method: 'ADD_ORDER',
             orderHash: '0x7337e2f2a9aa2ed6afe26edc2df7ad79c3ffa9cf9b81a964f707ea63f5272355',
@@ -190,7 +191,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
     it('throws an error when we try to add a bad signedOrder', async () => {
         const invalidAddOrderPayload = {
-            id: 'invalidAddOrderPayload',
+            id: 1,
             jsonrpc: '2.0',
             method: 'ADD_ORDER',
             signedOrder: {
@@ -258,7 +259,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             takerAddress,
         );
         const nonZeroMakerFeeOrderPayload = {
-            id: 'nonZeroMakerFeeOrderPayload',
+            id: 1,
             jsonrpc: '2.0',
             method: 'ADD_ORDER',
             signedOrder: nonZeroMakerFeeSignedOrder,
