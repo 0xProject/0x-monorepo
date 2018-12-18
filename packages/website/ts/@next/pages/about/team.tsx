@@ -181,7 +181,7 @@ export const NextAboutTeam = () => (
         title="We are a global, growing team"
         description="We are a distributed team with backgrounds in engineering, academic research, business, and design. The 0x Core Team is passionate about accelerating the adoption decentralized technology and believe in its potential to be an equalizing force in the world. Join us and do the most impactful work of your life."
         linkLabel="Join the team"
-        linkUrl={WebsitePaths.AboutJobs}
+        to={WebsitePaths.AboutJobs}
     >
         <Section maxWidth="1170px" wrapWidth="100%" isFlex={true} flexBreakpoint="900px">
             <Column>

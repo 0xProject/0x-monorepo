@@ -95,7 +95,7 @@ export class NextAboutJobs extends React.Component<NextAboutJobsProps, NextAbout
                     </>
                 }
                 linkLabel="Our mission and values"
-                linkUrl="/about/mission"
+                to="/about/mission"
             >
                 <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px" wrapWidth="100%">
                     <Column maxWidth="442px">
