@@ -98,34 +98,34 @@ contract MixinBalanceThresholdFilterCore is
         bytes4 exchangeFunctionSelector = bytes4(exchangeCalldataload(0));
         // solhint-disable expression-indent
         if (
-            exchangeFunctionSelector == batchFillOrdersSelector         ||
-            exchangeFunctionSelector == batchFillOrdersNoThrowSelector  || 
-            exchangeFunctionSelector == batchFillOrKillOrdersSelector   ||
-            exchangeFunctionSelector == marketBuyOrdersSelector         ||
-            exchangeFunctionSelector == marketBuyOrdersNoThrowSelector  ||
-            exchangeFunctionSelector == marketSellOrdersSelector        ||
-            exchangeFunctionSelector == marketSellOrdersNoThrowSelector
+            exchangeFunctionSelector == BATCH_FILL_ORDERS_SELECTOR              ||
+            exchangeFunctionSelector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR     ||
+            exchangeFunctionSelector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR      ||
+            exchangeFunctionSelector == MARKET_BUY_ORDERS_SELECTOR              ||
+            exchangeFunctionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR     ||
+            exchangeFunctionSelector == MARKET_SELL_ORDERS_SELECTOR             ||
+            exchangeFunctionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
             addressesToValidate = loadMakerAddressesFromOrderArray(0);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (
-            exchangeFunctionSelector == fillOrderSelector           ||
-            exchangeFunctionSelector == fillOrderNoThrowSelector    ||
-            exchangeFunctionSelector == fillOrKillOrderSelector
+            exchangeFunctionSelector == FILL_ORDER_SELECTOR             ||
+            exchangeFunctionSelector == FILL_ORDER_NO_THROW_SELECTOR    ||
+            exchangeFunctionSelector == FILL_OR_KILL_ORDER_SELECTOR
         ) {
             address makerAddress = loadMakerAddressFromOrder(0);
             addressesToValidate = addressesToValidate.append(makerAddress);
             addressesToValidate = addressesToValidate.append(signerAddress);
-        } else if (exchangeFunctionSelector == matchOrdersSelector) {
+        } else if (exchangeFunctionSelector == MATCH_ORDERS_SELECTOR) {
             address leftMakerAddress = loadMakerAddressFromOrder(0);
             addressesToValidate = addressesToValidate.append(leftMakerAddress);
             address rightMakerAddress = loadMakerAddressFromOrder(1);
             addressesToValidate = addressesToValidate.append(rightMakerAddress);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (
-            exchangeFunctionSelector != cancelOrderSelector         && 
-            exchangeFunctionSelector != batchCancelOrdersSelector   &&
-            exchangeFunctionSelector != cancelOrdersUpToSelector
+            exchangeFunctionSelector != CANCEL_ORDER_SELECTOR           &&
+            exchangeFunctionSelector != BATCH_CANCEL_ORDERS_SELECTOR    &&
+            exchangeFunctionSelector != CANCEL_ORDERS_UP_TO_SELECTOR
         ) {
             revert("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR");
         }
