@@ -109,8 +109,6 @@ render(
                                 <Route exact path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
-                                <Route exact path={WebsitePaths.Community} component={NextCommunity as any} />
-                                <Route exact path={WebsitePaths.MarketMaker} component={NextMarketMaker as any} />
                                 <Route exact path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
                                 <Route exact path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
                                 <Route exact path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
