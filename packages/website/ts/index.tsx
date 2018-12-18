@@ -4,13 +4,8 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
-import { About } from 'ts/containers/about';
 import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
-import { Instant } from 'ts/containers/instant';
-import { Jobs } from 'ts/containers/jobs';
-import { Landing } from 'ts/containers/landing'; // Note(ez): When we're done we omit all old site imports
-import { LaunchKit } from 'ts/containers/launch_kit';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
@@ -25,12 +20,10 @@ import { NextAboutJobs } from 'ts/@next/pages/about/jobs';
 import { NextAboutMission } from 'ts/@next/pages/about/mission';
 import { NextAboutPress } from 'ts/@next/pages/about/press';
 import { NextAboutTeam } from 'ts/@next/pages/about/team';
-import { NextCommunity } from 'ts/@next/pages/community';
 import { NextEcosystem } from 'ts/@next/pages/ecosystem';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextLaunchKit } from 'ts/@next/pages/launch_kit';
-import { NextMarketMaker } from 'ts/@next/pages/market_maker';
 import { NextWhy } from 'ts/@next/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -104,15 +97,19 @@ render(
                         <div>
                             <Switch>
                                 {/* Next (new site) routes */}
-                                <Route exact path="/" component={NextLanding as any} />
-                                <Route exact path={WebsitePaths.Why} component={NextWhy as any} />
-                                <Route exact path={WebsitePaths.Instant} component={Next0xInstant as any} />
-                                <Route exact path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
-                                <Route exact path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
-                                <Route exact path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
-                                <Route exact path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
-                                <Route exact path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
-                                <Route exact path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
+                                <Route exact={true} path="/" component={NextLanding as any} />
+                                <Route exact={true} path={WebsitePaths.Why} component={NextWhy as any} />
+                                <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
+                                <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
+                                <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.AboutMission}
+                                    component={NextAboutMission as any}
+                                />
+                                <Route exact={true} path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
+                                <Route exact={true} path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
+                                <Route exact={true} path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
                                 {/*
                                   Note(ez): We remove/replace all old routes with next routes
                                   once we're ready to put a ring on it. for now let's keep em there for reference
