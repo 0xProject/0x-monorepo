@@ -13,7 +13,7 @@ const navData = [
         url: WebsitePaths.Instant,
     },
     {
-        title: '0x Launch kit',
+        title: '0x Launch Kit',
         description: 'Build on the 0x protocol',
         url: WebsitePaths.LaunchKit,
     },
