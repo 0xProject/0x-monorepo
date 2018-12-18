@@ -89,7 +89,11 @@ export class NextLaunchKit extends React.Component {
                 <Banner
                     heading="Need more flexibility?"
                     subline="Dive into our docs, or contact us if needed"
-                    mainCta={{ text: 'Get Started', href: '/docs' }}
+                    mainCta={{
+                        text: 'Get Started',
+                        href: 'https://github.com/0xProject/0x-launch-kit/#table-of-contents',
+                        shouldOpenInNewTab: true,
+                    }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
@@ -108,7 +112,7 @@ export class NextLaunchKit extends React.Component {
 
 const HeroActions = () => (
     <React.Fragment>
-        <Button href="https://github.com/0xProject/0x-launch-kit" isInline={true}>
+        <Button href="https://github.com/0xProject/0x-launch-kit" isInline={true} target="_blank">
             Get Started
         </Button>
 

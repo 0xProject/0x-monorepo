@@ -21,6 +21,7 @@ interface CTAButton {
     text: string;
     href?: string;
     onClick?: () => void;
+    shouldOpenInNewTab?: boolean;
 }
 
 interface BorderProps {
@@ -46,7 +47,12 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             <Column>
                 <ButtonWrap>
                     {mainCta && (
-                        <Button color={colors.white} isTransparent={false} href={mainCta.href}>
+                        <Button
+                            color={colors.white}
+                            isTransparent={false}
+                            href={mainCta.href}
+                            target={mainCta.shouldOpenInNewTab ? '_blank' : ''}
+                        >
                             {mainCta.text}
                         </Button>
                     )}
