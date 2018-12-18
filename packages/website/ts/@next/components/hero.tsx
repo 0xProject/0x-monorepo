@@ -117,4 +117,19 @@ const ButtonWrap = styled.div`
     > *:nth-child(2) {
         ${addFadeInAnimation('0.6s', '0.4s')}
     }
+
+    @media (max-width: 500px) {
+        flex-direction: column;
+        justify-content: center;
+
+        * {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        * + * {
+            margin-left: 0;
+            margin-top: 12px;
+        }
+    }
 `;

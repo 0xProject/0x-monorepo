@@ -26,13 +26,14 @@ export const SectionLandingAbout = () => (
             instruments to assets that could have never existed before.
         </Paragraph>
 
-        <Button href={`${WebsitePaths.Why}#cases`} isWithArrow={true} isAccentColor={true}>
+        <DeveloperLink href={`${WebsitePaths.Why}#cases`} isWithArrow={true} isAccentColor={true}>
             Discover how developers use 0x
-        </Button>
+        </DeveloperLink>
 
         <hr
             style={{
-                width: '340px',
+                width: '100%',
+                maxWidth: '340px',
                 borderColor: '#3C4746',
                 margin: '60px auto',
             }}
@@ -54,6 +55,15 @@ const Figure = (props: FigureProps) => (
         <FigureDescription>{props.description}</FigureDescription>
     </Column>
 );
+
+const DeveloperLink = styled(Button)`
+        @media (max-width: 500px) {
+            && {
+                white-space: pre-wrap;
+                line-height: 1.3;
+            }
+    }
+`;
 
 const FigureValue = styled.dt`
     font-size: 50px;
