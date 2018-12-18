@@ -58,7 +58,7 @@ const StyledSlider = styled(SliderWithTooltip)`
         top: 7px;
         &:after {
             border: solid transparent;
-            content: " ";
+            content: ' ';
             height: 0;
             width: 0;
             position: absolute;

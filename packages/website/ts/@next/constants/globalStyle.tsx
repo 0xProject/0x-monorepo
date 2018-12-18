@@ -1,5 +1,5 @@
-import {createGlobalStyle, withTheme} from 'styled-components';
-import {cssReset} from 'ts/@next/constants/cssReset';
+import { createGlobalStyle, withTheme } from 'styled-components';
+import { cssReset } from 'ts/@next/constants/cssReset';
 
 export interface GlobalStyle {
     theme: {
@@ -10,7 +10,10 @@ export interface GlobalStyle {
     };
 }
 
-const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
+const GlobalStyles = withTheme(
+    createGlobalStyle <
+        GlobalStyle >
+        `
     ${cssReset};
 
     html {
@@ -100,6 +103,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
     img + p {
         padding-top: 30px;
     }
-`);
+`,
+);
 
 export { GlobalStyles };

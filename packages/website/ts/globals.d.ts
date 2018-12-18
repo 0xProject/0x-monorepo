@@ -8,7 +8,7 @@ declare module 'react-flickity-component';
 declare module 'react-anchor-link-smooth-scroll';
 declare module 'react-responsive';
 declare module 'react-scrollable-anchor';
-declare module 'react-headroom'
+declare module 'react-headroom';
 
 declare module '*.json' {
     const json: any;
@@ -20,7 +20,7 @@ declare module '*.json' {
 declare module '*.svg' {
     //const svg: any;
     //export default svg;
-    import {PureComponent, SVGProps} from "react";
+    import { PureComponent, SVGProps } from 'react';
     export default class extends PureComponent<SVGProps<SVGSVGElement>> {}
 }
 

@@ -9,11 +9,12 @@ interface Props {
 }
 
 const ImageClass: React.FunctionComponent<Props> = (props: Props) => {
-    return (
-        <img {...props} />
-    );
+    return <img {...props} />;
 };
 
-export const Image = styled(ImageClass)<Props>`
+export const Image =
+    styled(ImageClass) <
+    Props >
+    `
     margin: ${props => props.isCentered && `0 auto`};
 `;

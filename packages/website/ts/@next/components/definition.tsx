@@ -41,7 +41,9 @@ export const Definition = (props: Props) => (
             </Heading>
 
             {typeof props.description === 'string' ? (
-                <Paragraph isMuted={true} size={props.fontSize || 'default'}>{props.description}</Paragraph>
+                <Paragraph isMuted={true} size={props.fontSize || 'default'}>
+                    {props.description}
+                </Paragraph>
             ) : (
                 <>{props.description}</>
             )}

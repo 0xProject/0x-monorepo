@@ -47,7 +47,7 @@ Input.defaultProps = {
 const StyledInput = styled.input`
     appearance: none;
     background-color: #fff;
-    border: 1px solid #D5D5D5;
+    border: 1px solid #d5d5d5;
     color: #000;
     font-size: 1.294117647rem;
     padding: 16px 15px 14px;
@@ -59,11 +59,14 @@ const StyledInput = styled.input`
     border-color: ${(props: InputProps) => props.isErrors && `#FD0000`};
 
     &::placeholder {
-        color: #C3C3C3;
+        color: #c3c3c3;
     }
 `;
 
-const InputWrapper = styled.div<InputProps>`
+const InputWrapper =
+    styled.div <
+    InputProps >
+    `
     position: relative;
     flex-grow: ${props => props.width === InputWidth.Full && 1};
     width: ${props => props.width === InputWidth.Half && `calc(50% - 15px)`};
@@ -83,8 +86,8 @@ const Label = styled.label`
 `;
 
 const Error = styled.span`
-    color: #FD0000;
-    font-size: .833333333rem;
+    color: #fd0000;
+    font-size: 0.833333333rem;
     line-height: 1em;
     display: inline-block;
     position: absolute;

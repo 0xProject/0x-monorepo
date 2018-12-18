@@ -2,8 +2,8 @@ import * as React from 'react';
 import Loadable from 'react-loadable';
 import styled from 'styled-components';
 
-import {Paragraph} from 'ts/@next/components/text';
-import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
+import { Paragraph } from 'ts/@next/components/text';
+import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
 
 interface IconProps extends PaddingInterface {
     name?: string;
@@ -14,7 +14,7 @@ interface IconProps extends PaddingInterface {
 export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
     if (props.name && !props.component) {
         const IconSVG = Loadable({
-            loader: async () => import(/* webpackChunkName: "icon" */`ts/@next/icons/illustrations/${props.name}.svg`),
+            loader: async () => import(/* webpackChunkName: "icon" */ `ts/@next/icons/illustrations/${props.name}.svg`),
             loading: () => <Paragraph>Loading</Paragraph>,
         });
 
@@ -26,17 +26,16 @@ export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
     }
 
     if (props.component) {
-        return (
-            <StyledIcon {...props}>
-                {props.component}
-            </StyledIcon>
-        );
+        return <StyledIcon {...props}>{props.component}</StyledIcon>;
     }
 
     return null;
 };
 
-export const InlineIconWrap = styled.div<PaddingInterface>`
+export const InlineIconWrap =
+    styled.div <
+    PaddingInterface >
+    `
     margin: ${props => getCSSPadding(props.margin)};
     display: flex;
     align-items: center;
@@ -55,7 +54,10 @@ const _getSize = (size: string | number = 'small'): string => {
     return `${size}px`;
 };
 
-const StyledIcon = styled.figure<IconProps>`
+const StyledIcon =
+    styled.figure <
+    IconProps >
+    `
     width: ${props => _getSize(props.size)};
     height: ${props => _getSize(props.size)};
     margin: ${props => getCSSPadding(props.margin)};

@@ -23,10 +23,7 @@
     "awesomeTypescriptLoaderOptions": {
         "useCache": true,
         "errorsAsWarnings": true,
-        "reportFiles": [
-            "./ts/**/*"
-        ]
-
+        "reportFiles": ["./ts/**/*"]
     },
     "include": ["./ts/**/*"]
 }
