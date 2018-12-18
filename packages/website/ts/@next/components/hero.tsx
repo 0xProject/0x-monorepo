@@ -129,7 +129,7 @@ const ButtonWrap = styled.div`
     }
 `;
 
-export const Hero = (props: Props) => (
+export const Hero: React.StatelessComponent<Props> = (props: Props) => (
     <Section>
         <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
             {props.figure && <Content width="400px">{props.figure}</Content>}
