@@ -2,9 +2,9 @@ import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import {WrapGrid, WrapProps} from 'ts/@next/components/newLayout';
+import { WrapGrid, WrapProps } from 'ts/@next/components/newLayout';
 import { WebsitePaths } from 'ts/types';
 
 interface Props {
@@ -24,14 +24,10 @@ export class MobileNav extends React.PureComponent<Props> {
 
                         <ul>
                             <li>
-                                <Link to={WebsitePaths.Instant}>
-                                    0x Instant
-                                </Link>
+                                <Link to={WebsitePaths.Instant}>0x Instant</Link>
                             </li>
                             <li>
-                                <Link to={WebsitePaths.LaunchKit}>
-                                    0x Launch Kit
-                                </Link>
+                                <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
                             </li>
                         </ul>
                     </Section>
@@ -39,39 +35,36 @@ export class MobileNav extends React.PureComponent<Props> {
                     <Section isDark={true}>
                         <Grid as="ul" isFullWidth={true} isWrapped={true}>
                             <li>
-                                <Link to={WebsitePaths.Why}>
-                                    Why 0x
-                                </Link>
+                                <Link to={WebsitePaths.Why}>Why 0x</Link>
                             </li>
                             <li>
-                                <Link to={WebsitePaths.AboutMission}>
-                                    About
-                                </Link>
+                                <Link to={WebsitePaths.AboutMission}>About</Link>
                             </li>
                             <li>
-                                <a href="https://blog.0x.org/latest" target="_blank">
+                                <a href="https://blog.0xproject.com/latest" target="_blank">
                                     Blog
                                 </a>
                             </li>
                         </Grid>
                     </Section>
 
-                    {isToggled &&
-                        <Overlay onClick={toggleMobileNav} />
-                    }
+                    {isToggled && <Overlay onClick={toggleMobileNav} />}
                 </Wrap>
             </MediaQuery>
         );
     }
 }
 
-const Wrap = styled.nav<{ isToggled: boolean }>`
+const Wrap =
+    styled.nav <
+    { isToggled: boolean } >
+    `
     width: 100%;
     height: 357px;
     background-color: ${props => props.theme.mobileNavBgUpper};
     color: ${props => props.theme.mobileNavColor};
-    transition: ${props => props.isToggled ? 'visibility 0s, transform 0.5s' : 'visibility 0s 0.5s, transform 0.5s'};
-    transform: translate3d(0, ${props => props.isToggled ? 0 : '-100%'}, 0);
+    transition: ${props => (props.isToggled ? 'visibility 0s, transform 0.5s' : 'visibility 0s 0.5s, transform 0.5s')};
+    transform: translate3d(0, ${props => (props.isToggled ? 0 : '-100%')}, 0);
     visibility: ${props => !props.isToggled && 'hidden'};
     position: fixed;
     display: flex;
@@ -103,13 +96,19 @@ const Overlay = styled.div`
     cursor: pointer;
 `;
 
-const Section = styled.div<{ isDark?: boolean }>`
+const Section =
+    styled.div <
+    { isDark: boolean } >
+    `
     width: 100%;
     padding: 15px 30px;
     background-color: ${props => props.isDark && props.theme.mobileNavBgLower};
 `;
 
-const Grid = styled(WrapGrid)<WrapProps>`
+const Grid =
+    styled(WrapGrid) <
+    WrapProps >
+    `
     justify-content: flex-start;
 
     li {

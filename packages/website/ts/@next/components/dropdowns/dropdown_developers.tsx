@@ -1,63 +1,73 @@
+import { Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import {Link as RouterLink} from 'react-router-dom';
-import styled, {withTheme} from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 
-import {Button} from 'ts/@next/components/button';
-import {Column, FlexWrap, WrapGrid} from 'ts/@next/components/newLayout';
-import {ThemeValuesInterface} from 'ts/@next/components/siteWrap';
-import {Heading} from 'ts/@next/components/text';
+import { Button } from 'ts/@next/components/button';
+import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
+import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
+import { Heading } from 'ts/@next/components/text';
+import { WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 interface Props {
     theme: ThemeValuesInterface;
 }
 
-const introData = [
+interface LinkConfig {
+    label: string;
+    url: string;
+    shouldOpenInNewTab?: boolean;
+}
+
+const introData: LinkConfig[] = [
     {
         label: 'Build a relayer',
-        url: 'https://0x.org/wiki#Build-A-Relayer',
+        url: `${WebsitePaths.Wiki}#Build-A-Relayer`,
     },
     {
         label: 'Develop on Ethereum',
-        url: 'https://0x.org/wiki#Ethereum-Development',
+        url: `${WebsitePaths.Wiki}#Ethereum-Development`,
     },
     {
         label: 'Make & take orders',
-        url: 'https://0x.org/wiki#Create,-Validate,-Fill-Order',
+        url: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
     },
     {
         label: 'Use networked liquidity',
-        url: 'https://0x.org/wiki#Find,-Submit,-Fill-Order-From-Relayer',
+        url: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
 ];
 
-const docsData = [
+const docsData: LinkConfig[] = [
     {
         label: '0x.js',
-        url: 'https://0x.org/docs/0x.js',
+        url: WebsitePaths.ZeroExJs,
     },
     {
         label: '0x Connect',
-        url: 'https://0x.org/docs/connect',
+        url: WebsitePaths.Connect,
     },
     {
         label: 'Smart Contract',
-        url: 'https://0x.org/docs/contracts',
+        url: WebsitePaths.SmartContracts,
     },
 ];
 
-const linksData = [
+const linksData: LinkConfig[] = [
     {
         label: 'Wiki',
-        url: 'https://0x.org/wiki',
+        url: WebsitePaths.Wiki,
     },
     {
         label: 'Github',
-        url: 'https://github.com/0xProject',
+        url: constants.URL_GITHUB_ORG,
+        shouldOpenInNewTab: true,
     },
     {
-        label: 'Whitepaper',
-        url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md',
+        label: 'Protocol specification',
+        url: constants.URL_PROTOCOL_SPECIFICATION,
+        shouldOpenInNewTab: true,
     },
 ];
 
@@ -65,25 +75,16 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
     <>
         <DropdownWrap>
             <div>
-                <Heading
-                    asElement="h4"
-                    size={14}
-                    color="inherit"
-                    marginBottom="15px"
-                    isMuted={0.35}
-                >
+                <Heading asElement="h4" size={14} color="inherit" marginBottom="15px" isMuted={0.35}>
                     Getting Started
                 </Heading>
 
                 <StyledGrid isCentered={false} isWrapped={true}>
                     {_.map(introData, (item, index) => (
                         <li>
-                            <RouterLink
-                                key={`introLink-${index}`}
-                                to={item.url}
-                            >
+                            <Link key={`introLink-${index}`} to={item.url}>
                                 {item.label}
-                            </RouterLink>
+                            </Link>
                         </li>
                     ))}
                 </StyledGrid>
@@ -91,51 +92,44 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
 
             <StyledWrap>
                 <Column width="calc(100% - 15px)">
-                    <Heading
-                        asElement="h4"
-                        size={14}
-                        color="inherit"
-                        marginBottom="15px"
-                        isMuted={0.35}
-                    >
+                    <Heading asElement="h4" size={14} color="inherit" marginBottom="15px" isMuted={0.35}>
                         Popular Docs
                     </Heading>
 
                     <ul>
                         {_.map(docsData, (item, index) => (
                             <li key={`docsLink-${index}`}>
-                                <RouterLink to={item.url}>
+                                <Link to={item.url} shouldOpenInNewTab={item.shouldOpenInNewTab}>
                                     {item.label}
-                                </RouterLink>
+                                </Link>
                             </li>
                         ))}
                     </ul>
                 </Column>
 
                 <Column width="calc(100% - 15px)">
-                    <Heading
-                        asElement="h4"
-                        size={14}
-                        color="inherit"
-                        marginBottom="15px"
-                        isMuted={0.35}
-                    >
+                    <Heading asElement="h4" size={14} color="inherit" marginBottom="15px" isMuted={0.35}>
                         Useful Links
                     </Heading>
 
                     <ul>
                         {_.map(linksData, (item, index) => (
                             <li key={`usefulLink-${index}`}>
-                                <RouterLink to={item.url}>
+                                <Link to={item.url} shouldOpenInNewTab={item.shouldOpenInNewTab}>
                                     {item.label}
-                                </RouterLink>
+                                </Link>
                             </li>
                         ))}
                     </ul>
                 </Column>
             </StyledWrap>
 
-            <StyledLink to="https://0x.org/docs" bgColor={props.theme.dropdownButtonBg} isAccentColor={true} isNoBorder={true}>
+            <StyledLink
+                to={WebsitePaths.Docs}
+                bgColor={props.theme.dropdownButtonBg}
+                isAccentColor={true}
+                isNoBorder={true}
+            >
                 View All Documentation
             </StyledLink>
         </DropdownWrap>
@@ -174,7 +168,7 @@ const StyledWrap = styled(FlexWrap)`
         opacity: 0.15;
         position: absolute;
         top: 0;
-        left:0;
+        left: 0;
     }
 `;
 
