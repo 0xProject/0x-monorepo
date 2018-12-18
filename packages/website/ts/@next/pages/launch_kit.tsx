@@ -116,8 +116,8 @@ const HeroActions = () => (
             Get Started
         </Button>
 
-        <Button to={constants.URL_LAUNCH_KIT_BLOG_POST} isTransparent={true} isInline={true}>
-            Learn More
+        <Button href={constants.URL_LAUNCH_KIT_BLOG_POST} isTransparent={true} isInline={true} target="_blank">
+            Learn More!
         </Button>
     </React.Fragment>
 );
