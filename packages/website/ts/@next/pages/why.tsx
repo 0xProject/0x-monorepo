@@ -1,20 +1,18 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
-
 import styled from 'styled-components';
-
-import { Hero } from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
 import { Definition } from 'ts/@next/components/definition';
+import { Hero } from 'ts/@next/components/hero';
 import { Column, Section, WrapSticky } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Slide, Slider } from 'ts/@next/components/slider/slider';
+import { Heading } from 'ts/@next/components/text';
 
 import { ModalContact } from '../components/modals/modal_contact';
-import { Heading } from 'ts/@next/components/text';
 
 const offersData = [
     {
@@ -93,16 +91,17 @@ export class NextWhy extends React.Component {
         isContactModalOpen: false,
     };
     public render(): React.ReactNode {
+        const buildAction = (
+            <Button href="/docs" isWithArrow={true} isAccentColor={true}>
+                Build on 0x
+            </Button>
+        );
         return (
             <SiteWrap theme="dark">
                 <Hero
                     title="The exchange layer for the crypto economy"
                     description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."
-                    actions={
-                        <Button href="/docs" isWithArrow={true} isAccentColor={true}>
-                            Build on 0x
-                        </Button>
-                    }
+                    actions={buildAction}
                 />
 
                 <Section bgColor="dark" isFlex={true} maxWidth="1170px">
