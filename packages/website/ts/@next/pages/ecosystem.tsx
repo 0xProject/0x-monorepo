@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import {Button} from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
@@ -20,7 +20,8 @@ const benefits: BenefitProps[] = [
     {
         icon: 'milestoneGrants',
         title: 'Milestone Grants',
-        description: 'Receive non-dilutive capital ranging from $10,000 to $100,000, with grant sizes awarded based on the quality of your team, vision, execution, and community involvement.',
+        description:
+            'Receive non-dilutive capital ranging from $10,000 to $100,000, with grant sizes awarded based on the quality of your team, vision, execution, and community involvement.',
     },
     {
         icon: 'vcIntroductions',
@@ -40,7 +41,8 @@ const benefits: BenefitProps[] = [
     {
         icon: 'eficientDesign',
         title: 'Marketing and Design Help',
-        description: 'Get strategic advice on product positioning, customer acquisition, and UI/UX design that can impact the growth of your business.',
+        description:
+            'Get strategic advice on product positioning, customer acquisition, and UI/UX design that can impact the growth of your business.',
     },
     {
         icon: 'legalResources',
@@ -50,56 +52,56 @@ const benefits: BenefitProps[] = [
 ];
 
 export const NextEcosystem = () => (
-  <SiteWrap theme="light">
-    <Section isTextCentered={true}>
-        <Column>
-            <Heading size="medium" isCentered={true}>
-                Jumpstart your Business on 0x
-            </Heading>
-            <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
-                The Ecosystem Acceleration Program gives teams access to a variety of services including funding, personalized technical support, and recruiting assistance. We created the Ecosystem Acceleration Program to bolster the expansion of both infrastructure projects and relayers building on 0x.
-            </Paragraph>
-            <LinkWrap>
-                <Button
-                    to="#"
-                    isWithArrow={true}
-                    isAccentColor={true}
-                >
-                    Apply now
-                </Button>
-                <Button
-                    to="#"
-                    isWithArrow={true}
-                    isAccentColor={true}
-                >
-                    Learn More
-                </Button>
-            </LinkWrap>
-        </Column>
-    </Section>
+    <SiteWrap theme="light">
+        <Section isTextCentered={true}>
+            <Column>
+                <Heading size="medium" isCentered={true}>
+                    Jumpstart your Business on 0x
+                </Heading>
+                <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
+                    The Ecosystem Acceleration Program gives teams access to a variety of services including funding,
+                    personalized technical support, and recruiting assistance. We created the Ecosystem Acceleration
+                    Program to bolster the expansion of both infrastructure projects and relayers building on 0x.
+                </Paragraph>
+                <LinkWrap>
+                    <Button href="" isWithArrow={true} isAccentColor={true}>
+                        Apply now
+                    </Button>
+                    <Button to="#" isWithArrow={true} isAccentColor={true}>
+                        Learn More
+                    </Button>
+                </LinkWrap>
+            </Column>
+        </Section>
 
-    <Section bgColor={colors.backgroundLight} isFullWidth={true}>
-        <Column>
-            <Heading size={34} fontWeight="400" asElement="h2" isCentered={true} maxWidth="507px" marginBottom="70px">
-                Join a vibrant ecosystem of projects in the 0x Network.
-            </Heading>
-        </Column>
-        <WrapGrid isTextCentered={true} isWrapped={true} isFullWidth={true}>
-            {_.map(benefits, (benefit: BenefitProps, index) => (
-                <Column key={`benefit-${index}`} width="33%" padding="0 45px 30px">
-                    <Icon name={benefit.icon} size="medium" margin={[0, 0, 'small', 0]} />
-                    <Heading color={colors.textDarkPrimary} size="small" marginBottom="10px" isCentered={true}>
-                        {benefit.title}
-                    </Heading>
-                    <Paragraph isMuted={true} isCentered={true}>
-                        {benefit.description}
-                    </Paragraph>
-                </Column>
-            ))}
-        </WrapGrid>
-    </Section>
-
-  </SiteWrap>
+        <Section bgColor={colors.backgroundLight} isFullWidth={true}>
+            <Column>
+                <Heading
+                    size={34}
+                    fontWeight="400"
+                    asElement="h2"
+                    isCentered={true}
+                    maxWidth="507px"
+                    marginBottom="70px"
+                >
+                    Join a vibrant ecosystem of projects in the 0x Network.
+                </Heading>
+            </Column>
+            <WrapGrid isTextCentered={true} isWrapped={true} isFullWidth={true}>
+                {_.map(benefits, (benefit: BenefitProps, index) => (
+                    <Column key={`benefit-${index}`} width="33%" padding="0 45px 30px">
+                        <Icon name={benefit.icon} size="medium" margin={[0, 0, 'small', 0]} />
+                        <Heading color={colors.textDarkPrimary} size="small" marginBottom="10px" isCentered={true}>
+                            {benefit.title}
+                        </Heading>
+                        <Paragraph isMuted={true} isCentered={true}>
+                            {benefit.description}
+                        </Paragraph>
+                    </Column>
+                ))}
+            </WrapGrid>
+        </Section>
+    </SiteWrap>
 );
 
 const LinkWrap = styled.div`
