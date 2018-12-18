@@ -15,10 +15,6 @@ interface InputProps {
     isErrors?: boolean;
 }
 
-interface LabelProps {
-    string: boolean;
-}
-
 interface ErrorProps {
     [key: string]: string;
 }
