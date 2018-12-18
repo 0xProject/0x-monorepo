@@ -209,7 +209,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                     <Divider />
                     <div className="pt2" style={{ lineHeight: 1.5 }}>
                         The{' '}
-                        <a href="https://blog.0x.org/canonical-weth-a9aa7d0279dd" target="_blank">
+                        <a href={constants.URL_CANONICAL_WETH_POST} target="_blank">
                             canonical WETH
                         </a>{' '}
                         contract is updated when necessary. Unwrap outdated WETH in order to  retrieve your ETH and move
