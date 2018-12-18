@@ -60,10 +60,8 @@ async function getAllMissingBlocksAsync(web3Source: Web3Source, tableName: strin
 }
 
 async function getMissingBlockNumbersAsync(tableName: string): Promise<number[]> {
-    // Note(albrow): The easiest way to get all the blocks we need is to
-    // consider all the events tables together in a single query. If this query
-    // gets too slow, we should consider re-architecting so that we can work on
-    // getting the blocks for one type of event at a time.
+    // This query returns up to `MAX_BLOCKS_PER_QUERY` distinct block numbers
+    // which are present in `tableName` but not in `raw.blocks`.
     const response = (await connection.query(
         `SELECT DISTINCT(block_number) FROM ${tableName} LEFT JOIN raw.blocks ON ${tableName}.block_number = raw.blocks.number WHERE number IS NULL LIMIT $1;`,
         [MAX_BLOCKS_PER_QUERY],
