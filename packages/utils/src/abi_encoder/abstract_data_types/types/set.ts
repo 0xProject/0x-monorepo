@@ -134,20 +134,21 @@ export abstract class AbstractSetDataType extends DataType {
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // Create blocks for members of set.
         const memberCalldataBlocks: CalldataBlock[] = [];
-        const childMap = _.cloneDeep(this._memberIndexByName);
-        _.forOwn(obj, (value: any, key: string) => {
-            if (!(key in childMap)) {
+        let duplicateObj = _.cloneDeep(obj) as {[key:string]: any};
+        _.forEach(this._memberIndexByName, (memberIndex: number, memberName: string) => {
+            if (!(memberName in obj)) {
                 throw new Error(
-                    `Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`,
+                    `Could not assign tuple to object: missing field '${memberName}' in object ${obj}`,
                 );
             }
-            const memberBlock = this._members[this._memberIndexByName[key]].generateCalldataBlock(value, block);
+            const memberValue: any = duplicateObj[memberName];
+            const memberBlock = this._members[memberIndex].generateCalldataBlock(memberValue, block);
             memberCalldataBlocks.push(memberBlock);
-            delete childMap[key];
+            delete duplicateObj[memberName];
         });
         // Sanity check that all members have been included.
-        if (Object.keys(childMap).length !== 0) {
-            throw new Error(`Could not assign tuple to object: missing keys ${Object.keys(childMap)}`);
+        if (Object.keys(duplicateObj).length !== 0) {
+            throw new Error(`Could not assign tuple to object: unrecognized keys ${Object.keys(duplicateObj)}`);
         }
         // Associate member blocks with Set block.
         block.setMembers(memberCalldataBlocks);

@@ -60,9 +60,8 @@ export class WETH9Contract extends BaseContract {
             const functionSignature = 'name()';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.name;
-            const encodedData = ethersFunction.encode([]);
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -73,7 +72,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -87,18 +87,10 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('approve(address,uint256)').inputs;
-            [guy,
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            const encodedData = abiEncoder.encode([guy,
     wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [guy,
-    wad
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [guy,
-    wad
-    ]);
-            const encodedData = self._lookupEthersInterface('approve(address,uint256)').functions.approve.encode([guy,
-    wad
-    ]);
+    ], {optimize: false});
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -121,13 +113,8 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('approve(address,uint256)').inputs;
-            [guy,
-    wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [guy,
-    wad
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('approve(address,uint256)').functions.approve.encode([guy,
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            const encodedData = abiEncoder.encode([guy,
     wad
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -146,13 +133,8 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('approve(address,uint256)').inputs;
-            [guy,
-    wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [guy,
-    wad
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('approve(address,uint256)').functions.approve.encode([guy,
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            const abiEncodedTransactionData = abiEncoder.encode([guy,
     wad
     ]);
             return abiEncodedTransactionData;
@@ -172,11 +154,8 @@ export class WETH9Contract extends BaseContract {
         ] = BaseContract._formatABIDataItemList(inputAbi, [guy,
         wad
         ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [guy,
-        wad
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.approve;
-            const encodedData = ethersFunction.encode([guy,
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([guy,
         wad
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -189,7 +168,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -206,9 +186,8 @@ export class WETH9Contract extends BaseContract {
             const functionSignature = 'totalSupply()';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.totalSupply;
-            const encodedData = ethersFunction.encode([]);
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -219,7 +198,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'totalSupply'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -234,22 +214,11 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('transferFrom(address,address,uint256)').inputs;
-            [src,
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            const encodedData = abiEncoder.encode([src,
     dst,
     wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [src,
-    dst,
-    wad
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [src,
-    dst,
-    wad
-    ]);
-            const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').functions.transferFrom.encode([src,
-    dst,
-    wad
-    ]);
+    ], {optimize: false});
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -274,15 +243,8 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('transferFrom(address,address,uint256)').inputs;
-            [src,
-    dst,
-    wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [src,
-    dst,
-    wad
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').functions.transferFrom.encode([src,
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            const encodedData = abiEncoder.encode([src,
     dst,
     wad
     ]);
@@ -303,15 +265,8 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('transferFrom(address,address,uint256)').inputs;
-            [src,
-    dst,
-    wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [src,
-    dst,
-    wad
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('transferFrom(address,address,uint256)').functions.transferFrom.encode([src,
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            const abiEncodedTransactionData = abiEncoder.encode([src,
     dst,
     wad
     ]);
@@ -335,12 +290,8 @@ export class WETH9Contract extends BaseContract {
         dst,
         wad
         ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [src,
-        dst,
-        wad
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.transferFrom;
-            const encodedData = ethersFunction.encode([src,
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([src,
         dst,
         wad
         ]);
@@ -354,7 +305,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -367,14 +319,9 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('withdraw(uint256)').inputs;
-            [wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [wad
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [wad
-    ]);
-            const encodedData = self._lookupEthersInterface('withdraw(uint256)').functions.withdraw.encode([wad
-    ]);
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            const encodedData = abiEncoder.encode([wad
+    ], {optimize: false});
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -395,11 +342,8 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('withdraw(uint256)').inputs;
-            [wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [wad
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('withdraw(uint256)').functions.withdraw.encode([wad
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            const encodedData = abiEncoder.encode([wad
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -416,11 +360,8 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('withdraw(uint256)').inputs;
-            [wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [wad
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('withdraw(uint256)').functions.withdraw.encode([wad
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            const abiEncodedTransactionData = abiEncoder.encode([wad
     ]);
             return abiEncodedTransactionData;
         },
@@ -436,10 +377,8 @@ export class WETH9Contract extends BaseContract {
             [wad
         ] = BaseContract._formatABIDataItemList(inputAbi, [wad
         ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [wad
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.withdraw;
-            const encodedData = ethersFunction.encode([wad
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([wad
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -451,7 +390,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'withdraw'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -468,9 +408,8 @@ export class WETH9Contract extends BaseContract {
             const functionSignature = 'decimals()';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.decimals;
-            const encodedData = ethersFunction.encode([]);
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -481,7 +420,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'decimals'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -501,10 +441,8 @@ export class WETH9Contract extends BaseContract {
             [index_0
         ] = BaseContract._formatABIDataItemList(inputAbi, [index_0
         ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [index_0
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.balanceOf;
-            const encodedData = ethersFunction.encode([index_0
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([index_0
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -516,7 +454,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -533,9 +472,8 @@ export class WETH9Contract extends BaseContract {
             const functionSignature = 'symbol()';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.symbol;
-            const encodedData = ethersFunction.encode([]);
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -546,7 +484,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -560,18 +499,10 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('transfer(address,uint256)').inputs;
-            [dst,
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            const encodedData = abiEncoder.encode([dst,
     wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [dst,
-    wad
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [dst,
-    wad
-    ]);
-            const encodedData = self._lookupEthersInterface('transfer(address,uint256)').functions.transfer.encode([dst,
-    wad
-    ]);
+    ], {optimize: false});
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -594,13 +525,8 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('transfer(address,uint256)').inputs;
-            [dst,
-    wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [dst,
-    wad
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('transfer(address,uint256)').functions.transfer.encode([dst,
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            const encodedData = abiEncoder.encode([dst,
     wad
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -619,13 +545,8 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('transfer(address,uint256)').inputs;
-            [dst,
-    wad
-    ] = BaseContract._formatABIDataItemList(inputAbi, [dst,
-    wad
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('transfer(address,uint256)').functions.transfer.encode([dst,
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            const abiEncodedTransactionData = abiEncoder.encode([dst,
     wad
     ]);
             return abiEncodedTransactionData;
@@ -645,11 +566,8 @@ export class WETH9Contract extends BaseContract {
         ] = BaseContract._formatABIDataItemList(inputAbi, [dst,
         wad
         ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [dst,
-        wad
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.transfer;
-            const encodedData = ethersFunction.encode([dst,
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([dst,
         wad
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -662,7 +580,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'transfer'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -674,10 +593,8 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('deposit()').inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const encodedData = self._lookupEthersInterface('deposit()').functions.deposit.encode([]);
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            const encodedData = abiEncoder.encode([], {optimize: false});
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -696,9 +613,8 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('deposit()').inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('deposit()').functions.deposit.encode([]);
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            const encodedData = abiEncoder.encode([]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -713,9 +629,8 @@ export class WETH9Contract extends BaseContract {
         getABIEncodedTransactionData(
         ): string {
             const self = this as any as WETH9Contract;
-            const inputAbi = self._lookupAbi('deposit()').inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('deposit()').functions.deposit.encode([]);
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            const abiEncodedTransactionData = abiEncoder.encode([]);
             return abiEncodedTransactionData;
         },
         async callAsync(
@@ -727,9 +642,8 @@ export class WETH9Contract extends BaseContract {
             const functionSignature = 'deposit()';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.deposit;
-            const encodedData = ethersFunction.encode([]);
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -740,7 +654,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'deposit'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -763,11 +678,8 @@ export class WETH9Contract extends BaseContract {
         ] = BaseContract._formatABIDataItemList(inputAbi, [index_0,
         index_1
         ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [index_0,
-        index_1
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.allowance;
-            const encodedData = ethersFunction.encode([index_0,
+            const abiEncoder = self._lookupAbiEncoder(functionSignature);
+            const encodedData = abiEncoder.encode([index_0,
         index_1
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -780,7 +692,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            const decodingRules = {structsAsObjects: false};
+            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
             const outputAbi = (_.find(self.abi, {name: 'allowance'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -830,7 +743,7 @@ export class WETH9Contract extends BaseContract {
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('WETH9', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method

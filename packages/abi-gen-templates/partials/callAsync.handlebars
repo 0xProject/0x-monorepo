@@ -7,9 +7,8 @@ async callAsync(
     const functionSignature = '{{this.functionSignature}}';
     const inputAbi = self._lookupAbi(functionSignature).inputs;
     [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
-    BaseContract.strictArgumentEncodingCheck(inputAbi, [{{> params inputs=inputs}}]);
-    const ethersFunction = self._lookupEthersInterface(functionSignature).functions.{{this.name}};
-    const encodedData = ethersFunction.encode([{{> params inputs=inputs}}]);
+    const abiEncoder = self._lookupAbiEncoder(functionSignature);
+    const encodedData = abiEncoder.encode([{{> params inputs=inputs}}]);
     const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
         {
             to: self.address,
@@ -20,7 +19,8 @@ async callAsync(
     );
     const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
     BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-    let resultArray = ethersFunction.decode(rawCallResult);
+    const decodingRules = {structsAsObjects: false};
+    let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
     const outputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).outputs;
     resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
     resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
