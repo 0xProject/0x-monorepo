@@ -64,7 +64,7 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/@next/team/blake.jpg',
         name: 'Blake Henderson',
-        title: 'operations associate',
+        title: 'ecosystem programs lead',
     },
     {
         imageUrl: '/images/@next/team/zack.jpg',
@@ -89,7 +89,7 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/@next/team/melo.jpg',
         name: 'Mel Oberto',
-        title: 'office ops / executive assistant',
+        title: 'people operations associate',
     },
     {
         imageUrl: '/images/@next/team/alexb.jpg',
@@ -183,20 +183,12 @@ export const NextAboutTeam = () => (
         linkLabel="Join the team"
         linkUrl={WebsitePaths.AboutJobs}
     >
-        <Section
-            maxWidth="1170px"
-            wrapWidth="100%"
-            isFlex={true}
-            flexBreakpoint="900px"
-        >
+        <Section maxWidth="1170px" wrapWidth="100%" isFlex={true} flexBreakpoint="900px">
             <Column>
                 <Heading size="medium">0x Team</Heading>
             </Column>
 
-            <Column
-                width="70%"
-                maxWidth="800px"
-            >
+            <Column width="70%" maxWidth="800px">
                 <StyledGrid>
                     {_.map(team, (info: TeamMember, index: number) => (
                         <Member key={`team-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
@@ -205,21 +197,12 @@ export const NextAboutTeam = () => (
             </Column>
         </Section>
 
-        <Section
-            bgColor="#F3F6F4"
-            maxWidth="1170px"
-            wrapWidth="100%"
-            flexBreakpoint="900px"
-            isFlex={true}
-        >
+        <Section bgColor="#F3F6F4" maxWidth="1170px" wrapWidth="100%" flexBreakpoint="900px" isFlex={true}>
             <Column>
                 <Heading size="medium">Advisors</Heading>
             </Column>
 
-            <Column
-                width="70%"
-                maxWidth="800px"
-            >
+            <Column width="70%" maxWidth="800px">
                 <StyledGrid>
                     {_.map(advisors, (info: TeamMember, index: number) => (
                         <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
@@ -239,9 +222,11 @@ const StyledGrid = styled.div`
 
 const Member = ({ name, title, imageUrl }: TeamMember) => (
     <StyledMember>
-        <img src={imageUrl} alt={name}/>
+        <img src={imageUrl} alt={name} />
         <Name>{name}</Name>
-        <MemberTitle isMuted={0.5} size={14} style={{ textTransform: 'capitalize' }}>{title}</MemberTitle>
+        <MemberTitle isMuted={0.5} size={14} style={{ textTransform: 'capitalize' }}>
+            {title}
+        </MemberTitle>
     </StyledMember>
 );
 
@@ -252,12 +237,13 @@ const StyledMember = styled.div`
     margin-right: 15px;
 
     @media (max-width: 600px) {
-        &:nth-child(2n+1) {
+        &:nth-child(2n + 1) {
             clear: left;
         }
     }
 
-    img, svg {
+    img,
+    svg {
         width: 100%;
         height: auto;
         object-fit: contain;
@@ -268,7 +254,7 @@ const StyledMember = styled.div`
         width: calc(33.3333% - 30px);
         margin-right: 20px;
 
-        &:nth-child(3n+1) {
+        &:nth-child(3n + 1) {
             clear: left;
         }
     }
@@ -276,11 +262,11 @@ const StyledMember = styled.div`
     @media (min-width: 900px) {
         width: calc(25% - 30px);
 
-        &:nth-child(3n+1) {
+        &:nth-child(3n + 1) {
             clear: none;
         }
 
-        &:nth-child(4n+1) {
+        &:nth-child(4n + 1) {
             clear: left;
         }
     }
