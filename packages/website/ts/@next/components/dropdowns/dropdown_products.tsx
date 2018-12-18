@@ -1,22 +1,22 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import {Heading, Paragraph} from 'ts/@next/components/text';
+import { Heading, Paragraph } from 'ts/@next/components/text';
 import { WebsitePaths } from 'ts/types';
 
 const navData = [
-        {
-            title: '0x Instant',
-            description: 'Simple crypto purchasing',
-            url: WebsitePaths.Instant,
-        },
-        {
-            title: '0x Launch kit',
-            description: 'Build on the 0x protocol',
-            url: WebsitePaths.LaunchKit,
-        },
+    {
+        title: '0x Instant',
+        description: 'Simple crypto purchasing',
+        url: WebsitePaths.Instant,
+    },
+    {
+        title: '0x Launch kit',
+        description: 'Build on the 0x protocol',
+        url: WebsitePaths.LaunchKit,
+    },
 ];
 
 export const DropdownProducts: React.FunctionComponent<{}> = () => (
@@ -24,25 +24,15 @@ export const DropdownProducts: React.FunctionComponent<{}> = () => (
         {_.map(navData, (item, index) => (
             <li key={`productLink-${index}`}>
                 <Link to={item.url}>
-                    <Heading
-                        asElement="h3"
-                        color="inherit"
-                        isNoMargin={true}
-                        size="small"
-                    >
+                    <Heading asElement="h3" color="inherit" isNoMargin={true} size="small">
                         {item.title}
                     </Heading>
 
-                    {item.description &&
-                        <Paragraph
-                            color="inherit"
-                            isNoMargin={true}
-                            size="small"
-                            isMuted={0.5}
-                        >
+                    {item.description && (
+                        <Paragraph color="inherit" isNoMargin={true} size="small" isMuted={0.5}>
                             {item.description}
                         </Paragraph>
-                    }
+                    )}
                 </Link>
             </li>
         ))}
