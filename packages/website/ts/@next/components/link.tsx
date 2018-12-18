@@ -1,5 +1,5 @@
+import { Link as SmartLink } from '@0x/react-shared';
 import * as React from 'react';
-import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface LinkInterface {
@@ -13,7 +13,7 @@ interface LinkInterface {
     theme?: {
         textColor: string;
     };
-    target?: string;
+    shouldOpenInNewTab?: boolean;
 }
 
 export const Link = (props: LinkInterface) => {
@@ -44,7 +44,7 @@ export const LinkWrap = styled.div`
 `;
 
 const StyledLink =
-    styled(ReactRouterLink) <
+    styled(SmartLink) <
     LinkInterface >
     `
     display: ${props => !props.isBlock && 'inline-flex'};
