@@ -54,8 +54,7 @@ export const NextAboutPress = () => (
         description={
             <>
                 <Paragraph size="medium" marginBottom="60px">
-                    Want to write about 0x? <a href="mailto:team@0xproject.com">Get in touch</a>, or{' '}
-                    <a href="#">download our press kit</a>.
+                    Want to write about 0x? <a href="mailto:team@0xproject.com">Get in touch.</a>
                 </Paragraph>
 
                 {_.map(highlights, (highlight, index) => (
