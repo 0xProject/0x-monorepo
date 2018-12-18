@@ -253,9 +253,12 @@ const SectionWrap =
     }
 `;
 
+interface SectionTitleProps {
+    isNoBorder?: boolean;
+}
 const SectionTitle =
     styled(Heading) <
-    { isNoBorder: boolean } >
+    SectionTitleProps >
     `
     position: relative;
 
