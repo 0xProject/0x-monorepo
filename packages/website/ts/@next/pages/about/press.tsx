@@ -24,27 +24,29 @@ const highlights: HighlightProps[] = [
         title: 'Forbes',
         text:
             '0x Instant is aiming to aid businesses and developers such as news sites, crypto wallets, dApps or price trackers to monetize or add a new revenue stream to their existing pipeline.',
-        href: '#',
+        href:
+            'https://www.forbes.com/sites/rebeccacampbell1/2018/12/06/0x-launches-instant-delivers-an-easy-and-flexible-way-to-buy-crypto-tokens/#bfb73a843561',
     },
     {
         logo: '/images/@next/press/logo-venturebeat.png',
         title: 'VentureBeat',
         text: '0x leads the way for ‘tokenization’ of the world, and collectible game items are next',
-        href: '#',
+        href:
+            'https://venturebeat.com/2018/09/24/0x-leads-the-way-for-tokenization-of-the-world-and-collectible-game-items-are-next/',
     },
     {
         logo: '/images/@next/press/logo-fortune.png',
         title: 'Fortune',
         text:
             'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a blockchain.',
-        href: '#',
+        href: 'http://fortune.com/2018/09/06/0x-harbor-blockchain/',
     },
     {
         logo: '/images/@next/press/logo-techcrunch.png',
         title: 'TechCrunch',
         text:
             '0x allows any developer to quickly build their own decentralized cryptocurrency exchange and decide their own fees.',
-        href: '#',
+        href: 'https://techcrunch.com/2018/07/16/0x/',
     },
 ];
 
@@ -75,7 +77,7 @@ export const Highlight: React.FunctionComponent<HighlightItemProps> = (props: Hi
 
             <Column width="60%" maxWidth="560px">
                 <Paragraph isMuted={false}>{highlight.text}</Paragraph>
-                <Button href={highlight.href} isWithArrow={true} isNoBorder={true}>
+                <Button href={highlight.href} isWithArrow={true} isNoBorder={true} target="_blank">
                     Read Article
                 </Button>
             </Column>
