@@ -7,6 +7,7 @@ import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 import { WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+import { constants } from 'ts/utils/constants';
 
 const OPEN_POSITIONS_HASH = 'positions';
 
@@ -95,7 +96,7 @@ export class NextAboutJobs extends React.Component<NextAboutJobsProps, NextAbout
                     </>
                 }
                 linkLabel="Our mission and values"
-                linkUrl="/about/mission"
+                href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
             >
                 <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px" wrapWidth="100%">
                     <Column maxWidth="442px">
