@@ -61,7 +61,7 @@ export const NextEcosystem = () => (
                 </Heading>
                 <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
                     The Ecosystem Acceleration Program gives teams access to a variety of services including funding,
-                    personalized technical support, and recruiting assistance. We created the Ecosystem Acceleration
+                    dedicated technical support, and recruiting assistance. We created the Ecosystem Acceleration
                     Program to bolster the expansion of both infrastructure projects and relayers building on 0x.
                 </Paragraph>
                 <LinkWrap>
