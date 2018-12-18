@@ -35,7 +35,7 @@ export const NextAboutMission = () => (
         title="Creating a tokenized world where all value can flow freely."
         description="0x is important infrastructure for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past."
         linkLabel="Our mission and values"
-        linkUrl={constants.URL_MISSION_AND_VALUES_BLOG_POST}
+        href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
     >
         <Section isFullWidth={true} isPadded={false}>
             <FullWidthImage>
