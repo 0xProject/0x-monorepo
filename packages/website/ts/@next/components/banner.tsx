@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import {Button} from 'ts/@next/components/button';
-import {ThemeInterface} from 'ts/@next/components/siteWrap';
-import {Paragraph} from 'ts/@next/components/text';
+import { Button } from 'ts/@next/components/button';
+import { ThemeInterface } from 'ts/@next/components/siteWrap';
+import { Paragraph } from 'ts/@next/components/text';
 
-import {Column, Section} from 'ts/@next/components/newLayout';
+import { Column, Section } from 'ts/@next/components/newLayout';
 
 interface Props {
     heading?: string;
@@ -21,6 +21,7 @@ interface CTAButton {
     text: string;
     href?: string;
     onClick?: () => void;
+    shouldOpenInNewTab?: boolean;
 }
 
 interface BorderProps {
@@ -28,44 +29,35 @@ interface BorderProps {
 }
 
 export const Banner: React.StatelessComponent<Props> = (props: Props) => {
-    const {
-        heading,
-        subline,
-        mainCta,
-        secondaryCta,
-    } = props;
+    const { heading, subline, mainCta, secondaryCta } = props;
     return (
-        <CustomSection
-            bgColor="light"
-            isFlex={true}
-            flexBreakpoint="900px"
-            paddingMobile="120px 0"
-        >
-            <Border/>
+        <CustomSection bgColor="light" isFlex={true} flexBreakpoint="900px" paddingMobile="120px 0">
+            <Border />
             <Border isBottom={true} />
 
             <Column>
                 <CustomHeading>{heading}</CustomHeading>
 
-                {subline &&
+                {subline && (
                     <Paragraph color={colors.white} isMuted={0.5} isNoMargin={true}>
                         {subline}
                     </Paragraph>
-                }
+                )}
             </Column>
             <Column>
                 <ButtonWrap>
-                    {mainCta &&
+                    {mainCta && (
                         <Button
                             color={colors.white}
                             isTransparent={false}
                             href={mainCta.href}
+                            target={mainCta.shouldOpenInNewTab ? '_blank' : ''}
                         >
                             {mainCta.text}
                         </Button>
-                    }
+                    )}
 
-                    {secondaryCta &&
+                    {secondaryCta && (
                         <Button
                             color={colors.white}
                             href={secondaryCta.href}
@@ -74,7 +66,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                         >
                             {secondaryCta.text}
                         </Button>
-                    }
+                    )}
                 </ButtonWrap>
             </Column>
         </CustomSection>
@@ -101,9 +93,7 @@ const CustomSection = styled(Section)`
 const CustomHeading = styled.h2`
     font-size: 34px;
     font-weight: 400;
-    margin-bottom: 10px
-
-    @media (max-width: 768px) {
+    margin-bottom: 10px @media (max-width: 768px) {
         font-size: 30px;
     }
 `;
@@ -118,7 +108,8 @@ const ButtonWrap = styled.div`
     }
 
     @media (max-width: 768px) {
-        a, button {
+        a,
+        button {
             display: block;
             width: 220px;
         }
@@ -132,15 +123,19 @@ const ButtonWrap = styled.div`
 // Note let's refactor this
 // is it absolutely necessary to have a stateless component
 // to pass props down into the styled icon?
-const Border = styled.div<BorderProps>`
+const Border =
+    styled.div <
+    BorderProps >
+    `
     position: absolute;
-    background-image: ${props => props.isBottom ? 'url(/images/@next/banner/bottomofcta.png);' : 'url(/images/@next/banner/topofcta.png);' };
-    background-position: ${props => props.isBottom ? 'left top' : 'left bottom' };
+    background-image: ${props =>
+        props.isBottom ? 'url(/images/@next/banner/bottomofcta.png);' : 'url(/images/@next/banner/topofcta.png);'};
+    background-position: ${props => (props.isBottom ? 'left top' : 'left bottom')};
     left: 0;
     width: calc(100% + 214px);
     height: 40px;
-    top: ${props => !props.isBottom && 0 };
-    bottom: ${props => props.isBottom && 0 };
+    top: ${props => !props.isBottom && 0};
+    bottom: ${props => props.isBottom && 0};
     transform: translate(-112px);
 
     @media (max-width: 768px) {
