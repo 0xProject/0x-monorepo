@@ -9,6 +9,7 @@ interface Props {
     maxWidthHeading?: string;
     isLargeTitle?: boolean;
     isFullWidth?: boolean;
+    isCenteredMobile?: boolean;
     description: string;
     figure?: React.ReactNode;
     actions?: React.ReactNode;
@@ -16,7 +17,7 @@ interface Props {
 
 export const Hero = (props: Props) => (
     <Section>
-        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth}>
+        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
             {props.figure &&
                 <Content width="400px">
                     {props.figure}
@@ -42,6 +43,10 @@ export const Hero = (props: Props) => (
     </Section>
 );
 
+Hero.defaultProps = {
+    isCenteredMobile: true,
+};
+
 const Section = styled.section`
     padding: 120px 0;
 
@@ -50,7 +55,7 @@ const Section = styled.section`
     }
 `;
 
-const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean }>`
+const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean; isCenteredMobile?: boolean }>`
     width: calc(100% - 60px);
     margin: 0 auto;
 
@@ -64,7 +69,7 @@ const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean }>`
     }
 
     @media (max-width: 768px) {
-        text-align: center;
+        text-align: ${props => props.isCenteredMobile ? `center` : 'left'};
     }
 `;
 
