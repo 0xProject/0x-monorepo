@@ -7,11 +7,11 @@ import { colors } from 'ts/style/colors';
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
-import {Button} from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
-import {Input, InputWidth} from 'ts/@next/components/modals/input';
-import {Heading, Paragraph} from 'ts/@next/components/text';
-import {GlobalStyle} from 'ts/@next/constants/globalStyle';
+import { Input, InputWidth } from 'ts/@next/components/modals/input';
+import { Heading, Paragraph } from 'ts/@next/components/text';
+import { GlobalStyle } from 'ts/@next/constants/globalStyle';
 
 interface Props {
     theme?: GlobalStyle;
@@ -53,8 +53,8 @@ export class ModalContact extends React.Component<Props> {
         super(props);
     }
     public render(): React.ReactNode {
-        const {isOpen, onDismiss} = this.props;
-        const {isSuccessful, errors} = this.state;
+        const { isOpen, onDismiss } = this.props;
+        const { isSuccessful, errors } = this.state;
 
         return (
             <>
@@ -65,8 +65,13 @@ export class ModalContact extends React.Component<Props> {
                 >
                     <StyledDialogContent>
                         <Form onSubmit={this._onSubmitAsync.bind(this)} isSuccessful={isSuccessful}>
-                            <Heading color={colors.textDarkPrimary} size={34} asElement="h2">Contact the 0x Core Team</Heading>
-                            <Paragraph isMuted={true} color={colors.textDarkPrimary}>If you're considering building on 0x, we're happy to answer your questions. Fill out the form so we can connect you with the right person to help you get started.</Paragraph>
+                            <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
+                                Contact the 0x Core Team
+                            </Heading>
+                            <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                                If you're considering building on 0x, we're happy to answer your questions. Fill out the
+                                form so we can connect you with the right person to help you get started.
+                            </Paragraph>
                             <InputRow>
                                 <Input
                                     name="name"
@@ -129,9 +134,14 @@ export class ModalContact extends React.Component<Props> {
                             </ButtonRow>
                         </Form>
                         <Confirmation isSuccessful={isSuccessful}>
-                            <Icon name="rocketship" size="large" margin={[0, 0, 'default', 0]}  />
-                            <Heading color={colors.textDarkPrimary} size={34} asElement="h2">Thanks for contacting us.</Heading>
-                            <Paragraph isMuted={true} color={colors.textDarkPrimary}>We'll get back to you soon. If you need quick support in the meantime, reach out to the 0x team on Discord.</Paragraph>
+                            <Icon name="rocketship" size="large" margin={[0, 0, 'default', 0]} />
+                            <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
+                                Thanks for contacting us.
+                            </Heading>
+                            <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                                We'll get back to you soon. If you need quick support in the meantime, reach out to the
+                                0x team on Discord.
+                            </Paragraph>
                             <Button onClick={this.props.onDismiss}>Done</Button>
                         </Confirmation>
                     </StyledDialogContent>
@@ -151,7 +161,7 @@ export class ModalContact extends React.Component<Props> {
         this.setState({ ...this.state, errors: [], isSubmitting: true });
 
         try {
-            const response = await fetch('https://website-api.0x.org/leads', {
+            const response = await fetch('https://website-api.0xproject.com/leads', {
                 method: 'post',
                 mode: 'cors',
                 credentials: 'same-origin',
@@ -174,15 +184,18 @@ export class ModalContact extends React.Component<Props> {
             // Empty block
         }
     }
-    private _parseErrors(errors: ErrorResponseProps[]): ErrorProps  {
-        return _
-            .reduce(errors, (hash: ErrorProps, error: ErrorResponseProps) => {
+    private _parseErrors(errors: ErrorResponseProps[]): ErrorProps {
+        return _.reduce(
+            errors,
+            (hash: ErrorProps, error: ErrorResponseProps) => {
                 const { param, msg } = error;
                 const key = param;
                 hash[key] = msg;
 
                 return hash;
-            }, {});
+            },
+            {},
+        );
     }
 }
 // Handle errors: {"errors":[{"location":"body","param":"name","msg":"Invalid value"},{"location":"body","param":"email","msg":"Invalid value"}]}
@@ -217,7 +230,7 @@ const ButtonRow = styled(InputRow)`
 const StyledDialogContent = styled(DialogContent)`
     position: relative;
     max-width: 800px;
-    background-color: #F6F6F6 !important;
+    background-color: #f6f6f6 !important;
     padding: 60px 60px !important;
 
     @media (max-width: 768px) {
@@ -227,7 +240,10 @@ const StyledDialogContent = styled(DialogContent)`
     }
 `;
 
-const Form = styled.form<FormProps>`
+const Form =
+    styled.form <
+    FormProps >
+    `
     position: relative;
     transition: opacity 0.30s ease-in-out, visibility 0.30s ease-in-out;
 
@@ -235,7 +251,10 @@ const Form = styled.form<FormProps>`
     visibility: ${props => props.isSuccessful && `hidden`};
 `;
 
-const Confirmation = styled.div<FormProps>`
+const Confirmation =
+    styled.div <
+    FormProps >
+    `
     position: absolute;
     top: 50%;
     text-align: center;
@@ -245,8 +264,8 @@ const Confirmation = styled.div<FormProps>`
     transition-delay: 0.40s;
     padding: 60px 60px;
     transform: translateY(-50%);
-    opacity: ${props => props.isSuccessful ? `1` : `0`};
-    visibility: ${props => props.isSuccessful ? 'visible' : `hidden`};
+    opacity: ${props => (props.isSuccessful ? `1` : `0`)};
+    visibility: ${props => (props.isSuccessful ? 'visible' : `hidden`)};
 
     p {
         max-width: 492px;
