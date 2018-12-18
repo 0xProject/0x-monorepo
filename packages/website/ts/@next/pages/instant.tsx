@@ -204,6 +204,12 @@ const MarqueeWrap = styled.div`
     height: 514px;
     padding-bottom: 60px;
 
+    @media (max-width: 768px) {
+        width: calc(100% + 60px);
+        margin-left: -30px;
+        overflow: hidden;
+    }
+
     > div {
         height: auto;
         display: flex;
