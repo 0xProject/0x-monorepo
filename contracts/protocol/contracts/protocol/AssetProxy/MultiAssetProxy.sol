@@ -181,11 +181,11 @@ contract MultiAssetProxy is
                     let amountsElement := calldataload(add(amountsContentsStart, i))
                     let totalAmount := mul(amountsElement, amount)
 
-                    // Revert if multiplication resulted in an overflow
-                    if and(
-                        gt(amount, 0),
-                        iszero(eq(div(totalAmount, amount), amountsElement))
-                    ) {
+                    // Revert if `amount` != 0 and multiplication resulted in an overflow 
+                    if iszero(or(
+                        iszero(amount),
+                        eq(div(totalAmount, amount), amountsElement)
+                    )) {
                         // Revert with `Error("UINT256_OVERFLOW")`
                         mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                         mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
