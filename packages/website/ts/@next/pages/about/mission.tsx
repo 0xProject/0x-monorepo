@@ -7,21 +7,25 @@ import { Definition } from 'ts/@next/components/definition';
 import { Image } from 'ts/@next/components/image';
 import { Column, Section } from 'ts/@next/components/newLayout';
 import { Heading } from 'ts/@next/components/text';
+import { constants } from 'ts/utils/constants';
 
 const values = [
     {
         title: 'Do The Right Thing',
-        description: 'We acknowledge the broad subjectivity behind doing “the right thing,” and are committed to rigorously exploring its nuance in our decision making. We believe this responsibility drives our decision making above all else, and pledge to act in the best interest of our peers, community, and society as a whole.',
+        description:
+            'We acknowledge the broad subjectivity behind doing “the right thing,” and are committed to rigorously exploring its nuance in our decision making. We believe this responsibility drives our decision making above all else, and pledge to act in the best interest of our peers, community, and society as a whole.',
         icon: 'right-thing',
     },
     {
         title: 'Consistently Ship',
-        description: 'Achieving our mission requires dedication and diligence. We aspire to be an organization that consistently ships. We set high-impact goals that are rooted in data and pride ourselves in consistently outputting outstanding results across the organization.',
+        description:
+            'Achieving our mission requires dedication and diligence. We aspire to be an organization that consistently ships. We set high-impact goals that are rooted in data and pride ourselves in consistently outputting outstanding results across the organization.',
         icon: 'consistently-ship',
     },
     {
         title: 'Focus on Long-term Impact',
-        description: 'We anticipate that over time, awareness of the fundamentally disruptive nature of frictionless global exchange will cause some to see this technology as a threat. There will be setbacks, some will claim that this technology is too disruptive, and we will face adversity. Persistence and a healthy long-term focus will see us through these battles.',
+        description:
+            'We anticipate that over time, awareness of the fundamentally disruptive nature of frictionless global exchange will cause some to see this technology as a threat. There will be setbacks, some will claim that this technology is too disruptive, and we will face adversity. Persistence and a healthy long-term focus will see us through these battles.',
         icon: 'long-term-impact',
     },
 ];
@@ -31,15 +35,11 @@ export const NextAboutMission = () => (
         title="Creating a tokenized world where all value can flow freely."
         description="0x is important infrastructure for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past."
         linkLabel="Our mission and values"
-        linkUrl="#"
+        linkUrl={constants.URL_MISSION_AND_VALUES_BLOG_POST}
     >
         <Section isFullWidth={true} isPadded={false}>
             <FullWidthImage>
-                <Image
-                    src="/images/@next/about/about-office.png"
-                    alt="0x Offices"
-                    isCentered={true}
-                />
+                <Image src="/images/@next/about/about-office.png" alt="0x Offices" isCentered={true} />
             </FullWidthImage>
         </Section>
 
