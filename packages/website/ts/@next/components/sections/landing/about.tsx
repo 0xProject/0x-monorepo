@@ -38,9 +38,9 @@ export const SectionLandingAbout = () => (
         />
 
         <FlexWrap as="dl">
-            <Figure value="166,976" description="Total Transactions" />
+            <Figure value="353k" description="Total Transactions" />
 
-            <Figure value="$216M" description="Total Volume" />
+            <Figure value="$447M" description="Total Volume" />
 
             <Figure value="30+" description="Total Projects" />
         </FlexWrap>
