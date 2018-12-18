@@ -91,7 +91,7 @@ class Form extends React.Component<FormProps> {
         }
 
         try {
-            const response = await fetch('https://website-api.0x.org/newsletter_subscriber/substack', {
+            await fetch('https://website-api.0x.org/newsletter_subscriber/substack', {
                 method: 'post',
                 mode: 'cors',
                 headers: {
