@@ -192,6 +192,7 @@ render(
                                     component={LazySolCompilerDocumentation}
                                 />
                                 <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
+                                <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>
