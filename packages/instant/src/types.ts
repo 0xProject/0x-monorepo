@@ -26,6 +26,11 @@ export enum QuoteFetchOrigin {
     Heartbeat = 'Heartbeat',
 }
 
+export enum BaseCurrency {
+    USD = 'USD',
+    ETH = 'ETH',
+}
+
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
@@ -102,6 +107,7 @@ export interface AffiliateInfo {
 
 export interface ProviderState {
     name: string;
+    displayName: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;

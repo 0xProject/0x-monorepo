@@ -15,6 +15,21 @@ export function bigNumbertoStringOrNull(n: BigNumber): string | null {
 }
 
 /**
+ * If value is null or undefined, returns null. Otherwise converts value to a
+ * BigNumber.
+ * @param value A string or number to be converted to a BigNumber
+ */
+export function toBigNumberOrNull(value: string | number | null): BigNumber | null {
+    switch (value) {
+        case null:
+        case undefined:
+            return null;
+        default:
+            return new BigNumber(value);
+    }
+}
+
+/**
  * Logs an error by intelligently checking for `message` and `stack` properties.
  * Intended for use with top-level immediately invoked asynchronous functions.
  * @param e the error to log.

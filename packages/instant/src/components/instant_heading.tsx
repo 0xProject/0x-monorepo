@@ -61,12 +61,19 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private _renderAmountsSection(): React.ReactNode {
-        return (
-            <Container>
-                <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
-                <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
-            </Container>
-        );
+        if (
+            _.isUndefined(this.props.totalEthBaseUnitAmount) &&
+            this.props.quoteRequestState !== AsyncProcessState.Pending
+        ) {
+            return null;
+        } else {
+            return (
+                <Container>
+                    <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
+                    <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
+                </Container>
+            );
+        }
     }
 
     private _renderIcon(): React.ReactNode {
@@ -106,20 +113,23 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private readonly _renderEthAmount = (): React.ReactNode => {
+        const ethAmount = format.ethBaseUnitAmount(
+            this.props.totalEthBaseUnitAmount,
+            4,
+            <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
+        );
+
+        const fontSize = _.isString(ethAmount) && ethAmount.length >= 13 ? '14px' : '16px';
         return (
             <Text
-                fontSize="16px"
+                fontSize={fontSize}
                 textAlign="right"
                 width="100%"
                 fontColor={ColorOption.white}
                 fontWeight={500}
                 noWrap={true}
             >
-                {format.ethBaseUnitAmount(
-                    this.props.totalEthBaseUnitAmount,
-                    4,
-                    <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
-                )}
+                {ethAmount}
             </Text>
         );
     };

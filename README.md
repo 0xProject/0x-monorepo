@@ -24,9 +24,10 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 
 ### Python Packages
 
-| Package                                             | Version                                                                                               | Description                                                                  |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [`0x-order-utils.py`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders |
+| Package                                          | Version                                                                                               | Description                                                                                       |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`0x-order-utils`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders                      |
+| [`0x-sra-client`](/python-packages/sra_client)   | [![PyPI](https://img.shields.io/pypi/v/0x-sra-client.svg)](https://pypi.org/project/0x-sra-client/)   | A Python client for interacting with servers conforming to the Standard Relayer API specification |
 
 ### Typescript/Javascript Packages
 
@@ -76,11 +77,12 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 
 #### Private Packages
 
-| Package                                            | Description                                                      |
-| -------------------------------------------------- | ---------------------------------------------------------------- |
-| [`@0x/contracts`](/contracts/core)                 | 0x protocol solidity smart contracts & tests                     |
-| [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
-| [`@0x/website`](/packages/website)                 | 0x website                                                       |
+| Package                                            | Description                                                                      |
+| -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`@0x/contracts`](/contracts/core)                 | 0x protocol solidity smart contracts & tests                                     |
+| [`@0x/instant`](/packages/instant)                 | A free and flexible way to offer simple crypto purchasing in any app or website. |
+| [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether                 |
+| [`@0x/website`](/packages/website)                 | 0x website                                                                       |
 
 ## Usage
 

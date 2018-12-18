@@ -16,12 +16,12 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getMetamaskTrustedTokens();
-    await getZeroExTrustedTokens();
+    await getMetamaskTrustedTokensAsync();
+    await getZeroExTrustedTokensAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getMetamaskTrustedTokens(): Promise<void> {
+async function getMetamaskTrustedTokensAsync(): Promise<void> {
     // tslint:disable-next-line:no-console
     console.log('Getting latest metamask trusted tokens list ...');
     const trustedTokensRepository = connection.getRepository(TokenMetadata);
@@ -37,7 +37,7 @@ async function getMetamaskTrustedTokens(): Promise<void> {
     console.log('Done saving metamask trusted tokens.');
 }
 
-async function getZeroExTrustedTokens(): Promise<void> {
+async function getZeroExTrustedTokensAsync(): Promise<void> {
     // tslint:disable-next-line:no-console
     console.log('Getting latest 0x trusted tokens list ...');
     const trustedTokensRepository = connection.getRepository(TokenMetadata);

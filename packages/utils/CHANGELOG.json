@@ -1,13 +1,22 @@
 [
     {
-        "timestamp": 1543448882,
+        "version": "2.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
         "version": "2.0.7",
         "changes": [
             {
                 "note":
                     "Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development."
             }
-        ]
+        ],
+        "timestamp": 1544570656
     },
     {
         "timestamp": 1542821676,

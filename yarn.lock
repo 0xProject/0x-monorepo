@@ -51,14 +51,14 @@
     read-package-tree "^5.1.6"
     semver "^5.5.0"
 
-"@0x-lerna-fork/changed@^3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.0.0-beta.25.tgz#68fec3a4bf2b0808561db2d13d0b117659fb3242"
+"@0x-lerna-fork/changed@^3.0.0-beta.26":
+  version "3.0.0-beta.26"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.0.0-beta.26.tgz#23559565bea7811baf24566b8cb6c160044f79ae"
   dependencies:
     "@0x-lerna-fork/collect-updates" "^3.0.0-beta.22"
     "@0x-lerna-fork/command" "^3.0.0-beta.22"
     "@0x-lerna-fork/output" "^3.0.0-beta.22"
-    "@0x-lerna-fork/publish" "^3.0.0-beta.25"
+    "@0x-lerna-fork/publish" "^3.0.0-beta.26"
     chalk "^2.3.1"
 
 "@0x-lerna-fork/child-process@^3.0.0-beta.22":
@@ -81,13 +81,13 @@
     p-map-series "^1.0.0"
     p-waterfall "^1.0.0"
 
-"@0x-lerna-fork/cli@^3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/cli/-/cli-3.0.0-beta.25.tgz#1becdaf2cf2cbbbda7e2fcc96c3058398d7ed802"
+"@0x-lerna-fork/cli@^3.0.0-beta.26":
+  version "3.0.0-beta.26"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/cli/-/cli-3.0.0-beta.26.tgz#26c2e11481129e77f44275e1c56f9a7f06f9ae70"
   dependencies:
     "@0x-lerna-fork/add" "^3.0.0-beta.22"
     "@0x-lerna-fork/bootstrap" "^3.0.0-beta.22"
-    "@0x-lerna-fork/changed" "^3.0.0-beta.25"
+    "@0x-lerna-fork/changed" "^3.0.0-beta.26"
     "@0x-lerna-fork/clean" "^3.0.0-beta.22"
     "@0x-lerna-fork/create" "^3.0.0-beta.22"
     "@0x-lerna-fork/diff" "^3.0.0-beta.22"
@@ -97,7 +97,7 @@
     "@0x-lerna-fork/init" "^3.0.0-beta.22"
     "@0x-lerna-fork/link" "^3.0.0-beta.22"
     "@0x-lerna-fork/list" "^3.0.0-beta.22"
-    "@0x-lerna-fork/publish" "^3.0.0-beta.25"
+    "@0x-lerna-fork/publish" "^3.0.0-beta.26"
     "@0x-lerna-fork/run" "^3.0.0-beta.22"
     dedent "^0.7.0"
     is-ci "^1.0.10"
@@ -250,11 +250,11 @@
     p-map "^1.2.0"
     write-json-file "^2.3.0"
 
-"@0x-lerna-fork/lerna@3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.0.0-beta.25.tgz#0b5b85b4af3741863937f85ef130500e23325593"
+"@0x-lerna-fork/lerna@3.0.0-beta.26":
+  version "3.0.0-beta.26"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.0.0-beta.26.tgz#d54e506b6e16a83279c6350470ecced2d8acf092"
   dependencies:
-    "@0x-lerna-fork/cli" "^3.0.0-beta.25"
+    "@0x-lerna-fork/cli" "^3.0.0-beta.26"
     import-local "^1.0.0"
     npmlog "^4.1.2"
 
@@ -363,9 +363,9 @@
     inquirer "^5.1.0"
     npmlog "^4.1.2"
 
-"@0x-lerna-fork/publish@^3.0.0-beta.25":
-  version "3.0.0-beta.25"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.0.0-beta.25.tgz#edcb6d68b441b8456ceafb3073509da20fa2af0c"
+"@0x-lerna-fork/publish@^3.0.0-beta.26":
+  version "3.0.0-beta.26"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.0.0-beta.26.tgz#d1e36cf325b3a40e3c9dc0d02ac93a1c17ce50fb"
   dependencies:
     "@0x-lerna-fork/batch-packages" "^3.0.0-beta.22"
     "@0x-lerna-fork/child-process" "^3.0.0-beta.22"
@@ -3311,6 +3311,10 @@ boom@5.x.x:
   resolved "https://registry.yarnpkg.com/boom/-/boom-5.2.0.tgz#5dd9da6ee3a5f302077436290cb717d3f4a54e02"
   dependencies:
     hoek "4.x.x"
+
+bottleneck@^2.13.2:
+  version "2.13.2"
+  resolved "https://registry.yarnpkg.com/bottleneck/-/bottleneck-2.13.2.tgz#f3f28f0ddf82cdd3e44072aee3104a42adcca352"
 
 bowser@^1.7.3, bowser@^1.9.3:
   version "1.9.3"
@@ -14445,9 +14449,9 @@ solc@^0.4.24:
     semver "^5.3.0"
     yargs "^4.7.1"
 
-solhint@^1.2.1:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/solhint/-/solhint-1.4.0.tgz#59018cfc86e2fc268c8b520322ab1e0db1fdb94b"
+solhint@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/solhint/-/solhint-1.4.1.tgz#921ef9fed83dc945853079865140730d4d2140b2"
   dependencies:
     antlr4 "4.7.1"
     commander "2.18.0"

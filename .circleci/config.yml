@@ -18,6 +18,7 @@ jobs:
                   name: yarn
                   command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
             - run: yarn build:ci:no_website
+            - run: yarn build:ts
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -43,7 +44,9 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-multisig
             - run: yarn wsrun test:circleci @0x/contracts-utils
             - run: yarn wsrun test:circleci @0x/contracts-libs
-            - run: yarn wsrun test:circleci @0x/contracts-core
+            - run: yarn wsrun test:circleci @0x/contracts-tokens
+            - run: yarn wsrun test:circleci @0x/contracts-extensions
+            - run: yarn wsrun test:circleci @0x/contracts-protocol
     test-contracts-geth:
         docker:
             - image: circleci/node:9
@@ -58,7 +61,9 @@ jobs:
             - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test @0x/contracts-multisig
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-utils
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-core
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-tokens
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-extensions
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-protocol
     test-publish:
         resource_class: medium+
         docker:
@@ -186,6 +191,9 @@ jobs:
             - image: 0xorg/ganache-cli
               command: |
                   ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db /snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m "concert load couple harbor equip island argue ramp clarify fence smart topic"
+            - image: 0xorg/launch-kit-ci
+              command: |
+                  yarn start:ts -p 3000:3000
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -197,6 +205,11 @@ jobs:
                       cd python-packages/order_utils
                       python -m ensurepip
                       python -m pip install -e .[dev]
+            - run:
+                  command: |
+                      cd python-packages/sra_client
+                      python -m ensurepip
+                      python -m pip install -e .
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -210,10 +223,18 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       coverage run setup.py test
+            - run:
+                  command: |
+                      cd python-packages/sra_client
+                      coverage run setup.py test
             - save_cache:
                   key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/order_utils/.coverage
+            - save_cache:
+                  key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/sra_client/.coverage
     test-rest-python:
         working_directory: ~/repo
         docker:

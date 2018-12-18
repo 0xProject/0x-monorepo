@@ -1,11 +1,21 @@
 [
     {
+        "version": "3.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
         "version": "3.0.3",
         "changes": [
             {
                 "note": "Update SRA order provider to include Dai"
             }
-        ]
+        ],
+        "timestamp": 1544570656
     },
     {
         "timestamp": 1543401373,

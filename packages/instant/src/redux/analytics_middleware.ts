@@ -99,6 +99,9 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 analytics.trackInstallWalletModalClosed();
             }
             break;
+        case ActionTypes.UPDATE_BASE_CURRENCY:
+            analytics.trackBaseCurrencyChanged(curState.baseCurrency);
+            analytics.addEventProperties({ baseCurrency: curState.baseCurrency });
     }
 
     return nextAction;

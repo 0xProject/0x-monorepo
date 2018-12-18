@@ -7,7 +7,6 @@ import * as R from 'ramda';
 import { BLOXY_DEX_TRADES_URL, BloxyTrade } from '../../../src/data_sources/bloxy';
 import { DexTrade } from '../../../src/entities';
 import { _parseBloxyTrade } from '../../../src/parsers/bloxy';
-import { _convertToExchangeFillEvent } from '../../../src/parsers/events';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();

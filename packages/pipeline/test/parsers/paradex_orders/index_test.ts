@@ -42,10 +42,10 @@ describe('paradex_orders', () => {
             expected.price = new BigNumber(0.1245);
             expected.baseAssetSymbol = 'DEF';
             expected.baseAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
-            expected.baseVolume = new BigNumber(412 * 0.1245);
+            expected.baseVolume = new BigNumber(412);
             expected.quoteAssetSymbol = 'ABC';
             expected.quoteAssetAddress = '0x0000000000000000000000000000000000000000';
-            expected.quoteVolume = new BigNumber(412);
+            expected.quoteVolume = new BigNumber(412 * 0.1245);
 
             const actual = parseParadexOrder(paradexMarket, observedTimestamp, orderType, source, paradexOrder);
             expect(actual).deep.equal(expected);
