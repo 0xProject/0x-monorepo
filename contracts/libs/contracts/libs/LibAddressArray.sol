@@ -45,11 +45,20 @@ library LibAddressArray {
             addressArrayEndPtr := add(addressArray, addressArrayMemSizeInBytes)
         }
 
+        // Cases for `freeMemPtr`:
+        //  `freeMemPtr` == `addressArrayEndPtr`: Nothing occupies memory after `addressArray`
+        //  `freeMemPtr` > `addressArrayEndPtr`: Some value occupies memory after `addressArray`
+        //  `freeMemPtr` < `addressArrayEndPtr`: Memory has not been managed properly.
+        require(
+            freeMemPtr >= addressArrayEndPtr,
+            "INVALID_FREE_MEMORY_PTR"
+        );
+
         // If free memory begins at the end of `addressArray`
         // then we can append `addressToAppend` directly.
         // Otherwise, we must copy the array to free memory
         // before appending new values to it.
-        if (freeMemPtr != addressArrayEndPtr) {
+        if (freeMemPtr > addressArrayEndPtr) {
             LibBytes.memCopy(freeMemPtr, addressArrayBeginPtr, addressArrayMemSizeInBytes);
             assembly {
                 addressArray := freeMemPtr

@@ -70,9 +70,10 @@ contract MixinBalanceThresholdFilterCore is
         IThresholdAsset thresholdAsset = THRESHOLD_ASSET;
         for (uint256 i = 0; i < addressesToValidate.length; ++i) {
             uint256 addressBalance = thresholdAsset.balanceOf(addressesToValidate[i]);
-            if (addressBalance < balanceThreshold) {
-                revert("AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD");
-            }
+            require(
+                addressBalance >= balanceThreshold,
+                "AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD"
+            );
         }
         emit ValidatedAddresses(addressesToValidate);
         
