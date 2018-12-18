@@ -176,6 +176,7 @@ const StyledNavLink = styled(Link).attrs({
 
 const StyledAnchor = styled.a`
     ${linkStyles};
+    cursor: default;
 `;
 
 const HeaderWrap = styled(FlexWrap)`

@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import {Hero} from 'ts/@next/components/hero';
+import { colors } from 'ts/style/colors';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
 import { Definition } from 'ts/@next/components/definition';
+import { Hero } from 'ts/@next/components/hero';
 import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 
@@ -25,8 +26,8 @@ const offersData = [
         title: 'Market Making Compensation',
         description: (
             <ul>
-                <li>Receive an infrastructure grant of $20,000+ for completing onboarding</li>
-                <li>Earn an additional $5,000 by referring other market makers to the Program</li>
+                <li>Receive an infrastructure grant of $20,000+ for completing onboarding*</li>
+                <li>Earn an additional $5,000 by referring other market makers to the Program*</li>
             </ul>
         ),
     },
@@ -43,17 +44,20 @@ export class NextMarketMaker extends React.Component {
     };
     public render(): React.ReactNode {
         return (
-            <SiteWrap theme="dark">
+            <SiteWrap theme="light">
                 <Hero
+                    maxWidth="865px"
+                    maxWidthHeading="715px"
                     isLargeTitle={false}
                     isFullWidth={false}
+                    isCenteredMobile={false}
                     title="Bring liquidity to the exchanges of the future"
                     description="Market makers (MMs) are important stakeholders in the 0x ecosystem. The Market Making Program provides a set of resources that help onboard MMs bring liquidity to the 0x network. The program includes tutorials, a robust data platform, trade compensation, and 1:1 support from our MM Success Manager."
                     actions={<HeroActions/>}
                 />
 
                 <Section
-                    bgColor="dark"
+                    bgColor="light"
                     isFlex={true}
                     maxWidth="1170px"
                 >
@@ -79,7 +83,7 @@ export class NextMarketMaker extends React.Component {
                         title="Low Cost"
                         titleSize="small"
                         description="Pay no fees on orders except for bulk cancellations"
-                        icon="secureTrading"
+                        icon="low-cost"
                         iconSize="medium"
                         isInline={true}
                     />
@@ -94,6 +98,7 @@ export class NextMarketMaker extends React.Component {
                         description={item.description}
                         isInlineIcon={true}
                         iconSize={240}
+                        fontSize="medium"
                     />
                 ))}
                 </Section>
@@ -120,7 +125,7 @@ export class NextMarketMaker extends React.Component {
 
 const HeroActions = () => (
     <>
-        <Button href="https://github.com/0xProject/0x-launch-kit" isInline={true}>
+        <Button href="https://github.com/0xProject/0x-launch-kit" bgColor="dark" isInline={true}>
             Get Started
         </Button>
     </>

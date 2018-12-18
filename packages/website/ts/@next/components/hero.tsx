@@ -5,8 +5,11 @@ import {addFadeInAnimation} from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
+    maxWidth?: string;
+    maxWidthHeading?: string;
     isLargeTitle?: boolean;
     isFullWidth?: boolean;
+    isCenteredMobile?: boolean;
     description: string;
     figure?: React.ReactNode;
     actions?: React.ReactNode;
@@ -14,15 +17,15 @@ interface Props {
 
 export const Hero = (props: Props) => (
     <Section>
-        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth}>
+        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
             {props.figure &&
                 <Content width="400px">
                     {props.figure}
                 </Content>
             }
 
-            <Content width={props.figure ? '546px' : '678px'}>
-                <Title isLarge={props.isLargeTitle}>
+            <Content width={props.maxWidth ? props.maxWidth : (props.figure ? '546px' : '678px')}>
+                <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
                     {props.title}
                 </Title>
 
@@ -40,6 +43,10 @@ export const Hero = (props: Props) => (
     </Section>
 );
 
+Hero.defaultProps = {
+    isCenteredMobile: true,
+};
+
 const Section = styled.section`
     padding: 120px 0;
 
@@ -48,7 +55,7 @@ const Section = styled.section`
     }
 `;
 
-const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean }>`
+const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean; isCenteredMobile?: boolean }>`
     width: calc(100% - 60px);
     margin: 0 auto;
 
@@ -62,15 +69,18 @@ const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean }>`
     }
 
     @media (max-width: 768px) {
-        text-align: center;
+        text-align: ${props => props.isCenteredMobile ? `center` : 'left'};
     }
 `;
 
-const Title = styled.h1<{ isLarge?: any }>`
+const Title = styled.h1<{ isLarge?: any; maxWidth?: string }>`
     font-size: ${props => props.isLarge ? '80px' : '50px'};
     font-weight: 300;
     line-height: 1.1;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 30px;
+    max-width: ${props => props.maxWidth};
     ${addFadeInAnimation('0.5s')}
 
     @media (max-width: 1024px) {
@@ -85,9 +95,10 @@ const Title = styled.h1<{ isLarge?: any }>`
 const Description = styled.p`
     font-size: 22px;
     line-height: 31px;
+    font-weight: 300;
     padding: 0;
     margin-bottom: 50px;
-    color: rgba(255, 255, 255, 0.75);
+    color: ${props => props.theme.introTextColor};
     ${addFadeInAnimation('0.5s', '0.15s')}
 
     @media (max-width: 1024px) {
@@ -116,5 +127,20 @@ const ButtonWrap = styled.div`
     }
     > *:nth-child(2) {
         ${addFadeInAnimation('0.6s', '0.4s')}
+    }
+
+    @media (max-width: 500px) {
+        flex-direction: column;
+        justify-content: center;
+
+        * {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        * + * {
+            margin-left: 0;
+            margin-top: 12px;
+        }
     }
 `;

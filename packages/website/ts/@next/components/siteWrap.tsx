@@ -24,6 +24,7 @@ export interface ThemeValuesInterface {
     bgColor: string;
     darkBgColor?: string;
     lightBgColor: string;
+    introTextColor: string;
     textColor: string;
     paragraphColor: string;
     linkColor: string;
@@ -48,6 +49,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         bgColor: '#000000',
         darkBgColor: '#111A19',
         lightBgColor: '#003831',
+        introTextColor: 'rgba(255, 255, 255, 0.75)',
         textColor: '#FFFFFF',
         paragraphColor: '#FFFFFF',
         linkColor: colors.brandLight,
@@ -63,7 +65,9 @@ const GLOBAL_THEMES: ThemeInterface = {
     },
     light: {
         bgColor: '#FFFFFF',
-        lightBgColor: '#003831',
+        lightBgColor: '#F3F6F4',
+        darkBgColor: '#003831',
+        introTextColor: 'rgba(92, 92, 92, 0.87)',
         textColor: '#000000',
         paragraphColor: '#474747',
         linkColor: colors.brandDark,
@@ -81,6 +85,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     gray: {
         bgColor: '#e0e0e0',
         lightBgColor: '#003831',
+        introTextColor: 'rgba(92, 92, 92, 0.87)',
         textColor: '#000000',
         paragraphColor: '#777777',
         linkColor: colors.brandDark,
