@@ -1,28 +1,23 @@
 import * as React from 'react';
 
-import {BlockIconLink} from 'ts/@next/components/blockIconLink';
-import {Section} from 'ts/@next/components/newLayout';
+import { BlockIconLink } from 'ts/@next/components/blockIconLink';
+import { Section } from 'ts/@next/components/newLayout';
 
-import {AnimatedChatIcon} from 'ts/@next/components/animatedChatIcon';
-import {AnimatedCompassIcon} from 'ts/@next/components/animatedCompassIcon';
+import { AnimatedChatIcon } from 'ts/@next/components/animatedChatIcon';
+import { AnimatedCompassIcon } from 'ts/@next/components/animatedCompassIcon';
+import { WebsitePaths } from 'ts/types';
 
 interface Props {
     onContactClick?: () => void;
 }
 
 export const SectionLandingCta = (props: Props) => (
-    <Section
-        isPadded={false}
-        isFlex={true}
-        maxWidth="auto"
-        wrapWidth="100%"
-        flexBreakpoint="900px"
-    >
+    <Section isPadded={false} isFlex={true} maxWidth="auto" wrapWidth="100%" flexBreakpoint="900px">
         <BlockIconLink
             iconComponent={<AnimatedCompassIcon />}
             title="Ready to build on 0x?"
             linkLabel="Get Started"
-            linkUrl="https://0x.org/docs"
+            linkUrl={WebsitePaths.Docs}
         />
         <BlockIconLink
             iconComponent={<AnimatedChatIcon />}
