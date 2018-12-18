@@ -79,7 +79,20 @@ If using the Atom text editor, we recommend you install the following packages:
 *   VSCode: [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 *   Atom: [prettier-atom](https://atom.io/packages/prettier-atom)
 
-## Fix `submit-coverage` CI failure
+## Unenforced coding conventions
+
+A few of our coding conventions are not yet enforced by the linter/auto-formatter. Be careful to follow these conventions in your PR's.
+
+1.  Unused anonymous function parameters should be named with an underscore + number (e.g \_1, \_2, etc...)
+1.  There should be a new-line between methods in a class and between test cases.
+1.  If a string literal has the same value in two or more places, it should be a single constant referenced in both places.
+1.  Do not import from a project's `index.ts` (e.g import { Token } from '../src';). Always import from the source file itself.
+1.  Generic error variables should be named `err` instead of `e` or `error`.
+1.  If you _must_ cast a variable to any - try to type it back as fast as possible. (e.g., `const cw = ((zeroEx as any)._contractWrappers as ContractWrappers);`). This ensures subsequent code is type-safe.
+1.  Our enum conventions coincide with the recommended Typescript conventions, using capitalized keys, and all-caps snake-case values. Eg `GetStats = 'GET_STATS'`
+1.  All public, exported methods/functions/classes must have associated Javadoc-style comments.
+
+### Fix `submit-coverage` CI failure
 
 If you simply fork the repo and then create a PR from it, your PR will fail the `submit-coverage` check on CI. This is because the 0x CircleCI configuration sets the `COVERALLS_REPO_TOKEN` environment variable to the token for `0xProject/0x-monorepo`, but when running the check against your fork the token needs to match your repo's name `your-username/0x-monorepo`.
 
