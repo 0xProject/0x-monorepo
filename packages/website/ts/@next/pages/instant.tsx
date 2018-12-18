@@ -39,7 +39,7 @@ const featuresData = [
             {
                 label: 'Get Started',
                 onClick: getStartedClick,
-                useAnchorTag: true,
+                shouldUseAnchorTag: true,
             },
             {
                 label: 'Explore the Docs',

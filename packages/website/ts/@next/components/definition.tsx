@@ -9,7 +9,7 @@ interface Action {
     label: string;
     url?: string;
     onClick?: () => void;
-    useAnchorTag?: boolean;
+    shouldUseAnchorTag?: boolean;
 }
 
 interface Props {
@@ -57,7 +57,7 @@ export const Definition = (props: Props) => (
                             onClick={item.onClick}
                             isWithArrow={true}
                             isAccentColor={true}
-                            useAnchorTag={item.useAnchorTag}
+                            shouldUseAnchorTag={item.shouldUseAnchorTag}
                             target="_blank"
                         >
                             {item.label}
