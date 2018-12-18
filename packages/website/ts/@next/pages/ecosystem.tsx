@@ -9,6 +9,7 @@ import { Icon } from 'ts/@next/components/icon';
 import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
+import { constants } from 'ts/utils/constants';
 
 interface BenefitProps {
     title: string;
@@ -64,10 +65,21 @@ export const NextEcosystem = () => (
                     Program to bolster the expansion of both infrastructure projects and relayers building on 0x.
                 </Paragraph>
                 <LinkWrap>
-                    <Button href="" isWithArrow={true} isAccentColor={true}>
+                    <Button
+                        href={constants.URL_ECOSYSTEM_APPLY}
+                        isWithArrow={true}
+                        isAccentColor={true}
+                        useAnchorTag={true}
+                    >
                         Apply now
                     </Button>
-                    <Button to="#" isWithArrow={true} isAccentColor={true}>
+                    <Button
+                        href={constants.URL_ECOSYSTEM_BLOG_POST}
+                        isWithArrow={true}
+                        isAccentColor={true}
+                        useAnchorTag={true}
+                        target="_blank"
+                    >
                         Learn More
                     </Button>
                 </LinkWrap>
