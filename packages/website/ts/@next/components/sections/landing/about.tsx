@@ -5,6 +5,7 @@ import { Button } from 'ts/@next/components/button';
 import { Icon, InlineIconWrap } from 'ts/@next/components/icon';
 import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Paragraph } from 'ts/@next/components/text';
+import { WebsitePaths } from 'ts/types';
 
 interface FigureProps {
     value: string;
@@ -25,7 +26,7 @@ export const SectionLandingAbout = () => (
             instruments to assets that could have never existed before.
         </Paragraph>
 
-        <Button href="#" isWithArrow={true} isAccentColor={true}>
+        <Button href={`${WebsitePaths.Why}#cases`} isWithArrow={true} isAccentColor={true}>
             Discover how developers use 0x
         </Button>
 
