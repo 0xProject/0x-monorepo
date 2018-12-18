@@ -435,7 +435,7 @@ describe('OrderMatcher', () => {
                 initialLeftTakerAssetTakerBalance.plus(expectedTransferAmounts.leftTakerAssetSpreadAmount),
             );
         });
-        it('should not call fillOrder when rightOrder is completely filled after matchOrders call', async () => {
+        it('should not call fillOrder when rightOrder is completely filled after matchOrders call and orders were never partially filled', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
@@ -443,7 +443,7 @@ describe('OrderMatcher', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
             const data = exchange.matchOrders.getABIEncodedTransactionData(
                 signedOrderLeft,
@@ -451,7 +451,45 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts });
+            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts, ...protocolArtifacts });
+            const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
+                await web3Wrapper.sendTransactionAsync({
+                    data,
+                    to: orderMatcher.address,
+                    from: owner,
+                    gas: constants.MAX_MATCH_ORDERS_GAS,
+                }),
+            );
+            const fillLogs = _.filter(
+                txReceipt.logs,
+                log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+            );
+            // Only 2 Fill logs should exist for `matchOrders` call. `fillOrder` should not have been called and should not have emitted a Fill event.
+            expect(fillLogs.length).to.be.equal(2);
+        });
+        it('should not call fillOrder when rightOrder is completely filled after matchOrders call and orders were initially partially filled', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+            });
+            await exchangeWrapper.fillOrderAsync(signedOrderLeft, takerAddress, {
+                takerAssetFillAmount: signedOrderLeft.takerAssetAmount.dividedToIntegerBy(5),
+            });
+            await exchangeWrapper.fillOrderAsync(signedOrderRight, takerAddress, {
+                takerAssetFillAmount: signedOrderRight.takerAssetAmount.dividedToIntegerBy(5),
+            });
+            const data = exchange.matchOrders.getABIEncodedTransactionData(
+                signedOrderLeft,
+                signedOrderRight,
+                signedOrderLeft.signature,
+                signedOrderRight.signature,
+            );
+            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts, ...protocolArtifacts });
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,

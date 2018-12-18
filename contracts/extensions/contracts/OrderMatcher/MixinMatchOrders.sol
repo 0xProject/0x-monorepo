@@ -25,7 +25,7 @@ import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
 contract MixinMatchOrders is
     Ownable,
     LibConstants
-{        
+{
     // The below assembly in the fallback function is functionaly equivalent to the following Solidity code:
     /*
         /// @dev Match two complementary orders that have a profitable spread.
@@ -54,21 +54,33 @@ contract MixinMatchOrders is
                 rightSignature
             );
 
-            // If a spread was taken, use the spread to fill remaining amount of `rightOrder`
-            // Only attempt to fill `rightOrder` if a spread was taken and if not already completely filled
             uint256 leftMakerAssetSpreadAmount = matchedFillResults.leftMakerAssetSpreadAmount;
-            if (leftMakerAssetSpreadAmount > 0 && matchedFillResults.right.takerAssetFilledAmount < rightOrder.takerAssetAmount) {
-                // The `assetData` fields of the `rightOrder` could have been null for the `matchOrders` call. We reassign them before calling `fillOrder`.
-                rightOrder.makerAssetData = leftOrder.takerAssetData;
-                rightOrder.takerAssetData = leftOrder.makerAssetData;
+            uint256 rightOrderTakerAssetAmount = rightOrder.takerAssetAmount;
 
-                // We do not need to pass in a signature since it was already validated in the `matchOrders` call
-                EXCHANGE.fillOrder(
-                    rightOrder,
-                    leftMakerAssetSpreadAmount,
-                    ""
-                );
+            // Do not attempt to call `fillOrder` if no spread was taken or `rightOrder` has been completely filled
+            if (leftMakerAssetSpreadAmount == 0 || matchedFillResults.right.takerAssetFilledAmount == rightOrderTakerAssetAmount) {
+                return;
             }
+
+            // The `assetData` fields of the `rightOrder` could have been null for the `matchOrders` call. We reassign them before calling `fillOrder`.
+            rightOrder.makerAssetData = leftOrder.takerAssetData;
+            rightOrder.takerAssetData = leftOrder.makerAssetData;
+
+            // Query `rightOrder` info to check if it has been completely filled
+            // We need to make this check in case the `rightOrder` was partially filled before the `matchOrders` call
+            OrderInfo memory orderInfo = EXCHANGE.getOrderInfo(rightOrder);
+
+            // Do not attempt to call `fillOrder` if order has been completely filled
+            if (orderInfo.orderTakerAssetFilledAmount == rightOrderTakerAssetAmount) {
+                return;
+            }
+
+            // We do not need to pass in a signature since it was already validated in the `matchOrders` call
+            EXCHANGE.fillOrder(
+                rightOrder,
+                leftMakerAssetSpreadAmount,
+                ""
+            );
         }
     */
     // solhint-disable-next-line payable-fallback
@@ -101,7 +113,11 @@ contract MixinMatchOrders is
 
                 // Copy calldata to memory
                 // The calldata should be identical to the the ABIv2 encoded data required to call `EXCHANGE.matchOrders`
-                calldatacopy(0, 0, calldatasize())
+                calldatacopy(
+                    0,              // copy to memory at 0
+                    0,              // copy from calldata at 0
+                    calldatasize()  // copy all calldata
+                )
 
                 // At this point, calldata and memory have the following layout:
 
@@ -153,7 +169,7 @@ contract MixinMatchOrders is
                 // | 1092 + a + b + c + d + e  | f       | rightSignature Contents                     |
 
                 // Call `EXCHANGE.matchOrders`
-                let matchOrdersSuccess := call(
+                let success := call(
                     gas,             // forward all gas
                     exchange,        // call address of Exchange contract
                     0,               // transfer 0 wei
@@ -163,12 +179,17 @@ contract MixinMatchOrders is
                     288              // length of output is 288 bytes
                 )
 
-                if iszero(matchOrdersSuccess) {
-                    // Revert with reason if `matchOrders` call was unsuccessful
+                if iszero(success) {
+                    // Revert with reason if `EXCHANGE.matchOrders` call was unsuccessful
+                    returndatacopy(
+                        0,                // copy to memory at 0
+                        0,                // copy from return data at 0
+                        returndatasize()  // copy all return data
+                    )
                     revert(0, returndatasize())
                 }
 
-                // After calling `matchOrders`, the relevant parts of memory are:
+                // After calling `matchOrders`, the return data is layed out in memory as:
 
                 // | Offset                    | Length  | Contents                                    |
                 // |---------------------------|---------|-------------------------------------------- |
@@ -182,6 +203,67 @@ contract MixinMatchOrders is
                 // | 192                       |         |   7. right.makerFeePaid                     |
                 // | 224                       |         |   8. right.takerFeePaid                     |
                 // | 256                       |         |   9. leftMakerAssetSpreadAmount             |
+
+                let rightOrderStart := add(calldataload(36), 4)
+    
+                // If no spread was taken or if the entire `rightOrderTakerAssetAmount` has been filled, there is no need to call `EXCHANGE.fillOrder`.
+                if or(
+                    iszero(mload(256)),                                      // iszero(leftMakerAssetSpreadAmount)
+                    eq(mload(160), calldataload(add(rightOrderStart, 160)))  // eq(rightOrderTakerAssetFilledAmount, rightOrderTakerAssetAmount)
+                ) {
+                    return(0, 0)
+                }
+
+                // We assume that `leftOrder.makerAssetData == rightOrder.takerAssetData` and `leftOrder.takerAssetData == rightOrder.makerAssetData`
+                // `EXCHANGE.matchOrders` already makes this assumption, so it is likely
+                // that the `rightMakerAssetData` and `rightTakerAssetData` in calldata are empty
+
+                let leftOrderStart := add(calldataload(4), 4)
+
+                // Calculate locations of `leftMakerAssetData` and `leftTakerAssetData` in calldata
+                let leftMakerAssetDataStart := add(
+                    leftOrderStart,
+                    calldataload(add(leftOrderStart, 320))  // offset to `leftMakerAssetData`
+                )
+                let leftTakerAssetDataStart := add(
+                    leftOrderStart,
+                    calldataload(add(leftOrderStart, 352))  // offset to `leftTakerAssetData`
+                )
+
+                // Load lengths of `leftMakerAssetData` and `leftTakerAssetData`
+                let leftMakerAssetDataLen := calldataload(leftMakerAssetDataStart)
+                let leftTakerAssetDataLen := calldataload(leftTakerAssetDataStart)
+
+                // Write offset to `rightMakerAssetData` 
+                mstore(add(rightOrderStart, 320), 384)
+
+                // Write offset to `rightTakerAssetData`
+                let rightTakerAssetDataOffset := add(416, leftTakerAssetDataLen)
+                mstore(add(rightOrderStart, 352), rightTakerAssetDataOffset)
+
+                // Copy `leftTakerAssetData` from calldata onto `rightMakerAssetData` in memory
+                calldatacopy(
+                    add(rightOrderStart, 384),  // `rightMakerAssetDataStart`
+                    leftTakerAssetDataStart,
+                    add(leftTakerAssetDataLen, 32)
+                )
+
+                // Copy `leftMakerAssetData` from calldata onto `rightTakerAssetData` in memory
+                calldatacopy(
+                    add(rightOrderStart, rightTakerAssetDataOffset),  // `rightTakerAssetDataStart`
+                    leftMakerAssetDataStart,
+                    add(leftMakerAssetDataLen, 32)
+                )
+
+                // We must call `EXCHANGE.getOrderInfo(rightOrder)` before calling `EXCHANGE.fillOrder` to ensure that the order
+                // has not already been entirely filled (which is possible if an order was partially filled before the `matchOrders` call).
+                // We want the following layout in memory before calling `getOrderInfo`:
+
+                // | Offset                    | Length  | Contents                                    |
+                // |---------------------------|---------|-------------------------------------------- |
+                // | 544 + a + b               | 4       | `getOrderInfo` function selector            |
+                // |                           | 3 * 32  | function parameters:                        |
+                // | 548 + a + b               |         |   1. offset to rightOrder (*)               |
                 // |                           | 12 * 32 | rightOrder:                                 |
                 // | 580 + a + b               |         |   1.  senderAddress                         |
                 // | 612 + a + b               |         |   2.  makerAddress                          |
@@ -195,126 +277,124 @@ contract MixinMatchOrders is
                 // | 868 + a + b               |         |   10. salt                                  |
                 // | 900 + a + b               |         |   11. offset to rightMakerAssetData (*)     |
                 // | 932 + a + b               |         |   12. offset to rightTakerAssetData (*)     |
+                // | 964 + a + b               | 32      | rightMakerAssetData Length                  |
+                // | 996 + a + b               | c       | rightMakerAssetData Contents                |
+                // | 996 + a + b + c           | 32      | rightTakerAssetData Length                  |
+                // | 1028 + a + b + c          | d       | rightTakerAssetData Contents                |
 
-                let rightOrderStart := add(calldataload(36), 4)
+                // function selector (4 bytes) + 1 param (32 bytes) must be stored before `rightOrderStart`
+                let cdStart := sub(rightOrderStart, 36)
 
-                // Only call `fillOrder` if a spread was taken and `rightOrder` has not been completely filled
-                if and(
-                    gt(mload(256), 0),                                       // gt(leftMakerAssetSpreadAmount, 0)
-                    lt(mload(160), calldataload(add(rightOrderStart, 160)))  // lt(rightOrderTakerAssetFilledAmount, rightOrderTakerAssetAmount)
-                ) {
-                    
-                    // We want the following layout in memory before calling `fillOrder`:
+                // `getOrderInfo` selector = 0xc75e0a81
+                mstore(cdStart, 0xc75e0a8100000000000000000000000000000000000000000000000000000000)
 
-                    // | Offset                    | Length  | Contents                                    |
-                    // |---------------------------|---------|-------------------------------------------- |
-                    // | 480 + a + b               | 4       | `fillOrder` function selector               |
-                    // |                           | 3 * 32  | function parameters:                        |
-                    // | 484 + a + b               |         |   1. offset to rightOrder (*)               |
-                    // | 516 + a + b               |         |   2. takerAssetFillAmount                   |
-                    // | 548 + a + b               |         |   3. offset to rightSignature (*)           |
-                    // |                           | 12 * 32 | rightOrder:                                 |
-                    // | 580 + a + b               |         |   1.  senderAddress                         |
-                    // | 612 + a + b               |         |   2.  makerAddress                          |
-                    // | 644 + a + b               |         |   3.  takerAddress                          |
-                    // | 676 + a + b               |         |   4.  feeRecipientAddress                   |
-                    // | 708 + a + b               |         |   5.  makerAssetAmount                      |
-                    // | 740 + a + b               |         |   6.  takerAssetAmount                      |
-                    // | 772 + a + b               |         |   7.  makerFeeAmount                        |
-                    // | 804 + a + b               |         |   8.  takerFeeAmount                        |
-                    // | 836 + a + b               |         |   9.  expirationTimeSeconds                 |
-                    // | 868 + a + b               |         |   10. salt                                  |
-                    // | 900 + a + b               |         |   11. offset to rightMakerAssetData (*)     |
-                    // | 932 + a + b               |         |   12. offset to rightTakerAssetData (*)     |
-                    // | 964 + a + b               | 32      | rightMakerAssetData Length                  |
-                    // | 996 + a + b               | c       | rightMakerAssetData Contents                |
-                    // | 996 + a + b + c           | 32      | rightTakerAssetData Length                  |
-                    // | 1028 + a + b + c          | d       | rightTakerAssetData Contents                |
-                    // | 1028 + a + b + c + d      | 32      | rightSignature Length (always 0)            |
+                // Write offset to `rightOrder`
+                mstore(add(cdStart, 4), 32)
 
-                    // We assume that `leftOrder.makerAssetData == rightOrder.takerAssetData` and `leftOrder.takerAssetData == rightOrder.makerAssetData`
-                    // `EXCHANGE.matchOrders` already makes this assumption, so it is likely
-                    // that the `rightMakerAssetData` and `rightTakerAssetData` in calldata are empty
+                let rightOrderEnd := add(
+                    add(rightOrderStart, 484),
+                    add(leftMakerAssetDataLen, leftTakerAssetDataLen)                    
+                )
 
-                    let leftOrderStart := add(calldataload(4), 4)
+                // Call `EXCHANGE.getOrderInfo(rightOrder)`
+                success := staticcall(
+                    gas,                          // forward all gas
+                    exchange,                     // call address of Exchange contract
+                    cdStart,                      // start of input
+                    sub(rightOrderEnd, cdStart),  // length of input
+                    0,                            // write output over old output
+                    96                            // output is 96 bytes
+                )
 
-                    // Calculate locations of `leftMakerAssetData` and `leftTakerAssetData` in calldata
-                    let leftMakerAssetDataStart := add(
-                        leftOrderStart,
-                        calldataload(add(leftOrderStart, 320))  // offset to `leftMakerAssetData`
-                    )
-                    let leftTakerAssetDataStart := add(
-                        leftOrderStart,
-                        calldataload(add(leftOrderStart, 352))  // offset to `leftTakerAssetData`
-                    )
+                // After calling `EXCHANGE.getOrderInfo`, the return data is layed out in memory as:
 
-                    // Load lengths of `leftMakerAssetData` and `leftTakerAssetData`
-                    let leftMakerAssetDataLen := calldataload(leftMakerAssetDataStart)
-                    let leftTakerAssetDataLen := calldataload(leftTakerAssetDataStart)
+                // | Offset                    | Length  | Contents                                    |
+                // |---------------------------|---------|-------------------------------------------- |
+                // |                           | 3 * 32  | orderInfo                                   |
+                // | 0                         |         |   1. orderStatus                            |
+                // | 32                        |         |   2. orderHash                              |
+                // | 64                        |         |   3. orderTakerAssetFilledAmount            |
 
-                    // Write offset to `rightMakerAssetData` 
-                    mstore(add(rightOrderStart, 320), 384)
-
-                    // Write offset to `rightTakerAssetData`
-                    let rightTakerAssetDataOffset := add(416, leftTakerAssetDataLen)
-                    mstore(add(rightOrderStart, 352), rightTakerAssetDataOffset)
-
-                    // Copy `leftTakerAssetData` from calldata onto `rightMakerAssetData` in memory
-                    calldatacopy(
-                        add(rightOrderStart, 384),  // `rightMakerAssetDataStart`
-                        leftTakerAssetDataStart,
-                        add(leftTakerAssetDataLen, 32)
-                    )
-
-                    // Copy `leftMakerAssetData` from calldata onto `rightTakerAssetData` in memory
-                    calldatacopy(
-                        add(rightOrderStart, rightTakerAssetDataOffset),  // `rightTakerAssetDataStart`
-                        leftMakerAssetDataStart,
-                        add(leftMakerAssetDataLen, 32)
-                    )
-
-                    // Write length of signature (always 0 since signature was previously validated)
-                    let rightSignatureStart := add(
-                        add(rightOrderStart, rightTakerAssetDataOffset),  // `rightTakerAssetDataStart`
-                        add(leftMakerAssetDataLen, 32)                    
-                    )
-                    mstore(rightSignatureStart, 0)
-
-                    // function selector (4 bytes) + 3 params (3 * 32 bytes) must be stored before `rightOrderStart`
-                    let cdStart := sub(rightOrderStart, 100)
-
-                    // `fillOrder` selector = 0xb4be83d5
-                    mstore(cdStart, 0xb4be83d500000000000000000000000000000000000000000000000000000000)
-
-                    // Write offset to `rightOrder`
-                    mstore(add(cdStart, 4), 96)
-
-                    // Write `takerAssetFillAmount`, which will be the `leftMakerAssetSpreadAmount` received from the `matchOrders` call
-                    mstore(add(cdStart, 36), mload(256))
-
-                    // Write offset to `rightSignature`
-                    mstore(add(cdStart, 68), sub(rightSignatureStart, add(cdStart, 4)))
-
-                    let fillOrderSuccess := call(
-                        gas,                                         // forward all gas
-                        exchange,                                    // call address of Exchange contract
-                        0,                                           // transfer 0 wei
-                        cdStart,                                     // start of input
-                        sub(add(rightSignatureStart, 32), cdStart),  // length of input is end - start
-                        0,                                           // write output over input
-                        128                                          // length of output is 128 bytes
-                    )
-
-                    if fillOrderSuccess {
-                        return(0, 0)
-                    }
-                
-                    // Revert with reason if `fillOrder` call was unsuccessful
-                    revert(0, returndatasize())
+                // We do not need to check if the `getOrderInfo` call was successful because it has no possibility of reverting
+                // If order has been entirely filled, there is no need to call `EXCHANGE.fillOrder`
+                // eq(orderTakerAssetFilledAmount, rightOrderTakerAssetAmount)
+                if eq(mload(64), calldataload(add(rightOrderStart, 160))) {
+                    return(0, 0)
                 }
 
-                // Return if `matchOrders` call successful and `fillOrder` was not called
+                // We want the following layout in memory before calling `EXCHANGE.fillOrder`:
+
+                // | Offset                    | Length  | Contents                                    |
+                // |---------------------------|---------|-------------------------------------------- |
+                // | 480 + a + b               | 4       | `fillOrder` function selector               |
+                // |                           | 3 * 32  | function parameters:                        |
+                // | 484 + a + b               |         |   1. offset to rightOrder (*)               |
+                // | 516 + a + b               |         |   2. takerAssetFillAmount                   |
+                // | 548 + a + b               |         |   3. offset to rightSignature (*)           |
+                // |                           | 12 * 32 | rightOrder:                                 |
+                // | 580 + a + b               |         |   1.  senderAddress                         |
+                // | 612 + a + b               |         |   2.  makerAddress                          |
+                // | 644 + a + b               |         |   3.  takerAddress                          |
+                // | 676 + a + b               |         |   4.  feeRecipientAddress                   |
+                // | 708 + a + b               |         |   5.  makerAssetAmount                      |
+                // | 740 + a + b               |         |   6.  takerAssetAmount                      |
+                // | 772 + a + b               |         |   7.  makerFeeAmount                        |
+                // | 804 + a + b               |         |   8.  takerFeeAmount                        |
+                // | 836 + a + b               |         |   9.  expirationTimeSeconds                 |
+                // | 868 + a + b               |         |   10. salt                                  |
+                // | 900 + a + b               |         |   11. offset to rightMakerAssetData (*)     |
+                // | 932 + a + b               |         |   12. offset to rightTakerAssetData (*)     |
+                // | 964 + a + b               | 32      | rightMakerAssetData Length                  |
+                // | 996 + a + b               | c       | rightMakerAssetData Contents                |
+                // | 996 + a + b + c           | 32      | rightTakerAssetData Length                  |
+                // | 1028 + a + b + c          | d       | rightTakerAssetData Contents                |
+                // | 1028 + a + b + c + d      | 32      | rightSignature Length (always 0)            |
+
+                // Write length of signature (always 0 since signature was previously validated)
+                mstore(rightOrderEnd, 0)
+
+                // function selector (4 bytes) + 3 params (3 * 32 bytes) must be stored before `rightOrderStart`
+                cdStart := sub(rightOrderStart, 100)
+
+                // `fillOrder` selector = 0xb4be83d5
+                mstore(cdStart, 0xb4be83d500000000000000000000000000000000000000000000000000000000)
+
+                // Write offset to `rightOrder`
+                mstore(add(cdStart, 4), 96)
+
+                // Write `takerAssetFillAmount`, which will be the `leftMakerAssetSpreadAmount` received from the `matchOrders` call
+                mstore(add(cdStart, 36), mload(256))
+
+                // Write offset to `rightSignature`
+                mstore(
+                    add(cdStart, 68),
+                    sub(rightOrderEnd, add(cdStart, 4))
+                )
+
+                // Call `EXCHANGE.fillOrder(rightOrder, leftMakerAssetSpreadAmount, "")`
+                success := call(
+                    gas,                                   // forward all gas
+                    exchange,                              // call address of Exchange contract
+                    0,                                     // transfer 0 wei
+                    cdStart,                               // start of input
+                    add(sub(rightOrderEnd, cdStart), 32),  // length of input is end - start
+                    0,                                     // write output over input
+                    0                                      // do not write output to memory
+                )
+
+                if iszero(success) {
+                    // Revert with reason if `EXCHANGE.fillOrder` call was unsuccessful
+                    returndatacopy(
+                        0,                // copy to memory at 0
+                        0,                // copy from return data at 0
+                        returndatasize()  // copy all return data
+                    )
+                    revert(0, returndatasize())
+                }
+                
+                // Return if `EXCHANGE.fillOrder` did not revert
                 return(0, 0)
+            
             }
 
             // Revert if undefined function is called
