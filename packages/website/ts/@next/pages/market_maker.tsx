@@ -50,6 +50,7 @@ export class NextMarketMaker extends React.Component {
                     maxWidthHeading="715px"
                     isLargeTitle={false}
                     isFullWidth={false}
+                    isCenteredMobile={false}
                     title="Bring liquidity to the exchanges of the future"
                     description="Market makers (MMs) are important stakeholders in the 0x ecosystem. The Market Making Program provides a set of resources that help onboard MMs bring liquidity to the 0x network. The program includes tutorials, a robust data platform, trade compensation, and 1:1 support from our MM Success Manager."
                     actions={<HeroActions/>}
