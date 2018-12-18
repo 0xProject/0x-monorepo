@@ -19,6 +19,7 @@ interface Props {
     isWithMargin?: boolean;
     icon: string;
     iconSize?: 'medium' | 'large' | number;
+    fontSize?: 'default' | 'medium' | number;
     title: string;
     titleSize?: 'small' | 'default' | number;
     description: React.ReactNode | string;
@@ -40,7 +41,7 @@ export const Definition = (props: Props) => (
             </Heading>
 
             {typeof props.description === 'string' ? (
-                <Paragraph isMuted={true}>{props.description}</Paragraph>
+                <Paragraph isMuted={true} size={props.fontSize || 'default'}>{props.description}</Paragraph>
             ) : (
                 <>{props.description}</>
             )}
@@ -107,6 +108,9 @@ const TextWrap =
     }
 
     li {
+        color: ${props => props.theme.paragraphColor};
+        font-size: ${props => `var(--${props.fontSize || 'default'}Paragraph)`};
+        font-weight: 300;
         list-style: disc;
         opacity: 0.75;
         line-height: 1.444444444;
