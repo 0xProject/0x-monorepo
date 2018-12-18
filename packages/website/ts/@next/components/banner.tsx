@@ -31,7 +31,7 @@ interface BorderProps {
 export const Banner: React.StatelessComponent<Props> = (props: Props) => {
     const { heading, subline, mainCta, secondaryCta } = props;
     return (
-        <CustomSection bgColor="light" isFlex={true} flexBreakpoint="900px" paddingMobile="120px 0">
+        <CustomSection bgColor={colors.brandDark} isFlex={true} flexBreakpoint="900px" paddingMobile="120px 0">
             <Border />
             <Border isBottom={true} />
 

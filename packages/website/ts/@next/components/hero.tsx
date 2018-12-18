@@ -5,6 +5,8 @@ import {addFadeInAnimation} from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
+    maxWidth?: string;
+    maxWidthHeading?: string;
     isLargeTitle?: boolean;
     isFullWidth?: boolean;
     description: string;
@@ -21,8 +23,8 @@ export const Hero = (props: Props) => (
                 </Content>
             }
 
-            <Content width={props.figure ? '546px' : '678px'}>
-                <Title isLarge={props.isLargeTitle}>
+            <Content width={props.maxWidth ? props.maxWidth : (props.figure ? '546px' : '678px')}>
+                <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
                     {props.title}
                 </Title>
 
@@ -66,11 +68,14 @@ const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean }>`
     }
 `;
 
-const Title = styled.h1<{ isLarge?: any }>`
+const Title = styled.h1<{ isLarge?: any; maxWidth?: string }>`
     font-size: ${props => props.isLarge ? '80px' : '50px'};
     font-weight: 300;
     line-height: 1.1;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 30px;
+    max-width: ${props => props.maxWidth};
     ${addFadeInAnimation('0.5s')}
 
     @media (max-width: 1024px) {
@@ -85,9 +90,10 @@ const Title = styled.h1<{ isLarge?: any }>`
 const Description = styled.p`
     font-size: 22px;
     line-height: 31px;
+    font-weight: 300;
     padding: 0;
     margin-bottom: 50px;
-    color: rgba(255, 255, 255, 0.75);
+    color: ${props => props.theme.introTextColor};
     ${addFadeInAnimation('0.5s', '0.15s')}
 
     @media (max-width: 1024px) {
