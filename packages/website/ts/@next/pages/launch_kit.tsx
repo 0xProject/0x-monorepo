@@ -10,9 +10,9 @@ import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 
 import { Section } from 'ts/@next/components/newLayout';
-import { ModalContact } from '../components/modals/modal_contact';
+import { constants } from 'ts/utils/constants';
 
-import { WebsitePaths } from 'ts/types';
+import { ModalContact } from '../components/modals/modal_contact';
 
 const offersData = [
     {
@@ -91,7 +91,7 @@ export class NextLaunchKit extends React.Component {
                     subline="Dive into our docs, or contact us if needed"
                     mainCta={{
                         text: 'Get Started',
-                        href: 'https://github.com/0xProject/0x-launch-kit/#table-of-contents',
+                        href: `${constants.URL_LAUNCH_KIT}/#table-of-contents`,
                         shouldOpenInNewTab: true,
                     }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
@@ -112,15 +112,11 @@ export class NextLaunchKit extends React.Component {
 
 const HeroActions = () => (
     <React.Fragment>
-        <Button href="https://github.com/0xProject/0x-launch-kit" isInline={true} target="_blank">
+        <Button href={constants.URL_LAUNCH_KIT} isInline={true} target="_blank">
             Get Started
         </Button>
 
-        <Button
-            to={'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585'}
-            isTransparent={true}
-            isInline={true}
-        >
+        <Button to={constants.URL_LAUNCH_KIT_BLOG_POST} isTransparent={true} isInline={true}>
             Learn More
         </Button>
     </React.Fragment>
