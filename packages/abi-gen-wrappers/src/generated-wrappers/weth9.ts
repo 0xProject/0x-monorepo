@@ -72,12 +72,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public approve = {
@@ -168,12 +164,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public totalSupply = {
@@ -198,12 +190,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'totalSupply'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public transferFrom = {
@@ -305,12 +293,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public withdraw = {
@@ -390,12 +374,7 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'withdraw'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+                return;
         },
     };
     public decimals = {
@@ -420,12 +399,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'decimals'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public balanceOf = {
@@ -454,12 +429,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public symbol = {
@@ -484,12 +455,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public transfer = {
@@ -580,12 +547,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'transfer'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public deposit = {
@@ -654,12 +617,7 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'deposit'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+                return;
         },
     };
     public allowance = {
@@ -692,12 +650,8 @@ export class WETH9Contract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'allowance'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public static async deployFrom0xArtifactAsync(

@@ -8,6 +8,7 @@ import {
     testCombinatoriallyWithReferenceFuncAsync,
     txDefaults,
     uint256Values,
+    orderUtils,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
@@ -49,7 +50,7 @@ const emptySignedOrder: SignedOrder = {
 
 const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
-describe('Exchange core internal functions', () => {
+describe.skip('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
@@ -450,9 +451,10 @@ describe('Exchange core internal functions', () => {
                 makerFeePaid: new BigNumber(0),
                 takerFeePaid: new BigNumber(0),
             };
+            //console.log(`EMPTY ORDER:\n ${JSON.stringify(emptySignedOrder, null ,4)}`);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
-                    emptySignedOrder,
+                    orderUtils.getOrderWithoutExchangeAddress(emptySignedOrder),
                     constants.NULL_ADDRESS,
                     orderHash,
                     orderTakerAssetFilledAmount,

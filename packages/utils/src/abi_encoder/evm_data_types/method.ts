@@ -8,6 +8,7 @@ import { AbstractSetDataType } from '../abstract_data_types/types/set';
 import { constants } from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
+import { ArrayDataType } from './array';
 import { TupleDataType } from './tuple';
 
 export class MethodDataType extends AbstractSetDataType {
@@ -42,6 +43,12 @@ export class MethodDataType extends AbstractSetDataType {
     public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
         const returnValues = this._returnDataType.decode(returndata, rules);
         return returnValues;
+    }
+
+    public decodeReturnValuesAsArray(returndata: string, rules?: DecodingRules): any {
+        const returnValues = this.decodeReturnValues(returndata, rules);
+        const returnValuesAsArray = _.isObject(returnValues) ? _.values(returnValues) : [returnValues];
+        return returnValuesAsArray;
     }
 
     public getSignature(): string {

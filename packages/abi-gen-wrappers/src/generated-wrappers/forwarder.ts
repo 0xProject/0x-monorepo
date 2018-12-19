@@ -158,12 +158,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'marketBuyOrdersWithEth'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray;
         },
     };
     public withdrawAsset = {
@@ -254,12 +250,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'withdrawAsset'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+                return;
         },
     };
     public owner = {
@@ -284,12 +275,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'owner'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray[0];
         },
     };
     public marketSellOrdersWithEth = {
@@ -424,12 +411,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'marketSellOrdersWithEth'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
+                return resultArray;
         },
     };
     public transferOwnership = {
@@ -509,12 +492,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const decodingRules = {structsAsObjects: false};
-            let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-            const outputAbi = (_.find(self.abi, {name: 'transferOwnership'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+                return;
         },
     };
     public static async deployFrom0xArtifactAsync(

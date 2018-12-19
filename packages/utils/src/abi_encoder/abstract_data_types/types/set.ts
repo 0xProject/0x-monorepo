@@ -138,7 +138,7 @@ export abstract class AbstractSetDataType extends DataType {
         _.forEach(this._memberIndexByName, (memberIndex: number, memberName: string) => {
             if (!(memberName in obj)) {
                 throw new Error(
-                    `Could not assign tuple to object: missing field '${memberName}' in object ${obj}`,
+                    `Could not assign tuple to object: missing key '${memberName}' in object ${JSON.stringify(obj)}`,
                 );
             }
             const memberValue: any = duplicateObj[memberName];
@@ -180,17 +180,27 @@ export abstract class AbstractSetDataType extends DataType {
         // Create one member for each component of `dataItem`
         const members: DataType[] = [];
         const memberIndexByName: MemberIndexByName = {};
+        const memberNames: string[] = [];
         _.each(dataItem.components, (memberItem: DataItem) => {
+            // If a component with `name` already exists then
+            // rename to `name_nameIdx` to avoid naming conflicts.
+            let memberName = memberItem.name;
+            let nameIdx = 0;
+            while (_.includes(memberNames, memberName) || _.isEmpty(memberName)) {
+                nameIdx++;
+                memberName = `${memberItem.name}_${nameIdx}`;
+            }
+            memberNames.push(memberName);
             const childDataItem: DataItem = {
                 type: memberItem.type,
-                name: `${dataItem.name}.${memberItem.name}`,
+                name: `${dataItem.name}.${memberName}`
             };
             const components = memberItem.components;
             if (!_.isUndefined(components)) {
                 childDataItem.components = components;
             }
             const child = this.getFactory().create(childDataItem, this);
-            memberIndexByName[memberItem.name] = members.length;
+            memberIndexByName[memberName] = members.length;
             members.push(child);
         });
         return [members, memberIndexByName];

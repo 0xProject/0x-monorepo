@@ -47,9 +47,12 @@ export class IntDataType extends AbstractBlobDataType {
         return encodedValue;
     }
 
-    public decodeValue(calldata: RawCalldata): BigNumber {
+    public decodeValue(calldata: RawCalldata): BigNumber|number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, this._minValue, this._maxValue);
+        if (this._width === 8) {
+            return value.toNumber();
+        }
         return value;
     }
 

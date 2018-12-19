@@ -19,10 +19,10 @@ async callAsync(
     );
     const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
     BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-    const decodingRules = {structsAsObjects: false};
-    let resultArray = abiEncoder.decodeReturnValues(rawCallResult, decodingRules);
-    const outputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).outputs;
-    resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-    resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
+    {{#if hasReturnValue}}
+    let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
     return resultArray{{#singleReturnValue}}[0]{{/singleReturnValue}};
+    {{else}}
+    return;
+    {{/if}}
 },
