@@ -13,7 +13,7 @@ fence smart topic"``.
 from copy import copy
 from enum import auto, Enum
 import json
-from typing import cast, Dict, Tuple
+from typing import cast, Dict, NamedTuple, Tuple
 from pkg_resources import resource_string
 
 from mypy_extensions import TypedDict
@@ -317,6 +317,14 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
         + eip712_domain_struct_hash
         + eip712_order_struct_hash
     ).hex()
+
+
+class OrderInfo(NamedTuple):
+    """A Web3-compatible representation of the Exchange.OrderInfo struct."""
+
+    order_status: str
+    order_hash: bytes
+    order_taker_asset_filled_amount: int
 
 
 def is_valid_signature(
