@@ -146,7 +146,9 @@ export class Compiler {
                 logUtils.logWithTime('Found 0 errors. Watching for file changes.');
             } catch (err) {
                 if (err.typeName === 'CompilationError') {
-                    logUtils.logWithTime(`Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`);
+                    logUtils.logWithTime(
+                        `Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`,
+                    );
                 } else {
                     logUtils.logWithTime('Found errors. Watching for file changes.');
                 }
