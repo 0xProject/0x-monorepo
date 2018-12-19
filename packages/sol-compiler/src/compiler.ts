@@ -33,7 +33,6 @@ import {
 } from './utils/compiler';
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
-import { CompilationError } from './utils/types';
 import { utils } from './utils/utils';
 
 type TYPE_ALL_FILES_IDENTIFIER = '*';
@@ -157,7 +156,9 @@ export class Compiler {
         watcher.on('change', (changedFilePath: string) => {
             console.clear(); // tslint:disable-line:no-console
             utils.logWithTime('File change detected. Starting incremental compilation...');
-            onFileChangedAsync();
+            // NOTE: We can't await it here because that's a callback.
+            // Instead we stop watching inside of it and start it again when we're finished.
+            onFileChangedAsync(); // tslint:disable-line no-floating-promises
         });
     }
     private _getPathsToWatch(): string[] {
