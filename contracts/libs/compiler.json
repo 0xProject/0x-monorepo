@@ -18,5 +18,5 @@
             }
         }
     },
-    "contracts": ["TestLibs", "LibOrder", "LibMath", "LibFillResults", "LibAbiEncoder", "LibEIP712"]
+    "contracts": ["TestLibs", "LibOrder", "LibMath", "LibFillResults", "LibAbiEncoder", "LibEIP712", "LibAssetProxyErrors", "LibConstants"]
 }
