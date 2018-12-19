@@ -94,10 +94,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'addAuthorizedAddress(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([target
         ]);
@@ -111,7 +107,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public authorities = {
@@ -123,10 +120,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'authorities(uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [index_0
-        ] = BaseContract._formatABIDataItemList(inputAbi, [index_0
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([index_0
         ]);
@@ -140,8 +133,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public removeAuthorizedAddress = {
@@ -204,10 +197,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'removeAuthorizedAddress(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([target
         ]);
@@ -221,7 +210,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public owner = {
@@ -232,8 +222,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'owner()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -246,8 +234,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public removeAuthorizedAddressAtIndex = {
@@ -318,12 +306,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'removeAuthorizedAddressAtIndex(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target,
-        index
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-        index
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([target,
         index
@@ -338,7 +320,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public getProxyId = {
@@ -349,8 +332,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'getProxyId()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -363,8 +344,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public authorized = {
@@ -376,10 +357,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'authorized(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [index_0
-        ] = BaseContract._formatABIDataItemList(inputAbi, [index_0
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([index_0
         ]);
@@ -393,8 +370,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public getAuthorizedAddresses = {
@@ -405,8 +382,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'getAuthorizedAddresses()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -419,8 +394,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public transferOwnership = {
@@ -483,10 +458,6 @@ export class ERC20ProxyContract extends BaseContract {
         > {
             const self = this as any as ERC20ProxyContract;
             const functionSignature = 'transferOwnership(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [newOwner
-        ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([newOwner
         ]);
@@ -500,7 +471,8 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public static async deployFrom0xArtifactAsync(

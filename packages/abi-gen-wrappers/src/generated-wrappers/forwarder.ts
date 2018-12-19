@@ -123,22 +123,6 @@ export class ForwarderContract extends BaseContract {
         > {
             const self = this as any as ForwarderContract;
             const functionSignature = 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [orders,
-        makerAssetFillAmount,
-        signatures,
-        feeOrders,
-        feeSignatures,
-        feePercentage,
-        feeRecipient
-        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
-        makerAssetFillAmount,
-        signatures,
-        feeOrders,
-        feeSignatures,
-        feePercentage,
-        feeRecipient
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([orders,
         makerAssetFillAmount,
@@ -158,8 +142,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public withdrawAsset = {
@@ -230,12 +214,6 @@ export class ForwarderContract extends BaseContract {
         > {
             const self = this as any as ForwarderContract;
             const functionSignature = 'withdrawAsset(bytes,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [assetData,
-        amount
-        ] = BaseContract._formatABIDataItemList(inputAbi, [assetData,
-        amount
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([assetData,
         amount
@@ -250,7 +228,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public owner = {
@@ -261,8 +240,6 @@ export class ForwarderContract extends BaseContract {
         > {
             const self = this as any as ForwarderContract;
             const functionSignature = 'owner()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -275,8 +252,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public marketSellOrdersWithEth = {
@@ -379,20 +356,6 @@ export class ForwarderContract extends BaseContract {
         > {
             const self = this as any as ForwarderContract;
             const functionSignature = 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [orders,
-        signatures,
-        feeOrders,
-        feeSignatures,
-        feePercentage,
-        feeRecipient
-        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
-        signatures,
-        feeOrders,
-        feeSignatures,
-        feePercentage,
-        feeRecipient
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([orders,
         signatures,
@@ -411,8 +374,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public transferOwnership = {
@@ -475,10 +438,6 @@ export class ForwarderContract extends BaseContract {
         > {
             const self = this as any as ForwarderContract;
             const functionSignature = 'transferOwnership(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [newOwner
-        ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([newOwner
         ]);
@@ -492,7 +451,8 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public static async deployFrom0xArtifactAsync(

@@ -26,14 +26,6 @@ export class IValidatorContract extends BaseContract {
         > {
             const self = this as any as IValidatorContract;
             const functionSignature = 'isValidSignature(bytes32,address,bytes)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [hash,
-        signerAddress,
-        signature
-        ] = BaseContract._formatABIDataItemList(inputAbi, [hash,
-        signerAddress,
-        signature
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([hash,
         signerAddress,
@@ -49,8 +41,8 @@ export class IValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public static async deployFrom0xArtifactAsync(

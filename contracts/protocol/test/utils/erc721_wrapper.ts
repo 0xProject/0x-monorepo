@@ -102,15 +102,12 @@ export class ERC721Wrapper {
     public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
-        console.log('a');
-        console.log(to, ':', tokenId, ':', tokenOwner);
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await tokenContract.approve.sendTransactionAsync(to, tokenId, {
                 from: tokenOwner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        console.log('b');
     }
     public async transferFromAsync(
         tokenAddress: string,
@@ -147,7 +144,6 @@ export class ERC721Wrapper {
     public async ownerOfAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const owner = await tokenContract.ownerOf.callAsync(tokenId);
-        console.log(`OWNER OF = ${owner}`);
         return owner;
     }
     public async isOwnerAsync(userAddress: string, tokenAddress: string, tokenId: BigNumber): Promise<boolean> {

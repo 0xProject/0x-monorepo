@@ -51,6 +51,12 @@ export class MethodDataType extends AbstractSetDataType {
         return returnValuesAsArray;
     }
 
+    public decodeReturnValuesAsArrayOrNull(returndata: string, rules?: DecodingRules): any {
+        const returnValuesAsArray = this.decodeReturnValuesAsArray(returndata, rules);
+        const returnValue = _.isEmpty(returnValuesAsArray) ? [] : returnValuesAsArray;
+        return returnValue;
+    }
+
     public getSignature(): string {
         return this._methodSignature;
     }

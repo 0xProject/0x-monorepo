@@ -53,10 +53,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'getApproved(uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_tokenId
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_tokenId
         ]);
@@ -70,8 +66,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public approve = {
@@ -142,12 +138,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'approve(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_approved,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_approved,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_approved,
         _tokenId
@@ -162,7 +152,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public transferFrom = {
@@ -241,14 +232,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'transferFrom(address,address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_from,
-        _to,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-        _to,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_from,
         _to,
@@ -264,7 +247,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public safeTransferFrom1 = {
@@ -343,14 +327,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'safeTransferFrom(address,address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_from,
-        _to,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-        _to,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_from,
         _to,
@@ -366,7 +342,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public ownerOf = {
@@ -378,10 +355,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'ownerOf(uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_tokenId
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_tokenId
         ]);
@@ -395,8 +368,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public balanceOf = {
@@ -408,10 +381,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'balanceOf(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_owner
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_owner
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_owner
         ]);
@@ -425,8 +394,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public setApprovalForAll = {
@@ -497,12 +466,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'setApprovalForAll(address,bool)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_operator,
-        _approved
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_operator,
-        _approved
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_operator,
         _approved
@@ -517,7 +480,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public safeTransferFrom2 = {
@@ -604,16 +568,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'safeTransferFrom(address,address,uint256,bytes)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_from,
-        _to,
-        _tokenId,
-        _data
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-        _to,
-        _tokenId,
-        _data
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_from,
         _to,
@@ -630,7 +584,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                return;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public isApprovedForAll = {
@@ -643,12 +598,6 @@ export class ERC721TokenContract extends BaseContract {
         > {
             const self = this as any as ERC721TokenContract;
             const functionSignature = 'isApprovedForAll(address,address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_owner,
-        _operator
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_owner,
-        _operator
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([_owner,
         _operator
@@ -663,8 +612,8 @@ export class ERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public static async deployFrom0xArtifactAsync(

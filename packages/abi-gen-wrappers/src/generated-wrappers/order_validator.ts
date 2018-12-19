@@ -25,12 +25,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [order,
-        takerAddress
-        ] = BaseContract._formatABIDataItemList(inputAbi, [order,
-        takerAddress
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([order,
         takerAddress
@@ -45,8 +39,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public getBalanceAndAllowance = {
@@ -59,12 +53,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getBalanceAndAllowance(address,bytes)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target,
-        assetData
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-        assetData
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([target,
         assetData
@@ -79,8 +67,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public getOrdersAndTradersInfo = {
@@ -93,12 +81,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [orders,
-        takerAddresses
-        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
-        takerAddresses
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([orders,
         takerAddresses
@@ -113,8 +95,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public getTradersInfo = {
@@ -127,12 +109,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [orders,
-        takerAddresses
-        ] = BaseContract._formatABIDataItemList(inputAbi, [orders,
-        takerAddresses
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([orders,
         takerAddresses
@@ -147,8 +123,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public getERC721TokenOwner = {
@@ -161,12 +137,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getERC721TokenOwner(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [token,
-        tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [token,
-        tokenId
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([token,
         tokenId
@@ -181,8 +151,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public getBalancesAndAllowances = {
@@ -195,12 +165,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getBalancesAndAllowances(address,bytes[])';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target,
-        assetData
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-        assetData
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([target,
         assetData
@@ -215,8 +179,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray;
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray;
         },
     };
     public getTraderInfo = {
@@ -229,12 +193,6 @@ export class OrderValidatorContract extends BaseContract {
         > {
             const self = this as any as OrderValidatorContract;
             const functionSignature = 'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [order,
-        takerAddress
-        ] = BaseContract._formatABIDataItemList(inputAbi, [order,
-        takerAddress
-        ], BaseContract._bigNumberToString.bind(self));
             const abiEncoder = self._lookupAbiEncoder(functionSignature);
             const encodedData = abiEncoder.encode([order,
         takerAddress
@@ -249,8 +207,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-                let resultArray = abiEncoder.decodeReturnValuesAsArray(rawCallResult, {structsAsObjects: true});
-                return resultArray[0];
+            let resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
+            return resultArray[0];
         },
     };
     public static async deployFrom0xArtifactAsync(

@@ -451,7 +451,6 @@ describe.skip('Exchange core internal functions', () => {
                 makerFeePaid: new BigNumber(0),
                 takerFeePaid: new BigNumber(0),
             };
-            //console.log(`EMPTY ORDER:\n ${JSON.stringify(emptySignedOrder, null ,4)}`);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
                     orderUtils.getOrderWithoutExchangeAddress(emptySignedOrder),
