@@ -278,6 +278,7 @@ describe('OrderWatcherWebSocketServer', async () => {
         for (const client of [wsClient, wsClientTwo]) {
             const updateMsg = await _onMessageAsync(client);
             const updateData = JSON.parse(updateMsg.data);
+            console.log('-------------------------- UPDATE_DATA: ', updateData);
             const orderState = updateData.result as OrderStateValid;
             expect(orderState.isValid).to.be.true();
             expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
