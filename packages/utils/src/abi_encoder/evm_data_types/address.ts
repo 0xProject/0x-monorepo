@@ -43,7 +43,7 @@ export class AddressDataType extends AbstractBlobDataType {
         return valueLowercase;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return SolidityTypes.Address;
     }
     /* tslint:enable prefer-function-over-method */

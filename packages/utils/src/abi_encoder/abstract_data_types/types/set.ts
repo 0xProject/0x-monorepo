@@ -155,11 +155,11 @@ export abstract class AbstractSetDataType extends DataType {
         return block;
     }
 
-    protected _computeSignatureOfMembers(): string {
+    protected _computeSignatureOfMembers(detailed?: boolean): string {
         // Compute signature of members
         let signature = `(`;
         _.each(this._members, (member: DataType, i: number) => {
-            signature += member.getSignature();
+            signature += member.getSignature(detailed);
             if (i < this._members.length - 1) {
                 signature += ',';
             }

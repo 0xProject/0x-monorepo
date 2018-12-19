@@ -11,7 +11,11 @@ export class PointerDataType extends AbstractPointerDataType {
         super(dataItem, dataTypeFactory, destDataType, parentDataType);
     }
 
-    public getSignature(): string {
-        return this._destination.getSignature();
+    public getSignatureType(): string {
+        return this._destination.getSignature(false);
+    }
+
+    public getSignature(detailed?: boolean): string {
+        return this._destination.getSignature(detailed);
     }
 }

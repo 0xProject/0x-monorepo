@@ -12,3 +12,4 @@ export {
     Tuple,
     UInt,
 } from './evm_data_type_factory';
+export { fromSignature } from './utils/signatureParser';

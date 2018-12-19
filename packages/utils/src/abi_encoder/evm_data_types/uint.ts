@@ -55,7 +55,7 @@ export class UIntDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return `${SolidityTypes.Uint}${this._width}`;
     }
 }

@@ -65,7 +65,7 @@ export class DynamicBytesDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return SolidityTypes.Bytes;
     }
     /* tslint:enable prefer-function-over-method */

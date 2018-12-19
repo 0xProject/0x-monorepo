@@ -56,7 +56,7 @@ export class IntDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return `${SolidityTypes.Int}${this._width}`;
     }
 }

@@ -51,8 +51,16 @@ export abstract class DataType {
         return value;
     }
 
+    public getSignature(detailed?: boolean): string {
+        if (_.isEmpty(this._dataItem.name) || !detailed) return this.getSignatureType();
+        const name = this.getDataItem().name;
+        const shortName = name.indexOf('.') > 0 ? name.substr(name.lastIndexOf('.') + 1) : name;
+        const detailedSignature = `${shortName} ${this.getSignatureType()}`;
+        return detailedSignature;
+    }
+
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
     public abstract generateValue(calldata: RawCalldata, rules: DecodingRules): any;
-    public abstract getSignature(): string;
+    public abstract getSignatureType(): string;
     public abstract isStatic(): boolean;
 }

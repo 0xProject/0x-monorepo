@@ -57,7 +57,7 @@ export class MethodDataType extends AbstractSetDataType {
         return returnValue;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return this._methodSignature;
     }
 
