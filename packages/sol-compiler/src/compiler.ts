@@ -10,7 +10,6 @@ import {
     URLResolver,
 } from '@0x/sol-resolver';
 import { logUtils } from '@0x/utils';
-import chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as fs from 'fs';
@@ -136,18 +135,18 @@ export class Compiler {
     }
     public async watchAsync(): Promise<void> {
         console.clear(); // tslint:disable-line:no-console
-        logWithTime('Starting compilation in watch mode...');
+        utils.logWithTime('Starting compilation in watch mode...');
         const watcher = chokidar.watch('^$', { ignored: /(^|[\/\\])\../ });
         const onFileChangedAsync = async () => {
             watcher.unwatch('*'); // Stop watching
             try {
                 await this.compileAsync();
-                logWithTime('Found 0 errors. Watching for file changes.');
+                utils.logWithTime('Found 0 errors. Watching for file changes.');
             } catch (err) {
                 if (err.typeName === 'CompilationError') {
-                    logWithTime(`Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`);
+                    utils.logWithTime(`Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`);
                 } else {
-                    logWithTime('Found errors. Watching for file changes.');
+                    utils.logWithTime('Found errors. Watching for file changes.');
                 }
             }
 
@@ -157,7 +156,7 @@ export class Compiler {
         await onFileChangedAsync();
         watcher.on('change', (changedFilePath: string) => {
             console.clear(); // tslint:disable-line:no-console
-            logWithTime('File change detected. Starting incremental compilation...');
+            utils.logWithTime('File change detected. Starting incremental compilation...');
             onFileChangedAsync();
         });
     }
@@ -339,8 +338,4 @@ export class Compiler {
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.warn(`${contractName} artifact saved!`);
     }
-}
-
-function logWithTime(arg: string): void {
-    logUtils.log(`[${chalk.gray(new Date().toLocaleTimeString())}] ${arg}`);
 }
