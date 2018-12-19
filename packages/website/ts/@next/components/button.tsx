@@ -74,7 +74,9 @@ const ButtonBase =
     transition: background-color 0.35s, border-color 0.35s;
 
     // @todo Refactor to use theme props
-    ${props => props.bgColor === 'dark' && `
+    ${props =>
+        props.bgColor === 'dark' &&
+        `
         background-color: ${colors.brandDark};
         color: ${colors.white};
     `}

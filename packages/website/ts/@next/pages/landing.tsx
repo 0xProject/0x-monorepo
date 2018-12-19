@@ -1,11 +1,11 @@
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 
-import {SectionLandingAbout} from 'ts/@next/components/sections/landing/about';
-import {SectionLandingClients} from 'ts/@next/components/sections/landing/clients';
-import {SectionLandingCta} from 'ts/@next/components/sections/landing/cta';
-import {SectionLandingHero} from 'ts/@next/components/sections/landing/hero';
-import {SiteWrap} from 'ts/@next/components/siteWrap';
+import { SectionLandingAbout } from 'ts/@next/components/sections/landing/about';
+import { SectionLandingClients } from 'ts/@next/components/sections/landing/clients';
+import { SectionLandingCta } from 'ts/@next/components/sections/landing/cta';
+import { SectionLandingHero } from 'ts/@next/components/sections/landing/hero';
+import { SiteWrap } from 'ts/@next/components/siteWrap';
 
 import { ModalContact } from 'ts/@next/components/modals/modal_contact';
 
