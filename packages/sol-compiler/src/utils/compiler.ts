@@ -224,7 +224,7 @@ function recursivelyGatherDependencySources(
         }
 
         let importPath = importPathMatches[1];
-        // HACK(ablrow): We have, e.g.:
+        // HACK(albrow): We have, e.g.:
         //
         //      importPath   = "../../utils/LibBytes/LibBytes.sol"
         //      contractPath = "2.0.0/protocol/AssetProxyOwner/AssetProxyOwner.sol"
