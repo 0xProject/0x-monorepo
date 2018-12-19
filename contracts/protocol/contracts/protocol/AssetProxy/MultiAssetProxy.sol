@@ -33,6 +33,9 @@ contract MultiAssetProxy is
     function ()
         external
     {
+        // NOTE: The below assembly assumes that clients do some input validation and that the input is properly encoded according to the AbiV2 specification.
+        // It is technically possible for inputs with very large lengths and offsets to cause overflows. However, this would make the calldata prohibitively expensive
+        // and we therefore do not check for overflows in these scenarios.
         assembly {
             // The first 4 bytes of calldata holds the function selector
             let selector := and(calldataload(0), 0xffffffff00000000000000000000000000000000000000000000000000000000)
