@@ -104,6 +104,7 @@ export enum ContractName {
     Authorizable = 'Authorizable',
     Whitelist = 'Whitelist',
     Forwarder = 'Forwarder',
+    BalanceThresholdFilter = 'BalanceThresholdFilter',
 }
 
 export interface SignedTransaction {
