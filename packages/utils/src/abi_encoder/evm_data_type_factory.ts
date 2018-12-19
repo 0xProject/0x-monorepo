@@ -2,6 +2,8 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { generateDataItemsFromSignature } from './utils/signatureParser';
+
 import { DataType } from './abstract_data_types/data_type';
 import { DataTypeFactory } from './abstract_data_types/interfaces';
 import { AddressDataType } from './evm_data_types/address';
@@ -128,5 +130,26 @@ export class EvmDataTypeFactory implements DataTypeFactory {
     /* tslint:enable prefer-function-over-method */
 
     private constructor() {}
+}
+
+// Convenience function
+export function create(input: DataItem | DataItem[] | string): DataType {
+    // Handle different types of input
+    let dataItems: DataItem[] = [];
+    if (typeof(input) === 'string') {
+        dataItems = generateDataItemsFromSignature(input);
+    } else if(input instanceof Array) {
+        dataItems = input as DataItem[];
+    } else {
+        dataItems = [input as DataItem];
+    }
+    // Create single data item from input
+    let dataItem: DataItem = dataItems.length === 1 ? dataItems[0] : {
+        name: '',
+        type: 'tuple',
+        components: dataItems
+    };
+    // Create data type
+    return EvmDataTypeFactory.getInstance().create(dataItem);
 }
 /* tslint:enable no-construct */
