@@ -173,7 +173,8 @@ export class Compiler {
             const contractSource = spyResolver.resolve(contractName);
             // NOTE: We ignore the return value here. We don't want to compute the source tree hash.
             // We just want to call a SpyResolver on each contracts and it's dependencies and
-            // this is a convinient way to reuse the existing code that does that.
+            // this is a convenient way to reuse the existing code that does that.
+            // We can then get all the relevant paths from the `spyResolver` below.
             getSourceTreeHash(spyResolver, contractSource.path);
         }
         const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
