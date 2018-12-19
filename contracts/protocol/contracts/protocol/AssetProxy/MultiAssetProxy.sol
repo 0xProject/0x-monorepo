@@ -148,7 +148,7 @@ contract MultiAssetProxy is
                 let nestedAssetDataLen := calldataload(sub(nestedAssetDataContentsStart, 32))
 
                 // Revert if number of elements in `amounts` differs from number of elements in `nestedAssetData`
-                if iszero(eq(amountsLen, nestedAssetDataLen)) {
+                if sub(amountsLen, nestedAssetDataLen) {
                     // Revert with `Error("LENGTH_MISMATCH")`
                     mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
@@ -236,7 +236,7 @@ contract MultiAssetProxy is
 
                     // Only load `assetProxy` if `currentAssetProxyId` does not equal `assetProxyId`
                     // We do not need to check if `currentAssetProxyId` is 0 since `assetProxy` is also initialized to 0
-                    if iszero(eq(currentAssetProxyId, assetProxyId)) {
+                    if sub(currentAssetProxyId, assetProxyId) {
                         // Update `assetProxyId`
                         assetProxyId := currentAssetProxyId
                         // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
