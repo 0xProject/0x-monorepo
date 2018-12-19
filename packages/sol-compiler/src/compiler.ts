@@ -297,7 +297,7 @@ export class Compiler {
         const compiledContract = compilerOutput.contracts[contractPath][contractName];
 
         // need to gather sourceCodes for this artifact, but compilerOutput.sources (the list of contract modules)
-        // contains listings for for every contract compiled during the compiler invocation that compiled the contract
+        // contains listings for every contract compiled during the compiler invocation that compiled the contract
         // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
         // the relevant sources:
         const { sourceCodes, sources } = getSourcesWithDependencies(
