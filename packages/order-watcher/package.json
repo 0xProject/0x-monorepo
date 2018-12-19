@@ -74,7 +74,8 @@
         "ethereum-types": "^1.1.4",
         "ethereumjs-blockstream": "6.0.0",
         "ethers": "~4.0.4",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.5",
+        "websocket": "^1.0.25"
     },
     "publishConfig": {
         "access": "public"
