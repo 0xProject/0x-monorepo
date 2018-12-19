@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 
 import { Hero } from 'ts/@next/components/hero';
 
@@ -35,6 +36,7 @@ export class NextLaunchKit extends React.Component {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
+                <DocumentTitle title="0x Launch Kit: Launch a relayer in under a minute" />
                 <Hero
                     isLargeTitle={false}
                     isFullWidth={false}

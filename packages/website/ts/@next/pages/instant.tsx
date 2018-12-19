@@ -1,6 +1,7 @@
 import { utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import styled, { keyframes } from 'styled-components';
 
 import { Banner } from 'ts/@next/components/banner';
@@ -87,6 +88,7 @@ export class Next0xInstant extends React.Component<Props> {
     public render(): React.ReactNode {
         return (
             <SiteWrap>
+                <DocumentTitle title="0x Instant: Quick and secure crypto purchasing" />
                 <Hero
                     title="Introducing 0x Instant"
                     description="A free and flexible way to offer simple crypto purchasing in any app or website"

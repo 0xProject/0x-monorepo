@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
+import DocumentTitle from 'react-document-title';
 
-import { SectionLandingAbout } from 'ts/@next/components/sections/landing/about';
-import { SectionLandingClients } from 'ts/@next/components/sections/landing/clients';
-import { SectionLandingCta } from 'ts/@next/components/sections/landing/cta';
-import { SectionLandingHero } from 'ts/@next/components/sections/landing/hero';
+import {SectionLandingAbout} from 'ts/@next/components/sections/landing/about';
+import {SectionLandingClients} from 'ts/@next/components/sections/landing/clients';
+import {SectionLandingCta} from 'ts/@next/components/sections/landing/cta';
+import {SectionLandingHero} from 'ts/@next/components/sections/landing/hero';
+import {SiteWrap} from 'ts/@next/components/siteWrap';
 
 import { ModalContact } from 'ts/@next/components/modals/modal_contact';
 
@@ -23,6 +24,7 @@ export class NextLanding extends React.Component<Props> {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
+                <DocumentTitle title="0x: The protocol for trading tokens on Ethereum" />
                 <SectionLandingHero />
                 <SectionLandingAbout />
                 <SectionLandingClients />
