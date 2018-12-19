@@ -161,6 +161,8 @@ export class ModalContact extends React.Component<Props> {
         this.setState({ ...this.state, errors: [], isSubmitting: true });
 
         try {
+            // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
+            // tslint:disable:no-unbound-method
             const response = await fetch('https://website-api.0xproject.com/leads', {
                 method: 'post',
                 mode: 'cors',
@@ -185,6 +187,7 @@ export class ModalContact extends React.Component<Props> {
         }
     }
     private _parseErrors(errors: ErrorResponseProps[]): ErrorProps {
+        const initialValue: {} = {};
         return _.reduce(
             errors,
             (hash: ErrorProps, error: ErrorResponseProps) => {
@@ -194,7 +197,7 @@ export class ModalContact extends React.Component<Props> {
 
                 return hash;
             },
-            {},
+            initialValue,
         );
     }
 }

@@ -65,7 +65,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
             <Container minWidth="350px">
                 <ConfigGeneratorSection title="Liquidity Source">
                     <Select
-                        includeEmpty={false}
+                        shouldIncludeEmpty={false}
                         id=""
                         value={value.orderSource}
                         items={this._generateItems()}

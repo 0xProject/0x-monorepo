@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {getCSSPadding, PADDING_SIZES, PaddingInterface} from 'ts/@next/constants/utilities';
+import { getCSSPadding, PADDING_SIZES, PaddingInterface } from 'ts/@next/constants/utilities';
 
 interface WrapWidths {
     default: string;
@@ -51,8 +51,8 @@ export interface WrapStickyInterface {
 
 const _getColumnWidth = (args: GetColWidthArgs): string => {
     const { span = 1, columns } = args;
-    const percentWidth = (span / columns) * 100;
-    const gutterDiff = (GUTTER * (columns - 1)) / columns;
+    const percentWidth = span / columns * 100;
+    const gutterDiff = GUTTER * (columns - 1) / columns;
     return `calc(${percentWidth}% - ${gutterDiff}px)`;
 };
 
@@ -87,8 +87,11 @@ export const Main = styled.main`
 // passing a asElement (same patter nas Heading) so we dont have to
 // make a const on every route to withComponent-size it.
 // just <Section asElement?="div/section/footer/header/whatever" /> ?
-export const Section = styled.section<SectionProps>`
-    width: ${props => props.isFullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
+export const Section =
+    styled.section <
+    SectionProps >
+    `
+    width: ${props => (props.isFullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%')};
     padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large}` : PADDING_SIZES.default)};
     background-color: ${props => props.bgColor};
     position: ${props => props.isRelative && 'relative'};
@@ -102,11 +105,15 @@ export const Section = styled.section<SectionProps>`
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
         margin-bottom: ${props => !props.isNoMargin && `${GUTTER / 2}px`};
-        padding: ${props => props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default};
+        padding: ${props =>
+            props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default};
     }
 `;
 
-const WrapBase = styled.div<WrapProps>`
+const WrapBase =
+    styled.div <
+    WrapProps >
+    `
     max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     background-color: ${props => props.bgColor};
@@ -130,7 +137,10 @@ export const WrapCentered = styled(WrapBase)`
     text-align: center;
 `;
 
-export const WrapSticky = styled.div<WrapStickyInterface>`
+export const WrapSticky =
+    styled.div <
+    WrapStickyInterface >
+    `
     position: sticky;
     top: ${props => props.offsetTop || '60px'};
 `;
@@ -138,16 +148,21 @@ export const WrapSticky = styled.div<WrapStickyInterface>`
 export const WrapGrid = styled(WrapBase)`
     display: flex;
     flex-wrap: ${props => props.isWrapped && `wrap`};
-    justify-content: ${props => props.isCentered ? `center` : 'space-between'};
+    justify-content: ${props => (props.isCentered ? `center` : 'space-between')};
 `;
 
-export const Column = styled.div<ColumnProps>`
+export const Column =
+    styled.div <
+    ColumnProps >
+    `
     background-color: ${props => props.bgColor};
     flex-grow: ${props => props.isFlexGrow && 1};
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
-        padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default)};
-        width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
+        padding: ${props =>
+            !props.isNoPadding &&
+            (props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default)};
+        width: ${props => (props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%')};
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {

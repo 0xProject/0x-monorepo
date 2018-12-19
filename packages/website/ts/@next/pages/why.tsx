@@ -1,20 +1,18 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
-
 import styled from 'styled-components';
-
-import {Hero} from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
-import {Definition} from 'ts/@next/components/definition';
-import {Column, Section, WrapSticky} from 'ts/@next/components/newLayout';
+import { Definition } from 'ts/@next/components/definition';
+import { Hero } from 'ts/@next/components/hero';
+import { Column, Section, WrapSticky } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Slide, Slider } from 'ts/@next/components/slider/slider';
+import { Heading } from 'ts/@next/components/text';
 
 import { ModalContact } from '../components/modals/modal_contact';
-import { Heading } from 'ts/@next/components/text';
 
 const offersData = [
     {
@@ -48,7 +46,8 @@ const functionalityData = [
     {
         icon: 'buildBusiness',
         title: 'Build a Business',
-        description: 'Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.',
+        description:
+            'Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.',
     },
 ];
 
@@ -56,27 +55,32 @@ const useCaseSlides = [
     {
         icon: 'gamingAndCollectibles',
         title: 'Games & Collectibles',
-        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+        description:
+            'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
     },
     {
         icon: 'predictionMarkets',
         title: 'Prediction Markets',
-        description: 'Decentralized prediction markets and cryptodervivative platforms generate sets of tokens that represent a financial stake in the outcomes of events. 0x allows these tokens to be instantly tradable in liquid markets.',
+        description:
+            'Decentralized prediction markets and cryptodervivative platforms generate sets of tokens that represent a financial stake in the outcomes of events. 0x allows these tokens to be instantly tradable in liquid markets.',
     },
     {
         icon: 'orderBooks',
         title: 'Order Books',
-        description: 'There are thousands of decentralized apps and protocols that have native utility tokens. 0x provides professional exchanges with the ability to host order books and facilitates the exchange of these assets.',
+        description:
+            'There are thousands of decentralized apps and protocols that have native utility tokens. 0x provides professional exchanges with the ability to host order books and facilitates the exchange of these assets.',
     },
     {
         icon: 'decentralisedLoans',
         title: 'Decentralized Loans',
-        description: 'Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.',
+        description:
+            'Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.',
     },
     {
         icon: 'stableTokens',
         title: 'Stable Tokens',
-        description: 'Novel economic constructs such as stable coins require efficient, liquid markets to succeed. 0x will facilitate the underlying economic mechanisms that allow these tokens to remain stable.',
+        description:
+            'Novel economic constructs such as stable coins require efficient, liquid markets to succeed. 0x will facilitate the underlying economic mechanisms that allow these tokens to remain stable.',
     },
 ];
 
@@ -87,27 +91,20 @@ export class NextWhy extends React.Component {
         isContactModalOpen: false,
     };
     public render(): React.ReactNode {
+        const buildAction = (
+            <Button href="/docs" isWithArrow={true} isAccentColor={true}>
+                Build on 0x
+            </Button>
+        );
         return (
             <SiteWrap theme="dark">
                 <Hero
                     title="The exchange layer for the crypto economy"
                     description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."
-                    actions={
-                        <Button
-                            href="/docs"
-                            isWithArrow={true}
-                            isAccentColor={true}
-                        >
-                          Build on 0x
-                        </Button>
-                    }
+                    actions={buildAction}
                 />
 
-                <Section
-                    bgColor="dark"
-                    isFlex={true}
-                    maxWidth="1170px"
-                >
+                <Section bgColor="dark" isFlex={true} maxWidth="1170px">
                     <Definition
                         title="Support for all Ethereum Standards"
                         titleSize="small"
@@ -136,20 +133,22 @@ export class NextWhy extends React.Component {
                     />
                 </Section>
 
-              <Section maxWidth="1170px" isFlex={true} isFullWidth={true}>
-                  <Column>
-                      <NavStickyWrap offsetTop="130px">
-                          <ChapterLink href="#benefits">Benefits</ChapterLink>
-                          <ChapterLink href="#cases">Use Cases</ChapterLink>
-                          <ChapterLink href="#functionality">Features</ChapterLink>
-                      </NavStickyWrap>
-                  </Column>
+                <Section maxWidth="1170px" isFlex={true} isFullWidth={true}>
+                    <Column>
+                        <NavStickyWrap offsetTop="130px">
+                            <ChapterLink href="#benefits">Benefits</ChapterLink>
+                            <ChapterLink href="#cases">Use Cases</ChapterLink>
+                            <ChapterLink href="#functionality">Features</ChapterLink>
+                        </NavStickyWrap>
+                    </Column>
 
                     <Column width="55%" maxWidth="826px">
                         <Column width="100%" maxWidth="560px" padding="0 30px 0 0">
                             <ScrollableAnchor id="benefits">
                                 <SectionWrap>
-                                    <SectionTitle size="medium" marginBottom="60px" isNoBorder={true}>What 0x offers</SectionTitle>
+                                    <SectionTitle size="medium" marginBottom="60px" isNoBorder={true}>
+                                        What 0x offers
+                                    </SectionTitle>
 
                                     {_.map(offersData, (item, index) => (
                                         <Definition
@@ -166,7 +165,9 @@ export class NextWhy extends React.Component {
 
                             <ScrollableAnchor id="cases">
                                 <SectionWrap isNotRelative={true}>
-                                    <SectionTitle size="medium" marginBottom="60px">Use Cases</SectionTitle>
+                                    <SectionTitle size="medium" marginBottom="60px">
+                                        Use Cases
+                                    </SectionTitle>
                                     <Slider>
                                         {_.map(useCaseSlides, (item, index) => (
                                             <Slide
@@ -182,7 +183,9 @@ export class NextWhy extends React.Component {
 
                             <ScrollableAnchor id="functionality">
                                 <SectionWrap>
-                                    <SectionTitle size="medium" marginBottom="60px">Exchange Functionality</SectionTitle>
+                                    <SectionTitle size="medium" marginBottom="60px">
+                                        Exchange Functionality
+                                    </SectionTitle>
 
                                     {_.map(functionalityData, (item, index) => (
                                         <Definition
@@ -198,33 +201,36 @@ export class NextWhy extends React.Component {
                             </ScrollableAnchor>
                         </Column>
                     </Column>
-              </Section>
+                </Section>
 
-              <Banner
-                heading="Ready to get started?"
-                subline="Dive into our docs, or contact us if needed"
-                mainCta={{ text: 'Get Started', href: '/docs' }}
-                secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
-              />
-              <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
+                <Banner
+                    heading="Ready to get started?"
+                    subline="Dive into our docs, or contact us if needed"
+                    mainCta={{ text: 'Get Started', href: '/docs' }}
+                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
+                />
+                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
             </SiteWrap>
         );
     }
 
     public _onOpenContactModal = (): void => {
         this.setState({ isContactModalOpen: true });
-    }
+    };
 
     public _onDismissContactModal = (): void => {
         this.setState({ isContactModalOpen: false });
-    }
+    };
 }
 
 interface SectionProps {
     isNotRelative?: boolean;
 }
 
-const SectionWrap = styled.div<SectionProps>`
+const SectionWrap =
+    styled.div <
+    SectionProps >
+    `
     position: ${props => !props.isNotRelative && 'relative'};
 
     & + & {
@@ -247,10 +253,18 @@ const SectionWrap = styled.div<SectionProps>`
     }
 `;
 
-const SectionTitle = styled(Heading)<{ isNoBorder?: boolean }>`
+interface SectionTitleProps {
+    isNoBorder?: boolean;
+}
+const SectionTitle =
+    styled(Heading) <
+    SectionTitleProps >
+    `
     position: relative;
 
-    ${props => !props.isNoBorder && `
+    ${props =>
+        !props.isNoBorder &&
+        `
         &:before {
             content: '';
             width: 100vw;

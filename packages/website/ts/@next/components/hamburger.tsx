@@ -16,7 +16,10 @@ export const Hamburger: React.FunctionComponent<Props> = (props: Props) => {
     );
 };
 
-const StyledHamburger = styled.button<Props>`
+const StyledHamburger =
+    styled.button <
+    Props >
+    `
     background: none;
     border: 0;
     width: 22px;
@@ -50,7 +53,9 @@ const StyledHamburger = styled.button<Props>`
             //transform-origin: 0% 100%;
         }
 
-        ${props => props.isOpen && `
+        ${props =>
+            props.isOpen &&
+            `
             opacity: 1;
             transform: rotate(45deg) translate(0, 1px);
 

@@ -98,14 +98,12 @@ export class NextCommunity extends React.Component {
                             Community
                         </Heading>
                         <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
-                            The 0x community is a global, passionate group of crypto developers and enthusiasts. The official channels below provide a great forum for connecting and engaging with the community.
+                            The 0x community is a global, passionate group of crypto developers and enthusiasts. The
+                            official channels below provide a great forum for connecting and engaging with the
+                            community.
                         </Paragraph>
                         <LinkWrap>
-                            <Button
-                                to="#"
-                                isWithArrow={true}
-                                isAccentColor={true}
-                            >
+                            <Button to="#" isWithArrow={true} isAccentColor={true}>
                                 Join the 0x community
                             </Button>
                         </LinkWrap>
@@ -113,7 +111,13 @@ export class NextCommunity extends React.Component {
                 </Section>
 
                 <Section isFullWidth={true}>
-                    <WrapGrid isTextCentered={true} isWrapped={true} isFullWidth={false} isCentered={false} maxWidth="1151px">
+                    <WrapGrid
+                        isTextCentered={true}
+                        isWrapped={true}
+                        isFullWidth={false}
+                        isCentered={false}
+                        maxWidth="1151px"
+                    >
                         {_.map(communityLinks, (link: CommunityLinkProps, index: number) => (
                             <CommunityLink
                                 key={`cl-${index}`}
@@ -126,32 +130,37 @@ export class NextCommunity extends React.Component {
                     </WrapGrid>
                 </Section>
 
-                <EventsWrapper bgColor={colors.backgroundLight} isFullWidth={true} isCentered={true} isTextCentered={true}>
+                <EventsWrapper
+                    bgColor={colors.backgroundLight}
+                    isFullWidth={true}
+                    isCentered={true}
+                    isTextCentered={true}
+                >
                     <Column maxWidth="720px">
                         <Heading size="medium" asElement="h2" isCentered={true} maxWidth="507px" marginBottom="30px">
                             Upcoming Events
                         </Heading>
                         <Paragraph size="medium" isCentered={true} isMuted={true}>
-                            0x meetups happen all over the world on a monthly basis and are hosted by devoted members of the community. Want to host a meetup in your city? Reach out for help finding a venue, connecting with local 0x mentors, and promoting your events.
+                            0x meetups happen all over the world on a monthly basis and are hosted by devoted members of
+                            the community. Want to host a meetup in your city? Reach out for help finding a venue,
+                            connecting with local 0x mentors, and promoting your events.
                         </Paragraph>
                         <LinkWrap>
-                            <Button
-                                to="#"
-                                isWithArrow={true}
-                                isAccentColor={true}
-                            >
+                            <Button to="#" isWithArrow={true} isAccentColor={true}>
                                 Get in Touch
                             </Button>
-                            <Button
-                                to="#"
-                                isWithArrow={true}
-                                isAccentColor={true}
-                            >
+                            <Button to="#" isWithArrow={true} isAccentColor={true}>
                                 Join Newsletter
                             </Button>
                         </LinkWrap>
                     </Column>
-                    <WrapGrid isTextCentered={true} isWrapped={true} isFullWidth={false} isCentered={false} maxWidth="1149px">
+                    <WrapGrid
+                        isTextCentered={true}
+                        isWrapped={true}
+                        isFullWidth={false}
+                        isCentered={false}
+                        maxWidth="1149px"
+                    >
                         {_.map(events, (ev: EventProps, index: number) => (
                             <Event
                                 key={`event-${index}`}
@@ -177,17 +186,17 @@ export class NextCommunity extends React.Component {
 
     public _onOpenContactModal = (): void => {
         this.setState({ isContactModalOpen: true });
-    }
+    };
 
     public _onDismissContactModal = (): void => {
         this.setState({ isContactModalOpen: false });
-    }
+    };
 }
 
 const Event: React.FunctionComponent<EventProps> = (event: EventProps) => (
     <StyledEvent>
         <EventIcon name="logo-mark" size={30} margin={0} />
-        <EventImage src={event.imageUrl} alt=""/>
+        <EventImage src={event.imageUrl} alt="" />
         <EventContent>
             <Heading color={colors.white} size="small" marginBottom="0">
                 {event.title}
@@ -195,11 +204,7 @@ const Event: React.FunctionComponent<EventProps> = (event: EventProps) => (
             <Paragraph color={colors.white} isMuted={0.65}>
                 {event.date}
             </Paragraph>
-            <Button
-                color={colors.white}
-                href={event.signupUrl}
-                isWithArrow={true}
-            >
+            <Button color={colors.white} href={event.signupUrl} isWithArrow={true}>
                 Sign Up
             </Button>
         </EventContent>

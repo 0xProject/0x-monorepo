@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { css, keyframes, styled } from 'ts/style/theme';
 
 const appearFromBottomFrames = keyframes`

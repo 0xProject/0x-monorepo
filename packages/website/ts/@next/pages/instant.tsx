@@ -3,19 +3,18 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 import { Banner } from 'ts/@next/components/banner';
-import { Hero } from 'ts/@next/components/hero';
-
 import { Button } from 'ts/@next/components/button';
 import { Definition } from 'ts/@next/components/definition';
+import { Hero } from 'ts/@next/components/hero';
 import { Section, SectionProps } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 import { Configurator } from 'ts/@next/pages/instant/configurator';
+import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { utils } from 'ts/utils/utils';
+
 import { ModalContact } from '../components/modals/modal_contact';
 
 const CONFIGURATOR_MIN_WIDTH_PX = 1050;
@@ -39,7 +38,7 @@ const featuresData = [
             {
                 label: 'Get Started',
                 onClick: getStartedClick,
-                useAnchorTag: true,
+                shouldUseAnchorTag: true,
             },
             {
                 label: 'Explore the Docs',

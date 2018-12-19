@@ -49,14 +49,15 @@ export interface ColumnProps {
 export const Section: React.FunctionComponent<SectionProps> = (props: SectionProps) => {
     return (
         <SectionBase {...props}>
-            <Wrap {...props}>
-                {props.children}
-            </Wrap>
+            <Wrap {...props}>{props.children}</Wrap>
         </SectionBase>
     );
 };
 
-export const Column = styled.div<ColumnProps>`
+export const Column =
+    styled.div <
+    ColumnProps >
+    `
     width: ${props => props.width};
     max-width: ${props => props.maxWidth};
     padding: ${props => props.padding};
@@ -70,7 +71,10 @@ export const Column = styled.div<ColumnProps>`
     }
 `;
 
-export const FlexWrap = styled.div<FlexProps>`
+export const FlexWrap =
+    styled.div <
+    FlexProps >
+    `
     max-width: 1500px;
     margin: 0 auto;
     padding: ${props => props.padding};
@@ -81,12 +85,18 @@ export const FlexWrap = styled.div<FlexProps>`
     }
 `;
 
-export const WrapSticky = styled.div<WrapProps>`
+export const WrapSticky =
+    styled.div <
+    WrapProps >
+    `
     position: sticky;
     top: ${props => props.offsetTop || '60px'};
 `;
 
-const SectionBase = styled.section<SectionProps>`
+const SectionBase =
+    styled.section <
+    SectionProps >
+    `
     width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
     max-width: 1500px;
     margin: 0 auto;
@@ -100,7 +110,10 @@ const SectionBase = styled.section<SectionProps>`
     }
 `;
 
-const Wrap = styled(FlexWrap)<WrapProps>`
+const Wrap =
+    styled(FlexWrap) <
+    WrapProps >
+    `
     width: ${props => props.wrapWidth || 'calc(100% - 60px)'};
     width: ${props => props.bgColor && 'calc(100% - 60px)'};
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
@@ -108,10 +121,13 @@ const Wrap = styled(FlexWrap)<WrapProps>`
     margin: 0 auto;
 `;
 
-export const WrapGrid = styled(Wrap)<WrapProps>`
+export const WrapGrid =
+    styled(Wrap) <
+    WrapProps >
+    `
     display: flex;
     flex-wrap: ${props => props.isWrapped && `wrap`};
-    justify-content: ${props => props.isCentered ? `center` : 'space-between'};
+    justify-content: ${props => (props.isCentered ? `center` : 'space-between')};
 
     @media (max-width: 768px) {
         width: 100%;
