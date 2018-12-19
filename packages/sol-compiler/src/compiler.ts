@@ -134,18 +134,18 @@ export class Compiler {
     }
     public async watchAsync(): Promise<void> {
         console.clear(); // tslint:disable-line:no-console
-        utils.logWithTime('Starting compilation in watch mode...');
+        logUtils.logWithTime('Starting compilation in watch mode...');
         const watcher = chokidar.watch('^$', { ignored: /(^|[\/\\])\../ });
         const onFileChangedAsync = async () => {
             watcher.unwatch('*'); // Stop watching
             try {
                 await this.compileAsync();
-                utils.logWithTime('Found 0 errors. Watching for file changes.');
+                logUtils.logWithTime('Found 0 errors. Watching for file changes.');
             } catch (err) {
                 if (err.typeName === 'CompilationError') {
-                    utils.logWithTime(`Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`);
+                    logUtils.logWithTime(`Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`);
                 } else {
-                    utils.logWithTime('Found errors. Watching for file changes.');
+                    logUtils.logWithTime('Found errors. Watching for file changes.');
                 }
             }
 
@@ -155,7 +155,7 @@ export class Compiler {
         await onFileChangedAsync();
         watcher.on('change', (changedFilePath: string) => {
             console.clear(); // tslint:disable-line:no-console
-            utils.logWithTime('File change detected. Starting incremental compilation...');
+            logUtils.logWithTime('File change detected. Starting incremental compilation...');
             // NOTE: We can't await it here because that's a callback.
             // Instead we stop watching inside of it and start it again when we're finished.
             onFileChangedAsync(); // tslint:disable-line no-floating-promises
