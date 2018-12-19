@@ -46,18 +46,6 @@ describe.only('OrderWatcherWebSocketServer', async () => {
     let removeOrderPayload: RemoveOrderRequest;
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
-    // HACK: createFillableSignedOrderAsync is Promise-based, which forces us
-    // to use Promises instead of the done() callbacks for tests.
-    // onmessage callback must thus be wrapped as a Promise.
-    const _getOnMessagePromise = async (client: WebSocket.w3cwebsocket, method: string | null) =>
-        new Promise<WsMessage>(resolve => {
-            client.onmessage = (msg: WsMessage) => {
-                const data = JSON.parse(msg.data);
-                if (data.method === method) {
-                    resolve(msg);
-                }
-            };
-        });
 
     before(async () => {
         // Set up constants
@@ -152,7 +140,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             method: 'BAD_METHOD',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(invalidMethodPayload));
-        const errorMsg = await _getOnMessagePromise(wsClient, null);
+        const errorMsg = await onMessageAsync(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.id).to.be.null;
@@ -168,7 +156,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             method: 'GET_STATS',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(noJsonRpcPayload));
-        const errorMsg = await _getOnMessagePromise(wsClient, null);
+        const errorMsg = await onMessageAsync(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.method).to.be.null;
@@ -184,7 +172,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             orderHash: '0x7337e2f2a9aa2ed6afe26edc2df7ad79c3ffa9cf9b81a964f707ea63f5272355',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(noSignedOrderAddOrderPayload));
-        const errorMsg = await _getOnMessagePromise(wsClient, null);
+        const errorMsg = await onMessageAsync(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.id).to.be.null;
@@ -204,7 +192,7 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             },
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(invalidAddOrderPayload));
-        const errorMsg = await _getOnMessagePromise(wsClient, null);
+        const errorMsg = await onMessageAsync(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.id).to.be.null;
@@ -215,14 +203,14 @@ describe.only('OrderWatcherWebSocketServer', async () => {
 
     it('executes addOrder and removeOrder requests correctly', async () => {
         wsClient.onopen = () => wsClient.send(JSON.stringify(addOrderPayload));
-        const addOrderMsg = await _getOnMessagePromise(wsClient, OrderWatcherMethod.AddOrder);
+        const addOrderMsg = await onMessageAsync(wsClient, OrderWatcherMethod.AddOrder);
         const addOrderData = JSON.parse(addOrderMsg.data);
         expect(addOrderData.method).to.be.eq('ADD_ORDER');
         expect((wsServer as any)._orderWatcher._orderByOrderHash).to.deep.include({
             [orderHash]: signedOrder,
         });
 
-        const clientOnMessagePromise = _getOnMessagePromise(wsClient, OrderWatcherMethod.RemoveOrder);
+        const clientOnMessagePromise = onMessageAsync(wsClient, OrderWatcherMethod.RemoveOrder);
         wsClient.send(JSON.stringify(removeOrderPayload));
         const removeOrderMsg = await clientOnMessagePromise;
         const removeOrderData = JSON.parse(removeOrderMsg.data);
@@ -235,12 +223,16 @@ describe.only('OrderWatcherWebSocketServer', async () => {
     it('broadcasts orderStateInvalid message when makerAddress allowance set to 0 for watched order', async () => {
         // Add the regular order
         wsClient.onopen = () => wsClient.send(JSON.stringify(addOrderPayload));
-        const clientOnMessagePromise = _getOnMessagePromise(wsClient, OrderWatcherMethod.Update);
+
+        // We register the onMessage callback before calling `setProxyAllowanceAsync` which we
+        // expect will cause a message to be emitted. We do now "await" here, since we want to
+        // check for messages _after_ calling `setProxyAllowanceAsync`
+        const clientOnMessagePromise = onMessageAsync(wsClient, OrderWatcherMethod.Update);
 
         // Set the allowance to 0
         await contractWrappers.erc20Token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, new BigNumber(0));
 
-        // Ensure that orderStateInvalid message is received.
+        // We now await the `onMessage` promise to check for the message
         const orderWatcherUpdateMsg = await clientOnMessagePromise;
         const orderWatcherUpdateData = JSON.parse(orderWatcherUpdateMsg.data);
         expect(orderWatcherUpdateData.method).to.be.eq('UPDATE');
@@ -276,13 +268,14 @@ describe.only('OrderWatcherWebSocketServer', async () => {
         logUtils.log(`${new Date()} [Client] Connected.`);
         wsClientTwo.onopen = () => wsClientTwo.send(JSON.stringify(nonZeroMakerFeeOrderPayload));
 
-        const clientOneOnMessagePromise = _getOnMessagePromise(wsClient, OrderWatcherMethod.Update);
-        const clientTwoOnMessagePromise = _getOnMessagePromise(wsClientTwo, OrderWatcherMethod.Update);
+        // Setup the onMessage callbacks, but don't await them yet
+        const clientOneOnMessagePromise = onMessageAsync(wsClient, OrderWatcherMethod.Update);
+        const clientTwoOnMessagePromise = onMessageAsync(wsClientTwo, OrderWatcherMethod.Update);
 
         // Change the allowance
         await contractWrappers.erc20Token.setProxyAllowanceAsync(zrxTokenAddress, makerAddress, new BigNumber(0));
 
-        // Check that both clients receive the emitted event
+        // Check that both clients receive the emitted event by awaiting the onMessageAsync promises
         let updateMsg = await clientOneOnMessagePromise;
         let updateData = JSON.parse(updateMsg.data);
         let orderState = updateData.result as OrderStateValid;
@@ -299,3 +292,17 @@ describe.only('OrderWatcherWebSocketServer', async () => {
         logUtils.log(`${new Date()} [Client] Closed.`);
     });
 });
+
+// HACK: createFillableSignedOrderAsync is Promise-based, which forces us
+// to use Promises instead of the done() callbacks for tests.
+// onmessage callback must thus be wrapped as a Promise.
+async function onMessageAsync(client: WebSocket.w3cwebsocket, method: string | null): Promise<WsMessage> {
+    return new Promise<WsMessage>(resolve => {
+        client.onmessage = (msg: WsMessage) => {
+            const data = JSON.parse(msg.data);
+            if (data.method === method) {
+                resolve(msg);
+            }
+        };
+    });
+}
