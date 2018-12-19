@@ -42,6 +42,7 @@ import { ExchangeWrapper } from './exchange_wrapper';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
 import { SimpleOrderFilledCancelledFetcher } from './simple_order_filled_cancelled_fetcher';
+import { Method } from '@0x/utils/lib/src/abi_encoder';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -613,13 +614,13 @@ export class FillOrderCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
         const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
-        const expectedAbiEncodedData = this.exchangeWrapper.abiEncodeFillOrder(signedOrder, { takerAssetFillAmount });
-        const libsAbiEncodedData = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
+        const abiDataEncodedByContract = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
         );
-        expect(libsAbiEncodedData).to.be.equal(expectedAbiEncodedData, 'ABIEncodedFillOrderData');
+        const paramsDecodeddByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
+        expect(paramsDecodeddByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
     }
     private async _getTakerAssetFillAmountAsync(
         signedOrder: SignedOrder,

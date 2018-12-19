@@ -7,10 +7,12 @@ import {
     SignedTransaction,
 } from '@0x/contracts-test-utils';
 import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
-import { SignedOrder } from '@0x/types';
+import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { AbiDefinition, MethodAbi ,Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
+import { AbiEncoder } from '@0x/utils';
 
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { artifacts } from '../../src/artifacts';
@@ -274,6 +276,16 @@ export class ExchangeWrapper {
             params.signature,
         );
         return data;
+    }
+    // @hysz -- TEMPORARY HACK @TODO remove
+    public abiDecodeFillOrder(data: string): {order: OrderWithoutExchangeAddress, takerAssetFillAmount: BigNumber, signature: string} {
+        let fillOrderAbi = _.find(this._exchange.abi, (value: AbiDefinition) => {
+            if ((value.type === 'function') && (value as MethodAbi).name === 'fillOrder') {
+                return true;
+            }
+            return false;
+        }) as MethodAbi;
+        return (new AbiEncoder.Method(fillOrderAbi)).decode(data) as {order: OrderWithoutExchangeAddress, takerAssetFillAmount: BigNumber, signature: string};
     }
     public getExchangeAddress(): string {
         return this._exchange.address;

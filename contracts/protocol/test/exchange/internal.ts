@@ -50,7 +50,7 @@ const emptySignedOrder: SignedOrder = {
 
 const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
-describe.skip('Exchange core internal functions', () => {
+describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
