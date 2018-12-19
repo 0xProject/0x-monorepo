@@ -474,6 +474,8 @@ export enum Key {
     OrderBasicsDescription = 'ORDER_BASICS_DESCRIPTION',
     UseNetworkedLiquidity = 'USE_NETWORKED_LIQUIDITY',
     UseNetworkedLiquidityDescription = 'USE_NETWORKED_LIQUIDITY_DESCRIPTION',
+    Integrate0xInstant = 'INTEGRATE_0X_INSTANT',
+    Integrate0xInstantDescription = 'INTEGRATE_0X_INSTANT_DESCRIPTION',
     ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
     Sandbox = 'SANDBOX',
     Github = 'GITHUB',

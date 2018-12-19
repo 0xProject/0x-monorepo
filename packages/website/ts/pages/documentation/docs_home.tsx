@@ -44,6 +44,14 @@ const TUTORIALS: TutorialInfo[] = [
             to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
         },
     },
+    {
+        iconUrl: '/images/developers/tutorials/integrate_0x_instant.svg',
+        description: Key.Integrate0xInstantDescription,
+        link: {
+            title: Key.Integrate0xInstant,
+            to: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
+        },
+    },
 ];
 
 const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {

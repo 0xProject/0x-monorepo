@@ -122,6 +122,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                 window,
                 state.selectedAsset,
                 this.props.affiliateInfo,
+                state.baseCurrency,
             ),
         );
         analytics.trackInstantOpened();

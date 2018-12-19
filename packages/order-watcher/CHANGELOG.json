@@ -1,5 +1,24 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note":
+                    "Added a WebSocket interface to OrderWatcher so that it can be used by a client written in any language",
+                "pr": 1427
+            }
+        ]
+    },
+    {
+        "version": "2.2.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
         "version": "2.2.7",
         "changes": [
             {

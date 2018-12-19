@@ -2,6 +2,7 @@ import { AssetBuyerError } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
+import { DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
@@ -71,7 +72,7 @@ export const assetUtils = {
         }
         return metaData;
     },
-    bestNameForAsset: (asset?: Asset, defaultName: string = '???'): string => {
+    bestNameForAsset: (asset?: Asset, defaultName: string = DEFAULT_UNKOWN_ASSET_NAME): string => {
         if (_.isUndefined(asset)) {
             return defaultName;
         }

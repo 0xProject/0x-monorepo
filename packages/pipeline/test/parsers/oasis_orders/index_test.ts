@@ -37,10 +37,10 @@ describe('oasis_orders', () => {
             expected.price = new BigNumber(0.5);
             expected.baseAssetSymbol = 'DEF';
             expected.baseAssetAddress = null;
-            expected.baseVolume = new BigNumber(5);
+            expected.baseVolume = new BigNumber(10);
             expected.quoteAssetSymbol = 'ABC';
             expected.quoteAssetAddress = null;
-            expected.quoteVolume = new BigNumber(10);
+            expected.quoteVolume = new BigNumber(5);
 
             const actual = parseOasisOrder(oasisMarket, observedTimestamp, orderType, source, oasisOrder);
             expect(actual).deep.equal(expected);
