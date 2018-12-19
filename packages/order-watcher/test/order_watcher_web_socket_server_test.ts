@@ -26,7 +26,7 @@ interface WsMessage {
     data: string;
 }
 
-describe('OrderWatcherWebSocketServer', async () => {
+describe.only('OrderWatcherWebSocketServer', async () => {
     let contractWrappers: ContractWrappers;
     let wsServer: OrderWatcherWebSocketServer;
     let wsClient: WebSocket.w3cwebsocket;
@@ -49,9 +49,14 @@ describe('OrderWatcherWebSocketServer', async () => {
     // HACK: createFillableSignedOrderAsync is Promise-based, which forces us
     // to use Promises instead of the done() callbacks for tests.
     // onmessage callback must thus be wrapped as a Promise.
-    const _onMessageAsync = async (client: WebSocket.w3cwebsocket) =>
+    const _getOnMessagePromise = async (client: WebSocket.w3cwebsocket, method: string | null) =>
         new Promise<WsMessage>(resolve => {
-            client.onmessage = (msg: WsMessage) => resolve(msg);
+            client.onmessage = (msg: WsMessage) => {
+                const data = JSON.parse(msg.data);
+                if (data.method === method) {
+                    resolve(msg);
+                }
+            };
         });
 
     before(async () => {
@@ -106,20 +111,20 @@ describe('OrderWatcherWebSocketServer', async () => {
             isVerbose: true,
         };
         wsServer = new OrderWatcherWebSocketServer(provider, networkId, contractAddresses, orderWatcherConfig);
-        wsServer.start();
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
-        wsServer.stop();
     });
     beforeEach(async () => {
+        wsServer.start();
         await blockchainLifecycle.startAsync();
         wsClient = new WebSocket.w3cwebsocket('ws://127.0.0.1:8080/');
         logUtils.log(`${new Date()} [Client] Connected.`);
     });
     afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
         wsClient.close();
+        await blockchainLifecycle.revertAsync();
+        wsServer.stop();
         logUtils.log(`${new Date()} [Client] Closed.`);
     });
 
@@ -147,7 +152,7 @@ describe('OrderWatcherWebSocketServer', async () => {
             method: 'BAD_METHOD',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(invalidMethodPayload));
-        const errorMsg = await _onMessageAsync(wsClient);
+        const errorMsg = await _getOnMessagePromise(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.id).to.be.null;
@@ -163,7 +168,7 @@ describe('OrderWatcherWebSocketServer', async () => {
             method: 'GET_STATS',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(noJsonRpcPayload));
-        const errorMsg = await _onMessageAsync(wsClient);
+        const errorMsg = await _getOnMessagePromise(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.method).to.be.null;
@@ -179,7 +184,7 @@ describe('OrderWatcherWebSocketServer', async () => {
             orderHash: '0x7337e2f2a9aa2ed6afe26edc2df7ad79c3ffa9cf9b81a964f707ea63f5272355',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(noSignedOrderAddOrderPayload));
-        const errorMsg = await _onMessageAsync(wsClient);
+        const errorMsg = await _getOnMessagePromise(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.id).to.be.null;
@@ -199,7 +204,7 @@ describe('OrderWatcherWebSocketServer', async () => {
             },
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(invalidAddOrderPayload));
-        const errorMsg = await _onMessageAsync(wsClient);
+        const errorMsg = await _getOnMessagePromise(wsClient, null);
         const errorData = JSON.parse(errorMsg.data);
         // tslint:disable-next-line:no-unused-expression
         expect(errorData.id).to.be.null;
@@ -210,15 +215,16 @@ describe('OrderWatcherWebSocketServer', async () => {
 
     it('executes addOrder and removeOrder requests correctly', async () => {
         wsClient.onopen = () => wsClient.send(JSON.stringify(addOrderPayload));
-        const addOrderMsg = await _onMessageAsync(wsClient);
+        const addOrderMsg = await _getOnMessagePromise(wsClient, OrderWatcherMethod.AddOrder);
         const addOrderData = JSON.parse(addOrderMsg.data);
         expect(addOrderData.method).to.be.eq('ADD_ORDER');
         expect((wsServer as any)._orderWatcher._orderByOrderHash).to.deep.include({
             [orderHash]: signedOrder,
         });
 
+        const clientOnMessagePromise = _getOnMessagePromise(wsClient, OrderWatcherMethod.RemoveOrder);
         wsClient.send(JSON.stringify(removeOrderPayload));
-        const removeOrderMsg = await _onMessageAsync(wsClient);
+        const removeOrderMsg = await clientOnMessagePromise;
         const removeOrderData = JSON.parse(removeOrderMsg.data);
         expect(removeOrderData.method).to.be.eq('REMOVE_ORDER');
         expect((wsServer as any)._orderWatcher._orderByOrderHash).to.not.deep.include({
@@ -229,13 +235,13 @@ describe('OrderWatcherWebSocketServer', async () => {
     it('broadcasts orderStateInvalid message when makerAddress allowance set to 0 for watched order', async () => {
         // Add the regular order
         wsClient.onopen = () => wsClient.send(JSON.stringify(addOrderPayload));
-        await _onMessageAsync(wsClient);
+        const clientOnMessagePromise = _getOnMessagePromise(wsClient, OrderWatcherMethod.Update);
 
         // Set the allowance to 0
         await contractWrappers.erc20Token.setProxyAllowanceAsync(makerTokenAddress, makerAddress, new BigNumber(0));
 
         // Ensure that orderStateInvalid message is received.
-        const orderWatcherUpdateMsg = await _onMessageAsync(wsClient);
+        const orderWatcherUpdateMsg = await clientOnMessagePromise;
         const orderWatcherUpdateData = JSON.parse(orderWatcherUpdateMsg.data);
         expect(orderWatcherUpdateData.method).to.be.eq('UPDATE');
         const invalidOrderState = orderWatcherUpdateData.result as OrderStateInvalid;
@@ -269,20 +275,25 @@ describe('OrderWatcherWebSocketServer', async () => {
         wsClientTwo = new WebSocket.w3cwebsocket('ws://127.0.0.1:8080/');
         logUtils.log(`${new Date()} [Client] Connected.`);
         wsClientTwo.onopen = () => wsClientTwo.send(JSON.stringify(nonZeroMakerFeeOrderPayload));
-        await _onMessageAsync(wsClientTwo);
+
+        const clientOneOnMessagePromise = _getOnMessagePromise(wsClient, OrderWatcherMethod.Update);
+        const clientTwoOnMessagePromise = _getOnMessagePromise(wsClientTwo, OrderWatcherMethod.Update);
 
         // Change the allowance
         await contractWrappers.erc20Token.setProxyAllowanceAsync(zrxTokenAddress, makerAddress, new BigNumber(0));
 
         // Check that both clients receive the emitted event
-        for (const client of [wsClient, wsClientTwo]) {
-            const updateMsg = await _onMessageAsync(client);
-            const updateData = JSON.parse(updateMsg.data);
-            console.log('-------------------------- UPDATE_DATA: ', updateData);
-            const orderState = updateData.result as OrderStateValid;
-            expect(orderState.isValid).to.be.true();
-            expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
-        }
+        let updateMsg = await clientOneOnMessagePromise;
+        let updateData = JSON.parse(updateMsg.data);
+        let orderState = updateData.result as OrderStateValid;
+        expect(orderState.isValid).to.be.true();
+        expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
+
+        updateMsg = await clientTwoOnMessagePromise;
+        updateData = JSON.parse(updateMsg.data);
+        orderState = updateData.result as OrderStateValid;
+        expect(orderState.isValid).to.be.true();
+        expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
 
         wsClientTwo.close();
         logUtils.log(`${new Date()} [Client] Closed.`);
