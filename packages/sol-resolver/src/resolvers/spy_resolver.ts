@@ -1,6 +1,4 @@
-import * as fs from 'fs';
 import * as _ from 'lodash';
-import * as path from 'path';
 
 import { ContractSource } from '../types';
 
