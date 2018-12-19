@@ -6,7 +6,7 @@ import { Resolver } from './resolver';
 
 export class SpyResolver extends Resolver {
     public resolvedContractSources: ContractSource[] = [];
-    private _resolver: Resolver;
+    private readonly _resolver: Resolver;
     constructor(resolver: Resolver) {
         super();
         this._resolver = resolver;
