@@ -45,14 +45,30 @@ const projects: ProjectLogo[] = [
         persistOnMobile: true,
     },
     {
-        name: 'Shark Relay',
-        imageUrl: 'images/@next/clients/sharkrelay.svg',
-        persistOnMobile: true,
-    },
-    {
         name: 'dEX',
         imageUrl: 'images/@next/clients/ercdex.svg',
         persistOnMobile: true,
+    },
+    {
+        name: 'emoon',
+        imageUrl: 'images/@next/clients/emoon.svg',
+        persistOnMobile: true,
+    },
+    {
+        name: 'Gods Unchained',
+        imageUrl: 'images/@next/clients/godsUnchained.svg',
+    },
+    {
+        name: 'Instex',
+        imageUrl: 'images/@next/clients/instex.svg',
+    },
+    {
+        name: 'Lake Trade',
+        imageUrl: 'images/@next/clients/laketrade.svg',
+    },
+    {
+        name: 'Veil',
+        imageUrl: 'images/@next/clients/veil.svg',
     },
 ];
 
