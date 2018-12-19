@@ -135,7 +135,10 @@ export class Compiler {
     public async watchAsync(): Promise<void> {
         console.clear(); // tslint:disable-line:no-console
         logUtils.logWithTime('Starting compilation in watch mode...');
-        const watcher = chokidar.watch('^$', { ignored: /(^|[\/\\])\../ });
+        const MATCH_NOTHING_REGEX = '^$';
+        const IGNORE_DOT_FILES_REGEX = /(^|[\/\\])\../;
+        // Initially we watch nothing. We'll add the paths later.
+        const watcher = chokidar.watch(MATCH_NOTHING_REGEX, { ignored: IGNORE_DOT_FILES_REGEX });
         const onFileChangedAsync = async () => {
             watcher.unwatch('*'); // Stop watching
             try {
