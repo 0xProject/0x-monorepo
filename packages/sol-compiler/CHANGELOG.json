@@ -4,11 +4,11 @@
         "changes": [
             {
                 "note": "Add sol-compiler watch mode with -w flag",
-                "pr": "TODO"
+                "pr": 1461
             },
             {
                 "note": "Make error and warning colouring more visually pleasant and consistent with other compilers",
-                "pr": "TODO"
+                "pr": 1461
             }
         ]
     },

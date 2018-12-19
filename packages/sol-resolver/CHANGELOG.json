@@ -4,11 +4,11 @@
         "changes": [
             {
                 "note": "Add `absolutePath` to `ContractSource` type",
-                "pr": "TODO"
+                "pr": 1461
             },
             {
                 "note": "Add `SpyResolver` that records all resolved contracts data",
-                "pr": "TODO"
+                "pr": 1461
             }
         ]
     },
