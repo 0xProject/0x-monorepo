@@ -100,8 +100,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
         {
-            description:
-                'A Python Standard Relayer API client',
+            description: 'A Python Standard Relayer API client',
             link: {
                 title: '0x-sra-client.py',
                 to: 'https://pypi.org/project/0x-sra-client/',
