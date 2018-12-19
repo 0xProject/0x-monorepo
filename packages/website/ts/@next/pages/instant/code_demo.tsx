@@ -22,7 +22,7 @@ const CustomPre = styled.pre`
         border: none;
     }
     code:first-of-type {
-        background-color: #060D0D !important;
+        background-color: #060d0d !important;
         color: #999;
         min-height: 100%;
         text-align: center;
@@ -161,9 +161,7 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
             <Container position="relative" height="100%">
                 <Container position="absolute" top="10px" right="10px" zIndex={zIndex.overlay - 1}>
                     <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
-                        <StyledButton>
-                            {copyButtonText}
-                        </StyledButton>
+                        <StyledButton>{copyButtonText}</StyledButton>
                     </CopyToClipboard>
                 </Container>
                 <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>

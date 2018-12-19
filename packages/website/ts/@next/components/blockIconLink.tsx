@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
-import {Button} from 'ts/@next/components/button';
-import {Icon} from 'ts/@next/components/icon';
+import { Button } from 'ts/@next/components/button';
+import { Icon } from 'ts/@next/components/icon';
 
 interface Props {
     icon?: string;
@@ -16,48 +16,26 @@ interface Props {
 
 class BaseComponent extends React.PureComponent<Props> {
     public onClick = (): void => {
-        const {
-            linkAction,
-            linkUrl,
-        } = this.props;
+        const { linkAction, linkUrl } = this.props;
 
         if (linkAction) {
             linkAction();
         } else {
             this.props.history.push(linkUrl);
         }
-    }
+    };
 
     public render(): React.ReactNode {
-        const {
-            icon,
-            iconComponent,
-            linkUrl,
-            linkAction,
-            title,
-            linkLabel,
-        } = this.props;
+        const { icon, iconComponent, linkUrl, linkAction, title, linkLabel } = this.props;
 
         return (
             <Wrap onClick={this.onClick}>
                 <div>
-                    <Icon
-                        name={icon}
-                        component={iconComponent}
-                        size="large"
-                        margin={[0, 0, 'default', 0]}
-                    />
+                    <Icon name={icon} component={iconComponent} size="large" margin={[0, 0, 'default', 0]} />
 
-                    <Title>
-                        {title}
-                    </Title>
+                    <Title>{title}</Title>
 
-                    <Button
-                        isWithArrow={true}
-                        isTransparent={true}
-                        href={linkUrl}
-                        onClick={linkAction}
-                    >
+                    <Button isWithArrow={true} isTransparent={true} href={linkUrl} onClick={linkAction}>
                         {linkLabel}
                     </Button>
                 </div>

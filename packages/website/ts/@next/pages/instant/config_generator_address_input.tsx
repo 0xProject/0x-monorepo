@@ -43,11 +43,7 @@ export class ConfigGeneratorAddressInput extends React.Component<
         const hasError = !_.isEmpty(errMsg);
         return (
             <Container height="80px">
-                <Input
-                    value={this.props.value}
-                    onChange={this._handleChange}
-                    placeholder="0xe99...aa8da4"
-                />
+                <Input value={this.props.value} onChange={this._handleChange} placeholder="0xe99...aa8da4" />
                 <Container marginTop="5px" isHidden={!hasError} height="25px">
                     <Paragraph size="small" isNoMargin={true}>
                         {errMsg}

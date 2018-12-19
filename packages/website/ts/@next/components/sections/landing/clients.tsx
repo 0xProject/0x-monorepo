@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-import {Heading} from 'ts/@next/components/text';
+import { Heading } from 'ts/@next/components/text';
 
-import {Section, WrapGrid} from 'ts/@next/components/newLayout';
+import { Section, WrapGrid } from 'ts/@next/components/newLayout';
 
 interface ProjectLogo {
     name: string;
@@ -58,16 +58,11 @@ const projects: ProjectLogo[] = [
 
 export const SectionLandingClients = () => (
     <Section isTextCentered={true}>
-        <Heading size="small">
-            Join the growing number of projects developing on 0x
-        </Heading>
+        <Heading size="small">Join the growing number of projects developing on 0x</Heading>
 
         <WrapGrid isWrapped={true}>
             {_.map(projects, (item: ProjectLogo, index) => (
-                <StyledProject
-                    key={`client-${index}`}
-                    isOnMobile={item.persistOnMobile}
-                >
+                <StyledProject key={`client-${index}`} isOnMobile={item.persistOnMobile}>
                     <img src={item.imageUrl} alt={item.name} />
                 </StyledProject>
             ))}
@@ -75,7 +70,10 @@ export const SectionLandingClients = () => (
     </Section>
 );
 
-const StyledProject = styled.div<StyledProjectInterface>`
+const StyledProject =
+    styled.div <
+    StyledProjectInterface >
+    `
     flex-shrink: 0;
 
     img {

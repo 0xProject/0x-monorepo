@@ -7,8 +7,7 @@ import { colors } from 'ts/style/colors';
 import { Icon } from 'ts/@next/components/icon';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
-interface SliderProps {
-}
+interface SliderProps {}
 
 interface SlideProps {
     icon: string;
@@ -20,7 +19,8 @@ interface SlideProps {
 const flickityOptions = {
     initialIndex: 0,
     cellAlign: 'left',
-    arrowShape: 'M0 50.766L42.467 93.58l5.791-5.839-32.346-32.61H100V46.84H15.48L50.2 11.838 44.409 6 5.794 44.93l-.003-.003z',
+    arrowShape:
+        'M0 50.766L42.467 93.58l5.791-5.839-32.346-32.61H100V46.84H15.48L50.2 11.838 44.409 6 5.794 44.93l-.003-.003z',
     prevNextButtons: true,
 };
 
@@ -33,7 +33,9 @@ export const Slide: React.StatelessComponent<SlideProps> = (props: SlideProps) =
                 <Icon name={icon} size="large" />
             </SlideHead>
             <SlideContent>
-                <Heading asElement="h4" size="small" marginBottom="15px">{heading}</Heading>
+                <Heading asElement="h4" size="small" marginBottom="15px">
+                    {heading}
+                </Heading>
                 <Paragraph isMuted={true}>{text}</Paragraph>
             </SlideContent>
         </StyledSlide>
@@ -93,7 +95,7 @@ const StyledSlider = styled.div`
         top: calc(50% - 37px);
         border: 0;
         padding: 0;
-        transition: background-color .40s ease-in-out, visibility .40s ease-in-out, opacity .40s ease-in-out;
+        transition: background-color 0.4s ease-in-out, visibility 0.4s ease-in-out, opacity 0.4s ease-in-out;
 
         &:disabled {
             opacity: 0;
@@ -130,7 +132,7 @@ const StyledSlide = styled.div`
     height: 520px;
     flex: 0 0 auto;
     opacity: 0.3;
-    transition: opacity .40s ease-in-out;
+    transition: opacity 0.4s ease-in-out;
 
     & + & {
         margin-left: 30px;

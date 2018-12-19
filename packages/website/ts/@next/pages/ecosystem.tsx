@@ -69,7 +69,7 @@ export const NextEcosystem = () => (
                         href={constants.URL_ECOSYSTEM_APPLY}
                         isWithArrow={true}
                         isAccentColor={true}
-                        useAnchorTag={true}
+                        shouldUseAnchorTag={true}
                     >
                         Apply now
                     </Button>
@@ -77,7 +77,7 @@ export const NextEcosystem = () => (
                         href={constants.URL_ECOSYSTEM_BLOG_POST}
                         isWithArrow={true}
                         isAccentColor={true}
-                        useAnchorTag={true}
+                        shouldUseAnchorTag={true}
                         target="_blank"
                     >
                         Learn More

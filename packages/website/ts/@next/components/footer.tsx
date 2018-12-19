@@ -2,7 +2,6 @@ import { Link as SmartLink } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
-import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Logo } from 'ts/@next/components/logo';

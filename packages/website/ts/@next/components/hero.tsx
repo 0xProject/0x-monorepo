@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import {addFadeInAnimation} from 'ts/@next/constants/animations';
+import { addFadeInAnimation } from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
@@ -15,38 +15,6 @@ interface Props {
     actions?: React.ReactNode;
 }
 
-export const Hero = (props: Props) => (
-    <Section>
-        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
-            {props.figure &&
-                <Content width="400px">
-                    {props.figure}
-                </Content>
-            }
-
-            <Content width={props.maxWidth ? props.maxWidth : (props.figure ? '546px' : '678px')}>
-                <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
-                    {props.title}
-                </Title>
-
-                <Description>
-                    {props.description}
-                </Description>
-
-                {props.actions &&
-                    <ButtonWrap>
-                        {props.actions}
-                    </ButtonWrap>
-                }
-            </Content>
-        </Wrap>
-    </Section>
-);
-
-Hero.defaultProps = {
-    isCenteredMobile: true,
-};
-
 const Section = styled.section`
     padding: 120px 0;
 
@@ -55,26 +23,41 @@ const Section = styled.section`
     }
 `;
 
-const Wrap = styled.div<{ isCentered?: boolean; isFullWidth?: boolean; isCenteredMobile?: boolean }>`
+interface WrapProps {
+    isCentered?: boolean;
+    isFullWidth?: boolean;
+    isCenteredMobile?: boolean;
+}
+const Wrap =
+    styled.div <
+    WrapProps >
+    `
     width: calc(100% - 60px);
     margin: 0 auto;
 
     @media (min-width: 768px) {
-        max-width: ${props => !props.isFullWidth ? '895px' : '1136px'};
+        max-width: ${props => (!props.isFullWidth ? '895px' : '1136px')};
         flex-direction: row-reverse;
         display: flex;
         align-items: center;
         text-align: ${props => props.isCentered && 'center'};
-        justify-content: ${props => props.isCentered ? 'center' : 'space-between'};
+        justify-content: ${props => (props.isCentered ? 'center' : 'space-between')};
     }
 
     @media (max-width: 768px) {
-        text-align: ${props => props.isCenteredMobile ? `center` : 'left'};
+        text-align: ${props => (props.isCenteredMobile ? `center` : 'left')};
     }
 `;
 
-const Title = styled.h1<{ isLarge?: any; maxWidth?: string }>`
-    font-size: ${props => props.isLarge ? '80px' : '50px'};
+interface TitleProps {
+    isLarge?: any;
+    maxWidth?: string;
+}
+const Title =
+    styled.h1 <
+    TitleProps >
+    `
+    font-size: ${props => (props.isLarge ? '80px' : '50px')};
     font-weight: 300;
     line-height: 1.1;
     margin-left: auto;
@@ -99,14 +82,15 @@ const Description = styled.p`
     padding: 0;
     margin-bottom: 50px;
     color: ${props => props.theme.introTextColor};
-    ${addFadeInAnimation('0.5s', '0.15s')}
-
-    @media (max-width: 1024px) {
+    ${addFadeInAnimation('0.5s', '0.15s')} @media (max-width: 1024px) {
         margin-bottom: 30px;
     }
 `;
 
-const Content = styled.div<{ width: string }>`
+const Content =
+    styled.div <
+    { width: string } >
+    `
     width: 100%;
 
     @media (min-width: 768px) {
@@ -123,10 +107,10 @@ const ButtonWrap = styled.div`
     }
 
     > *:nth-child(1) {
-        ${addFadeInAnimation('0.6s', '0.3s')}
+        ${addFadeInAnimation('0.6s', '0.3s')};
     }
     > *:nth-child(2) {
-        ${addFadeInAnimation('0.6s', '0.4s')}
+        ${addFadeInAnimation('0.6s', '0.4s')};
     }
 
     @media (max-width: 500px) {
@@ -144,3 +128,25 @@ const ButtonWrap = styled.div`
         }
     }
 `;
+
+export const Hero: React.StatelessComponent<Props> = (props: Props) => (
+    <Section>
+        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
+            {props.figure && <Content width="400px">{props.figure}</Content>}
+
+            <Content width={props.maxWidth ? props.maxWidth : props.figure ? '546px' : '678px'}>
+                <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
+                    {props.title}
+                </Title>
+
+                <Description>{props.description}</Description>
+
+                {props.actions && <ButtonWrap>{props.actions}</ButtonWrap>}
+            </Content>
+        </Wrap>
+    </Section>
+);
+
+Hero.defaultProps = {
+    isCenteredMobile: true,
+};

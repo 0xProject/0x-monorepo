@@ -115,13 +115,10 @@ export class SiteWrap extends React.Component<Props, State> {
         this.setState({
             isMobileNavOpen: !this.state.isMobileNavOpen,
         });
-    }
+    };
 
     public render(): React.ReactNode {
-        const {
-            children,
-            theme = 'dark',
-        } = this.props;
+        const { children, theme = 'dark' } = this.props;
         const { isMobileNavOpen } = this.state;
         const currentTheme = GLOBAL_THEMES[theme];
 
@@ -131,16 +128,11 @@ export class SiteWrap extends React.Component<Props, State> {
                     <>
                         <GlobalStyles />
 
-                        <Header
-                            isNavToggled={isMobileNavOpen}
-                            toggleMobileNav={this.toggleMobileNav}
-                        />
+                        <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
 
-                        <Main isNavToggled={isMobileNavOpen}>
-                            {children}
-                        </Main>
+                        <Main isNavToggled={isMobileNavOpen}>{children}</Main>
 
-                        <Footer/>
+                        <Footer />
                     </>
                 </ThemeProvider>
             </>
@@ -148,7 +140,10 @@ export class SiteWrap extends React.Component<Props, State> {
     }
 }
 
-const Main = styled.main<MainProps>`
+const Main =
+    styled.main <
+    MainProps >
+    `
     transition: transform 0.5s, opacity 0.5s;
     opacity: ${props => props.isNavToggled && '0.5'};
 `;

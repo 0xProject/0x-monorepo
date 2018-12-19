@@ -57,11 +57,11 @@ const Figure = (props: FigureProps) => (
 );
 
 const DeveloperLink = styled(Button)`
-        @media (max-width: 500px) {
-            && {
-                white-space: pre-wrap;
-                line-height: 1.3;
-            }
+    @media (max-width: 500px) {
+        && {
+            white-space: pre-wrap;
+            line-height: 1.3;
+        }
     }
 `;
 

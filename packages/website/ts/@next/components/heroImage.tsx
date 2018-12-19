@@ -5,11 +5,7 @@ interface Props {
     image: React.ReactNode;
 }
 
-export const LandingAnimation = (props: Props) => (
-    <Wrap>
-        {props.image}
-    </Wrap>
-);
+export const LandingAnimation = (props: Props) => <Wrap>{props.image}</Wrap>;
 
 const Wrap = styled.figure`
     display: inline-block;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
+import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
 
 interface BaseTextInterface extends PaddingInterface {
     size?: 'default' | 'medium' | 'large' | 'small' | number;
@@ -9,7 +9,7 @@ interface BaseTextInterface extends PaddingInterface {
 }
 
 interface HeadingProps extends BaseTextInterface {
-    asElement?: 'h1'| 'h2'| 'h3'| 'h4';
+    asElement?: 'h1' | 'h2' | 'h3' | 'h4';
     maxWidth?: string;
     fontWeight?: string;
     isCentered?: boolean;
@@ -27,38 +27,33 @@ interface ParagraphProps extends BaseTextInterface {
     fontWeight?: string | number;
 }
 
-const StyledHeading = styled.h1<HeadingProps>`
+const StyledHeading =
+    styled.h1 <
+    HeadingProps >
+    `
     max-width: ${props => props.maxWidth};
     color: ${props => props.color || props.theme.textColor};
     display: ${props => props.isFlex && `inline-flex`};
     align-items: center;
     justify-content: ${props => props.isFlex && `space-between`};
-    font-size: ${props => typeof props.size === 'string' ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
+    font-size: ${props =>
+        typeof props.size === 'string' ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
     text-align: ${props => props.isCentered && 'center'};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     margin-left: ${props => props.isCentered && 'auto'};
     margin-right: ${props => props.isCentered && 'auto'};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
-    opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
-    font-weight: ${props => props.fontWeight ? props.fontWeight : (['h4'].includes(props.asElement) ? 400 : 300)};
+    opacity: ${props => (typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted)};
+    font-weight: ${props => (props.fontWeight ? props.fontWeight : ['h4'].includes(props.asElement) ? 400 : 300)};
     width: ${props => props.isFlex && `100%`};
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {
-    const {
-        asElement = 'h1',
-        children,
-    } = props;
+    const { asElement = 'h1', children } = props;
     const Component = StyledHeading.withComponent(asElement);
 
-    return (
-        <Component
-            {...props}
-        >
-            {children}
-        </Component>
-    );
+    return <Component {...props}>{children}</Component>;
 };
 
 Heading.defaultProps = {
@@ -69,14 +64,17 @@ Heading.defaultProps = {
 // Note: this would be useful to be implemented the same way was "Heading"
 // and be more generic. e.g. <Text /> with a props asElement so we can use it
 // for literally anything =
-export const Paragraph = styled.p<ParagraphProps>`
+export const Paragraph =
+    styled.p <
+    ParagraphProps >
+    `
     font-size: ${props => `var(--${props.size || 'default'}Paragraph)`};
     font-weight: ${props => props.fontWeight || 300};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     color: ${props => props.color || props.theme.paragraphColor};
-    opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
-    text-align: ${props => props.textAlign ? props.textAlign  : props.isCentered && 'center'};
+    opacity: ${props => (typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted)};
+    text-align: ${props => (props.textAlign ? props.textAlign : props.isCentered && 'center')};
     line-height: 1.4;
 `;
 
