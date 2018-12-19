@@ -6,13 +6,17 @@ import {
     NPMResolver,
     RelativeFSResolver,
     Resolver,
+    SpyResolver,
     URLResolver,
 } from '@0x/sol-resolver';
 import { logUtils } from '@0x/utils';
+import chalk from 'chalk';
+import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as pluralize from 'pluralize';
 import * as semver from 'semver';
 import solc = require('solc');
 
@@ -30,6 +34,7 @@ import {
 } from './utils/compiler';
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
+import { CompilationError } from './utils/types';
 import { utils } from './utils/utils';
 
 type TYPE_ALL_FILES_IDENTIFIER = '*';
@@ -128,6 +133,43 @@ export class Compiler {
     public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
         const promisedOutputs = this._compileContractsAsync(this._getContractNamesToCompile(), false);
         return promisedOutputs;
+    }
+    public async watchAsync(): Promise<void> {
+        console.clear(); // tslint:disable-line:no-console
+        logWithTime('Starting compilation in watch mode...');
+        const watcher = chokidar.watch('^$', { ignored: /(^|[\/\\])\../ });
+        const onFileChangedAsync = async () => {
+            watcher.unwatch('*'); // Stop watching
+            try {
+                await this.compileAsync();
+                logWithTime('Found 0 errors. Watching for file changes.');
+            } catch (err) {
+                if (err.typeName === 'CompilationError') {
+                    logWithTime(`Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`);
+                } else {
+                    logWithTime('Found errors. Watching for file changes.');
+                }
+            }
+
+            const pathsToWatch = this._getPathsToWatch();
+            watcher.add(pathsToWatch);
+        };
+        await onFileChangedAsync();
+        watcher.on('change', (changedFilePath: string) => {
+            console.clear(); // tslint:disable-line:no-console
+            logWithTime('File change detected. Starting incremental compilation...');
+            onFileChangedAsync();
+        });
+    }
+    private _getPathsToWatch(): string[] {
+        const contractNames = this._getContractNamesToCompile();
+        const spyResolver = new SpyResolver(this._resolver);
+        for (const contractName of contractNames) {
+            const contractSource = spyResolver.resolve(contractName);
+            getSourceTreeHash(spyResolver, contractSource.path);
+        }
+        const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
+        return pathsToWatch;
     }
     private _getContractNamesToCompile(): string[] {
         let contractNamesToCompile;
@@ -297,4 +339,8 @@ export class Compiler {
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.warn(`${contractName} artifact saved!`);
     }
+}
+
+function logWithTime(arg: string): void {
+    logUtils.log(`[${chalk.gray(new Date().toLocaleTimeString())}] ${arg}`);
 }

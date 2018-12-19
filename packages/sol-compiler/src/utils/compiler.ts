@@ -12,6 +12,7 @@ import { binPaths } from '../solc/bin_paths';
 
 import { constants } from './constants';
 import { fsWrapper } from './fs_wrapper';
+import { CompilationError } from './types';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.
@@ -147,13 +148,13 @@ function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]): void {
     if (!_.isEmpty(errors)) {
         errors.forEach(error => {
             const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-            logUtils.warn(chalk.red(normalizedErrMsg));
+            logUtils.log(chalk.red('error'), normalizedErrMsg);
         });
-        throw new Error('Compilation errors encountered');
+        throw new CompilationError(errors.length);
     } else {
         warnings.forEach(warning => {
             const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-            logUtils.warn(chalk.yellow(normalizedWarningMsg));
+            logUtils.log(chalk.yellow('warning'), normalizedWarningMsg);
         });
     }
 }
