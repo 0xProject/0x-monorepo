@@ -1,5 +1,18 @@
 [
     {
+        "version": "1.2.1",
+        "changes": [
+            {
+                "note": "Add `absolutePath` to `ContractSource` type",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `SpyResolver` that records all resolved contracts data",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "1.1.1",
         "changes": [
             {
