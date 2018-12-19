@@ -18,13 +18,12 @@ import * as _ from 'lodash';
 import {
     artifacts,
     ERC20ProxyContract,
-    ERC20Wrapper,
     ERC721ProxyContract,
-    ERC721Wrapper,
     ExchangeContract,
-    ExchangeWrapper,
     OrderValidatorContract,
 } from '../../src';
+
+import { ERC20Wrapper, ERC721Wrapper, ExchangeWrapper } from '../utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
