@@ -68,9 +68,8 @@ describe(ContractName.DutchAuction, () => {
     let erc721MakerAssetIds: BigNumber[];
     const tenMinutesInSeconds = 10 * 60;
 
-    let dutchAuctionInstance: DutchAuctionContract;
     let dutchAuctionWrapper: DutchAuctionWrapper;
-    let defaultMakerAssetData: string;
+    let defaultERC20MakerAssetData: string;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -190,7 +189,7 @@ describe(ContractName.DutchAuction, () => {
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         sellerOrderFactory = new OrderFactory(makerPrivateKey, sellerDefaultOrderParams);
         buyerOrderFactory = new OrderFactory(takerPrivateKey, buyerDefaultOrderParams);
-        defaultMakerAssetData = assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress);
+        defaultERC20MakerAssetData = assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -208,7 +207,7 @@ describe(ContractName.DutchAuction, () => {
         it('should be worth the begin price at the begining of the auction', async () => {
             auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp + 2);
             const makerAssetData = assetDataUtils.encodeDutchAuctionAssetData(
-                defaultMakerAssetData,
+                defaultERC20MakerAssetData,
                 auctionBeginTimeSeconds,
                 auctionBeginAmount,
             );
@@ -222,7 +221,7 @@ describe(ContractName.DutchAuction, () => {
             auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds * 2);
             auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds);
             const makerAssetData = assetDataUtils.encodeDutchAuctionAssetData(
-                defaultMakerAssetData,
+                defaultERC20MakerAssetData,
                 auctionBeginTimeSeconds,
                 auctionBeginAmount,
             );
@@ -288,7 +287,7 @@ describe(ContractName.DutchAuction, () => {
             auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds * 2);
             auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds);
             const makerAssetData = assetDataUtils.encodeDutchAuctionAssetData(
-                defaultMakerAssetData,
+                defaultERC20MakerAssetData,
                 auctionBeginTimeSeconds,
                 auctionBeginAmount,
             );
@@ -322,7 +321,7 @@ describe(ContractName.DutchAuction, () => {
         it('begin time is less than end time', async () => {
             auctionBeginTimeSeconds = new BigNumber(auctionEndTimeSeconds).plus(tenMinutesInSeconds);
             const makerAssetData = assetDataUtils.encodeDutchAuctionAssetData(
-                defaultMakerAssetData,
+                defaultERC20MakerAssetData,
                 auctionBeginTimeSeconds,
                 auctionBeginAmount,
             );
