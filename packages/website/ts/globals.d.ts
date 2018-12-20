@@ -1,3 +1,4 @@
+declare module '@reach/dialog';
 declare module 'truffle-contract';
 declare module 'whatwg-fetch';
 declare module 'thenby';

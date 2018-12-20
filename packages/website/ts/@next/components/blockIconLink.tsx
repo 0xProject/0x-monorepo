@@ -1,20 +1,24 @@
+import { History, Location } from 'history';
 import * as React from 'react';
-import { withRouter } from 'react-router-dom';
+import { match, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 
-interface Props {
+interface BaseComponentProps {
     icon?: string;
     iconComponent?: React.ReactNode;
     title: string;
     linkLabel: string;
     linkUrl?: string;
     linkAction?: () => void;
+    history: History;
+    location: Location;
+    match: match<any>;
 }
 
-class BaseComponent extends React.PureComponent<Props> {
+class BaseComponent extends React.PureComponent<BaseComponentProps> {
     public onClick = (): void => {
         const { linkAction, linkUrl } = this.props;
 
@@ -44,7 +48,7 @@ class BaseComponent extends React.PureComponent<Props> {
     }
 }
 
-export const BlockIconLink = withRouter(BaseComponent);
+export const BlockIconLink = withRouter<BaseComponentProps>(BaseComponent);
 
 const Wrap = styled.div`
     width: calc(50% - 15px);

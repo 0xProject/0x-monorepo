@@ -37,7 +37,7 @@ export const Button = (props: ButtonInterface) => {
         linkElem = ReactRouterLink;
     }
 
-    const Component = linkElem ? ButtonBase.withComponent(linkElem) : ButtonBase;
+    const Component = linkElem ? ButtonBase.withComponent<any>(linkElem) : ButtonBase;
     const targetProp = href && target ? { target } : {};
 
     return (

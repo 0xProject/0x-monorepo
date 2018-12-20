@@ -253,9 +253,11 @@ const EventContent = styled.div`
     padding: 30px 30px;
 `;
 
-// Community Links
+interface StyledCommunityLinkProps {
+    bgColor: string;
+}
 const StyledCommunityLink = styled.a`
-    background-color: ${(props: CommunityLinkProps) => props.bgColor};
+    background-color: ${(props: StyledCommunityLinkProps) => props.bgColor};
     color: ${colors.white};
     width: 175px;
     height: 175px;
