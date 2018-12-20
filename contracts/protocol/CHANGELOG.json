@@ -9,6 +9,10 @@
             {
                 "note": "Add validation and comments to MultiAssetProxy",
                 "pr": 1455
+            },
+            {
+                "note": "Move OrderValidator to extensions",
+                "pr": 1464
             }
         ]
     },

@@ -9,6 +9,10 @@
             {
                 "note": "Add OrderMatcher",
                 "pr": 1117
+            },
+            {
+                "note": "Add OrderValidator",
+                "pr": 1464
             }
         ]
     },
