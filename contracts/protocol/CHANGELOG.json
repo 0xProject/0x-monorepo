@@ -1,5 +1,18 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added LibAddressArray",
+                "pr": 1383
+            },
+            {
+                "note": "Add validation and comments to MultiAssetProxy",
+                "pr": 1455
+            }
+        ]
+    },
+    {
         "timestamp": 1544741676,
         "version": "2.1.59",
         "changes": [

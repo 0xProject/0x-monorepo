@@ -100,6 +100,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
         {
+            description: 'A Python Standard Relayer API client',
+            link: {
+                title: '0x-sra-client.py',
+                to: 'https://pypi.org/project/0x-sra-client/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
             description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {

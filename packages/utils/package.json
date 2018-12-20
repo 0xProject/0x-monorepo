@@ -49,6 +49,7 @@
         "@types/node": "*",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~4.1.0",
+        "chalk": "^2.4.1",
         "detect-node": "2.0.3",
         "ethereum-types": "^1.1.4",
         "ethereumjs-util": "^5.1.1",

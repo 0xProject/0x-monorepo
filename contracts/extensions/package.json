@@ -19,7 +19,8 @@
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "test:trace": "SOLIDITY_REVERT_TRACE=true run-s build run_mocha",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
-        "compile": "sol-compiler --contracts-dir contracts",
+        "compile": "sol-compiler",
+        "watch": "sol-compiler -w",
         "clean": "shx rm -rf lib generated-artifacts generated-wrappers",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output generated-wrappers --backend ethers",
         "lint": "tslint --format stylish --project . --exclude ./generated-wrappers/**/* --exclude ./generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
@@ -31,7 +32,7 @@
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "generated-artifacts/@(DutchAuction|Forwarder).json"
+        "abis": "generated-artifacts/@(BalanceThresholdFilter|DutchAuction|Forwarder|OrderMatcher).json"
     },
     "repository": {
         "type": "git",
