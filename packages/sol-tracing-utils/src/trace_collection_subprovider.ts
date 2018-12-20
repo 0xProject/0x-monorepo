@@ -20,6 +20,24 @@ export interface TraceCollectionSubproviderConfig {
     shouldCollectGasEstimateTraces: boolean;
 }
 
+type AsyncFunc = (...args: any[]) => Promise<void>;
+
+// This wrapper outputs errors to console even if the promise gets ignored
+// we need this because web3-provider-engine does not handler promises in
+// the after function of next(after).
+function logErrors(fn: AsyncFunc): AsyncFunc {
+    async function wrapped(...args: any[]): Promise<void> {
+        try {
+            await fn(...args);
+        } catch (e) {
+            // tslint:disable-next-line no-console
+            console.error(e);
+            throw e;
+        }
+    }
+    return wrapped;
+}
+
 // Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
 // On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
 // That allows us to avoid influencing test behaviour.
@@ -74,7 +92,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const txData = payload.params[0];
-                        next(this._onTransactionSentAsync.bind(this, txData));
+                        next(logErrors(this._onTransactionSentAsync.bind(this, txData)));
                     }
                     return;
 
@@ -83,7 +101,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const callData = payload.params[0];
-                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, callData));
+                        next(logErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, callData)));
                     }
                     return;
 
@@ -92,7 +110,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const estimateGasData = payload.params[0];
-                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData));
+                        next(logErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData)));
                     }
                     return;
 
