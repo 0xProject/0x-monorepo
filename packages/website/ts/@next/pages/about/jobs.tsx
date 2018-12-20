@@ -4,6 +4,7 @@ import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
+import { Link } from 'ts/@next/components/link';
 import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 import { WebsiteBackendJobInfo } from 'ts/types';
@@ -26,7 +27,7 @@ const Position: React.FunctionComponent<PositionItemProps> = (props: PositionIte
     const { position } = props;
     return (
         <PositionWrap>
-            <StyledColumn width="30%">
+            <StyledColumn width="40%">
                 <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0">
                     <a href={position.href} target="_blank">
                         {position.title}
@@ -34,7 +35,7 @@ const Position: React.FunctionComponent<PositionItemProps> = (props: PositionIte
                 </Heading>
             </StyledColumn>
 
-            <StyledColumn width="50%" padding="0 40px 0 0">
+            <StyledColumn width="30%" padding="0 40px 0 0">
                 <Paragraph isMuted={true} marginBottom="0">
                     {position.location}
                 </Paragraph>
@@ -42,9 +43,9 @@ const Position: React.FunctionComponent<PositionItemProps> = (props: PositionIte
 
             <StyledColumn width="20%">
                 <Paragraph marginBottom="0" textAlign="right">
-                    <a href={position.href} target="_blank">
+                    <Link href={position.href} target="_blank">
                         Apply
-                    </a>
+                    </Link>
                 </Paragraph>
             </StyledColumn>
         </PositionWrap>

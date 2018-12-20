@@ -14,6 +14,7 @@ interface LinkInterface {
         textColor: string;
     };
     shouldOpenInNewTab?: boolean;
+    target?: string;
 }
 
 export const Link = (props: LinkInterface) => {
