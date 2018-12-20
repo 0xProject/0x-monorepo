@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity 0.4.24;
+pragma solidity ^0.4.24;
 
 import "@0x/contracts-libs/contracts/libs/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
