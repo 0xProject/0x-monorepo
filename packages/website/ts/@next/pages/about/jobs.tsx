@@ -35,7 +35,7 @@ const Position: React.FunctionComponent<PositionItemProps> = (props: PositionIte
                 </Heading>
             </StyledColumn>
 
-            <StyledColumn width="30%" padding="0 40px 0 0">
+            <StyledColumn width="40%" padding="0 40px 0 0">
                 <Paragraph isMuted={true} marginBottom="0">
                     {position.location}
                 </Paragraph>
