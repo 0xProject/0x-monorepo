@@ -128,7 +128,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
         window.open(`${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`, '_blank');
     };
-    private readonly _handleSRASelection = (event: Event) => {
+    private readonly _handleSRASelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const sraEndpoint = event.target.value;
         const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,

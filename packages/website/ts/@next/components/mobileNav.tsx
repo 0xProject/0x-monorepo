@@ -96,13 +96,16 @@ const Overlay = styled.div`
     cursor: pointer;
 `;
 
+interface SectionProps {
+    isDark?: boolean;
+}
 const Section =
     styled.div <
-    { isDark: boolean } >
+    SectionProps >
     `
     width: 100%;
     padding: 15px 30px;
-    background-color: ${props => props.isDark && props.theme.mobileNavBgLower};
+    background-color: ${props => (props.isDark ? props.theme.mobileNavBgLower : 'transparent')};
 `;
 
 const Grid =

@@ -13,6 +13,7 @@ interface InputProps {
     type?: string;
     errors?: ErrorProps;
     isErrors?: boolean;
+    required?: boolean;
 }
 
 interface ErrorProps {
