@@ -87,12 +87,13 @@ export class BuyButton extends React.Component<BuyButtonProps> {
                     analytics.trackBuySimulationFailed(buyQuote);
                     this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
                     return;
-                } else {
-                    if (e.message !== AssetBuyerError.SignatureRequestDenied) {
-                        errorReporter.report(e);
-                    }
+                } else if (e.message === AssetBuyerError.SignatureRequestDenied) {
                     analytics.trackBuySignatureDenied(buyQuote);
                     this.props.onSignatureDenied(buyQuote);
+                    return;
+                } else {
+                    errorReporter.report(e);
+                    this.props.onValidationFail(buyQuote, ZeroExInstantError.CouldNotSubmitTransaction);
                     return;
                 }
             }

@@ -91,6 +91,7 @@ export enum Network {
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
     InsufficientETH = 'INSUFFICIENT_ETH',
+    CouldNotSubmitTransaction = 'COULD_NOT_SUBMIT_TRANSACTION',
 }
 
 export type SimpleHandler = () => void;
