@@ -17,6 +17,7 @@ export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 export const GIT_SHA = process.env.GIT_SHA;
 export const NODE_ENV = process.env.NODE_ENV;
 export const NPM_PACKAGE_VERSION = process.env.NPM_PACKAGE_VERSION;
+export const DEFAULT_UNKOWN_ASSET_NAME = '???';
 export const ACCOUNT_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 5;
 export const BUY_QUOTE_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 15;
 export const DEFAULT_GAS_PRICE = GWEI_IN_WEI.mul(6);

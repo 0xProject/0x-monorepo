@@ -20,5 +20,10 @@
         "module": "esnext",
         "moduleResolution": "node"
     },
+    "awesomeTypescriptLoaderOptions": {
+        "useCache": true,
+        "errorsAsWarnings": true,
+        "reportFiles": ["./ts/**/*"]
+    },
     "include": ["./ts/**/*"]
 }

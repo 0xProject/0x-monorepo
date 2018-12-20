@@ -11,10 +11,7 @@ export class URLResolver extends Resolver {
         if (importPath.startsWith(FILE_URL_PREXIF)) {
             const filePath = importPath.substr(FILE_URL_PREXIF.length);
             const fileContent = fs.readFileSync(filePath).toString();
-            return {
-                source: fileContent,
-                path: importPath,
-            };
+            return { source: fileContent, path: importPath, absolutePath: filePath };
         }
         return undefined;
     }

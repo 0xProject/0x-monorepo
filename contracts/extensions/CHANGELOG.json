@@ -1,5 +1,22 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Added Balance Threshold Filter",
+                "pr": 1383
+            },
+            {
+                "note": "Add OrderMatcher",
+                "pr": 1117
+            },
+            {
+                "note": "Add OrderValidator",
+                "pr": 1464
+            }
+        ]
+    },
+    {
         "timestamp": 1544741676,
         "version": "1.0.2",
         "changes": [

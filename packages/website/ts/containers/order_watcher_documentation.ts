@@ -24,7 +24,7 @@ const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.OrderWatcher,
     packageName: '@0x/order-watcher',
     type: SupportedDocJson.TypeDoc,
-    displayName: 'OrderWatcher',
+    displayName: 'Order Watcher',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
         'getting-started': [markdownSections.introduction, markdownSections.installation],

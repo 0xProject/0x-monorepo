@@ -58,7 +58,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
     [Categories.ZeroExProtocol]: [
         {
             description:
-                'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0xproject.com/docs/order-utils) and [contract-wrappers](https://0xproject.com/docs/contract-wrappers).',
+                'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0x.org/docs/order-utils) and [contract-wrappers](https://0x.org/docs/contract-wrappers).',
             link: {
                 title: '0x.js',
                 to: WebsitePaths.ZeroExJs,
@@ -96,6 +96,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '0x-order-utils.py',
                 to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'A Python Standard Relayer API client',
+            link: {
+                title: '0x-sra-client.py',
+                to: 'https://pypi.org/project/0x-sra-client/',
                 shouldOpenInNewTab: true,
             },
         },

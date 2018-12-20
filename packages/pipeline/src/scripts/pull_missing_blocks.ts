@@ -9,7 +9,7 @@ import { Web3Source } from '../data_sources/web3';
 import { Block } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseBlock } from '../parsers/web3';
-import { EXCHANGE_START_BLOCK, handleError, INFURA_ROOT_URL } from '../utils';
+import { handleError, INFURA_ROOT_URL } from '../utils';
 
 // Number of blocks to save at once.
 const BATCH_SAVE_SIZE = 1000;
@@ -37,22 +37,19 @@ interface MissingBlocksResponse {
 
 async function getAllMissingBlocksAsync(web3Source: Web3Source): Promise<void> {
     const blocksRepository = connection.getRepository(Block);
-    let fromBlock = EXCHANGE_START_BLOCK;
     while (true) {
-        const blockNumbers = await getMissingBlockNumbersAsync(fromBlock);
+        const blockNumbers = await getMissingBlockNumbersAsync();
         if (blockNumbers.length === 0) {
             // There are no more missing blocks. We're done.
             break;
         }
         await getAndSaveBlocksAsync(web3Source, blocksRepository, blockNumbers);
-        fromBlock = Math.max(...blockNumbers) + 1;
     }
     const totalBlocks = await blocksRepository.count();
     console.log(`Done saving blocks. There are now ${totalBlocks} total blocks.`);
 }
 
-async function getMissingBlockNumbersAsync(fromBlock: number): Promise<number[]> {
-    console.log(`Checking for missing blocks starting at ${fromBlock}...`);
+async function getMissingBlockNumbersAsync(): Promise<number[]> {
     // Note(albrow): The easiest way to get all the blocks we need is to
     // consider all the events tables together in a single query. If this query
     // gets too slow, we should consider re-architecting so that we can work on
@@ -66,13 +63,12 @@ async function getMissingBlockNumbersAsync(fromBlock: number): Promise<number[]>
         )
         SELECT DISTINCT(block_number) FROM all_events
             WHERE block_number NOT IN (SELECT number FROM raw.blocks)
-                AND block_number >= $1
-            ORDER BY block_number ASC LIMIT $2`,
-        [fromBlock, MAX_BLOCKS_PER_QUERY],
+            ORDER BY block_number ASC LIMIT $1`,
+        [MAX_BLOCKS_PER_QUERY],
     )) as MissingBlocksResponse[];
     const blockNumberStrings = R.pluck('block_number', response);
     const blockNumbers = R.map(parseInt, blockNumberStrings);
-    console.log(`Found ${blockNumbers.length} missing blocks in the given range.`);
+    console.log(`Found ${blockNumbers.length} missing blocks.`);
     return blockNumbers;
 }
 
