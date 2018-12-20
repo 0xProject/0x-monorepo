@@ -9,6 +9,7 @@ export interface ContractAddresses {
     assetProxyOwner: string;
     forwarder: string;
     orderValidator: string;
+    dutchAuction: string;
 }
 
 export enum NetworkId {
@@ -29,6 +30,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
+        dutchAuction: '0x',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -39,6 +41,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b',
         forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
+        dutchAuction: '0x',
     },
     4: {
         exchange: '0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e',
@@ -49,6 +52,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0xe1703da878afcebff5b7624a826902af475b9c03',
         forwarder: '0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4',
         orderValidator: '0x0c5173a51e26b29d6126c686756fb9fbef71f762',
+        dutchAuction: '0x',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -59,6 +63,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
         forwarder: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
+        dutchAuction: '0x',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
@@ -70,6 +75,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
         forwarder: '0xb69e673309512a9d726f87304c6984054f87a93b',
         orderValidator: '0xe86bb98fcf9bff3512c74589b78fb168200cc546',
+        dutchAuction: '0x',
     },
 };
 

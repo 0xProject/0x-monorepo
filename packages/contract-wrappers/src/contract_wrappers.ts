@@ -20,6 +20,7 @@ import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
 import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 import { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
+import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
@@ -65,6 +66,10 @@ export class ContractWrappers {
      * An instance of the OrderValidatorWrapper class containing methods for interacting with any OrderValidator smart contract.
      */
     public orderValidator: OrderValidatorWrapper;
+    /**
+     * An instance of the DutchAuctionWrapper class containing methods for interacting with any DutchAuction smart contract.
+     */
+    public dutchAuction: DutchAuctionWrapper;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
@@ -137,6 +142,11 @@ export class ContractWrappers {
             contractAddresses.etherToken,
         );
         this.orderValidator = new OrderValidatorWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.orderValidator,
+        );
+        this.dutchAuction = new DutchAuctionWrapper(
             this._web3Wrapper,
             config.networkId,
             contractAddresses.orderValidator,

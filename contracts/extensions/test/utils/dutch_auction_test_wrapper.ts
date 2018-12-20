@@ -5,11 +5,13 @@ import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
+import { BigNumber } from '@0x/utils';
 
 import { DutchAuctionContract } from '../../generated-wrappers/dutch_auction';
 import { artifacts } from '../../src/artifacts';
+import { DutchAuctionWrapper } from '@0x/contract-wrappers';
 
-export class DutchAuctionWrapper {
+export class DutchAuctionTestWrapper {
     private readonly _dutchAuctionContract: DutchAuctionContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
@@ -59,4 +61,16 @@ export class DutchAuctionWrapper {
         const afterAuctionDetails = await this._dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
         return afterAuctionDetails;
     }
+    /**
+     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+     * encoded assetData string, containing information both about the asset being traded and the
+     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+     * @param assetData Hex encoded assetData string for the asset being auctioned.
+     * @param beginTimeSeconds Begin time of the dutch auction.
+     * @param beginAmount Starting amount being sold in the dutch auction.
+     * @return The hex encoded assetData string.
+     */
+    public static encodeDutchAuctionAssetData(assetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
+        return DutchAuctionWrapper.encodeDutchAuctionAssetData(assetData, beginTimeSeconds, beginAmount);
+    };
 }
