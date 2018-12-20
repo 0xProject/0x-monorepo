@@ -15,6 +15,7 @@ interface InputProps {
     type: string;
     label: string;
     textColor: string;
+    required?: boolean;
 }
 
 interface ArrowProps {
@@ -78,7 +79,7 @@ class Form extends React.Component<FormProps> {
         );
     }
 
-    private async _onSubmitAsync(e: Event): Promise<void> {
+    private async _onSubmitAsync(e: React.FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault();
 
         const email = this.emailInput.current.value;

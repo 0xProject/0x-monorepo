@@ -29,7 +29,7 @@ interface NavItemProps {
     id?: string;
     text?: string;
     dropdownWidth?: number;
-    dropdownComponent?: React.ReactNode;
+    dropdownComponent?: React.FunctionComponent<any>;
     shouldOpenInNewTab?: boolean;
 }
 
