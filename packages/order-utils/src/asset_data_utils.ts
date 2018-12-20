@@ -305,4 +305,24 @@ export const assetDataUtils = {
                 throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
         }
     },
+    /**
+     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+     * encoded assetData string, containing information both about the asset being traded and the
+     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+     * @param assetData Hex encoded assetData string for the asset being auctioned.
+     * @param beginTimeSeconds Begin time of the dutch auction.
+     * @param beginAmount Starting amount being sold in the dutch auction.
+     * @return The hex encoded assetData string.
+     */
+    encodeDutchAuctionAssetData(assetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
+        const assetDataBuffer = ethUtil.toBuffer(assetData);
+        const abiEncodedAuctionData = (ethAbi as any).rawEncode(
+            ['uint256', 'uint256'],
+            [beginTimeSeconds.toString(), beginAmount.toString()],
+        );
+        const abiEncodedAuctionDataBuffer = ethUtil.toBuffer(abiEncodedAuctionData);
+        const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
+        const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
+        return dutchAuctionData;
+    },
 };

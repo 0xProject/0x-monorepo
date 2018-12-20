@@ -676,3 +676,12 @@ export interface SimpleEvmOutput {
 export interface SimpleEvmBytecodeOutput {
     object: string;
 }
+
+export interface DutchAuctionDetails {
+    beginTimeSeconds: BigNumber;
+    endTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
+    endAmount: BigNumber;
+    currentAmount: BigNumber;
+    currentTimeSeconds: BigNumber;
+}
