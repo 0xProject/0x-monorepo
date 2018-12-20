@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
@@ -54,6 +55,7 @@ const benefits: BenefitProps[] = [
 
 export const NextEcosystem = () => (
     <SiteWrap theme="light">
+        <DocumentTitle title="Ecosystem Acceleration Program: Jumpstart your Business on 0x" />
         <Section isTextCentered={true}>
             <Column>
                 <Heading size="medium" isCentered={true}>

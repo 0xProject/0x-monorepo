@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
@@ -183,6 +184,7 @@ export const NextAboutTeam = () => (
         linkLabel="Join the team"
         to={WebsitePaths.AboutJobs}
     >
+        <DocumentTitle title="Our Team - 0x" />
         <Section maxWidth="1170px" wrapWidth="100%" isFlex={true} flexBreakpoint="900px">
             <Column>
                 <Heading size="medium">0x Team</Heading>

@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
@@ -37,6 +38,7 @@ export const NextAboutMission = () => (
         linkLabel="Our mission and values"
         href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
     >
+        <DocumentTitle title="Our Mission - 0x" />
         <Section isFullWidth={true} isPadded={false}>
             <FullWidthImage>
                 <Image src="/images/@next/about/about-office.png" alt="0x Offices" isCentered={true} />

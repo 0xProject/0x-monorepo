@@ -22,6 +22,7 @@ export class FeePercentageSlider extends React.Component<FeePercentageSliderProp
                 max={0.05}
                 step={0.0025}
                 value={this.props.value}
+                disabled={this.props.isDisabled}
                 onChange={this.props.onChange}
                 tipFormatter={this._feePercentageSliderFormatter}
                 tipProps={{ placement: 'bottom', overlayStyle: { backgroundColor: '#fff', borderRadius: '4px' } }}

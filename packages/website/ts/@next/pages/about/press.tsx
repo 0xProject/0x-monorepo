@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
@@ -64,7 +65,9 @@ export const NextAboutPress = () => (
                 ))}
             </>
         }
-    />
+    >
+        <DocumentTitle title="Press Highlights - 0x" />
+    </AboutPageLayout>
 );
 
 export const Highlight: React.FunctionComponent<HighlightItemProps> = (props: HighlightItemProps) => {

@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
@@ -98,6 +99,7 @@ export class NextAboutJobs extends React.Component<NextAboutJobsProps, NextAbout
                 linkLabel="Our mission and values"
                 href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
             >
+                <DocumentTitle title="Jobs at 0x" />
                 <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px" wrapWidth="100%">
                     <Column maxWidth="442px">
                         <Heading size="medium" marginBottom="30px">

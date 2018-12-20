@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import DocumentTitle from 'react-document-title';
 import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
 import styled from 'styled-components';
 
@@ -98,6 +99,7 @@ export class NextWhy extends React.Component {
         );
         return (
             <SiteWrap theme="dark">
+                <DocumentTitle title="Features & Benefits - 0x" />
                 <Hero
                     title="The exchange layer for the crypto economy"
                     description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."
