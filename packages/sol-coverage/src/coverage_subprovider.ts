@@ -74,7 +74,7 @@ export const coverageHandler: SingleFileSubtraceHandler = (
 
     let sourceRanges = _.map(subtrace, structLog => pcToSourceRange[structLog.pc]);
     sourceRanges = _.compact(sourceRanges); // Some PC's don't map to a source range and we just ignore them.
-    // By default lodash does a shallow object comparasion. We JSON.stringify them and compare as strings.
+    // By default lodash does a shallow object comparison. We JSON.stringify them and compare as strings.
     sourceRanges = _.uniqBy(sourceRanges, s => JSON.stringify(s)); // We don't care if one PC was covered multiple times within a single transaction
     sourceRanges = _.filter(sourceRanges, sourceRange => sourceRange.fileName === absoluteFileName);
     const branchCoverage: BranchCoverage = {};
