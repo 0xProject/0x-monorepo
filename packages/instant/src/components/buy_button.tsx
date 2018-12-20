@@ -93,7 +93,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
                     return;
                 } else {
                     errorReporter.report(e);
-                    analytics.trackBuySignatureDenied(buyQuote);
+                    analytics.trackBuyUnknownError(buyQuote, e.message);
                     this.props.onValidationFail(buyQuote, ZeroExInstantError.CouldNotSubmitTransaction);
                     return;
                 }
