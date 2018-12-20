@@ -18,5 +18,5 @@
             }
         }
     },
-    "contracts": ["BalanceThresholdFilter", "DutchAuction", "Forwarder", "OrderMatcher"]
+    "contracts": ["BalanceThresholdFilter", "DutchAuction", "Forwarder", "OrderMatcher", "OrderValidator"]
 }
