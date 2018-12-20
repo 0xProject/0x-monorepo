@@ -29,7 +29,7 @@ export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLIn
     return (
         <InputWrapper {...props}>
             <Label htmlFor={id}>{label}</Label>
-            <StyledInput as={componentType} ref={ref} id={id} placeholder={label} isErrors={isErrors} {...props} />
+            <StyledInput as={componentType} ref={ref} id={id} isErrors={isErrors} {...props} />
             {isErrors && <Error>{errorMessage}</Error>}
         </InputWrapper>
     );
