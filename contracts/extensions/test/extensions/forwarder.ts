@@ -48,7 +48,6 @@ describe(ContractName.Forwarder, () => {
     let owner: string;
     let takerAddress: string;
     let feeRecipientAddress: string;
-    let otherAddress: string;
     let defaultMakerAssetAddress: string;
     let zrxAssetData: string;
     let wethAssetData: string;
@@ -78,7 +77,7 @@ describe(ContractName.Forwarder, () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress, otherAddress] = accounts);
+        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
         const txHash = await web3Wrapper.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
         const transaction = await web3Wrapper.getTransactionByHashAsync(txHash);
