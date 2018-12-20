@@ -30,7 +30,10 @@ const schemaErrorTransformer = (error: Error) => {
 };
 
 const signatureRequestErrorTransformer = (error: Error) => {
-    if (_.includes(error.message, constants.USER_DENIED_SIGNATURE_PATTERN)) {
+    if (
+        _.includes(error.message, constants.METAMASK_USER_DENIED_SIGNATURE_PATTERN) ||
+        _.includes(error.message, constants.TRUST_WALLET_USER_DENIED_SIGNATURE_PATTERN)
+    ) {
         const errMsg = ContractWrappersError.SignatureRequestDenied;
         return new Error(errMsg);
     }
