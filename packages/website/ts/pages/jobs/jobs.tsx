@@ -3,8 +3,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 
-import { Footer } from 'ts/components/footer';
 import { MetaTags } from 'ts/components/meta_tags';
+import { Footer } from 'ts/components/old_footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Container } from 'ts/components/ui/container';
 import { Benefits } from 'ts/pages/jobs/benefits';

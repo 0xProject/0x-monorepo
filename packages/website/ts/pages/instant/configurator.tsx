@@ -10,7 +10,7 @@ import { Column, FlexWrap } from 'ts/components/newLayout';
 import { Heading } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
-import { ZeroExInstantBaseConfig } from '../../../../../instant/src/types';
+import { ZeroExInstantBaseConfig } from '../../../../instant/src/types';
 
 export interface ConfiguratorState {
     instantConfig: ZeroExInstantBaseConfig;

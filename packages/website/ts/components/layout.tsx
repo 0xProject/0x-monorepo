@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { getCSSPadding, PADDING_SIZES, PaddingInterface } from 'ts/@next/constants/utilities';
+import { getCSSPadding, PADDING_SIZES, PaddingInterface } from 'ts/constants/utilities';
 
 interface WrapWidths {
     default: string;

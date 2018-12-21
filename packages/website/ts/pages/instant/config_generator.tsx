@@ -6,13 +6,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
-import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { CheckMark } from 'ts/components/ui/check_mark';
 import { Container } from 'ts/components/ui/container';
 import { MultiSelect } from 'ts/components/ui/multi_select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
+import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
+import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -21,8 +21,8 @@ import { constants } from 'ts/utils/constants';
 import { Heading } from 'ts/components/text';
 import { Select, SelectItemConfig } from 'ts/pages/instant/select';
 
-import { assetMetaDataMap } from '../../../../../instant/src/data/asset_meta_data_map';
-import { ERC20AssetMetaData, ZeroExInstantBaseConfig } from '../../../../../instant/src/types';
+import { assetMetaDataMap } from '../../../../instant/src/data/asset_meta_data_map';
+import { ERC20AssetMetaData, ZeroExInstantBaseConfig } from '../../../../instant/src/types';
 
 export interface ConfigGeneratorProps {
     value: ZeroExInstantBaseConfig;

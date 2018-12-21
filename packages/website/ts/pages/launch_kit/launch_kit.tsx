@@ -2,7 +2,7 @@ import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
-import { Footer } from 'ts/components/footer';
+import { Footer } from 'ts/components/old_footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
