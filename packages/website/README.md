@@ -2,8 +2,8 @@
 
 This repository contains our website and [0x Portal DApp][portal-url] (over-the-counter exchange), facilitating trustless over-the-counter trading of Ethereum-based tokens using 0x protocol.
 
-[website-url]: https://0xproject.com/
-[portal-url]: https://0xproject.com/portal
+[website-url]: https://0x.org/
+[portal-url]: https://0x.org/portal
 
 ## Contributing
 

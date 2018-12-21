@@ -12,6 +12,7 @@ import {
 import {
     artifacts as tokensArtifacts,
     DummyERC20TokenContract,
+    DummyERC20TokenTransferEventArgs,
     DummyERC721ReceiverContract,
     DummyERC721TokenContract,
     DummyMultipleReturnERC20TokenContract,
@@ -22,6 +23,7 @@ import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
@@ -737,6 +739,36 @@ describe('Asset Transfer Proxies', () => {
                 expect(newBalances[toAddress][erc20TokenA.address]).to.be.bignumber.equal(
                     erc20Balances[toAddress][erc20TokenA.address].add(totalAmount),
                 );
+            });
+            it('should dispatch an ERC20 transfer when input amount is 0', async () => {
+                const inputAmount = constants.ZERO_AMOUNT;
+                const erc20Amount = new BigNumber(10);
+                const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+                const amounts = [erc20Amount];
+                const nestedAssetData = [erc20AssetData];
+                const assetData = assetDataInterface.MultiAsset.getABIEncodedTransactionData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    inputAmount,
+                );
+                const erc20Balances = await erc20Wrapper.getBalancesAsync();
+                const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokensArtifacts });
+                const tx = await logDecoder.getTxWithDecodedLogsAsync(
+                    await web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data,
+                        from: authorized,
+                    }),
+                );
+                expect(tx.logs.length).to.be.equal(1);
+                const log = tx.logs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>;
+                const transferEventName = 'Transfer';
+                expect(log.event).to.equal(transferEventName);
+                expect(log.args._value).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                expect(newBalances).to.deep.equal(erc20Balances);
             });
             it('should successfully transfer multiple of the same ERC20 token', async () => {
                 const inputAmount = new BigNumber(1);

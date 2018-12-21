@@ -107,7 +107,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 },
                 {
                     title: this.props.translate.get(Key.Contact, Deco.Cap),
-                    to: 'mailto:team@0xproject.com',
+                    to: 'mailto:team@0x.org',
                     shouldOpenInNewTab: true,
                 },
             ],

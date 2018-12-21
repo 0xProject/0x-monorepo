@@ -26,6 +26,11 @@ export enum QuoteFetchOrigin {
     Heartbeat = 'Heartbeat',
 }
 
+export enum BaseCurrency {
+    USD = 'USD',
+    ETH = 'ETH',
+}
+
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
@@ -91,6 +96,7 @@ export enum Network {
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
     InsufficientETH = 'INSUFFICIENT_ETH',
+    CouldNotSubmitTransaction = 'COULD_NOT_SUBMIT_TRANSACTION',
 }
 
 export type SimpleHandler = () => void;
@@ -176,6 +182,7 @@ export enum ProviderType {
     Mist = 'MIST',
     CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
+    TrustWallet = 'TRUST_WALLET',
     Fallback = 'FALLBACK',
 }
 

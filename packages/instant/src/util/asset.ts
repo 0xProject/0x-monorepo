@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { BIG_NUMBER_ZERO } from '../constants';
+import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
@@ -74,7 +74,7 @@ export const assetUtils = {
         }
         return metaData;
     },
-    bestNameForAsset: (asset?: Asset, defaultName: string = '???'): string => {
+    bestNameForAsset: (asset?: Asset, defaultName: string = DEFAULT_UNKOWN_ASSET_NAME): string => {
         if (_.isUndefined(asset)) {
             return defaultName;
         }

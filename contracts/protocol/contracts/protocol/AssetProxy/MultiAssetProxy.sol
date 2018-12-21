@@ -33,6 +33,9 @@ contract MultiAssetProxy is
     function ()
         external
     {
+        // NOTE: The below assembly assumes that clients do some input validation and that the input is properly encoded according to the AbiV2 specification.
+        // It is technically possible for inputs with very large lengths and offsets to cause overflows. However, this would make the calldata prohibitively
+        // expensive and we therefore do not check for overflows in these scenarios.
         assembly {
             // The first 4 bytes of calldata holds the function selector
             let selector := and(calldataload(0), 0xffffffff00000000000000000000000000000000000000000000000000000000)
@@ -145,7 +148,7 @@ contract MultiAssetProxy is
                 let nestedAssetDataLen := calldataload(sub(nestedAssetDataContentsStart, 32))
 
                 // Revert if number of elements in `amounts` differs from number of elements in `nestedAssetData`
-                if iszero(eq(amountsLen, nestedAssetDataLen)) {
+                if sub(amountsLen, nestedAssetDataLen) {
                     // Revert with `Error("LENGTH_MISMATCH")`
                     mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
@@ -181,8 +184,11 @@ contract MultiAssetProxy is
                     let amountsElement := calldataload(add(amountsContentsStart, i))
                     let totalAmount := mul(amountsElement, amount)
 
-                    // Revert if multiplication resulted in an overflow
-                    if iszero(eq(div(totalAmount, amount), amountsElement)) {
+                    // Revert if `amount` != 0 and multiplication resulted in an overflow 
+                    if iszero(or(
+                        iszero(amount),
+                        eq(div(totalAmount, amount), amountsElement)
+                    )) {
                         // Revert with `Error("UINT256_OVERFLOW")`
                         mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                         mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
@@ -230,7 +236,7 @@ contract MultiAssetProxy is
 
                     // Only load `assetProxy` if `currentAssetProxyId` does not equal `assetProxyId`
                     // We do not need to check if `currentAssetProxyId` is 0 since `assetProxy` is also initialized to 0
-                    if iszero(eq(currentAssetProxyId, assetProxyId)) {
+                    if sub(currentAssetProxyId, assetProxyId) {
                         // Update `assetProxyId`
                         assetProxyId := currentAssetProxyId
                         // To lookup a value in a mapping, we load from the storage location keccak256(k, p),

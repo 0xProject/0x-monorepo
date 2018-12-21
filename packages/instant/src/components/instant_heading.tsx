@@ -113,20 +113,23 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private readonly _renderEthAmount = (): React.ReactNode => {
+        const ethAmount = format.ethBaseUnitAmount(
+            this.props.totalEthBaseUnitAmount,
+            4,
+            <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
+        );
+
+        const fontSize = _.isString(ethAmount) && ethAmount.length >= 13 ? '14px' : '16px';
         return (
             <Text
-                fontSize="16px"
+                fontSize={fontSize}
                 textAlign="right"
                 width="100%"
                 fontColor={ColorOption.white}
                 fontWeight={500}
                 noWrap={true}
             >
-                {format.ethBaseUnitAmount(
-                    this.props.totalEthBaseUnitAmount,
-                    4,
-                    <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
-                )}
+                {ethAmount}
             </Text>
         );
     };

@@ -6,6 +6,7 @@ import { GIT_SHA, HEAP_ENABLED, INSTANT_DISCHARGE_TARGET, NODE_ENV, NPM_PACKAGE_
 import {
     AffiliateInfo,
     Asset,
+    BaseCurrency,
     Network,
     OrderProcessState,
     OrderSource,
@@ -37,6 +38,7 @@ enum EventNames {
     ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
     ACCOUNT_UNLOCK_DENIED = 'Account - Unlock Denied',
     ACCOUNT_ADDRESS_CHANGED = 'Account - Address Changed',
+    BASE_CURRENCY_CHANGED = 'Base Currency - Changed',
     PAYMENT_METHOD_DROPDOWN_OPENED = 'Payment Method - Dropdown Opened',
     PAYMENT_METHOD_OPENED_ETHERSCAN = 'Payment Method - Opened Etherscan',
     PAYMENT_METHOD_COPIED_ADDRESS = 'Payment Method - Copied Address',
@@ -44,9 +46,11 @@ enum EventNames {
     BUY_STARTED = 'Buy - Started',
     BUY_SIGNATURE_DENIED = 'Buy - Signature Denied',
     BUY_SIMULATION_FAILED = 'Buy - Simulation Failed',
+    BUY_UNKNOWN_ERROR = 'Buy - Unknown Error',
     BUY_TX_SUBMITTED = 'Buy - Tx Submitted',
     BUY_TX_SUCCEEDED = 'Buy - Tx Succeeded',
     BUY_TX_FAILED = 'Buy - Tx Failed',
+    USD_PRICE_FETCH_FAILED = 'USD Price - Fetch Failed',
     INSTALL_WALLET_CLICKED = 'Install Wallet - Clicked',
     INSTALL_WALLET_MODAL_OPENED = 'Install Wallet - Modal - Opened',
     INSTALL_WALLET_MODAL_CLICKED_EXPLANATION = 'Install Wallet - Modal - Clicked Explanation',
@@ -118,6 +122,7 @@ export interface AnalyticsEventOptions {
     selectedAssetSymbol?: string;
     selectedAssetData?: string;
     selectedAssetDecimals?: number;
+    baseCurrency?: string;
 }
 export enum TokenSelectorClosedVia {
     ClickedX = 'Clicked X',
@@ -141,6 +146,7 @@ export const analytics = {
         window: Window,
         selectedAsset?: Asset,
         affiliateInfo?: AffiliateInfo,
+        baseCurrency?: BaseCurrency,
     ): AnalyticsEventOptions => {
         const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
         const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
@@ -159,6 +165,7 @@ export const analytics = {
             selectedAssetName: selectedAsset ? selectedAsset.metaData.name : 'none',
             selectedAssetData: selectedAsset ? selectedAsset.assetData : 'none',
             instantEnvironment: INSTANT_DISCHARGE_TARGET || `Local ${NODE_ENV}`,
+            baseCurrency,
         };
         return eventOptions;
     },
@@ -170,6 +177,8 @@ export const analytics = {
     trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
     trackAccountAddressChanged: (address: string) =>
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
+    trackBaseCurrencyChanged: (currencyChangedTo: BaseCurrency) =>
+        trackingEventFnWithPayload(EventNames.BASE_CURRENCY_CHANGED)({ currencyChangedTo }),
     trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_DROPDOWN_OPENED),
     trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_OPENED_ETHERSCAN),
     trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_COPIED_ADDRESS),
@@ -181,6 +190,11 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.BUY_SIGNATURE_DENIED)(buyQuoteEventProperties(buyQuote)),
     trackBuySimulationFailed: (buyQuote: BuyQuote) =>
         trackingEventFnWithPayload(EventNames.BUY_SIMULATION_FAILED)(buyQuoteEventProperties(buyQuote)),
+    trackBuyUnknownError: (buyQuote: BuyQuote, errorMessage: string) =>
+        trackingEventFnWithPayload(EventNames.BUY_UNKNOWN_ERROR)({
+            ...buyQuoteEventProperties(buyQuote),
+            errorMessage,
+        }),
     trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({
             ...buyQuoteEventProperties(buyQuote),
@@ -230,4 +244,5 @@ export const analytics = {
             fetchOrigin,
         });
     },
+    trackUsdPriceFailed: trackingEventFnWithoutPayload(EventNames.USD_PRICE_FETCH_FAILED),
 };

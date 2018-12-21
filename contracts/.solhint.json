@@ -5,6 +5,7 @@
         "avoid-tx-origin": "warn",
         "bracket-align": false,
         "code-complexity": false,
+        "compiler-fixed": false,
         "const-name-snakecase": "error",
         "expression-indent": "error",
         "function-max-lines": false,

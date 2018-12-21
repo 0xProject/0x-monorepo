@@ -1,5 +1,13 @@
 [
     {
+        "version": "4.1.4",
+        "changes": [
+            {
+                "note": "Add support for Trust Wallet signature denial error"
+            }
+        ]
+    },
+    {
         "version": "4.1.3",
         "changes": [
             {

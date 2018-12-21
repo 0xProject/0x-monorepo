@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity 0.4.24;
+pragma solidity ^0.4.24;
 
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/ITransactions.sol";
 

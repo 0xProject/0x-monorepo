@@ -25,7 +25,6 @@
         "Exchange",
         "MixinAuthorizable",
         "MultiAssetProxy",
-        "OrderValidator",
         "TestAssetProxyOwner",
         "TestAssetProxyDispatcher",
         "TestExchangeInternals",
