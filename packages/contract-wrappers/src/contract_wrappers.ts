@@ -149,7 +149,7 @@ export class ContractWrappers {
         this.dutchAuction = new DutchAuctionWrapper(
             this._web3Wrapper,
             config.networkId,
-            contractAddresses.orderValidator,
+            contractAddresses.dutchAuction,
         );
     }
     /**
