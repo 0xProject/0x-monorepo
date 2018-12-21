@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Heading, Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
 const navData = [

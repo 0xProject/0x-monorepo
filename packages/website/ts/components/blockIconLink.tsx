@@ -3,8 +3,8 @@ import * as React from 'react';
 import { match, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Button } from 'ts/@next/components/button';
-import { Icon } from 'ts/@next/components/icon';
+import { Button } from 'ts/components/button';
+import { Icon } from 'ts/components/icon';
 
 interface BaseComponentProps {
     icon?: string;

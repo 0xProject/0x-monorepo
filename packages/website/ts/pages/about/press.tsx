@@ -3,10 +3,10 @@ import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
-import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Button } from 'ts/@next/components/button';
-import { Column, FlexWrap } from 'ts/@next/components/newLayout';
-import { Paragraph } from 'ts/@next/components/text';
+import { AboutPageLayout } from 'ts/components/aboutPageLayout';
+import { Button } from 'ts/components/button';
+import { Column, FlexWrap } from 'ts/components/newLayout';
+import { Paragraph } from 'ts/components/text';
 
 interface HighlightProps {
     logo: string;
@@ -21,7 +21,7 @@ interface HighlightItemProps {
 
 const highlights: HighlightProps[] = [
     {
-        logo: '/images/@next/press/logo-forbes.png',
+        logo: '/images/press/logo-forbes.png',
         title: 'Forbes',
         text:
             '0x Instant is aiming to aid businesses and developers such as news sites, crypto wallets, dApps or price trackers to monetize or add a new revenue stream to their existing pipeline.',
@@ -29,21 +29,21 @@ const highlights: HighlightProps[] = [
             'https://www.forbes.com/sites/rebeccacampbell1/2018/12/06/0x-launches-instant-delivers-an-easy-and-flexible-way-to-buy-crypto-tokens/#bfb73a843561',
     },
     {
-        logo: '/images/@next/press/logo-venturebeat.png',
+        logo: '/images/press/logo-venturebeat.png',
         title: 'VentureBeat',
         text: '0x leads the way for ‘tokenization’ of the world, and collectible game items are next',
         href:
             'https://venturebeat.com/2018/09/24/0x-leads-the-way-for-tokenization-of-the-world-and-collectible-game-items-are-next/',
     },
     {
-        logo: '/images/@next/press/logo-fortune.png',
+        logo: '/images/press/logo-fortune.png',
         title: 'Fortune',
         text:
             'In the future, many traditional investments like real estate and corporate shares will come in the form of digital tokens that are bought and transferred on a blockchain.',
         href: 'http://fortune.com/2018/09/06/0x-harbor-blockchain/',
     },
     {
-        logo: '/images/@next/press/logo-techcrunch.png',
+        logo: '/images/press/logo-techcrunch.png',
         title: 'TechCrunch',
         text:
             '0x allows any developer to quickly build their own decentralized cryptocurrency exchange and decide their own fees.',

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
+import { getCSSPadding, PaddingInterface } from 'ts/constants/utilities';
 
 interface BaseTextInterface extends PaddingInterface {
     size?: 'default' | 'medium' | 'large' | 'small' | number;

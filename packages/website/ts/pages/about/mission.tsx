@@ -3,11 +3,11 @@ import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
-import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Definition } from 'ts/@next/components/definition';
-import { Image } from 'ts/@next/components/image';
-import { Column, Section } from 'ts/@next/components/newLayout';
-import { Heading } from 'ts/@next/components/text';
+import { AboutPageLayout } from 'ts/components/aboutPageLayout';
+import { Definition } from 'ts/components/definition';
+import { Image } from 'ts/components/image';
+import { Column, Section } from 'ts/components/newLayout';
+import { Heading } from 'ts/components/text';
 import { constants } from 'ts/utils/constants';
 
 const values = [
@@ -41,7 +41,7 @@ export const NextAboutMission = () => (
         <DocumentTitle title="Our Mission - 0x" />
         <Section isFullWidth={true} isPadded={false}>
             <FullWidthImage>
-                <Image src="/images/@next/about/about-office.png" alt="0x Offices" isCentered={true} />
+                <Image src="/images/about/about-office.png" alt="0x Offices" isCentered={true} />
             </FullWidthImage>
         </Section>
 

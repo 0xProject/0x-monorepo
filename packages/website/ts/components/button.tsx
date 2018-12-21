@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/@next/components/siteWrap';
+import { ThemeInterface } from 'ts/components/siteWrap';
 
 import { colors } from 'ts/style/colors';
 

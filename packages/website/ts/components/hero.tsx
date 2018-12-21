@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { addFadeInAnimation } from 'ts/@next/constants/animations';
+import { addFadeInAnimation } from 'ts/constants/animations';
 
 interface Props {
     title: string;

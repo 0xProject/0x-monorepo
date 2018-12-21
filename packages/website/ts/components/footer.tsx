@@ -4,9 +4,9 @@ import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
-import { Logo } from 'ts/@next/components/logo';
-import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
-import { NewsletterForm } from 'ts/@next/components/newsletter_form';
+import { Logo } from 'ts/components/logo';
+import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
+import { NewsletterForm } from 'ts/components/newsletter_form';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 

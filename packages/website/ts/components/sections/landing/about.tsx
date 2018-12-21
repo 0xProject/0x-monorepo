@@ -1,10 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Button } from 'ts/@next/components/button';
-import { Icon, InlineIconWrap } from 'ts/@next/components/icon';
-import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
-import { Paragraph } from 'ts/@next/components/text';
+import { Button } from 'ts/components/button';
+import { Icon, InlineIconWrap } from 'ts/components/icon';
+import { Column, FlexWrap, Section } from 'ts/components/newLayout';
+import { Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
 interface FigureProps {

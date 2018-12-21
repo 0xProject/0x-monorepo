@@ -3,9 +3,9 @@ import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
-import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { AboutPageLayout } from 'ts/components/aboutPageLayout';
+import { Column, FlexWrap, Section } from 'ts/components/newLayout';
+import { Heading, Paragraph } from 'ts/components/text';
 import { WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
@@ -117,7 +117,7 @@ export class NextAboutJobs extends React.Component<NextAboutJobsProps, NextAbout
 
                     <Column maxWidth="600px">
                         <ImageWrap>
-                            <img src="/images/@next/jobs/map@2x.png" height="365" alt="Map of community" />
+                            <img src="/images/jobs/map@2x.png" height="365" alt="Map of community" />
                         </ImageWrap>
                     </Column>
                 </Section>

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/@next/components/siteWrap';
-import LogoIcon from 'ts/@next/icons/logo-with-type.svg';
+import { ThemeInterface } from 'ts/components/siteWrap';
+import LogoIcon from 'ts/icons/logo-with-type.svg';
 
 interface LogoInterface {
     theme?: ThemeInterface;

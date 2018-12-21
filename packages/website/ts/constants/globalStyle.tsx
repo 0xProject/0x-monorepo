@@ -1,5 +1,5 @@
 import { createGlobalStyle, withTheme } from 'styled-components';
-import { cssReset } from 'ts/@next/constants/cssReset';
+import { cssReset } from 'ts/constants/cssReset';
 
 export interface GlobalStyle {
     theme: {

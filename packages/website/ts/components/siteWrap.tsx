@@ -3,9 +3,9 @@ import styled, { ThemeProvider } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Footer } from 'ts/@next/components/footer';
-import { Header } from 'ts/@next/components/header';
-import { GlobalStyles } from 'ts/@next/constants/globalStyle';
+import { Footer } from 'ts/components/footer';
+import { Header } from 'ts/components/header';
+import { GlobalStyles } from 'ts/constants/globalStyle';
 
 interface Props {
     theme?: 'dark' | 'light' | 'gray';

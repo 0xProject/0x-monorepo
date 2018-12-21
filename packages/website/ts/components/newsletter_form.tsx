@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled, { withTheme } from 'styled-components';
 
-import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
+import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { colors } from 'ts/style/colors';
 import { errorReporter } from 'ts/utils/error_reporter';
 

@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { Button } from 'ts/@next/components/button';
-import { Hero } from 'ts/@next/components/hero';
-import { LandingAnimation } from 'ts/@next/components/heroImage';
+import { Button } from 'ts/components/button';
+import { Hero } from 'ts/components/hero';
+import { LandingAnimation } from 'ts/components/heroImage';
 
-import { HeroAnimation } from 'ts/@next/components/heroAnimation';
+import { HeroAnimation } from 'ts/components/heroAnimation';
 import { WebsitePaths } from 'ts/types';
 
 export const SectionLandingHero = () => (

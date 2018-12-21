@@ -2,12 +2,12 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { CodeDemo } from 'ts/@next/pages/instant/code_demo';
-import { ConfigGenerator } from 'ts/@next/pages/instant/config_generator';
+import { CodeDemo } from 'ts/pages/instant/code_demo';
+import { ConfigGenerator } from 'ts/pages/instant/config_generator';
 
-import { Link } from 'ts/@next/components/link';
-import { Column, FlexWrap } from 'ts/@next/components/newLayout';
-import { Heading } from 'ts/@next/components/text';
+import { Link } from 'ts/components/link';
+import { Column, FlexWrap } from 'ts/components/newLayout';
+import { Heading } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
 import { ZeroExInstantBaseConfig } from '../../../../../instant/src/types';

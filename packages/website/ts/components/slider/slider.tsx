@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Icon } from 'ts/@next/components/icon';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Icon } from 'ts/components/icon';
+import { Heading, Paragraph } from 'ts/components/text';
 
 interface SliderProps {}
 

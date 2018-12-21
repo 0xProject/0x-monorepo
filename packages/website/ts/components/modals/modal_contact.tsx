@@ -7,11 +7,11 @@ import { colors } from 'ts/style/colors';
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
-import { Button } from 'ts/@next/components/button';
-import { Icon } from 'ts/@next/components/icon';
-import { Input, InputWidth } from 'ts/@next/components/modals/input';
-import { Heading, Paragraph } from 'ts/@next/components/text';
-import { GlobalStyle } from 'ts/@next/constants/globalStyle';
+import { Button } from 'ts/components/button';
+import { Icon } from 'ts/components/icon';
+import { Input, InputWidth } from 'ts/components/modals/input';
+import { Heading, Paragraph } from 'ts/components/text';
+import { GlobalStyle } from 'ts/constants/globalStyle';
 
 interface Props {
     theme?: GlobalStyle;

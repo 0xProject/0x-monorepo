@@ -5,9 +5,9 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Column, Section } from 'ts/@next/components/newLayout';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { AboutPageLayout } from 'ts/components/aboutPageLayout';
+import { Column, Section } from 'ts/components/newLayout';
+import { Heading, Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
 interface TeamMember {
@@ -18,132 +18,132 @@ interface TeamMember {
 
 const team: TeamMember[] = [
     {
-        imageUrl: '/images/@next/team/willw.jpg',
+        imageUrl: '/images/team/willw.jpg',
         name: 'Will Warren',
         title: 'co-founder & CEO',
     },
     {
-        imageUrl: '/images/@next/team/amirb.jpg',
+        imageUrl: '/images/team/amirb.jpg',
         name: 'Amir Bandeali',
         title: 'Co-founder & CTO',
     },
     {
-        imageUrl: '/images/@next/team/fabiob.jpg',
+        imageUrl: '/images/team/fabiob.jpg',
         name: 'Fabio Berger',
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/alexv.jpg',
+        imageUrl: '/images/team/alexv.jpg',
         name: 'Alex Xu',
         title: 'Director of operations',
     },
     {
-        imageUrl: '/images/@next/team/leonidL.jpg',
+        imageUrl: '/images/team/leonidL.jpg',
         name: 'Leonid Logvinov',
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/benb.jpg',
+        imageUrl: '/images/team/benb.jpg',
         name: 'Ben Burns',
         title: 'designer',
     },
     {
-        imageUrl: '/images/@next/team/brandonm.jpg',
+        imageUrl: '/images/team/brandonm.jpg',
         name: 'Brandon Millman',
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/toms.jpg',
+        imageUrl: '/images/team/toms.jpg',
         name: 'Tom Schmidt',
         title: 'product manager',
     },
     {
-        imageUrl: '/images/@next/team/jacobe.jpg',
+        imageUrl: '/images/team/jacobe.jpg',
         name: 'Jacob Evans',
         title: 'ecosystem engineer',
     },
     {
-        imageUrl: '/images/@next/team/blake.jpg',
+        imageUrl: '/images/team/blake.jpg',
         name: 'Blake Henderson',
         title: 'ecosystem programs lead',
     },
     {
-        imageUrl: '/images/@next/team/zack.jpg',
+        imageUrl: '/images/team/zack.jpg',
         name: 'Zack Skelly',
         title: 'lead recruiter',
     },
     {
-        imageUrl: '/images/@next/team/greg.jpg',
+        imageUrl: '/images/team/greg.jpg',
         name: 'Greg Hysen',
         title: 'blockchain engineer',
     },
     {
-        imageUrl: '/images/@next/team/remcoB.jpg',
+        imageUrl: '/images/team/remcoB.jpg',
         name: 'Remco Bloemen',
         title: 'technical fellow',
     },
     {
-        imageUrl: '/images/@next/team/francesco.jpg',
+        imageUrl: '/images/team/francesco.jpg',
         name: 'Francesco Agosti',
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo.jpg',
+        imageUrl: '/images/team/melo.jpg',
         name: 'Mel Oberto',
         title: 'people operations associate',
     },
     {
-        imageUrl: '/images/@next/team/alexb.jpg',
+        imageUrl: '/images/team/alexb.jpg',
         name: 'Alex Browne',
         title: 'engineer in residence',
     },
     {
-        imageUrl: '/images/@next/team/peterz.jpg',
+        imageUrl: '/images/team/peterz.jpg',
         name: 'Peter Zeitz',
         title: 'research fellow',
     },
     {
-        imageUrl: '/images/@next/team/chrisk.jpg',
+        imageUrl: '/images/team/chrisk.jpg',
         name: 'Chris Kalani',
         title: 'director of design',
     },
     {
-        imageUrl: '/images/@next/team/clayr.jpg',
+        imageUrl: '/images/team/clayr.jpg',
         name: 'Clay Robbins',
         title: 'ecosystem development lead',
     },
     {
-        imageUrl: '/images/@next/team/mattt.jpg',
+        imageUrl: '/images/team/mattt.jpg',
         name: 'Matt Taylor',
         title: 'marketing lead',
     },
     {
-        imageUrl: '/images/@next/team/eugenea.jpg',
+        imageUrl: '/images/team/eugenea.jpg',
         name: 'Eugene Aumson',
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/weijew.jpg',
+        imageUrl: '/images/team/weijew.jpg',
         name: 'Weijie Wu',
         title: 'research fellow',
     },
     {
-        imageUrl: '/images/@next/team/rahuls.jpg',
+        imageUrl: '/images/team/rahuls.jpg',
         name: 'Rahul Singireddy',
         title: 'relayer success manager',
     },
     {
-        imageUrl: '/images/@next/team/jasons.jpg',
+        imageUrl: '/images/team/jasons.jpg',
         name: 'Jason Somensatto',
         title: 'strategic legal counsel',
     },
     {
-        imageUrl: '/images/@next/team/steveK.jpg',
+        imageUrl: '/images/team/steveK.jpg',
         name: 'Steve Klebanoff',
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/xianny.jpg',
+        imageUrl: '/images/team/xianny.jpg',
         name: 'Xianny Ng',
         title: 'engineer',
     },
@@ -151,27 +151,27 @@ const team: TeamMember[] = [
 
 const advisors: TeamMember[] = [
     {
-        imageUrl: '/images/@next/team/advisors/frede.jpg',
+        imageUrl: '/images/team/advisors/frede.jpg',
         name: 'Fred Ehrsam',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/advisors/olafc.jpg',
+        imageUrl: '/images/team/advisors/olafc.jpg',
         name: 'Olaf Carlson-Wee',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/advisors/joeyk.jpg',
+        imageUrl: '/images/team/advisors/joeyk.jpg',
         name: 'Joey Krug',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/advisors/lindax.jpg',
+        imageUrl: '/images/team/advisors/lindax.jpg',
         name: 'Linda Xie',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/advisors/davids.jpg',
+        imageUrl: '/images/team/advisors/davids.jpg',
         name: 'David Sacks',
         title: 'Advisor',
     },

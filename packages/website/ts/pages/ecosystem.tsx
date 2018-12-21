@@ -5,11 +5,11 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button } from 'ts/@next/components/button';
-import { Icon } from 'ts/@next/components/icon';
-import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Button } from 'ts/components/button';
+import { Icon } from 'ts/components/icon';
+import { Column, Section, WrapGrid } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
+import { Heading, Paragraph } from 'ts/components/text';
 import { constants } from 'ts/utils/constants';
 
 interface BenefitProps {

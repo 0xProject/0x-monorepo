@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
-import { Button } from 'ts/@next/components/button';
+import { Button } from 'ts/components/button';
 import { Container } from 'ts/components/ui/container';
 import { styled } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';

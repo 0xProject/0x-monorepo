@@ -3,10 +3,10 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { withTheme } from 'styled-components';
 
-import { Button } from 'ts/@next/components/button';
-import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
-import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
-import { Heading } from 'ts/@next/components/text';
+import { Button } from 'ts/components/button';
+import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
+import { ThemeValuesInterface } from 'ts/components/siteWrap';
+import { Heading } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 

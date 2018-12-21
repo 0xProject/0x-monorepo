@@ -1,7 +1,7 @@
 import Slider from 'rc-slider';
 import * as React from 'react';
 import styled from 'styled-components';
-import 'ts/@next/pages/instant/rc-slider.css';
+import 'ts/pages/instant/rc-slider.css';
 
 import { colors } from 'ts/style/colors';
 

@@ -2,15 +2,15 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 
-import { Hero } from 'ts/@next/components/hero';
+import { Hero } from 'ts/components/hero';
 
-import { Banner } from 'ts/@next/components/banner';
-import { Button } from 'ts/@next/components/button';
-import { Definition } from 'ts/@next/components/definition';
-import { Icon } from 'ts/@next/components/icon';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
+import { Banner } from 'ts/components/banner';
+import { Button } from 'ts/components/button';
+import { Definition } from 'ts/components/definition';
+import { Icon } from 'ts/components/icon';
+import { SiteWrap } from 'ts/components/siteWrap';
 
-import { Section } from 'ts/@next/components/newLayout';
+import { Section } from 'ts/components/newLayout';
 import { constants } from 'ts/utils/constants';
 
 import { ModalContact } from '../components/modals/modal_contact';

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Button } from 'ts/@next/components/button';
-import { Icon } from 'ts/@next/components/icon';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Button } from 'ts/components/button';
+import { Icon } from 'ts/components/icon';
+import { Heading, Paragraph } from 'ts/components/text';
 
 interface Action {
     label: string;

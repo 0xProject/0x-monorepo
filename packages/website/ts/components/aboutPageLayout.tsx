@@ -2,13 +2,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Button } from 'ts/@next/components/button';
-import { ChapterLink } from 'ts/@next/components/chapter_link';
-import { Column, Section } from 'ts/@next/components/newLayout';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Button } from 'ts/components/button';
+import { ChapterLink } from 'ts/components/chapter_link';
+import { Column, Section } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
+import { Heading, Paragraph } from 'ts/components/text';
 
-import { addFadeInAnimation } from 'ts/@next/constants/animations';
+import { addFadeInAnimation } from 'ts/constants/animations';
 import { WebsitePaths } from 'ts/types';
 
 interface Props {

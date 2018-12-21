@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button } from 'ts/@next/components/button';
-import { ThemeInterface } from 'ts/@next/components/siteWrap';
-import { Paragraph } from 'ts/@next/components/text';
+import { Button } from 'ts/components/button';
+import { ThemeInterface } from 'ts/components/siteWrap';
+import { Paragraph } from 'ts/components/text';
 
-import { Column, Section } from 'ts/@next/components/newLayout';
+import { Column, Section } from 'ts/components/newLayout';
 
 interface Props {
     heading?: string;
@@ -129,7 +129,7 @@ const Border =
     `
     position: absolute;
     background-image: ${props =>
-        props.isBottom ? 'url(/images/@next/banner/bottomofcta.png);' : 'url(/images/@next/banner/topofcta.png);'};
+        props.isBottom ? 'url(/images/banner/bottomofcta.png);' : 'url(/images/banner/topofcta.png);'};
     background-position: ${props => (props.isBottom ? 'left top' : 'left bottom')};
     left: 0;
     width: calc(100% + 214px);

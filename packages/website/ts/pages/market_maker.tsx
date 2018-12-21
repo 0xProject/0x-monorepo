@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { Banner } from 'ts/@next/components/banner';
-import { Button } from 'ts/@next/components/button';
-import { Definition } from 'ts/@next/components/definition';
-import { Hero } from 'ts/@next/components/hero';
-import { ModalContact } from 'ts/@next/components/modals/modal_contact';
-import { Section } from 'ts/@next/components/newLayout';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
+import { Banner } from 'ts/components/banner';
+import { Button } from 'ts/components/button';
+import { Definition } from 'ts/components/definition';
+import { Hero } from 'ts/components/hero';
+import { ModalContact } from 'ts/components/modals/modal_contact';
+import { Section } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
 
 const offersData = [
     {

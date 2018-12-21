@@ -4,13 +4,13 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Banner } from 'ts/@next/components/banner';
-import { Button } from 'ts/@next/components/button';
-import { Icon } from 'ts/@next/components/icon';
-import { ModalContact } from 'ts/@next/components/modals/modal_contact';
-import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Banner } from 'ts/components/banner';
+import { Button } from 'ts/components/button';
+import { Icon } from 'ts/components/icon';
+import { ModalContact } from 'ts/components/modals/modal_contact';
+import { Column, Section, WrapGrid } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
+import { Heading, Paragraph } from 'ts/components/text';
 
 interface EventProps {
     title: string;
@@ -30,19 +30,19 @@ const events: EventProps[] = [
     {
         title: '0x London Meetup',
         date: 'October 20th 2018',
-        imageUrl: '/images/@next/events/london.jpg',
+        imageUrl: '/images/events/london.jpg',
         signupUrl: '#',
     },
     {
         title: '0x Berlin Meetup',
         date: 'October 20th 2018',
-        imageUrl: '/images/@next/events/berlin.jpg',
+        imageUrl: '/images/events/berlin.jpg',
         signupUrl: '#',
     },
     {
         title: '0x San Francisco Meetup',
         date: 'October 20th 2018',
-        imageUrl: '/images/@next/events/sf.jpg',
+        imageUrl: '/images/events/sf.jpg',
         signupUrl: '#',
     },
 ];

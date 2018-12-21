@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { Link } from 'react-router-dom';
 
-import { WrapGrid, WrapProps } from 'ts/@next/components/newLayout';
+import { WrapGrid, WrapProps } from 'ts/components/newLayout';
 import { WebsitePaths } from 'ts/types';
 
 interface Props {

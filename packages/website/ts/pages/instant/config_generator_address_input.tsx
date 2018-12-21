@@ -7,7 +7,7 @@ import { colors } from 'ts/style/colors';
 
 import { Container } from 'ts/components/ui/container';
 
-import { Paragraph } from 'ts/@next/components/text';
+import { Paragraph } from 'ts/components/text';
 
 export interface ConfigGeneratorAddressInputProps {
     value?: string;

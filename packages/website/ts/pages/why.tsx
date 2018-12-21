@@ -4,14 +4,14 @@ import DocumentTitle from 'react-document-title';
 import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
 import styled from 'styled-components';
 
-import { Banner } from 'ts/@next/components/banner';
-import { Button } from 'ts/@next/components/button';
-import { Definition } from 'ts/@next/components/definition';
-import { Hero } from 'ts/@next/components/hero';
-import { Column, Section, WrapSticky } from 'ts/@next/components/newLayout';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Slide, Slider } from 'ts/@next/components/slider/slider';
-import { Heading } from 'ts/@next/components/text';
+import { Banner } from 'ts/components/banner';
+import { Button } from 'ts/components/button';
+import { Definition } from 'ts/components/definition';
+import { Hero } from 'ts/components/hero';
+import { Column, Section, WrapSticky } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
+import { Slide, Slider } from 'ts/components/slider/slider';
+import { Heading } from 'ts/components/text';
 
 import { ModalContact } from '../components/modals/modal_contact';
 

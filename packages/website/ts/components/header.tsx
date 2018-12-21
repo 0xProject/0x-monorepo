@@ -6,14 +6,14 @@ import styled, { css, withTheme } from 'styled-components';
 
 import Headroom from 'react-headroom';
 
-import { Button } from 'ts/@next/components/button';
-import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
-import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
-import { Hamburger } from 'ts/@next/components/hamburger';
-import { Logo } from 'ts/@next/components/logo';
-import { MobileNav } from 'ts/@next/components/mobileNav';
-import { FlexWrap } from 'ts/@next/components/newLayout';
-import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
+import { Button } from 'ts/components/button';
+import { DropdownDevelopers } from 'ts/components/dropdowns/dropdown_developers';
+import { DropdownProducts } from 'ts/components/dropdowns/dropdown_products';
+import { Hamburger } from 'ts/components/hamburger';
+import { Logo } from 'ts/components/logo';
+import { MobileNav } from 'ts/components/mobileNav';
+import { FlexWrap } from 'ts/components/newLayout';
+import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 

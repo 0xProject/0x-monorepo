@@ -4,14 +4,14 @@ import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 import styled, { keyframes } from 'styled-components';
 
-import { Banner } from 'ts/@next/components/banner';
-import { Button } from 'ts/@next/components/button';
-import { Definition } from 'ts/@next/components/definition';
-import { Hero } from 'ts/@next/components/hero';
-import { Section, SectionProps } from 'ts/@next/components/newLayout';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Heading, Paragraph } from 'ts/@next/components/text';
-import { Configurator } from 'ts/@next/pages/instant/configurator';
+import { Banner } from 'ts/components/banner';
+import { Button } from 'ts/components/button';
+import { Definition } from 'ts/components/definition';
+import { Hero } from 'ts/components/hero';
+import { Section, SectionProps } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
+import { Heading, Paragraph } from 'ts/components/text';
+import { Configurator } from 'ts/pages/instant/configurator';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { utils } from 'ts/utils/utils';
@@ -100,7 +100,7 @@ export class Next0xInstant extends React.Component<Props> {
                         <div>
                             {[...Array(18)].map((item, index) => (
                                 <Card key={`card-${index}`} index={index}>
-                                    <img src={`/images/@next/0x-instant/widget-${index % 6 + 1}.png`} />
+                                    <img src={`/images/0x-instant/widget-${index % 6 + 1}.png`} />
                                 </Card>
                             ))}
                         </div>

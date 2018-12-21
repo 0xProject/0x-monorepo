@@ -6,8 +6,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ConfigGeneratorAddressInput } from 'ts/@next/pages/instant/config_generator_address_input';
-import { FeePercentageSlider } from 'ts/@next/pages/instant/fee_percentage_slider';
+import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
+import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { CheckMark } from 'ts/components/ui/check_mark';
 import { Container } from 'ts/components/ui/container';
 import { MultiSelect } from 'ts/components/ui/multi_select';
@@ -18,8 +18,8 @@ import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 // New components
-import { Heading } from 'ts/@next/components/text';
-import { Select, SelectItemConfig } from 'ts/@next/pages/instant/select';
+import { Heading } from 'ts/components/text';
+import { Select, SelectItemConfig } from 'ts/pages/instant/select';
 
 import { assetMetaDataMap } from '../../../../../instant/src/data/asset_meta_data_map';
 import { ERC20AssetMetaData, ZeroExInstantBaseConfig } from '../../../../../instant/src/types';

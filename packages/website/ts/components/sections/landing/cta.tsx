@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import { BlockIconLink } from 'ts/@next/components/blockIconLink';
-import { Section } from 'ts/@next/components/newLayout';
+import { BlockIconLink } from 'ts/components/blockIconLink';
+import { Section } from 'ts/components/newLayout';
 
-import { AnimatedChatIcon } from 'ts/@next/components/animatedChatIcon';
-import { AnimatedCompassIcon } from 'ts/@next/components/animatedCompassIcon';
+import { AnimatedChatIcon } from 'ts/components/animatedChatIcon';
+import { AnimatedCompassIcon } from 'ts/components/animatedCompassIcon';
 import { WebsitePaths } from 'ts/types';
 
 interface Props {
