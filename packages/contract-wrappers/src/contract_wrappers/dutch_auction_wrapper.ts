@@ -7,7 +7,7 @@ import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { ContractAbi } from 'ethereum-types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, abiUtils } from '@0x/utils';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import ethAbi = require('ethereumjs-abi');
@@ -21,8 +21,7 @@ import { OrderTransactionOpts } from '../types';
 import { ContractWrapper } from './contract_wrapper';
 import { ExchangeWrapperError } from '../types';
 
-import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { constants } from 'zlib';
+import { assetDataUtils, AssetData } from '@0x/order-utils';
 
 export class DutchAuctionWrapper extends ContractWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
@@ -74,6 +73,10 @@ export class DutchAuctionWrapper extends ContractWrapper {
             sellOrder.takerAssetData !== buyOrder.makerAssetData
         ) {
             throw new Error(ExchangeWrapperError.AssetDataMismatch);
+        } else {
+            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
+            //rightSignedOrder.makerAssetData = '0x';
+           // rightSignedOrder.takerAssetData = '0x';
         }
         // get contract
         const dutchAuctionInstance = await this._getDutchAuctionContractAsync();
@@ -136,66 +139,6 @@ export class DutchAuctionWrapper extends ContractWrapper {
         this._dutchAuctionContractIfExists = contractInstance;
         return this._dutchAuctionContractIfExists;
     }
-
-    public async createSignedSellOrderAsync(
-        auctionBeginTimeSections: BigNumber,
-        auctionBeginAmount: BigNumber,
-        auctionEndAmount: BigNumber,
-        acutionEndTime: BigNumber,
-        makerAssetData: string,
-        takerAssetData: string,
-        makerAddress: string,
-        takerAddress: string,
-        takerFillableAmount: BigNumber,
-        senderAddress?: string,
-        makerFee?: BigNumber,
-        takerFee?: BigNumber,
-        feeRecipientAddress?: string,
-    ): Promise<SignedOrder> {
-        console.log(`asdasd`);
-        const makerAssetAmount = auctionEndAmount;
-        const makerAssetDataWithAuctionDetails = DutchAuctionWrapper.encodeDutchAuctionAssetData(makerAssetData, auctionBeginTimeSections, auctionBeginAmount);
-        const signedOrder = await orderFactory.createSignedOrderAsync(
-            this._web3Wrapper.getProvider(),
-            makerAddress,
-            makerAssetAmount,
-            makerAssetDataWithAuctionDetails,
-            takerFillableAmount,
-            takerAssetData,
-            this._exchangeAddress,
-            {
-                takerAddress,
-                senderAddress,
-                makerFee,
-                takerFee,
-                feeRecipientAddress,
-                expirationTimeSeconds: acutionEndTime,
-            },
-        );
-        //console.log(signedOrder);
-        return signedOrder;
-    }
-
-    public async createSignedBuyOrderAsync(sellOrder: SignedOrder, buyerAddress: string, senderAddress?: string, makerFee?: BigNumber, takerFee?: BigNumber, feeRecipientAddress?: string): Promise<SignedOrder> {
-        const signedOrder = await orderFactory.createSignedOrderAsync(
-            this._web3Wrapper.getProvider(),
-            buyerAddress,
-            sellOrder.takerAssetAmount.times(2), // change this to decode value from auction @TODO -- add decode above for this.
-            sellOrder.takerAssetData,
-            sellOrder.makerAssetAmount,
-            sellOrder.makerAssetData,
-            sellOrder.exchangeAddress,
-            {
-                senderAddress,
-                makerFee,
-                takerFee,
-                feeRecipientAddress,
-                expirationTimeSeconds: sellOrder.expirationTimeSeconds,
-            },
-        );
-       // console.log(signedOrder);
-        return signedOrder;
-    }
     /**
      * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
      * encoded assetData string, containing information both about the asset being traded and the
@@ -206,7 +149,6 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * @return The hex encoded assetData string.
      */
     public static encodeDutchAuctionAssetData(assetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
-       // console.log(`yoooo`, assetData);
         const assetDataBuffer = ethUtil.toBuffer(assetData);
         const abiEncodedAuctionData = (ethAbi as any).rawEncode(
             ['uint256', 'uint256'],
@@ -218,4 +160,28 @@ export class DutchAuctionWrapper extends ContractWrapper {
         const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
         return dutchAuctionData;
     };
+    /**
+     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+     * encoded assetData string, containing information both about the asset being traded and the
+     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+     * @param dutchAuctionData Hex encoded assetData string for the asset being auctioned.
+     * @return 
+     */
+    public static decodeDutchAuctionData(dutchAuctionData: string): [AssetData, BigNumber, BigNumber] {
+        const dutchAuctionDataBuffer = ethUtil.toBuffer(dutchAuctionData);
+        // Decode asset data
+        const assetDataBuffer = dutchAuctionDataBuffer.slice(0, dutchAuctionDataBuffer.byteLength - 64);
+        const assetDataHex = ethUtil.bufferToHex(assetDataBuffer);
+        const assetData = assetDataUtils.decodeAssetDataOrThrow(assetDataHex);
+        // Decode auction details
+        const dutchAuctionDetailsBuffer = dutchAuctionDataBuffer.slice(dutchAuctionDataBuffer.byteLength - 64);
+        const [beginTimeSecondsAsBN, beginAmountAsBN] = ethAbi.rawDecode(
+            ['uint256', 'uint256'],
+            dutchAuctionDetailsBuffer
+        );
+        const beginTimeSeconds = new BigNumber(`0x${beginTimeSecondsAsBN.toString()}`);
+        const beginAmount = new BigNumber(`0x${beginAmountAsBN.toString()}`);
+        console.log(beginAmount);
+        return [assetData, beginTimeSeconds, beginAmount];
+     };
 }
