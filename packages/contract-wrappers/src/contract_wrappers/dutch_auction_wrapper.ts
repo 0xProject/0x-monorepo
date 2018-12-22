@@ -4,7 +4,7 @@ import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { ContractAbi } from 'ethereum-types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { BigNumber, abiUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import ethAbi = require('ethereumjs-abi');
 import { schemas } from '@0x/json-schemas';
@@ -22,7 +22,6 @@ import { assetDataUtils } from '@0x/order-utils';
 export class DutchAuctionWrapper extends ContractWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
     public address: string;
-    private _exchangeAddress: string;
     private _dutchAuctionContractIfExists?: DutchAuctionContract;
     /**
      * Instantiate DutchAuctionWrapper
@@ -31,14 +30,11 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * @param address The address of the Dutch Auction contract. If undefined, will
      * default to the known address corresponding to the networkId.
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string, exchangeAddress?: string) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
         this.address = this.address = _.isUndefined(address)
             ? _getDefaultContractAddresses(networkId).dutchAuction
             : address;
-        this._exchangeAddress = _.isUndefined(exchangeAddress)
-            ? _getDefaultContractAddresses(networkId).exchange
-            : exchangeAddress;
     }
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
