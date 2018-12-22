@@ -22,7 +22,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:custom-no-magic-numbers
-describe.only('DutchAuctionWrapper', () => {
+describe('DutchAuctionWrapper', () => {
     const fillableAmount = new BigNumber(2); //Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18);
     const tenMinutesInSeconds = 10 * 60;
     let contractWrappers: ContractWrappers;
