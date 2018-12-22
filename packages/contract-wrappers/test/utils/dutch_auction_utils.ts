@@ -24,31 +24,34 @@ export class DutchAuctionUtils {
     }
     public async createSignedSellOrderAsync(
         auctionBeginTimeSections: BigNumber,
-        auctionBeginAmount: BigNumber,
-        auctionEndAmount: BigNumber,
-        acutionEndTime: BigNumber,
+        acutionEndTimeSeconds: BigNumber,
+        auctionBeginTakerAssetAmount: BigNumber,
+        auctionEndTakerAssetAmount: BigNumber,
+        makerAssetAmount: BigNumber,
         makerAssetData: string,
         takerAssetData: string,
         makerAddress: string,
         takerAddress: string,
-        takerFillableAmount: BigNumber,
         senderAddress?: string,
         makerFee?: BigNumber,
         takerFee?: BigNumber,
         feeRecipientAddress?: string,
     ): Promise<SignedOrder> {
-        const makerAssetAmount = auctionEndAmount;
+        // Notes on sell order:
+        // - The `takerAssetAmount` is set to the `auctionEndTakerAssetAmount`, which is the lowest amount the 
+        //   the seller can expect to receive
+        // - The `makerAssetData` is overloaded to include the auction begin time and begin taker asset amount
         const makerAssetDataWithAuctionDetails = DutchAuctionWrapper.encodeDutchAuctionAssetData(
             makerAssetData,
             auctionBeginTimeSections,
-            auctionBeginAmount,
+            auctionBeginTakerAssetAmount,
         );
         const signedOrder = await orderFactory.createSignedOrderAsync(
             this._web3Wrapper.getProvider(),
             makerAddress,
             makerAssetAmount,
             makerAssetDataWithAuctionDetails,
-            takerFillableAmount,
+            auctionEndTakerAssetAmount,
             takerAssetData,
             this._exchangeAddress,
             {
@@ -57,7 +60,7 @@ export class DutchAuctionUtils {
                 makerFee,
                 takerFee,
                 feeRecipientAddress,
-                expirationTimeSeconds: acutionEndTime,
+                expirationTimeSeconds: acutionEndTimeSeconds,
             },
         );
         const erc20AssetData = assetDataUtils.decodeERC20AssetData(makerAssetData);
@@ -71,8 +74,15 @@ export class DutchAuctionUtils {
         makerFee?: BigNumber,
         takerFee?: BigNumber,
         feeRecipientAddress?: string,
+        expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
         const dutchAuctionData = DutchAuctionWrapper.decodeDutchAuctionData(sellOrder.makerAssetData);
+        // Notes on buy order:
+        // - The `makerAssetAmount` is set to `dutchAuctionData.beginAmount`, which is 
+        //   the highest amount the buyer would have to pay out at any point during the auction.
+        // - The `takerAssetAmount` is set to the seller's `makerAssetAmount`, as the buyer
+        //   receives the entire amount being sold by the seller.
+        // - The `makerAssetData`/`takerAssetData` are reversed from the sell order
         const signedOrder = await orderFactory.createSignedOrderAsync(
             this._web3Wrapper.getProvider(),
             buyerAddress,
@@ -86,7 +96,7 @@ export class DutchAuctionUtils {
                 makerFee,
                 takerFee,
                 feeRecipientAddress,
-                expirationTimeSeconds: sellOrder.expirationTimeSeconds,
+                expirationTimeSeconds,
             },
         );
         const buyerERC20AssetData = assetDataUtils.decodeERC20AssetData(sellOrder.takerAssetData);
@@ -135,7 +145,6 @@ export class DutchAuctionUtils {
         );
         const oldMakerAllowance = await erc20Token.allowance.callAsync(address, this._erc20ProxyAddress);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
-
         const txHash = await erc20Token.approve.sendTransactionAsync(this._erc20ProxyAddress, newMakerAllowance, {
             from: address,
         });

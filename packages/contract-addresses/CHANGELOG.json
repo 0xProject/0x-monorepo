@@ -3,7 +3,7 @@
         "version": "2.1.0",
         "changes": [
             {
-                "note": "Added entries for Dutch Auction contract",
+                "note": "Added testnet entries for Dutch Auction contract (kovan,rinkeby,ropsten)",
                 "pr": 1465
             }
         ]

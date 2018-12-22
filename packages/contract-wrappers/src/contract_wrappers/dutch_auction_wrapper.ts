@@ -47,9 +47,9 @@ export class DutchAuctionWrapper extends ContractWrapper {
         return dutchAuctionData;
     }
     /**
-     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+     * Dutch auction details are encoded with the asset data for a 0x order. This function decodes a hex
      * encoded assetData string, containing information both about the asset being traded and the
-     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+     * dutch auction.
      * @param dutchAuctionData Hex encoded assetData string for the asset being auctioned.
      * @return An object containing the auction asset, auction begin time and auction begin amount.
      */
@@ -95,10 +95,11 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * start time and the auction begin amount. The sell order is a an order at the lowest amount
      * at the end of the auction. Excess from the match is transferred to the seller.
      * Over time the price moves from beginAmount to endAmount given the current block.timestamp.
-     * @param buyOrder The Buyer's order. This order is for the current expected price of the auction.
-     * @param sellOrder The Seller's order. This order is for the lowest amount (at the end of the auction).
-     * @param from Address the transaction is being sent from.
-     * @return Transaction receipt with decoded logs.
+     * @param buyOrder      The Buyer's order. This order is for the current expected price of the auction.
+     * @param sellOrder     The Seller's order. This order is for the lowest amount (at the end of the auction).
+     * @param takerAddress  The user Ethereum address who would like to fill this order. Must be available via the supplied
+     *                      Provider provided at instantiation.
+     * @return              Transaction hash.
      */
     public async matchOrdersAsync(
         buyOrder: SignedOrder,
@@ -152,7 +153,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
         return txHash;
     }
     /**
-     * Calculates the Auction Details for the given order
+     * Fetches the Auction Details for the given order
      * @param sellOrder The Seller's order. This order is for the lowest amount (at the end of the auction).
      * @return The dutch auction details.
      */

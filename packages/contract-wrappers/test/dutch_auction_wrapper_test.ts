@@ -21,7 +21,9 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:custom-no-magic-numbers
 describe('DutchAuctionWrapper', () => {
-    const fillableAmount = new BigNumber(2);
+    const makerAssetAmount = new BigNumber(5);
+    const auctionEndTakerAmount = new BigNumber(10);
+    const auctionBeginTakerAmount = auctionEndTakerAmount.times(2);
     const tenMinutesInSeconds = 10 * 60;
     let contractWrappers: ContractWrappers;
     let exchangeContractAddress: string;
@@ -35,9 +37,7 @@ describe('DutchAuctionWrapper', () => {
     let makerTokenAssetData: string;
     let takerTokenAssetData: string;
     let auctionBeginTimeSeconds: BigNumber;
-    let auctionBeginAmount: BigNumber;
     let auctionEndTimeSeconds: BigNumber;
-    let auctionEndAmount: BigNumber;
     before(async () => {
         // setup contract wrappers & addresses
         const contractAddresses = await migrateOnceAsync();
@@ -58,8 +58,6 @@ describe('DutchAuctionWrapper', () => {
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
         ];
         // setup auction details in maker asset data
-        auctionEndAmount = fillableAmount;
-        auctionBeginAmount = auctionEndAmount.times(2);
         const currentBlockTimestamp: number = await getLatestBlockTimestampAsync();
         auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds);
         auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp + tenMinutesInSeconds);
@@ -73,14 +71,14 @@ describe('DutchAuctionWrapper', () => {
         );
         sellOrder = await dutchAuctionUtils.createSignedSellOrderAsync(
             auctionBeginTimeSeconds,
-            auctionBeginAmount,
-            auctionEndAmount,
             auctionEndTimeSeconds,
+            auctionBeginTakerAmount,
+            auctionEndTakerAmount,
+            makerAssetAmount,
             makerTokenAssetData,
             takerTokenAssetData,
             makerAddress,
             constants.NULL_ADDRESS,
-            auctionEndAmount,
         );
         buyOrder = await dutchAuctionUtils.createSignedBuyOrderAsync(sellOrder, takerAddress);
     });
@@ -119,7 +117,7 @@ describe('DutchAuctionWrapper', () => {
             expect(auctionDetails.beginTimeSeconds, 'auctionDetails.beginTimeSeconds').to.be.bignumber.equal(
                 auctionBeginTimeSeconds,
             );
-            expect(auctionDetails.beginAmount, 'auctionDetails.beginAmount').to.be.bignumber.equal(auctionBeginAmount);
+            expect(auctionDetails.beginAmount, 'auctionDetails.beginAmount').to.be.bignumber.equal(auctionBeginTakerAmount);
             expect(auctionDetails.endTimeSeconds, 'auctionDetails.endTimeSeconds').to.be.bignumber.equal(
                 auctionEndTimeSeconds,
             );
