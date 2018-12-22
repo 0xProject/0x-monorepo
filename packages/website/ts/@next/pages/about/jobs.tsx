@@ -4,8 +4,11 @@ import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
+import { Link } from 'ts/@next/components/link';
 import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Container } from 'ts/components/ui/container';
+import { colors } from 'ts/style/colors';
 import { WebsiteBackendJobInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
@@ -26,25 +29,27 @@ const Position: React.FunctionComponent<PositionItemProps> = (props: PositionIte
     const { position } = props;
     return (
         <PositionWrap>
-            <StyledColumn width="30%">
-                <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0">
-                    <a href={position.href} target="_blank">
-                        {position.title}
-                    </a>
-                </Heading>
+            <StyledColumn width="50%">
+                <Container position="relative" top="-3px" paddingRight="12px">
+                    <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0">
+                        <a href={position.href} target="_blank">
+                            {position.title}
+                        </a>
+                    </Heading>
+                </Container>
             </StyledColumn>
 
-            <StyledColumn width="50%" padding="0 40px 0 0">
+            <StyledColumn width="30%" padding="0 40px 0 0">
                 <Paragraph isMuted={true} marginBottom="0">
                     {position.location}
                 </Paragraph>
             </StyledColumn>
 
             <StyledColumn width="20%">
-                <Paragraph marginBottom="0" textAlign="right">
-                    <a href={position.href} target="_blank">
+                <Paragraph marginBottom="0" textAlign="right" color={colors.brandDark} fontWeight={400}>
+                    <Link href={position.href} target="_blank">
                         Apply
-                    </a>
+                    </Link>
                 </Paragraph>
             </StyledColumn>
         </PositionWrap>
