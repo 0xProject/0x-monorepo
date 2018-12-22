@@ -12,6 +12,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
@@ -20,7 +21,6 @@ import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
 import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 import { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
-import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';

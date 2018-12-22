@@ -1,19 +1,20 @@
-import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } from '@0x/abi-gen-wrappers';
-import { SignedOrder } from '@0x/types';
+import { DummyERC20TokenContract } from '@0x/abi-gen-wrappers';
 import * as artifacts from '@0x/contract-artifacts';
+import { assetDataUtils } from '@0x/order-utils';
+import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 
 import { DutchAuctionWrapper } from '../../src/contract_wrappers/dutch_auction_wrapper';
+
 import { constants } from './constants';
-import { assetDataUtils } from '@0x/order-utils';
 
 export class DutchAuctionUtils {
-    private _web3Wrapper: Web3Wrapper;
-    private _coinbase: string;
-    private _exchangeAddress: string;
-    private _erc20ProxyAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _coinbase: string;
+    private readonly _exchangeAddress: string;
+    private readonly _erc20ProxyAddress: string;
 
     constructor(web3Wrapper: Web3Wrapper, coinbase: string, exchangeAddress: string, erc20ProxyAddress: string) {
         this._web3Wrapper = web3Wrapper;
@@ -36,7 +37,6 @@ export class DutchAuctionUtils {
         takerFee?: BigNumber,
         feeRecipientAddress?: string,
     ): Promise<SignedOrder> {
-        console.log(`asdasd`);
         const makerAssetAmount = auctionEndAmount;
         const makerAssetDataWithAuctionDetails = DutchAuctionWrapper.encodeDutchAuctionAssetData(
             makerAssetData,

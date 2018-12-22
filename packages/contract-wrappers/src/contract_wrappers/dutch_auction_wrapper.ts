@@ -1,28 +1,84 @@
 import { DutchAuctionContract } from '@0x/abi-gen-wrappers';
 import { DutchAuction } from '@0x/contract-artifacts';
-import { _getDefaultContractAddresses } from '../utils/contract_addresses';
-import { DutchAuctionDetails, SignedOrder } from '@0x/types';
-import { ContractAbi } from 'ethereum-types';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
-import ethAbi = require('ethereumjs-abi');
 import { schemas } from '@0x/json-schemas';
-import { assert } from '../utils/assert';
-import ethUtil = require('ethereumjs-util');
+import { assetDataUtils } from '@0x/order-utils';
+import { DutchAuctionDetails, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import { ContractAbi } from 'ethereum-types';
+import * as ethAbi from 'ethereumjs-abi';
+import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
-import { OrderTransactionOpts } from '../types';
-import { ContractWrapper } from './contract_wrapper';
-import { DutchAuctionWrapperError, DutchAuctionData } from '../types';
+import { DutchAuctionData, DutchAuctionWrapperError, OrderTransactionOpts } from '../types';
+import { assert } from '../utils/assert';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
-import { assetDataUtils } from '@0x/order-utils';
+import { ContractWrapper } from './contract_wrapper';
 
 export class DutchAuctionWrapper extends ContractWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
     public address: string;
     private _dutchAuctionContractIfExists?: DutchAuctionContract;
+    /**
+     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+     * encoded assetData string, containing information both about the asset being traded and the
+     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+     * @param assetData Hex encoded assetData string for the asset being auctioned.
+     * @param beginTimeSeconds Begin time of the dutch auction.
+     * @param beginAmount Starting amount being sold in the dutch auction.
+     * @return The hex encoded assetData string.
+     */
+    public static encodeDutchAuctionAssetData(
+        assetData: string,
+        beginTimeSeconds: BigNumber,
+        beginAmount: BigNumber,
+    ): string {
+        const assetDataBuffer = ethUtil.toBuffer(assetData);
+        const abiEncodedAuctionData = (ethAbi as any).rawEncode(
+            ['uint256', 'uint256'],
+            [beginTimeSeconds.toString(), beginAmount.toString()],
+        );
+        const abiEncodedAuctionDataBuffer = ethUtil.toBuffer(abiEncodedAuctionData);
+        const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
+        const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
+        return dutchAuctionData;
+    }
+    /**
+     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+     * encoded assetData string, containing information both about the asset being traded and the
+     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+     * @param dutchAuctionData Hex encoded assetData string for the asset being auctioned.
+     * @return An object containing the auction asset, auction begin time and auction begin amount.
+     */
+    public static decodeDutchAuctionData(dutchAuctionData: string): DutchAuctionData {
+        const dutchAuctionDataBuffer = ethUtil.toBuffer(dutchAuctionData);
+        // Decode asset data
+        const dutchAuctionDataLengthInBytes = 64;
+        const assetDataBuffer = dutchAuctionDataBuffer.slice(
+            0,
+            dutchAuctionDataBuffer.byteLength - dutchAuctionDataLengthInBytes,
+        );
+        const assetDataHex = ethUtil.bufferToHex(assetDataBuffer);
+        const assetData = assetDataUtils.decodeAssetDataOrThrow(assetDataHex);
+        // Decode auction details
+        const dutchAuctionDetailsBuffer = dutchAuctionDataBuffer.slice(
+            dutchAuctionDataBuffer.byteLength - dutchAuctionDataLengthInBytes,
+        );
+        const [beginTimeSecondsAsBN, beginAmountAsBN] = ethAbi.rawDecode(
+            ['uint256', 'uint256'],
+            dutchAuctionDetailsBuffer,
+        );
+        const beginTimeSeconds = new BigNumber(`0x${beginTimeSecondsAsBN.toString()}`);
+        const beginAmount = new BigNumber(`0x${beginAmountAsBN.toString()}`);
+        return {
+            assetData,
+            beginTimeSeconds,
+            beginAmount,
+        };
+    }
     /**
      * Instantiate DutchAuctionWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
@@ -30,11 +86,9 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * @param address The address of the Dutch Auction contract. If undefined, will
      * default to the known address corresponding to the networkId.
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
+    public constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address)
-            ? _getDefaultContractAddresses(networkId).dutchAuction
-            : address;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).dutchAuction : address;
     }
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
@@ -123,56 +177,5 @@ export class DutchAuctionWrapper extends ContractWrapper {
         );
         this._dutchAuctionContractIfExists = contractInstance;
         return this._dutchAuctionContractIfExists;
-    }
-    /**
-     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
-     * encoded assetData string, containing information both about the asset being traded and the
-     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
-     * @param assetData Hex encoded assetData string for the asset being auctioned.
-     * @param beginTimeSeconds Begin time of the dutch auction.
-     * @param beginAmount Starting amount being sold in the dutch auction.
-     * @return The hex encoded assetData string.
-     */
-    public static encodeDutchAuctionAssetData(
-        assetData: string,
-        beginTimeSeconds: BigNumber,
-        beginAmount: BigNumber,
-    ): string {
-        const assetDataBuffer = ethUtil.toBuffer(assetData);
-        const abiEncodedAuctionData = (ethAbi as any).rawEncode(
-            ['uint256', 'uint256'],
-            [beginTimeSeconds.toString(), beginAmount.toString()],
-        );
-        const abiEncodedAuctionDataBuffer = ethUtil.toBuffer(abiEncodedAuctionData);
-        const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
-        const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
-        return dutchAuctionData;
-    }
-    /**
-     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
-     * encoded assetData string, containing information both about the asset being traded and the
-     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
-     * @param dutchAuctionData Hex encoded assetData string for the asset being auctioned.
-     * @return An object containing the auction asset, auction begin time and auction begin amount.
-     */
-    public static decodeDutchAuctionData(dutchAuctionData: string): DutchAuctionData {
-        const dutchAuctionDataBuffer = ethUtil.toBuffer(dutchAuctionData);
-        // Decode asset data
-        const assetDataBuffer = dutchAuctionDataBuffer.slice(0, dutchAuctionDataBuffer.byteLength - 64);
-        const assetDataHex = ethUtil.bufferToHex(assetDataBuffer);
-        const assetData = assetDataUtils.decodeAssetDataOrThrow(assetDataHex);
-        // Decode auction details
-        const dutchAuctionDetailsBuffer = dutchAuctionDataBuffer.slice(dutchAuctionDataBuffer.byteLength - 64);
-        const [beginTimeSecondsAsBN, beginAmountAsBN] = ethAbi.rawDecode(
-            ['uint256', 'uint256'],
-            dutchAuctionDetailsBuffer,
-        );
-        const beginTimeSeconds = new BigNumber(`0x${beginTimeSecondsAsBN.toString()}`);
-        const beginAmount = new BigNumber(`0x${beginAmountAsBN.toString()}`);
-        return {
-            assetData,
-            beginTimeSeconds,
-            beginAmount,
-        };
     }
 }

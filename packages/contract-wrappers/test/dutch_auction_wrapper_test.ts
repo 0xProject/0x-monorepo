@@ -1,3 +1,4 @@
+import { expectTransactionFailedAsync, getLatestBlockTimestampAsync } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -9,13 +10,10 @@ import { ContractWrappers } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { DutchAuctionUtils } from './utils/dutch_auction_utils';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
-import { getLatestBlockTimestampAsync } from '@0x/contracts-test-utils';
-import { DutchAuctionUtils } from './utils/dutch_auction_utils';
-
-import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -23,7 +21,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:custom-no-magic-numbers
 describe('DutchAuctionWrapper', () => {
-    const fillableAmount = new BigNumber(2); //Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18);
+    const fillableAmount = new BigNumber(2);
     const tenMinutesInSeconds = 10 * 60;
     let contractWrappers: ContractWrappers;
     let exchangeContractAddress: string;
@@ -62,7 +60,7 @@ describe('DutchAuctionWrapper', () => {
         // setup auction details in maker asset data
         auctionEndAmount = fillableAmount;
         auctionBeginAmount = auctionEndAmount.times(2);
-        const currentBlockTimestamp = await getLatestBlockTimestampAsync();
+        const currentBlockTimestamp: number = await getLatestBlockTimestampAsync();
         auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds);
         auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp + tenMinutesInSeconds);
         // create auction orders
