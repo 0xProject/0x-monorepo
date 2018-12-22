@@ -162,8 +162,8 @@ export class DutchAuctionWrapper extends ContractWrapper {
         // get contract
         const dutchAuctionInstance = await this._getDutchAuctionContractAsync();
         // call contract
-        const afterAuctionDetails = await dutchAuctionInstance.getAuctionDetails.callAsync(sellOrder);
-        return afterAuctionDetails;
+        const auctionDetails = await dutchAuctionInstance.getAuctionDetails.callAsync(sellOrder);
+        return auctionDetails;
     }
     private async _getDutchAuctionContractAsync(): Promise<DutchAuctionContract> {
         if (!_.isUndefined(this._dutchAuctionContractIfExists)) {

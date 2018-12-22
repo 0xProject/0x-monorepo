@@ -56,7 +56,7 @@ export class DutchAuctionTestWrapper {
      * @return The dutch auction details.
      */
     public async getAuctionDetailsAsync(sellOrder: SignedOrder): Promise<DutchAuctionDetails> {
-        const afterAuctionDetails = await this._dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-        return afterAuctionDetails;
+        const auctionDetails = await this._dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
+        return auctionDetails;
     }
 }
