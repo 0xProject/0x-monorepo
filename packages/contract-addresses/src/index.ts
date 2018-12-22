@@ -20,6 +20,8 @@ export enum NetworkId {
     Ganache = 50,
 }
 
+const NULL_ADDRESS  = '0x0000000000000000000000000000000000000000';
+
 const networkToAddresses: { [networkId: number]: ContractAddresses } = {
     1: {
         erc20Proxy: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
@@ -30,7 +32,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
-        dutchAuction: '0x',
+        // @todo hysz/dekz: Add mainnet address once deployed.
+        dutchAuction: NULL_ADDRESS,
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -75,7 +78,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
         forwarder: '0xb69e673309512a9d726f87304c6984054f87a93b',
         orderValidator: '0xe86bb98fcf9bff3512c74589b78fb168200cc546',
-        dutchAuction: '0x',
+        // @todo hysz/dekz: Add address once deployed.
+        dutchAuction: NULL_ADDRESS,
     },
 };
 
