@@ -47,11 +47,7 @@ export const buyQuoteCalculator = {
                 .div(multiplerNeededWithSlippage)
                 .round(0, BigNumber.ROUND_DOWN);
 
-            throw new InsufficientAssetLiquidityError(
-                amountAvailableToFillConsideringSlippage.gt(constants.ZERO_AMOUNT)
-                    ? amountAvailableToFillConsideringSlippage
-                    : undefined,
-            );
+            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
         }
         // if we are not buying ZRX:
         // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)

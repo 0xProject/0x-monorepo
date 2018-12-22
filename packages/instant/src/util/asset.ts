@@ -115,7 +115,6 @@ export const assetUtils = {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
             if (
                 error instanceof InsufficientAssetLiquidityError &&
-                error.amountAvailableToFill &&
                 error.amountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)
             ) {
                 const unitAmountAvailableToFill = Web3Wrapper.toUnitAmount(
