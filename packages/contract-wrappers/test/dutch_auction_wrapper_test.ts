@@ -15,9 +15,7 @@ import { provider, web3Wrapper } from './utils/web3_wrapper';
 import { getLatestBlockTimestampAsync } from '@0x/contracts-test-utils';
 import { DutchAuctionUtils } from './utils/dutch_auction_utils';
 
-import {
-    expectTransactionFailedAsync,
-} from '@0x/contracts-test-utils';
+import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -25,7 +23,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:custom-no-magic-numbers
 describe.only('DutchAuctionWrapper', () => {
-    const fillableAmount = new BigNumber(2);//Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18);
+    const fillableAmount = new BigNumber(2); //Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18);
     const tenMinutesInSeconds = 10 * 60;
     let contractWrappers: ContractWrappers;
     let exchangeContractAddress: string;
@@ -69,7 +67,12 @@ describe.only('DutchAuctionWrapper', () => {
         auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp + tenMinutesInSeconds);
         // create auction orders
         const coinbase = userAddresses[0];
-        const dutchAuctionUtils = new DutchAuctionUtils(web3Wrapper, coinbase, exchangeContractAddress, contractWrappers.erc20Proxy.address);
+        const dutchAuctionUtils = new DutchAuctionUtils(
+            web3Wrapper,
+            coinbase,
+            exchangeContractAddress,
+            contractWrappers.erc20Proxy.address,
+        );
         sellOrder = await dutchAuctionUtils.createSignedSellOrderAsync(
             auctionBeginTimeSeconds,
             auctionBeginAmount,
@@ -81,10 +84,7 @@ describe.only('DutchAuctionWrapper', () => {
             constants.NULL_ADDRESS,
             auctionEndAmount,
         );
-        buyOrder = await dutchAuctionUtils.createSignedBuyOrderAsync(
-            sellOrder,
-            takerAddress,
-        );
+        buyOrder = await dutchAuctionUtils.createSignedBuyOrderAsync(sellOrder, takerAddress);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -105,15 +105,10 @@ describe.only('DutchAuctionWrapper', () => {
             const badSellOrder = buyOrder;
             const badBuyOrder = sellOrder;
             return expectTransactionFailedAsync(
-                contractWrappers.dutchAuction.matchOrdersAsync(
-                    badBuyOrder,
-                    badSellOrder,
-                    takerAddress,
-                    {
-                        shouldValidate: true,
-                    },
-                ),
-                RevertReason.InvalidAssetData
+                contractWrappers.dutchAuction.matchOrdersAsync(badBuyOrder, badSellOrder, takerAddress, {
+                    shouldValidate: true,
+                }),
+                RevertReason.InvalidAssetData,
             );
         });
     });
@@ -123,9 +118,13 @@ describe.only('DutchAuctionWrapper', () => {
             // get auction details
             const auctionDetails = await contractWrappers.dutchAuction.getAuctionDetailsAsync(sellOrder);
             // run some basic sanity checks on the return value
-            expect(auctionDetails.beginTimeSeconds, 'auctionDetails.beginTimeSeconds').to.be.bignumber.equal(auctionBeginTimeSeconds);
+            expect(auctionDetails.beginTimeSeconds, 'auctionDetails.beginTimeSeconds').to.be.bignumber.equal(
+                auctionBeginTimeSeconds,
+            );
             expect(auctionDetails.beginAmount, 'auctionDetails.beginAmount').to.be.bignumber.equal(auctionBeginAmount);
-            expect(auctionDetails.endTimeSeconds, 'auctionDetails.endTimeSeconds').to.be.bignumber.equal(auctionEndTimeSeconds);
+            expect(auctionDetails.endTimeSeconds, 'auctionDetails.endTimeSeconds').to.be.bignumber.equal(
+                auctionEndTimeSeconds,
+            );
         });
     });
 });

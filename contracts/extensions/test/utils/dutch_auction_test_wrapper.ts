@@ -70,7 +70,11 @@ export class DutchAuctionTestWrapper {
      * @param beginAmount Starting amount being sold in the dutch auction.
      * @return The hex encoded assetData string.
      */
-    public static encodeDutchAuctionAssetData(assetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
+    public static encodeDutchAuctionAssetData(
+        assetData: string,
+        beginTimeSeconds: BigNumber,
+        beginAmount: BigNumber,
+    ): string {
         return DutchAuctionWrapper.encodeDutchAuctionAssetData(assetData, beginTimeSeconds, beginAmount);
-    };
+    }
 }

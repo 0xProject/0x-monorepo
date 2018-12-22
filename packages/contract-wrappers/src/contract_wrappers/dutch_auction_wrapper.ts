@@ -1,14 +1,10 @@
-import { artifacts as protocolArtifacts } from '@0x/contracts-protocol';
 import { DutchAuctionContract } from '@0x/abi-gen-wrappers';
 import { DutchAuction } from '@0x/contract-artifacts';
-import { LogDecoder } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { ContractAbi } from 'ethereum-types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BigNumber, abiUtils } from '@0x/utils';
-import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import ethAbi = require('ethereumjs-abi');
 import { schemas } from '@0x/json-schemas';
@@ -35,15 +31,14 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * @param address The address of the Dutch Auction contract. If undefined, will
      * default to the known address corresponding to the networkId.
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        address?: string,
-        exchangeAddress?: string,
-    ) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string, exchangeAddress?: string) {
         super(web3Wrapper, networkId);
-        this.address = this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).dutchAuction : address;
-        this._exchangeAddress = _.isUndefined(exchangeAddress) ? _getDefaultContractAddresses(networkId).exchange : exchangeAddress;
+        this.address = this.address = _.isUndefined(address)
+            ? _getDefaultContractAddresses(networkId).dutchAuction
+            : address;
+        this._exchangeAddress = _.isUndefined(exchangeAddress)
+            ? _getDefaultContractAddresses(networkId).exchange
+            : exchangeAddress;
     }
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
@@ -142,7 +137,11 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * @param beginAmount Starting amount being sold in the dutch auction.
      * @return The hex encoded assetData string.
      */
-    public static encodeDutchAuctionAssetData(assetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
+    public static encodeDutchAuctionAssetData(
+        assetData: string,
+        beginTimeSeconds: BigNumber,
+        beginAmount: BigNumber,
+    ): string {
         const assetDataBuffer = ethUtil.toBuffer(assetData);
         const abiEncodedAuctionData = (ethAbi as any).rawEncode(
             ['uint256', 'uint256'],
@@ -152,7 +151,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
         const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
         const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
         return dutchAuctionData;
-    };
+    }
     /**
      * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
      * encoded assetData string, containing information both about the asset being traded and the
@@ -170,14 +169,14 @@ export class DutchAuctionWrapper extends ContractWrapper {
         const dutchAuctionDetailsBuffer = dutchAuctionDataBuffer.slice(dutchAuctionDataBuffer.byteLength - 64);
         const [beginTimeSecondsAsBN, beginAmountAsBN] = ethAbi.rawDecode(
             ['uint256', 'uint256'],
-            dutchAuctionDetailsBuffer
+            dutchAuctionDetailsBuffer,
         );
         const beginTimeSeconds = new BigNumber(`0x${beginTimeSecondsAsBN.toString()}`);
         const beginAmount = new BigNumber(`0x${beginAmountAsBN.toString()}`);
         return {
             assetData,
             beginTimeSeconds,
-            beginAmount
+            beginAmount,
         };
-     };
+    }
 }
