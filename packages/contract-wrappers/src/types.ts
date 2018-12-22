@@ -14,6 +14,8 @@ import { BigNumber } from '@0x/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
 
+import { AssetData } from '@0x/order-utils';
+
 export enum ExchangeWrapperError {
     AssetDataMismatch = 'ASSET_DATA_MISMATCH',
 }
@@ -205,4 +207,14 @@ export interface OrderAndTraderInfo {
 export interface BalanceAndAllowance {
     balance: BigNumber;
     allowance: BigNumber;
+}
+
+export enum DutchAuctionWrapperError {
+    AssetDataMismatch = 'ASSET_DATA_MISMATCH',
+}
+
+export interface DutchAuctionData {
+    assetData: AssetData;
+    beginTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
 }

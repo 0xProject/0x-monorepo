@@ -19,9 +19,9 @@ import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import { OrderTransactionOpts } from '../types';
 import { ContractWrapper } from './contract_wrapper';
-import { ExchangeWrapperError } from '../types';
+import { DutchAuctionWrapperError, DutchAuctionData } from '../types';
 
-import { assetDataUtils, AssetData } from '@0x/order-utils';
+import { assetDataUtils } from '@0x/order-utils';
 
 export class DutchAuctionWrapper extends ContractWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
@@ -72,11 +72,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
             sellOrder.makerAssetData !== buyOrder.takerAssetData ||
             sellOrder.takerAssetData !== buyOrder.makerAssetData
         ) {
-            throw new Error(ExchangeWrapperError.AssetDataMismatch);
-        } else {
-            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
-            //rightSignedOrder.makerAssetData = '0x';
-           // rightSignedOrder.takerAssetData = '0x';
+            throw new Error(DutchAuctionWrapperError.AssetDataMismatch);
         }
         // get contract
         const dutchAuctionInstance = await this._getDutchAuctionContractAsync();
@@ -119,8 +115,6 @@ export class DutchAuctionWrapper extends ContractWrapper {
         // type assertions
         assert.doesConformToSchema('sellOrder', sellOrder, schemas.signedOrderSchema);
         // get contract
-        console.log(sellOrder);
-        console.log(await this._getDutchAuctionContractAsync());
         const dutchAuctionInstance = await this._getDutchAuctionContractAsync();
         // call contract
         const afterAuctionDetails = await dutchAuctionInstance.getAuctionDetails.callAsync(sellOrder);
@@ -156,7 +150,6 @@ export class DutchAuctionWrapper extends ContractWrapper {
         );
         const abiEncodedAuctionDataBuffer = ethUtil.toBuffer(abiEncodedAuctionData);
         const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
-     //   console.log(`GREFG --- `, abiEncodedAuctionData);
         const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
         return dutchAuctionData;
     };
@@ -165,9 +158,9 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * encoded assetData string, containing information both about the asset being traded and the
      * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
      * @param dutchAuctionData Hex encoded assetData string for the asset being auctioned.
-     * @return 
+     * @return An object containing the auction asset, auction begin time and auction begin amount.
      */
-    public static decodeDutchAuctionData(dutchAuctionData: string): [AssetData, BigNumber, BigNumber] {
+    public static decodeDutchAuctionData(dutchAuctionData: string): DutchAuctionData {
         const dutchAuctionDataBuffer = ethUtil.toBuffer(dutchAuctionData);
         // Decode asset data
         const assetDataBuffer = dutchAuctionDataBuffer.slice(0, dutchAuctionDataBuffer.byteLength - 64);
@@ -181,7 +174,10 @@ export class DutchAuctionWrapper extends ContractWrapper {
         );
         const beginTimeSeconds = new BigNumber(`0x${beginTimeSecondsAsBN.toString()}`);
         const beginAmount = new BigNumber(`0x${beginAmountAsBN.toString()}`);
-        console.log(beginAmount);
-        return [assetData, beginTimeSeconds, beginAmount];
+        return {
+            assetData,
+            beginTimeSeconds,
+            beginAmount
+        };
      };
 }
