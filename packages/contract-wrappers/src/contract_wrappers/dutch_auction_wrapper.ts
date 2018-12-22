@@ -32,7 +32,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = this.address = _.isUndefined(address)
+        this.address = _.isUndefined(address)
             ? _getDefaultContractAddresses(networkId).dutchAuction
             : address;
     }
