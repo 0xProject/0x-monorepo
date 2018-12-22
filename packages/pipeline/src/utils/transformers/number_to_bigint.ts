@@ -9,8 +9,12 @@ const decimalRadix = 10;
 // https://github.com/typeorm/typeorm/issues/2400 for more information.
 export class NumberToBigIntTransformer implements ValueTransformer {
     // tslint:disable-next-line:prefer-function-over-method
-    public to(value: number): string {
-        return value.toString();
+    public to(value: number): string | null {
+        if (typeof value !== 'number') {
+            return null;
+        } else {
+            return value.toString();
+        }
     }
 
     // tslint:disable-next-line:prefer-function-over-method

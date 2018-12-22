@@ -2,6 +2,11 @@ import { ConnectionOptions } from 'typeorm';
 
 import {
     Block,
+    CopperActivity,
+    CopperActivityType,
+    CopperCustomField,
+    CopperLead,
+    CopperOpportunity,
     DexTrade,
     ERC20ApprovalEvent,
     ExchangeCancelEvent,
@@ -18,6 +23,11 @@ import {
 
 const entities = [
     Block,
+    CopperOpportunity,
+    CopperActivity,
+    CopperActivityType,
+    CopperCustomField,
+    CopperLead,
     DexTrade,
     ExchangeCancelEvent,
     ExchangeCancelUpToEvent,

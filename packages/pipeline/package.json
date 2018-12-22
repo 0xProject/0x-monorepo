@@ -29,6 +29,9 @@
     "devDependencies": {
         "@0x/tslint-config": "^2.0.0",
         "@types/axios": "^0.14.0",
+        "@types/chai": "^4.1.7",
+        "@types/chai-as-promised": "^7.1.0",
+        "@types/mocha": "^5.2.5",
         "@types/ramda": "^0.25.38",
         "chai": "^4.1.2",
         "chai-as-promised": "^7.1.1",
@@ -58,6 +61,7 @@
         "ethereum-types": "^1.1.4",
         "pg": "^7.5.0",
         "prettier": "^1.15.3",
+        "pw-app-sdk": "^0.3.4",
         "ramda": "^0.25.0",
         "reflect-metadata": "^0.1.12",
         "sqlite3": "^4.0.2",

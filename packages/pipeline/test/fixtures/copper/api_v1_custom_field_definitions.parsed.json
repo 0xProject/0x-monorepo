@@ -1,0 +1,40 @@
+[
+    { "id": 261066, "name": "Integration Type", "dataType": "MultiSelect" },
+    {
+        "id": 394020,
+        "name": "Strategic Relationship",
+        "rank": 7,
+        "dataType": "Integration Type",
+        "fieldType": "option"
+    },
+    { "id": 394013, "name": "ERC-20 Exchange", "rank": 0, "dataType": "Integration Type", "fieldType": "option" },
+    { "id": 394014, "name": "ERC-721 Marketplace", "rank": 1, "dataType": "Integration Type", "fieldType": "option" },
+    { "id": 394015, "name": "Trade Widget", "rank": 2, "dataType": "Integration Type", "fieldType": "option" },
+    {
+        "id": 394016,
+        "name": "Prediction Market Exchange",
+        "rank": 3,
+        "dataType": "Integration Type",
+        "fieldType": "option"
+    },
+    {
+        "id": 394017,
+        "name": "Security Token Exchange",
+        "rank": 4,
+        "dataType": "Integration Type",
+        "fieldType": "option"
+    },
+    { "id": 394018, "name": "Complementary Company", "rank": 5, "dataType": "Integration Type", "fieldType": "option" },
+    { "id": 394019, "name": "Service Provider", "rank": 6, "dataType": "Integration Type", "fieldType": "option" },
+    { "id": 261067, "name": "Company Type", "dataType": "Dropdown" },
+    { "id": 394129, "name": "Market Maker", "rank": 6, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394130, "name": "Events", "rank": 2, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394023, "name": "Exchange", "rank": 3, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394024, "name": "Investor", "rank": 5, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394026, "name": "Service Provider", "rank": 8, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394027, "name": "Wallet", "rank": 9, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394134, "name": "Game", "rank": 4, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394025, "name": "OTC", "rank": 7, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394021, "name": "Blockchain/Protocol", "rank": 0, "dataType": "Company Type", "fieldType": "option" },
+    { "id": 394022, "name": "dApp", "rank": 1, "dataType": "Company Type", "fieldType": "option" }
+]
