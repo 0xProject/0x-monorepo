@@ -117,7 +117,9 @@ describe('DutchAuctionWrapper', () => {
             expect(auctionDetails.beginTimeSeconds, 'auctionDetails.beginTimeSeconds').to.be.bignumber.equal(
                 auctionBeginTimeSeconds,
             );
-            expect(auctionDetails.beginAmount, 'auctionDetails.beginAmount').to.be.bignumber.equal(auctionBeginTakerAmount);
+            expect(auctionDetails.beginAmount, 'auctionDetails.beginAmount').to.be.bignumber.equal(
+                auctionBeginTakerAmount,
+            );
             expect(auctionDetails.endTimeSeconds, 'auctionDetails.endTimeSeconds').to.be.bignumber.equal(
                 auctionEndTimeSeconds,
             );

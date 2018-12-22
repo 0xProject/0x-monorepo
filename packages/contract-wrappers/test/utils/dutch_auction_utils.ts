@@ -38,7 +38,7 @@ export class DutchAuctionUtils {
         feeRecipientAddress?: string,
     ): Promise<SignedOrder> {
         // Notes on sell order:
-        // - The `takerAssetAmount` is set to the `auctionEndTakerAssetAmount`, which is the lowest amount the 
+        // - The `takerAssetAmount` is set to the `auctionEndTakerAssetAmount`, which is the lowest amount the
         //   the seller can expect to receive
         // - The `makerAssetData` is overloaded to include the auction begin time and begin taker asset amount
         const makerAssetDataWithAuctionDetails = DutchAuctionWrapper.encodeDutchAuctionAssetData(
@@ -78,7 +78,7 @@ export class DutchAuctionUtils {
     ): Promise<SignedOrder> {
         const dutchAuctionData = DutchAuctionWrapper.decodeDutchAuctionData(sellOrder.makerAssetData);
         // Notes on buy order:
-        // - The `makerAssetAmount` is set to `dutchAuctionData.beginAmount`, which is 
+        // - The `makerAssetAmount` is set to `dutchAuctionData.beginAmount`, which is
         //   the highest amount the buyer would have to pay out at any point during the auction.
         // - The `takerAssetAmount` is set to the seller's `makerAssetAmount`, as the buyer
         //   receives the entire amount being sold by the seller.
