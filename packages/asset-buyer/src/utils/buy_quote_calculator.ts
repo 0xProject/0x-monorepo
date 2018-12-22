@@ -36,16 +36,14 @@ export const buyQuoteCalculator = {
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
             // We needed the amount they requested to buy, plus the amount for slippage
             const totalAmountRequested = assetBuyAmount.plus(slippageBufferAmount);
-            const amountUnableToFill = totalAmountRequested.minus(remainingFillAmount);
-            // multiplerNeededWithSlippage represents what we need to multiply the assetBuyAmount by
+            const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
+            // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
             // in order to get the total amount needed considering slippage
-            // i.e. if slippagePercent was 0.2 (20%), multiplerNeededWithSlippage would be 1.2
-            const multiplerNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
-            // Given amountAvailableToFillConsideringSlippage * multiplerNeededWithSlippage = amountUnableToFill
-            // We divide amountUnableToFill by multiplerNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
-            const amountAvailableToFillConsideringSlippage = amountUnableToFill
-                .div(multiplerNeededWithSlippage)
-                .round(0, BigNumber.ROUND_DOWN);
+            // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
+            const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
+            // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
+            // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
+            const amountAvailableToFillConsideringSlippage = amountAbleToFill.div(multiplierNeededWithSlippage).floor();
 
             throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
         }
