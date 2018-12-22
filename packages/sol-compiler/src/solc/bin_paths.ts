@@ -18,4 +18,8 @@ export const binPaths: BinaryPaths = {
     '0.4.22': 'soljson-v0.4.22+commit.4cb486ee.js',
     '0.4.23': 'soljson-v0.4.23+commit.124ca40d.js',
     '0.4.24': 'soljson-v0.4.24+commit.e67f0147.js',
+    '0.4.25': 'soljson-v0.4.25+commit.59dbf8f1.js',
+    '0.5.0': 'soljson-v0.5.0+commit.1d4f565a.js',
+    '0.5.1': 'soljson-v0.5.1+commit.c8a2cb62.js',
+    '0.5.2': 'soljson-v0.5.2+commit.1df8f40c.js',
 };

@@ -4449,6 +4449,11 @@ comma-separated-tokens@^1.0.0:
   dependencies:
     trim "0.0.1"
 
+command-exists@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
+  integrity sha512-PM54PkseWbiiD/mMsbvW351/u+dafwTJ0ye2qB60G1aGQP9j3xK2gmMDc+R34L3nDtx4qMCitXT75mkbkGJDLw==
+
 commander@2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
@@ -7339,7 +7344,7 @@ ganache-core@0xProject/ganache-core#monorepo-dep:
     ethereumjs-tx "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "~0.6.0"
+    ethereumjs-wallet "0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"
@@ -14092,7 +14097,7 @@ require-from-string@^1.1.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/require-from-string/-/require-from-string-1.2.1.tgz#529c9ccef27380adfec9a2f965b649bbee636418"
 
-require-from-string@^2.0.1:
+require-from-string@^2.0.0, require-from-string@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/require-from-string/-/require-from-string-2.0.2.tgz#89a7fdd938261267318eafe14f9c32e598c36909"
 
@@ -14910,16 +14915,6 @@ solc@^0.4.2:
     semver "^5.3.0"
     yargs "^4.7.1"
 
-solc@^0.4.23:
-  version "0.4.23"
-  resolved "https://registry.yarnpkg.com/solc/-/solc-0.4.23.tgz#54a0ff4015827b32fddb62c0a418b5247310a58e"
-  dependencies:
-    fs-extra "^0.30.0"
-    memorystream "^0.3.1"
-    require-from-string "^1.1.0"
-    semver "^5.3.0"
-    yargs "^4.7.1"
-
 solc@^0.4.24:
   version "0.4.25"
   resolved "https://registry.yarnpkg.com/solc/-/solc-0.4.25.tgz#06b8321f7112d95b4b903639b1138a4d292f5faa"
@@ -14929,6 +14924,20 @@ solc@^0.4.24:
     require-from-string "^1.1.0"
     semver "^5.3.0"
     yargs "^4.7.1"
+
+solc@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/solc/-/solc-0.5.2.tgz#45d5d11569e41c2b2535f3a50fe0616ca771a347"
+  integrity sha512-gZSRM+2HKe8TXeXE+RJtdPq9+8IxpukMnUXXfphJ4d5duHfKfi7lu0eBFh6WSWvnYQ8xis+sfidiurOop2q1KQ==
+  dependencies:
+    command-exists "^1.2.8"
+    fs-extra "^0.30.0"
+    keccak "^1.0.2"
+    memorystream "^0.3.1"
+    require-from-string "^2.0.0"
+    semver "^5.5.0"
+    tmp "0.0.33"
+    yargs "^11.0.0"
 
 solhint@^1.4.1:
   version "1.4.1"
@@ -15933,7 +15942,7 @@ tmp@0.0.31:
   dependencies:
     os-tmpdir "~1.0.1"
 
-tmp@^0.0.33:
+tmp@0.0.33, tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
   dependencies:
