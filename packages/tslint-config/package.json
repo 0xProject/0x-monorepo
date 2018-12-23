@@ -9,6 +9,7 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
+        "test": "mocha ./lib/test/*.spec.js",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project ."
     },
@@ -40,6 +41,7 @@
     },
     "dependencies": {
         "lodash": "^4.17.5",
+        "to-snake-case": "^1.0.0",
         "tslint": "5.11.0",
         "tslint-eslint-rules": "5.4.0",
         "tslint-react": "^3.2.0",
