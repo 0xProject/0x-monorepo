@@ -4,6 +4,7 @@ export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtil
 
 export {
     ContractWrappers,
+    DutchAuctionWrapper,
     ERC20TokenWrapper,
     ERC721TokenWrapper,
     EtherTokenWrapper,
