@@ -13,6 +13,7 @@ import { DataType } from '../data_type';
 import { DataTypeFactory, MemberIndexByName } from '../interfaces';
 
 import { AbstractPointerDataType } from './pointer';
+import { logUtils } from '../../../log_utils';
 
 export abstract class AbstractSetDataType extends DataType {
     protected readonly _arrayLength: number | undefined;
@@ -134,22 +135,16 @@ export abstract class AbstractSetDataType extends DataType {
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // Create blocks for members of set.
         const memberCalldataBlocks: CalldataBlock[] = [];
-        let duplicateObj = _.cloneDeep(obj) as {[key:string]: any};
         _.forEach(this._memberIndexByName, (memberIndex: number, memberName: string) => {
             if (!(memberName in obj)) {
                 throw new Error(
                     `Could not assign tuple to object: missing key '${memberName}' in object ${JSON.stringify(obj)}`,
                 );
             }
-            const memberValue: any = duplicateObj[memberName];
+            const memberValue: any = (obj as {[key:string]: any})[memberName];
             const memberBlock = this._members[memberIndex].generateCalldataBlock(memberValue, block);
             memberCalldataBlocks.push(memberBlock);
-            delete duplicateObj[memberName];
         });
-        // Sanity check that all members have been included.
-        if (Object.keys(duplicateObj).length !== 0) {
-            throw new Error(`Could not assign tuple to object: unrecognized keys ${Object.keys(duplicateObj)}`);
-        }
         // Associate member blocks with Set block.
         block.setMembers(memberCalldataBlocks);
         return block;

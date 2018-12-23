@@ -91,10 +91,7 @@ export class BaseContract {
     }
     protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
         if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
-            const revertReason = ethers.utils.defaultAbiCoder.decode(
-                ['string'],
-                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
-            );
+            const revertReason = AbiEncoder.create('(string)').decode(ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH));
             throw new Error(revertReason);
         }
     }
@@ -139,6 +136,28 @@ export class BaseContract {
             return false;
         }) as MethodAbi;
         return methodAbi;
+    }
+    protected _strictEncodeArguments(functionSignature: string, functionArguments: any): string {
+        const abiEncoder = this._lookupAbiEncoder(functionSignature);
+        const inputAbi = abiEncoder.getDataItem().components;
+        if (inputAbi === undefined) {
+            throw new Error(`Undefined Method Input ABI`);
+        }
+        const params = abiUtils.parseEthersParams(inputAbi);
+        const rawEncoded = abiEncoder.encode(functionArguments);
+        const rawDecoded = abiEncoder.decodeAsArray(rawEncoded);
+        for (let i = 0; i < rawDecoded.length; i++) {
+            const original = functionArguments[i];
+            const decoded = rawDecoded[i];
+            if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
+                throw new Error(
+                    `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
+                        params.types[i]
+                    }. (Possible type overflow or other encoding error)`,
+                );
+            }
+        }
+        return rawEncoded;
     }
     constructor(
         contractName: string,

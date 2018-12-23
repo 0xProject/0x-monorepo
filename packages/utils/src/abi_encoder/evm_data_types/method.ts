@@ -35,6 +35,12 @@ export class MethodDataType extends AbstractSetDataType {
         return value;
     }
 
+    public decodeAsArray(returndata: string, rules?: DecodingRules): any {
+        const value = this.decode(returndata, rules);
+        const valuesAsArray = _.isObject(value) ? _.values(value) : [value];
+        return valuesAsArray;
+    }
+
     public encodeReturnValues(value: any, rules?: EncodingRules): string {
         const returnData = this._returnDataType.encode(value, rules);
         return returnData;

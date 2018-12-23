@@ -48,32 +48,6 @@ contract TestLibs is
         return fillOrderCalldata;
     }
 
-    function publicAbiDecodeFillOrder(
-        bytes memory fillOrderCalldata
-    )
-        public
-        pure
-        returns (
-            Order memory order,
-            uint256 takerAssetFillAmount,
-            bytes memory signature
-        )
-    {
-        (
-            order,
-            takerAssetFillAmount,
-            signature
-        ) = abi.decode(
-            fillOrderCalldata,
-            "((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"
-        );
-        return (
-            order,
-            takerAssetFillAmount,
-            signature
-        );
-    }
-
     function publicGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,

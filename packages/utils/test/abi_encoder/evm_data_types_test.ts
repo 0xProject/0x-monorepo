@@ -407,21 +407,6 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 dataType.encode(args, encodingRules);
             }).to.throw('Could not assign tuple to object: missing key \'field_2\' in object {"field_1":"-5"}');
         });
-        it('Bad Key', async () => {
-            // Create DataType object
-            const testDataItem = {
-                name: 'Tuple',
-                type: 'tuple',
-                components: [{name: 'field_1', type: 'bool' }],
-            };
-            const dataType = new AbiEncoder.Tuple(testDataItem);
-            // Construct args to be encoded
-            const args = { field_1: true, unknown_field: new BigNumber(-5) };
-            // Encode Args and validate result
-            expect(() => {
-                dataType.encode(args, encodingRules);
-            }).to.throw("Could not assign tuple to object: unrecognized keys unknown_field");
-        });
     });
 
     describe('Address', () => {

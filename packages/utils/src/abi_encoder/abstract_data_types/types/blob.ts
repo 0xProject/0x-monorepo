@@ -9,6 +9,8 @@ import { DecodingRules } from '../../utils/rules';
 import { DataType } from '../data_type';
 import { DataTypeFactory } from '../interfaces';
 
+import * as ethUtil from 'ethereumjs-util';
+
 export abstract class AbstractBlobDataType extends DataType {
     protected _sizeKnownAtCompileTime: boolean;
 
