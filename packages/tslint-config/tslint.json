@@ -25,6 +25,7 @@
         "curly": true,
         "custom-no-magic-numbers": [true, 0, 1, 2, 3, -1],
         "encoding": true,
+        "enum-snake-case": true,
         "eofline": true,
         "import-spacing": true,
         "indent": [true, "spaces", 4],
@@ -125,5 +126,5 @@
             "check-preblock"
         ]
     },
-    "rulesDirectory": "lib"
+    "rulesDirectory": "lib/rules"
 }

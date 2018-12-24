@@ -7,9 +7,9 @@ const rule = 'enum-snake-case';
 
 describe('enumNamingRule', () => {
     it(`testing failure example`, () => {
-        const src = `enum test { memberOne, memberTwo }`;
+        const src = `enum test { memberOne = 'memberOne', member_two = 'member-two', member3 = 3 }`;
         const result = helper(src, rule);
-        assert.equal(result.errorCount, 2);
+        assert.equal(result.errorCount, 3);
     });
 
     it(`testing not failure example`, () => {
@@ -37,11 +37,11 @@ describe('enumNamingRule', () => {
     });
 
     it('testing fixer example', () => {
-        const src = `enum test { memberOne, memberTwo }`;
-        const expected = `enum test { MEMBER_ONE, MEMBER_TWO }`;
+        const src = `enum test { MemberOne = 'memberOne', member_two = 'member-two', member3 = 3, memberFour }`;
+        const expected = `enum test { MEMBER_ONE = 'memberOne', MEMBER_TWO = 'member-two', MEMBER3 = 3, MEMBER_FOUR }`;
         const actual = getFixedResult(src, rule);
         const result = helper(src, rule);
-        assert.equal(result.errorCount, 2);
+        assert.equal(result.errorCount, 4); // tslint:disable-line:custom-no-magic-numbers
         assert.equal(actual, expected);
     });
 });
