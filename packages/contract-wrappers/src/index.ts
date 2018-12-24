@@ -58,7 +58,7 @@ export {
     DutchAuctionData,
 } from './types';
 
-export { Order, SignedOrder, AssetProxyId } from '@0x/types';
+export { AssetData, DutchAuctionDetails, ERC20AssetData, ERC721AssetData, Order, SignedOrder, AssetProxyId } from '@0x/types';
 
 export {
     BlockParamLiteral,
