@@ -107,7 +107,6 @@ describe('Asset Transfer Proxies', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
-
         // Configure ERC721Proxy
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
@@ -115,14 +114,12 @@ describe('Asset Transfer Proxies', () => {
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-
 
         // Configure MultiAssetProxy
         await web3Wrapper.awaitTransactionSuccessAsync(
@@ -131,21 +128,18 @@ describe('Asset Transfer Proxies', () => {
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-
         await web3Wrapper.awaitTransactionSuccessAsync(
             await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-
         await web3Wrapper.awaitTransactionSuccessAsync(
             await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-
 
         // Deploy and configure ERC20 tokens
         const numDummyErc20ToDeploy = 2;
@@ -171,7 +165,6 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-
 
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         await web3Wrapper.awaitTransactionSuccessAsync(

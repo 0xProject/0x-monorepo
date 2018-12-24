@@ -135,21 +135,23 @@ export class EvmDataTypeFactory implements DataTypeFactory {
 // Convenience function
 export function create(input: DataItem | DataItem[] | string): DataType {
     // Handle different types of input
-    let dataItems: DataItem[] = [];
-    if (typeof(input) === 'string') {
-        dataItems = generateDataItemsFromSignature(input);
-    } else if(input instanceof Array) {
-        dataItems = input as DataItem[];
+    const isSignature = typeof(input) === 'string';
+    const isTupleSignature = isSignature && (input as string).startsWith('(');
+    const parseAsTuple = isTupleSignature || _.isArray(input);
+    // Create input `dataItem`
+    let dataItem: DataItem;
+    if(parseAsTuple) {
+        const dataItems = isSignature ? generateDataItemsFromSignature(input as string) : input as DataItem[];
+        dataItem = {
+            name: '',
+            type: 'tuple',
+            components: dataItems
+        };
     } else {
-        dataItems = [input as DataItem];
+        dataItem = isSignature ? generateDataItemsFromSignature(input as string)[0] : input as DataItem;
     }
-    // Create single data item from input
-    let dataItem: DataItem = dataItems.length === 1 ? dataItems[0] : {
-        name: '',
-        type: 'tuple',
-        components: dataItems
-    };
     // Create data type
-    return EvmDataTypeFactory.getInstance().create(dataItem);
+    const dataType = EvmDataTypeFactory.getInstance().create(dataItem);
+    return dataType;
 }
 /* tslint:enable no-construct */

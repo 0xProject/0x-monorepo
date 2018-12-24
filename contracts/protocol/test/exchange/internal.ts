@@ -8,7 +8,6 @@ import {
     testCombinatoriallyWithReferenceFuncAsync,
     txDefaults,
     uint256Values,
-    orderUtils,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
@@ -453,7 +452,7 @@ describe('Exchange core internal functions', () => {
             };
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
-                    orderUtils.getOrderWithoutExchangeAddress(emptySignedOrder),
+                    emptySignedOrder,
                     constants.NULL_ADDRESS,
                     orderHash,
                     orderTakerAssetFilledAmount,

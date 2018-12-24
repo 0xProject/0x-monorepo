@@ -13,4 +13,4 @@ export {
     UInt,
     create,
 } from './evm_data_type_factory';
-//export { fromSignature } from './utils/signatureParser';
+export { DataType } from './abstract_data_types/data_type';

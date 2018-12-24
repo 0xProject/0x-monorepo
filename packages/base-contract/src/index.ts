@@ -41,12 +41,6 @@ export class BaseContract {
     ): any {
         return _.map(values, (value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
     }
-    protected static _lowercaseAddress(type: string, value: string): string {
-        return type === 'address' ? value.toLowerCase() : value;
-    }
-    protected static _bigNumberToString(_type: string, value: any): any {
-        return _.isObject(value) && value.isBigNumber ? value.toString() : value;
-    }
     protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
         const constructorAbiIfExists = _.find(
             abi,
@@ -66,9 +60,6 @@ export class BaseContract {
             };
             return defaultConstructorAbi;
         }
-    }
-    protected static _bnToBigNumber(_type: string, value: any): any {
-        return _.isObject(value) && value._hex ? new BigNumber(value.toString()) : value;
     }
     protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,
@@ -99,11 +90,11 @@ export class BaseContract {
     // the given inputAbi. An argument may not be considered safely encodeable
     // if it overflows the corresponding Solidity type, there is a bug in the
     // encoder, or the encoder performs unsafe type coercion.
-    public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
-        const coder = new ethers.utils.AbiCoder();
+    public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): string {
+        const abiEncoder = AbiEncoder.create(inputAbi);
         const params = abiUtils.parseEthersParams(inputAbi);
-        const rawEncoded = coder.encode(inputAbi, args);
-        const rawDecoded = coder.decode(inputAbi, rawEncoded);
+        const rawEncoded = abiEncoder.encode(args);
+        const rawDecoded = abiEncoder.decodeAsArray(rawEncoded);
         for (let i = 0; i < rawDecoded.length; i++) {
             const original = args[i];
             const decoded = rawDecoded[i];
@@ -115,7 +106,14 @@ export class BaseContract {
                 );
             }
         }
+        return rawEncoded;
     }
+       protected static _lowercaseAddress(type: string, value: string): string {
+                return type === 'address' ? value.toLowerCase() : value;
+            }
+            protected static _bigNumberToString(_type: string, value: any): any {
+                return _.isObject(value) && value.isBigNumber ? value.toString() : value;
+           }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
         if (_.isUndefined(abiEncoder)) {
@@ -143,21 +141,8 @@ export class BaseContract {
         if (inputAbi === undefined) {
             throw new Error(`Undefined Method Input ABI`);
         }
-        const params = abiUtils.parseEthersParams(inputAbi);
-        const rawEncoded = abiEncoder.encode(functionArguments);
-        const rawDecoded = abiEncoder.decodeAsArray(rawEncoded);
-        for (let i = 0; i < rawDecoded.length; i++) {
-            const original = functionArguments[i];
-            const decoded = rawDecoded[i];
-            if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
-                throw new Error(
-                    `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
-                        params.types[i]
-                    }. (Possible type overflow or other encoding error)`,
-                );
-            }
-        }
-        return rawEncoded;
+        const abiEncodedArguments = abiEncoder.encode(functionArguments);////BaseContract.strictArgumentEncodingCheck(inputAbi, functionArguments);
+        return abiEncodedArguments;
     }
     constructor(
         contractName: string,

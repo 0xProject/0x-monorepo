@@ -68,6 +68,7 @@ export class {{contractName}}Contract extends BaseContract {
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
+        console.log('*'.repeat(50), `\n${JSON.stringify(deployInfo)}`);
         const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
