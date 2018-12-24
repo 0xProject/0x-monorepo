@@ -38,6 +38,6 @@ function walk(ctx: Lint.WalkContext<void>): void {
 
 function isSnakeCase(s: string): boolean {
     const regex = /^[A-Z\d]+(_{1}[A-Z\d]+)*$/g;
-    const [key, val] = s.split('=').map(w => w.trim());
+    const key = s.split('=')[0].trim();
     return regex.test(key);
 }

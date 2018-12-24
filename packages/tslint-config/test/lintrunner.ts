@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Configuration, Fix, Linter, Replacement } from 'tslint';
+import { Configuration, Linter, Replacement } from 'tslint';
 
 export const helper = (src: string, rule: string) => {
     const linter = new Linter({ fix: false });
