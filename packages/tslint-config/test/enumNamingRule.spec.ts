@@ -2,7 +2,7 @@ import * as assert from 'assert';
 
 import { Rule } from '../rules/enumSnakeCaseRule';
 
-import { getFixedResult, helper } from './lintRunner';
+import { getFixedResult, helper } from './lintrunner';
 const rule = 'enum-snake-case';
 
 describe('enumNamingRule', () => {
