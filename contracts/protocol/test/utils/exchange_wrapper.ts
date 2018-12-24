@@ -17,6 +17,8 @@ import { AbiEncoder } from '@0x/utils';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { artifacts } from '../../src/artifacts';
 
+import { AbiDecodedFillOrderData } from './types';
+
 export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
     private readonly _web3Wrapper: Web3Wrapper;
@@ -277,10 +279,9 @@ export class ExchangeWrapper {
         );
         return data;
     }
-    // @TODO hysz -- Remove once abi decoding has been added to contract templates
     public abiDecodeFillOrder(
         data: string,
-    ): { order: OrderWithoutExchangeAddress; takerAssetFillAmount: BigNumber; signature: string } {
+    ): AbiDecodedFillOrderData {
         // Lookup fillOrder ABI
         let fillOrderAbi = _.find(this._exchange.abi, (value: AbiDefinition) => {
             if (value.type === 'function' && (value as MethodAbi).name === 'fillOrder') {
@@ -290,11 +291,7 @@ export class ExchangeWrapper {
         }) as MethodAbi;
         // Decode input data
         const abiEncoder = new AbiEncoder.Method(fillOrderAbi);
-        const decodedData = abiEncoder.decode(data) as {
-            order: OrderWithoutExchangeAddress;
-            takerAssetFillAmount: BigNumber;
-            signature: string;
-        };
+        const decodedData = abiEncoder.decode(data) as AbiDecodedFillOrderData;
         return decodedData;
     }
     public getExchangeAddress(): string {
