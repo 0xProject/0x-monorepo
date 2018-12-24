@@ -10,7 +10,7 @@ import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { AbiDefinition, MethodAbi ,Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { AbiDefinition, MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import { AbiEncoder } from '@0x/utils';
 
@@ -277,15 +277,25 @@ export class ExchangeWrapper {
         );
         return data;
     }
-    // @hysz -- TEMPORARY HACK @TODO remove
-    public abiDecodeFillOrder(data: string): {order: OrderWithoutExchangeAddress, takerAssetFillAmount: BigNumber, signature: string} {
+    // @TODO hysz -- Remove once abi decoding has been added to contract templates
+    public abiDecodeFillOrder(
+        data: string,
+    ): { order: OrderWithoutExchangeAddress; takerAssetFillAmount: BigNumber; signature: string } {
+        // Lookup fillOrder ABI
         let fillOrderAbi = _.find(this._exchange.abi, (value: AbiDefinition) => {
-            if ((value.type === 'function') && (value as MethodAbi).name === 'fillOrder') {
+            if (value.type === 'function' && (value as MethodAbi).name === 'fillOrder') {
                 return true;
             }
             return false;
         }) as MethodAbi;
-        return (new AbiEncoder.Method(fillOrderAbi)).decode(data) as {order: OrderWithoutExchangeAddress, takerAssetFillAmount: BigNumber, signature: string};
+        // Decode input data
+        const abiEncoder = new AbiEncoder.Method(fillOrderAbi);
+        const decodedData = abiEncoder.decode(data) as {
+            order: OrderWithoutExchangeAddress;
+            takerAssetFillAmount: BigNumber;
+            signature: string;
+        };
+        return decodedData;
     }
     public getExchangeAddress(): string {
         return this._exchange.address;

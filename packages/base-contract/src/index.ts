@@ -82,7 +82,9 @@ export class BaseContract {
     }
     protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
         if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
-            const revertReason = AbiEncoder.create('(string)').decode(ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH));
+            const revertReason = AbiEncoder.create('(string)').decode(
+                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
+            );
             throw new Error(revertReason);
         }
     }
@@ -108,12 +110,12 @@ export class BaseContract {
         }
         return rawEncoded;
     }
-       protected static _lowercaseAddress(type: string, value: string): string {
-                return type === 'address' ? value.toLowerCase() : value;
-            }
-            protected static _bigNumberToString(_type: string, value: any): any {
-                return _.isObject(value) && value.isBigNumber ? value.toString() : value;
-           }
+    protected static _lowercaseAddress(type: string, value: string): string {
+        return type === 'address' ? value.toLowerCase() : value;
+    }
+    protected static _bigNumberToString(_type: string, value: any): any {
+        return _.isObject(value) && value.isBigNumber ? value.toString() : value;
+    }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
         if (_.isUndefined(abiEncoder)) {
@@ -141,7 +143,7 @@ export class BaseContract {
         if (inputAbi === undefined) {
             throw new Error(`Undefined Method Input ABI`);
         }
-        const abiEncodedArguments = abiEncoder.encode(functionArguments);////BaseContract.strictArgumentEncodingCheck(inputAbi, functionArguments);
+        const abiEncodedArguments = abiEncoder.encode(functionArguments); ////BaseContract.strictArgumentEncodingCheck(inputAbi, functionArguments);
         return abiEncodedArguments;
     }
     constructor(

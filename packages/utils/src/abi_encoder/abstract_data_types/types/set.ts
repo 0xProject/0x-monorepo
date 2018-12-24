@@ -141,7 +141,7 @@ export abstract class AbstractSetDataType extends DataType {
                     `Could not assign tuple to object: missing key '${memberName}' in object ${JSON.stringify(obj)}`,
                 );
             }
-            const memberValue: any = (obj as {[key:string]: any})[memberName];
+            const memberValue: any = (obj as { [key: string]: any })[memberName];
             const memberBlock = this._members[memberIndex].generateCalldataBlock(memberValue, block);
             memberCalldataBlocks.push(memberBlock);
         });
@@ -188,7 +188,7 @@ export abstract class AbstractSetDataType extends DataType {
             memberNames.push(memberName);
             const childDataItem: DataItem = {
                 type: memberItem.type,
-                name: `${dataItem.name}.${memberName}`
+                name: `${dataItem.name}.${memberName}`,
             };
             const components = memberItem.components;
             if (!_.isUndefined(components)) {

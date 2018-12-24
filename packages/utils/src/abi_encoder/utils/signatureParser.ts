@@ -19,20 +19,20 @@ export function generateDataItemFromSignature(signature: string): DataItem {
 export function generateDataItemsFromSignature(signature: string): DataItem[] {
     let trimmedSignature = signature;
     if (signature.startsWith('(')) {
-        if(!signature.endsWith(')')) {
+        if (!signature.endsWith(')')) {
             throw new Error(`Failed to generate data item. Must end with ')'`);
         }
         trimmedSignature = signature.substr(1, signature.length - 2);
     }
     trimmedSignature += ',';
     let currTokenIsArray = false;
-    let currTokenArrayModifier = "";
+    let currTokenArrayModifier = '';
     let isParsingArrayModifier = false;
     let currToken = '';
     let parenCount = 0;
     let currTokenName = '';
     const dataItems: DataItem[] = [];
-    for(const char of trimmedSignature) {
+    for (const char of trimmedSignature) {
         // Tokenize the type string while keeping track of parentheses.
         switch (char) {
             case '(':
@@ -47,7 +47,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
                 if (parenCount === 0) {
                     isParsingArrayModifier = true;
                     currTokenIsArray = true;
-                    currTokenArrayModifier += "[";
+                    currTokenArrayModifier += '[';
                 } else {
                     currToken += char;
                 }
@@ -63,7 +63,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
             case ' ':
                 if (parenCount === 0) {
                     currTokenName = currToken;
-                    currToken = "";
+                    currToken = '';
                 } else {
                     currToken += char;
                 }
@@ -74,7 +74,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
                     const components = currToken.startsWith('(') ? generateDataItemsFromSignature(currToken) : [];
                     const isTuple = !_.isEmpty(components);
                     const isArray = currTokenIsArray;
-                    let dataItem: DataItem = {name: currTokenName, type: ''};
+                    let dataItem: DataItem = { name: currTokenName, type: '' };
                     if (isTuple) {
                         dataItem.type = 'tuple';
                         dataItem.components = components;
@@ -84,13 +84,13 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
                     if (isArray) {
                         dataItem.type += currTokenArrayModifier;
                     }
-                    
+
                     dataItems.push(dataItem);
 
                     currTokenName = '';
                     currToken = '';
                     currTokenIsArray = false;
-                    currTokenArrayModifier = "";
+                    currTokenArrayModifier = '';
                     break;
                 } else {
                     currToken += char;

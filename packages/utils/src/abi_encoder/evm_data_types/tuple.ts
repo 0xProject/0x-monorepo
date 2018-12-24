@@ -16,7 +16,7 @@ export class TupleDataType extends AbstractSetDataType {
         if (!TupleDataType.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
         }
-        //this._signature = 
+        //this._signature =
     }
 
     public getSignatureType(): string {
