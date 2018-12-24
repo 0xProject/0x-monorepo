@@ -78,8 +78,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
         forwarder: '0xb69e673309512a9d726f87304c6984054f87a93b',
         orderValidator: '0xe86bb98fcf9bff3512c74589b78fb168200cc546',
-        // @todo hysz/dekz: Add address once deployed.
-        dutchAuction: NULL_ADDRESS,
+        dutchAuction: '0xdc688d29394a3f1e6f1e5100862776691afaf3d2',
     },
 };
 
