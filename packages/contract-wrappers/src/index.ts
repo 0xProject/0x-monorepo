@@ -55,6 +55,7 @@ export {
     OrderAndTraderInfo,
     TraderInfo,
     ValidateOrderFillableOpts,
+    DutchAuctionData,
 } from './types';
 
 export { Order, SignedOrder, AssetProxyId } from '@0x/types';
