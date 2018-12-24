@@ -5,7 +5,6 @@ import { DataTypeFactory } from '../abstract_data_types/interfaces';
 import { AbstractSetDataType } from '../abstract_data_types/types/set';
 
 export class TupleDataType extends AbstractSetDataType {
-
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Tuple;
     }

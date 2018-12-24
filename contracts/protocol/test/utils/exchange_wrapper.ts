@@ -7,12 +7,11 @@ import {
     SignedTransaction,
 } from '@0x/contracts-test-utils';
 import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
-import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { SignedOrder } from '@0x/types';
+import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { AbiDefinition, MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
-import { AbiEncoder } from '@0x/utils';
 
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { artifacts } from '../../src/artifacts';
@@ -279,12 +278,10 @@ export class ExchangeWrapper {
         );
         return data;
     }
-    public abiDecodeFillOrder(
-        data: string,
-    ): AbiDecodedFillOrderData {
+    public abiDecodeFillOrder(data: string): AbiDecodedFillOrderData {
         // Lookup fillOrder ABI
-        let fillOrderAbi = _.find(this._exchange.abi, (value: AbiDefinition) => {
-            if (value.type === 'function' && (value as MethodAbi).name === 'fillOrder') {
+        const fillOrderAbi = _.find(this._exchange.abi, (value: AbiDefinition) => {
+            if (value.type === 'function' && (value as any).name === 'fillOrder') {
                 return true;
             }
             return false;

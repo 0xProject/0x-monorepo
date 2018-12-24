@@ -1,6 +1,16 @@
 import { AbiEncoder, abiUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { AbiDefinition, AbiType, ConstructorAbi, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
+import {
+    AbiDefinition,
+    AbiType,
+    ConstructorAbi,
+    ContractAbi,
+    DataItem,
+    MethodAbi,
+    Provider,
+    TxData,
+    TxDataPayable,
+} from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 

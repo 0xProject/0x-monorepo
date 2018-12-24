@@ -42,7 +42,6 @@ import { ExchangeWrapper } from './exchange_wrapper';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
 import { SimpleOrderFilledCancelledFetcher } from './simple_order_filled_cancelled_fetcher';
-import { Method } from '@0x/utils/lib/src/abi_encoder';
 
 chaiSetup.configure();
 const expect = chai.expect;
