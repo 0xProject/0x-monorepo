@@ -29,6 +29,12 @@ export class BaseContract {
     ): any {
         return _.map(values, (value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
     }
+    protected static _lowercaseAddress(type: string, value: string): string {
+        return type === 'address' ? value.toLowerCase() : value;
+    }
+    protected static _bigNumberToString(_type: string, value: any): any {
+        return _.isObject(value) && value.isBigNumber ? value.toString() : value;
+    }
     protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
         const constructorAbiIfExists = _.find(
             abi,
@@ -97,12 +103,6 @@ export class BaseContract {
             }
         }
         return rawEncoded;
-    }
-    protected static _lowercaseAddress(type: string, value: string): string {
-        return type === 'address' ? value.toLowerCase() : value;
-    }
-    protected static _bigNumberToString(_type: string, value: any): any {
-        return _.isObject(value) && value.isBigNumber ? value.toString() : value;
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
