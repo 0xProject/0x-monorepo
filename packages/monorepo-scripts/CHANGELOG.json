@@ -17,6 +17,10 @@
             {
                 "note": "Fix a bug when hardcoded CHANGELOG paths cause fetching release notes to fail",
                 "pr": 1311
+            },
+            {
+                "note": "Added DutchAuctionWrapper to the CLASSES_WITH_HIDDEN_CONSTRUCTORS array",
+                "pr": 1465
             }
         ]
     },
