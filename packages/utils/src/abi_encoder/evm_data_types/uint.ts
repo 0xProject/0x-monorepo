@@ -49,7 +49,8 @@ export class UIntDataType extends AbstractBlobDataType {
     public decodeValue(calldata: RawCalldata): BigNumber | number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, UIntDataType._MIN_VALUE, this._maxValue);
-        if (this._width === 8) {
+        const numberOfBytesInUint8 = 8;
+        if (this._width === numberOfBytesInUint8) {
             return value.toNumber();
         }
         return value;

@@ -13,7 +13,6 @@ import { DataType } from '../data_type';
 import { DataTypeFactory, MemberIndexByName } from '../interfaces';
 
 import { AbstractPointerDataType } from './pointer';
-import { logUtils } from '../../../log_utils';
 
 export abstract class AbstractSetDataType extends DataType {
     protected readonly _arrayLength: number | undefined;

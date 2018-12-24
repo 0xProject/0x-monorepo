@@ -7,7 +7,6 @@ import { constants } from '../utils/constants';
 
 export class ArrayDataType extends AbstractSetDataType {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
-    private readonly _arraySignature: string;
     private readonly _elementType: string;
 
     public static matchType(type: string): boolean {
@@ -35,7 +34,6 @@ export class ArrayDataType extends AbstractSetDataType {
         super(dataItem, dataTypeFactory, isArray, arrayLength, arrayElementType);
         // Set array properties
         this._elementType = arrayElementType;
-        this._arraySignature = this._computeSignature();
     }
 
     public getSignatureType(): string {
@@ -43,9 +41,13 @@ export class ArrayDataType extends AbstractSetDataType {
     }
 
     public getSignature(detailed?: boolean): string {
-        if (_.isEmpty(this.getDataItem().name) || !detailed) return this.getSignatureType();
+        if (_.isEmpty(this.getDataItem().name) || !detailed) {
+            return this.getSignatureType();
+        }
         const name = this.getDataItem().name;
-        const shortName = name.indexOf('.') > 0 ? name.substr(name.lastIndexOf('.') + 1) : name;
+        const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
+        const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
         const detailedSignature = `${shortName} ${this._computeSignature(detailed)}`;
         return detailedSignature;
     }

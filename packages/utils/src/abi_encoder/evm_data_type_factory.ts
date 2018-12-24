@@ -132,15 +132,23 @@ export class EvmDataTypeFactory implements DataTypeFactory {
     private constructor() {}
 }
 
-// Convenience function
+/**
+ * Convenience function for creating a DataType from different inputs.
+ * @param input A single or set of DataItem or a DataType signature.
+ *              A signature in the form of '<type>' is interpreted as a `DataItem`
+ *              For example, 'string' is interpreted as {type: 'string'}
+ *              A signature in the form '(<type1>, <type2>, ..., <typen>)' is interpreted as `DataItem[]`
+ *              For eaxmple, '(string, uint256)' is interpreted as [{type: 'string'}, {type: 'uint256'}]
+ * @return DataType corresponding to input.
+ */
 export function create(input: DataItem | DataItem[] | string): DataType {
     // Handle different types of input
     const isSignature = typeof input === 'string';
     const isTupleSignature = isSignature && (input as string).startsWith('(');
-    const parseAsTuple = isTupleSignature || _.isArray(input);
+    const shouldParseAsTuple = isTupleSignature || _.isArray(input);
     // Create input `dataItem`
     let dataItem: DataItem;
-    if (parseAsTuple) {
+    if (shouldParseAsTuple) {
         const dataItems = isSignature ? generateDataItemsFromSignature(input as string) : (input as DataItem[]);
         dataItem = {
             name: '',

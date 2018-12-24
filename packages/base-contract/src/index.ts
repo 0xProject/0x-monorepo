@@ -1,22 +1,10 @@
-import { abiUtils, BigNumber } from '@0x/utils';
+import { AbiEncoder, abiUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import {
-    AbiDefinition,
-    AbiType,
-    ConstructorAbi,
-    ContractAbi,
-    DataItem,
-    MethodAbi,
-    Provider,
-    TxData,
-    TxDataPayable,
-} from 'ethereum-types';
+import { AbiDefinition, AbiType, ConstructorAbi, ContractAbi, DataItem, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
-
-import { AbiEncoder } from '@0x/utils';
 
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
@@ -143,7 +131,7 @@ export class BaseContract {
         if (inputAbi === undefined) {
             throw new Error(`Undefined Method Input ABI`);
         }
-        const abiEncodedArguments = abiEncoder.encode(functionArguments); ////BaseContract.strictArgumentEncodingCheck(inputAbi, functionArguments);
+        const abiEncodedArguments = abiEncoder.encode(functionArguments);
         return abiEncodedArguments;
     }
     constructor(

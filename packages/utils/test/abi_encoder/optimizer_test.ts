@@ -232,7 +232,9 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
     it('Array Elements Duplicated as Tuple Fields', async () => {
         // Generate calldata
         const method = new AbiEncoder.Method(OptimizedAbis.arrayElementsDuplicatedAsTupleFields);
+        // tslint:disable custom-no-magic-numbers
         const array = [100, 150, 200, 225];
+        // tslint:enable custom-no-magic-numbers
         const tuple = [
             [new BigNumber(array[0])],
             [new BigNumber(array[1])],

@@ -58,9 +58,13 @@ export abstract class DataType {
     }
 
     public getSignature(detailed?: boolean): string {
-        if (_.isEmpty(this._dataItem.name) || !detailed) return this.getSignatureType();
+        if (_.isEmpty(this._dataItem.name) || !detailed) {
+            return this.getSignatureType();
+        }
         const name = this.getDataItem().name;
-        const shortName = name.indexOf('.') > 0 ? name.substr(name.lastIndexOf('.') + 1) : name;
+        const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
+        const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
         const detailedSignature = `${shortName} ${this.getSignatureType()}`;
         return detailedSignature;
     }

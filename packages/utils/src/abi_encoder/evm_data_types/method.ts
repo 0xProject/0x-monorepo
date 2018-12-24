@@ -8,7 +8,6 @@ import { AbstractSetDataType } from '../abstract_data_types/types/set';
 import { constants } from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
-import { ArrayDataType } from './array';
 import { TupleDataType } from './tuple';
 
 export class MethodDataType extends AbstractSetDataType {

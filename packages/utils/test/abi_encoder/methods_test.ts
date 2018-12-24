@@ -199,7 +199,9 @@ describe('ABI Encoder: Method Encoding / Decoding', () => {
     it('Unfixed Length Array / Static Members ABI', async () => {
         // Generate calldata
         const method = new AbiEncoder.Method(AbiSamples.dynamicArrayStaticMembersAbi);
+        // tslint:disable custom-no-magic-numbers
         const args = [[127, 14, 54]];
+        // tslint:enable custom-no-magic-numbers
         const calldata = method.encode(args, encodingRules);
         // Validate calldata
         const expectedCalldata =
@@ -213,7 +215,9 @@ describe('ABI Encoder: Method Encoding / Decoding', () => {
     it('Fixed Length Array / Static Members ABI', async () => {
         // Generate calldata
         const method = new AbiEncoder.Method(AbiSamples.staticArrayAbi);
+        // tslint:disable custom-no-magic-numbers
         const args = [[127, 14, 54]];
+        // tslint:enable custom-no-magic-numbers
         const calldata = method.encode(args, encodingRules);
         // Validate calldata
         const expectedCalldata =
@@ -310,7 +314,9 @@ describe('ABI Encoder: Method Encoding / Decoding', () => {
     it('Large, Nested ABI', async () => {
         // Construct Calldata
         const method = new AbiEncoder.Method(AbiSamples.largeNestedAbi);
+        // tslint:disable custom-no-magic-numbers
         const someStaticArray = [127, 14, 54];
+        // tslint:enable custom-no-magic-numbers
         const someStaticArrayWithDynamicMembers = [
             'the little piping piper piped a piping pipper papper',
             'the kid knows how to write poems, what can I say -- I guess theres a lot I could say to try to fill this line with a lot of text.',

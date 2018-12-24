@@ -1,21 +1,15 @@
+import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DataItem } from 'ethereum-protocol';
-
-/*
-export function generateDataItemFromSignature(signature: string): DataItem {
-    const dataItems = generateDataItemsFromSignature(signature);
-    if (dataItems.length === 1) {
-        return dataItems[0];
-    }
-    // signature represents a tuple
-    return {
-        name: '',
-        type: 'tuple',
-        components: dataItems
-    };
-}*/
-
+/**
+ * Returns an array of DataItem's corresponding to the input signature.
+ * A signature can be in two forms: '<DataItem.type>' or '(<DataItem1.type>, <DataItem2.type>, ...)
+ * An example of the first form would be 'address' or 'uint256'
+ * An example of the second form would be '(address, uint256)'
+ * Signatures can also include a name field, for example: 'foo address' or '(foo address, bar uint256)'
+ * @param signature of input DataItems
+ * @return DataItems derived from input signature
+ */
 export function generateDataItemsFromSignature(signature: string): DataItem[] {
     let trimmedSignature = signature;
     if (signature.startsWith('(')) {
@@ -25,7 +19,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
         trimmedSignature = signature.substr(1, signature.length - 2);
     }
     trimmedSignature += ',';
-    let currTokenIsArray = false;
+    let isCurrTokenArray = false;
     let currTokenArrayModifier = '';
     let isParsingArrayModifier = false;
     let currToken = '';
@@ -46,7 +40,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
             case '[':
                 if (parenCount === 0) {
                     isParsingArrayModifier = true;
-                    currTokenIsArray = true;
+                    isCurrTokenArray = true;
                     currTokenArrayModifier += '[';
                 } else {
                     currToken += char;
@@ -70,26 +64,24 @@ export function generateDataItemsFromSignature(signature: string): DataItem[] {
                 break;
             case ',':
                 if (parenCount === 0) {
-                    //throw new Error(`Generating Data Items`);
+                    // Generate new DataItem from token
                     const components = currToken.startsWith('(') ? generateDataItemsFromSignature(currToken) : [];
                     const isTuple = !_.isEmpty(components);
-                    const isArray = currTokenIsArray;
-                    let dataItem: DataItem = { name: currTokenName, type: '' };
+                    const dataItem: DataItem = { name: currTokenName, type: '' };
                     if (isTuple) {
                         dataItem.type = 'tuple';
                         dataItem.components = components;
                     } else {
                         dataItem.type = currToken;
                     }
-                    if (isArray) {
+                    if (isCurrTokenArray) {
                         dataItem.type += currTokenArrayModifier;
                     }
-
                     dataItems.push(dataItem);
-
+                    // reset token state
                     currTokenName = '';
                     currToken = '';
-                    currTokenIsArray = false;
+                    isCurrTokenArray = false;
                     currTokenArrayModifier = '';
                     break;
                 } else {
