@@ -6,7 +6,7 @@ RUN npm install -g ganache-cli@6.1.6
 
 ENV MNEMONIC "concert load couple harbor equip island argue ramp clarify fence smart topic"
 ENV NETWORK_ID 50
-ENV VERSION "2.2.2"
+ENV VERSION "latest"
 ENV SNAPSHOT_HOST "http://ganache-snapshots.0x.org.s3-website.us-east-2.amazonaws.com"
 ENV SNAPSHOT_NAME "0x_ganache_snapshot"
 EXPOSE 8545
