@@ -82,7 +82,7 @@ export class BaseContract {
     }
     protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
         if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
-            const revertReason = AbiEncoder.create('(string)').decode(
+            const revertReason = AbiEncoder.create('(string)').decodeAsArray(
                 ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
             );
             throw new Error(revertReason);
