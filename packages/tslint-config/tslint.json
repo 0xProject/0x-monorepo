@@ -25,7 +25,7 @@
         "curly": true,
         "custom-no-magic-numbers": [true, 0, 1, 2, 3, -1],
         "encoding": true,
-        "enum-snake-case": true,
+        "enum-snake-case": false,
         "eofline": true,
         "import-spacing": true,
         "indent": [true, "spaces", 4],
