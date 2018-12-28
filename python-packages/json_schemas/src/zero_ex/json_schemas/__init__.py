@@ -17,23 +17,7 @@ class _LocalRefResolver(jsonschema.RefResolver):
         jsonschema.RefResolver.__init__(self, "", "")
 
     @staticmethod
-    def _ref_to_file(ref: str) -> str:
-        """Translate a JSON schema ref to its corresponding file name.
-
-        >>> _LocalRefResolver._ref_to_file("/addressSchema")
-        'address_schema.json'
-        """
-        _ref = ref.lstrip("/")
-
-        # handle weird special cases
-        _ref = _ref.replace("ECSignature", "EcSignature")
-        if _ref.endswith("Schema"):
-            # strip off the Schema suffix
-            _ref = _ref[:-6]
-
-        return f"{snakecase(_ref)}_schema.json"
-
-    def resolve_from_url(self, url: str) -> str:
+    def resolve_from_url(url: str) -> str:
         """Resolve the given URL.
 
         :param url: a string representing the URL of the JSON schema to fetch.
@@ -45,7 +29,7 @@ class _LocalRefResolver(jsonschema.RefResolver):
         return json.loads(
             resource_string(
                 "zero_ex.json_schemas",
-                f"schemas/{_LocalRefResolver._ref_to_file(ref)}",
+                f"schemas/{snakecase(ref.lstrip('/'))}.json",
             )
         )
 
@@ -68,7 +52,7 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
 
     >>> assert_valid(
     ...     {'v': 27, 'r': '0x'+'f'*64, 's': '0x'+'f'*64},
-    ...     '/ECSignature',
+    ...     '/ecSignatureSchema',
     ... )
     """
     # noqa

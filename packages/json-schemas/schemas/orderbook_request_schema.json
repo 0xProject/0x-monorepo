@@ -1,5 +1,5 @@
 {
-    "id": "/OrderBookRequest",
+    "id": "/OrderbookRequestSchema",
     "type": "object",
     "properties": {
         "baseAssetData": { "$ref": "/hexSchema" },
