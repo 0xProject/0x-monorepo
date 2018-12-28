@@ -59,3 +59,25 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
 
     _, schema = _LOCAL_RESOLVER.resolve(schema_id)
     jsonschema.validate(data, schema, resolver=_LOCAL_RESOLVER)
+
+
+def assert_valid_json(data: str, schema_id: str) -> None:
+    """Validate the given `data` against the specified `schema`.
+
+    :param data: JSON string to be validated.
+    :param schema_id: id property of the JSON schema to validate against.  Must
+        be one of those listed in `the 0x JSON schema files
+        <https://github.com/0xProject/0x-monorepo/tree/development/packages/json-schemas/schemas>`_.
+
+    Raises an exception if validation fails.
+
+    >>> assert_valid_json(
+    ...     r'''{
+    ...         "v": 27,
+    ...         "r": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    ...         "s": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    ...     }''',
+    ...     '/ecSignatureSchema',
+    ... )
+    """  # noqa: E501 (line too long)
+    assert_valid(json.loads(data), schema_id)
