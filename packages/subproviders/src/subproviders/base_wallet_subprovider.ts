@@ -21,7 +21,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
     }
 
     public abstract async getAccountsAsync(): Promise<string[]>;
-    public abstract async signTransactionAsync(txParams: PartialTxParams, networkId?: number): Promise<string>;
+    public abstract async signTransactionAsync(txParams: PartialTxParams): Promise<string>;
     public abstract async signPersonalMessageAsync(data: string, address: string): Promise<string>;
     public abstract async signTypedDataAsync(address: string, typedData: any): Promise<string>;
 

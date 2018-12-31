@@ -25,6 +25,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     private readonly _privateKeyPath: string;
     private _cachedAccounts: string[];
     private readonly _trezorConnectClientApi: any;
+    private readonly _networkId: number;
     /**
      * Instantiates a TrezorSubprovider. Defaults to private key path set to `m/44'/60'/0'/0/`.
      * Must be initialized with trezor-connect API module https://github.com/trezor/connect.
@@ -36,6 +37,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         this._privateKeyPath = PRIVATE_KEY_PATH;
         this._cachedAccounts = [];
         this._trezorConnectClientApi = config.trezorConnectClientApi;
+        this._networkId = config.networkId;
     }
     /**
      * Retrieve a users Trezor account. This method is automatically called
@@ -73,7 +75,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
      * @param txParams Parameters of the transaction to sign
      * @return Signed transaction hex string
      */
-    public async signTransactionAsync(txData: PartialTxParams, networkId: number): Promise<string> {
+    public async signTransactionAsync(txData: PartialTxParams): Promise<string> {
         if (_.isUndefined(txData.from) || !addressUtils.isAddress(txData.from)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
@@ -92,7 +94,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
                 to: txData.to,
                 value: txData.value,
                 data: txData.data,
-                chainId: networkId,
+                chainId: this._networkId,
                 nonce: txData.nonce,
                 gasLimit: txData.gas,
                 gasPrice: txData.gasPrice,
