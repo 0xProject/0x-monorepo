@@ -141,13 +141,16 @@ export interface TrezorSubproviderConfig {
 }
 
 export interface TrezorGetAddressResponsePayload {
-    address: string;
     path: {
-        0: number;
-        1: number;
-        2: number;
+        [index: number]: number;
     };
     serializedPath: string;
+    childNumb: number;
+    xpub: string;
+    chainCode: string;
+    publicKey: string;
+    fingerprint: number;
+    depth: number;
 }
 
 export interface TrezorSignTxResponsePayload {
@@ -156,7 +159,7 @@ export interface TrezorSignTxResponsePayload {
     s: string;
 }
 
-export interface TrezorSignMssgResponsePayload {
+export interface TrezorSignMsgResponsePayload {
     address: string;
     signature: string;
 }

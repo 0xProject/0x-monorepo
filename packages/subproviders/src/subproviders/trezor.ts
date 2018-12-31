@@ -3,12 +3,14 @@ import { addressUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import * as _ from 'lodash';
 
+import hdkey from 'ethereumjs-wallet/hdkey';
+
 import {
     PartialTxParams,
     TrezorConnectResponse,
     TrezorGetAddressResponsePayload,
     TrezorResponseErrorPayload,
-    TrezorSignMssgResponsePayload,
+    TrezorSignMsgResponsePayload,
     TrezorSignTxResponsePayload,
     TrezorSubproviderConfig,
     WalletSubproviderErrors,
@@ -16,43 +18,45 @@ import {
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
-const PRIVATE_KEY_PATH = `m/44'/60'/0'`;
+const PRIVATE_KEY_PATH = `m/44'/60'/0'/0`;
+const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
 
 export class TrezorSubprovider extends BaseWalletSubprovider {
-    private readonly _publicKeyPath: string;
+    private readonly _privateKeyPath: string;
     private _cachedAccounts: string[];
     private readonly _trezorConnectClientApi: any;
     /**
-     * Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'`.
+     * Instantiates a TrezorSubprovider. Defaults to private key path set to `m/44'/60'/0'/0/`.
      * Must be initialized with trezor-connect API module https://github.com/trezor/connect.
      * @param TrezorSubprovider config object containing trezor-connect API
      * @return TrezorSubprovider instance
      */
     constructor(config: TrezorSubproviderConfig) {
         super();
-        this._publicKeyPath = PRIVATE_KEY_PATH;
+        this._privateKeyPath = PRIVATE_KEY_PATH;
         this._cachedAccounts = [];
         this._trezorConnectClientApi = config.trezorConnectClientApi;
     }
     /**
-     * Retrieve a users Trezor account. The accounts are private key path derived, This method
-     * is automatically called when issuing a `eth_accounts` JSON RPC request via your providerEngine
+     * Retrieve a users Trezor account. This method is automatically called
+     * when issuing a `eth_accounts` JSON RPC request via your providerEngine
      * instance.
      * @return An array of accounts
      */
-    public async getAccountsAsync(): Promise<string[]> {
+    public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
         if (this._cachedAccounts.length) {
             return this._cachedAccounts;
         }
         const accounts: string[] = [];
-        const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumGetAddress({
-            path: this._publicKeyPath,
-            showOnTrezor: true,
-        });
+
+        const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({ path: this._privateKeyPath });
 
         if (response.success) {
             const payload: TrezorGetAddressResponsePayload = response.payload;
-            accounts.push(payload.address);
+            const hdPubKey = hdkey.fromExtendedKey(payload.xpub);
+            for (let i = 0; i < numberOfAccounts; i++) {
+                accounts.push(hdPubKey.deriveChild(i).getWallet().getAddressString());
+            }
             this._cachedAccounts = accounts;
         } else {
             const payload: TrezorResponseErrorPayload = response.payload;
@@ -69,7 +73,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
      * @param txParams Parameters of the transaction to sign
      * @return Signed transaction hex string
      */
-    public async signTransactionAsync(txData: PartialTxParams): Promise<string> {
+    public async signTransactionAsync(txData: PartialTxParams, networkId: number): Promise<string> {
         if (_.isUndefined(txData.from) || !addressUtils.isAddress(txData.from)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
@@ -79,14 +83,16 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         txData.gasPrice = txData.gasPrice ? txData.gasPrice : '0x0';
 
         const accountIndex = this._cachedAccounts.indexOf(txData.from);
-
+        if (accountIndex === -1) {
+            throw new Error(WalletSubproviderErrors.AddressNotFound);
+        }
         const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignTransaction({
-            path: this._publicKeyPath + `${accountIndex}`,
+            path: `${this._privateKeyPath}/${accountIndex}`,
             transaction: {
                 to: txData.to,
                 value: txData.value,
                 data: txData.data,
-                chainId: 1,
+                chainId: networkId,
                 nonce: txData.nonce,
                 gasLimit: txData.gas,
                 gasPrice: txData.gasPrice,
@@ -133,22 +139,25 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
         const accountIndex = this._cachedAccounts.indexOf(address);
+        if (accountIndex === -1) {
+            throw new Error(WalletSubproviderErrors.AddressNotFound);
+        }
         const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignMessage({
-            path: this._publicKeyPath + `${accountIndex}`,
+            path: `${this._privateKeyPath}/${accountIndex}`,
             message: data,
             hex: false,
         });
 
         if (response.success) {
-            const payload: TrezorSignMssgResponsePayload = response.payload;
-            return '0x' + payload.signature;
+            const payload: TrezorSignMsgResponsePayload = response.payload;
+            return `0x${payload.signature}`;
         } else {
             const payload: TrezorResponseErrorPayload = response.payload;
             throw new Error(payload.error);
         }
     }
     /**
-     * eth_signTypedData is currently not supported on Trezor devices.
+     * TODO:: eth_signTypedData is currently not supported on Trezor devices.
      * @param address Address of the account to sign with
      * @param data the typed data object
      * @return Signature hex string (order: rsv)
