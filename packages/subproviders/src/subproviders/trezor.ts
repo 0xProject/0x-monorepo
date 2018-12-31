@@ -86,7 +86,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
 
         const accountIndex = this._cachedAccounts.indexOf(txData.from);
         if (accountIndex === -1) {
-            throw new Error(WalletSubproviderErrors.AddressNotFound);
+            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
         const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignTransaction({
             path: `${this._privateKeyPath}/${accountIndex}`,
