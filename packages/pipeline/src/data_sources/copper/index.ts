@@ -1,4 +1,5 @@
 import { fetchAsync } from '@0x/utils';
+import Bottleneck from 'bottleneck';
 
 import {
     CopperActivityTypeCategory,
@@ -35,7 +36,7 @@ export enum CopperEndpoint {
     Opportunities = 'opportunities',
     Activities = 'activities',
 }
-
+const ONE_SECOND = 1000;
 function getUriForEndpoint(endpoint: CopperEndpoint): string {
     return ((_endpoint: CopperEndpoint) => {
         switch (_endpoint) {
@@ -57,13 +58,12 @@ function httpErrorCheck(response: Response): void {
     }
 }
 export class CopperSource {
-    private readonly _maxConcurrentRequests: number;
     private readonly _accessToken: string;
     private readonly _userEmail: string;
     private readonly _DEFAULT_HEADERS: any;
+    private readonly _limiter: Bottleneck;
 
     constructor(maxConcurrentRequests: number, accessToken: string, userEmail: string) {
-        this._maxConcurrentRequests = maxConcurrentRequests;
         this._accessToken = accessToken;
         this._userEmail = userEmail;
         this._DEFAULT_HEADERS = {
@@ -72,14 +72,22 @@ export class CopperSource {
             'X-PW-Application': 'developer_api',
             'X-PW-UserEmail': this._userEmail,
         };
+        this._limiter = new Bottleneck({
+            minTime: ONE_SECOND / maxConcurrentRequests,
+            reservoir: 30,
+            reservoirRefreshAmount: 30,
+            reservoirRefreshInterval: maxConcurrentRequests,
+        });
     }
 
     public async fetchNumberOfPagesAsync(endpoint: CopperEndpoint, searchParams?: CopperSearchParams): Promise<number> {
-        const resp = await fetchAsync(COPPER_URI + getUriForEndpoint(endpoint), {
-            method: 'POST',
-            body: JSON.stringify({ ...DEFAULT_PAGINATION_PARAMS, ...searchParams }),
-            headers: this._DEFAULT_HEADERS,
-        });
+        const resp = await this._limiter.schedule(() =>
+            fetchAsync(COPPER_URI + getUriForEndpoint(endpoint), {
+                method: 'POST',
+                body: JSON.stringify({ ...DEFAULT_PAGINATION_PARAMS, ...searchParams }),
+                headers: this._DEFAULT_HEADERS,
+            }),
+        );
 
         httpErrorCheck(resp);
 
@@ -94,30 +102,37 @@ export class CopperSource {
         endpoint: CopperEndpoint,
         searchParams?: CopperSearchParams,
     ): Promise<T[]> {
-        const response = await fetchAsync(COPPER_URI + getUriForEndpoint(endpoint), {
-            method: 'POST',
-            body: JSON.stringify({ ...DEFAULT_PAGINATION_PARAMS, ...searchParams }),
-            headers: this._DEFAULT_HEADERS,
-        });
+        const request = { ...DEFAULT_PAGINATION_PARAMS, ...searchParams };
+        const response = await this._limiter.schedule(() =>
+            fetchAsync(COPPER_URI + getUriForEndpoint(endpoint), {
+                method: 'POST',
+                body: JSON.stringify(request),
+                headers: this._DEFAULT_HEADERS,
+            }),
+        );
         httpErrorCheck(response);
         const json: T[] = await response.json();
         return json;
     }
 
     public async fetchActivityTypesAsync(): Promise<Map<CopperActivityTypeCategory, CopperActivityTypeResponse[]>> {
-        const response = await fetchAsync(`${COPPER_URI}/activity_types`, {
-            method: 'GET',
-            headers: this._DEFAULT_HEADERS,
-        });
+        const response = await this._limiter.schedule(() =>
+            fetchAsync(`${COPPER_URI}/activity_types`, {
+                method: 'GET',
+                headers: this._DEFAULT_HEADERS,
+            }),
+        );
         httpErrorCheck(response);
         return response.json();
     }
 
     public async fetchCustomFieldsAsync(): Promise<CopperCustomFieldResponse[]> {
-        const response = await fetchAsync(`${COPPER_URI}/custom_field_definitions`, {
-            method: 'GET',
-            headers: this._DEFAULT_HEADERS,
-        });
+        const response = await this._limiter.schedule(() =>
+            fetchAsync(`${COPPER_URI}/custom_field_definitions`, {
+                method: 'GET',
+                headers: this._DEFAULT_HEADERS,
+            }),
+        );
         httpErrorCheck(response);
         return response.json();
     }

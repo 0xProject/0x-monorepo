@@ -29,25 +29,25 @@ let connection: Connection;
     const source = new CopperSource(COPPER_RATE_LIMIT, accessToken, userEmail);
 
     const fetchPromises = [
-        fetchAndSaveLeads(source),
-        fetchAndSaveOpportunities(source),
-        fetchAndSaveActivities(source),
-        fetchAndSaveCustomFields(source),
-        fetchAndSaveActivityTypes(source),
+        fetchAndSaveLeadsAsync(source),
+        fetchAndSaveOpportunitiesAsync(source),
+        fetchAndSaveActivitiesAsync(source),
+        fetchAndSaveCustomFieldsAsync(source),
+        fetchAndSaveActivityTypesAsync(source),
     ];
     fetchPromises.forEach(async fn => {
         await fn;
     });
 })().catch(handleError);
 
-async function fetchAndSaveLeads(source: CopperSource): Promise<void> {
+async function fetchAndSaveLeadsAsync(source: CopperSource): Promise<void> {
     const repository = connection.getRepository(CopperLead);
     const startTime = await getMaxAsync(connection, 'date_modified', 'raw.copper_leads');
     console.log(`Fetching Copper leads starting from ${startTime}...`);
     await fetchAndSaveAsync(CopperEndpoint.Leads, source, startTime, {}, parseLeads, repository);
 }
 
-async function fetchAndSaveOpportunities(source: CopperSource): Promise<void> {
+async function fetchAndSaveOpportunitiesAsync(source: CopperSource): Promise<void> {
     const repository = connection.getRepository(CopperOpportunity);
     const startTime = await getMaxAsync(connection, 'date_modified', 'raw.copper_opportunities');
     console.log(`Fetching Copper opportunities starting from ${startTime}...`);
@@ -61,11 +61,11 @@ async function fetchAndSaveOpportunities(source: CopperSource): Promise<void> {
     );
 }
 
-async function fetchAndSaveActivities(source: CopperSource): Promise<void> {
+async function fetchAndSaveActivitiesAsync(source: CopperSource): Promise<void> {
     const repository = connection.getRepository(CopperActivity);
     const startTime = await getMaxAsync(connection, 'date_modified', 'raw.copper_activities');
     const searchParams = {
-        minimum_activity_date: Math.floor(startTime / ONE_SECOND), // tslint:disable-line:radix
+        minimum_activity_date: Math.floor(startTime / ONE_SECOND),
     };
     console.log(`Fetching Copper activities starting from ${startTime}...`);
     await fetchAndSaveAsync(CopperEndpoint.Activities, source, startTime, searchParams, parseActivities, repository);
@@ -114,14 +114,14 @@ async function fetchAndSaveAsync<T extends CopperSearchResponse, E>(
     }
 }
 
-async function fetchAndSaveActivityTypes(source: CopperSource): Promise<void> {
+async function fetchAndSaveActivityTypesAsync(source: CopperSource): Promise<void> {
     console.log(`Fetching Copper activity types...`);
     const activityTypes = await source.fetchActivityTypesAsync();
     const repository = connection.getRepository(CopperActivityType);
     await repository.save(parseActivityTypes(activityTypes));
 }
 
-async function fetchAndSaveCustomFields(source: CopperSource): Promise<void> {
+async function fetchAndSaveCustomFieldsAsync(source: CopperSource): Promise<void> {
     console.log(`Fetching Copper custom fields...`);
     const customFields = await source.fetchCustomFieldsAsync();
     const repository = connection.getRepository(CopperCustomField);
