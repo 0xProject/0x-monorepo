@@ -109,7 +109,12 @@ export interface CopperCustomFieldResponse {
     data_type: CopperCustomFieldType;
     options?: CopperCustomFieldOptionResponse[];
 }
-
+/**
+ * Parse response from Copper API /search/leads/
+ *
+ * @param leads - The array of leads returned from the API
+ * @returns Returns an array of Copper Lead entities
+ */
 export function parseLeads(leads: CopperLeadResponse[]): CopperLead[] {
     return leads.map(lead => {
         const entity = new CopperLead();
@@ -147,6 +152,12 @@ export function parseLeads(leads: CopperLeadResponse[]): CopperLead[] {
     });
 }
 
+/**
+ * Parse response from Copper API /search/activities/
+ *
+ * @param activities - The array of activities returned from the API
+ * @returns Returns an array of Copper Activity entities
+ */
 export function parseActivities(activities: CopperActivityResponse[]): CopperActivity[] {
     return activities.map(activity => {
         const entity = new CopperActivity();
@@ -176,6 +187,12 @@ export function parseActivities(activities: CopperActivityResponse[]): CopperAct
     });
 }
 
+/**
+ * Parse response from Copper API /search/opportunities/
+ *
+ * @param opportunities - The array of opportunities returned from the API
+ * @returns Returns an array of Copper Opportunity entities
+ */
 export function parseOpportunities(opportunities: CopperOpportunityResponse[]): CopperOpportunity[] {
     return opportunities.map(opp => {
         const entity = new CopperOpportunity();
@@ -203,6 +220,12 @@ export function parseOpportunities(opportunities: CopperOpportunityResponse[]): 
     });
 }
 
+/**
+ * Parse response from Copper API /activity_types/
+ *
+ * @param activityTypeResponse - Activity Types response from the API, keyed by "user" or "system"
+ * @returns Returns an array of Copper Activity Type entities
+ */
 export function parseActivityTypes(
     activityTypeResponse: Map<CopperActivityTypeCategory, CopperActivityTypeResponse[]>,
 ): CopperActivityType[] {
@@ -223,6 +246,12 @@ export function parseActivityTypes(
     });
 }
 
+/**
+ * Parse response from Copper API /custom_field_definitions/
+ *
+ * @param customFieldResponse - array of custom field definitions returned from the API"
+ * @returns Returns an array of Copper Custom Field entities
+ */
 export function parseCustomFields(customFieldResponse: CopperCustomFieldResponse[]): CopperCustomField[] {
     function parseTopLevelField(field: CopperCustomFieldResponse): CopperCustomField[] {
         const parsed: CopperCustomField = {
