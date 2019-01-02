@@ -182,6 +182,8 @@ setup(
     install_requires=[
         "eth-abi",
         "eth_utils",
+        "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
+        # above works around https://github.com/ethereum/web3.py/issues/1179
         "jsonschema",
         "mypy_extensions",
         "web3",
