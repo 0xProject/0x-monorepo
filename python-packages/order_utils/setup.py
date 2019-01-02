@@ -51,6 +51,15 @@ class LintCommand(distutils.command.build_py.build_py):
                 "diff src/zero_ex/json_schemas/schemas"
                 + " ../../packages/json-schemas/schemas"
             ).split(),
+            # ensure contract artifacts match the authoritative copies:
+            # this is a hack.  ideally we would symlink to the authoritative
+            # copies, but a problem with setuptools is preventing it from
+            # following symlinks when gathering package_data.  see
+            # https://github.com/pypa/setuptools/issues/415.
+            (
+                "diff src/zero_ex/contract_artifacts/artifacts"
+                + " ../../packages/contract-artifacts/artifacts"
+            ).split(),
             # general linter:
             "pylint src test setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable
