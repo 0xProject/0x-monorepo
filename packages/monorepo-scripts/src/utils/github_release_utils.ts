@@ -93,7 +93,7 @@ function adjustAssetPaths(assets: string[]): string[] {
     return finalAssets;
 }
 
-export function getReleaseNotesForPackage(packageLocation: string, packageName: string): string {
+function getReleaseNotesForPackage(packageLocation: string, packageName: string): string {
     const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
     const changelogJSON = readFileSync(changelogJSONPath, 'utf-8');
     const changelogs = JSON.parse(changelogJSON);
