@@ -154,21 +154,23 @@ const getTokenIcon = (symbol: string): React.StatelessComponent | undefined => {
     }
 };
 
-const TokenSelectorRowIcon: React.StatelessComponent<TokenSelectorRowIconProps> = props => {
-    const { token } = props;
-    const iconUrlIfExists = token.metaData.iconUrl;
+class TokenSelectorRowIcon extends React.PureComponent<TokenSelectorRowIconProps> {
+    public render(): React.ReactNode {
+        const { token } = this.props;
+        const iconUrlIfExists = token.metaData.iconUrl;
 
-    const TokenIcon = getTokenIcon(token.metaData.symbol);
-    const displaySymbol = assetUtils.bestNameForAsset(token);
-    if (!_.isUndefined(iconUrlIfExists)) {
-        return <img src={iconUrlIfExists} />;
-    } else if (!_.isUndefined(TokenIcon)) {
-        return <TokenIcon />;
-    } else {
-        return (
-            <Text fontColor={ColorOption.white} fontSize="8px">
-                {displaySymbol}
-            </Text>
-        );
+        const TokenIcon = getTokenIcon(token.metaData.symbol);
+        const displaySymbol = assetUtils.bestNameForAsset(token);
+        if (!_.isUndefined(iconUrlIfExists)) {
+            return <img src={iconUrlIfExists} />;
+        } else if (!_.isUndefined(TokenIcon)) {
+            return <TokenIcon />;
+        } else {
+            return (
+                <Text fontColor={ColorOption.white} fontSize="8px">
+                    {displaySymbol}
+                </Text>
+            );
+        }
     }
-};
+}

@@ -24,7 +24,10 @@ export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-export class ZeroExInstantContainer extends React.PureComponent<ZeroExInstantContainerProps, ZeroExInstantContainerState> {
+export class ZeroExInstantContainer extends React.PureComponent<
+    ZeroExInstantContainerProps,
+    ZeroExInstantContainerState
+> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
@@ -60,6 +63,7 @@ export class ZeroExInstantContainer extends React.PureComponent<ZeroExInstantCon
                         <SlidingPanel
                             animationState={this.state.tokenSelectionPanelAnimationState}
                             onClose={this._handlePanelCloseClickedX}
+                            onAnimationEnd={this._handleSlidingPanelAnimationEnd}
                         >
                             <AvailableERC20TokenSelector onTokenSelect={this._handlePanelCloseAfterChose} />
                         </SlidingPanel>
@@ -97,5 +101,12 @@ export class ZeroExInstantContainer extends React.PureComponent<ZeroExInstantCon
         this.setState({
             tokenSelectionPanelAnimationState: 'slidOut',
         });
+    };
+    private readonly _handleSlidingPanelAnimationEnd = (): void => {
+        if (this.state.tokenSelectionPanelAnimationState === 'slidOut') {
+            // When the slidOut animation completes, don't keep the panel mounted.
+            // Performance optimization
+            this.setState({ tokenSelectionPanelAnimationState: 'none' });
+        }
     };
 }
