@@ -24,7 +24,7 @@ export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-export class ZeroExInstantContainer extends React.Component<ZeroExInstantContainerProps, ZeroExInstantContainerState> {
+export class ZeroExInstantContainer extends React.PureComponent<ZeroExInstantContainerProps, ZeroExInstantContainerState> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };

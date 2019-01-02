@@ -26,7 +26,7 @@ export interface DropdownState {
     isOpen: boolean;
 }
 
-export class Dropdown extends React.Component<DropdownProps, DropdownState> {
+export class Dropdown extends React.PureComponent<DropdownProps, DropdownState> {
     public static defaultProps = {
         items: [],
     };

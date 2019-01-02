@@ -21,7 +21,7 @@ export interface ERC20TokenSelectorState {
     searchQuery: string;
 }
 
-export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps> {
+export class ERC20TokenSelector extends React.PureComponent<ERC20TokenSelectorProps> {
     public state: ERC20TokenSelectorState = {
         searchQuery: '',
     };
@@ -76,7 +76,7 @@ interface TokenSelectorRowProps {
     onClick: (token: ERC20Asset) => void;
 }
 
-class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
+class TokenSelectorRow extends React.PureComponent<TokenSelectorRowProps> {
     public render(): React.ReactNode {
         const { token } = this.props;
         const circleColor = token.metaData.primaryColor || 'black';
