@@ -90,7 +90,7 @@ async function confirmAsync(message: string): Promise<void> {
 
     if (!isDryRun && releaseNotes) {
         try {
-            alertDiscord(releaseNotes);
+            await alertDiscord(releaseNotes);
         } catch (e) {
             utils.log("Couldn't alert discord, error: ", e.message, '. Please alert manually.');
         }
