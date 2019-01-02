@@ -26,6 +26,8 @@ export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose 
     </Container>
 );
 
+Panel.displayName = 'Panel';
+
 export interface SlidingPanelProps extends PanelProps {
     animationState: SlideAnimationState;
 }
@@ -65,3 +67,5 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
         </SlideAnimation>
     );
 };
+
+SlidingPanel.displayName = 'SlidingPanel';

@@ -71,3 +71,5 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         />
     );
 };
+
+BuyOrderStateButtons.displayName = 'BuyOrderStateButtons';

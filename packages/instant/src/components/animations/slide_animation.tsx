@@ -24,3 +24,5 @@ export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = pro
         </PositionAnimation>
     );
 };
+
+SlideAnimation.displayName = 'SlideAnimation';

@@ -138,3 +138,5 @@ export const DropdownItem: React.StatelessComponent<DropdownItemProps> = ({ text
         </Text>
     </Container>
 );
+
+DropdownItem.displayName = 'DropdownItem';

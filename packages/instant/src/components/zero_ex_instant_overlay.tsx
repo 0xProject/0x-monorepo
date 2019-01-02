@@ -49,3 +49,5 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
         </ZeroExInstantProvider>
     );
 };
+
+ZeroExInstantOverlay.displayName = 'ZeroExInstantOverlay';
