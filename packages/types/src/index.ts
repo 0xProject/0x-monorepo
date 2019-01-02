@@ -110,7 +110,9 @@ export type DoneCallback = (err?: Error) => void;
 
 export interface OrderRelevantState {
     makerBalance: BigNumber;
+    makerIndividualBalances: ObjectMap<BigNumber>;
     makerProxyAllowance: BigNumber;
+    makerIndividualProxyAllowances: ObjectMap<BigNumber>;
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
@@ -175,7 +177,7 @@ export interface MultiAssetData {
     nestedAssetData: string[];
 }
 
-export type AssetData = ERC20AssetData | ERC721AssetData | MultiAssetData;
+export type SingleAssetData = ERC20AssetData | ERC721AssetData;
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
