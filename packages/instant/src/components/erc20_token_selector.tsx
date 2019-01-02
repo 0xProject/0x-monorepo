@@ -26,7 +26,7 @@ export class ERC20TokenSelector extends React.PureComponent<ERC20TokenSelectorPr
         searchQuery: '',
     };
     public render(): React.ReactNode {
-        const { tokens, onTokenSelect } = this.props;
+        const { tokens } = this.props;
         return (
             <Container height="100%">
                 <Container marginBottom="10px">
@@ -42,12 +42,11 @@ export class ERC20TokenSelector extends React.PureComponent<ERC20TokenSelectorPr
                     tabIndex={-1}
                 />
                 <Container overflow="scroll" height="calc(100% - 90px)" marginTop="10px">
-                    {_.map(tokens, token => {
-                        if (!this._isTokenQueryMatch(token)) {
-                            return null;
-                        }
-                        return <TokenSelectorRow key={token.assetData} token={token} onClick={onTokenSelect} />;
-                    })}
+                    <TokenRowFilter
+                        tokens={tokens}
+                        onClick={this._handleTokenClick}
+                        searchQuery={this.state.searchQuery}
+                    />
                 </Container>
             </Container>
         );
@@ -59,8 +58,32 @@ export class ERC20TokenSelector extends React.PureComponent<ERC20TokenSelectorPr
         });
         analytics.trackTokenSelectorSearched(searchQuery);
     };
+    private readonly _handleTokenClick = (token: ERC20Asset): void => {
+        this.props.onTokenSelect(token);
+    };
+}
+
+interface TokenRowFilterProps {
+    tokens: ERC20Asset[];
+    onClick: (token: ERC20Asset) => void;
+    searchQuery: string;
+}
+
+class TokenRowFilter extends React.Component<TokenRowFilterProps> {
+    public render(): React.ReactNode {
+        return _.map(this.props.tokens, token => {
+            if (!this._isTokenQueryMatch(token)) {
+                return null;
+            }
+            return <TokenSelectorRow key={token.assetData} token={token} onClick={this.props.onClick} />;
+        });
+    }
+    public shouldComponentUpdate(nextProps: TokenRowFilterProps): boolean {
+        const arePropsDeeplyEqual = _.isEqual(nextProps, this.props);
+        return !arePropsDeeplyEqual;
+    }
     private readonly _isTokenQueryMatch = (token: ERC20Asset): boolean => {
-        const { searchQuery } = this.state;
+        const { searchQuery } = this.props;
         const searchQueryLowerCase = searchQuery.toLowerCase().trim();
         if (searchQueryLowerCase === '') {
             return true;
