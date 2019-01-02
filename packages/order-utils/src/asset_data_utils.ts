@@ -1,4 +1,4 @@
-import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData, MultiAssetData } from '@0x/types';
+import { AssetProxyId, ERC20AssetData, ERC721AssetData, MultiAssetData, SingleAssetData } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -225,7 +225,7 @@ export const assetDataUtils = {
      * @param assetData Hex encoded assetData string to decode
      * @return Either a ERC20 or ERC721 assetData object
      */
-    decodeAssetDataOrThrow(assetData: string): AssetData {
+    decodeAssetDataOrThrow(assetData: string): SingleAssetData | MultiAssetData {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:

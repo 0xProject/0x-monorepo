@@ -1,15 +1,21 @@
 import {
+    AssetProxyId,
     ExchangeContractErrs,
+    MultiAssetData,
+    ObjectMap,
     OrderRelevantState,
     OrderState,
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
+    SingleAssetData,
 } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
+import { assetDataUtils } from './asset_data_utils';
 import { orderHashUtils } from './order_hash';
 import { OrderValidationUtils } from './order_validation_utils';
 import { RemainingFillableCalculator } from './remaining_fillable_calculator';
@@ -18,7 +24,9 @@ import { utils } from './utils';
 interface SidedOrderRelevantState {
     isMakerSide: boolean;
     traderBalance: BigNumber;
+    traderIndividualBalances: ObjectMap<BigNumber>;
     traderProxyAllowance: BigNumber;
+    traderIndividualProxyAllowances: ObjectMap<BigNumber>;
     traderFeeBalance: BigNumber;
     traderFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
@@ -121,7 +129,9 @@ export class OrderStateUtils {
         const sidedOrderRelevantState = {
             isMakerSide: true,
             traderBalance: orderRelevantState.makerBalance,
+            traderIndividualBalances: orderRelevantState.makerIndividualBalances,
             traderProxyAllowance: orderRelevantState.makerProxyAllowance,
+            traderIndividualProxyAllowances: orderRelevantState.makerIndividualProxyAllowances,
             traderFeeBalance: orderRelevantState.makerFeeBalance,
             traderFeeProxyAllowance: orderRelevantState.makerFeeProxyAllowance,
             filledTakerAssetAmount: orderRelevantState.filledTakerAssetAmount,
@@ -165,7 +175,9 @@ export class OrderStateUtils {
 
         const orderRelevantState = {
             makerBalance: sidedOrderRelevantState.traderBalance,
+            makerIndividualBalances: sidedOrderRelevantState.traderIndividualBalances,
             makerProxyAllowance: sidedOrderRelevantState.traderProxyAllowance,
+            makerIndividualProxyAllowances: sidedOrderRelevantState.traderIndividualProxyAllowances,
             makerFeeBalance: sidedOrderRelevantState.traderFeeBalance,
             makerFeeProxyAllowance: sidedOrderRelevantState.traderFeeProxyAllowance,
             filledTakerAssetAmount: sidedOrderRelevantState.filledTakerAssetAmount,
@@ -236,10 +248,12 @@ export class OrderStateUtils {
         const isAssetZRX = assetData === zrxAssetData;
 
         const traderBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
+        const traderIndividualBalances = await this._getAssetBalancesAsync(assetData, traderAddress);
         const traderProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
             assetData,
             traderAddress,
         );
+        const traderIndividualProxyAllowances = await this._getAssetProxyAllowancesAsync(assetData, traderAddress);
         const traderFeeBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
             zrxAssetData,
             traderAddress,
@@ -278,7 +292,9 @@ export class OrderStateUtils {
         const sidedOrderRelevantState = {
             isMakerSide,
             traderBalance,
+            traderIndividualBalances,
             traderProxyAllowance,
+            traderIndividualProxyAllowances,
             traderFeeBalance,
             traderFeeProxyAllowance,
             filledTakerAssetAmount,
@@ -286,5 +302,60 @@ export class OrderStateUtils {
             isOrderCancelled,
         };
         return sidedOrderRelevantState;
+    }
+    private async _getAssetBalancesAsync(
+        assetData: string,
+        traderAddress: string,
+        initialBalances: ObjectMap<BigNumber> = {},
+    ): Promise<ObjectMap<BigNumber>> {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        let balances: ObjectMap<BigNumber> = { ...initialBalances };
+        switch (decodedAssetData.assetProxyId) {
+            case AssetProxyId.ERC20:
+            case AssetProxyId.ERC721:
+                const balance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
+                const tokenAddress = (decodedAssetData as SingleAssetData).tokenAddress;
+                balances[tokenAddress] = _.isUndefined(initialBalances[tokenAddress])
+                    ? balance
+                    : balances[tokenAddress].add(balance);
+                break;
+            case AssetProxyId.MultiAsset:
+                for (const assetDataElement of (decodedAssetData as MultiAssetData).nestedAssetData) {
+                    balances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, balances);
+                }
+                break;
+            default:
+                throw new Error(`Proxy with id ${decodedAssetData.assetProxyId} not supported`);
+        }
+        return balances;
+    }
+    private async _getAssetProxyAllowancesAsync(
+        assetData: string,
+        traderAddress: string,
+        initialAllowances: ObjectMap<BigNumber> = {},
+    ): Promise<ObjectMap<BigNumber>> {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        let allowances: ObjectMap<BigNumber> = { ...initialAllowances };
+        switch (decodedAssetData.assetProxyId) {
+            case AssetProxyId.ERC20:
+            case AssetProxyId.ERC721:
+                const allowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
+                    assetData,
+                    traderAddress,
+                );
+                const tokenAddress = (decodedAssetData as SingleAssetData).tokenAddress;
+                allowances[tokenAddress] = _.isUndefined(initialAllowances[tokenAddress])
+                    ? allowance
+                    : allowances[tokenAddress].add(allowance);
+                break;
+            case AssetProxyId.MultiAsset:
+                for (const assetDataElement of (decodedAssetData as MultiAssetData).nestedAssetData) {
+                    allowances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, allowances);
+                }
+                break;
+            default:
+                throw new Error(`Proxy with id ${decodedAssetData.assetProxyId} not supported`);
+        }
+        return allowances;
     }
 }
