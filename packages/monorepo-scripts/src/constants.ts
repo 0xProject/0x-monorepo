@@ -6,5 +6,6 @@ export const constants = {
     lernaExecutable: path.join('node_modules', '@0x-lerna-fork', 'lerna', 'cli.js'),
     githubPersonalAccessToken: process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS,
     discordAlertWebhookUrl: process.env.DISCORD_GITHUB_RELEASE_WEBHOOK_URL,
+    releasesUrl: 'https://github.com/0xProject/0x-monorepo/releases',
     dependenciesUpdatedMessage: 'Dependencies updated',
 };
