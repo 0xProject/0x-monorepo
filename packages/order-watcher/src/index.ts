@@ -7,6 +7,7 @@ export {
     OrderStateInvalid,
     OrderState,
     ExchangeContractErrs,
+    ObjectMap,
     OrderRelevantState,
     Stats,
 } from '@0x/types';

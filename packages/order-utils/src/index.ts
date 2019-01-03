@@ -41,6 +41,7 @@ export {
     MultiAssetDataWithRecursiveDecoding,
     AssetProxyId,
     SignatureType,
+    ObjectMap,
     OrderStateValid,
     OrderStateInvalid,
     ExchangeContractErrs,

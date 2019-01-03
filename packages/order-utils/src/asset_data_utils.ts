@@ -154,6 +154,7 @@ export const assetDataUtils = {
         return {
             assetProxyId: decodedAssetData.assetProxyId,
             amounts: flattenedAmounts,
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             nestedAssetData: flattenedDecodedNestedAssetData as SingleAssetData[],
         };
     },
