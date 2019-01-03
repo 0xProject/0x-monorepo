@@ -1,4 +1,4 @@
-import { AssetBuyerError, InsufficientAssetLiquidityError, BigNumber } from '@0x/asset-buyer';
+import { AssetBuyerError, BigNumber, InsufficientAssetLiquidityError } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
@@ -82,11 +82,6 @@ describe('assetDataUtil', () => {
                 expect(
                     assetUtils.assetBuyerErrorMessage(WAX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
                 ).toEqual('There are only 3 WAX available to buy');
-            });
-            it('should return generic message when InsufficientAssetLiquidityError contains undefined value', () => {
-                expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError())).toEqual(
-                    'Not enough ZRX available',
-                );
             });
             it('should return generic message when amount available rounds to zero', () => {
                 const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.002), 18);
