@@ -3,7 +3,8 @@
         "version": "3.1.0",
         "changes": [
             {
-                "note": "Use new ABI encoder and add encoding/decoding logic for MultiAsset assetData",
+                "note":
+                    "Use new ABI encoder, add encoding/decoding logic for MultiAsset assetData, and add information to return values in orderStateUtils",
                 "pr": 1363
             }
         ]

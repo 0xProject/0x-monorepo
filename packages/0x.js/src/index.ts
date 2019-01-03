@@ -71,6 +71,7 @@ export { AbiDecoder } from '@0x/utils';
 export { BigNumber } from '@0x/utils';
 
 export {
+    AssetData,
     ExchangeContractErrs,
     Order,
     SignedOrder,
@@ -85,6 +86,7 @@ export {
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
     SignatureType,
+    ObjectMap,
     OrderRelevantState,
     Stats,
 } from '@0x/types';

@@ -185,6 +185,8 @@ export interface MultiAssetDataWithRecursiveDecoding {
     nestedAssetData: SingleAssetData[];
 }
 
+export type AssetData = SingleAssetData | MultiAssetData | MultiAssetDataWithRecursiveDecoding;
+
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
     OrderUnfillable = 'ORDER_UNFILLABLE',
