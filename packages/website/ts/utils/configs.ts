@@ -39,8 +39,8 @@ export const configs = {
     ] as OutdatedWrappedEtherByNetworkId[],
     // The order matters. We first try first node and only then fall back to others.
     PUBLIC_NODE_URLS_BY_NETWORK_ID: {
-        [1]: [`https://mainnet.infura.io/${INFURA_API_KEY}`, 'https://mainnet.0x.org'],
-        [42]: [`https://kovan.infura.io/${INFURA_API_KEY}`, 'https://kovan.0x.org'],
+        [1]: [`https://mainnet.infura.io/${INFURA_API_KEY}`, 'https://mainnet.0xproject.com'],
+        [42]: [`https://kovan.infura.io/${INFURA_API_KEY}`, 'https://kovan.0xproject.com'],
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,

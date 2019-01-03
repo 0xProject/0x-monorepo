@@ -9,7 +9,6 @@ type StringOrNum = string | number;
 export type ContainerTag = 'div' | 'span';
 
 export interface ContainerProps {
-    children?: React.ReactNode;
     margin?: string;
     marginTop?: StringOrNum;
     marginBottom?: StringOrNum;
