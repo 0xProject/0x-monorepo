@@ -6,6 +6,8 @@ import * as R from 'ramda';
 import { SraOrder } from '../../entities';
 import { bigNumbertoStringOrNull, convertAssetProxyIdToType } from '../../utils';
 
+// tslint:disable:no-unnecessary-type-assertion
+
 /**
  * Parses a raw order response from an SRA endpoint and returns an array of
  * SraOrder entities.

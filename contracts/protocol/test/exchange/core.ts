@@ -1,4 +1,3 @@
-import { artifacts as interfacesArtifacts, IAssetDataContract } from '@0x/contracts-interfaces';
 import {
     chaiSetup,
     constants,

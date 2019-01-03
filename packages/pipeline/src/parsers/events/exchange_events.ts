@@ -7,6 +7,8 @@ import * as R from 'ramda';
 import { ExchangeCancelEvent, ExchangeCancelUpToEvent, ExchangeFillEvent } from '../../entities';
 import { bigNumbertoStringOrNull, convertAssetProxyIdToType } from '../../utils';
 
+// tslint:disable:no-unnecessary-type-assertion
+
 /**
  * Parses raw event logs for a fill event and returns an array of
  * ExchangeFillEvent entities.

@@ -2,6 +2,10 @@ import { AssetProxyId } from '@0x/types';
 
 import { AssetType } from '../../types';
 
+/**
+ * Converts an assetProxyId to its string equivalent
+ * @param assetProxyId Id of AssetProxy
+ */
 export function convertAssetProxyIdToType(assetProxyId: AssetProxyId): AssetType {
     switch (assetProxyId) {
         case AssetProxyId.ERC20:
