@@ -24,17 +24,16 @@ export class CopperOpportunity {
     public primaryContactId?: number;
     @Column({ name: 'priority', nullable: true, type: 'varchar' }) public priority?: string;
     @Column({ name: 'status', type: 'varchar' }) public status!: string;
-    @Column({ name: 'tags', type: 'varchar' }) public tags!: string[];
     @Column({ name: 'interaction_count', type: 'bigint', transformer: numberToBigIntTransformer })
     public interactionCount!: number;
     @Column({ name: 'monetary_value', nullable: true, type: 'integer' })
     public monetaryValue?: number;
-    @Column({ name: 'win_probability', type: 'integer' })
-    public winProbability!: number;
+    @Column({ name: 'win_probability', nullable: true, type: 'integer' })
+    public winProbability?: number;
     @Column({ name: 'date_created', type: 'bigint', transformer: numberToBigIntTransformer })
     public dateCreated!: number;
     @PrimaryColumn({ name: 'date_modified', type: 'bigint', transformer: numberToBigIntTransformer })
     public dateModified!: number;
-    @Column({ name: 'custom_fields', type: 'jsonb', transformer: arrayToJsonTransformer })
-    public customFields!: number[];
+    @Column({ name: 'custom_fields', type: 'jsonb' })
+    public customFields!: { [key: number]: number };
 }

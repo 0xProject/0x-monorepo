@@ -72,14 +72,14 @@ export interface CopperOpportunityResponse {
     tags: string[];
     interaction_count: number;
     monetary_value?: number;
-    win_probability: number;
+    win_probability?: number;
     date_created: number; // in seconds
     date_modified: number; // in seconds
     custom_fields: CopperNestedCustomFieldResponse[];
 }
 interface CopperNestedCustomFieldResponse {
     custom_field_definition_id: number;
-    value?: string;
+    value: number | number[] | null;
 }
 // custom fields
 export enum CopperCustomFieldType {
@@ -172,6 +172,20 @@ export function parseActivities(activities: CopperActivityResponse[]): CopperAct
  */
 export function parseOpportunities(opportunities: CopperOpportunityResponse[]): CopperOpportunity[] {
     return opportunities.map(opp => {
+        const customFields: { [key: number]: number } = opp.custom_fields
+            .filter(f => f.value !== null)
+            .map(f => ({
+                ...f,
+                value: ([] as number[]).concat(f.value || []), // normalise all values to number[]
+            }))
+            .map(f => (f.value as number[]).map(val => [f.custom_field_definition_id, val] as [number, number])) // pair each value with the custom_field_definition_id
+            .reduce((acc, pair) => acc.concat(pair)) // flatten
+            .reduce((obj: { [key: number]: number }, [key, value]) => {
+                // transform into object literal
+                obj[key] = value;
+                return obj;
+            }, {});
+
         const entity = new CopperOpportunity();
         entity.id = opp.id;
         entity.name = opp.name;
@@ -186,13 +200,12 @@ export function parseOpportunities(opportunities: CopperOpportunityResponse[]): 
         entity.primaryContactId = opp.primary_contact_id || undefined;
         entity.priority = opp.priority || undefined;
         entity.status = opp.status;
-        entity.tags = opp.tags || undefined;
         entity.interactionCount = opp.interaction_count;
         entity.monetaryValue = opp.monetary_value || undefined;
-        entity.winProbability = opp.win_probability;
+        entity.winProbability = opp.win_probability === null ? undefined : opp.win_probability;
         entity.dateCreated = opp.date_created * ONE_SECOND;
         entity.dateModified = opp.date_modified * ONE_SECOND;
-        entity.customFields = opp.custom_fields.map(f => f.custom_field_definition_id);
+        entity.customFields = customFields;
         return entity;
     });
 }
