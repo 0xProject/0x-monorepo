@@ -71,7 +71,6 @@ export { AbiDecoder } from '@0x/utils';
 export { BigNumber } from '@0x/utils';
 
 export {
-    AssetData,
     ExchangeContractErrs,
     Order,
     SignedOrder,
