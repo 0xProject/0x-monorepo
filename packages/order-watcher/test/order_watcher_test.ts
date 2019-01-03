@@ -675,5 +675,213 @@ describe('OrderWatcher', () => {
                 })().catch(done);
             });
         });
+        describe('multiAsset', async () => {
+            const tokenId = new BigNumber(42);
+            const [makerErc721TokenAddress] = tokenUtils.getDummyERC721TokenAddresses();
+            const makerErc721AssetData = assetDataUtils.encodeERC721AssetData(makerErc721TokenAddress, tokenId);
+            const fillableErc721Amount = new BigNumber(1);
+            const [makerErc20TokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
+            const makerErc20AssetData = assetDataUtils.encodeERC20AssetData(makerErc20TokenAddress);
+            const fillableErc20Amount = new BigNumber(2);
+            const multiAssetAmounts = [fillableErc721Amount, fillableErc20Amount];
+            const nestedAssetData = [makerErc721AssetData, makerErc20AssetData];
+            const makerMultiAssetData = assetDataUtils.encodeMultiAssetData(multiAssetAmounts, nestedAssetData);
+            it('should emit orderStateInvalid when maker allowance of ERC721 token set to 0 for watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    await contractWrappers.erc721Token.setApprovalAsync(
+                        makerErc721TokenAddress,
+                        constants.NULL_ADDRESS,
+                        tokenId,
+                    );
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when maker allowance for all of ERC721 token set to 0 for watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    await contractWrappers.erc721Token.setApprovalAsync(
+                        makerErc721TokenAddress,
+                        constants.NULL_ADDRESS,
+                        tokenId,
+                    );
+                    let isApproved = true;
+                    await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+                        makerErc721TokenAddress,
+                        makerAddress,
+                        isApproved,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    isApproved = false;
+                    await contractWrappers.erc721Token.setProxyApprovalForAllAsync(
+                        makerErc721TokenAddress,
+                        makerAddress,
+                        isApproved,
+                    );
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when maker moves ERC721 backing watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    await contractWrappers.erc721Token.transferFromAsync(
+                        makerErc721TokenAddress,
+                        coinbase,
+                        makerAddress,
+                        tokenId,
+                    );
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when maker allowance of ERC20 token set to 0 for watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableErc721Amount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerAllowance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    await contractWrappers.erc20Token.setProxyAllowanceAsync(
+                        makerErc20TokenAddress,
+                        makerAddress,
+                        new BigNumber(0),
+                    );
+                })().catch(done);
+            });
+            it('should not emit an orderState event when irrelevant ERC20 Transfer event received', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableAmount,
+                    );
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((_orderState: OrderState) => {
+                        throw new Error('OrderState callback fired for irrelevant order');
+                    });
+                    orderWatcher.subscribe(callback);
+                    const notTheMaker = userAddresses[0];
+                    const anyRecipient = takerAddress;
+                    const transferAmount = new BigNumber(2);
+                    await contractWrappers.erc20Token.transferAsync(
+                        makerTokenAddress,
+                        notTheMaker,
+                        anyRecipient,
+                        transferAmount,
+                    );
+                    setTimeout(() => {
+                        done();
+                    }, TIMEOUT_MS);
+                })().catch(done);
+            });
+            it('should emit orderStateInvalid when makerAddress moves ERC20 balance backing watched order', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableAmount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
+                    });
+                    orderWatcher.subscribe(callback);
+                    const anyRecipient = takerAddress;
+                    const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(
+                        makerTokenAddress,
+                        makerAddress,
+                    );
+                    await contractWrappers.erc20Token.transferAsync(
+                        makerTokenAddress,
+                        makerAddress,
+                        anyRecipient,
+                        makerBalance,
+                    );
+                })().catch(done);
+            });
+            // TODO(abandeali1): The following test will fail until the MAP has been deployed and activated.
+            // it('should emit orderStateInvalid when watched order fully filled', (done: DoneCallback) => {
+            //     (async () => {
+            //         signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+            //             makerMultiAssetData,
+            //             takerAssetData,
+            //             makerAddress,
+            //             takerAddress,
+            //             fillableAmount,
+            //         );
+            //         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            //         await orderWatcher.addOrderAsync(signedOrder);
+
+            //         const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+            //             expect(orderState.isValid).to.be.false();
+            //             const invalidOrderState = orderState as OrderStateInvalid;
+            //             expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+            //             expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderRemainingFillAmountZero);
+            //         });
+            //         orderWatcher.subscribe(callback);
+
+            //         await contractWrappers.exchange.fillOrderAsync(signedOrder, fillableAmount, takerAddress);
+            //     })().catch(done);
+            // });
+        });
     });
 }); // tslint:disable:max-file-line-count
