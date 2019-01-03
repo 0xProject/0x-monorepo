@@ -29,15 +29,17 @@ type CopperResponse = CopperSearchResponse | CopperCustomFieldResponse;
 type CopperEntity = CopperLead | CopperActivity | CopperOpportunity | CopperActivityType | CopperCustomField;
 
 import * as activityTypesApiResponse from '../../fixtures/copper/api_v1_activity_types.json';
-import * as activityTypesParsed from '../../fixtures/copper/api_v1_activity_types.parsed.json';
 import * as customFieldsApiResponse from '../../fixtures/copper/api_v1_custom_field_definitions.json';
-import * as customFieldsParsed from '../../fixtures/copper/api_v1_custom_field_definitions.parsed.json';
 import * as listActivitiesApiResponse from '../../fixtures/copper/api_v1_list_activities.json';
-import * as listActivitiesParsed from '../../fixtures/copper/api_v1_list_activities.parsed.json';
 import * as listLeadsApiResponse from '../../fixtures/copper/api_v1_list_leads.json';
-import * as listLeadsParsed from '../../fixtures/copper/api_v1_list_leads.parsed.json';
 import * as listOpportunitiesApiResponse from '../../fixtures/copper/api_v1_list_opportunities.json';
-import * as listOpportunitiesParsed from '../../fixtures/copper/api_v1_list_opportunities.parsed.json';
+import {
+    ParsedActivities,
+    ParsedActivityTypes,
+    ParsedCustomFields,
+    ParsedLeads,
+    ParsedOpportunities,
+} from '../../fixtures/copper/parsed_entities';
 
 interface TestCase {
     input: CopperResponse[];
@@ -47,22 +49,22 @@ interface TestCase {
 const testCases: TestCase[] = [
     {
         input: listLeadsApiResponse,
-        expected: (listLeadsParsed as unknown) as CopperLead[],
+        expected: ParsedLeads,
         parseFn: parseLeads,
     },
     {
-        input: listActivitiesApiResponse as unknown as CopperActivityResponse[],
-        expected: listActivitiesParsed as CopperActivity[],
+        input: (listActivitiesApiResponse as unknown) as CopperActivityResponse[],
+        expected: ParsedActivities,
         parseFn: parseActivities,
     },
     {
         input: listOpportunitiesApiResponse,
-        expected: (listOpportunitiesParsed as unknown) as CopperOpportunity[],
+        expected: ParsedOpportunities,
         parseFn: parseOpportunities,
     },
     {
         input: customFieldsApiResponse,
-        expected: customFieldsParsed,
+        expected: ParsedCustomFields,
         parseFn: parseCustomFields,
     },
 ];
@@ -70,15 +72,16 @@ describe('Copper parser', () => {
     it('parses API responses', () => {
         testCases.forEach(testCase => {
             const actual: CopperEntity[] = testCase.parseFn(testCase.input);
-            expect(JSON.stringify(actual)).equal(JSON.stringify(testCase.expected));
+            expect(actual).deep.equal(testCase.expected);
         });
     });
 
+    // special case because the API response is not an array
     it('parses activity types API response', () => {
         const actual: CopperActivityType[] = parseActivityTypes((activityTypesApiResponse as unknown) as Map<
             CopperActivityTypeCategory,
             CopperActivityTypeResponse[]
         >);
-        expect(actual).deep.equal(activityTypesParsed);
+        expect(actual).deep.equal(ParsedActivityTypes);
     });
 });

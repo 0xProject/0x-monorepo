@@ -10,7 +10,7 @@ const decimalRadix = 10;
 export class NumberToBigIntTransformer implements ValueTransformer {
     // tslint:disable-next-line:prefer-function-over-method
     public to(value: number): string | null {
-        if (typeof value !== 'number') {
+        if (value === null || value === undefined) {
             return null;
         } else {
             return value.toString();

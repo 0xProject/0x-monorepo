@@ -13,11 +13,6 @@
         "./test/fixtures/copper/api_v1_custom_field_definitions.json",
         "./test/fixtures/copper/api_v1_list_activities.json",
         "./test/fixtures/copper/api_v1_list_leads.json",
-        "./test/fixtures/copper/api_v1_list_opportunities.json",
-        "./test/fixtures/copper/api_v1_activity_types.parsed.json",
-        "./test/fixtures/copper/api_v1_custom_field_definitions.parsed.json",
-        "./test/fixtures/copper/api_v1_list_activities.parsed.json",
-        "./test/fixtures/copper/api_v1_list_leads.parsed.json",
-        "./test/fixtures/copper/api_v1_list_opportunities.parsed.json"
+        "./test/fixtures/copper/api_v1_list_opportunities.json"
     ]
 }

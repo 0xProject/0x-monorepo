@@ -15,12 +15,6 @@ const leads = new Table({
         { name: 'status', type: 'varchar' },
         { name: 'status_id', type: 'bigint' },
         { name: 'title', type: 'varchar', isNullable: true },
-
-        { name: 'email', type: 'integer' },
-        { name: 'socials', type: 'integer' },
-        { name: 'websites', type: 'integer' },
-        { name: 'phone_numbers', type: 'integer' },
-
         { name: 'date_created', type: 'bigint' },
         { name: 'date_modified', type: 'bigint', isPrimary: true },
     ],
@@ -63,7 +57,7 @@ const opportunities = new Table({
         { name: 'tags', type: 'varchar' },
         { name: 'interaction_count', type: 'bigint' },
         { name: 'monetary_value', isNullable: true, type: 'integer' },
-        { name: 'win_probability', type: 'integer', isNullable: true },
+        { name: 'win_probability', type: 'integer' },
         { name: 'date_created', type: 'bigint' },
         { name: 'date_modified', type: 'bigint', isPrimary: true },
         { name: 'custom_fields', type: 'jsonb' },

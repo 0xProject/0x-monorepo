@@ -110,7 +110,7 @@ async function fetchAndSaveAsync<T extends CopperSearchResponse, E>(
     } catch (err) {
         console.log(`Error fetching ${endpoint}, stopping: ${err.stack}`);
     } finally {
-        console.log(`Saved ${saved} ${endpoint}, done.`);
+        console.log(`Saved ${saved} items from ${endpoint}, done.`);
     }
 }
 

@@ -19,10 +19,6 @@ export interface CopperLeadResponse {
     title?: string;
     date_created: number; // in seconds
     date_modified: number; // in seconds
-    email: Map<string, string>;
-    socials: Array<Map<string, string>>;
-    websites: Array<Map<string, string>>;
-    phone_numbers: Array<Map<string, string>>;
 }
 
 export interface CopperActivityResponse {
@@ -76,7 +72,7 @@ export interface CopperOpportunityResponse {
     tags: string[];
     interaction_count: number;
     monetary_value?: number;
-    win_probability?: number;
+    win_probability: number;
     date_created: number; // in seconds
     date_modified: number; // in seconds
     custom_fields: CopperNestedCustomFieldResponse[];
@@ -119,35 +115,19 @@ export function parseLeads(leads: CopperLeadResponse[]): CopperLead[] {
     return leads.map(lead => {
         const entity = new CopperLead();
         entity.id = lead.id;
-        entity.name = lead.name;
-        entity.firstName = lead.first_name;
-        entity.lastName = lead.last_name;
-        entity.middleName = lead.middle_name;
-        entity.assigneeId = lead.assignee_id;
-        entity.companyName = lead.company_name;
-        entity.customerSourceId = lead.customer_source_id;
-        entity.monetaryValue = lead.monetary_value;
+        entity.name = lead.name || undefined;
+        entity.firstName = lead.first_name || undefined;
+        entity.lastName = lead.last_name || undefined;
+        entity.middleName = lead.middle_name || undefined;
+        entity.assigneeId = lead.assignee_id || undefined;
+        entity.companyName = lead.company_name || undefined;
+        entity.customerSourceId = lead.customer_source_id || undefined;
+        entity.monetaryValue = lead.monetary_value || undefined;
         entity.status = lead.status;
         entity.statusId = lead.status_id;
-        entity.title = lead.title;
-
+        entity.title = lead.title || undefined;
         entity.dateCreated = lead.date_created * ONE_SECOND;
         entity.dateModified = lead.date_modified * ONE_SECOND;
-
-        entity.email = lead.email === null ? 0 : 1;
-
-        // nullable fields
-        entity.socials = 0;
-        entity.websites = 0;
-        entity.phoneNumbers = 0;
-        try {
-            entity.socials = lead.socials.length;
-            entity.websites = lead.websites.length;
-            entity.phoneNumbers = lead.phone_numbers.length;
-        } catch (e) {
-            return entity;
-        }
-
         return entity;
     });
 }
@@ -174,15 +154,12 @@ export function parseActivities(activities: CopperActivityResponse[]): CopperAct
         entity.dateCreated = activity.date_created * ONE_SECOND;
         entity.dateModified = activity.date_modified * ONE_SECOND;
 
-        // nullable fields
-        try {
-            entity.oldValueId = activity.old_value.id;
-            entity.oldValueName = activity.old_value.name;
-            entity.newValueId = activity.new_value.id;
-            entity.newValueName = activity.new_value.name;
-        } catch (e) {
-            return entity;
-        }
+        // nested nullable fields
+        entity.oldValueId = R.path(['old_value', 'id'], activity);
+        entity.oldValueName = R.path(['old_value', 'name'], activity);
+        entity.newValueId = R.path(['new_value', 'id'], activity);
+        entity.newValueName = R.path(['new_value', 'name'], activity);
+
         return entity;
     });
 }
@@ -198,20 +175,20 @@ export function parseOpportunities(opportunities: CopperOpportunityResponse[]): 
         const entity = new CopperOpportunity();
         entity.id = opp.id;
         entity.name = opp.name;
-        entity.assigneeId = opp.assignee_id;
-        entity.closeDate = opp.close_date;
-        entity.companyId = opp.company_id;
-        entity.companyName = opp.company_name;
-        entity.customerSourceId = opp.customer_source_id;
-        entity.lossReasonId = opp.loss_reason_id;
+        entity.assigneeId = opp.assignee_id || undefined;
+        entity.closeDate = opp.close_date || undefined;
+        entity.companyId = opp.company_id || undefined;
+        entity.companyName = opp.company_name || undefined;
+        entity.customerSourceId = opp.customer_source_id || undefined;
+        entity.lossReasonId = opp.loss_reason_id || undefined;
         entity.pipelineId = opp.pipeline_id;
         entity.pipelineStageId = opp.pipeline_stage_id;
-        entity.primaryContactId = opp.primary_contact_id;
-        entity.priority = opp.priority;
+        entity.primaryContactId = opp.primary_contact_id || undefined;
+        entity.priority = opp.priority || undefined;
         entity.status = opp.status;
-        entity.tags = opp.tags;
+        entity.tags = opp.tags || undefined;
         entity.interactionCount = opp.interaction_count;
-        entity.monetaryValue = opp.monetary_value;
+        entity.monetaryValue = opp.monetary_value || undefined;
         entity.winProbability = opp.win_probability;
         entity.dateCreated = opp.date_created * ONE_SECOND;
         entity.dateModified = opp.date_modified * ONE_SECOND;
@@ -229,45 +206,40 @@ export function parseOpportunities(opportunities: CopperOpportunityResponse[]): 
 export function parseActivityTypes(
     activityTypeResponse: Map<CopperActivityTypeCategory, CopperActivityTypeResponse[]>,
 ): CopperActivityType[] {
-    const values: CopperActivityTypeResponse[] = R.reduce(
-        (acc, val) => acc.concat(val),
-        [] as CopperActivityTypeResponse[],
-        Object.values(activityTypeResponse),
-    );
-    return values.map(activityType => {
-        const parsed: CopperActivityType = {
-            id: activityType.id,
-            name: activityType.name,
-            category: activityType.category.toString(),
-            isDisabled: activityType.is_disabled,
-            countAsInteraction: activityType.count_as_interaction,
-        };
-        return parsed;
-    });
+    const values: CopperActivityTypeResponse[] = R.flatten(Object.values(activityTypeResponse));
+    return values.map(activityType => ({
+        id: activityType.id,
+        name: activityType.name,
+        category: activityType.category.toString(),
+        isDisabled: activityType.is_disabled,
+        countAsInteraction: activityType.count_as_interaction,
+    }));
 }
 
 /**
  * Parse response from Copper API /custom_field_definitions/
  *
- * @param customFieldResponse - array of custom field definitions returned from the API"
+ * @param customFieldResponse - array of custom field definitions returned from the API, consisting of top-level fields and nested fields
  * @returns Returns an array of Copper Custom Field entities
  */
 export function parseCustomFields(customFieldResponse: CopperCustomFieldResponse[]): CopperCustomField[] {
     function parseTopLevelField(field: CopperCustomFieldResponse): CopperCustomField[] {
-        const parsed: CopperCustomField = {
+        const topLevelField: CopperCustomField = {
             id: field.id,
             name: field.name,
             dataType: field.data_type.toString(),
         };
 
         if (field.options !== undefined) {
-            return R.reduce(
-                (acc, option) => acc.concat({ ...option, dataType: field.name, fieldType: 'option' }),
-                [parsed],
-                field.options,
-            );
+            const nestedFields: CopperCustomField[] = field.options.map(option => ({
+                id: option.id,
+                name: option.name,
+                dataType: field.name,
+                fieldType: 'option',
+            }));
+            return nestedFields.concat(topLevelField);
         } else {
-            return [parsed];
+            return [topLevelField];
         }
     }
     return R.chain(parseTopLevelField, customFieldResponse);

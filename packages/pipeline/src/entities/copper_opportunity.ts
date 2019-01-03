@@ -29,8 +29,8 @@ export class CopperOpportunity {
     public interactionCount!: number;
     @Column({ name: 'monetary_value', nullable: true, type: 'integer' })
     public monetaryValue?: number;
-    @Column({ name: 'win_probability', type: 'integer', nullable: true })
-    public winProbability?: number;
+    @Column({ name: 'win_probability', type: 'integer' })
+    public winProbability!: number;
     @Column({ name: 'date_created', type: 'bigint', transformer: numberToBigIntTransformer })
     public dateCreated!: number;
     @PrimaryColumn({ name: 'date_modified', type: 'bigint', transformer: numberToBigIntTransformer })

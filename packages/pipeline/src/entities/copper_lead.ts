@@ -21,11 +21,6 @@ export class CopperLead {
     @Column({ name: 'status_id', type: 'bigint', transformer: numberToBigIntTransformer }) public statusId!: number;
     @Column({ name: 'title', type: 'varchar', nullable: true }) public title?: string;
 
-    @Column({ name: 'email', type: 'integer' }) public email!: number;
-    @Column({ name: 'socials', type: 'integer' }) public socials!: number;
-    @Column({ name: 'websites', type: 'integer' }) public websites!: number;
-    @Column({ name: 'phone_numbers', type: 'integer' }) public phoneNumbers!: number;
-
     @Index()
     @Column({ name: 'date_created', type: 'bigint', transformer: numberToBigIntTransformer })
     public dateCreated!: number;
