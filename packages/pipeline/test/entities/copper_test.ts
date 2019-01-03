@@ -27,33 +27,28 @@ describe('Copper entities', () => {
         it('Copper lead', async () => {
             const connection = await createDbConnectionOnceAsync();
             const repository = connection.getRepository(CopperLead);
-            const entity = ParsedLeads[0];
-            await testSaveAndFindEntityAsync(repository, entity);
+            ParsedLeads.forEach(async entity => testSaveAndFindEntityAsync(repository, entity));
         });
         it('Copper activity', async () => {
             const connection = await createDbConnectionOnceAsync();
             const repository = connection.getRepository(CopperActivity);
-            const entity = ParsedActivities[0];
-            await testSaveAndFindEntityAsync(repository, entity);
+            ParsedActivities.forEach(async entity => testSaveAndFindEntityAsync(repository, entity));
         });
         // searching on jsonb fields is broken in typeorm
         it.skip('Copper opportunity', async () => {
             const connection = await createDbConnectionOnceAsync();
             const repository = connection.getRepository(CopperOpportunity);
-            const entity = ParsedOpportunities[0];
-            await testSaveAndFindEntityAsync(repository, entity);
+            ParsedOpportunities.forEach(async entity => testSaveAndFindEntityAsync(repository, entity));
         });
         it('Copper activity type', async () => {
             const connection = await createDbConnectionOnceAsync();
             const repository = connection.getRepository(CopperActivityType);
-            const entity = ParsedActivityTypes[0];
-            await testSaveAndFindEntityAsync(repository, entity);
+            ParsedActivityTypes.forEach(async entity => testSaveAndFindEntityAsync(repository, entity));
         });
         it('Copper custom field', async () => {
             const connection = await createDbConnectionOnceAsync();
             const repository = connection.getRepository(CopperCustomField);
-            const entity = ParsedCustomFields[0];
-            await testSaveAndFindEntityAsync(repository, entity);
+            ParsedCustomFields.forEach(async entity => testSaveAndFindEntityAsync(repository, entity));
         });
     });
 });

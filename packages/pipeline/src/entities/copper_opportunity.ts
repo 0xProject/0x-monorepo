@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-import { arrayToJsonTransformer, numberToBigIntTransformer } from '../utils';
+import { numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'copper_opportunities', schema: 'raw' })
 export class CopperOpportunity {

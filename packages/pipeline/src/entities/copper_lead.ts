@@ -11,10 +11,10 @@ export class CopperLead {
     @Column({ name: 'first_name', type: 'varchar', nullable: true }) public firstName?: string;
     @Column({ name: 'last_name', type: 'varchar', nullable: true }) public lastName?: string;
     @Column({ name: 'middle_name', type: 'varchar', nullable: true }) public middleName?: string;
-    @Column({ name: 'assignee_id', type: 'bigint', nullable: true })
+    @Column({ name: 'assignee_id', type: 'bigint', transformer: numberToBigIntTransformer, nullable: true })
     public assigneeId?: number;
     @Column({ name: 'company_name', type: 'varchar', nullable: true }) public companyName?: string;
-    @Column({ name: 'customer_source_id', type: 'bigint', nullable: true })
+    @Column({ name: 'customer_source_id', type: 'bigint', transformer: numberToBigIntTransformer, nullable: true })
     public customerSourceId?: number;
     @Column({ name: 'monetary_value', type: 'integer', nullable: true }) public monetaryValue?: number;
     @Column({ name: 'status', type: 'varchar' }) public status!: string;

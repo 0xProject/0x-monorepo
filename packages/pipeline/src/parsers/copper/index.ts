@@ -178,9 +178,9 @@ export function parseOpportunities(opportunities: CopperOpportunityResponse[]): 
                 ...f,
                 value: ([] as number[]).concat(f.value || []), // normalise all values to number[]
             }))
-            .map(f => (f.value as number[]).map(val => [f.custom_field_definition_id, val] as [number, number])) // pair each value with the custom_field_definition_id
+            .map(f => f.value.map(val => [f.custom_field_definition_id, val] as [number, number])) // pair each value with the custom_field_definition_id
             .reduce((acc, pair) => acc.concat(pair)) // flatten
-            .reduce((obj: { [key: number]: number }, [key, value]) => {
+            .reduce<{ [key: number]: number }>((obj, [key, value]) => {
                 // transform into object literal
                 obj[key] = value;
                 return obj;
