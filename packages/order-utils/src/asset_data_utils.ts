@@ -128,16 +128,32 @@ export const assetDataUtils = {
      */
     decodeMultiAssetDataRecursively(assetData: string): MultiAssetDataWithRecursiveDecoding {
         const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
-        const decodedNestedAssetData = _.map(decodedAssetData.nestedAssetData as string[], nestedAssetDataElement => {
-            const decodedNestedAssetDataElement = assetDataUtils.decodeAssetDataOrThrow(nestedAssetDataElement);
-            return decodedNestedAssetDataElement.assetProxyId === AssetProxyId.MultiAsset
-                ? assetDataUtils.decodeMultiAssetDataRecursively(nestedAssetDataElement).nestedAssetData
-                : (decodedNestedAssetDataElement as SingleAssetData);
-        });
+        const amounts: any[] = [];
+        const decodedNestedAssetData = _.map(
+            decodedAssetData.nestedAssetData as string[],
+            (nestedAssetDataElement, index) => {
+                const decodedNestedAssetDataElement = assetDataUtils.decodeAssetDataOrThrow(nestedAssetDataElement);
+                if (decodedNestedAssetDataElement.assetProxyId === AssetProxyId.MultiAsset) {
+                    const recursivelyDecodedAssetData = assetDataUtils.decodeMultiAssetDataRecursively(
+                        nestedAssetDataElement,
+                    );
+                    amounts.push(
+                        _.map(recursivelyDecodedAssetData.amounts as BigNumber[], amountElement =>
+                            amountElement.times(decodedAssetData.amounts[index]),
+                        ),
+                    );
+                    return recursivelyDecodedAssetData.nestedAssetData;
+                } else {
+                    amounts.push(decodedAssetData.amounts[index]);
+                    return decodedNestedAssetDataElement as SingleAssetData;
+                }
+            },
+        );
+        const flattenedAmounts = _.flattenDeep(amounts);
         const flattenedDecodedNestedAssetData = _.flattenDeep(decodedNestedAssetData);
         return {
             assetProxyId: decodedAssetData.assetProxyId,
-            amounts: decodedAssetData.amounts,
+            amounts: flattenedAmounts,
             nestedAssetData: flattenedDecodedNestedAssetData as SingleAssetData[],
         };
     },
