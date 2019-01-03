@@ -24,7 +24,7 @@ export interface PaymentMethodProps {
     onUnlockWalletClick: () => void;
 }
 
-export class PaymentMethod extends React.Component<PaymentMethodProps> {
+export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
             <Container width="100%" height="120px" padding="20px 20px 0px 20px">

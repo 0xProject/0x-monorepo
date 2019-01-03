@@ -26,42 +26,48 @@ export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose 
     </Container>
 );
 
+Panel.displayName = 'Panel';
+
 export interface SlidingPanelProps extends PanelProps {
     animationState: SlideAnimationState;
+    onAnimationEnd?: () => void;
 }
 
-export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props => {
-    if (props.animationState === 'none') {
-        return null;
+export class SlidingPanel extends React.PureComponent<SlidingPanelProps> {
+    public render(): React.ReactNode {
+        if (this.props.animationState === 'none') {
+            return null;
+        }
+        const { animationState, onAnimationEnd, ...rest } = this.props;
+        const slideAmount = '100%';
+        const slideUpSettings: PositionAnimationSettings = {
+            duration: '0.3s',
+            timingFunction: 'ease-in-out',
+            top: {
+                from: slideAmount,
+                to: '0px',
+            },
+            position: 'absolute',
+        };
+        const slideDownSettings: PositionAnimationSettings = {
+            duration: '0.3s',
+            timingFunction: 'ease-out',
+            top: {
+                from: '0px',
+                to: slideAmount,
+            },
+            position: 'absolute',
+        };
+        return (
+            <SlideAnimation
+                slideInSettings={slideUpSettings}
+                slideOutSettings={slideDownSettings}
+                animationState={animationState}
+                height="100%"
+                onAnimationEnd={onAnimationEnd}
+            >
+                <Panel {...rest} />
+            </SlideAnimation>
+        );
     }
-    const { animationState, ...rest } = props;
-    const slideAmount = '100%';
-    const slideUpSettings: PositionAnimationSettings = {
-        duration: '0.3s',
-        timingFunction: 'ease-in-out',
-        top: {
-            from: slideAmount,
-            to: '0px',
-        },
-        position: 'absolute',
-    };
-    const slideDownSettings: PositionAnimationSettings = {
-        duration: '0.3s',
-        timingFunction: 'ease-out',
-        top: {
-            from: '0px',
-            to: slideAmount,
-        },
-        position: 'absolute',
-    };
-    return (
-        <SlideAnimation
-            slideInSettings={slideUpSettings}
-            slideOutSettings={slideDownSettings}
-            animationState={animationState}
-            height="100%"
-        >
-            <Panel {...rest} />
-        </SlideAnimation>
-    );
-};
+}

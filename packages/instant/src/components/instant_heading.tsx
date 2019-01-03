@@ -28,7 +28,7 @@ const ICON_WIDTH = 34;
 const ICON_HEIGHT = 34;
 const ICON_COLOR = ColorOption.white;
 
-export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
+export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
         const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
