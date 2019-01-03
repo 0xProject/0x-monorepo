@@ -1,6 +1,6 @@
 import { APIOrder, OrdersResponse } from '@0x/connect';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0x/types';
+import { AssetProxyId, ERC721AssetData, SingleAssetData } from '@0x/types';
 import * as R from 'ramda';
 
 import { SraOrder } from '../../entities';
@@ -46,8 +46,9 @@ export function _convertToEntity(apiOrder: APIOrder): SraOrder {
     // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
     sraOrder.makerTokenAddress =
         makerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? '0x'
-            : (makerAssetData as ERC20AssetData | ERC721AssetData).tokenAddress;
+            ? assetDataUtils.decodeMultiAssetDataRecursively(apiOrder.order.makerAssetData).nestedAssetData[0]
+                  .tokenAddress
+            : (makerAssetData as SingleAssetData).tokenAddress;
     // tslint has a false positive here. Type assertion is required.
     // tslint:disable-next-line:no-unnecessary-type-assertion
     sraOrder.makerTokenId = bigNumbertoStringOrNull((makerAssetData as ERC721AssetData).tokenId);
@@ -56,9 +57,10 @@ export function _convertToEntity(apiOrder: APIOrder): SraOrder {
     sraOrder.takerAssetProxyId = takerAssetData.assetProxyId;
     // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
     sraOrder.takerTokenAddress =
-        makerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? '0x'
-            : (takerAssetData as ERC20AssetData | ERC721AssetData).tokenAddress;
+        takerAssetData.assetProxyId === AssetProxyId.MultiAsset
+            ? assetDataUtils.decodeMultiAssetDataRecursively(apiOrder.order.takerAssetData).nestedAssetData[0]
+                  .tokenAddress
+            : (takerAssetData as SingleAssetData).tokenAddress;
     // tslint:disable-next-line:no-unnecessary-type-assertion
     sraOrder.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
 

@@ -507,7 +507,7 @@
     lodash "^4.17.5"
     uuid "^3.1.0"
 
-"@0x/order-utils@^2.0.0", "@0x/order-utils@^2.0.1":
+"@0x/order-utils@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-2.0.1.tgz#8c46d7aeb9e2cce54a0822824c12427cbe5f7eb4"
   dependencies:
@@ -7339,7 +7339,7 @@ ganache-core@0xProject/ganache-core#monorepo-dep:
     ethereumjs-tx "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "~0.6.0"
+    ethereumjs-wallet "0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"

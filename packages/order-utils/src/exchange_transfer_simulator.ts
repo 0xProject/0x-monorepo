@@ -108,7 +108,7 @@ export class ExchangeTransferSimulator {
                     const amountsElement = decodedAssetData.amounts[index];
                     const totalAmount = amountInBaseUnits.times(amountsElement);
                     await this.transferFromAsync(
-                        nestedAssetDataElement,
+                        nestedAssetDataElement as string,
                         from,
                         to,
                         totalAmount,

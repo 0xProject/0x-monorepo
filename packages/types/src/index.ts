@@ -171,13 +171,19 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
+export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+
 export interface MultiAssetData {
     assetProxyId: string;
     amounts: BigNumber[];
     nestedAssetData: string[];
 }
 
-export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+export interface MultiAssetDataWithRecursiveDecoding {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: SingleAssetData[];
+}
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {

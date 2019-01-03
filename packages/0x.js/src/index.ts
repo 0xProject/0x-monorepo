@@ -83,6 +83,7 @@ export {
     ERC20AssetData,
     ERC721AssetData,
     MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
     SignatureType,
     OrderRelevantState,
     Stats,

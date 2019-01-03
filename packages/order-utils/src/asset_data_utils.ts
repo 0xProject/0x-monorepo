@@ -1,4 +1,11 @@
-import { AssetProxyId, ERC20AssetData, ERC721AssetData, MultiAssetData, SingleAssetData } from '@0x/types';
+import {
+    AssetProxyId,
+    ERC20AssetData,
+    ERC721AssetData,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
+    SingleAssetData,
+} from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -112,6 +119,26 @@ export const assetDataUtils = {
             assetProxyId,
             amounts,
             nestedAssetData,
+        };
+    },
+    /**
+     * Decodes a MultiAsset assetData hex string into it's corresponding amounts and decoded nestedAssetData elements (all nested elements are flattened)
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded amounts and nestedAssetData
+     */
+    decodeMultiAssetDataRecursively(assetData: string): MultiAssetDataWithRecursiveDecoding {
+        const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+        const decodedNestedAssetData = _.map(decodedAssetData.nestedAssetData as string[], nestedAssetDataElement => {
+            const decodedNestedAssetDataElement = assetDataUtils.decodeAssetDataOrThrow(nestedAssetDataElement);
+            return decodedNestedAssetDataElement.assetProxyId === AssetProxyId.MultiAsset
+                ? assetDataUtils.decodeMultiAssetDataRecursively(nestedAssetDataElement).nestedAssetData
+                : (decodedNestedAssetDataElement as SingleAssetData);
+        });
+        const flattenedDecodedNestedAssetData = _.flattenDeep(decodedNestedAssetData);
+        return {
+            assetProxyId: decodedAssetData.assetProxyId,
+            amounts: decodedAssetData.amounts,
+            nestedAssetData: flattenedDecodedNestedAssetData as SingleAssetData[],
         };
     },
     /**
