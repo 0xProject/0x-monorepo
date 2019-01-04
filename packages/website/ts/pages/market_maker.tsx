@@ -3,43 +3,64 @@ import * as React from 'react';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
-import { Definition } from 'ts/components/definition';
+import { Action, Definition } from 'ts/components/definition';
 import { Hero } from 'ts/components/hero';
 import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { WebsitePaths } from 'ts/types';
 
-const offersData = [
-    {
-        icon: 'supportForAllEthereumStandards',
-        title: 'Comprehensive Tutorials',
-        description:
-            'Stay on the bleeding edge of crypto by learning how to market make on decentralized exchanges. The network of 0x relayers provides market makers a first-mover advantage to capture larger spreads, find arbitrage opportunities, and trade on new types of exchanges like prediction markets and non-fungible token marketplaces.',
-        links: [
-            {
-                label: 'Explore the Docs',
-                url: `${WebsitePaths.Wiki}#Market-Making-on-0x`,
-            },
-        ],
-    },
-    {
-        icon: 'generateRevenueForYourBusiness-large',
-        title: 'Market Making Compensation',
-        description: 'Accepted applicants can receive up to $15,000 for completing onboarding',
-    },
-    {
-        icon: 'getInTouch',
-        title: 'Dedicated Support',
-        description:
-            'The 0x team will provide 1:1 onboarding assistance and promptly answer all your questions. They will walk you through the tutorials so that you know how to read 0x order types, spin up an Ethereum node, and execute trades on the blockchain.',
-    },
-];
+interface OfferData {
+    icon: string;
+    title: string;
+    description: string;
+    links?: Action[];
+}
+export interface NextMarketMakerProps {}
 
-export class NextMarketMaker extends React.Component {
+export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
     public state = {
         isContactModalOpen: false,
     };
+
+    private _offersData: OfferData[];
+
+    constructor(props: NextMarketMakerProps) {
+        super(props);
+        this._offersData = [
+            {
+                icon: 'supportForAllEthereumStandards',
+                title: 'Comprehensive Tutorials',
+                description:
+                    'Stay on the bleeding edge of crypto by learning how to market make on decentralized exchanges. The network of 0x relayers provides market makers a first-mover advantage to capture larger spreads, find arbitrage opportunities, and trade on new types of exchanges like prediction markets and non-fungible token marketplaces.',
+                links: [
+                    {
+                        label: 'Explore the Docs',
+                        url: `${WebsitePaths.Wiki}#Market-Making-on-0x`,
+                    },
+                ],
+            },
+            {
+                icon: 'generateRevenueForYourBusiness-large',
+                title: 'Market Making Compensation',
+                description: 'Accepted applicants can receive up to $15,000 for completing onboarding',
+            },
+            {
+                icon: 'getInTouch',
+                title: 'Dedicated Support',
+                description:
+                    'The 0x team will provide 1:1 onboarding assistance and promptly answer all your questions. They will walk you through the tutorials so that you know how to read 0x order types, spin up an Ethereum node, and execute trades on the blockchain.',
+                links: [
+                    {
+                        label: 'Contact Us',
+                        onClick: this._onOpenContactModal.bind(this),
+                        shouldUseAnchorTag: true,
+                    },
+                ],
+            },
+        ];
+    }
+
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
@@ -84,7 +105,7 @@ export class NextMarketMaker extends React.Component {
                 </Section>
 
                 <Section>
-                    {_.map(offersData, (item, index) => (
+                    {_.map(this._offersData, (item, index) => (
                         <Definition
                             key={`offers-${index}`}
                             icon={item.icon}

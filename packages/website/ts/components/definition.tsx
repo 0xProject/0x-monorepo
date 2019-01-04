@@ -5,7 +5,7 @@ import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
-interface Action {
+export interface Action {
     label: string;
     url?: string;
     onClick?: () => void;
