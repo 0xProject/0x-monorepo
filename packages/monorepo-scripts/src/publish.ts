@@ -14,7 +14,7 @@ import { constants } from './constants';
 import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { configs } from './utils/configs';
-import { alertDiscord } from './utils/discord';
+import { alertDiscordAsync } from './utils/discord';
 import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils';
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
@@ -90,7 +90,7 @@ async function confirmAsync(message: string): Promise<void> {
 
     if (!isDryRun && releaseNotes) {
         try {
-            await alertDiscord(releaseNotes);
+            await alertDiscordAsync(releaseNotes);
         } catch (e) {
             utils.log("Couldn't alert discord, error: ", e.message, '. Please alert manually.');
         }
