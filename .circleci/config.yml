@@ -362,6 +362,9 @@ jobs:
                       - coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn report_coverage
 workflows:
