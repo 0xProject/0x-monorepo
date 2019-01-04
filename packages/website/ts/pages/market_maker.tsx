@@ -16,6 +16,12 @@ const offersData = [
         title: 'Comprehensive Tutorials',
         description:
             'Stay on the bleeding edge of crypto by learning how to market make on decentralized exchanges. The network of 0x relayers provides market makers a first-mover advantage to capture larger spreads, find arbitrage opportunities, and trade on new types of exchanges like prediction markets and non-fungible token marketplaces.',
+        links: [
+            {
+                label: 'Explore the Docs',
+                url: `${WebsitePaths.Wiki}#Market-Making-on-0x`,
+            },
+        ],
     },
     {
         icon: 'generateRevenueForYourBusiness-large',
@@ -87,6 +93,7 @@ export class NextMarketMaker extends React.Component {
                             isInlineIcon={true}
                             iconSize={240}
                             fontSize="medium"
+                            actions={item.links}
                         />
                     ))}
                 </Section>
