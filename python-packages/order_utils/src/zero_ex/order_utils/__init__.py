@@ -25,6 +25,7 @@ from web3.providers.base import BaseProvider
 from web3.utils import datatypes
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+import zero_ex.contract_artifacts
 from zero_ex.dev_utils.type_assertions import (
     assert_is_address,
     assert_is_hex_string,
@@ -35,27 +36,6 @@ from zero_ex.json_schemas import assert_valid
 
 class _Constants:
     """Static data used by order utilities."""
-
-    _contract_name_to_abi: Dict[str, Dict] = {}  # class data, not instance
-
-    @classmethod
-    def contract_name_to_abi(cls, contract_name: str) -> Dict:
-        """Return the ABI for the given contract name.
-
-        First tries to get data from the class level storage
-        `_contract_name_to_abi`.  If it's not there, loads it from disk, stores
-        it in the class data (for the next caller), and then returns it.
-        """
-        try:
-            return cls._contract_name_to_abi[contract_name]
-        except KeyError:
-            cls._contract_name_to_abi[contract_name] = json.loads(
-                resource_string(
-                    "zero_ex.contract_artifacts",
-                    f"artifacts/{contract_name}.json",
-                )
-            )["compilerOutput"]["abi"]
-            return cls._contract_name_to_abi[contract_name]
 
     null_address = "0x0000000000000000000000000000000000000000"
 
@@ -358,7 +338,7 @@ def is_valid_signature(
     # false positive from pylint: disable=no-member
     contract: datatypes.Contract = web3_instance.eth.contract(
         address=to_checksum_address(contract_address),
-        abi=_Constants.contract_name_to_abi("Exchange"),
+        abi=zero_ex.contract_artifacts.abi_by_name("Exchange"),
     )
     try:
         return (

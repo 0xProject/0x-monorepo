@@ -30,6 +30,8 @@ class LintCommand(distutils.command.build_py.build_py):
             "mypy src setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
+            # run doctests:
+            "pytest --doctest-modules".split(),
             # general linter:
             "pylint src setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable

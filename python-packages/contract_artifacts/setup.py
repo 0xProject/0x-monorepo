@@ -1,27 +1,15 @@
 #!/usr/bin/env python
 
-"""setuptools module for order_utils package."""
+"""setuptools module for contract_artifacts package."""
 
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path
-from pathlib import Path
 from sys import argv
 
 from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
-from setuptools.command.test import test as TestCommand
-
-
-class TestCommandExtension(TestCommand):
-    """Run pytest tests."""
-
-    def run_tests(self):
-        """Invoke pytest."""
-        import pytest
-
-        exit(pytest.main(["--doctest-modules"]))
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -33,26 +21,26 @@ class LintCommand(distutils.command.build_py.build_py):
         """Run linter shell commands."""
         lint_commands = [
             # formatter:
-            "black --line-length 79 --check --diff src test setup.py".split(),
+            "black --line-length 79 --check --diff src setup.py".split(),
             # style guide checker (formerly pep8):
-            "pycodestyle src test setup.py".split(),
+            "pycodestyle --show-source --show-pep8 src setup.py".split(),
             # docstring style checker:
-            "pydocstyle src test setup.py".split(),
+            "pydocstyle src setup.py".split(),
             # static type checker:
-            "mypy src test setup.py".split(),
+            "mypy src setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
-            # ensure json schemas don't differ from the authoritative copies:
+            # ensure contract artifacts match the authoritative copies:
             # this is a hack.  ideally we would symlink to the authoritative
             # copies, but a problem with setuptools is preventing it from
             # following symlinks when gathering package_data.  see
             # https://github.com/pypa/setuptools/issues/415.
             (
-                "diff src/zero_ex/json_schemas/schemas"
-                + " ../../packages/json-schemas/schemas"
+                "diff src/zero_ex/contract_artifacts/artifacts"
+                + " ../../packages/contract-artifacts/artifacts"
             ).split(),
             # general linter:
-            "pylint src test setup.py".split(),
+            "pylint src setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable
             # fast failures.
         ]
@@ -61,22 +49,6 @@ class LintCommand(distutils.command.build_py.build_py):
         environ["MYPYPATH"] = path.join(
             path.dirname(path.realpath(argv[0])), "stubs"
         )
-
-        # HACK(gene): until eth_abi releases
-        # https://github.com/ethereum/eth-abi/pull/107 , we need to simply
-        # create an empty file `py.typed` in the eth_abi package directory.
-        import eth_abi
-
-        eth_abi_dir = path.dirname(path.realpath(eth_abi.__file__))
-        Path(path.join(eth_abi_dir, "py.typed")).touch()
-
-        # HACK(gene): until eth_utils fixes
-        # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
-        # create an empty file `py.typed` in the eth_abi package directory.
-        import eth_utils
-
-        eth_utils_dir = path.dirname(path.realpath(eth_utils.__file__))
-        Path(path.join(eth_utils_dir, "py.typed")).touch()
 
         for lint_command in lint_commands:
             print(
@@ -95,7 +67,7 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
+        rmtree("src/0x_contract_artifacts.egg-info", ignore_errors=True)
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
@@ -130,7 +102,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
     description = (
         "Publish docs to "
-        + "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-contract-artifacts-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
@@ -138,58 +110,30 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
         subprocess.check_call("discharge deploy".split())  # nosec
 
 
-class GanacheCommand(distutils.command.build_py.build_py):
-    """Custom command to publish to pypi.org."""
-
-    description = "Run ganache daemon to support tests."
-
-    def run(self):
-        """Run ganache."""
-        cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
-            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
-            + " --networkId 50 -m"
-        ).split()
-        cmd_line.append(
-            "concert load couple harbor equip island argue ramp clarify fence"
-            + " smart topic"
-        )
-        subprocess.call(cmd_line)  # nosec
-
-
 with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
 
 setup(
-    name="0x-order-utils",
-    version="1.0.1",
-    description="Order utilities for 0x applications",
+    name="0x-contract-artifacts",
+    version="2.0.0",
+    description="0x smart contract compilation artifacts",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
+    url=(
+        "https://github.com/0xproject/0x-monorepo/tree/development"
+        + "/python-packages/contract_artifacts"
+    ),
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
-        "test": TestCommandExtension,
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
         "publish_docs": PublishDocsCommand,
-        "ganache": GanacheCommand,
     },
-    install_requires=[
-        "0x-contract-addresses",
-        "0x-contract-artifacts",
-        "eth-abi",
-        "eth_utils",
-        "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
-        # above works around https://github.com/ethereum/web3.py/issues/1179
-        "jsonschema",
-        "mypy_extensions",
-        "web3",
-    ],
+    install_requires=["mypy_extensions"],
     extras_require={
         "dev": [
             "bandit",
@@ -208,10 +152,7 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={
-        "zero_ex.order_utils": ["py.typed"],
-        "zero_ex.json_schemas": ["py.typed", "schemas/*"],
-    },
+    package_data={"zero_ex.contract_artifacts": ["py.typed", "artifacts/*"]},
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(
@@ -220,7 +161,7 @@ setup(
     namespace_packages=["zero_ex"],
     packages=find_packages("src"),
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Financial and Insurance Industry",
         "License :: OSI Approved :: Apache Software License",

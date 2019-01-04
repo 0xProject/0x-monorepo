@@ -5,9 +5,9 @@ from web3 import Web3
 from web3.utils import datatypes
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+import zero_ex.contract_artifacts
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
-    _Constants,
     Order,
     OrderInfo,
     order_to_jsdict,
@@ -47,7 +47,7 @@ def test_get_order_info():
     # false positive from pylint: disable=no-member
     exchange: datatypes.Contract = web3_instance.eth.contract(
         address=to_checksum_address(contract_address),
-        abi=_Constants.contract_name_to_abi("Exchange"),
+        abi=zero_ex.contract_artifacts.abi_by_name("Exchange"),
     )
 
     order_info = OrderInfo(*exchange.call().getOrderInfo(order))

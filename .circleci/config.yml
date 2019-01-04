@@ -207,6 +207,11 @@ jobs:
                       python -m pip install .
             - run:
                   command: |
+                      cd python-packages/contract_artifacts
+                      python -m ensurepip
+                      python -m pip install .
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       python -m ensurepip
                       python -m pip install -e .[dev]
@@ -230,6 +235,10 @@ jobs:
                       coverage run setup.py test
             - run:
                   command: |
+                      cd python-packages/contract_artifacts
+                      coverage run setup.py test
+            - run:
+                  command: |
                       cd python-packages/contract_demo
                       coverage run setup.py test
             - run:
@@ -244,6 +253,10 @@ jobs:
                   key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/contract_addresses/.coverage
+            - save_cache:
+                  key: coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_artifacts/.coverage
             - save_cache:
                   key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -301,6 +314,11 @@ jobs:
                       python -m pip install .[dev]
             - run:
                   command: |
+                      cd python-packages/contract_artifacts
+                      python -m ensurepip
+                      python -m pip install .[dev]
+            - run:
+                  command: |
                       cd python-packages/contract_demo
                       python -m ensurepip
                       python -m pip install .[dev]
@@ -317,6 +335,10 @@ jobs:
             - run:
                   command: |
                       cd python-packages/contract_addresses
+                      python setup.py lint
+            - run:
+                  command: |
+                      cd python-packages/contract_artifacts
                       python setup.py lint
             - run:
                   command: |
@@ -397,6 +419,9 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
