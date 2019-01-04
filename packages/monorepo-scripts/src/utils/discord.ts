@@ -4,11 +4,10 @@ import { constants } from '../constants';
 
 import { utils } from './utils';
 
-export const alertDiscordAsync = async (releaseNotes: string): Promise<boolean> => {
+export const alertDiscordAsync = async (releaseNotes: string): Promise<void> => {
     const webhookUrl = constants.discordAlertWebhookUrl;
     if (!webhookUrl) {
-        utils.log('Not alerting to discord because webhook url not set');
-        return false;
+        throw new Error("No discord webhook url, can't alert");
     }
 
     utils.log('Alerting discord...');
@@ -23,5 +22,5 @@ export const alertDiscordAsync = async (releaseNotes: string): Promise<boolean> 
         },
         body: JSON.stringify(payload),
     });
-    return true;
+    return;
 };
