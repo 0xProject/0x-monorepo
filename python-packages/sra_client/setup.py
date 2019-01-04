@@ -48,6 +48,15 @@ class PublishCommand(distutils.command.build_py.build_py):
         subprocess.check_call("twine upload dist/*".split())  # nosec
 
 
+class LintCommand(distutils.command.build_py.build_py):
+    """No-op lint command to support top-level lint script."""
+
+    description = "No-op"
+
+    def run(self):
+        pass
+
+
 setup(
     name=NAME,
     version=VERSION,
@@ -63,5 +72,6 @@ setup(
     cmdclass={
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
+        "lint": LintCommand,
     },
 )
