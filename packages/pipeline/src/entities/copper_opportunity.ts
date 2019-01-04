@@ -4,14 +4,18 @@ import { numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'copper_opportunities', schema: 'raw' })
 export class CopperOpportunity {
-    @PrimaryColumn({ name: 'id', type: 'bigint', transformer: numberToBigIntTransformer }) public id!: number;
-    @Column({ name: 'name', type: 'varchar' }) public name!: string;
+    @PrimaryColumn({ name: 'id', type: 'bigint', transformer: numberToBigIntTransformer })
+    public id!: number;
+    @Column({ name: 'name', type: 'varchar' })
+    public name!: string;
     @Column({ name: 'assignee_id', nullable: true, type: 'bigint', transformer: numberToBigIntTransformer })
     public assigneeId?: number;
-    @Column({ name: 'close_date', nullable: true, type: 'varchar' }) public closeDate?: string;
+    @Column({ name: 'close_date', nullable: true, type: 'varchar' })
+    public closeDate?: string;
     @Column({ name: 'company_id', nullable: true, type: 'bigint', transformer: numberToBigIntTransformer })
     public companyId?: number;
-    @Column({ name: 'company_name', nullable: true, type: 'varchar' }) public companyName?: string;
+    @Column({ name: 'company_name', nullable: true, type: 'varchar' })
+    public companyName?: string;
     @Column({ name: 'customer_source_id', nullable: true, type: 'bigint', transformer: numberToBigIntTransformer })
     public customerSourceId?: number;
     @Column({ name: 'loss_reason_id', nullable: true, type: 'bigint', transformer: numberToBigIntTransformer })
@@ -22,8 +26,10 @@ export class CopperOpportunity {
     public pipelineStageId!: number;
     @Column({ name: 'primary_contact_id', nullable: true, type: 'bigint', transformer: numberToBigIntTransformer })
     public primaryContactId?: number;
-    @Column({ name: 'priority', nullable: true, type: 'varchar' }) public priority?: string;
-    @Column({ name: 'status', type: 'varchar' }) public status!: string;
+    @Column({ name: 'priority', nullable: true, type: 'varchar' })
+    public priority?: string;
+    @Column({ name: 'status', type: 'varchar' })
+    public status!: string;
     @Column({ name: 'interaction_count', type: 'bigint', transformer: numberToBigIntTransformer })
     public interactionCount!: number;
     @Column({ name: 'monetary_value', nullable: true, type: 'integer' })
