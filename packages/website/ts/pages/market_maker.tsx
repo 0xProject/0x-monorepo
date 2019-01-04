@@ -8,29 +8,25 @@ import { Hero } from 'ts/components/hero';
 import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
+import { WebsitePaths } from 'ts/types';
 
 const offersData = [
     {
         icon: 'supportForAllEthereumStandards',
         title: 'Comprehensive Tutorials',
         description:
-            'Stay on the bleeding edge of crypto by learning how to market make on decentralized exchanges. The network of 0x relayers provides market makers a first-mover advantage to capture larger spreads, arbitrage markets, and access a long-tail of new tokens not currently listed on centralized exchanges.',
+            'Stay on the bleeding edge of crypto by learning how to market make on decentralized exchanges. The network of 0x relayers provides market makers a first-mover advantage to capture larger spreads, find arbitrage opportunities, and trade on new types of exchanges like prediction markets and non-fungible token marketplaces.',
     },
     {
         icon: 'generateRevenueForYourBusiness-large',
         title: 'Market Making Compensation',
-        description: (
-            <ul>
-                <li>Receive an infrastructure grant of $20,000+ for completing onboarding*</li>
-                <li>Earn an additional $5,000 by referring other market makers to the Program*</li>
-            </ul>
-        ),
+        description: 'Accepted applicants can receive up to $15,000 for completing onboarding',
     },
     {
         icon: 'getInTouch',
-        title: 'Personalized Support',
+        title: 'Dedicated Support',
         description:
-            'The 0x MM Success Manager will walk you through how to read 0x order types, spin up an Ethereum node, set up your MM bot, and execute trades on the blockchain. We are more than happy to promptly answer your questions and give you complete onboarding assistance.',
+            'The 0x team will provide 1:1 onboarding assistance and promptly answer all your questions. They will walk you through the tutorials so that you know how to read 0x order types, spin up an Ethereum node, and execute trades on the blockchain.',
     },
 ];
 
@@ -48,7 +44,7 @@ export class NextMarketMaker extends React.Component {
                     isFullWidth={false}
                     isCenteredMobile={false}
                     title="Bring liquidity to the exchanges of the future"
-                    description="Market makers (MMs) are important stakeholders in the 0x ecosystem. The Market Making Program provides a set of resources that help onboard MMs bring liquidity to the 0x network. The program includes tutorials, a robust data platform, trade compensation, and 1:1 support from our MM Success Manager."
+                    description="Market makers (MMs) are important stakeholders in the 0x ecosystem. The Market Making Program provides a set of resources that help onboard MMs to bring liquidity to the 0x network. The Program includes tutorials, monetary incentives, and 1:1 support from the 0x team."
                     actions={<HeroActions />}
                 />
 
@@ -74,7 +70,7 @@ export class NextMarketMaker extends React.Component {
                     <Definition
                         title="Low Cost"
                         titleSize="small"
-                        description="Pay no fees on orders except for bulk cancellations"
+                        description="Pay no fees to make or take orders."
                         icon="low-cost"
                         iconSize="medium"
                         isInline={true}
@@ -96,9 +92,9 @@ export class NextMarketMaker extends React.Component {
                 </Section>
 
                 <Banner
-                    heading="Need more flexibility?"
+                    heading="Start trading today."
                     subline="Dive into our docs, or contact us if needed"
-                    mainCta={{ text: 'Explore the Docs', href: '/docs' }}
+                    mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
@@ -117,7 +113,7 @@ export class NextMarketMaker extends React.Component {
 
 const HeroActions = () => (
     <>
-        <Button href="https://github.com/0xProject/0x-launch-kit" bgColor="dark" isInline={true}>
+        <Button href={`${WebsitePaths.Wiki}#Market-Making-on-0x`} bgColor="dark" isInline={true}>
             Get Started
         </Button>
     </>
