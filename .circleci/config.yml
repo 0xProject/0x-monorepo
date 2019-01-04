@@ -278,11 +278,6 @@ jobs:
                       cd python-packages
                       ./install
                       ./lint
-            - save_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - '/usr/local/bin'
-                      - '/usr/local/lib/python3.7/site-packages'
     static-tests:
         working_directory: ~/repo
         docker:
@@ -399,6 +394,9 @@ workflows:
             - submit-coverage:
                   requires:
                       - test-rest
+                      - test-python
+            - static-tests-python:
+                  requires:
                       - test-python
             - test-python
             # skip python tox run for now, as we don't yet have multiple test environments to support.
