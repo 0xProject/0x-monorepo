@@ -202,6 +202,11 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/contract_addresses
+                      python -m ensurepip
+                      python -m pip install .
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       python -m ensurepip
                       python -m pip install -e .[dev]
@@ -221,6 +226,10 @@ jobs:
                       - '.tox'
             - run:
                   command: |
+                      cd python-packages/contract_addresses
+                      coverage run setup.py test
+            - run:
+                  command: |
                       cd python-packages/contract_demo
                       coverage run setup.py test
             - run:
@@ -231,6 +240,10 @@ jobs:
                   command: |
                       cd python-packages/sra_client
                       coverage run setup.py test
+            - save_cache:
+                  key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_addresses/.coverage
             - save_cache:
                   key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -283,6 +296,11 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/contract_addresses
+                      python -m ensurepip
+                      python -m pip install .[dev]
+            - run:
+                  command: |
                       cd python-packages/contract_demo
                       python -m ensurepip
                       python -m pip install .[dev]
@@ -296,6 +314,10 @@ jobs:
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
+            - run:
+                  command: |
+                      cd python-packages/contract_addresses
+                      python setup.py lint
             - run:
                   command: |
                       cd python-packages/contract_demo
@@ -372,6 +394,9 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}

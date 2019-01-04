@@ -4,6 +4,7 @@ from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.utils import datatypes
 
+from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
     _Constants,
@@ -34,8 +35,9 @@ def test_get_order_info():
     web3_instance = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
     # false positive from pylint: disable=no-member
-    network_id = web3_instance.net.version
-    contract_address = _Constants.network_to_exchange_addr[network_id]
+    contract_address = NETWORK_TO_ADDRESSES[
+        NetworkId(int(web3_instance.net.version))
+    ].exchange
 
     assert_valid(
         order_to_jsdict(order, exchange_address=contract_address),
@@ -55,7 +57,8 @@ def test_get_order_info():
 
     assert isinstance(order_info.order_hash, bytes)
     assert order_info.order_hash.hex() == generate_order_hash_hex(
-        order, exchange_address=_Constants.network_to_exchange_addr["50"]
+        order,
+        exchange_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
     )
 
     assert isinstance(order_info.order_taker_asset_filled_amount, int)

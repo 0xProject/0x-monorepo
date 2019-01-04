@@ -112,6 +112,7 @@ setup(
         "publish_docs": PublishDocsCommand,
     },
     install_requires=[
+        "0x-contract-addresses",
         "0x-order-utils",
         "0x-web3",  # TEMPORARY! pending resolution of our web3.py PR#1147
         "mypy_extensions",
