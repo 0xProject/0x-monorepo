@@ -43,6 +43,7 @@
     "dependencies": {
         "@0x/assert": "^1.0.20",
         "@0x/asset-buyer": "^3.0.4",
+        "@0x/connect": "^3.0.10",
         "@0x/json-schemas": "^2.1.4",
         "@0x/order-utils": "^3.0.7",
         "@0x/subproviders": "^2.1.8",
@@ -79,8 +80,10 @@
         "@types/styled-components": "^4.0.1",
         "awesome-typescript-loader": "^5.2.1",
         "dotenv-cli": "^1.4.0",
+        "emoji-regex": "^7.0.3",
         "enzyme": "^3.6.0",
         "enzyme-adapter-react-16": "^1.5.0",
+        "fetch-mock": "^7.3.0",
         "ip": "^1.1.5",
         "jest": "^23.6.0",
         "make-promises-safe": "^1.1.0",
