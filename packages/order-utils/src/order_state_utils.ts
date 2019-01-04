@@ -1,14 +1,11 @@
 import {
-    AssetProxyId,
     ExchangeContractErrs,
-    MultiAssetData,
     ObjectMap,
     OrderRelevantState,
     OrderState,
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
-    SingleAssetData,
 } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -310,22 +307,16 @@ export class OrderStateUtils {
     ): Promise<ObjectMap<BigNumber>> {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
         let balances: ObjectMap<BigNumber> = { ...initialBalances };
-        switch (decodedAssetData.assetProxyId) {
-            case AssetProxyId.ERC20:
-            case AssetProxyId.ERC721:
-                const balance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
-                const tokenAddress = (decodedAssetData as SingleAssetData).tokenAddress;
-                balances[tokenAddress] = _.isUndefined(initialBalances[tokenAddress])
-                    ? balance
-                    : balances[tokenAddress].add(balance);
-                break;
-            case AssetProxyId.MultiAsset:
-                for (const assetDataElement of (decodedAssetData as MultiAssetData).nestedAssetData) {
-                    balances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, balances);
-                }
-                break;
-            default:
-                throw new Error(`Proxy with id ${decodedAssetData.assetProxyId} not supported`);
+        if (assetDataUtils.isERC20AssetData(decodedAssetData) || assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            const balance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
+            const tokenAddress = decodedAssetData.tokenAddress;
+            balances[tokenAddress] = _.isUndefined(initialBalances[tokenAddress])
+                ? balance
+                : balances[tokenAddress].add(balance);
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            for (const assetDataElement of decodedAssetData.nestedAssetData) {
+                balances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, balances);
+            }
         }
         return balances;
     }
@@ -336,25 +327,19 @@ export class OrderStateUtils {
     ): Promise<ObjectMap<BigNumber>> {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
         let allowances: ObjectMap<BigNumber> = { ...initialAllowances };
-        switch (decodedAssetData.assetProxyId) {
-            case AssetProxyId.ERC20:
-            case AssetProxyId.ERC721:
-                const allowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
-                    assetData,
-                    traderAddress,
-                );
-                const tokenAddress = (decodedAssetData as SingleAssetData).tokenAddress;
-                allowances[tokenAddress] = _.isUndefined(initialAllowances[tokenAddress])
-                    ? allowance
-                    : allowances[tokenAddress].add(allowance);
-                break;
-            case AssetProxyId.MultiAsset:
-                for (const assetDataElement of (decodedAssetData as MultiAssetData).nestedAssetData) {
-                    allowances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, allowances);
-                }
-                break;
-            default:
-                throw new Error(`Proxy with id ${decodedAssetData.assetProxyId} not supported`);
+        if (assetDataUtils.isERC20AssetData(decodedAssetData) || assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            const allowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
+                assetData,
+                traderAddress,
+            );
+            const tokenAddress = decodedAssetData.tokenAddress;
+            allowances[tokenAddress] = _.isUndefined(initialAllowances[tokenAddress])
+                ? allowance
+                : allowances[tokenAddress].add(allowance);
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            for (const assetDataElement of decodedAssetData.nestedAssetData) {
+                allowances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, allowances);
+            }
         }
         return allowances;
     }

@@ -1,6 +1,5 @@
-// tslint:disable:no-unnecessary-type-assertion
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData, MultiAssetData, SignedOrder } from '@0x/types';
+import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -70,7 +69,10 @@ export class DependentOrderHashesTracker {
         this._removeAssetDataFromDependentOrderHashes(signedOrder, signedOrder.makerAssetData);
         // If makerToken === ZRX then we already removed it and we don't need to remove it again.
         const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(signedOrder.makerAssetData);
-        if ((decodedMakerAssetData as ERC20AssetData).tokenAddress !== this._zrxTokenAddress) {
+        if (
+            assetDataUtils.isERC20AssetData(decodedMakerAssetData) &&
+            decodedMakerAssetData.tokenAddress !== this._zrxTokenAddress
+        ) {
             this._removeFromERC20DependentOrderhashes(signedOrder, this._zrxTokenAddress);
         }
         this._removeFromMakerDependentOrderhashes(signedOrder);
@@ -149,24 +151,14 @@ export class DependentOrderHashesTracker {
     }
     private _addAssetDataToDependentOrderHashes(signedOrder: SignedOrder, assetData: string): void {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-        switch (decodedAssetData.assetProxyId) {
-            case AssetProxyId.ERC20:
-                this._addToERC20DependentOrderHashes(signedOrder, (decodedAssetData as ERC20AssetData).tokenAddress);
-                break;
-            case AssetProxyId.ERC721:
-                this._addToERC721DependentOrderHashes(
-                    signedOrder,
-                    (decodedAssetData as ERC721AssetData).tokenAddress,
-                    (decodedAssetData as ERC721AssetData).tokenId,
-                );
-                break;
-            case AssetProxyId.MultiAsset:
-                _.each((decodedAssetData as MultiAssetData).nestedAssetData, nestedAssetDataElement =>
-                    this._addAssetDataToDependentOrderHashes(signedOrder, nestedAssetDataElement),
-                );
-                break;
-            default:
-                break;
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            this._addToERC20DependentOrderHashes(signedOrder, decodedAssetData.tokenAddress);
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            this._addToERC721DependentOrderHashes(signedOrder, decodedAssetData.tokenAddress, decodedAssetData.tokenId);
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                this._addAssetDataToDependentOrderHashes(signedOrder, nestedAssetDataElement),
+            );
         }
     }
     private _addToMakerDependentOrderHashes(signedOrder: SignedOrder): void {
@@ -234,27 +226,18 @@ export class DependentOrderHashesTracker {
     }
     private _removeAssetDataFromDependentOrderHashes(signedOrder: SignedOrder, assetData: string): void {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-        switch (decodedAssetData.assetProxyId) {
-            case AssetProxyId.ERC20:
-                this._removeFromERC20DependentOrderhashes(
-                    signedOrder,
-                    (decodedAssetData as ERC20AssetData).tokenAddress,
-                );
-                break;
-            case AssetProxyId.ERC721:
-                this._removeFromERC721DependentOrderhashes(
-                    signedOrder,
-                    (decodedAssetData as ERC721AssetData).tokenAddress,
-                    (decodedAssetData as ERC721AssetData).tokenId,
-                );
-                break;
-            case AssetProxyId.MultiAsset:
-                _.each((decodedAssetData as MultiAssetData).nestedAssetData, nestedAssetDataElement =>
-                    this._removeAssetDataFromDependentOrderHashes(signedOrder, nestedAssetDataElement),
-                );
-                break;
-            default:
-                break;
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            this._removeFromERC20DependentOrderhashes(signedOrder, decodedAssetData.tokenAddress);
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            this._removeFromERC721DependentOrderhashes(
+                signedOrder,
+                decodedAssetData.tokenAddress,
+                decodedAssetData.tokenId,
+            );
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                this._removeAssetDataFromDependentOrderHashes(signedOrder, nestedAssetDataElement),
+            );
         }
     }
 }

@@ -1,13 +1,11 @@
 import { ExchangeCancelEventArgs, ExchangeCancelUpToEventArgs, ExchangeFillEventArgs } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC721AssetData, SingleAssetData } from '@0x/types';
+import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
 import { ExchangeCancelEvent, ExchangeCancelUpToEvent, ExchangeFillEvent } from '../../entities';
 import { bigNumbertoStringOrNull, convertAssetProxyIdToType } from '../../utils';
-
-// tslint:disable:no-unnecessary-type-assertion
 
 /**
  * Parses raw event logs for a fill event and returns an array of
@@ -59,26 +57,24 @@ export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<Exchang
     exchangeFillEvent.takerFeePaid = eventLog.args.takerFeePaid;
     exchangeFillEvent.orderHash = eventLog.args.orderHash;
     exchangeFillEvent.rawMakerAssetData = eventLog.args.makerAssetData;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeFillEvent.makerAssetType = convertAssetProxyIdToType(makerAssetData.assetProxyId as AssetProxyId);
     exchangeFillEvent.makerAssetProxyId = makerAssetData.assetProxyId;
-    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
-    exchangeFillEvent.makerTokenAddress =
-        makerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.makerAssetData).nestedAssetData[0]
-                  .tokenAddress
-            : (makerAssetData as SingleAssetData).tokenAddress;
+    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store the first token address from the MultiAssetProxy assetData
+    exchangeFillEvent.makerTokenAddress = assetDataUtils.isMultiAssetData(makerAssetData)
+        ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.makerAssetData).nestedAssetData[0].tokenAddress
+        : makerAssetData.tokenAddress;
     // tslint has a false positive here. Type assertion is required.
     // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeFillEvent.makerTokenId = bigNumbertoStringOrNull((makerAssetData as ERC721AssetData).tokenId);
     exchangeFillEvent.rawTakerAssetData = eventLog.args.takerAssetData;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeFillEvent.takerAssetType = convertAssetProxyIdToType(takerAssetData.assetProxyId as AssetProxyId);
     exchangeFillEvent.takerAssetProxyId = takerAssetData.assetProxyId;
-    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
-    exchangeFillEvent.takerTokenAddress =
-        takerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.takerAssetData).nestedAssetData[0]
-                  .tokenAddress
-            : (takerAssetData as SingleAssetData).tokenAddress;
+    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store the first token address from the MultiAssetProxy assetData
+    exchangeFillEvent.takerTokenAddress = assetDataUtils.isMultiAssetData(takerAssetData)
+        ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.takerAssetData).nestedAssetData[0].tokenAddress
+        : takerAssetData.tokenAddress;
     // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeFillEvent.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
     return exchangeFillEvent;
@@ -106,25 +102,23 @@ export function _convertToExchangeCancelEvent(
     exchangeCancelEvent.senderAddress = eventLog.args.senderAddress;
     exchangeCancelEvent.orderHash = eventLog.args.orderHash;
     exchangeCancelEvent.rawMakerAssetData = eventLog.args.makerAssetData;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeCancelEvent.makerAssetType = convertAssetProxyIdToType(makerAssetData.assetProxyId as AssetProxyId);
     exchangeCancelEvent.makerAssetProxyId = makerAssetData.assetProxyId;
-    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
-    exchangeCancelEvent.makerTokenAddress =
-        makerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.makerAssetData).nestedAssetData[0]
-                  .tokenAddress
-            : (makerAssetData as SingleAssetData).tokenAddress;
+    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store the first token address from the MultiAssetProxy assetData
+    exchangeCancelEvent.makerTokenAddress = assetDataUtils.isMultiAssetData(makerAssetData)
+        ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.makerAssetData).nestedAssetData[0].tokenAddress
+        : makerAssetData.tokenAddress;
     // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeCancelEvent.makerTokenId = bigNumbertoStringOrNull((makerAssetData as ERC721AssetData).tokenId);
     exchangeCancelEvent.rawTakerAssetData = eventLog.args.takerAssetData;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeCancelEvent.takerAssetType = convertAssetProxyIdToType(takerAssetData.assetProxyId as AssetProxyId);
     exchangeCancelEvent.takerAssetProxyId = takerAssetData.assetProxyId;
-    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
-    exchangeCancelEvent.takerTokenAddress =
-        takerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.takerAssetData).nestedAssetData[0]
-                  .tokenAddress
-            : (takerAssetData as SingleAssetData).tokenAddress;
+    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store the first token address from the MultiAssetProxy assetData
+    exchangeCancelEvent.takerTokenAddress = assetDataUtils.isMultiAssetData(takerAssetData)
+        ? assetDataUtils.decodeMultiAssetDataRecursively(eventLog.args.takerAssetData).nestedAssetData[0].tokenAddress
+        : takerAssetData.tokenAddress;
     // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeCancelEvent.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
     return exchangeCancelEvent;

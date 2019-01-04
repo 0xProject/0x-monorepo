@@ -7,7 +7,6 @@ import {
     SingleAssetData,
 } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
-import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -23,7 +22,7 @@ export const assetDataUtils = {
      * @return The hex encoded assetData string
      */
     encodeERC20AssetData(tokenAddress: string): string {
-        const abiEncoder = new AbiEncoder.Method(constants.ERC20_METHOD_ABI as MethodAbi);
+        const abiEncoder = new AbiEncoder.Method(constants.ERC20_METHOD_ABI);
         const args = [tokenAddress];
         const assetData = abiEncoder.encode(args, encodingRules);
         return assetData;
@@ -36,7 +35,7 @@ export const assetDataUtils = {
     decodeERC20AssetData(assetData: string): ERC20AssetData {
         assetDataUtils.assertIsERC20AssetData(assetData);
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
-        const abiEncoder = new AbiEncoder.Method(constants.ERC20_METHOD_ABI as MethodAbi);
+        const abiEncoder = new AbiEncoder.Method(constants.ERC20_METHOD_ABI);
         const decodedAssetData = abiEncoder.decode(assetData, decodingRules);
         return {
             assetProxyId,
@@ -52,7 +51,7 @@ export const assetDataUtils = {
      * @return The hex encoded assetData string
      */
     encodeERC721AssetData(tokenAddress: string, tokenId: BigNumber): string {
-        const abiEncoder = new AbiEncoder.Method(constants.ERC721_METHOD_ABI as MethodAbi);
+        const abiEncoder = new AbiEncoder.Method(constants.ERC721_METHOD_ABI);
         const args = [tokenAddress, tokenId];
         const assetData = abiEncoder.encode(args, encodingRules);
         return assetData;
@@ -65,7 +64,7 @@ export const assetDataUtils = {
     decodeERC721AssetData(assetData: string): ERC721AssetData {
         assetDataUtils.assertIsERC721AssetData(assetData);
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
-        const abiEncoder = new AbiEncoder.Method(constants.ERC721_METHOD_ABI as MethodAbi);
+        const abiEncoder = new AbiEncoder.Method(constants.ERC721_METHOD_ABI);
         const decodedAssetData = abiEncoder.decode(assetData, decodingRules);
         return {
             assetProxyId,
@@ -90,7 +89,7 @@ export const assetDataUtils = {
             );
         }
         _.forEach(nestedAssetData, assetDataElement => assetDataUtils.validateAssetDataOrThrow(assetDataElement));
-        const abiEncoder = new AbiEncoder.Method(constants.MULTI_ASSET_METHOD_ABI as MethodAbi);
+        const abiEncoder = new AbiEncoder.Method(constants.MULTI_ASSET_METHOD_ABI);
         const args = [amounts, nestedAssetData];
         const assetData = abiEncoder.encode(args, encodingRules);
         return assetData;
@@ -103,7 +102,7 @@ export const assetDataUtils = {
     decodeMultiAssetData(assetData: string): MultiAssetData {
         assetDataUtils.assertIsMultiAssetData(assetData);
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
-        const abiEncoder = new AbiEncoder.Method(constants.MULTI_ASSET_METHOD_ABI as MethodAbi);
+        const abiEncoder = new AbiEncoder.Method(constants.MULTI_ASSET_METHOD_ABI);
         const decodedAssetData = abiEncoder.decode(assetData, decodingRules);
         // TODO(abandeali1): fix return types for `AbiEncoder.Method.decode` so that we can remove type assertion
         const amounts = (decodedAssetData as any).amounts;
@@ -138,7 +137,7 @@ export const assetDataUtils = {
                         nestedAssetDataElement,
                     );
                     amounts.push(
-                        _.map(recursivelyDecodedAssetData.amounts as BigNumber[], amountElement =>
+                        _.map(recursivelyDecodedAssetData.amounts, amountElement =>
                             amountElement.times(decodedAssetData.amounts[index]),
                         ),
                     );
@@ -180,6 +179,27 @@ export const assetDataUtils = {
             throw new Error(`Invalid assetProxyId: ${assetProxyId}`);
         }
         return assetProxyId;
+    },
+    /**
+     * Checks if the decoded asset data is valid ERC20 data
+     * @param decodedAssetData The decoded asset data to check
+     */
+    isERC20AssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is ERC20AssetData {
+        return decodedAssetData.assetProxyId === AssetProxyId.ERC20;
+    },
+    /**
+     * Checks if the decoded asset data is valid ERC721 data
+     * @param decodedAssetData The decoded asset data to check
+     */
+    isERC721AssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is ERC721AssetData {
+        return decodedAssetData.assetProxyId === AssetProxyId.ERC721;
+    },
+    /**
+     * Checks if the decoded asset data is valid MultiAsset data
+     * @param decodedAssetData The decoded asset data to check
+     */
+    isMultiAssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is MultiAssetData {
+        return decodedAssetData.assetProxyId === AssetProxyId.MultiAsset;
     },
     /**
      * Throws if the length or assetProxyId are invalid for the ERC20Proxy.

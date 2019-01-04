@@ -1,12 +1,10 @@
 import { APIOrder, OrdersResponse } from '@0x/connect';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC721AssetData, SingleAssetData } from '@0x/types';
+import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import * as R from 'ramda';
 
 import { SraOrder } from '../../entities';
 import { bigNumbertoStringOrNull, convertAssetProxyIdToType } from '../../utils';
-
-// tslint:disable:no-unnecessary-type-assertion
 
 /**
  * Parses a raw order response from an SRA endpoint and returns an array of
@@ -43,26 +41,24 @@ export function _convertToEntity(apiOrder: APIOrder): SraOrder {
     sraOrder.signature = apiOrder.order.signature;
 
     sraOrder.rawMakerAssetData = apiOrder.order.makerAssetData;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     sraOrder.makerAssetType = convertAssetProxyIdToType(makerAssetData.assetProxyId as AssetProxyId);
     sraOrder.makerAssetProxyId = makerAssetData.assetProxyId;
-    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
-    sraOrder.makerTokenAddress =
-        makerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? assetDataUtils.decodeMultiAssetDataRecursively(apiOrder.order.makerAssetData).nestedAssetData[0]
-                  .tokenAddress
-            : (makerAssetData as SingleAssetData).tokenAddress;
+    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store the first token address from the MultiAssetProxy assetData
+    sraOrder.makerTokenAddress = assetDataUtils.isMultiAssetData(makerAssetData)
+        ? assetDataUtils.decodeMultiAssetDataRecursively(apiOrder.order.makerAssetData).nestedAssetData[0].tokenAddress
+        : makerAssetData.tokenAddress;
     // tslint has a false positive here. Type assertion is required.
     // tslint:disable-next-line:no-unnecessary-type-assertion
     sraOrder.makerTokenId = bigNumbertoStringOrNull((makerAssetData as ERC721AssetData).tokenId);
     sraOrder.rawTakerAssetData = apiOrder.order.takerAssetData;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     sraOrder.takerAssetType = convertAssetProxyIdToType(takerAssetData.assetProxyId as AssetProxyId);
     sraOrder.takerAssetProxyId = takerAssetData.assetProxyId;
-    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store a null byte array when decoding assetData from the MultiAssetProxy
-    sraOrder.takerTokenAddress =
-        takerAssetData.assetProxyId === AssetProxyId.MultiAsset
-            ? assetDataUtils.decodeMultiAssetDataRecursively(apiOrder.order.takerAssetData).nestedAssetData[0]
-                  .tokenAddress
-            : (takerAssetData as SingleAssetData).tokenAddress;
+    // HACK(abandeali1): this event schema currently does not support multiple maker/taker assets, so we store the first token address from the MultiAssetProxy assetData
+    sraOrder.takerTokenAddress = assetDataUtils.isMultiAssetData(takerAssetData)
+        ? assetDataUtils.decodeMultiAssetDataRecursively(apiOrder.order.takerAssetData).nestedAssetData[0].tokenAddress
+        : takerAssetData.tokenAddress;
     // tslint:disable-next-line:no-unnecessary-type-assertion
     sraOrder.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
 

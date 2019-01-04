@@ -1,4 +1,58 @@
 import { BigNumber } from '@0x/utils';
+import { MethodAbi } from 'ethereum-types';
+
+const ERC20_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'tokenContract',
+            type: 'address',
+        },
+    ],
+    name: 'ERC20Token',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
+
+const ERC721_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'tokenContract',
+            type: 'address',
+        },
+        {
+            name: 'tokenId',
+            type: 'uint256',
+        },
+    ],
+    name: 'ERC721Token',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
+
+const MULTI_ASSET_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'amounts',
+            type: 'uint256[]',
+        },
+        {
+            name: 'nestedAssetData',
+            type: 'bytes[]',
+        },
+    ],
+    name: 'MultiAsset',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
@@ -49,54 +103,7 @@ export const constants = {
             { name: 'data', type: 'bytes' },
         ],
     },
-    ERC20_METHOD_ABI: {
-        constant: false,
-        inputs: [
-            {
-                name: 'tokenContract',
-                type: 'address',
-            },
-        ],
-        name: 'ERC20Token',
-        outputs: [],
-        payable: false,
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    ERC721_METHOD_ABI: {
-        constant: false,
-        inputs: [
-            {
-                name: 'tokenContract',
-                type: 'address',
-            },
-            {
-                name: 'tokenId',
-                type: 'uint256',
-            },
-        ],
-        name: 'ERC721Token',
-        outputs: [],
-        payable: false,
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
-    MULTI_ASSET_METHOD_ABI: {
-        constant: false,
-        inputs: [
-            {
-                name: 'amounts',
-                type: 'uint256[]',
-            },
-            {
-                name: 'nestedAssetData',
-                type: 'bytes[]',
-            },
-        ],
-        name: 'MultiAsset',
-        outputs: [],
-        payable: false,
-        stateMutability: 'nonpayable',
-        type: 'function',
-    },
+    ERC20_METHOD_ABI,
+    ERC721_METHOD_ABI,
+    MULTI_ASSET_METHOD_ABI,
 };

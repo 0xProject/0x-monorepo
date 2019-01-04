@@ -32,16 +32,7 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0x/order-utils';
-import {
-    AssetProxyId,
-    ERC20AssetData,
-    ERC721AssetData,
-    ExchangeContractErrs,
-    MultiAssetData,
-    OrderState,
-    SignedOrder,
-    Stats,
-} from '@0x/types';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
 import { errorUtils, intervalUtils } from '@0x/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -240,20 +231,14 @@ export class OrderWatcher {
     }
     private _addAssetDataToAbiDecoder(assetData: string): void {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-        switch (decodedAssetData.assetProxyId) {
-            case AssetProxyId.ERC20:
-                this._collisionResistantAbiDecoder.addERC20Token((decodedAssetData as ERC20AssetData).tokenAddress);
-                break;
-            case AssetProxyId.ERC721:
-                this._collisionResistantAbiDecoder.addERC721Token((decodedAssetData as ERC721AssetData).tokenAddress);
-                break;
-            case AssetProxyId.MultiAsset:
-                _.each((decodedAssetData as MultiAssetData).nestedAssetData, nestedAssetDataElement =>
-                    this._addAssetDataToAbiDecoder(nestedAssetDataElement),
-                );
-                break;
-            default:
-                break;
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            this._collisionResistantAbiDecoder.addERC20Token(decodedAssetData.tokenAddress);
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            this._collisionResistantAbiDecoder.addERC721Token(decodedAssetData.tokenAddress);
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                this._addAssetDataToAbiDecoder(nestedAssetDataElement),
+            );
         }
     }
     private _deleteLazyStoreBalance(assetData: string, userAddress: string): void {

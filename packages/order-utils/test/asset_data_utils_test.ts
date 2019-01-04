@@ -27,7 +27,6 @@ const KNOWN_MULTI_ASSET_ENCODING = {
         '0x94cfcdd7000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000024f47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044025717920000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000',
 };
 
-// tslint:disable:no-unnecessary-type-assertion
 describe('assetDataUtils', () => {
     it('should encode ERC20', () => {
         const assetData = assetDataUtils.encodeERC20AssetData(KNOWN_ERC20_ENCODING.address);
@@ -69,6 +68,7 @@ describe('assetDataUtils', () => {
         expect(decodedAssetData.assetProxyId).to.equal(AssetProxyId.MultiAsset);
         expect(decodedAssetData.amounts).to.deep.equal(KNOWN_MULTI_ASSET_ENCODING.amounts);
         const decodedErc20AssetData = decodedAssetData.nestedAssetData[0];
+        // tslint:disable-next-line:no-unnecessary-type-assertion
         const decodedErc721AssetData = decodedAssetData.nestedAssetData[1] as ERC721AssetData;
         expect(decodedErc20AssetData.tokenAddress).to.equal(KNOWN_ERC20_ENCODING.address);
         expect(decodedErc20AssetData.assetProxyId).to.equal(AssetProxyId.ERC20);
@@ -91,8 +91,10 @@ describe('assetDataUtils', () => {
         const expectedLength = 4;
         expect(decodedAssetData.nestedAssetData.length).to.be.equal(expectedLength);
         const decodedErc20AssetData1 = decodedAssetData.nestedAssetData[0];
+        // tslint:disable-next-line:no-unnecessary-type-assertion
         const decodedErc721AssetData1 = decodedAssetData.nestedAssetData[1] as ERC721AssetData;
         const decodedErc20AssetData2 = decodedAssetData.nestedAssetData[2];
+        // tslint:disable-next-line:no-unnecessary-type-assertion
         const decodedErc721AssetData2 = decodedAssetData.nestedAssetData[3] as ERC721AssetData;
         expect(decodedErc20AssetData1.tokenAddress).to.equal(KNOWN_ERC20_ENCODING.address);
         expect(decodedErc20AssetData1.assetProxyId).to.equal(AssetProxyId.ERC20);
