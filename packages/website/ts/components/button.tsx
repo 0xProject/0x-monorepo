@@ -8,6 +8,7 @@ import { colors } from 'ts/style/colors';
 
 interface ButtonInterface {
     bgColor?: string;
+    borderColor?: string;
     color?: string;
     children?: React.ReactNode | string;
     isTransparent?: boolean;
@@ -26,7 +27,7 @@ interface ButtonInterface {
     shouldUseAnchorTag?: boolean;
 }
 
-export const Button = (props: ButtonInterface) => {
+export const Button: React.StatelessComponent<ButtonInterface> = (props: ButtonInterface) => {
     const { children, href, isWithArrow, to, shouldUseAnchorTag, target } = props;
     let linkElem;
 
@@ -53,6 +54,10 @@ export const Button = (props: ButtonInterface) => {
     );
 };
 
+Button.defaultProps = {
+    borderColor: 'rgba(255, 255, 255, .4)',
+};
+
 const ButtonBase =
     styled.button <
     ButtonInterface >
@@ -62,7 +67,7 @@ const ButtonBase =
     display: inline-block;
     background-color: ${props => props.bgColor || colors.brandLight};
     background-color: ${props => (props.isTransparent || props.isWithArrow) && 'transparent'};
-    border-color: ${props => props.isTransparent && !props.isWithArrow && 'rgba(255, 255, 255, .4)'};
+    border-color: ${props => props.isTransparent && !props.isWithArrow && props.borderColor};
     color: ${props => (props.isAccentColor ? props.theme.linkColor : props.color || props.theme.textColor)};
     padding: ${props => !props.isNoPadding && !props.isWithArrow && '18px 30px'};
     white-space: ${props => props.isWithArrow && 'nowrap'};

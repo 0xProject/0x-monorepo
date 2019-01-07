@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { opacify } from 'polished';
 import * as React from 'react';
 
 import { Banner } from 'ts/components/banner';
@@ -8,6 +9,7 @@ import { Hero } from 'ts/components/hero';
 import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
+import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 
 interface OfferData {
@@ -53,7 +55,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                 links: [
                     {
                         label: 'Contact Us',
-                        onClick: this._onOpenContactModal.bind(this),
+                        onClick: this._onOpenContactModal,
                         shouldUseAnchorTag: true,
                     },
                 ],
@@ -72,7 +74,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                     isCenteredMobile={false}
                     title="Bring liquidity to the exchanges of the future"
                     description="Market makers (MMs) are important stakeholders in the 0x ecosystem. The Market Making Program provides a set of resources that help onboard MMs to bring liquidity to the 0x network. The Program includes tutorials, monetary incentives, and 1:1 support from the 0x team."
-                    actions={<HeroActions />}
+                    actions={this._renderHeroActions()}
                 />
 
                 <Section bgColor="light" isFlex={true} maxWidth="1170px">
@@ -123,7 +125,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                     heading="Start trading today."
                     subline="Dive into our docs, or contact us if needed"
                     mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
-                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
+                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal }}
                 />
                 <ModalContact
                     isOpen={this.state.isContactModalOpen}
@@ -134,19 +136,27 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
         );
     }
 
-    public _onOpenContactModal = (): void => {
+    private readonly _onOpenContactModal = (): void => {
         this.setState({ isContactModalOpen: true });
     };
 
-    public _onDismissContactModal = (): void => {
+    private readonly _onDismissContactModal = (): void => {
         this.setState({ isContactModalOpen: false });
     };
-}
 
-const HeroActions = () => (
-    <>
-        <Button href={`${WebsitePaths.Wiki}#Market-Making-on-0x`} bgColor="dark" isInline={true}>
-            Get Started
-        </Button>
-    </>
-);
+    private readonly _renderHeroActions = () => (
+        <>
+            <Button href={`${WebsitePaths.Wiki}#Market-Making-on-0x`} bgColor="dark" isInline={true}>
+                Get Started
+            </Button>
+            <Button
+                onClick={this._onOpenContactModal}
+                borderColor={opacify(0.4)(colors.brandDark)}
+                isTransparent={true}
+                isInline={true}
+            >
+                Contact Us
+            </Button>
+        </>
+    );
+}
