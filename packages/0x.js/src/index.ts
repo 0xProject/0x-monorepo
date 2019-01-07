@@ -81,6 +81,7 @@ export {
     OrderStateInvalid,
     OrderState,
     AssetProxyId,
+    AssetData,
     SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,

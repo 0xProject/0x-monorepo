@@ -9,12 +9,10 @@ import {
     WETH9Events,
 } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { OrderState, SignedOrder } from '@0x/types';
+import { AssetData, OrderState, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
-
-import { AssetData } from '@0x/order-utils';
 
 export enum ExchangeWrapperError {
     AssetDataMismatch = 'ASSET_DATA_MISMATCH',

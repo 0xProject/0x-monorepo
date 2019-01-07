@@ -60,9 +60,12 @@ export {
 
 export {
     AssetData,
-    DutchAuctionDetails,
     ERC20AssetData,
     ERC721AssetData,
+    SingleAssetData,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
+    DutchAuctionDetails,
     Order,
     SignedOrder,
     AssetProxyId,
