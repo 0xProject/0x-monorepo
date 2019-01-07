@@ -5,7 +5,7 @@ import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Action, Definition } from 'ts/components/definition';
 import { Hero } from 'ts/components/hero';
-import { ModalContact } from 'ts/components/modals/modal_contact';
+import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { WebsitePaths } from 'ts/types';
@@ -125,7 +125,11 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                     mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
-                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
+                <ModalContact
+                    isOpen={this.state.isContactModalOpen}
+                    onDismiss={this._onDismissContactModal}
+                    modalContactType={ModalContactType.MarketMaker}
+                />
             </SiteWrap>
         );
     }
