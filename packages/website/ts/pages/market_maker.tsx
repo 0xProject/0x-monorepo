@@ -155,7 +155,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                 isTransparent={true}
                 isInline={true}
             >
-                Contact Us
+                Apply Now
             </Button>
         </>
     );
