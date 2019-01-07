@@ -92,7 +92,7 @@ async function confirmAsync(message: string): Promise<void> {
         try {
             await alertDiscordAsync(releaseNotes);
         } catch (e) {
-            utils.log("Couldn't alert discord, error: ", e.message, '. Please alert manually.');
+            utils.log("Publish successful, but couldn't auto-alert discord (", e.message, '), Please alert manually.');
         }
     }
 })().catch(err => {
