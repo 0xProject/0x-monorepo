@@ -125,7 +125,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                     heading="Start trading today."
                     subline="Check out our Market Making tutorials to get started"
                     mainCta={{ text: 'Tutorials', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
-                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal }}
+                    secondaryCta={{ text: 'Apply Now', onClick: this._onOpenContactModal }}
                 />
                 <ModalContact
                     isOpen={this.state.isContactModalOpen}
