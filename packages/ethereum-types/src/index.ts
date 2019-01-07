@@ -511,9 +511,10 @@ export interface Source {
  * contracts to compile with the the version specified here.
  */
 export interface CompilerOptions {
-    contractsDir?: string;
-    artifactsDir?: string;
-    compilerSettings?: CompilerSettings;
-    contracts?: string[] | '*';
+    contractsDir: string;
+    artifactsDir: string;
+    compilerSettings: CompilerSettings;
+    contracts: string[] | '*';
     solcVersion?: string;
+    watch: boolean;
 } // tslint:disable-line:max-file-line-count

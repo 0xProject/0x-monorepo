@@ -1,0 +1,159 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "MAuthorizable",
+	"compilerOutput": {
+		"abi": [
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "target",
+						"type": "address"
+					}
+				],
+				"name": "addAuthorizedAddress",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "target",
+						"type": "address"
+					}
+				],
+				"name": "removeAuthorizedAddress",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "target",
+						"type": "address"
+					},
+					{
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "removeAuthorizedAddressAtIndex",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [],
+				"name": "getAuthorizedAddresses",
+				"outputs": [
+					{
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"name": "target",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"name": "caller",
+						"type": "address"
+					}
+				],
+				"name": "AuthorizedAddressAdded",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"name": "target",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"name": "caller",
+						"type": "address"
+					}
+				],
+				"name": "AuthorizedAddressRemoved",
+				"type": "event"
+			}
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x",
+				"opcodes": "",
+				"sourceMap": ""
+			}
+		}
+	},
+	"sources": {
+		"protocol/AssetProxy/mixins/MAuthorizable.sol": {
+			"id": 31
+		},
+		"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAuthorizable.sol": {
+			"id": 1
+		},
+		"@0x/contracts-utils/contracts/utils/Ownable/IOwnable.sol": {
+			"id": 23
+		}
+	},
+	"sourceCodes": {
+		"protocol/AssetProxy/mixins/MAuthorizable.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAuthorizable.sol\";\n\n\ncontract MAuthorizable is\n    IAuthorizable\n{\n    // Event logged when a new address is authorized.\n    event AuthorizedAddressAdded(\n        address indexed target,\n        address indexed caller\n    );\n\n    // Event logged when a currently authorized address is unauthorized.\n    event AuthorizedAddressRemoved(\n        address indexed target,\n        address indexed caller\n    );\n\n    /// @dev Only authorized addresses can invoke functions with this modifier.\n    modifier onlyAuthorized { revert(); _; }\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAuthorizable.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-utils/contracts/utils/Ownable/IOwnable.sol\";\n\n\ncontract IAuthorizable is\n    IOwnable\n{\n    /// @dev Authorizes an address.\n    /// @param target Address to authorize.\n    function addAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    function removeAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    /// @param index Index of target in authorities array.\n    function removeAuthorizedAddressAtIndex(\n        address target,\n        uint256 index\n    )\n        external;\n    \n    /// @dev Gets all authorized addresses.\n    /// @return Array of authorized addresses.\n    function getAuthorizedAddresses()\n        external\n        view\n        returns (address[] memory);\n}\n",
+		"@0x/contracts-utils/contracts/utils/Ownable/IOwnable.sol": "pragma solidity 0.4.24;\n\n\ncontract IOwnable {\n\n    function transferOwnership(address newOwner)\n        public;\n}\n"
+	},
+	"sourceTreeHashHex": "0x96f9d874087e464151e489067e68edf896bbf896e3270a0426a0cdf2a20b5647",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

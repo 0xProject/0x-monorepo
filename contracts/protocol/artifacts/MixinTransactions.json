@@ -1,0 +1,229 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "MixinTransactions",
+	"compilerOutput": {
+		"abi": [
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"name": "signerAddress",
+						"type": "address"
+					},
+					{
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "preSign",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "transactions",
+				"outputs": [
+					{
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "validatorAddress",
+						"type": "address"
+					},
+					{
+						"name": "approval",
+						"type": "bool"
+					}
+				],
+				"name": "setSignatureValidatorApproval",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "hash",
+						"type": "bytes32"
+					},
+					{
+						"name": "signerAddress",
+						"type": "address"
+					},
+					{
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "isValidSignature",
+				"outputs": [
+					{
+						"name": "isValid",
+						"type": "bool"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "salt",
+						"type": "uint256"
+					},
+					{
+						"name": "signerAddress",
+						"type": "address"
+					},
+					{
+						"name": "data",
+						"type": "bytes"
+					},
+					{
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "executeTransaction",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [],
+				"name": "EIP712_DOMAIN_HASH",
+				"outputs": [
+					{
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [],
+				"name": "currentContextAddress",
+				"outputs": [
+					{
+						"name": "",
+						"type": "address"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"name": "signerAddress",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"name": "validatorAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"name": "approved",
+						"type": "bool"
+					}
+				],
+				"name": "SignatureValidatorApproval",
+				"type": "event"
+			}
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x",
+				"opcodes": "",
+				"sourceMap": ""
+			}
+		}
+	},
+	"sources": {
+		"protocol/Exchange/MixinTransactions.sol": {
+			"id": 38
+		},
+		"@0x/contracts-libs/contracts/libs/LibExchangeErrors.sol": {
+			"id": 14
+		},
+		"protocol/Exchange/mixins/MSignatureValidator.sol": {
+			"id": 43
+		},
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/ISignatureValidator.sol": {
+			"id": 6
+		},
+		"protocol/Exchange/mixins/MTransactions.sol": {
+			"id": 44
+		},
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/ITransactions.sol": {
+			"id": 7
+		},
+		"@0x/contracts-libs/contracts/libs/LibEIP712.sol": {
+			"id": 13
+		}
+	},
+	"sourceCodes": {
+		"protocol/Exchange/MixinTransactions.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-libs/contracts/libs/LibExchangeErrors.sol\";\nimport \"./mixins/MSignatureValidator.sol\";\nimport \"./mixins/MTransactions.sol\";\nimport \"@0x/contracts-libs/contracts/libs/LibEIP712.sol\";\n\n\ncontract MixinTransactions is\n    LibEIP712,\n    MSignatureValidator,\n    MTransactions\n{\n    // Mapping of transaction hash => executed\n    // This prevents transactions from being executed more than once.\n    mapping (bytes32 => bool) public transactions;\n\n    // Address of current transaction signer\n    address public currentContextAddress;\n\n    /// @dev Executes an exchange method call in the context of signer.\n    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.\n    /// @param signerAddress Address of transaction signer.\n    /// @param data AbiV2 encoded calldata.\n    /// @param signature Proof of signer transaction by signer.\n    function executeTransaction(\n        uint256 salt,\n        address signerAddress,\n        bytes data,\n        bytes signature\n    )\n        external\n    {\n        // Prevent reentrancy\n        require(\n            currentContextAddress == address(0),\n            \"REENTRANCY_ILLEGAL\"\n        );\n\n        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(\n            salt,\n            signerAddress,\n            data\n        ));\n\n        // Validate transaction has not been executed\n        require(\n            !transactions[transactionHash],\n            \"INVALID_TX_HASH\"\n        );\n\n        // Transaction always valid if signer is sender of transaction\n        if (signerAddress != msg.sender) {\n            // Validate signature\n            require(\n                isValidSignature(\n                    transactionHash,\n                    signerAddress,\n                    signature\n                ),\n                \"INVALID_TX_SIGNATURE\"\n            );\n\n            // Set the current transaction signer\n            currentContextAddress = signerAddress;\n        }\n\n        // Execute transaction\n        transactions[transactionHash] = true;\n        require(\n            address(this).delegatecall(data),\n            \"FAILED_EXECUTION\"\n        );\n\n        // Reset current transaction signer if it was previously updated\n        if (signerAddress != msg.sender) {\n            currentContextAddress = address(0);\n        }\n    }\n\n    /// @dev Calculates EIP712 hash of the Transaction.\n    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.\n    /// @param signerAddress Address of transaction signer.\n    /// @param data AbiV2 encoded calldata.\n    /// @return EIP712 hash of the Transaction.\n    function hashZeroExTransaction(\n        uint256 salt,\n        address signerAddress,\n        bytes memory data\n    )\n        internal\n        pure\n        returns (bytes32 result)\n    {\n        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;\n        bytes32 dataHash = keccak256(data);\n\n        // Assembly for more efficiently computing:\n        // keccak256(abi.encodePacked(\n        //     EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,\n        //     salt,\n        //     bytes32(signerAddress),\n        //     keccak256(data)\n        // ));\n\n        assembly {\n            // Load free memory pointer\n            let memPtr := mload(64)\n\n            mstore(memPtr, schemaHash)                                                               // hash of schema\n            mstore(add(memPtr, 32), salt)                                                            // salt\n            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))  // signerAddress\n            mstore(add(memPtr, 96), dataHash)                                                        // hash of data\n\n            // Compute hash\n            result := keccak256(memPtr, 128)\n        }\n        return result;\n    }\n\n    /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).\n    ///      If calling a fill function, this address will represent the taker.\n    ///      If calling a cancel function, this address will represent the maker.\n    /// @return Signer of 0x transaction if entry point is `executeTransaction`.\n    ///         `msg.sender` if entry point is any other function.\n    function getCurrentContextAddress()\n        internal\n        view\n        returns (address)\n    {\n        address currentContextAddress_ = currentContextAddress;\n        address contextAddress = currentContextAddress_ == address(0) ? msg.sender : currentContextAddress_;\n        return contextAddress;\n    }\n}\n",
+		"@0x/contracts-libs/contracts/libs/LibExchangeErrors.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\n// solhint-disable\npragma solidity 0.4.24;\n\n\n/// @dev This contract documents the revert reasons used in the Exchange contract.\n/// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.\ncontract LibExchangeErrors {\n\n    /// Order validation errors ///\n    string constant ORDER_UNFILLABLE = \"ORDER_UNFILLABLE\";                              // Order cannot be filled.\n    string constant INVALID_MAKER = \"INVALID_MAKER\";                                    // Invalid makerAddress.\n    string constant INVALID_TAKER = \"INVALID_TAKER\";                                    // Invalid takerAddress.\n    string constant INVALID_SENDER = \"INVALID_SENDER\";                                  // Invalid `msg.sender`.\n    string constant INVALID_ORDER_SIGNATURE = \"INVALID_ORDER_SIGNATURE\";                // Signature validation failed. \n    \n    /// fillOrder validation errors ///\n    string constant INVALID_TAKER_AMOUNT = \"INVALID_TAKER_AMOUNT\";                      // takerAssetFillAmount cannot equal 0.\n    string constant ROUNDING_ERROR = \"ROUNDING_ERROR\";                                  // Rounding error greater than 0.1% of takerAssetFillAmount. \n    \n    /// Signature validation errors ///\n    string constant INVALID_SIGNATURE = \"INVALID_SIGNATURE\";                            // Signature validation failed. \n    string constant SIGNATURE_ILLEGAL = \"SIGNATURE_ILLEGAL\";                            // Signature type is illegal.\n    string constant SIGNATURE_UNSUPPORTED = \"SIGNATURE_UNSUPPORTED\";                    // Signature type unsupported.\n    \n    /// cancelOrdersUptTo errors ///\n    string constant INVALID_NEW_ORDER_EPOCH = \"INVALID_NEW_ORDER_EPOCH\";                // Specified salt must be greater than or equal to existing orderEpoch.\n\n    /// fillOrKillOrder errors ///\n    string constant COMPLETE_FILL_FAILED = \"COMPLETE_FILL_FAILED\";                      // Desired takerAssetFillAmount could not be completely filled. \n\n    /// matchOrders errors ///\n    string constant NEGATIVE_SPREAD_REQUIRED = \"NEGATIVE_SPREAD_REQUIRED\";              // Matched orders must have a negative spread.\n\n    /// Transaction errors ///\n    string constant REENTRANCY_ILLEGAL = \"REENTRANCY_ILLEGAL\";                          // Recursive reentrancy is not allowed. \n    string constant INVALID_TX_HASH = \"INVALID_TX_HASH\";                                // Transaction has already been executed. \n    string constant INVALID_TX_SIGNATURE = \"INVALID_TX_SIGNATURE\";                      // Signature validation failed. \n    string constant FAILED_EXECUTION = \"FAILED_EXECUTION\";                              // Transaction execution failed. \n    \n    /// registerAssetProxy errors ///\n    string constant ASSET_PROXY_ALREADY_EXISTS = \"ASSET_PROXY_ALREADY_EXISTS\";          // AssetProxy with same id already exists.\n\n    /// dispatchTransferFrom errors ///\n    string constant ASSET_PROXY_DOES_NOT_EXIST = \"ASSET_PROXY_DOES_NOT_EXIST\";          // No assetProxy registered at given id.\n    string constant TRANSFER_FAILED = \"TRANSFER_FAILED\";                                // Asset transfer unsuccesful.\n\n    /// Length validation errors ///\n    string constant LENGTH_GREATER_THAN_0_REQUIRED = \"LENGTH_GREATER_THAN_0_REQUIRED\";  // Byte array must have a length greater than 0.\n    string constant LENGTH_GREATER_THAN_3_REQUIRED = \"LENGTH_GREATER_THAN_3_REQUIRED\";  // Byte array must have a length greater than 3.\n    string constant LENGTH_0_REQUIRED = \"LENGTH_0_REQUIRED\";                            // Byte array must have a length of 0.\n    string constant LENGTH_65_REQUIRED = \"LENGTH_65_REQUIRED\";                          // Byte array must have a length of 65.\n}\n",
+		"protocol/Exchange/mixins/MSignatureValidator.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-interfaces/contracts/protocol/Exchange/ISignatureValidator.sol\";\n\n\ncontract MSignatureValidator is\n    ISignatureValidator\n{\n    event SignatureValidatorApproval(\n        address indexed signerAddress,     // Address that approves or disapproves a contract to verify signatures.\n        address indexed validatorAddress,  // Address of signature validator contract.\n        bool approved                      // Approval or disapproval of validator contract.\n    );\n\n    // Allowed signature types.\n    enum SignatureType {\n        Illegal,         // 0x00, default value\n        Invalid,         // 0x01\n        EIP712,          // 0x02\n        EthSign,         // 0x03\n        Wallet,          // 0x04\n        Validator,       // 0x05\n        PreSigned,       // 0x06\n        NSignatureTypes  // 0x07, number of signature types. Always leave at end.\n    }\n\n    /// @dev Verifies signature using logic defined by Wallet contract.\n    /// @param hash Any 32 byte hash.\n    /// @param walletAddress Address that should have signed the given hash\n    ///                      and defines its own signature verification method.\n    /// @param signature Proof that the hash has been signed by signer.\n    /// @return True if the address recovered from the provided signature matches the input signer address.\n    function isValidWalletSignature(\n        bytes32 hash,\n        address walletAddress,\n        bytes signature\n    )\n        internal\n        view\n        returns (bool isValid);\n\n    /// @dev Verifies signature using logic defined by Validator contract.\n    /// @param validatorAddress Address of validator contract.\n    /// @param hash Any 32 byte hash.\n    /// @param signerAddress Address that should have signed the given hash.\n    /// @param signature Proof that the hash has been signed by signer.\n    /// @return True if the address recovered from the provided signature matches the input signer address.\n    function isValidValidatorSignature(\n        address validatorAddress,\n        bytes32 hash,\n        address signerAddress,\n        bytes signature\n    )\n        internal\n        view\n        returns (bool isValid);\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/ISignatureValidator.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract ISignatureValidator {\n\n    /// @dev Approves a hash on-chain using any valid signature type.\n    ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.\n    /// @param signerAddress Address that should have signed the given hash.\n    /// @param signature Proof that the hash has been signed by signer.\n    function preSign(\n        bytes32 hash,\n        address signerAddress,\n        bytes signature\n    )\n        external;\n    \n    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.\n    /// @param validatorAddress Address of Validator contract.\n    /// @param approval Approval or disapproval of  Validator contract.\n    function setSignatureValidatorApproval(\n        address validatorAddress,\n        bool approval\n    )\n        external;\n\n    /// @dev Verifies that a signature is valid.\n    /// @param hash Message hash that is signed.\n    /// @param signerAddress Address of signer.\n    /// @param signature Proof of signing.\n    /// @return Validity of order signature.\n    function isValidSignature(\n        bytes32 hash,\n        address signerAddress,\n        bytes memory signature\n    )\n        public\n        view\n        returns (bool isValid);\n}\n",
+		"protocol/Exchange/mixins/MTransactions.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-interfaces/contracts/protocol/Exchange/ITransactions.sol\";\n\n\ncontract MTransactions is\n    ITransactions\n{\n    // Hash for the EIP712 ZeroEx Transaction Schema\n    bytes32 constant internal EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(\n        \"ZeroExTransaction(\",\n        \"uint256 salt,\",\n        \"address signerAddress,\",\n        \"bytes data\",\n        \")\"\n    ));\n\n    /// @dev Calculates EIP712 hash of the Transaction.\n    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.\n    /// @param signerAddress Address of transaction signer.\n    /// @param data AbiV2 encoded calldata.\n    /// @return EIP712 hash of the Transaction.\n    function hashZeroExTransaction(\n        uint256 salt,\n        address signerAddress,\n        bytes memory data\n    )\n        internal\n        pure\n        returns (bytes32 result);\n\n    /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).\n    ///      If calling a fill function, this address will represent the taker.\n    ///      If calling a cancel function, this address will represent the maker.\n    /// @return Signer of 0x transaction if entry point is `executeTransaction`.\n    ///         `msg.sender` if entry point is any other function.\n    function getCurrentContextAddress()\n        internal\n        view\n        returns (address);\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/ITransactions.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\npragma solidity 0.4.24;\n\n\ncontract ITransactions {\n\n    /// @dev Executes an exchange method call in the context of signer.\n    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.\n    /// @param signerAddress Address of transaction signer.\n    /// @param data AbiV2 encoded calldata.\n    /// @param signature Proof of signer transaction by signer.\n    function executeTransaction(\n        uint256 salt,\n        address signerAddress,\n        bytes data,\n        bytes signature\n    )\n        external;\n}\n",
+		"@0x/contracts-libs/contracts/libs/LibEIP712.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract LibEIP712 {\n\n    // EIP191 header for EIP712 prefix\n    string constant internal EIP191_HEADER = \"\\x19\\x01\";\n\n    // EIP712 Domain Name value\n    string constant internal EIP712_DOMAIN_NAME = \"0x Protocol\";\n\n    // EIP712 Domain Version value\n    string constant internal EIP712_DOMAIN_VERSION = \"2\";\n\n    // Hash of the EIP712 Domain Separator Schema\n    bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(\n        \"EIP712Domain(\",\n        \"string name,\",\n        \"string version,\",\n        \"address verifyingContract\",\n        \")\"\n    ));\n\n    // Hash of the EIP712 Domain Separator data\n    // solhint-disable-next-line var-name-mixedcase\n    bytes32 public EIP712_DOMAIN_HASH;\n\n    constructor ()\n        public\n    {\n        EIP712_DOMAIN_HASH = keccak256(abi.encodePacked(\n            EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,\n            keccak256(bytes(EIP712_DOMAIN_NAME)),\n            keccak256(bytes(EIP712_DOMAIN_VERSION)),\n            bytes32(address(this))\n        ));\n    }\n\n    /// @dev Calculates EIP712 encoding for a hash struct in this EIP712 Domain.\n    /// @param hashStruct The EIP712 hash struct.\n    /// @return EIP712 hash applied to this EIP712 Domain.\n    function hashEIP712Message(bytes32 hashStruct)\n        internal\n        view\n        returns (bytes32 result)\n    {\n        bytes32 eip712DomainHash = EIP712_DOMAIN_HASH;\n\n        // Assembly for more efficient computing:\n        // keccak256(abi.encodePacked(\n        //     EIP191_HEADER,\n        //     EIP712_DOMAIN_HASH,\n        //     hashStruct    \n        // ));\n\n        assembly {\n            // Load free memory pointer\n            let memPtr := mload(64)\n\n            mstore(memPtr, 0x1901000000000000000000000000000000000000000000000000000000000000)  // EIP191 header\n            mstore(add(memPtr, 2), eip712DomainHash)                                            // EIP712 domain hash\n            mstore(add(memPtr, 34), hashStruct)                                                 // Hash of struct\n\n            // Compute hash\n            result := keccak256(memPtr, 66)\n        }\n        return result;\n    }\n}\n"
+	},
+	"sourceTreeHashHex": "0x22a5276a8c023d878b20603d901d7df97c65556a31c0531cb0689d7461e6b262",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

@@ -1,0 +1,194 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "TestAssetProxyDispatcher",
+	"compilerOutput": {
+		"abi": [
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "",
+						"type": "bytes4"
+					}
+				],
+				"name": "assetProxies",
+				"outputs": [
+					{
+						"name": "",
+						"type": "address"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [
+					{
+						"name": "assetProxyId",
+						"type": "bytes4"
+					}
+				],
+				"name": "getAssetProxy",
+				"outputs": [
+					{
+						"name": "",
+						"type": "address"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "assetData",
+						"type": "bytes"
+					},
+					{
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "publicDispatchTransferFrom",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": true,
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"name": "",
+						"type": "address"
+					}
+				],
+				"payable": false,
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "assetProxy",
+						"type": "address"
+					}
+				],
+				"name": "registerAssetProxy",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"name": "id",
+						"type": "bytes4"
+					},
+					{
+						"indexed": false,
+						"name": "assetProxy",
+						"type": "address"
+					}
+				],
+				"name": "AssetProxyRegistered",
+				"type": "event"
+			}
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x6080604052336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550610bfe806100536000396000f300608060405260043610610078576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680633fd3c9971461007d5780636070410814610109578063889b6d8d146101955780638da5cb5b14610248578063c585bb931461029f578063f2fde38b146102e2575b600080fd5b34801561008957600080fd5b506100c760048036038101908080357bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19169060200190929190505050610325565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34801561011557600080fd5b5061015360048036038101908080357bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19169060200190929190505050610358565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156101a157600080fd5b50610246600480360381019080803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291905050506103d3565b005b34801561025457600080fd5b5061025d6103e5565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156102ab57600080fd5b506102e0600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061040a565b005b3480156102ee57600080fd5b50610323600480360381019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506107ce565b005b60016020528060005260406000206000915054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b600060016000837bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19167bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050919050565b6103df8484848461090c565b50505050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161415156104d3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260138152602001807f4f4e4c595f434f4e54524143545f4f574e45520000000000000000000000000081525060200191505060405180910390fd5b8392508273ffffffffffffffffffffffffffffffffffffffff1663ae25532e6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401602060405180830381600087803b15801561053a57600080fd5b505af115801561054e573d6000803e3d6000fd5b505050506040513d602081101561056457600080fd5b8101908080519060200190929190505050915060016000837bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19167bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1614151561068f576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601a8152602001807f41535345545f50524f58595f414c52454144595f45584953545300000000000081525060200191505060405180910390fd5b8260016000847bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19167bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055507fd2c6b762299c609bdb96520b58a49bfb80186934d4f71a86a367571a15c03194828560405180837bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19167bffffffffffffffffffffffffffffffffffffffffffffffffffffffff191681526020018273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019250505060405180910390a150505050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515610892576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004018080602001828103825260138152602001807f4f4e4c595f434f4e54524143545f4f574e45520000000000000000000000000081525060200191505060405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1614151561090957806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b50565b60008060008311801561094b57508373ffffffffffffffffffffffffffffffffffffffff168573ffffffffffffffffffffffffffffffffffffffff1614155b15610bca57600386511115156109c9576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601e8152602001807f4c454e4754485f475245415445525f5448414e5f335f5245515549524544000081525060200191505060405180910390fd5b7fffffffff00000000000000000000000000000000000000000000000000000000602087015116915060016000837bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19167bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1614151515610b0b576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040180806020018281038252601a8152602001807f41535345545f50524f58595f444f45535f4e4f545f455849535400000000000081525060200191505060405180910390fd5b604051660fffffffffffe0603f885101168060840182017fa85e59e40000000000000000000000000000000000000000000000000000000083526080600484015273ffffffffffffffffffffffffffffffffffffffff8816602484015273ffffffffffffffffffffffffffffffffffffffff87166044840152856064840152608483015b81811015610bac578951815260208101905060208a019950610b8f565b61020084858403866000895af1801515610bc4573d85fd5b50505050505b5050505050505600a165627a7a72305820f85923381fa8c4b2a044bda7f291a66a5c5576f4b4726f63f8a0cce1452a53850029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLER PUSH1 0x0 DUP1 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF MUL NOT AND SWAP1 DUP4 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND MUL OR SWAP1 SSTORE POP PUSH2 0xBFE DUP1 PUSH2 0x53 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x4 CALLDATASIZE LT PUSH2 0x78 JUMPI PUSH1 0x0 CALLDATALOAD PUSH29 0x100000000000000000000000000000000000000000000000000000000 SWAP1 DIV PUSH4 0xFFFFFFFF AND DUP1 PUSH4 0x3FD3C997 EQ PUSH2 0x7D JUMPI DUP1 PUSH4 0x60704108 EQ PUSH2 0x109 JUMPI DUP1 PUSH4 0x889B6D8D EQ PUSH2 0x195 JUMPI DUP1 PUSH4 0x8DA5CB5B EQ PUSH2 0x248 JUMPI DUP1 PUSH4 0xC585BB93 EQ PUSH2 0x29F JUMPI DUP1 PUSH4 0xF2FDE38B EQ PUSH2 0x2E2 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x89 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0xC7 PUSH1 0x4 DUP1 CALLDATASIZE SUB DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x325 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x115 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x153 PUSH1 0x4 DUP1 CALLDATASIZE SUB DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x358 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x1A1 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x246 PUSH1 0x4 DUP1 CALLDATASIZE SUB DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD SWAP1 PUSH1 0x20 ADD SWAP1 DUP3 ADD DUP1 CALLDATALOAD SWAP1 PUSH1 0x20 ADD SWAP1 DUP1 DUP1 PUSH1 0x1F ADD PUSH1 0x20 DUP1 SWAP2 DIV MUL PUSH1 0x20 ADD PUSH1 0x40 MLOAD SWAP1 DUP2 ADD PUSH1 0x40 MSTORE DUP1 SWAP4 SWAP3 SWAP2 SWAP1 DUP2 DUP2 MSTORE PUSH1 0x20 ADD DUP4 DUP4 DUP1 DUP3 DUP5 CALLDATACOPY DUP3 ADD SWAP2 POP POP POP POP POP POP SWAP2 SWAP3 SWAP2 SWAP3 SWAP1 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 DUP1 CALLDATALOAD SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x3D3 JUMP JUMPDEST STOP JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x254 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x25D PUSH2 0x3E5 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x2AB JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x2E0 PUSH1 0x4 DUP1 CALLDATASIZE SUB DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x40A JUMP JUMPDEST STOP JUMPDEST CALLVALUE DUP1 ISZERO PUSH2 0x2EE JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x323 PUSH1 0x4 DUP1 CALLDATASIZE SUB DUP2 ADD SWAP1 DUP1 DUP1 CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP PUSH2 0x7CE JUMP JUMPDEST STOP JUMPDEST PUSH1 0x1 PUSH1 0x20 MSTORE DUP1 PUSH1 0x0 MSTORE PUSH1 0x40 PUSH1 0x0 KECCAK256 PUSH1 0x0 SWAP2 POP SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 JUMP JUMPDEST PUSH1 0x0 PUSH1 0x1 PUSH1 0x0 DUP4 PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 PUSH1 0x0 SWAP1 SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 POP SWAP2 SWAP1 POP JUMP JUMPDEST PUSH2 0x3DF DUP5 DUP5 DUP5 DUP5 PUSH2 0x90C JUMP JUMPDEST POP POP POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 SWAP1 SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 DUP1 PUSH1 0x0 SWAP1 SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND CALLER PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ ISZERO ISZERO PUSH2 0x4D3 JUMPI PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE PUSH1 0x13 DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH32 0x4F4E4C595F434F4E54524143545F4F574E455200000000000000000000000000 DUP2 MSTORE POP PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST DUP4 SWAP3 POP DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0xAE25532E PUSH1 0x40 MLOAD DUP2 PUSH4 0xFFFFFFFF AND PUSH29 0x100000000000000000000000000000000000000000000000000000000 MUL DUP2 MSTORE PUSH1 0x4 ADD PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 PUSH1 0x0 DUP8 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0x53A JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS CALL ISZERO DUP1 ISZERO PUSH2 0x54E JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x564 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 DUP1 DUP1 MLOAD SWAP1 PUSH1 0x20 ADD SWAP1 SWAP3 SWAP2 SWAP1 POP POP POP SWAP2 POP PUSH1 0x1 PUSH1 0x0 DUP4 PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 PUSH1 0x0 SWAP1 SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 POP PUSH1 0x0 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ ISZERO ISZERO PUSH2 0x68F JUMPI PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE PUSH1 0x1A DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH32 0x41535345545F50524F58595F414C52454144595F455849535453000000000000 DUP2 MSTORE POP PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST DUP3 PUSH1 0x1 PUSH1 0x0 DUP5 PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 PUSH1 0x0 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF MUL NOT AND SWAP1 DUP4 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND MUL OR SWAP1 SSTORE POP PUSH32 0xD2C6B762299C609BDB96520B58A49BFB80186934D4F71A86A367571A15C03194 DUP3 DUP6 PUSH1 0x40 MLOAD DUP1 DUP4 PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND DUP2 MSTORE PUSH1 0x20 ADD DUP3 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD SWAP3 POP POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP POP POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 SWAP1 SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND CALLER PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ ISZERO ISZERO PUSH2 0x892 JUMPI PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE PUSH1 0x13 DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH32 0x4F4E4C595F434F4E54524143545F4F574E455200000000000000000000000000 DUP2 MSTORE POP PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST PUSH1 0x0 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ ISZERO ISZERO PUSH2 0x909 JUMPI DUP1 PUSH1 0x0 DUP1 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF MUL NOT AND SWAP1 DUP4 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND MUL OR SWAP1 SSTORE POP JUMPDEST POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 DUP4 GT DUP1 ISZERO PUSH2 0x94B JUMPI POP DUP4 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP6 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ ISZERO JUMPDEST ISZERO PUSH2 0xBCA JUMPI PUSH1 0x3 DUP7 MLOAD GT ISZERO ISZERO PUSH2 0x9C9 JUMPI PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE PUSH1 0x1E DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH32 0x4C454E4754485F475245415445525F5448414E5F335F52455155495245440000 DUP2 MSTORE POP PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 PUSH1 0x20 DUP8 ADD MLOAD AND SWAP2 POP PUSH1 0x1 PUSH1 0x0 DUP4 PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND PUSH28 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF NOT AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 DUP2 MSTORE PUSH1 0x20 ADD PUSH1 0x0 KECCAK256 PUSH1 0x0 SWAP1 SLOAD SWAP1 PUSH2 0x100 EXP SWAP1 DIV PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND SWAP1 POP PUSH1 0x0 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND EQ ISZERO ISZERO ISZERO PUSH2 0xB0B JUMPI PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD DUP1 DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE PUSH1 0x1A DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH32 0x41535345545F50524F58595F444F45535F4E4F545F4558495354000000000000 DUP2 MSTORE POP PUSH1 0x20 ADD SWAP2 POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST PUSH1 0x40 MLOAD PUSH7 0xFFFFFFFFFFFE0 PUSH1 0x3F DUP9 MLOAD ADD AND DUP1 PUSH1 0x84 ADD DUP3 ADD PUSH32 0xA85E59E400000000000000000000000000000000000000000000000000000000 DUP4 MSTORE PUSH1 0x80 PUSH1 0x4 DUP5 ADD MSTORE PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP9 AND PUSH1 0x24 DUP5 ADD MSTORE PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP8 AND PUSH1 0x44 DUP5 ADD MSTORE DUP6 PUSH1 0x64 DUP5 ADD MSTORE PUSH1 0x84 DUP4 ADD JUMPDEST DUP2 DUP2 LT ISZERO PUSH2 0xBAC JUMPI DUP10 MLOAD DUP2 MSTORE PUSH1 0x20 DUP2 ADD SWAP1 POP PUSH1 0x20 DUP11 ADD SWAP10 POP PUSH2 0xB8F JUMP JUMPDEST PUSH2 0x200 DUP5 DUP6 DUP5 SUB DUP7 PUSH1 0x0 DUP10 GAS CALL DUP1 ISZERO ISZERO PUSH2 0xBC4 JUMPI RETURNDATASIZE DUP6 REVERT JUMPDEST POP POP POP POP POP JUMPDEST POP POP POP POP POP POP JUMP STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0xf8 MSIZE 0x23 CODESIZE 0x1f 0xa8 0xc4 0xb2 LOG0 DIFFICULTY 0xbd 0xa7 CALLCODE SWAP2 0xa6 PUSH11 0x5C5576F4B4726F63F8A0CC 0xe1 GASLIMIT 0x2a MSTORE8 DUP6 STOP 0x29 ",
+				"sourceMap": "671:301:47:-;;;170:10:24;162:5;;:18;;;;;;;;;;;;;;;;;;671:301:47;;;;;;"
+			}
+		}
+	},
+	"sources": {
+		"test/TestAssetProxyDispatcher/TestAssetProxyDispatcher.sol": {
+			"id": 47
+		},
+		"protocol/Exchange/MixinAssetProxyDispatcher.sol": {
+			"id": 34
+		},
+		"@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol": {
+			"id": 24
+		},
+		"@0x/contracts-utils/contracts/utils/Ownable/IOwnable.sol": {
+			"id": 23
+		},
+		"protocol/Exchange/mixins/MAssetProxyDispatcher.sol": {
+			"id": 40
+		},
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/IAssetProxyDispatcher.sol": {
+			"id": 2
+		},
+		"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAssetProxy.sol": {
+			"id": 0
+		},
+		"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAuthorizable.sol": {
+			"id": 1
+		}
+	},
+	"sourceCodes": {
+		"test/TestAssetProxyDispatcher/TestAssetProxyDispatcher.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"../../protocol/Exchange/MixinAssetProxyDispatcher.sol\";\n\n\ncontract TestAssetProxyDispatcher is \n    MixinAssetProxyDispatcher\n{\n    function publicDispatchTransferFrom(\n        bytes memory assetData,\n        address from,\n        address to,\n        uint256 amount\n    )\n        public\n    {\n        dispatchTransferFrom(assetData, from, to, amount);\n    }\n}\n",
+		"protocol/Exchange/MixinAssetProxyDispatcher.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol\";\nimport \"./mixins/MAssetProxyDispatcher.sol\";\nimport \"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAssetProxy.sol\";\n\n\ncontract MixinAssetProxyDispatcher is\n    Ownable,\n    MAssetProxyDispatcher\n{\n    // Mapping from Asset Proxy Id's to their respective Asset Proxy\n    mapping (bytes4 => IAssetProxy) public assetProxies;\n\n    /// @dev Registers an asset proxy to its asset proxy id.\n    ///      Once an asset proxy is registered, it cannot be unregistered.\n    /// @param assetProxy Address of new asset proxy to register.\n    function registerAssetProxy(address assetProxy)\n        external\n        onlyOwner\n    {\n        IAssetProxy assetProxyContract = IAssetProxy(assetProxy);\n\n        // Ensure that no asset proxy exists with current id.\n        bytes4 assetProxyId = assetProxyContract.getProxyId();\n        address currentAssetProxy = assetProxies[assetProxyId];\n        require(\n            currentAssetProxy == address(0),\n            \"ASSET_PROXY_ALREADY_EXISTS\"\n        );\n\n        // Add asset proxy and log registration.\n        assetProxies[assetProxyId] = assetProxyContract;\n        emit AssetProxyRegistered(\n            assetProxyId,\n            assetProxy\n        );\n    }\n\n    /// @dev Gets an asset proxy.\n    /// @param assetProxyId Id of the asset proxy.\n    /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.\n    function getAssetProxy(bytes4 assetProxyId)\n        external\n        view\n        returns (address)\n    {\n        return assetProxies[assetProxyId];\n    }\n\n    /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.\n    /// @param assetData Byte array encoded for the asset.\n    /// @param from Address to transfer token from.\n    /// @param to Address to transfer token to.\n    /// @param amount Amount of token to transfer.\n    function dispatchTransferFrom(\n        bytes memory assetData,\n        address from,\n        address to,\n        uint256 amount\n    )\n        internal\n    {\n        // Do nothing if no amount should be transferred.\n        if (amount > 0 && from != to) {\n            // Ensure assetData length is valid\n            require(\n                assetData.length > 3,\n                \"LENGTH_GREATER_THAN_3_REQUIRED\"\n            );\n            \n            // Lookup assetProxy. We do not use `LibBytes.readBytes4` for gas efficiency reasons.\n            bytes4 assetProxyId;\n            assembly {\n                assetProxyId := and(mload(\n                    add(assetData, 32)),\n                    0xFFFFFFFF00000000000000000000000000000000000000000000000000000000\n                )\n            }\n            address assetProxy = assetProxies[assetProxyId];\n\n            // Ensure that assetProxy exists\n            require(\n                assetProxy != address(0),\n                \"ASSET_PROXY_DOES_NOT_EXIST\"\n            );\n            \n            // We construct calldata for the `assetProxy.transferFrom` ABI.\n            // The layout of this calldata is in the table below.\n            // \n            // | Area     | Offset | Length  | Contents                                    |\n            // | -------- |--------|---------|-------------------------------------------- |\n            // | Header   | 0      | 4       | function selector                           |\n            // | Params   |        | 4 * 32  | function parameters:                        |\n            // |          | 4      |         |   1. offset to assetData (*)                |\n            // |          | 36     |         |   2. from                                   |\n            // |          | 68     |         |   3. to                                     |\n            // |          | 100    |         |   4. amount                                 |\n            // | Data     |        |         | assetData:                                  |\n            // |          | 132    | 32      | assetData Length                            |\n            // |          | 164    | **      | assetData Contents                          |\n\n            assembly {\n                /////// Setup State ///////\n                // `cdStart` is the start of the calldata for `assetProxy.transferFrom` (equal to free memory ptr).\n                let cdStart := mload(64)\n                // `dataAreaLength` is the total number of words needed to store `assetData`\n                //  As-per the ABI spec, this value is padded up to the nearest multiple of 32,\n                //  and includes 32-bytes for length.\n                let dataAreaLength := and(add(mload(assetData), 63), 0xFFFFFFFFFFFE0)\n                // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.\n                let cdEnd := add(cdStart, add(132, dataAreaLength))\n\n                \n                /////// Setup Header Area ///////\n                // This area holds the 4-byte `transferFromSelector`.\n                // bytes4(keccak256(\"transferFrom(bytes,address,address,uint256)\")) = 0xa85e59e4\n                mstore(cdStart, 0xa85e59e400000000000000000000000000000000000000000000000000000000)\n                \n                /////// Setup Params Area ///////\n                // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.\n                // Notes:\n                //   1. The offset to `assetData` is the length of the Params Area (128 bytes).\n                //   2. A 20-byte mask is applied to addresses to zero-out the unused bytes.\n                mstore(add(cdStart, 4), 128)\n                mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))\n                mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))\n                mstore(add(cdStart, 100), amount)\n                \n                /////// Setup Data Area ///////\n                // This area holds `assetData`.\n                let dataArea := add(cdStart, 132)\n                // solhint-disable-next-line no-empty-blocks\n                for {} lt(dataArea, cdEnd) {} {\n                    mstore(dataArea, mload(assetData))\n                    dataArea := add(dataArea, 32)\n                    assetData := add(assetData, 32)\n                }\n\n                /////// Call `assetProxy.transferFrom` using the constructed calldata ///////\n                let success := call(\n                    gas,                    // forward all gas\n                    assetProxy,             // call address of asset proxy\n                    0,                      // don't send any ETH\n                    cdStart,                // pointer to start of input\n                    sub(cdEnd, cdStart),    // length of input  \n                    cdStart,                // write output over input\n                    512                     // reserve 512 bytes for output\n                )\n                if iszero(success) {\n                    revert(cdStart, returndatasize())\n                }\n            }\n        }\n    }\n}\n",
+		"@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol": "pragma solidity 0.4.24;\n\nimport \"./IOwnable.sol\";\n\n\ncontract Ownable is\n    IOwnable\n{\n    address public owner;\n\n    constructor ()\n        public\n    {\n        owner = msg.sender;\n    }\n\n    modifier onlyOwner() {\n        require(\n            msg.sender == owner,\n            \"ONLY_CONTRACT_OWNER\"\n        );\n        _;\n    }\n\n    function transferOwnership(address newOwner)\n        public\n        onlyOwner\n    {\n        if (newOwner != address(0)) {\n            owner = newOwner;\n        }\n    }\n}\n",
+		"@0x/contracts-utils/contracts/utils/Ownable/IOwnable.sol": "pragma solidity 0.4.24;\n\n\ncontract IOwnable {\n\n    function transferOwnership(address newOwner)\n        public;\n}\n",
+		"protocol/Exchange/mixins/MAssetProxyDispatcher.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-interfaces/contracts/protocol/Exchange/IAssetProxyDispatcher.sol\";\n\n\ncontract MAssetProxyDispatcher is\n    IAssetProxyDispatcher\n{\n    // Logs registration of new asset proxy\n    event AssetProxyRegistered(\n        bytes4 id,              // Id of new registered AssetProxy.\n        address assetProxy      // Address of new registered AssetProxy.\n    );\n\n    /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.\n    /// @param assetData Byte array encoded for the asset.\n    /// @param from Address to transfer token from.\n    /// @param to Address to transfer token to.\n    /// @param amount Amount of token to transfer.\n    function dispatchTransferFrom(\n        bytes memory assetData,\n        address from,\n        address to,\n        uint256 amount\n    )\n        internal;\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/IAssetProxyDispatcher.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract IAssetProxyDispatcher {\n\n    /// @dev Registers an asset proxy to its asset proxy id.\n    ///      Once an asset proxy is registered, it cannot be unregistered.\n    /// @param assetProxy Address of new asset proxy to register.\n    function registerAssetProxy(address assetProxy)\n        external;\n\n    /// @dev Gets an asset proxy.\n    /// @param assetProxyId Id of the asset proxy.\n    /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.\n    function getAssetProxy(bytes4 assetProxyId)\n        external\n        view\n        returns (address);\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAssetProxy.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"./IAuthorizable.sol\";\n\n\ncontract IAssetProxy is\n    IAuthorizable\n{\n    /// @dev Transfers assets. Either succeeds or throws.\n    /// @param assetData Byte array encoded for the respective asset proxy.\n    /// @param from Address to transfer asset from.\n    /// @param to Address to transfer asset to.\n    /// @param amount Amount of asset to transfer.\n    function transferFrom(\n        bytes assetData,\n        address from,\n        address to,\n        uint256 amount\n    )\n        external;\n    \n    /// @dev Gets the proxy id associated with the proxy address.\n    /// @return Proxy id.\n    function getProxyId()\n        external\n        pure\n        returns (bytes4);\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAuthorizable.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-utils/contracts/utils/Ownable/IOwnable.sol\";\n\n\ncontract IAuthorizable is\n    IOwnable\n{\n    /// @dev Authorizes an address.\n    /// @param target Address to authorize.\n    function addAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    function removeAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    /// @param index Index of target in authorities array.\n    function removeAuthorizedAddressAtIndex(\n        address target,\n        uint256 index\n    )\n        external;\n    \n    /// @dev Gets all authorized addresses.\n    /// @return Array of authorized addresses.\n    function getAuthorizedAddresses()\n        external\n        view\n        returns (address[] memory);\n}\n"
+	},
+	"sourceTreeHashHex": "0x14a2f4e7fc0192ca82037294fb6e03b99a8787b265104a30f3be8940d5615a22",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

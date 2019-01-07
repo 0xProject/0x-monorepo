@@ -1,0 +1,42 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "SafeMath",
+	"compilerOutput": {
+		"abi": [],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820a796f3a34dd341358ea0ed05640d1fe37c523722c0921b29d3846bc49cad25440029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x35 DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0xa7 SWAP7 RETURN LOG3 0x4d 0xd3 COINBASE CALLDATALOAD DUP15 LOG0 0xed SDIV PUSH5 0xD1FE37C52 CALLDATACOPY 0x22 0xc0 SWAP3 SHL 0x29 0xd3 DUP5 PUSH12 0xC49CAD254400290000000000 ",
+				"sourceMap": "26:1482:7:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;26:1482:7;;;;;;;"
+			}
+		}
+	},
+	"sources": {
+		"utils/SafeMath/SafeMath.sol": {
+			"id": 7
+		}
+	},
+	"sourceCodes": {
+		"utils/SafeMath/SafeMath.sol": "pragma solidity 0.4.24;\n\n\ncontract SafeMath {\n\n    function safeMul(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        if (a == 0) {\n            return 0;\n        }\n        uint256 c = a * b;\n        require(\n            c / a == b,\n            \"UINT256_OVERFLOW\"\n        );\n        return c;\n    }\n\n    function safeDiv(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        uint256 c = a / b;\n        return c;\n    }\n\n    function safeSub(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        require(\n            b <= a,\n            \"UINT256_UNDERFLOW\"\n        );\n        return a - b;\n    }\n\n    function safeAdd(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        uint256 c = a + b;\n        require(\n            c >= a,\n            \"UINT256_OVERFLOW\"\n        );\n        return c;\n    }\n\n    function max64(uint64 a, uint64 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a >= b ? a : b;\n    }\n\n    function min64(uint64 a, uint64 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a < b ? a : b;\n    }\n\n    function max256(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a >= b ? a : b;\n    }\n\n    function min256(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a < b ? a : b;\n    }\n}\n"
+	},
+	"sourceTreeHashHex": "0x2a10b38ed4e013b1cbcd01be5df0553db35e07c1438f22464134af6532dcd0bc",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

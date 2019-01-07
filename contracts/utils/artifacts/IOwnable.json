@@ -1,0 +1,57 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "IOwnable",
+	"compilerOutput": {
+		"abi": [
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x",
+				"opcodes": "",
+				"sourceMap": ""
+			}
+		}
+	},
+	"sources": {
+		"utils/Ownable/IOwnable.sol": {
+			"id": 4
+		}
+	},
+	"sourceCodes": {
+		"utils/Ownable/IOwnable.sol": "pragma solidity 0.4.24;\n\n\ncontract IOwnable {\n\n    function transferOwnership(address newOwner)\n        public;\n}\n"
+	},
+	"sourceTreeHashHex": "0x768e586349f9e20df154d815256f420b33c0df71d2d8c2b54a25318e0c11d715",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

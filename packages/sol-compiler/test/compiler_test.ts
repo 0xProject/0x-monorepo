@@ -22,6 +22,13 @@ describe('#Compiler', function(): void {
         artifactsDir,
         contractsDir,
         contracts: constants.contracts,
+        compilerSettings: {
+            outputSelection: {
+                '*': {
+                    '*': [],
+                },
+            },
+        },
     };
     it('should create an Exchange artifact with the correct unlinked binary', async () => {
         compilerOpts.contracts = ['Exchange'];

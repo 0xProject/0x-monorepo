@@ -1,0 +1,42 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "LibAssetProxyErrors",
+	"compilerOutput": {
+		"abi": [],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820d599b5a86712b3e89395a4753cfdabc09515a0f59e6e07672ec465ea7f59e20f0029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x35 DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0xd5 SWAP10 0xb5 0xa8 PUSH8 0x12B3E89395A4753C REVERT 0xab 0xc0 SWAP6 ISZERO LOG0 0xf5 SWAP15 PUSH15 0x7672EC465EA7F59E20F0029000000 ",
+				"sourceMap": "815:1182:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;815:1182:4;;;;;;;"
+			}
+		}
+	},
+	"sources": {
+		"libs/LibAssetProxyErrors.sol": {
+			"id": 4
+		}
+	},
+	"sourceCodes": {
+		"libs/LibAssetProxyErrors.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\n// solhint-disable\npragma solidity 0.4.24;\n\n\n/// @dev This contract documents the revert reasons used in the AssetProxy contracts.\n/// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.\ncontract LibAssetProxyErrors {\n\n    /// Authorizable errors ///\n    string constant SENDER_NOT_AUTHORIZED = \"SENDER_NOT_AUTHORIZED\";                        // Sender not authorized to call this method.\n    string constant TARGET_NOT_AUTHORIZED = \"TARGET_NOT_AUTHORIZED\";                        // Target address not authorized to call this method.\n    string constant TARGET_ALREADY_AUTHORIZED = \"TARGET_ALREADY_AUTHORIZED\";                // Target address must not already be authorized.\n    string constant INDEX_OUT_OF_BOUNDS = \"INDEX_OUT_OF_BOUNDS\";                            // Specified array index is out of bounds.\n    string constant AUTHORIZED_ADDRESS_MISMATCH = \"AUTHORIZED_ADDRESS_MISMATCH\";            // Address at index does not match given target address.\n\n    /// Transfer errors ///\n    string constant INVALID_AMOUNT = \"INVALID_AMOUNT\";                                      // Transfer amount must equal 1.\n    string constant TRANSFER_FAILED = \"TRANSFER_FAILED\";                                    // Transfer failed.\n    string constant LENGTH_GREATER_THAN_131_REQUIRED = \"LENGTH_GREATER_THAN_131_REQUIRED\";  // Byte array must have a length greater than 0.\n}\n"
+	},
+	"sourceTreeHashHex": "0x3cc37404b074b376f3ca7e3a929b19a87cd7d0fd8e13d7e6c6b46495f0ec27b8",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

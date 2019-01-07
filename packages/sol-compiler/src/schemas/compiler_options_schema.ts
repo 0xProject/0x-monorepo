@@ -21,6 +21,6 @@ export const compilerOptionsSchema = {
         },
     },
     type: 'object',
-    required: [],
+    required: ['contractsDir', 'artifactsDir', 'compilerSettings', 'contracts'],
     additionalProperties: false,
 };

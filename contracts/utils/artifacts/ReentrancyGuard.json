@@ -1,0 +1,42 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "ReentrancyGuard",
+	"compilerOutput": {
+		"abi": [],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x608060405260008060006101000a81548160ff021916908315150217905550348015602957600080fd5b5060358060376000396000f3006080604052600080fd00a165627a7a72305820de84702043fc56b6eb1b3a5d2c0d38c1e31be205ae22434b30b4213e4709c3e20029",
+				"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 PUSH1 0x0 PUSH2 0x100 EXP DUP2 SLOAD DUP2 PUSH1 0xFF MUL NOT AND SWAP1 DUP4 ISZERO ISZERO MUL OR SWAP1 SSTORE POP CALLVALUE DUP1 ISZERO PUSH1 0x29 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x35 DUP1 PUSH1 0x37 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0xde DUP5 PUSH17 0x2043FC56B6EB1B3A5D2C0D38C1E31BE205 0xae 0x22 NUMBER 0x4b ADDRESS 0xb4 0x21 RETURNDATACOPY 0x47 MULMOD 0xc3 0xe2 STOP 0x29 ",
+				"sourceMap": "606:573:6:-;;;689:5;667:27;;;;;;;;;;;;;;;;;;;;606:573;8:9:-1;5:2;;;30:1;27;20:12;5:2;606:573:6;;;;;;;"
+			}
+		}
+	},
+	"sources": {
+		"utils/ReentrancyGuard/ReentrancyGuard.sol": {
+			"id": 6
+		}
+	},
+	"sourceCodes": {
+		"utils/ReentrancyGuard/ReentrancyGuard.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract ReentrancyGuard {\n\n    // Locked state of mutex\n    bool private locked = false;\n\n    /// @dev Functions with this modifer cannot be reentered. The mutex will be locked\n    ///      before function execution and unlocked after.\n    modifier nonReentrant() {\n        // Ensure mutex is unlocked\n        require(\n            !locked,\n            \"REENTRANCY_ILLEGAL\"\n        );\n\n        // Lock mutex before function call\n        locked = true;\n\n        // Perform function call\n        _;\n\n        // Unlock mutex after function call\n        locked = false;\n    }\n}\n"
+	},
+	"sourceTreeHashHex": "0xfad8ad3470330b357ef274e436aa80f07f0abf6f24615a2594dd2ab9eef27966",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}

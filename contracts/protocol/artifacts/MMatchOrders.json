@@ -1,0 +1,244 @@
+{
+	"schemaVersion": "2.0.0",
+	"contractName": "MMatchOrders",
+	"compilerOutput": {
+		"abi": [
+			{
+				"constant": false,
+				"inputs": [
+					{
+						"components": [
+							{
+								"name": "makerAddress",
+								"type": "address"
+							},
+							{
+								"name": "takerAddress",
+								"type": "address"
+							},
+							{
+								"name": "feeRecipientAddress",
+								"type": "address"
+							},
+							{
+								"name": "senderAddress",
+								"type": "address"
+							},
+							{
+								"name": "makerAssetAmount",
+								"type": "uint256"
+							},
+							{
+								"name": "takerAssetAmount",
+								"type": "uint256"
+							},
+							{
+								"name": "makerFee",
+								"type": "uint256"
+							},
+							{
+								"name": "takerFee",
+								"type": "uint256"
+							},
+							{
+								"name": "expirationTimeSeconds",
+								"type": "uint256"
+							},
+							{
+								"name": "salt",
+								"type": "uint256"
+							},
+							{
+								"name": "makerAssetData",
+								"type": "bytes"
+							},
+							{
+								"name": "takerAssetData",
+								"type": "bytes"
+							}
+						],
+						"name": "leftOrder",
+						"type": "tuple"
+					},
+					{
+						"components": [
+							{
+								"name": "makerAddress",
+								"type": "address"
+							},
+							{
+								"name": "takerAddress",
+								"type": "address"
+							},
+							{
+								"name": "feeRecipientAddress",
+								"type": "address"
+							},
+							{
+								"name": "senderAddress",
+								"type": "address"
+							},
+							{
+								"name": "makerAssetAmount",
+								"type": "uint256"
+							},
+							{
+								"name": "takerAssetAmount",
+								"type": "uint256"
+							},
+							{
+								"name": "makerFee",
+								"type": "uint256"
+							},
+							{
+								"name": "takerFee",
+								"type": "uint256"
+							},
+							{
+								"name": "expirationTimeSeconds",
+								"type": "uint256"
+							},
+							{
+								"name": "salt",
+								"type": "uint256"
+							},
+							{
+								"name": "makerAssetData",
+								"type": "bytes"
+							},
+							{
+								"name": "takerAssetData",
+								"type": "bytes"
+							}
+						],
+						"name": "rightOrder",
+						"type": "tuple"
+					},
+					{
+						"name": "leftSignature",
+						"type": "bytes"
+					},
+					{
+						"name": "rightSignature",
+						"type": "bytes"
+					}
+				],
+				"name": "matchOrders",
+				"outputs": [
+					{
+						"components": [
+							{
+								"components": [
+									{
+										"name": "makerAssetFilledAmount",
+										"type": "uint256"
+									},
+									{
+										"name": "takerAssetFilledAmount",
+										"type": "uint256"
+									},
+									{
+										"name": "makerFeePaid",
+										"type": "uint256"
+									},
+									{
+										"name": "takerFeePaid",
+										"type": "uint256"
+									}
+								],
+								"name": "left",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"name": "makerAssetFilledAmount",
+										"type": "uint256"
+									},
+									{
+										"name": "takerAssetFilledAmount",
+										"type": "uint256"
+									},
+									{
+										"name": "makerFeePaid",
+										"type": "uint256"
+									},
+									{
+										"name": "takerFeePaid",
+										"type": "uint256"
+									}
+								],
+								"name": "right",
+								"type": "tuple"
+							},
+							{
+								"name": "leftMakerAssetSpreadAmount",
+								"type": "uint256"
+							}
+						],
+						"name": "matchedFillResults",
+						"type": "tuple"
+					}
+				],
+				"payable": false,
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"evm": {
+			"bytecode": {
+				"linkReferences": {},
+				"object": "0x",
+				"opcodes": "",
+				"sourceMap": ""
+			}
+		}
+	},
+	"sources": {
+		"protocol/Exchange/mixins/MMatchOrders.sol": {
+			"id": 42
+		},
+		"@0x/contracts-libs/contracts/libs/LibOrder.sol": {
+			"id": 17
+		},
+		"@0x/contracts-libs/contracts/libs/LibEIP712.sol": {
+			"id": 13
+		},
+		"@0x/contracts-libs/contracts/libs/LibFillResults.sol": {
+			"id": 15
+		},
+		"@0x/contracts-utils/contracts/utils/SafeMath/SafeMath.sol": {
+			"id": 26
+		},
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/IMatchOrders.sol": {
+			"id": 5
+		}
+	},
+	"sourceCodes": {
+		"protocol/Exchange/mixins/MMatchOrders.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\npragma solidity 0.4.24;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-libs/contracts/libs/LibOrder.sol\";\nimport \"@0x/contracts-libs/contracts/libs/LibFillResults.sol\";\nimport \"@0x/contracts-interfaces/contracts/protocol/Exchange/IMatchOrders.sol\";\n\n\ncontract MMatchOrders is\n    IMatchOrders\n{\n    /// @dev Validates context for matchOrders. Succeeds or throws.\n    /// @param leftOrder First order to match.\n    /// @param rightOrder Second order to match.\n    function assertValidMatch(\n        LibOrder.Order memory leftOrder,\n        LibOrder.Order memory rightOrder\n    )\n        internal\n        pure;\n\n    /// @dev Calculates fill amounts for the matched orders.\n    ///      Each order is filled at their respective price point. However, the calculations are\n    ///      carried out as though the orders are both being filled at the right order's price point.\n    ///      The profit made by the leftOrder order goes to the taker (who matched the two orders).\n    /// @param leftOrder First order to match.\n    /// @param rightOrder Second order to match.\n    /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.\n    /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.\n    /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.\n    function calculateMatchedFillResults(\n        LibOrder.Order memory leftOrder,\n        LibOrder.Order memory rightOrder,\n        uint256 leftOrderTakerAssetFilledAmount,\n        uint256 rightOrderTakerAssetFilledAmount\n    )\n        internal\n        pure\n        returns (LibFillResults.MatchedFillResults memory matchedFillResults);\n\n}\n",
+		"@0x/contracts-libs/contracts/libs/LibOrder.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"./LibEIP712.sol\";\n\n\ncontract LibOrder is\n    LibEIP712\n{\n    // Hash for the EIP712 Order Schema\n    bytes32 constant internal EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(\n        \"Order(\",\n        \"address makerAddress,\",\n        \"address takerAddress,\",\n        \"address feeRecipientAddress,\",\n        \"address senderAddress,\",\n        \"uint256 makerAssetAmount,\",\n        \"uint256 takerAssetAmount,\",\n        \"uint256 makerFee,\",\n        \"uint256 takerFee,\",\n        \"uint256 expirationTimeSeconds,\",\n        \"uint256 salt,\",\n        \"bytes makerAssetData,\",\n        \"bytes takerAssetData\",\n        \")\"\n    ));\n\n    // A valid order remains fillable until it is expired, fully filled, or cancelled.\n    // An order's state is unaffected by external factors, like account balances.\n    enum OrderStatus {\n        INVALID,                     // Default value\n        INVALID_MAKER_ASSET_AMOUNT,  // Order does not have a valid maker asset amount\n        INVALID_TAKER_ASSET_AMOUNT,  // Order does not have a valid taker asset amount\n        FILLABLE,                    // Order is fillable\n        EXPIRED,                     // Order has already expired\n        FULLY_FILLED,                // Order is fully filled\n        CANCELLED                    // Order has been cancelled\n    }\n\n    // solhint-disable max-line-length\n    struct Order {\n        address makerAddress;           // Address that created the order.      \n        address takerAddress;           // Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.          \n        address feeRecipientAddress;    // Address that will recieve fees when order is filled.      \n        address senderAddress;          // Address that is allowed to call Exchange contract methods that affect this order. If set to 0, any address is allowed to call these methods.\n        uint256 makerAssetAmount;       // Amount of makerAsset being offered by maker. Must be greater than 0.        \n        uint256 takerAssetAmount;       // Amount of takerAsset being bid on by maker. Must be greater than 0.        \n        uint256 makerFee;               // Amount of ZRX paid to feeRecipient by maker when order is filled. If set to 0, no transfer of ZRX from maker to feeRecipient will be attempted.\n        uint256 takerFee;               // Amount of ZRX paid to feeRecipient by taker when order is filled. If set to 0, no transfer of ZRX from taker to feeRecipient will be attempted.\n        uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.          \n        uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.     \n        bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The last byte references the id of this proxy.\n        bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The last byte references the id of this proxy.\n    }\n    // solhint-enable max-line-length\n\n    struct OrderInfo {\n        uint8 orderStatus;                    // Status that describes order's validity and fillability.\n        bytes32 orderHash;                    // EIP712 hash of the order (see LibOrder.getOrderHash).\n        uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.\n    }\n\n    /// @dev Calculates Keccak-256 hash of the order.\n    /// @param order The order structure.\n    /// @return Keccak-256 EIP712 hash of the order.\n    function getOrderHash(Order memory order)\n        internal\n        view\n        returns (bytes32 orderHash)\n    {\n        orderHash = hashEIP712Message(hashOrder(order));\n        return orderHash;\n    }\n\n    /// @dev Calculates EIP712 hash of the order.\n    /// @param order The order structure.\n    /// @return EIP712 hash of the order.\n    function hashOrder(Order memory order)\n        internal\n        pure\n        returns (bytes32 result)\n    {\n        bytes32 schemaHash = EIP712_ORDER_SCHEMA_HASH;\n        bytes32 makerAssetDataHash = keccak256(order.makerAssetData);\n        bytes32 takerAssetDataHash = keccak256(order.takerAssetData);\n\n        // Assembly for more efficiently computing:\n        // keccak256(abi.encodePacked(\n        //     EIP712_ORDER_SCHEMA_HASH,\n        //     bytes32(order.makerAddress),\n        //     bytes32(order.takerAddress),\n        //     bytes32(order.feeRecipientAddress),\n        //     bytes32(order.senderAddress),\n        //     order.makerAssetAmount,\n        //     order.takerAssetAmount,\n        //     order.makerFee,\n        //     order.takerFee,\n        //     order.expirationTimeSeconds,\n        //     order.salt,\n        //     keccak256(order.makerAssetData),\n        //     keccak256(order.takerAssetData)\n        // ));\n\n        assembly {\n            // Calculate memory addresses that will be swapped out before hashing\n            let pos1 := sub(order, 32)\n            let pos2 := add(order, 320)\n            let pos3 := add(order, 352)\n\n            // Backup\n            let temp1 := mload(pos1)\n            let temp2 := mload(pos2)\n            let temp3 := mload(pos3)\n            \n            // Hash in place\n            mstore(pos1, schemaHash)\n            mstore(pos2, makerAssetDataHash)\n            mstore(pos3, takerAssetDataHash)\n            result := keccak256(pos1, 416)\n            \n            // Restore\n            mstore(pos1, temp1)\n            mstore(pos2, temp2)\n            mstore(pos3, temp3)\n        }\n        return result;\n    }\n}\n",
+		"@0x/contracts-libs/contracts/libs/LibEIP712.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\ncontract LibEIP712 {\n\n    // EIP191 header for EIP712 prefix\n    string constant internal EIP191_HEADER = \"\\x19\\x01\";\n\n    // EIP712 Domain Name value\n    string constant internal EIP712_DOMAIN_NAME = \"0x Protocol\";\n\n    // EIP712 Domain Version value\n    string constant internal EIP712_DOMAIN_VERSION = \"2\";\n\n    // Hash of the EIP712 Domain Separator Schema\n    bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(\n        \"EIP712Domain(\",\n        \"string name,\",\n        \"string version,\",\n        \"address verifyingContract\",\n        \")\"\n    ));\n\n    // Hash of the EIP712 Domain Separator data\n    // solhint-disable-next-line var-name-mixedcase\n    bytes32 public EIP712_DOMAIN_HASH;\n\n    constructor ()\n        public\n    {\n        EIP712_DOMAIN_HASH = keccak256(abi.encodePacked(\n            EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,\n            keccak256(bytes(EIP712_DOMAIN_NAME)),\n            keccak256(bytes(EIP712_DOMAIN_VERSION)),\n            bytes32(address(this))\n        ));\n    }\n\n    /// @dev Calculates EIP712 encoding for a hash struct in this EIP712 Domain.\n    /// @param hashStruct The EIP712 hash struct.\n    /// @return EIP712 hash applied to this EIP712 Domain.\n    function hashEIP712Message(bytes32 hashStruct)\n        internal\n        view\n        returns (bytes32 result)\n    {\n        bytes32 eip712DomainHash = EIP712_DOMAIN_HASH;\n\n        // Assembly for more efficient computing:\n        // keccak256(abi.encodePacked(\n        //     EIP191_HEADER,\n        //     EIP712_DOMAIN_HASH,\n        //     hashStruct    \n        // ));\n\n        assembly {\n            // Load free memory pointer\n            let memPtr := mload(64)\n\n            mstore(memPtr, 0x1901000000000000000000000000000000000000000000000000000000000000)  // EIP191 header\n            mstore(add(memPtr, 2), eip712DomainHash)                                            // EIP712 domain hash\n            mstore(add(memPtr, 34), hashStruct)                                                 // Hash of struct\n\n            // Compute hash\n            result := keccak256(memPtr, 66)\n        }\n        return result;\n    }\n}\n",
+		"@0x/contracts-libs/contracts/libs/LibFillResults.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\nimport \"@0x/contracts-utils/contracts/utils/SafeMath/SafeMath.sol\";\n\n\ncontract LibFillResults is\n    SafeMath\n{\n    struct FillResults {\n        uint256 makerAssetFilledAmount;  // Total amount of makerAsset(s) filled.\n        uint256 takerAssetFilledAmount;  // Total amount of takerAsset(s) filled.\n        uint256 makerFeePaid;            // Total amount of ZRX paid by maker(s) to feeRecipient(s).\n        uint256 takerFeePaid;            // Total amount of ZRX paid by taker to feeRecipients(s).\n    }\n\n    struct MatchedFillResults {\n        FillResults left;                    // Amounts filled and fees paid of left order.\n        FillResults right;                   // Amounts filled and fees paid of right order.\n        uint256 leftMakerAssetSpreadAmount;  // Spread between price of left and right order, denominated in the left order's makerAsset, paid to taker.\n    }\n\n    /// @dev Adds properties of both FillResults instances.\n    ///      Modifies the first FillResults instance specified.\n    /// @param totalFillResults Fill results instance that will be added onto.\n    /// @param singleFillResults Fill results instance that will be added to totalFillResults.\n    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)\n        internal\n        pure\n    {\n        totalFillResults.makerAssetFilledAmount = safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);\n        totalFillResults.takerAssetFilledAmount = safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);\n        totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);\n        totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);\n    }\n}\n",
+		"@0x/contracts-utils/contracts/utils/SafeMath/SafeMath.sol": "pragma solidity 0.4.24;\n\n\ncontract SafeMath {\n\n    function safeMul(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        if (a == 0) {\n            return 0;\n        }\n        uint256 c = a * b;\n        require(\n            c / a == b,\n            \"UINT256_OVERFLOW\"\n        );\n        return c;\n    }\n\n    function safeDiv(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        uint256 c = a / b;\n        return c;\n    }\n\n    function safeSub(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        require(\n            b <= a,\n            \"UINT256_UNDERFLOW\"\n        );\n        return a - b;\n    }\n\n    function safeAdd(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        uint256 c = a + b;\n        require(\n            c >= a,\n            \"UINT256_OVERFLOW\"\n        );\n        return c;\n    }\n\n    function max64(uint64 a, uint64 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a >= b ? a : b;\n    }\n\n    function min64(uint64 a, uint64 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a < b ? a : b;\n    }\n\n    function max256(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a >= b ? a : b;\n    }\n\n    function min256(uint256 a, uint256 b)\n        internal\n        pure\n        returns (uint256)\n    {\n        return a < b ? a : b;\n    }\n}\n",
+		"@0x/contracts-interfaces/contracts/protocol/Exchange/IMatchOrders.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\npragma solidity 0.4.24;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-libs/contracts/libs/LibOrder.sol\";\nimport \"@0x/contracts-libs/contracts/libs/LibFillResults.sol\";\n\n\ncontract IMatchOrders {\n\n    /// @dev Match two complementary orders that have a profitable spread.\n    ///      Each order is filled at their respective price point. However, the calculations are\n    ///      carried out as though the orders are both being filled at the right order's price point.\n    ///      The profit made by the left order goes to the taker (who matched the two orders).\n    /// @param leftOrder First order to match.\n    /// @param rightOrder Second order to match.\n    /// @param leftSignature Proof that order was created by the left maker.\n    /// @param rightSignature Proof that order was created by the right maker.\n    /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.\n    function matchOrders(\n        LibOrder.Order memory leftOrder,\n        LibOrder.Order memory rightOrder,\n        bytes memory leftSignature,\n        bytes memory rightSignature\n    )\n        public\n        returns (LibFillResults.MatchedFillResults memory matchedFillResults);\n}\n"
+	},
+	"sourceTreeHashHex": "0x819d4ce6a711feeffec60c2176893ce4bfaf16d3aa074222f09bed8aadf9dd28",
+	"compiler": {
+		"name": "solc",
+		"version": "soljson-v0.4.24+commit.e67f0147.js",
+		"settings": {
+			"optimizer": {
+				"enabled": false
+			},
+			"outputSelection": {
+				"*": {
+					"*": [
+						"abi",
+						"evm.bytecode.object"
+					]
+				}
+			}
+		}
+	},
+	"networks": {}
+}
