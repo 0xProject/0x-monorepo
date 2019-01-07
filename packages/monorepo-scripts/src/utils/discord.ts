@@ -6,7 +6,7 @@ import { utils } from './utils';
 
 export const alertDiscordAsync = async (releaseNotes: string): Promise<void> => {
     const webhookUrl = constants.discordAlertWebhookUrl;
-    if (!webhookUrl) {
+    if (webhookUrl === undefined) {
         throw new Error("No discord webhook url, can't alert");
     }
 
