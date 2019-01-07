@@ -25,7 +25,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
         isContactModalOpen: false,
     };
 
-    private _offersData: OfferData[];
+    private readonly _offersData: OfferData[];
 
     constructor(props: NextMarketMakerProps) {
         super(props);
