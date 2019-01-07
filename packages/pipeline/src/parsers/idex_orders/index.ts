@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 
 import { aggregateOrders } from '../utils';
 
-import { IdexOrder, IdexOrderbook, IdexOrderParam } from '../../data_sources/idex';
+import { IdexOrderbook, IdexOrderParam } from '../../data_sources/idex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
@@ -21,7 +21,9 @@ export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp:
     const idexBidOrder = idexOrderbook.bids[0];
     const parsedBids =
         aggregatedBids.length > 0
-            ? aggregatedBids.map(order => parseIdexOrder(idexBidOrder.params, observedTimestamp, 'bid', source, order))
+            ? aggregatedBids.map(order =>
+                  parseIdexOrder(idexBidOrder.params, observedTimestamp, OrderType.Bid, source, order),
+              )
             : [];
 
     const aggregatedAsks = aggregateOrders(idexOrderbook.asks);
@@ -29,7 +31,9 @@ export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp:
     const idexAskOrder = idexOrderbook.asks[0];
     const parsedAsks =
         aggregatedAsks.length > 0
-            ? aggregatedAsks.map(order => parseIdexOrder(idexAskOrder.params, observedTimestamp, 'ask', source, order))
+            ? aggregatedAsks.map(order =>
+                  parseIdexOrder(idexAskOrder.params, observedTimestamp, OrderType.Ask, source, order),
+              )
             : [];
     return parsedBids.concat(parsedAsks);
 }
@@ -62,7 +66,7 @@ export function parseIdexOrder(
     tokenOrder.baseVolume = amount;
     tokenOrder.quoteVolume = price.times(amount);
 
-    if (orderType === 'bid') {
+    if (orderType === OrderType.Bid) {
         tokenOrder.baseAssetSymbol = idexOrderParam.buySymbol;
         tokenOrder.baseAssetAddress = idexOrderParam.tokenBuy;
         tokenOrder.quoteAssetSymbol = idexOrderParam.sellSymbol;

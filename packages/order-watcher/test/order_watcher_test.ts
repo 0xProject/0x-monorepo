@@ -859,29 +859,29 @@ describe('OrderWatcher', () => {
                 })().catch(done);
             });
             // TODO(abandeali1): The following test will fail until the MAP has been deployed and activated.
-            // it('should emit orderStateInvalid when watched order fully filled', (done: DoneCallback) => {
-            //     (async () => {
-            //         signedOrder = await fillScenarios.createFillableSignedOrderAsync(
-            //             makerMultiAssetData,
-            //             takerAssetData,
-            //             makerAddress,
-            //             takerAddress,
-            //             fillableAmount,
-            //         );
-            //         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            //         await orderWatcher.addOrderAsync(signedOrder);
+            it.skip('should emit orderStateInvalid when watched order fully filled', (done: DoneCallback) => {
+                (async () => {
+                    signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                        makerMultiAssetData,
+                        takerAssetData,
+                        makerAddress,
+                        takerAddress,
+                        fillableAmount,
+                    );
+                    const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                    await orderWatcher.addOrderAsync(signedOrder);
 
-            //         const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
-            //             expect(orderState.isValid).to.be.false();
-            //             const invalidOrderState = orderState as OrderStateInvalid;
-            //             expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-            //             expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderRemainingFillAmountZero);
-            //         });
-            //         orderWatcher.subscribe(callback);
+                    const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                        expect(orderState.isValid).to.be.false();
+                        const invalidOrderState = orderState as OrderStateInvalid;
+                        expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                        expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderRemainingFillAmountZero);
+                    });
+                    orderWatcher.subscribe(callback);
 
-            //         await contractWrappers.exchange.fillOrderAsync(signedOrder, fillableAmount, takerAddress);
-            //     })().catch(done);
-            // });
+                    await contractWrappers.exchange.fillOrderAsync(signedOrder, fillableAmount, takerAddress);
+                })().catch(done);
+            });
         });
     });
 }); // tslint:disable:max-file-line-count

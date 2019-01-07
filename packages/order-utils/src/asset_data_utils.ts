@@ -76,7 +76,7 @@ export const assetDataUtils = {
     /**
      * Encodes assetData for multiple AssetProxies into a single hex encoded assetData string, usable in the makerAssetData or
      * takerAssetData fields in a 0x order.
-     * @param amounts Amounts of each asset that correspond to a ginle unit within an order.
+     * @param amounts Amounts of each asset that correspond to a single unit within an order.
      * @param nestedAssetData assetData strings that correspond to a valid assetProxyId.
      * @return The hex encoded assetData string
      */

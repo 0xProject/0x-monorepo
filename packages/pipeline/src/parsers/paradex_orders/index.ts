@@ -21,10 +21,10 @@ export function parseParadexOrders(
     source: string,
 ): TokenOrder[] {
     const parsedBids = paradexOrderbookResponse.bids.map(order =>
-        parseParadexOrder(paradexMarket, observedTimestamp, 'bid', source, order),
+        parseParadexOrder(paradexMarket, observedTimestamp, OrderType.Bid, source, order),
     );
     const parsedAsks = paradexOrderbookResponse.asks.map(order =>
-        parseParadexOrder(paradexMarket, observedTimestamp, 'ask', source, order),
+        parseParadexOrder(paradexMarket, observedTimestamp, OrderType.Ask, source, order),
     );
     return parsedBids.concat(parsedAsks);
 }

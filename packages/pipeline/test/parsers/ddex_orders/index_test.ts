@@ -31,13 +31,13 @@ describe('ddex_orders', () => {
                 amountDecimals: 0,
             };
             const observedTimestamp: number = Date.now();
-            const orderType: OrderType = 'bid';
+            const orderType: OrderType = OrderType.Bid;
             const source: string = 'ddex';
 
             const expected = new TokenOrder();
             expected.source = 'ddex';
             expected.observedTimestamp = observedTimestamp;
-            expected.orderType = 'bid';
+            expected.orderType = OrderType.Bid;
             expected.price = new BigNumber(0.5);
             // ddex currently confuses base and quote assets.
             // Switch them to maintain our internal consistency.

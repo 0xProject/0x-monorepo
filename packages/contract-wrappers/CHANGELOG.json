@@ -6,7 +6,7 @@
                 "note": "Add support for Trust Wallet signature denial error"
             },
             {
-                "note": "Add balance and allowance queries for MultiAssetProxy",
+                "note": "Add balance and allowance queries for `MultiAssetProxy`",
                 "pr": 1363
             }
         ]

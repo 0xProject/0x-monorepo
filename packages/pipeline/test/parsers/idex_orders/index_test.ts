@@ -31,13 +31,13 @@ describe('idex_orders', () => {
                 user: '0x212345667543456435324564345643453453333',
             };
             const observedTimestamp: number = Date.now();
-            const orderType: OrderType = 'bid';
+            const orderType: OrderType = OrderType.Bid;
             const source: string = 'idex';
 
             const expected = new TokenOrder();
             expected.source = 'idex';
             expected.observedTimestamp = observedTimestamp;
-            expected.orderType = 'bid';
+            expected.orderType = OrderType.Bid;
             expected.price = new BigNumber(0.5);
             expected.baseAssetSymbol = 'ABC';
             expected.baseAssetAddress = '0x0000000000000000000000000000000000000000';
@@ -65,13 +65,13 @@ describe('idex_orders', () => {
                 user: '0x212345667543456435324564345643453453333',
             };
             const observedTimestamp: number = Date.now();
-            const orderType: OrderType = 'ask';
+            const orderType: OrderType = OrderType.Ask;
             const source: string = 'idex';
 
             const expected = new TokenOrder();
             expected.source = 'idex';
             expected.observedTimestamp = observedTimestamp;
-            expected.orderType = 'ask';
+            expected.orderType = OrderType.Ask;
             expected.price = new BigNumber(0.5);
             expected.baseAssetSymbol = 'ABC';
             expected.baseAssetAddress = '0x0000000000000000000000000000000000000000';

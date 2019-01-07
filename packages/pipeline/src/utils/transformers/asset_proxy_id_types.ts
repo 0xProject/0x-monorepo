@@ -9,11 +9,11 @@ import { AssetType } from '../../types';
 export function convertAssetProxyIdToType(assetProxyId: AssetProxyId): AssetType {
     switch (assetProxyId) {
         case AssetProxyId.ERC20:
-            return 'erc20';
+            return AssetType.ERC20;
         case AssetProxyId.ERC721:
-            return 'erc721';
+            return AssetType.ERC721;
         case AssetProxyId.MultiAsset:
-            return 'multiAsset';
+            return AssetType.MultiAsset;
         default:
             throw new Error(`${assetProxyId} not a supported assetProxyId`);
     }
