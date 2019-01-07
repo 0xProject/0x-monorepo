@@ -23,13 +23,13 @@ export function parseOasisOrders(
     observedTimestamp: number,
     source: string,
 ): TokenOrder[] {
-    const aggregatedBids = aggregateOrders(R.filter(R.propEq('act', 'bid'), oasisOrderbook));
-    const aggregatedAsks = aggregateOrders(R.filter(R.propEq('act', 'ask'), oasisOrderbook));
+    const aggregatedBids = aggregateOrders(R.filter(R.propEq('act', OrderType.Bid), oasisOrderbook));
+    const aggregatedAsks = aggregateOrders(R.filter(R.propEq('act', OrderType.Ask), oasisOrderbook));
     const parsedBids = aggregatedBids.map(order =>
-        parseOasisOrder(oasisMarket, observedTimestamp, 'bid', source, order),
+        parseOasisOrder(oasisMarket, observedTimestamp, OrderType.Bid, source, order),
     );
     const parsedAsks = aggregatedAsks.map(order =>
-        parseOasisOrder(oasisMarket, observedTimestamp, 'ask', source, order),
+        parseOasisOrder(oasisMarket, observedTimestamp, OrderType.Ask, source, order),
     );
     return parsedBids.concat(parsedAsks);
 }

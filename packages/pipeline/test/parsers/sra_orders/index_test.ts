@@ -5,6 +5,7 @@ import 'mocha';
 
 import { SraOrder } from '../../../src/entities';
 import { _convertToEntity } from '../../../src/parsers/sra_orders';
+import { AssetType } from '../../../src/types';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
@@ -50,12 +51,12 @@ describe('sra_orders', () => {
             expected.signature =
                 '0x1b5a5d672b0d647b5797387ccbb89d822d5d2e873346b014f4ff816ff0783f2a7a0d2824d2d7042ec8ea375bc7f870963e1cb8248f1db03ddf125e27b5963aa11f03';
             expected.rawMakerAssetData = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-            expected.makerAssetType = 'erc20';
+            expected.makerAssetType = AssetType.ERC20;
             expected.makerAssetProxyId = '0xf47261b0';
             expected.makerTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
             expected.makerTokenId = null;
             expected.rawTakerAssetData = '0xf47261b000000000000000000000000042d6622dece394b54999fbd73d108123806f6a18';
-            expected.takerAssetType = 'erc20';
+            expected.takerAssetType = AssetType.ERC20;
             expected.takerAssetProxyId = '0xf47261b0';
             expected.takerTokenAddress = '0x42d6622dece394b54999fbd73d108123806f6a18';
             expected.takerTokenId = null;

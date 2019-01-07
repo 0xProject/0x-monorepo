@@ -22,6 +22,7 @@ import * as UnlimitedAllowanceToken_v1 from '../../generated-artifacts/Unlimited
 import * as WETH9 from '../../generated-artifacts/WETH9.json';
 import * as ZRXToken from '../../generated-artifacts/ZRXToken.json';
 
+// tslint:disable:no-unnecessary-type-assertion
 export const artifacts = {
     DummyERC20Token: DummyERC20Token as ContractArtifact,
     DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,

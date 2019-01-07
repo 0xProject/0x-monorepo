@@ -1,8 +1,8 @@
 export interface DecodingRules {
-    structsAsObjects: boolean;
+    shouldConvertStructsToObjects: boolean;
 }
 
 export interface EncodingRules {
-    optimize?: boolean;
-    annotate?: boolean;
+    shouldOptimize?: boolean;
+    shouldAnnotate?: boolean;
 }

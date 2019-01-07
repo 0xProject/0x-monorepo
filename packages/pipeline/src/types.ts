@@ -1,2 +1,9 @@
-export type AssetType = 'erc20' | 'erc721';
-export type OrderType = 'bid' | 'ask';
+export enum AssetType {
+    ERC20 = 'erc20',
+    ERC721 = 'erc721',
+    MultiAsset = 'multiAsset',
+}
+export enum OrderType {
+    Bid = 'bid',
+    Ask = 'ask',
+}

@@ -62,7 +62,7 @@ export abstract class AbstractSetDataType extends DataType {
         // Create a new scope in the calldata, before descending into the members of this set.
         calldata.startScope();
         let value: any[] | object;
-        if (rules.structsAsObjects && !this._isArray) {
+        if (rules.shouldConvertStructsToObjects && !this._isArray) {
             // Construct an object with values for each member of the set.
             value = {};
             _.each(this._memberIndexByName, (idx: number, key: string) => {

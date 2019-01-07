@@ -1,9 +1,13 @@
 [
     {
-        "version": "4.1.4",
+        "version": "4.2.0",
         "changes": [
             {
                 "note": "Add support for Trust Wallet signature denial error"
+            },
+            {
+                "note": "Add balance and allowance queries for `MultiAssetProxy`",
+                "pr": 1363
             }
         ]
     },

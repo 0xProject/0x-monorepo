@@ -1,7 +1,6 @@
 import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-import { OrderType } from '../types';
 import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'token_orderbook_snapshots', schema: 'raw' })
@@ -11,7 +10,7 @@ export class TokenOrderbookSnapshot {
     @PrimaryColumn({ name: 'source' })
     public source!: string;
     @PrimaryColumn({ name: 'order_type' })
-    public orderType!: OrderType;
+    public orderType!: string;
     @PrimaryColumn({ name: 'price', type: 'numeric', transformer: bigNumberTransformer })
     public price!: BigNumber;
     @PrimaryColumn({ name: 'base_asset_symbol' })

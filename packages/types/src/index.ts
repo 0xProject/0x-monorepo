@@ -110,7 +110,9 @@ export type DoneCallback = (err?: Error) => void;
 
 export interface OrderRelevantState {
     makerBalance: BigNumber;
+    makerIndividualBalances: ObjectMap<BigNumber>;
     makerProxyAllowance: BigNumber;
+    makerIndividualProxyAllowances: ObjectMap<BigNumber>;
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
@@ -155,6 +157,7 @@ export enum SignatureType {
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
+    MultiAsset = '0x94cfcdd7',
 }
 
 export interface ERC20AssetData {
@@ -168,7 +171,21 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type AssetData = ERC20AssetData | ERC721AssetData;
+export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+
+export interface MultiAssetData {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: string[];
+}
+
+export interface MultiAssetDataWithRecursiveDecoding {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: SingleAssetData[];
+}
+
+export type AssetData = SingleAssetData | MultiAssetData | MultiAssetDataWithRecursiveDecoding;
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {

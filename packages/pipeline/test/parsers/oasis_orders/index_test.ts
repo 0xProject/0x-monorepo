@@ -27,13 +27,13 @@ describe('oasis_orders', () => {
                 low: 0,
             };
             const observedTimestamp: number = Date.now();
-            const orderType: OrderType = 'bid';
+            const orderType: OrderType = OrderType.Bid;
             const source: string = 'oasis';
 
             const expected = new TokenOrder();
             expected.source = 'oasis';
             expected.observedTimestamp = observedTimestamp;
-            expected.orderType = 'bid';
+            expected.orderType = OrderType.Bid;
             expected.price = new BigNumber(0.5);
             expected.baseAssetSymbol = 'DEF';
             expected.baseAssetAddress = null;

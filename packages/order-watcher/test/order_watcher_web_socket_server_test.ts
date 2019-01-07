@@ -26,7 +26,7 @@ interface WsMessage {
     data: string;
 }
 
-describe.only('OrderWatcherWebSocketServer', async () => {
+describe('OrderWatcherWebSocketServer', async () => {
     let contractWrappers: ContractWrappers;
     let wsServer: OrderWatcherWebSocketServer;
     let wsClient: WebSocket.w3cwebsocket;
