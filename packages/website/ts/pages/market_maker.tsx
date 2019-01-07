@@ -72,14 +72,14 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                     isLargeTitle={false}
                     isFullWidth={false}
                     isCenteredMobile={false}
-                    title="Bring liquidity to the exchanges of the future"
+                    title="Bring liquidity to the markets of the future"
                     description="Market makers (MMs) are important stakeholders in the 0x ecosystem. The Market Making Program provides a set of resources that help onboard MMs to bring liquidity to the 0x network. The Program includes tutorials, monetary incentives, and 1:1 support from the 0x team."
                     actions={this._renderHeroActions()}
                 />
 
                 <Section bgColor="light" isFlex={true} maxWidth="1170px">
                     <Definition
-                        title="Secure"
+                        title="Secure Trading"
                         titleSize="small"
                         description="Take full custody of your assets to eliminate counterparty risk"
                         icon="secureTrading"
@@ -99,7 +99,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                     <Definition
                         title="Low Cost"
                         titleSize="small"
-                        description="Pay no fees to make or take orders."
+                        description="Pay no gas fees to make 0x orders"
                         icon="low-cost"
                         iconSize="medium"
                         isInline={true}
@@ -123,8 +123,8 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
 
                 <Banner
                     heading="Start trading today."
-                    subline="Dive into our docs, or contact us if needed"
-                    mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
+                    subline="Check out our Market Making tutorials to get started"
+                    mainCta={{ text: 'Tutorials', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal }}
                 />
                 <ModalContact
