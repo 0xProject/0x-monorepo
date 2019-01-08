@@ -2,7 +2,7 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { generateDataItemsFromSignature } from './utils/signatureParser';
+import { generateDataItemsFromSignature } from './utils/signature_parser';
 
 import { DataType } from './abstract_data_types/data_type';
 import { DataTypeFactory } from './abstract_data_types/interfaces';
