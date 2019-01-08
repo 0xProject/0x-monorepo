@@ -1457,7 +1457,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const orderInfoBeforeCancelling = await erc721MakerBalanceThresholdWrapper.getOrderInfoAsync(
                 validSignedOrder,
             );
-            expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
             // Cancel
             const txReceipt = await erc721MakerBalanceThresholdWrapper.cancelOrderAsync(
                 validSignedOrder,
@@ -1470,7 +1470,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const orderInfoAfterCancelling = await erc721MakerBalanceThresholdWrapper.getOrderInfoAsync(
                 validSignedOrder,
             );
-            expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.CANCELLED);
+            expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
         });
         it('Should successfully cancel order if maker does not meet balance threshold', async () => {
             // Create order where maker does not meet balance threshold
@@ -1479,7 +1479,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const orderInfoBeforeCancelling = await erc721NonValidBalanceThresholdWrapper.getOrderInfoAsync(
                 signedOrderWithBadMakerAddress,
             );
-            expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
             // Cancel
             const txReceipt = await erc721NonValidBalanceThresholdWrapper.cancelOrderAsync(
                 signedOrderWithBadMakerAddress,
@@ -1492,7 +1492,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const orderInfoAfterCancelling = await erc721MakerBalanceThresholdWrapper.getOrderInfoAsync(
                 signedOrderWithBadMakerAddress,
             );
-            expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.CANCELLED);
+            expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
         });
     });
 
@@ -1512,7 +1512,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 const orderInfoBeforeCancelling = await erc721MakerBalanceThresholdWrapper.getOrderInfoAsync(
                     signedOrder,
                 );
-                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
             });
             // Cancel
             const txReceipt = await erc721MakerBalanceThresholdWrapper.batchCancelOrdersAsync(
@@ -1527,7 +1527,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 const orderInfoAfterCancelling = await erc721MakerBalanceThresholdWrapper.getOrderInfoAsync(
                     signedOrder,
                 );
-                return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.CANCELLED);
+                return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
             });
         });
         it('Should successfully batch cancel order if maker does not meet balance threshold', async () => {
@@ -1542,7 +1542,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 const orderInfoBeforeCancelling = await erc721NonValidBalanceThresholdWrapper.getOrderInfoAsync(
                     signedOrder,
                 );
-                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
             });
             // Cancel
             const txReceipt = await erc721NonValidBalanceThresholdWrapper.batchCancelOrdersAsync(
@@ -1557,7 +1557,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 const orderInfoAfterCancelling = await erc721NonValidBalanceThresholdWrapper.getOrderInfoAsync(
                     signedOrder,
                 );
-                return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.CANCELLED);
+                return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
             });
         });
     });
@@ -1578,7 +1578,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 const orderInfoBeforeCancelling = await erc721MakerBalanceThresholdWrapper.getOrderInfoAsync(
                     signedOrder,
                 );
-                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
             });
             // Cancel
             const cancelOrdersUpToThisSalt = new BigNumber(1);
@@ -1596,9 +1596,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 );
                 const saltAsBigNumber = new BigNumber(salt);
                 if (saltAsBigNumber.lessThanOrEqualTo(cancelOrdersUpToThisSalt)) {
-                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.CANCELLED);
+                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
                 } else {
-                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
                 }
             });
         });
@@ -1614,7 +1614,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 const orderInfoBeforeCancelling = await erc721NonValidBalanceThresholdWrapper.getOrderInfoAsync(
                     signedOrder,
                 );
-                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+                return expect(orderInfoBeforeCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
             });
             // Cancel
             const cancelOrdersUpToThisSalt = new BigNumber(1);
@@ -1632,9 +1632,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 );
                 const saltAsBigNumber = new BigNumber(salt);
                 if (saltAsBigNumber.lessThanOrEqualTo(cancelOrdersUpToThisSalt)) {
-                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.CANCELLED);
+                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
                 } else {
-                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+                    return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
                 }
             });
         });
