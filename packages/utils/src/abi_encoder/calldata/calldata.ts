@@ -49,7 +49,7 @@ export class Calldata {
             throw new Error('expected root');
         }
         // Optimize, if flag set
-        if (this._rules.optimize) {
+        if (this._rules.shouldOptimize) {
             this._optimize();
         }
         // Set offsets
@@ -60,7 +60,9 @@ export class Calldata {
             offset += block.getSizeInBytes();
         }
         // Generate hex string
-        const hexString = this._rules.annotate ? this._toHumanReadableCallData() : this._toEvmCompatibeCallDataHex();
+        const hexString = this._rules.shouldAnnotate
+            ? this._toHumanReadableCallData()
+            : this._toEvmCompatibeCallDataHex();
         return hexString;
     }
     /**

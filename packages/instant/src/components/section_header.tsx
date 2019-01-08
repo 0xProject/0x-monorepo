@@ -18,3 +18,4 @@ export const SectionHeader: React.StatelessComponent<SectionHeaderProps> = props
         </Text>
     );
 };
+SectionHeader.displayName = 'SectionHeader';

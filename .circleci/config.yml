@@ -210,6 +210,10 @@ jobs:
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
+                      cd python-packages/json_schemas
+                      coverage run setup.py test
+            - run:
+                  command: |
             - run:
                   command: |
                       cd python-packages
@@ -226,6 +230,10 @@ jobs:
                   key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/contract_demo/.coverage
+            - save_cache:
+                  key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/json_schemas/.coverage
             - save_cache:
                   key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -248,7 +256,7 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -274,10 +282,19 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      python -m ensurepip
+                      python -m pip install .[dev]
+            - run:
+                  command: |
                       python -m ensurepip
                       cd python-packages
                       ./install
                       ./lint
+                      cd python-packages/json_schemas
+                      python setup.py lint
+            - run:
+                  command: |
     static-tests:
         working_directory: ~/repo
         docker:
@@ -346,6 +363,9 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}

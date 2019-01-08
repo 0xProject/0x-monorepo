@@ -31,7 +31,7 @@ export interface ERC20AssetAmountInputState {
     currentFontSizePx: number;
 }
 
-export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
+export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
         isDisabled: false,

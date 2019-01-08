@@ -22,9 +22,6 @@ See source for class properties.  Sphinx does not easily generate class property
 
 .. autoclass:: zero_ex.order_utils.asset_data_utils.ERC721AssetData
 
-.. automodule:: zero_ex.json_schemas
-   :members:
-
 Indices and tables
 ==================
 

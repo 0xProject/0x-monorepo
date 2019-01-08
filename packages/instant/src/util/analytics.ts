@@ -46,6 +46,7 @@ enum EventNames {
     BUY_STARTED = 'Buy - Started',
     BUY_SIGNATURE_DENIED = 'Buy - Signature Denied',
     BUY_SIMULATION_FAILED = 'Buy - Simulation Failed',
+    BUY_UNKNOWN_ERROR = 'Buy - Unknown Error',
     BUY_TX_SUBMITTED = 'Buy - Tx Submitted',
     BUY_TX_SUCCEEDED = 'Buy - Tx Succeeded',
     BUY_TX_FAILED = 'Buy - Tx Failed',
@@ -189,6 +190,11 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.BUY_SIGNATURE_DENIED)(buyQuoteEventProperties(buyQuote)),
     trackBuySimulationFailed: (buyQuote: BuyQuote) =>
         trackingEventFnWithPayload(EventNames.BUY_SIMULATION_FAILED)(buyQuoteEventProperties(buyQuote)),
+    trackBuyUnknownError: (buyQuote: BuyQuote, errorMessage: string) =>
+        trackingEventFnWithPayload(EventNames.BUY_UNKNOWN_ERROR)({
+            ...buyQuoteEventProperties(buyQuote),
+            errorMessage,
+        }),
     trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({
             ...buyQuoteEventProperties(buyQuote),

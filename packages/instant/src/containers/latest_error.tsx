@@ -14,7 +14,7 @@ import { zIndex } from '../style/z_index';
 import { Asset, DisplayStatus, Omit, SlideAnimationState } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 
-export interface LatestErrorComponentProps {
+interface LatestErrorComponentProps {
     asset?: Asset;
     latestErrorMessage?: string;
     animationState: SlideAnimationState;
@@ -22,7 +22,7 @@ export interface LatestErrorComponentProps {
     onOverlayClick: () => void;
 }
 
-export const LatestErrorComponent: React.StatelessComponent<LatestErrorComponentProps> = props => {
+const LatestErrorComponent: React.StatelessComponent<LatestErrorComponentProps> = props => {
     if (!props.latestErrorMessage) {
         // Render a hidden SlidingError such that instant does not move when a real error is rendered.
         return (

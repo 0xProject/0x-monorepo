@@ -26,7 +26,7 @@ interface ScalingAmountInputState {
 }
 
 const { stringToMaybeBigNumber, areMaybeBigNumbersEqual } = maybeBigNumberUtil;
-export class ScalingAmountInput extends React.Component<ScalingAmountInputProps, ScalingAmountInputState> {
+export class ScalingAmountInput extends React.PureComponent<ScalingAmountInputProps, ScalingAmountInputState> {
     public static defaultProps = {
         onAmountChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,

@@ -1,0 +1,12 @@
+{
+    "id": "/wholeNumberSchema",
+    "anyOf": [
+        {
+            "type": "string",
+            "pattern": "^\\d+$"
+        },
+        {
+            "type": "integer"
+        }
+    ]
+}

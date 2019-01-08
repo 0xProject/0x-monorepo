@@ -9,7 +9,9 @@
     "files": [
         "./generated-artifacts/BalanceThresholdFilter.json",
         "./generated-artifacts/DutchAuction.json",
-        "./generated-artifacts/Forwarder.json"
+        "./generated-artifacts/Forwarder.json",
+        "./generated-artifacts/OrderMatcher.json",
+        "./generated-artifacts/OrderValidator.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

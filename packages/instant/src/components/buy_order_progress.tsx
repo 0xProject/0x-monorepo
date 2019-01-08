@@ -31,3 +31,5 @@ export const BuyOrderProgress: React.StatelessComponent<BuyOrderProgressProps> =
     }
     return null;
 };
+
+BuyOrderProgress.displayName = 'BuyOrderProgress';

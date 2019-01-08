@@ -42,15 +42,6 @@ class LintCommand(distutils.command.build_py.build_py):
             "mypy src test setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
-            # ensure json schemas don't differ from the authoritative copies:
-            # this is a hack.  ideally we would symlink to the authoritative
-            # copies, but a problem with setuptools is preventing it from
-            # following symlinks when gathering package_data.  see
-            # https://github.com/pypa/setuptools/issues/415.
-            (
-                "diff src/zero_ex/json_schemas/schemas"
-                + " ../../packages/json-schemas/schemas"
-            ).split(),
             # general linter:
             "pylint src test setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable
@@ -182,11 +173,11 @@ setup(
     install_requires=[
         "0x-contract-addresses",
         "0x-contract-artifacts",
+        "0x-json-schemas",
         "eth-abi",
         "eth_utils",
         "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
         # above works around https://github.com/ethereum/web3.py/issues/1179
-        "jsonschema",
         "mypy_extensions",
         "web3",
     ],
@@ -208,10 +199,7 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={
-        "zero_ex.order_utils": ["py.typed"],
-        "zero_ex.json_schemas": ["py.typed", "schemas/*"],
-    },
+    package_data={"zero_ex.order_utils": ["py.typed"]},
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(
