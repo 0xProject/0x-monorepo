@@ -2,7 +2,7 @@ import { ALink } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import { Key, WebsitePaths } from 'ts/types';
 
-const URL_FORUM = 'https://forum.0x.org';
+const URL_FORUM = 'https://forum.0xproject.com';
 const URL_ZEROEX_CHAT = 'https://discord.gg/d3FTX3M';
 
 export const constants = {
@@ -75,7 +75,7 @@ export const constants = {
     URL_APACHE_LICENSE: 'http://www.apache.org/licenses/LICENSE-2.0',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
     URL_BLOG: 'https://blog.0xproject.com/latest',
-    URL_DISCOURSE_FORUM: 'https://forum.0x.org',
+    URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
     URL_ECOSYSTEM_APPLY: 'https://0x.smapply.io/',
     URL_ECOSYSTEM_BLOG_POST: 'https://blog.0xproject.com/announcing-the-0x-ecosystem-acceleration-program-89d1cb89d565',
     URL_FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
