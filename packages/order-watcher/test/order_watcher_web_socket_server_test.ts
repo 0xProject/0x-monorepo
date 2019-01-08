@@ -262,7 +262,9 @@ describe('OrderWatcherWebSocketServer', async () => {
             id: 1,
             jsonrpc: '2.0',
             method: 'ADD_ORDER',
+            params: {
                 signedOrder: nonZeroMakerFeeSignedOrder,
+            },
         };
 
         // Set up a second client and have it add the order
@@ -280,15 +282,15 @@ describe('OrderWatcherWebSocketServer', async () => {
         // Check that both clients receive the emitted event by awaiting the onMessageAsync promises
         let updateMsg = await clientOneOnMessagePromise;
         let updateData = JSON.parse(updateMsg.data);
-        let orderState = updateData.result as OrderStateValid;
-        expect(orderState.isValid).to.be.true();
-        expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
+        let orderState = updateData.result as OrderStateInvalid;
+        expect(orderState.isValid).to.be.false();
+        expect(orderState.error).to.be.eq('INSUFFICIENT_MAKER_FEE_ALLOWANCE');
 
         updateMsg = await clientTwoOnMessagePromise;
         updateData = JSON.parse(updateMsg.data);
-        orderState = updateData.result as OrderStateValid;
-        expect(orderState.isValid).to.be.true();
-        expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
+        orderState = updateData.result as OrderStateInvalid;
+        expect(orderState.isValid).to.be.false();
+        expect(orderState.error).to.be.eq('INSUFFICIENT_MAKER_FEE_ALLOWANCE');
 
         wsClientTwo.close();
         logUtils.log(`${new Date()} [Client] Closed.`);
