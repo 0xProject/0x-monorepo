@@ -26,4 +26,4 @@ lib
 /packages/sra-spec/public/
 package.json
 scripts/postpublish_utils.js
-packages/sol-cov/test/fixtures/artifacts
+packages/sol-coverage/test/fixtures/artifacts

@@ -1,5 +1,5 @@
 import { devConstants } from '@0x/dev-utils';
-import { ProfilerSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
+import { ProfilerSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-profiler';
 import * as _ from 'lodash';
 
 let profilerSubprovider: ProfilerSubprovider;

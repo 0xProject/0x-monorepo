@@ -1,0 +1,12 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note":
+                    "Initial release as a separate package. For historic entries check @0x/sol-trace-based-tools-common",
+                "pr": 1492
+            }
+        ]
+    }
+]

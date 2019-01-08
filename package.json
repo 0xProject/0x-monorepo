@@ -41,7 +41,7 @@
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer migrations"
+        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer migrations"
     },
     "bundlewatch": {
         "files": [
@@ -61,6 +61,9 @@
             ],
             "repoBranchBase": "development"
         }
+    },
+    "resolutions": {
+        "graceful-fs": "4.1.15"
     },
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.0.0-beta.26",
