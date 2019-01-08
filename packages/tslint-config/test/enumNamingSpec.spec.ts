@@ -16,6 +16,11 @@ describe('enumNamingRule', () => {
         const result = helper(src, rule);
         assert.equal(result.errorCount, 0);
     });
+    it(`should not fail PascalCase keys with numbers`, () => {
+        const src = `enum test { Member1 = 'member_one', MemberTwo = 'member two' }`;
+        const result = helper(src, rule);
+        assert.equal(result.errorCount, 0);
+    });
     it(`should fail with camelCase`, () => {
         const src = `enum test { memberOne, memberTwo }`;
         const result = helper(src, rule);

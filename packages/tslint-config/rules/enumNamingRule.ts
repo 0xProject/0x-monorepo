@@ -42,7 +42,7 @@ function walk(ctx: Lint.WalkContext<void>): void {
 }
 
 function toPascalCase(str: string): string {
-    let result = str.replace(/([a-z\W])([A-Z])/g, '$1 $2');
+    let result = str.replace(/([a-z0-9\W])([A-Z])/g, '$1 $2');
     if (result.length === 1) {
         return result.toUpperCase();
     }
@@ -53,7 +53,7 @@ function toPascalCase(str: string): string {
     });
 }
 function isPascalCase(s: string): boolean {
-    const regex = /^([A-Z][a-z]+)+$/g;
+    const regex = /^([A-Z0-9][a-z0-9]+)+$/g;
     const key = s.split('=')[0].trim();
     return regex.test(key);
 }
