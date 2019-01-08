@@ -30,7 +30,7 @@ class LintCommand(distutils.command.build_py.build_py):
             "mypy src setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
-            # ensure contract artifacts match the authoritative copies:
+            # HACK: ensure contract artifacts match the authoritative copies:
             # this is a hack.  ideally we would symlink to the authoritative
             # copies, but a problem with setuptools is preventing it from
             # following symlinks when gathering package_data.  see
