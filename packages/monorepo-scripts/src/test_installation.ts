@@ -55,7 +55,7 @@ function logIfDefined(x: any): void {
         packages,
         pkg => !pkg.packageJson.private && !_.isUndefined(pkg.packageJson.main) && pkg.packageJson.main.endsWith('.js'),
     );
-    const CHUNK_SIZE = 10;
+    const CHUNK_SIZE = 15;
     const chunkedInstallablePackages = _.chunk(installablePackages, CHUNK_SIZE);
     utils.log(`Testing all packages in ${chunkedInstallablePackages.length} chunks`);
     for (const installablePackagesChunk of chunkedInstallablePackages) {
