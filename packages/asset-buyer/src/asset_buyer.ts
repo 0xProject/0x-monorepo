@@ -16,6 +16,7 @@ import {
     BuyQuote,
     BuyQuoteExecutionOpts,
     BuyQuoteRequestOpts,
+    LiquidityForAssetData,
     OrderProvider,
     OrderProviderResponse,
     OrdersAndFillableAmounts,
@@ -25,11 +26,41 @@ import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
+import { orderUtils } from './utils/order_utils';
 
 interface OrdersEntry {
     ordersAndFillableAmounts: OrdersAndFillableAmounts;
     lastRefreshTime: number;
 }
+
+const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAmounts): LiquidityForAssetData => {
+    const { orders, remainingFillableMakerAssetAmounts } = ordersAndFillableAmounts;
+    const liquidityInBigNumbers = orders.reduce(
+        (acc, order, curIndex) => {
+            const availableMakerAssetAmount = remainingFillableMakerAssetAmounts[curIndex];
+            if (availableMakerAssetAmount === undefined) {
+                throw new Error(`No corresponding fillableMakerAssetAmounts at index ${curIndex}`);
+            }
+
+            const tokensAvailableForCurrentOrder = availableMakerAssetAmount;
+            const ethValueAvailableForCurrentOrder = orderUtils.getTakerFillAmount(order, availableMakerAssetAmount);
+            return {
+                tokensAvailableInUnitAmount: acc.tokensAvailableInUnitAmount.plus(tokensAvailableForCurrentOrder),
+                ethValueAvailableInWei: acc.ethValueAvailableInWei.plus(ethValueAvailableForCurrentOrder),
+            };
+        },
+        {
+            tokensAvailableInUnitAmount: new BigNumber(0),
+            ethValueAvailableInWei: new BigNumber(0),
+        },
+    );
+
+    // Turn into regular numbers
+    return {
+        tokensAvailableInUnitAmount: liquidityInBigNumbers.tokensAvailableInUnitAmount.toNumber(),
+        ethValueAvailableInWei: liquidityInBigNumbers.ethValueAvailableInWei.toNumber(),
+    };
+};
 
 export class AssetBuyer {
     public readonly provider: Provider;
@@ -138,10 +169,10 @@ export class AssetBuyer {
         // get the relevant orders for the makerAsset and fees
         // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
+            this.getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
             isMakerAssetZrxToken
                 ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
@@ -177,6 +208,36 @@ export class AssetBuyer {
         const buyQuote = this.getBuyQuoteAsync(assetData, assetBuyAmount, options);
         return buyQuote;
     }
+    public async getLiquidityForAssetDataAsync(
+        assetData: string,
+        options: Partial<BuyQuoteRequestOpts> = {},
+    ): Promise<LiquidityForAssetData> {
+        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = _.merge(
+            {},
+            constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
+            options,
+        );
+        assert.isString('assetData', assetData);
+        assert.isValidPercentage('feePercentage', feePercentage);
+        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
+        assert.isNumber('slippagePercentage', slippagePercentage);
+
+        const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
+        if (!assetPairs.includes(assetData)) {
+            return {
+                tokensAvailableInUnitAmount: 0,
+                ethValueAvailableInWei: 0,
+            };
+        }
+
+        const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
+            assetData,
+            shouldForceOrderRefresh,
+        );
+
+        return calculateLiquidity(ordersAndFillableAmounts);
+    }
+
     /**
      * Given a BuyQuote and desired rate, attempt to execute the buy.
      * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
@@ -261,7 +322,7 @@ export class AssetBuyer {
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
      */
-    private async _getOrdersAndFillableAmountsAsync(
+    public async getOrdersAndFillableAmountsAsync(
         assetData: string,
         shouldForceOrderRefresh: boolean,
     ): Promise<OrdersAndFillableAmounts> {

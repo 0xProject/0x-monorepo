@@ -121,3 +121,11 @@ export interface OrdersAndFillableAmounts {
     orders: SignedOrder[];
     remainingFillableMakerAssetAmounts: BigNumber[];
 }
+
+/**
+ * Represents available liquidity for a given assetData
+ */
+export interface LiquidityForAssetData {
+    tokensAvailableInUnitAmount: number;
+    ethValueAvailableInWei: number;
+}
