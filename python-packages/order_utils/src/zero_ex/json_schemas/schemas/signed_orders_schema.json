@@ -1,5 +1,0 @@
-{
-    "id": "/signedOrdersSchema",
-    "type": "array",
-    "items": { "$ref": "/signedOrderSchema" }
-}
