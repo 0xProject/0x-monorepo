@@ -18,7 +18,7 @@ from pkg_resources import resource_string
 
 from mypy_extensions import TypedDict
 
-from eth_utils import keccak, to_bytes, to_checksum_address
+from eth_utils import keccak, remove_0x_prefix, to_bytes, to_checksum_address
 from web3 import Web3
 import web3.exceptions
 from web3.providers.base import BaseProvider
@@ -214,13 +214,12 @@ def jsdict_order_to_struct(jsdict: dict) -> Order:
 
     order = cast(Order, copy(jsdict))
 
-    def strip_0x(hex_string: str) -> str:
-        if hex_string.startswith("0x"):
-            return hex_string[2:]
-        return hex_string
-
-    order["makerAssetData"] = bytes.fromhex(strip_0x(jsdict["makerAssetData"]))
-    order["takerAssetData"] = bytes.fromhex(strip_0x(jsdict["takerAssetData"]))
+    order["makerAssetData"] = bytes.fromhex(
+        remove_0x_prefix(jsdict["makerAssetData"])
+    )
+    order["takerAssetData"] = bytes.fromhex(
+        remove_0x_prefix(jsdict["takerAssetData"])
+    )
 
     del order["exchangeAddress"]  # type: ignore
     # silence mypy pending release of
