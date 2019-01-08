@@ -9,7 +9,7 @@ import {
     WETH9Events,
 } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { OrderState, SignedOrder } from '@0x/types';
+import { AssetData, OrderState, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
@@ -205,4 +205,14 @@ export interface OrderAndTraderInfo {
 export interface BalanceAndAllowance {
     balance: BigNumber;
     allowance: BigNumber;
+}
+
+export enum DutchAuctionWrapperError {
+    AssetDataMismatch = 'ASSET_DATA_MISMATCH',
+}
+
+export interface DutchAuctionData {
+    assetData: AssetData;
+    beginTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
 }

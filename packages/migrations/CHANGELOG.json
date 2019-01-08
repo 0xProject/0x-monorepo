@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Added migrations for Dutch Auction contract",
+                "pr": 1465
+            }
+        ]
+    },
+    {
         "version": "2.2.2",
         "changes": [
             {

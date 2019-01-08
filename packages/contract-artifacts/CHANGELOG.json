@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "pr": 1465,
+                "note": "Added artifact for Dutch Auction contract"
+            }
+        ]
+    },
+    {
         "version": "1.1.2",
         "changes": [
             {

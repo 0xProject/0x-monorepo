@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added Dutch Auction Wrapper",
+                "pr": 1465
+            }
+        ]
+    },
+    {
         "version": "2.0.2",
         "changes": [
             {

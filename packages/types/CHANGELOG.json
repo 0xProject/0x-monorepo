@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.5.0",
+        "changes": [
+            {
+                "note": "Added types for Dutch Auction contract",
+                "pr": 1465
+            }
+        ]
+    },
+    {
         "version": "1.4.1",
         "changes": [
             {
