@@ -53,7 +53,7 @@ function toPascalCase(str: string): string {
     });
 }
 function isPascalCase(s: string): boolean {
-    const regex = /^([A-Z0-9][a-z0-9]+)+$/g;
+    const regex = /^([A-Z0-9]+[a-z0-9]+)+$/g;
     const key = s.split('=')[0].trim();
     return regex.test(key);
 }
