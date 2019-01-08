@@ -1,5 +1,5 @@
 {
-    "id": "/PagedRequestOpts",
+    "id": "/PagedRequestOptsSchema",
     "type": "object",
     "properties": {
         "page": { "type": "number" },

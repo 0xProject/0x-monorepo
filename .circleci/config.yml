@@ -202,14 +202,25 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      python -m ensurepip
+                      python -m pip install .[dev]
+                      # HACK! installing the package should do the following
+                      # copy for us, but it's not working in CircleCI for some
+                      # reason.  Zendesk support ticket raised (#43979) with
+                      # CircleCI.
+                      mkdir /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
+                      cp -R src/zero_ex/json_schemas/schemas/* /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .[dev]
             - run:
                   command: |
                       cd python-packages/sra_client
                       python -m ensurepip
-                      python -m pip install -e .
+                      python -m pip install .[dev]
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -221,12 +232,20 @@ jobs:
                       - '.tox'
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      coverage run setup.py test
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       coverage run setup.py test
             - run:
                   command: |
                       cd python-packages/sra_client
                       coverage run setup.py test
+            - save_cache:
+                  key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/json_schemas/.coverage
             - save_cache:
                   key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -249,7 +268,7 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -275,14 +294,23 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      python -m ensurepip
+                      python -m pip install .[dev]
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .[dev]
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
+            - run:
+                  command: |
+                      cd python-packages/json_schemas
+                      python setup.py lint
             - run:
                   command: |
                       cd python-packages/order_utils
@@ -355,6 +383,9 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}

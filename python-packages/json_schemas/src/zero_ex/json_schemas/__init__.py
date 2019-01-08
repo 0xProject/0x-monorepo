@@ -6,6 +6,7 @@ from typing import Mapping
 
 from pkg_resources import resource_string
 import jsonschema
+from stringcase import snakecase
 
 
 class _LocalRefResolver(jsonschema.RefResolver):
@@ -13,20 +14,10 @@ class _LocalRefResolver(jsonschema.RefResolver):
 
     def __init__(self):
         """Initialize a new instance."""
-        self.ref_to_file = {
-            "/addressSchema": "address_schema.json",
-            "/hexSchema": "hex_schema.json",
-            "/orderSchema": "order_schema.json",
-            "/wholeNumberSchema": "whole_number_schema.json",
-            "/ECSignature": "ec_signature_schema.json",
-            "/signedOrderSchema": "signed_order_schema.json",
-            "/ecSignatureParameterSchema": (
-                "ec_signature_parameter_schema.json" + ""
-            ),
-        }
         jsonschema.RefResolver.__init__(self, "", "")
 
-    def resolve_from_url(self, url: str) -> str:
+    @staticmethod
+    def resolve_from_url(url: str) -> str:
         """Resolve the given URL.
 
         :param url: a string representing the URL of the JSON schema to fetch.
@@ -35,15 +26,11 @@ class _LocalRefResolver(jsonschema.RefResolver):
                    `url` does not exist.
         """
         ref = url.replace("file://", "")
-        if ref in self.ref_to_file:
-            return json.loads(
-                resource_string(
-                    "zero_ex.json_schemas", f"schemas/{self.ref_to_file[ref]}"
-                )
+        return json.loads(
+            resource_string(
+                "zero_ex.json_schemas",
+                f"schemas/{snakecase(ref.lstrip('/'))}.json",
             )
-        raise jsonschema.ValidationError(
-            f"Unknown ref '{ref}'. "
-            + f"Known refs: {list(self.ref_to_file.keys())}."
         )
 
 
@@ -65,10 +52,32 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
 
     >>> assert_valid(
     ...     {'v': 27, 'r': '0x'+'f'*64, 's': '0x'+'f'*64},
-    ...     '/ECSignature',
+    ...     '/ecSignatureSchema',
     ... )
     """
     # noqa
 
     _, schema = _LOCAL_RESOLVER.resolve(schema_id)
     jsonschema.validate(data, schema, resolver=_LOCAL_RESOLVER)
+
+
+def assert_valid_json(data: str, schema_id: str) -> None:
+    """Validate the given `data` against the specified `schema`.
+
+    :param data: JSON string to be validated.
+    :param schema_id: id property of the JSON schema to validate against.  Must
+        be one of those listed in `the 0x JSON schema files
+        <https://github.com/0xProject/0x-monorepo/tree/development/packages/json-schemas/schemas>`_.
+
+    Raises an exception if validation fails.
+
+    >>> assert_valid_json(
+    ...     r'''{
+    ...         "v": 27,
+    ...         "r": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    ...         "s": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    ...     }''',
+    ...     '/ecSignatureSchema',
+    ... )
+    """  # noqa: E501 (line too long)
+    assert_valid(json.loads(data), schema_id)

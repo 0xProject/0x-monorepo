@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-"""setuptools module for order_utils package."""
+"""setuptools module for json_schemas package."""
 
+import distutils.command.build_py
+from distutils.command.clean import clean
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path
-from pathlib import Path
 from sys import argv
 
-from distutils.command.clean import clean
-import distutils.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
@@ -53,22 +52,6 @@ class LintCommand(distutils.command.build_py.build_py):
             path.dirname(path.realpath(argv[0])), "stubs"
         )
 
-        # HACK(gene): until eth_abi releases
-        # https://github.com/ethereum/eth-abi/pull/107 , we need to simply
-        # create an empty file `py.typed` in the eth_abi package directory.
-        import eth_abi
-
-        eth_abi_dir = path.dirname(path.realpath(eth_abi.__file__))
-        Path(path.join(eth_abi_dir, "py.typed")).touch()
-
-        # HACK(gene): until eth_utils fixes
-        # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
-        # create an empty file `py.typed` in the eth_abi package directory.
-        import eth_utils
-
-        eth_utils_dir = path.dirname(path.realpath(eth_utils.__file__))
-        Path(path.join(eth_utils_dir, "py.typed")).touch()
-
         for lint_command in lint_commands:
             print(
                 "Running lint command `", " ".join(lint_command).strip(), "`"
@@ -86,7 +69,7 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
+        rmtree("src/*.egg-info", ignore_errors=True)
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
@@ -121,7 +104,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
     description = (
         "Publish docs to "
-        + "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-json-schemas-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
@@ -129,36 +112,20 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
         subprocess.check_call("discharge deploy".split())  # nosec
 
 
-class GanacheCommand(distutils.command.build_py.build_py):
-    """Custom command to publish to pypi.org."""
-
-    description = "Run ganache daemon to support tests."
-
-    def run(self):
-        """Run ganache."""
-        cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
-            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
-            + " --networkId 50 -m"
-        ).split()
-        cmd_line.append(
-            "concert load couple harbor equip island argue ramp clarify fence"
-            + " smart topic"
-        )
-        subprocess.call(cmd_line)  # nosec
-
-
 with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
 
 setup(
-    name="0x-order-utils",
-    version="1.0.1",
-    description="Order utilities for 0x applications",
+    name="0x-json-schemas",
+    version="1.0.0",
+    description="JSON schemas for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
+    url=(
+        "https://github.com/0xProject/0x-monorepo/tree/development"
+        + "/python-packages/json_schemas"
+    ),
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
@@ -168,15 +135,8 @@ setup(
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
         "publish_docs": PublishDocsCommand,
-        "ganache": GanacheCommand,
     },
-    install_requires=[
-        "0x-json-schemas",
-        "eth-abi",
-        "eth_utils",
-        "mypy_extensions",
-        "web3",
-    ],
+    install_requires=["jsonschema", "mypy_extensions", "stringcase"],
     extras_require={
         "dev": [
             "bandit",
@@ -195,10 +155,7 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={
-        "zero_ex.order_utils": ["py.typed"],
-        "zero_ex.contract_artifacts": ["artifacts/*"],
-    },
+    package_data={"zero_ex.json_schemas": ["py.typed", "schemas/*"]},
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(

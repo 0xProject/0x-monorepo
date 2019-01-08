@@ -1,5 +1,5 @@
 {
-    "id": "/OrderConfigRequest",
+    "id": "/OrderConfigRequestSchema",
     "type": "object",
     "properties": {
         "makerAddress": { "$ref": "/addressSchema" },

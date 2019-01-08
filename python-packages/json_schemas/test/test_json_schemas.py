@@ -1,8 +1,26 @@
 """Tests of zero_ex.json_schemas"""
 
 
-from zero_ex.order_utils import make_empty_order
 from zero_ex.json_schemas import _LOCAL_RESOLVER, assert_valid
+
+
+NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
+
+EMPTY_ORDER = {
+    "makerAddress": NULL_ADDRESS,
+    "takerAddress": NULL_ADDRESS,
+    "senderAddress": NULL_ADDRESS,
+    "feeRecipientAddress": NULL_ADDRESS,
+    "makerAssetData": NULL_ADDRESS,
+    "takerAssetData": NULL_ADDRESS,
+    "salt": "0",
+    "makerFee": "0",
+    "takerFee": "0",
+    "makerAssetAmount": "0",
+    "takerAssetAmount": "0",
+    "expirationTimeSeconds": "0",
+    "exchangeAddress": NULL_ADDRESS,
+}
 
 
 def test_assert_valid_caches_resources():
@@ -15,7 +33,7 @@ def test_assert_valid_caches_resources():
     """
     _LOCAL_RESOLVER._remote_cache.cache_clear()  # pylint: disable=W0212
 
-    assert_valid(make_empty_order(), "/orderSchema")
+    assert_valid(EMPTY_ORDER, "/orderSchema")
     cache_info = (
         _LOCAL_RESOLVER._remote_cache.cache_info()  # pylint: disable=W0212
     )
