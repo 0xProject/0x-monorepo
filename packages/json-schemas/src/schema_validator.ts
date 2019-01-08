@@ -44,7 +44,6 @@ export class SchemaValidator {
      * @returns The results of the validation
      */
     public validate(instance: any, schema: Schema): ValidatorResult {
-        console.log('validating....');
         SchemaValidator._assertSchemaNotUndefined(schema);
         const jsonSchemaCompatibleObject = JSON.parse(JSON.stringify(instance));
         return this._validator.validate(jsonSchemaCompatibleObject, schema);
