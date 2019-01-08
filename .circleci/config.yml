@@ -210,10 +210,6 @@ jobs:
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
-                      cd python-packages/json_schemas
-                      coverage run setup.py test
-            - run:
-                  command: |
             - run:
                   command: |
                       cd python-packages
