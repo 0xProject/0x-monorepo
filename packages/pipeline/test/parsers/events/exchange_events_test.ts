@@ -6,6 +6,7 @@ import 'mocha';
 
 import { ExchangeFillEvent } from '../../../src/entities';
 import { _convertToExchangeFillEvent } from '../../../src/parsers/events/exchange_events';
+import { AssetType } from '../../../src/types';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
@@ -62,12 +63,12 @@ describe('exchange_events', () => {
             expected.takerFeePaid = new BigNumber('12345');
             expected.orderHash = '0xab12ed2cbaa5615ab690b9da75a46e53ddfcf3f1a68655b5fe0d94c75a1aac4a';
             expected.rawMakerAssetData = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-            expected.makerAssetType = 'erc20';
+            expected.makerAssetType = AssetType.ERC20;
             expected.makerAssetProxyId = '0xf47261b0';
             expected.makerTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
             expected.makerTokenId = null;
             expected.rawTakerAssetData = '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498';
-            expected.takerAssetType = 'erc20';
+            expected.takerAssetType = AssetType.ERC20;
             expected.takerAssetProxyId = '0xf47261b0';
             expected.takerTokenAddress = '0xe41d2489571d322189246dafa5ebde1f4699f498';
             expected.takerTokenId = null;

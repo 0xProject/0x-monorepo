@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.5.0",
+        "changes": [
+            {
+                "note": "Added types for Dutch Auction contract",
+                "pr": 1465
+            }
+        ]
+    },
+    {
         "version": "1.4.1",
         "changes": [
             {
@@ -18,6 +27,10 @@
             {
                 "note": "Add RevertReasons for DutchAuction contract",
                 "pr": 1225
+            },
+            {
+                "note": "Add MultiAsset types",
+                "pr": 1363
             }
         ],
         "timestamp": 1544570656

@@ -71,3 +71,5 @@ export const StandardPanelContent: React.StatelessComponent<StandardPanelContent
         <Container>{action}</Container>
     </Container>
 );
+
+StandardPanelContent.displayName = 'StandardPanelContent';

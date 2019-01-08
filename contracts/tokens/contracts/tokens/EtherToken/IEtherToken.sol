@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.4.24;
 
 import "../ERC20Token/IERC20Token.sol";
 

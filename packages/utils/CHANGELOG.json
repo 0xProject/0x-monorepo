@@ -1,5 +1,23 @@
 [
     {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Add `should` prefix to names of properties in EncodingRules and DecodingRules",
+                "pr": 1363
+            }
+        ]
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add `logWithTime` to `logUtils`",
+                "pr": 1461
+            }
+        ]
+    },
+    {
         "version": "2.0.8",
         "changes": [
             {

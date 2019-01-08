@@ -12,6 +12,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
@@ -65,6 +66,10 @@ export class ContractWrappers {
      * An instance of the OrderValidatorWrapper class containing methods for interacting with any OrderValidator smart contract.
      */
     public orderValidator: OrderValidatorWrapper;
+    /**
+     * An instance of the DutchAuctionWrapper class containing methods for interacting with any DutchAuction smart contract.
+     */
+    public dutchAuction: DutchAuctionWrapper;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
@@ -140,6 +145,11 @@ export class ContractWrappers {
             this._web3Wrapper,
             config.networkId,
             contractAddresses.orderValidator,
+        );
+        this.dutchAuction = new DutchAuctionWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.dutchAuction,
         );
     }
     /**

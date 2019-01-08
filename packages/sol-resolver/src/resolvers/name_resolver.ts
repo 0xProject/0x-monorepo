@@ -20,10 +20,7 @@ export class NameResolver extends EnumerableResolver {
             if (contractName === lookupContractName) {
                 const absoluteContractPath = path.join(this._contractsDir, filePath);
                 const source = fs.readFileSync(absoluteContractPath).toString();
-                contractSource = {
-                    source,
-                    path: filePath,
-                };
+                contractSource = { source, path: filePath, absolutePath: absoluteContractPath };
                 return true;
             }
             return undefined;
@@ -36,10 +33,7 @@ export class NameResolver extends EnumerableResolver {
         const onFile = (filePath: string) => {
             const absoluteContractPath = path.join(this._contractsDir, filePath);
             const source = fs.readFileSync(absoluteContractPath).toString();
-            const contractSource = {
-                source,
-                path: filePath,
-            };
+            const contractSource = { source, path: filePath, absolutePath: absoluteContractPath };
             contractSources.push(contractSource);
         };
         this._traverseContractsDir(this._contractsDir, onFile);

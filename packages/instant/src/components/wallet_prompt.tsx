@@ -45,3 +45,5 @@ WalletPrompt.defaultProps = {
     primaryColor: ColorOption.darkOrange,
     secondaryColor: ColorOption.lightOrange,
 };
+
+WalletPrompt.displayName = 'WalletPrompt';

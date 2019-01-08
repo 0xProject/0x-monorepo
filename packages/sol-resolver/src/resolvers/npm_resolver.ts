@@ -32,10 +32,7 @@ export class NPMResolver extends Resolver {
                 const lookupPath = path.join(currentPath, 'node_modules', packagePath, pathWithinPackage);
                 if (fs.existsSync(lookupPath) && fs.lstatSync(lookupPath).isFile()) {
                     const fileContent = fs.readFileSync(lookupPath).toString();
-                    return {
-                        source: fileContent,
-                        path: lookupPath,
-                    };
+                    return { source: fileContent, path: importPath, absolutePath: lookupPath };
                 }
                 currentPath = path.dirname(currentPath);
             }

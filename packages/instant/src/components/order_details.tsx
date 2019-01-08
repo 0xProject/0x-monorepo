@@ -26,7 +26,7 @@ export interface OrderDetailsProps {
     onBaseCurrencySwitchEth: () => void;
     onBaseCurrencySwitchUsd: () => void;
 }
-export class OrderDetails extends React.Component<OrderDetailsProps> {
+export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     public render(): React.ReactNode {
         const shouldShowUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
         return (
@@ -200,7 +200,7 @@ export interface OrderDetailsRowProps {
     primaryValue: React.ReactNode;
     secondaryValue?: React.ReactNode;
 }
-export class OrderDetailsRow extends React.Component<OrderDetailsRowProps, {}> {
+export class OrderDetailsRow extends React.PureComponent<OrderDetailsRowProps, {}> {
     public render(): React.ReactNode {
         return (
             <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>

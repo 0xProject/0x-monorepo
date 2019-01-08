@@ -16,7 +16,7 @@ interface TimeCounterState {
     elapsedSeconds: number;
 }
 
-export class TimeCounter extends React.Component<TimeCounterProps, TimeCounterState> {
+export class TimeCounter extends React.PureComponent<TimeCounterProps, TimeCounterState> {
     public state = {
         elapsedSeconds: 0,
     };
