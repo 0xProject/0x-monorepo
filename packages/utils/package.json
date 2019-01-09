@@ -1,6 +1,6 @@
 {
     "name": "@0x/utils",
-    "version": "2.0.8",
+    "version": "2.1.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,7 +44,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/types": "^1.4.1",
+        "@0x/types": "^1.5.0",
         "@0x/typescript-typings": "^3.0.6",
         "@types/node": "*",
         "abortcontroller-polyfill": "^1.1.9",

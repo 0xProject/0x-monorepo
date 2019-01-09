@@ -6,7 +6,8 @@
                 "note": "Added Dutch Auction Wrapper",
                 "pr": 1465
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "1.1.0",

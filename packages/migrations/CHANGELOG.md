@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0 - _January 9, 2019_
+
+    * Added migrations for Dutch Auction contract (#1465)
+
 ## v2.2.2 - _December 13, 2018_
 
     * Dependencies updated

@@ -7,7 +7,8 @@
                     "Change implementation to use react-router-dom NavLink instead of Link. Expose `activeStyle` prop.",
                 "pr": 1448
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "1.0.25",

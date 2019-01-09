@@ -7,7 +7,8 @@
                     "Use new ABI encoder, add encoding/decoding logic for MultiAsset assetData, and add information to return values in orderStateUtils",
                 "pr": 1363
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "3.0.7",
