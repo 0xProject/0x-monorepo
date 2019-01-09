@@ -9,6 +9,10 @@
             {
                 "note": "Make error and warning colouring more visually pleasant and consistent with other compilers",
                 "pr": 1461
+            },
+            {
+                "note": "Add newest solidity versions from 0.4.25 to 0.5.2",
+                "pr": 1496
             }
         ]
     },
