@@ -1,0 +1,7 @@
+{
+    "id": "/RequestOptsSchema",
+    "type": "object",
+    "properties": {
+        "networkId": { "type": "number" }
+    }
+}

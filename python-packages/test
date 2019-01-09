@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+"""Script to run tests against local copy of all components."""
+
+from os import path
+import subprocess
+
+subprocess.check_call(
+    (
+        f"{path.join('.', 'cmd_pkgs_in_dep_order.py')}"
+        + f" {path.join('.', 'setup.py')} test"
+    ).split()
+)
