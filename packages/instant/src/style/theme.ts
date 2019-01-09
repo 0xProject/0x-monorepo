@@ -1,6 +1,14 @@
 import * as styledComponents from 'styled-components';
 
-const { default: styled, css, keyframes, withTheme, createGlobalStyle, ThemeProvider } = styledComponents;
+const {
+    default: styled,
+    css,
+    keyframes,
+    withTheme,
+    createGlobalStyle,
+    ThemeConsumer,
+    ThemeProvider,
+} = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
 
@@ -30,8 +38,8 @@ export const theme: Theme = {
     lightestGrey: '#EEEEEE',
     darkGrey: '#333333',
     white: 'white',
-    lightOrange: '#F9F2ED',
-    darkOrange: '#F2994C',
+    lightOrange: '#FFF8F2',
+    darkOrange: '#F7A24F',
     green: '#3CB34F',
     red: '#D00000',
     darkBlue: '#135df6',
@@ -45,4 +53,4 @@ export const generateOverlayBlack = (opacity = 0.6) => {
     return `rgba(0, 0, 0, ${opacity})`;
 };
 
-export { styled, css, keyframes, withTheme, createGlobalStyle, ThemeProvider };
+export { styled, css, keyframes, withTheme, createGlobalStyle, ThemeConsumer, ThemeProvider };

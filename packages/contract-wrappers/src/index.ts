@@ -34,6 +34,7 @@ export { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 export { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
 export { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 export { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
+export { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
 
@@ -54,9 +55,21 @@ export {
     OrderAndTraderInfo,
     TraderInfo,
     ValidateOrderFillableOpts,
+    DutchAuctionData,
 } from './types';
 
-export { Order, SignedOrder, AssetProxyId } from '@0x/types';
+export {
+    AssetData,
+    ERC20AssetData,
+    ERC721AssetData,
+    SingleAssetData,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
+    DutchAuctionDetails,
+    Order,
+    SignedOrder,
+    AssetProxyId,
+} from '@0x/types';
 
 export {
     BlockParamLiteral,

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 
-export interface InputProps {
+export interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
     tabIndex?: number;
     className?: string;
     value?: string;
@@ -10,6 +10,7 @@ export interface InputProps {
     fontSize?: string;
     fontColor?: ColorOption;
     placeholder?: string;
+    type?: string;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -28,9 +29,13 @@ export const Input =
         outline: none;
         border: none;
         &::placeholder {
-            color: ${props => props.theme[props.fontColor || 'white']};
-            opacity: 0.5;
+            color: ${props => props.theme[props.fontColor || 'white']} !important;
+            opacity: 0.5 !important;
         }
+        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
     }
 `;
 

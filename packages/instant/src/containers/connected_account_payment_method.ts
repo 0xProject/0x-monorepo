@@ -11,7 +11,8 @@ import {
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
-import { Network, Omit, OperatingSystem, ProviderState, StandardSlidingPanelContent } from '../types';
+import { Network, Omit, OperatingSystem, ProviderState, StandardSlidingPanelContent, WalletSuggestion } from '../types';
+import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
 
 export interface ConnectedAccountPaymentMethodProps {}
@@ -19,6 +20,7 @@ export interface ConnectedAccountPaymentMethodProps {}
 interface ConnectedState {
     network: Network;
     providerState: ProviderState;
+    walletDisplayName?: string;
 }
 
 interface ConnectedDispatch {
@@ -33,6 +35,7 @@ type FinalProps = ConnectedProps & ConnectedAccountPaymentMethodProps;
 const mapStateToProps = (state: State, _ownProps: ConnectedAccountPaymentMethodProps): ConnectedState => ({
     network: state.network,
     providerState: state.providerState,
+    walletDisplayName: state.walletDisplayName,
 });
 
 const mapDispatchToProps = (
@@ -40,8 +43,11 @@ const mapDispatchToProps = (
     ownProps: ConnectedAccountPaymentMethodProps,
 ): ConnectedDispatch => ({
     openInstallWalletPanel: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
-    unlockWalletAndDispatchToStore: async (providerState: ProviderState) =>
-        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true),
+    unlockWalletAndDispatchToStore: (providerState: ProviderState) => {
+        analytics.trackAccountUnlockRequested();
+        // tslint:disable-next-line:no-floating-promises
+        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true);
+    },
 });
 
 const mergeProps = (
@@ -52,27 +58,32 @@ const mergeProps = (
     ...ownProps,
     network: connectedState.network,
     account: connectedState.providerState.account,
-    walletName: connectedState.providerState.name,
+    walletDisplayName: connectedState.providerState.displayName,
     onUnlockWalletClick: () => connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState),
     onInstallWalletClick: () => {
         const isMobile = envUtil.isMobileOperatingSystem();
-        if (!isMobile) {
+        const walletSuggestion: WalletSuggestion = isMobile
+            ? WalletSuggestion.CoinbaseWallet
+            : WalletSuggestion.MetaMask;
+
+        analytics.trackInstallWalletClicked(walletSuggestion);
+        if (walletSuggestion === WalletSuggestion.MetaMask) {
             connectedDispatch.openInstallWalletPanel();
-            return;
+        } else {
+            const operatingSystem = envUtil.getOperatingSystem();
+            let url = COINBASE_WALLET_SITE_URL;
+            switch (operatingSystem) {
+                case OperatingSystem.Android:
+                    url = COINBASE_WALLET_ANDROID_APP_STORE_URL;
+                    break;
+                case OperatingSystem.iOS:
+                    url = COINBASE_WALLET_IOS_APP_STORE_URL;
+                    break;
+                default:
+                    break;
+            }
+            window.open(url, '_blank');
         }
-        const operatingSystem = envUtil.getOperatingSystem();
-        let url = COINBASE_WALLET_SITE_URL;
-        switch (operatingSystem) {
-            case OperatingSystem.Android:
-                url = COINBASE_WALLET_ANDROID_APP_STORE_URL;
-                break;
-            case OperatingSystem.iOS:
-                url = COINBASE_WALLET_IOS_APP_STORE_URL;
-                break;
-            default:
-                break;
-        }
-        window.open(url, '_blank');
     },
 });
 

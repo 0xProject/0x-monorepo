@@ -1,4 +1,5 @@
 export { OrderWatcher } from './order_watcher/order_watcher';
+export { OrderWatcherWebSocketServer } from './order_watcher/order_watcher_web_socket_server';
 export { ExpirationWatcher } from './order_watcher/expiration_watcher';
 
 export {
@@ -6,6 +7,7 @@ export {
     OrderStateInvalid,
     OrderState,
     ExchangeContractErrs,
+    ObjectMap,
     OrderRelevantState,
     Stats,
 } from '@0x/types';

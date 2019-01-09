@@ -30,3 +30,5 @@ export const AmountPlaceholder: React.StatelessComponent<AmountPlaceholderProps>
         return <PlainPlaceholder color={props.color} />;
     }
 };
+
+AmountPlaceholder.displayName = 'AmountPlaceholder';

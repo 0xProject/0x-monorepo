@@ -1,5 +1,46 @@
 [
     {
+        "version": "1.2.1",
+        "changes": [
+            {
+                "note": "Add `absolutePath` to `ContractSource` type",
+                "pr": 1461
+            },
+            {
+                "note": "Add `SpyResolver` that records all resolved contracts data",
+                "pr": 1461
+            }
+        ]
+    },
+    {
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "NPMResolver now supports scoped packages",
+                "pr": 1311
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "1.0.17",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "1.0.16",
         "changes": [
             {

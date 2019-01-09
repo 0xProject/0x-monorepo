@@ -11,21 +11,23 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
-import { OrderProcessState, SlideAnimationState } from '../types';
+import { SlideAnimationState } from '../types';
+import { analytics, TokenSelectorClosedVia } from '../util/analytics';
 
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 
-export interface ZeroExInstantContainerProps {
-    orderProcessState: OrderProcessState;
-}
+export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantContainerState> {
+export class ZeroExInstantContainer extends React.PureComponent<
+    ZeroExInstantContainerProps,
+    ZeroExInstantContainerState
+> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
@@ -60,9 +62,10 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
                         </Flex>
                         <SlidingPanel
                             animationState={this.state.tokenSelectionPanelAnimationState}
-                            onClose={this._handlePanelClose}
+                            onClose={this._handlePanelCloseClickedX}
+                            onAnimationEnd={this._handleSlidingPanelAnimationEnd}
                         >
-                            <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
+                            <AvailableERC20TokenSelector onTokenSelect={this._handlePanelCloseAfterChose} />
                         </SlidingPanel>
                         <CurrentStandardSlidingPanel />
                     </Container>
@@ -71,7 +74,7 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
                         marginTop="10px"
                         marginLeft="auto"
                         marginRight="auto"
-                        width="140px"
+                        width="108px"
                     >
                         <a href={ZERO_EX_SITE_URL} target="_blank">
                             <PoweredByLogo />
@@ -82,13 +85,28 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
         );
     }
     private readonly _handleSymbolClick = (): void => {
+        analytics.trackTokenSelectorOpened();
         this.setState({
             tokenSelectionPanelAnimationState: 'slidIn',
         });
     };
-    private readonly _handlePanelClose = (): void => {
+    private readonly _handlePanelCloseClickedX = (): void => {
+        this._handlePanelClose(TokenSelectorClosedVia.ClickedX);
+    };
+    private readonly _handlePanelCloseAfterChose = (): void => {
+        this._handlePanelClose(TokenSelectorClosedVia.TokenChose);
+    };
+    private readonly _handlePanelClose = (closedVia: TokenSelectorClosedVia): void => {
+        analytics.trackTokenSelectorClosed(closedVia);
         this.setState({
             tokenSelectionPanelAnimationState: 'slidOut',
         });
+    };
+    private readonly _handleSlidingPanelAnimationEnd = (): void => {
+        if (this.state.tokenSelectionPanelAnimationState === 'slidOut') {
+            // When the slidOut animation completes, don't keep the panel mounted.
+            // Performance optimization
+            this.setState({ tokenSelectionPanelAnimationState: 'none' });
+        }
     };
 }

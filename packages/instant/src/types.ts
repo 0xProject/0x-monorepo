@@ -21,6 +21,16 @@ export enum OrderProcessState {
     Failure = 'FAILURE',
 }
 
+export enum QuoteFetchOrigin {
+    Manual = 'Manual',
+    Heartbeat = 'Heartbeat',
+}
+
+export enum BaseCurrency {
+    USD = 'USD',
+    ETH = 'ETH',
+}
+
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
@@ -86,6 +96,7 @@ export enum Network {
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
     InsufficientETH = 'INSUFFICIENT_ETH',
+    CouldNotSubmitTransaction = 'COULD_NOT_SUBMIT_TRANSACTION',
 }
 
 export type SimpleHandler = () => void;
@@ -97,6 +108,7 @@ export interface AffiliateInfo {
 
 export interface ProviderState {
     name: string;
+    displayName: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
@@ -149,6 +161,11 @@ export enum Browser {
     Other = 'OTHER',
 }
 
+export enum WalletSuggestion {
+    CoinbaseWallet = 'Coinbase Wallet',
+    MetaMask = 'MetaMask',
+}
+
 export enum OperatingSystem {
     Android = 'ANDROID',
     iOS = 'IOS',
@@ -165,5 +182,24 @@ export enum ProviderType {
     Mist = 'MIST',
     CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
+    TrustWallet = 'TRUST_WALLET',
     Fallback = 'FALLBACK',
 }
+
+export interface ZeroExInstantRequiredBaseConfig {
+    orderSource: OrderSource;
+}
+
+export interface ZeroExInstantOptionalBaseConfig {
+    provider: Provider;
+    walletDisplayName: string;
+    availableAssetDatas: string[];
+    defaultAssetBuyAmount: number;
+    defaultSelectedAssetData: string;
+    additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
+    networkId: Network;
+    affiliateInfo: AffiliateInfo;
+    shouldDisableAnalyticsTracking: boolean;
+}
+
+export type ZeroExInstantBaseConfig = ZeroExInstantRequiredBaseConfig & Partial<ZeroExInstantOptionalBaseConfig>;

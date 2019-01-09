@@ -7,6 +7,8 @@ import {
     GWEI_IN_WEI,
 } from '../constants';
 
+import { errorReporter } from './error_reporter';
+
 interface EthGasStationResult {
     average: number;
     fastestWait: number;
@@ -42,8 +44,9 @@ export class GasPriceEstimator {
         let fetchedAmount: GasInfo | undefined;
         try {
             fetchedAmount = await fetchFastAmountInWeiAsync();
-        } catch {
+        } catch (e) {
             fetchedAmount = undefined;
+            errorReporter.report(e);
         }
 
         if (fetchedAmount) {

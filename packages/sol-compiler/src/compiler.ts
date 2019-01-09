@@ -6,26 +6,29 @@ import {
     NPMResolver,
     RelativeFSResolver,
     Resolver,
+    SpyResolver,
     URLResolver,
 } from '@0x/sol-resolver';
-import { fetchAsync, logUtils } from '@0x/utils';
-import chalk from 'chalk';
+import { logUtils } from '@0x/utils';
+import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
-import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as requireFromString from 'require-from-string';
+import * as pluralize from 'pluralize';
 import * as semver from 'semver';
 import solc = require('solc');
 
 import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
+    addHexPrefixToContractBytecode,
+    compile,
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
-    getNormalizedErrMsg,
-    parseDependencies,
+    getSolcAsync,
+    getSourcesWithDependencies,
+    getSourceTreeHash,
     parseSolidityVersionRange,
 } from './utils/compiler';
 import { constants } from './utils/constants';
@@ -35,7 +38,6 @@ import { utils } from './utils/utils';
 type TYPE_ALL_FILES_IDENTIFIER = '*';
 const ALL_CONTRACTS_IDENTIFIER = '*';
 const ALL_FILES_IDENTIFIER = '*';
-const SOLC_BIN_DIR = path.join(__dirname, '..', '..', 'solc_bin');
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
 // Solc compiler settings cannot be configured from the commandline.
@@ -82,49 +84,6 @@ export class Compiler {
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
-    private static async _getSolcAsync(
-        solcVersion: string,
-    ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
-        const fullSolcVersion = binPaths[solcVersion];
-        if (_.isUndefined(fullSolcVersion)) {
-            throw new Error(`${solcVersion} is not a known compiler version`);
-        }
-        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
-        let solcjs: string;
-        if (await fsWrapper.doesFileExistAsync(compilerBinFilename)) {
-            solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();
-        } else {
-            logUtils.warn(`Downloading ${fullSolcVersion}...`);
-            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetchAsync(url);
-            const SUCCESS_STATUS = 200;
-            if (response.status !== SUCCESS_STATUS) {
-                throw new Error(`Failed to load ${fullSolcVersion}`);
-            }
-            solcjs = await response.text();
-            await fsWrapper.writeFileAsync(compilerBinFilename, solcjs);
-        }
-        if (solcjs.length === 0) {
-            throw new Error('No compiler available');
-        }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
-        return { solcInstance, fullSolcVersion };
-    }
-    private static _addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
-        if (!_.isUndefined(compiledContract.evm)) {
-            if (!_.isUndefined(compiledContract.evm.bytecode) && !_.isUndefined(compiledContract.evm.bytecode.object)) {
-                compiledContract.evm.bytecode.object = ethUtil.addHexPrefix(compiledContract.evm.bytecode.object);
-            }
-            if (
-                !_.isUndefined(compiledContract.evm.deployedBytecode) &&
-                !_.isUndefined(compiledContract.evm.deployedBytecode.object)
-            ) {
-                compiledContract.evm.deployedBytecode.object = ethUtil.addHexPrefix(
-                    compiledContract.evm.deployedBytecode.object,
-                );
-            }
-        }
-    }
     /**
      * Instantiates a new instance of the Compiler class.
      * @param opts Optional compiler options
@@ -158,7 +117,7 @@ export class Compiler {
      */
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
-        await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
+        await createDirIfDoesNotExistAsync(constants.SOLC_BIN_DIR);
         await this._compileContractsAsync(this._getContractNamesToCompile(), true);
     }
     /**
@@ -172,6 +131,54 @@ export class Compiler {
     public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
         const promisedOutputs = this._compileContractsAsync(this._getContractNamesToCompile(), false);
         return promisedOutputs;
+    }
+    public async watchAsync(): Promise<void> {
+        console.clear(); // tslint:disable-line:no-console
+        logUtils.logWithTime('Starting compilation in watch mode...');
+        const MATCH_NOTHING_REGEX = '^$';
+        const IGNORE_DOT_FILES_REGEX = /(^|[\/\\])\../;
+        // Initially we watch nothing. We'll add the paths later.
+        const watcher = chokidar.watch(MATCH_NOTHING_REGEX, { ignored: IGNORE_DOT_FILES_REGEX });
+        const onFileChangedAsync = async () => {
+            watcher.unwatch('*'); // Stop watching
+            try {
+                await this.compileAsync();
+                logUtils.logWithTime('Found 0 errors. Watching for file changes.');
+            } catch (err) {
+                if (err.typeName === 'CompilationError') {
+                    logUtils.logWithTime(
+                        `Found ${err.errorsCount} ${pluralize('error', err.errorsCount)}. Watching for file changes.`,
+                    );
+                } else {
+                    logUtils.logWithTime('Found errors. Watching for file changes.');
+                }
+            }
+
+            const pathsToWatch = this._getPathsToWatch();
+            watcher.add(pathsToWatch);
+        };
+        await onFileChangedAsync();
+        watcher.on('change', (changedFilePath: string) => {
+            console.clear(); // tslint:disable-line:no-console
+            logUtils.logWithTime('File change detected. Starting incremental compilation...');
+            // NOTE: We can't await it here because that's a callback.
+            // Instead we stop watching inside of it and start it again when we're finished.
+            onFileChangedAsync(); // tslint:disable-line no-floating-promises
+        });
+    }
+    private _getPathsToWatch(): string[] {
+        const contractNames = this._getContractNamesToCompile();
+        const spyResolver = new SpyResolver(this._resolver);
+        for (const contractName of contractNames) {
+            const contractSource = spyResolver.resolve(contractName);
+            // NOTE: We ignore the return value here. We don't want to compute the source tree hash.
+            // We just want to call a SpyResolver on each contracts and it's dependencies and
+            // this is a convenient way to reuse the existing code that does that.
+            // We can then get all the relevant paths from the `spyResolver` below.
+            getSourceTreeHash(spyResolver, contractSource.path);
+        }
+        const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
+        return pathsToWatch;
     }
     private _getContractNamesToCompile(): string[] {
         let contractNamesToCompile;
@@ -201,12 +208,14 @@ export class Compiler {
 
         for (const contractName of contractNames) {
             const contractSource = this._resolver.resolve(contractName);
+            const sourceTreeHashHex = getSourceTreeHash(
+                this._resolver,
+                path.join(this._contractsDir, contractSource.path),
+            ).toString('hex');
             const contractData = {
                 contractName,
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
-                sourceTreeHashHex: `0x${this._getSourceTreeHash(
-                    path.join(this._contractsDir, contractSource.path),
-                ).toString('hex')}`,
+                sourceTreeHashHex: `0x${sourceTreeHashHex}`,
             };
             if (!this._shouldCompile(contractData)) {
                 continue;
@@ -244,9 +253,8 @@ export class Compiler {
                 }) with Solidity v${solcVersion}...`,
             );
 
-            const { solcInstance, fullSolcVersion } = await Compiler._getSolcAsync(solcVersion);
-
-            const compilerOutput = this._compile(solcInstance, input.standardInput);
+            const { solcInstance, fullSolcVersion } = await getSolcAsync(solcVersion);
+            const compilerOutput = compile(this._resolver, solcInstance, input.standardInput);
             compilerOutputs.push(compilerOutput);
 
             for (const contractPath of input.contractsToCompile) {
@@ -259,7 +267,7 @@ export class Compiler {
                     );
                 }
 
-                Compiler._addHexPrefixToContractBytecode(compiledContract);
+                addHexPrefixToContractBytecode(compiledContract);
 
                 if (shouldPersist) {
                     await this._persistCompiledContractAsync(
@@ -298,10 +306,14 @@ export class Compiler {
         const compiledContract = compilerOutput.contracts[contractPath][contractName];
 
         // need to gather sourceCodes for this artifact, but compilerOutput.sources (the list of contract modules)
-        // contains listings for for every contract compiled during the compiler invocation that compiled the contract
+        // contains listings for every contract compiled during the compiler invocation that compiled the contract
         // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
         // the relevant sources:
-        const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath, compilerOutput.sources);
+        const { sourceCodes, sources } = getSourcesWithDependencies(
+            this._resolver,
+            contractPath,
+            compilerOutput.sources,
+        );
 
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledContract,
@@ -335,124 +347,5 @@ export class Compiler {
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.warn(`${contractName} artifact saved!`);
-    }
-    /**
-     * For the given @param contractPath, populates JSON objects to be used in the ContractVersionData interface's
-     * properties `sources` (source code file names mapped to ID numbers) and `sourceCodes` (source code content of
-     * contracts) for that contract.  The source code pointed to by contractPath is read and parsed directly (via
-     * `this._resolver.resolve().source`), as are its imports, recursively.  The ID numbers for @return `sources` are
-     * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
-     * disk (via the aforementioned `resolver.source`).
-     */
-    private _getSourcesWithDependencies(
-        contractPath: string,
-        fullSources: { [sourceName: string]: { id: number } },
-    ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
-        const sources = { [contractPath]: { id: fullSources[contractPath].id } };
-        const sourceCodes = { [contractPath]: this._resolver.resolve(contractPath).source };
-        this._recursivelyGatherDependencySources(
-            contractPath,
-            sourceCodes[contractPath],
-            fullSources,
-            sources,
-            sourceCodes,
-        );
-        return { sourceCodes, sources };
-    }
-    private _recursivelyGatherDependencySources(
-        contractPath: string,
-        contractSource: string,
-        fullSources: { [sourceName: string]: { id: number } },
-        sourcesToAppendTo: { [sourceName: string]: { id: number } },
-        sourceCodesToAppendTo: { [sourceName: string]: string },
-    ): void {
-        const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
-        if (importStatementMatches === null) {
-            return;
-        }
-        for (const importStatementMatch of importStatementMatches) {
-            const importPathMatches = importStatementMatch.match(/\"([^\"]*)\"/);
-            if (importPathMatches === null || importPathMatches.length === 0) {
-                continue;
-            }
-
-            let importPath = importPathMatches[1];
-            // HACK(ablrow): We have, e.g.:
-            //
-            //      importPath   = "../../utils/LibBytes/LibBytes.sol"
-            //      contractPath = "2.0.0/protocol/AssetProxyOwner/AssetProxyOwner.sol"
-            //
-            // Resolver doesn't understand "../" so we want to pass
-            // "2.0.0/utils/LibBytes/LibBytes.sol" to resolver.
-            //
-            // This hack involves using path.resolve. But path.resolve returns
-            // absolute directories by default. We trick it into thinking that
-            // contractPath is a root directory by prepending a '/' and then
-            // removing the '/' the end.
-            //
-            //      path.resolve("/a/b/c", ""../../d/e") === "/a/d/e"
-            //
-            const lastPathSeparatorPos = contractPath.lastIndexOf('/');
-            const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
-            importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
-
-            if (_.isUndefined(sourcesToAppendTo[importPath])) {
-                sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
-                sourceCodesToAppendTo[importPath] = this._resolver.resolve(importPath).source;
-
-                this._recursivelyGatherDependencySources(
-                    importPath,
-                    this._resolver.resolve(importPath).source,
-                    fullSources,
-                    sourcesToAppendTo,
-                    sourceCodesToAppendTo,
-                );
-            }
-        }
-    }
-    private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
-        const compiled: solc.StandardOutput = JSON.parse(
-            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
-                const sourceCodeIfExists = this._resolver.resolve(importPath);
-                return { contents: sourceCodeIfExists.source };
-            }),
-        );
-        if (!_.isUndefined(compiled.errors)) {
-            const SOLIDITY_WARNING = 'warning';
-            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
-            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
-            if (!_.isEmpty(errors)) {
-                errors.forEach(error => {
-                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.warn(chalk.red(normalizedErrMsg));
-                });
-                throw new Error('Compilation errors encountered');
-            } else {
-                warnings.forEach(warning => {
-                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.warn(chalk.yellow(normalizedWarningMsg));
-                });
-            }
-        }
-        return compiled;
-    }
-    /**
-     * Gets the source tree hash for a file and its dependencies.
-     * @param fileName Name of contract file.
-     */
-    private _getSourceTreeHash(importPath: string): Buffer {
-        const contractSource = this._resolver.resolve(importPath);
-        const dependencies = parseDependencies(contractSource);
-        const sourceHash = ethUtil.sha3(contractSource.source);
-        if (dependencies.length === 0) {
-            return sourceHash;
-        } else {
-            const dependencySourceTreeHashes = _.map(dependencies, (dependency: string) =>
-                this._getSourceTreeHash(dependency),
-            );
-            const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
-            const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
-            return sourceTreeHash;
-        }
     }
 }

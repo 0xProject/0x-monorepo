@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.8 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.2.7 - _December 11, 2018_
+
+    * Dependencies updated
+
+## v2.2.6 - _November 28, 2018_
+
+    * Dependencies updated
+
+## v2.2.5 - _November 21, 2018_
+
+    * Dependencies updated
+
 ## v2.2.4 - _November 14, 2018_
 
     * Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX (#1259)

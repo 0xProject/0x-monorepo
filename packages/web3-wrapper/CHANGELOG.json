@@ -1,5 +1,34 @@
 [
     {
+        "version": "3.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Return `value` and `gasPrice` as BigNumbers to avoid loss of precision errors",
+                "pr": 1402
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "version": "3.1.6",
+        "changes": [
+            {
+                "note": "Unmarshall mined transaction receipts",
+                "pr": 1308
+            }
+        ],
+        "timestamp": 1543401373
+    },
+    {
         "version": "3.1.5",
         "changes": [
             {
@@ -10,7 +39,8 @@
                 "note": "Return `undefined` instead of `null` if transaction receipt not found",
                 "pr": 1291
             }
-        ]
+        ],
+        "timestamp": 1542821676
     },
     {
         "timestamp": 1542208198,

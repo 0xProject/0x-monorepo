@@ -10,7 +10,7 @@ import { ERC20AssetAmountInput, ERC20AssetAmountInputProps } from '../components
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { AffiliateInfo, ERC20Asset, Omit, OrderProcessState } from '../types';
+import { AffiliateInfo, ERC20Asset, Omit, OrderProcessState, QuoteFetchOrigin } from '../types';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
@@ -88,7 +88,7 @@ const mapDispatchToProps = (
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, {
+            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, QuoteFetchOrigin.Manual, {
                 setPending: true,
                 dispatchErrors: true,
                 affiliateInfo,

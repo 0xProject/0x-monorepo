@@ -1,8 +1,9 @@
 import { BigNumber } from '@0x/utils';
-import copy from 'copy-to-clipboard';
+import * as copy from 'copy-to-clipboard';
 import * as React from 'react';
 
 import { Network } from '../types';
+import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
 import { etherscanUtil } from '../util/etherscan';
 import { format } from '../util/format';
@@ -15,12 +16,19 @@ export interface PaymentMethodDropdownProps {
     network: Network;
 }
 
-export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdownProps> {
+export class PaymentMethodDropdown extends React.PureComponent<PaymentMethodDropdownProps> {
     public render(): React.ReactNode {
         const { accountAddress, accountEthBalanceInWei } = this.props;
         const value = format.ethAddress(accountAddress);
         const label = format.ethBaseUnitAmount(accountEthBalanceInWei, 4, '') as string;
-        return <Dropdown value={value} label={label} items={this._getDropdownItemConfigs()} />;
+        return (
+            <Dropdown
+                value={value}
+                label={label}
+                items={this._getDropdownItemConfigs()}
+                onOpen={analytics.trackPaymentMethodDropdownOpened}
+            />
+        );
     }
     private readonly _getDropdownItemConfigs = (): DropdownItemConfig[] => {
         if (envUtil.isMobileOperatingSystem()) {
@@ -37,11 +45,15 @@ export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdown
         return [viewOnEtherscan, copyAddressToClipboard];
     };
     private readonly _handleEtherscanClick = (): void => {
+        analytics.trackPaymentMethodOpenedEtherscan();
+
         const { accountAddress, network } = this.props;
         const etherscanUrl = etherscanUtil.getEtherScanEthAddressIfExists(accountAddress, network);
         window.open(etherscanUrl, '_blank');
     };
     private readonly _handleCopyToClipboardClick = (): void => {
+        analytics.trackPaymentMethodCopiedAddress();
+
         const { accountAddress } = this.props;
         copy(accountAddress);
     };

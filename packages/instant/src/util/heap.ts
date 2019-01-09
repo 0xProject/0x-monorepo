@@ -5,12 +5,15 @@ import * as _ from 'lodash';
 import { HEAP_ANALYTICS_ID } from '../constants';
 
 import { AnalyticsEventOptions, AnalyticsUserOptions } from './analytics';
+import { errorReporter } from './error_reporter';
+
+export type EventProperties = ObjectMap<string | number>;
 
 export interface HeapAnalytics {
     loaded: boolean;
     appid: string;
     identify(id: string, idType: string): void;
-    track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
+    track(eventName: string, eventProperties?: EventProperties): void;
     resetIdentity(): void;
     addUserProperties(properties: AnalyticsUserOptions): void;
     addEventProperties(properties: AnalyticsEventOptions): void;
@@ -105,8 +108,8 @@ export const heapUtil = {
                 heapFunctionCall(curHeap);
             } catch (e) {
                 // We never want analytics to crash our React component
-                // TODO(sk): error reporter here
                 logUtils.log('Analytics error', e);
+                errorReporter.report(e);
             }
         }
     },

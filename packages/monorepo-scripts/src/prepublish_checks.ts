@@ -17,7 +17,6 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkChangelogFormatAsync(updatedPublicPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
     await checkPublishRequiredSetupAsync();
-    checkRequiredEnvVariables();
 }
 
 async function checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages: Package[]): Promise<void> {
@@ -184,17 +183,7 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
     }
 }
 
-const checkRequiredEnvVariables = () => {
-    utils.log('Checking required environment variables...');
-    const requiredEnvVars = ['INSTANT_HEAP_ANALYTICS_ID_PRODUCTION'];
-    requiredEnvVars.forEach(requiredEnvVarName => {
-        if (_.isUndefined(process.env[requiredEnvVarName])) {
-            throw new Error(`Must have ${requiredEnvVarName} set`);
-        }
-    });
-};
-
 prepublishChecksAsync().catch(err => {
-    utils.log(err.message);
+    utils.log(err);
     process.exit(1);
 });

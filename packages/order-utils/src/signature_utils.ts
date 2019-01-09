@@ -115,7 +115,7 @@ export const signatureUtils = {
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
         // tslint:disable-next-line:custom-no-magic-numbers
-        const signatureWithoutType = signature.slice(-2);
+        const signatureWithoutType = signature.slice(0, -2);
         const walletContract = new IWalletContract(artifacts.IWallet.compilerOutput.abi, signerAddress, provider);
         const isValid = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
         return isValid;

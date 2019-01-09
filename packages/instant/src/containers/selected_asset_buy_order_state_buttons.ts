@@ -9,7 +9,8 @@ import { Dispatch } from 'redux';
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { AccountState, AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
+import { AccountState, AffiliateInfo, Asset, OrderProcessState, ZeroExInstantError } from '../types';
+import { analytics } from '../util/analytics';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 
@@ -21,6 +22,7 @@ interface ConnectedState {
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
+    selectedAsset?: Asset;
     onViewTransaction: () => void;
 }
 
@@ -40,6 +42,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
     const account = state.providerState.account;
     const accountAddress = account.state === AccountState.Ready ? account.address : undefined;
     const accountEthBalanceInWei = account.state === AccountState.Ready ? account.ethBalanceInWei : undefined;
+    const selectedAsset = state.selectedAsset;
     return {
         accountAddress,
         accountEthBalanceInWei,
@@ -48,6 +51,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
         web3Wrapper,
         buyQuote: state.latestBuyQuote,
         affiliateInfo: state.affiliateInfo,
+        selectedAsset,
         onViewTransaction: () => {
             if (
                 state.buyOrderState.processState === OrderProcessState.Processing ||
@@ -59,6 +63,8 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
                     assetBuyer.networkId,
                 );
                 if (etherscanUrl) {
+                    analytics.trackTransactionViewed(state.buyOrderState.processState);
+
                     window.open(etherscanUrl, '_blank');
                     return;
                 }
@@ -88,6 +94,9 @@ const mapDispatchToProps = (
         dispatch(actions.setBuyOrderStateNone());
         if (error === ZeroExInstantError.InsufficientETH) {
             const errorMessage = "You don't have enough ETH";
+            errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
+        } else if (error === ZeroExInstantError.CouldNotSubmitTransaction) {
+            const errorMessage = 'Could not submit transaction';
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
         } else {
             errorFlasher.flashNewErrorMessage(dispatch);

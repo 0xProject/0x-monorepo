@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.8 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.0.7 - _December 11, 2018_
+
+    * Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development.
+
+## v2.0.6 - _November 21, 2018_
+
+    * Dependencies updated
+
 ## v2.0.5 - _November 14, 2018_
 
     * Dependencies updated

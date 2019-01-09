@@ -38,6 +38,8 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
     </Container>
 );
 
+Error.displayName = 'Error';
+
 export interface SlidingErrorProps extends ErrorProps {
     animationState: SlideAnimationState;
 }
@@ -94,3 +96,5 @@ export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props =
         </SlideAnimation>
     );
 };
+
+SlidingError.displayName = 'SlidingError';

@@ -28,11 +28,11 @@ const ICON_WIDTH = 34;
 const ICON_HEIGHT = 34;
 const ICON_COLOR = ColorOption.white;
 
-export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
+export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
         const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
-            <Container backgroundColor={ColorOption.primaryColor} padding="20px" width="100%">
+            <Container backgroundColor={ColorOption.primaryColor} width="100%" padding="20px">
                 <Container marginBottom="5px">
                     <Text
                         letterSpacing="1px"
@@ -61,12 +61,19 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private _renderAmountsSection(): React.ReactNode {
-        return (
-            <Container>
-                <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
-                <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
-            </Container>
-        );
+        if (
+            _.isUndefined(this.props.totalEthBaseUnitAmount) &&
+            this.props.quoteRequestState !== AsyncProcessState.Pending
+        ) {
+            return null;
+        } else {
+            return (
+                <Container>
+                    <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
+                    <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
+                </Container>
+            );
+        }
     }
 
     private _renderIcon(): React.ReactNode {
@@ -106,20 +113,30 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private readonly _renderEthAmount = (): React.ReactNode => {
+        const ethAmount = format.ethBaseUnitAmount(
+            this.props.totalEthBaseUnitAmount,
+            4,
+            <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
+        );
+
+        const fontSize = _.isString(ethAmount) && ethAmount.length >= 13 ? '14px' : '16px';
         return (
-            <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                {format.ethBaseUnitAmount(
-                    this.props.totalEthBaseUnitAmount,
-                    4,
-                    <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
-                )}
+            <Text
+                fontSize={fontSize}
+                textAlign="right"
+                width="100%"
+                fontColor={ColorOption.white}
+                fontWeight={500}
+                noWrap={true}
+            >
+                {ethAmount}
             </Text>
         );
     };
 
     private readonly _renderDollarAmount = (): React.ReactNode => {
         return (
-            <Text fontSize="16px" fontColor={ColorOption.white}>
+            <Text fontSize="16px" textAlign="right" width="100%" fontColor={ColorOption.white} noWrap={true}>
                 {format.ethBaseUnitAmountInUsd(
                     this.props.totalEthBaseUnitAmount,
                     this.props.ethUsdPrice,

@@ -137,14 +137,8 @@ class GanacheCommand(distutils.command.build_py.build_py):
     def run(self):
         """Run ganache."""
         cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
-            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
-            + " --networkId 50 -m"
+            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
         ).split()
-        cmd_line.append(
-            "concert load couple harbor equip island argue ramp clarify fence"
-            + " smart topic"
-        )
         subprocess.call(cmd_line)  # nosec
 
 
@@ -171,9 +165,9 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
+        "0x-json-schemas",
         "eth-abi",
         "eth_utils",
-        "jsonschema",
         "mypy_extensions",
         "web3",
     ],
@@ -198,7 +192,6 @@ setup(
     package_data={
         "zero_ex.order_utils": ["py.typed"],
         "zero_ex.contract_artifacts": ["artifacts/*"],
-        "zero_ex.json_schemas": ["schemas/*"],
     },
     package_dir={"": "src"},
     license="Apache 2.0",

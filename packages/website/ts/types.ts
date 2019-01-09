@@ -352,7 +352,16 @@ export enum WebsitePaths {
     Home = '/',
     FAQ = '/faq',
     About = '/about',
+    AboutMission = '/about/mission',
+    AboutTeam = '/about/team',
+    AboutPress = '/about/press',
+    AboutJobs = '/about/jobs',
+    Community = '/community',
     LaunchKit = '/launch-kit',
+    Instant = '/instant',
+    Ecosystem = '/eap',
+    MarketMaker = '/market-maker',
+    Why = '/why',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
@@ -366,6 +375,7 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
+    Migrations = '/docs/migrations',
     Careers = '/careers',
 }
 
@@ -383,6 +393,7 @@ export enum DocPackages {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    Migrations = 'MIGRATIONS',
 }
 
 export enum Key {
@@ -460,7 +471,7 @@ export enum Key {
     Website = 'WEBSITE',
     Developers = 'DEVELOPERS',
     Home = 'HOME',
-    RocketChat = 'ROCKETCHAT',
+    Discord = 'DISCORD',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
     OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
     BuildARelayer = 'BUILD_A_RELAYER',
@@ -471,6 +482,8 @@ export enum Key {
     OrderBasicsDescription = 'ORDER_BASICS_DESCRIPTION',
     UseNetworkedLiquidity = 'USE_NETWORKED_LIQUIDITY',
     UseNetworkedLiquidityDescription = 'USE_NETWORKED_LIQUIDITY_DESCRIPTION',
+    Integrate0xInstant = 'INTEGRATE_0X_INSTANT',
+    Integrate0xInstantDescription = 'INTEGRATE_0X_INSTANT_DESCRIPTION',
     ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
     Sandbox = 'SANDBOX',
     Github = 'GITHUB',
@@ -493,6 +506,7 @@ export enum Key {
     GetInTouch = 'GET_IN_TOUCH',
     LearnMore = 'LEARN_MORE',
     GetStarted = 'GET_STARTED',
+    ProtocolSpecification = 'PROTOCOL_SPECIFICATION',
 }
 
 export enum SmartContractDocSections {

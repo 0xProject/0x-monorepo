@@ -1,5 +1,51 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note":
+                    "Change implementation to use react-router-dom NavLink instead of Link. Expose `activeStyle` prop.",
+                "pr": 1448
+            }
+        ]
+    },
+    {
+        "version": "1.0.25",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "1.0.24",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1543401373,
+        "version": "1.0.23",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "1.0.22",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1542208198,
         "version": "1.0.21",
         "changes": [

@@ -1,6 +1,6 @@
 {
     "name": "@0x/base-contract",
-    "version": "3.0.6",
+    "version": "3.0.10",
     "engines": {
         "node": ">=6.12"
     },
@@ -29,7 +29,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/base-contract/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^1.0.10",
+        "@0x/tslint-config": "^2.0.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "make-promises-safe": "^1.1.0",
@@ -40,10 +40,10 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/typescript-typings": "^3.0.4",
-        "@0x/utils": "^2.0.5",
-        "@0x/web3-wrapper": "^3.1.4",
-        "ethereum-types": "^1.1.2",
+        "@0x/typescript-typings": "^3.0.6",
+        "@0x/utils": "^2.0.8",
+        "@0x/web3-wrapper": "^3.2.1",
+        "ethereum-types": "^1.1.4",
         "ethers": "~4.0.4",
         "lodash": "^4.17.5"
     },

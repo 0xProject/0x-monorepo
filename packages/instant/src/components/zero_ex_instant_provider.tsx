@@ -1,6 +1,4 @@
-import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -11,36 +9,19 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
+import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
+import { setupRollbar } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
-fonts.include();
+export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
-export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
-    Partial<ZeroExInstantProviderOptionalProps>;
-
-export interface ZeroExInstantProviderRequiredProps {
-    orderSource: OrderSource;
-}
-
-export interface ZeroExInstantProviderOptionalProps {
-    provider: Provider;
-    availableAssetDatas: string[];
-    defaultAssetBuyAmount: number;
-    defaultSelectedAssetData: string;
-    additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
-    networkId: Network;
-    affiliateInfo: AffiliateInfo;
-    shouldDisableAnalyticsTracking: boolean;
-}
-
-export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
+export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProviderProps> {
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
     private _buyQuoteHeartbeat?: Heartbeater;
@@ -57,10 +38,12 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             props.orderSource,
             networkId,
             props.provider,
+            props.walletDisplayName,
         );
         // merge the additional additionalAssetMetaDataMap with our default map
         const completeAssetMetaDataMap = {
-            ...props.additionalAssetMetaDataMap,
+            // Make sure the passed in assetDatas are lower case
+            ..._.mapKeys(props.additionalAssetMetaDataMap || {}, (value, key) => key.toLowerCase()),
             ...defaultState.assetMetaDataMap,
         };
         // construct the final state
@@ -68,6 +51,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             ...defaultState,
             providerState,
             network: networkId,
+            walletDisplayName: props.walletDisplayName,
             selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
                 ? undefined
                 : assetUtils.createAssetFromAssetDataOrThrow(
@@ -88,6 +72,8 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     constructor(props: ZeroExInstantProviderProps) {
         super(props);
+        setupRollbar();
+        fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
     }
@@ -116,7 +102,9 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // Trigger first buyquote fetch
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, { updateSilently: false });
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, QuoteFetchOrigin.Manual, {
+            updateSilently: false,
+        });
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
@@ -126,14 +114,17 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
 
         // Analytics
         disableAnalytics(this.props.shouldDisableAnalyticsTracking || false);
-        analytics.addEventProperties({
-            embeddedHost: window.location.host,
-            embeddedUrl: window.location.href,
-            networkId: state.network,
-            providerName: state.providerState.name,
-            gitSha: process.env.GIT_SHA,
-            npmVersion: process.env.NPM_PACKAGE_VERSION,
-        });
+        analytics.addEventProperties(
+            analytics.generateEventProperties(
+                state.network,
+                this.props.orderSource,
+                state.providerState,
+                window,
+                state.selectedAsset,
+                this.props.affiliateInfo,
+                state.baseCurrency,
+            ),
+        );
         analytics.trackInstantOpened();
     }
     public componentWillUnmount(): void {

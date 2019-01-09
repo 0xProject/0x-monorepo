@@ -1,6 +1,8 @@
+import { AssetBuyerError } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
+import { DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
@@ -25,7 +27,7 @@ export const assetUtils = {
             return;
         }
         return {
-            assetData,
+            assetData: assetData.toLowerCase(),
             metaData,
         };
     },
@@ -35,7 +37,7 @@ export const assetUtils = {
         network: Network,
     ): Asset => {
         return {
-            assetData,
+            assetData: assetData.toLowerCase(),
             metaData: assetUtils.getMetaDataOrThrow(assetData, assetMetaDataMap, network),
         };
     },
@@ -70,7 +72,7 @@ export const assetUtils = {
         }
         return metaData;
     },
-    bestNameForAsset: (asset?: Asset, defaultName: string = '???'): string => {
+    bestNameForAsset: (asset?: Asset, defaultName: string = DEFAULT_UNKOWN_ASSET_NAME): string => {
         if (_.isUndefined(asset)) {
             return defaultName;
         }
@@ -105,5 +107,21 @@ export const assetUtils = {
             asset => (asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined),
         );
         return _.compact(erc20sOrUndefined);
+    },
+    assetBuyerErrorMessage: (asset: ERC20Asset, error: Error): string | undefined => {
+        if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
+            const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
+            return `Not enough ${assetName} available`;
+        } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
+            return 'Not enough ZRX available';
+        } else if (
+            error.message === AssetBuyerError.StandardRelayerApiError ||
+            error.message.startsWith(AssetBuyerError.AssetUnavailable)
+        ) {
+            const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
+            return `${assetName} is currently unavailable`;
+        }
+
+        return undefined;
     },
 };

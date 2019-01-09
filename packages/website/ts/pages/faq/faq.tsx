@@ -2,7 +2,7 @@ import { colors, Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Footer } from 'ts/components/footer';
+import { Footer } from 'ts/components/old_footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Question } from 'ts/pages/faq/question';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -379,7 +379,7 @@ const sections: FAQSection[] = [
                     <div>
                         Join our{' '}
                         <a href={constants.URL_ZEROEX_CHAT} target="_blank">
-                            Rocket.chat
+                            Discord
                         </a>! As an open source project, 0x will rely on a worldwide community of passionate developers
                         to contribute proposals, ideas and code.
                     </div>

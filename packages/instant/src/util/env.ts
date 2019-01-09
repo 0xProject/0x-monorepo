@@ -44,6 +44,8 @@ export const envUtil = {
     getProviderType(provider: Provider): ProviderType | undefined {
         if (provider.constructor.name === 'EthereumProvider') {
             return ProviderType.Mist;
+        } else if ((provider as any).isTrust) {
+            return ProviderType.TrustWallet;
         } else if ((provider as any).isParity) {
             return ProviderType.Parity;
         } else if ((provider as any).isMetaMask) {
@@ -59,6 +61,13 @@ export const envUtil = {
         const providerTypeIfExists = envUtil.getProviderType(provider);
         if (_.isUndefined(providerTypeIfExists)) {
             return provider.constructor.name;
+        }
+        return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
+    },
+    getProviderDisplayName(provider: Provider): string {
+        const providerTypeIfExists = envUtil.getProviderType(provider);
+        if (_.isUndefined(providerTypeIfExists)) {
+            return 'Wallet';
         }
         return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
     },

@@ -31,7 +31,7 @@ export interface ERC20AssetAmountInputState {
     currentFontSizePx: number;
 }
 
-export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
+export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
         isDisabled: false,
@@ -64,6 +64,9 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         maxFontSizePx={this.props.startingFontSizePx}
                         onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
+                        hasAutofocus={true}
+                        /* We send in a key of asset data to force a rerender of this component when the user selects a new asset.  We do this so the autofocus attribute will bring focus onto this input */
+                        key={asset.assetData}
                     />
                 </Container>
                 <Container
@@ -110,7 +113,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         );
     };
     private readonly _renderChevronIcon = (): React.ReactNode => {
-        if (!this._areMultipleAssetsAvailable()) {
+        if (!this._areAnyAssetsAvailable()) {
             return null;
         }
         return (
@@ -131,14 +134,14 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         // We don't want to allow opening the token selection panel if there are no assets.
         // Since styles are inferred from the presence of a click handler, we want to return undefined
         // instead of providing a noop.
-        if (!this._areMultipleAssetsAvailable() || _.isUndefined(this.props.onSelectAssetClick)) {
+        if (!this._areAnyAssetsAvailable() || _.isUndefined(this.props.onSelectAssetClick)) {
             return undefined;
         }
         return this._handleSelectAssetClick;
     };
-    private readonly _areMultipleAssetsAvailable = (): boolean => {
+    private readonly _areAnyAssetsAvailable = (): boolean => {
         const { numberOfAssetsAvailable } = this.props;
-        return !_.isUndefined(numberOfAssetsAvailable) && numberOfAssetsAvailable > 1;
+        return !_.isUndefined(numberOfAssetsAvailable) && numberOfAssetsAvailable > 0;
     };
     private readonly _handleSelectAssetClick = (): void => {
         if (this.props.onSelectAssetClick) {

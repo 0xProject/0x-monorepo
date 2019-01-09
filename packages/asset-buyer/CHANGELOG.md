@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.4 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v3.0.3 - _December 11, 2018_
+
+    * Update SRA order provider to include Dai
+
+## v3.0.2 - _November 28, 2018_
+
+    * Dependencies updated
+
+## v3.0.1 - _November 21, 2018_
+
+    * Dependencies updated (#1276)
+
 ## v3.0.0 - _November 14, 2018_
 
     * update `getBuyQuoteAsync` to return eth spent on assets instead of per unit amount (#1252)

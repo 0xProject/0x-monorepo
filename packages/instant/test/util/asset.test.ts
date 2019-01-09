@@ -1,6 +1,7 @@
+import { AssetBuyerError } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 
-import { Asset, AssetMetaData, ERC20AssetMetaData, Network, ZeroExInstantError } from '../../src/types';
+import { Asset, AssetMetaData, ERC20Asset, ERC20AssetMetaData, Network, ZeroExInstantError } from '../../src/types';
 import { assetUtils } from '../../src/util/asset';
 
 const ZRX_ASSET_DATA = '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498';
@@ -11,7 +12,7 @@ const ZRX_META_DATA: ERC20AssetMetaData = {
     decimals: 18,
     name: '0x',
 };
-const ZRX_ASSET: Asset = {
+const ZRX_ASSET: ERC20Asset = {
     assetData: ZRX_ASSET_DATA,
     metaData: ZRX_META_DATA,
 };
@@ -43,6 +44,34 @@ describe('assetDataUtil', () => {
             expect(() =>
                 assetUtils.getMetaDataOrThrow('asset data we dont have', META_DATA_MAP, Network.Mainnet),
             ).toThrowError(ZeroExInstantError.AssetMetaDataNotAvailable);
+        });
+    });
+    describe('assetBuyerErrorMessage', () => {
+        it('should return message for InsufficientAssetLiquidity', () => {
+            const insufficientAssetError = new Error(AssetBuyerError.InsufficientAssetLiquidity);
+            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, insufficientAssetError)).toEqual(
+                'Not enough ZRX available',
+            );
+        });
+        it('should return message for InsufficientAssetLiquidity', () => {
+            const insufficientZrxError = new Error(AssetBuyerError.InsufficientZrxLiquidity);
+            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, insufficientZrxError)).toEqual(
+                'Not enough ZRX available',
+            );
+        });
+        it('should message for StandardRelayerApiError', () => {
+            const standardRelayerError = new Error(AssetBuyerError.StandardRelayerApiError);
+            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, standardRelayerError)).toEqual(
+                'ZRX is currently unavailable',
+            );
+        });
+        it('should return error for AssetUnavailable error', () => {
+            const assetUnavailableError = new Error(
+                `${AssetBuyerError.AssetUnavailable}: For assetData ${ZRX_ASSET_DATA}`,
+            );
+            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, assetUnavailableError)).toEqual(
+                'ZRX is currently unavailable',
+            );
         });
     });
 });
