@@ -27,16 +27,29 @@ export interface ContainerProps {
     borderBottom?: string;
     className?: string;
     backgroundColor?: ColorOption;
+    rawBackgroundColor?: string;
     hasBoxShadow?: boolean;
+    isHidden?: boolean;
     zIndex?: number;
     whiteSpace?: string;
     opacity?: number;
     cursor?: string;
     overflow?: string;
     darkenOnHover?: boolean;
+    rawHoverColor?: string;
     boxShadowOnHover?: boolean;
     flexGrow?: string | number;
 }
+
+const getBackgroundColor = (theme: any, backgroundColor?: ColorOption, rawBackgroundColor?: string): string => {
+    if (backgroundColor) {
+        return theme[backgroundColor] as string;
+    }
+    if (rawBackgroundColor) {
+        return rawBackgroundColor;
+    }
+    return 'none';
+};
 
 export const Container =
     styled.div <
@@ -65,14 +78,17 @@ export const Container =
         ${props => cssRuleIfExists(props, 'opacity')}
         ${props => cssRuleIfExists(props, 'cursor')}
         ${props => cssRuleIfExists(props, 'overflow')}
+        ${props => (props.overflow === 'scroll' ? `-webkit-overflow-scrolling: touch` : '')};
         ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
         ${props => props.display && stylesForMedia<string>('display', props.display)}
         ${props => props.width && stylesForMedia<string>('width', props.width)}
         ${props => props.height && stylesForMedia<string>('height', props.height)}
         ${props => props.borderRadius && stylesForMedia<string>('border-radius', props.borderRadius)}
-        background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+        ${props => (props.isHidden ? 'visibility: hidden;' : '')}
+        background-color: ${props => getBackgroundColor(props.theme, props.backgroundColor, props.rawBackgroundColor)};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {
+            ${props => (props.rawHoverColor ? `background-color: ${props.rawHoverColor}` : '')}
             ${props =>
                 props.darkenOnHover
                     ? `background-color: ${

@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _January 9, 2019_
+
+    * Add support for MultiAssetProxy (#1363)
+
+## v1.0.16 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.0.15 - _December 11, 2018_
+
+    * Dependencies updated
+
+## v1.0.14 - _November 28, 2018_
+
+    * Dependencies updated
+
 ## v1.0.13 - _November 21, 2018_
 
     * Dependencies updated

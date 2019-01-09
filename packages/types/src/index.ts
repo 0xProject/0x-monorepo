@@ -110,7 +110,9 @@ export type DoneCallback = (err?: Error) => void;
 
 export interface OrderRelevantState {
     makerBalance: BigNumber;
+    makerIndividualBalances: ObjectMap<BigNumber>;
     makerProxyAllowance: BigNumber;
+    makerIndividualProxyAllowances: ObjectMap<BigNumber>;
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
@@ -155,6 +157,7 @@ export enum SignatureType {
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
+    MultiAsset = '0x94cfcdd7',
 }
 
 export interface ERC20AssetData {
@@ -168,7 +171,21 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type AssetData = ERC20AssetData | ERC721AssetData;
+export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+
+export interface MultiAssetData {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: string[];
+}
+
+export interface MultiAssetDataWithRecursiveDecoding {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: SingleAssetData[];
+}
+
+export type AssetData = SingleAssetData | MultiAssetData | MultiAssetDataWithRecursiveDecoding;
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
@@ -195,6 +212,7 @@ export enum RevertReason {
     FailedExecution = 'FAILED_EXECUTION',
     AssetProxyAlreadyExists = 'ASSET_PROXY_ALREADY_EXISTS',
     LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
+    LengthGreaterThan3Required = 'LENGTH_GREATER_THAN_3_REQUIRED',
     LengthGreaterThan131Required = 'LENGTH_GREATER_THAN_131_REQUIRED',
     Length0Required = 'LENGTH_0_REQUIRED',
     Length65Required = 'LENGTH_65_REQUIRED',
@@ -209,6 +227,7 @@ export enum RevertReason {
     MakerNotWhitelisted = 'MAKER_NOT_WHITELISTED',
     TakerNotWhitelisted = 'TAKER_NOT_WHITELISTED',
     AssetProxyDoesNotExist = 'ASSET_PROXY_DOES_NOT_EXIST',
+    LengthMismatch = 'LENGTH_MISMATCH',
     LibBytesGreaterThanZeroLengthRequired = 'GREATER_THAN_ZERO_LENGTH_REQUIRED',
     LibBytesGreaterOrEqualTo4LengthRequired = 'GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED',
     LibBytesGreaterOrEqualTo20LengthRequired = 'GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED',
@@ -235,6 +254,16 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
+    // DutchAuction
+    AuctionInvalidAmount = 'INVALID_AMOUNT',
+    AuctionExpired = 'AUCTION_EXPIRED',
+    AuctionNotStarted = 'AUCTION_NOT_STARTED',
+    AuctionInvalidBeginTime = 'INVALID_BEGIN_TIME',
+    InvalidAssetData = 'INVALID_ASSET_DATA',
+    // Balance Threshold Filter
+    InvalidOrBlockedExchangeSelector = 'INVALID_OR_BLOCKED_EXCHANGE_SELECTOR',
+    BalanceQueryFailed = 'BALANCE_QUERY_FAILED',
+    AtLeastOneAddressDoesNotMeetBalanceThreshold = 'AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD',
 }
 
 export enum StatusCodes {
@@ -646,4 +675,13 @@ export interface SimpleEvmOutput {
 
 export interface SimpleEvmBytecodeOutput {
     object: string;
+}
+
+export interface DutchAuctionDetails {
+    beginTimeSeconds: BigNumber;
+    endTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
+    endAmount: BigNumber;
+    currentAmount: BigNumber;
+    currentTimeSeconds: BigNumber;
 }

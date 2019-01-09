@@ -5,6 +5,24 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0 - _January 9, 2019_
+
+    * Added migrations for Dutch Auction contract (#1465)
+
+## v2.2.2 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.2.1 - _December 11, 2018_
+
+    * Dependencies updated
+
+## v2.2.0 - _November 28, 2018_
+
+    * Add CLI `0x-migrate` for running the 0x migrations in a language-agnostic way (#1324)
+    * Deploy testnet Exchange arfitact. Previously mainnet Exchange artifact was deployed. (#1309)
+    * Fund the Forwarder with ZRX for fees. (#1309)
+
 ## v2.1.0 - _November 21, 2018_
 
     * Export all type declarations used by the public interface, as well as the `ContractAddresses` mapping (#1301)

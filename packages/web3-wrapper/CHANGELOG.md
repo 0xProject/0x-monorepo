@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.2 - _January 9, 2019_
+
+    * Dependencies updated
+
+## v3.2.1 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v3.2.0 - _December 11, 2018_
+
+    * Return `value` and `gasPrice` as BigNumbers to avoid loss of precision errors (#1402)
+
+## v3.1.6 - _November 28, 2018_
+
+    * Unmarshall mined transaction receipts (#1308)
+
 ## v3.1.5 - _November 21, 2018_
 
     * Add unmarshalling of transaction receipts (#1291)

@@ -7,8 +7,8 @@ import {
     OnboardingTooltip,
     TooltipPointerDisplay,
 } from 'ts/components/onboarding/onboarding_tooltip';
-import { Animation } from 'ts/components/ui/animation';
 import { Container } from 'ts/components/ui/container';
+import { EaseUpFromBottomAnimation } from 'ts/components/ui/ease_up_from_bottom_animation';
 import { Overlay } from 'ts/components/ui/overlay';
 import { zIndex } from 'ts/style/z_index';
 
@@ -66,7 +66,7 @@ export class OnboardingFlow extends React.Component<OnboardingFlowProps> {
         let onboardingElement = null;
         const currentStep = this._getCurrentStep();
         if (this.props.isMobile) {
-            onboardingElement = <Animation type="easeUpFromBottom">{this._renderOnboardingCard()}</Animation>;
+            onboardingElement = <EaseUpFromBottomAnimation>{this._renderOnboardingCard()}</EaseUpFromBottomAnimation>;
         } else if (currentStep.position.type === 'target') {
             const { placement, target } = currentStep.position;
             onboardingElement = (

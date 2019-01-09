@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _January 9, 2019_
+
+    * Add `should` prefix to names of properties in EncodingRules and DecodingRules (#1363)
+
+## v2.1.0 - _Invalid date_
+
+    * Add `logWithTime` to `logUtils` (#1461)
+
+## v2.0.8 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.0.7 - _December 11, 2018_
+
+    * Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development.
+
 ## v2.0.6 - _November 21, 2018_
 
     * Dependencies updated

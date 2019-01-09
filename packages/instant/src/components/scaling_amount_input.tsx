@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { Maybe } from '../types';
 
+import { GIT_SHA, MAGIC_TRIGGER_ERROR_INPUT, MAGIC_TRIGGER_ERROR_MESSAGE, NPM_PACKAGE_VERSION } from '../constants';
 import { ColorOption } from '../style/theme';
 import { maybeBigNumberUtil } from '../util/maybe_big_number';
 import { util } from '../util/util';
@@ -18,17 +19,19 @@ export interface ScalingAmountInputProps {
     value?: BigNumber;
     onAmountChange: (value?: BigNumber) => void;
     onFontSizeChange: (fontSizePx: number) => void;
+    hasAutofocus: boolean;
 }
 interface ScalingAmountInputState {
     stringValue: string;
 }
 
 const { stringToMaybeBigNumber, areMaybeBigNumbersEqual } = maybeBigNumberUtil;
-export class ScalingAmountInput extends React.Component<ScalingAmountInputProps, ScalingAmountInputState> {
+export class ScalingAmountInput extends React.PureComponent<ScalingAmountInputProps, ScalingAmountInputState> {
     public static defaultProps = {
         onAmountChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
         isDisabled: false,
+        hasAutofocus: false,
     };
     public constructor(props: ScalingAmountInputProps) {
         super(props);
@@ -55,6 +58,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
         const { textLengthThreshold, fontColor, maxFontSizePx, onFontSizeChange } = this.props;
         return (
             <ScalingInput
+                type="number"
                 maxFontSizePx={maxFontSizePx}
                 textLengthThreshold={textLengthThreshold}
                 onFontSizeChange={onFontSizeChange}
@@ -64,10 +68,15 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
                 placeholder="0.00"
                 emptyInputWidthCh={3.5}
                 isDisabled={this.props.isDisabled}
+                hasAutofocus={this.props.hasAutofocus}
             />
         );
     }
     private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        if (event.target.value === MAGIC_TRIGGER_ERROR_INPUT) {
+            throw new Error(`${MAGIC_TRIGGER_ERROR_MESSAGE} git: ${GIT_SHA}, npm: ${NPM_PACKAGE_VERSION}`);
+        }
+
         const sanitizedValue = event.target.value.replace(/[^0-9.]/g, ''); // only allow numbers and "."
         this.setState({
             stringValue: sanitizedValue,

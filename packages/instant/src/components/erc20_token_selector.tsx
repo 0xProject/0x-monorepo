@@ -3,10 +3,10 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { ERC20Asset } from '../types';
+import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 
 import { SearchInput } from './search_input';
-
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -18,15 +18,15 @@ export interface ERC20TokenSelectorProps {
 }
 
 export interface ERC20TokenSelectorState {
-    searchQuery?: string;
+    searchQuery: string;
 }
 
-export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps> {
+export class ERC20TokenSelector extends React.PureComponent<ERC20TokenSelectorProps> {
     public state: ERC20TokenSelectorState = {
-        searchQuery: undefined,
+        searchQuery: '',
     };
     public render(): React.ReactNode {
-        const { tokens, onTokenSelect } = this.props;
+        const { tokens } = this.props;
         return (
             <Container height="100%">
                 <Container marginBottom="10px">
@@ -42,12 +42,11 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
                     tabIndex={-1}
                 />
                 <Container overflow="scroll" height="calc(100% - 90px)" marginTop="10px">
-                    {_.map(tokens, token => {
-                        if (!this._isTokenQueryMatch(token)) {
-                            return null;
-                        }
-                        return <TokenSelectorRow key={token.assetData} token={token} onClick={onTokenSelect} />;
-                    })}
+                    <TokenRowFilter
+                        tokens={tokens}
+                        onClick={this._handleTokenClick}
+                        searchQuery={this.state.searchQuery}
+                    />
                 </Container>
             </Container>
         );
@@ -57,13 +56,38 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
         this.setState({
             searchQuery,
         });
+        analytics.trackTokenSelectorSearched(searchQuery);
     };
+    private readonly _handleTokenClick = (token: ERC20Asset): void => {
+        this.props.onTokenSelect(token);
+    };
+}
+
+interface TokenRowFilterProps {
+    tokens: ERC20Asset[];
+    onClick: (token: ERC20Asset) => void;
+    searchQuery: string;
+}
+
+class TokenRowFilter extends React.Component<TokenRowFilterProps> {
+    public render(): React.ReactNode {
+        return _.map(this.props.tokens, token => {
+            if (!this._isTokenQueryMatch(token)) {
+                return null;
+            }
+            return <TokenSelectorRow key={token.assetData} token={token} onClick={this.props.onClick} />;
+        });
+    }
+    public shouldComponentUpdate(nextProps: TokenRowFilterProps): boolean {
+        const arePropsDeeplyEqual = _.isEqual(nextProps, this.props);
+        return !arePropsDeeplyEqual;
+    }
     private readonly _isTokenQueryMatch = (token: ERC20Asset): boolean => {
-        const { searchQuery } = this.state;
-        if (_.isUndefined(searchQuery)) {
+        const { searchQuery } = this.props;
+        const searchQueryLowerCase = searchQuery.toLowerCase().trim();
+        if (searchQueryLowerCase === '') {
             return true;
         }
-        const searchQueryLowerCase = searchQuery.toLowerCase();
         const tokenName = token.metaData.name.toLowerCase();
         const tokenSymbol = token.metaData.symbol.toLowerCase();
         return _.startsWith(tokenSymbol, searchQueryLowerCase) || _.startsWith(tokenName, searchQueryLowerCase);
@@ -75,7 +99,7 @@ interface TokenSelectorRowProps {
     onClick: (token: ERC20Asset) => void;
 }
 
-class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
+class TokenSelectorRow extends React.PureComponent<TokenSelectorRowProps> {
     public render(): React.ReactNode {
         const { token } = this.props;
         const circleColor = token.metaData.primaryColor || 'black';
@@ -121,20 +145,32 @@ interface TokenSelectorRowIconProps {
     token: ERC20Asset;
 }
 
-const TokenSelectorRowIcon: React.StatelessComponent<TokenSelectorRowIconProps> = props => {
-    const { token } = props;
-    const iconUrlIfExists = token.metaData.iconUrl;
-    const TokenIcon = require(`../assets/icons/${token.metaData.symbol}.svg`);
-    const displaySymbol = assetUtils.bestNameForAsset(token);
-    if (!_.isUndefined(iconUrlIfExists)) {
-        return <img src={iconUrlIfExists} />;
-    } else if (!_.isUndefined(TokenIcon)) {
-        return <TokenIcon />;
-    } else {
-        return (
-            <Text fontColor={ColorOption.white} fontSize="8px">
-                {displaySymbol}
-            </Text>
-        );
+const getTokenIcon = (symbol: string): React.StatelessComponent | undefined => {
+    try {
+        return require(`../assets/icons/${symbol}.svg`) as React.StatelessComponent;
+    } catch (e) {
+        // Can't find icon
+        return undefined;
     }
 };
+
+class TokenSelectorRowIcon extends React.PureComponent<TokenSelectorRowIconProps> {
+    public render(): React.ReactNode {
+        const { token } = this.props;
+        const iconUrlIfExists = token.metaData.iconUrl;
+
+        const TokenIcon = getTokenIcon(token.metaData.symbol);
+        const displaySymbol = assetUtils.bestNameForAsset(token);
+        if (!_.isUndefined(iconUrlIfExists)) {
+            return <img src={iconUrlIfExists} />;
+        } else if (!_.isUndefined(TokenIcon)) {
+            return <TokenIcon />;
+        } else {
+            return (
+                <Text fontColor={ColorOption.white} fontSize="8px">
+                    {displaySymbol}
+                </Text>
+            );
+        }
+    }
+}

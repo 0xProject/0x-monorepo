@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
+import { transparentize } from 'polished';
 import * as React from 'react';
 
-import { ColorOption, completelyTransparent } from '../../style/theme';
+import { ColorOption, completelyTransparent, ThemeConsumer } from '../../style/theme';
 import { zIndex } from '../../style/z_index';
 
 import { Container } from './container';
@@ -19,13 +20,14 @@ export interface DropdownProps {
     value: string;
     label?: string;
     items: DropdownItemConfig[];
+    onOpen?: () => void;
 }
 
 export interface DropdownState {
     isOpen: boolean;
 }
 
-export class Dropdown extends React.Component<DropdownProps, DropdownState> {
+export class Dropdown extends React.PureComponent<DropdownProps, DropdownState> {
     public static defaultProps = {
         items: [],
     };
@@ -97,9 +99,14 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
         if (_.isEmpty(this.props.items)) {
             return;
         }
+        const isOpen = !this.state.isOpen;
         this.setState({
-            isOpen: !this.state.isOpen,
+            isOpen,
         });
+
+        if (isOpen && this.props.onOpen) {
+            this.props.onOpen();
+        }
     };
     private readonly _closeDropdown = (): void => {
         this.setState({
@@ -115,20 +122,26 @@ export interface DropdownItemProps extends DropdownItemConfig {
 }
 
 export const DropdownItem: React.StatelessComponent<DropdownItemProps> = ({ text, onClick, isLast }) => (
-    <Container
-        onClick={onClick}
-        cursor="pointer"
-        darkenOnHover={true}
-        backgroundColor={ColorOption.white}
-        padding="0.8em"
-        borderTop="0"
-        border="1px solid"
-        borderRadius={isLast ? '0px 0px 4px 4px' : undefined}
-        width="100%"
-        borderColor={ColorOption.feintGrey}
-    >
-        <Text fontSize="14px" fontColor={ColorOption.darkGrey}>
-            {text}
-        </Text>
-    </Container>
+    <ThemeConsumer>
+        {theme => (
+            <Container
+                onClick={onClick}
+                cursor="pointer"
+                rawHoverColor={transparentize(0.9, theme[ColorOption.primaryColor])}
+                backgroundColor={ColorOption.white}
+                padding="0.8em"
+                borderTop="0"
+                border="1px solid"
+                borderRadius={isLast ? '0px 0px 4px 4px' : undefined}
+                width="100%"
+                borderColor={ColorOption.feintGrey}
+            >
+                <Text fontSize="14px" fontColor={ColorOption.darkGrey}>
+                    {text}
+                </Text>
+            </Container>
+        )}
+    </ThemeConsumer>
 );
+
+DropdownItem.displayName = 'DropdownItem';

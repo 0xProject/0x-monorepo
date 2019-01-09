@@ -1,5 +1,5 @@
 {
-    "id": "/OrdersRequestOpts",
+    "id": "/OrdersRequestOptsSchema",
     "type": "object",
     "properties": {
         "makerAssetProxyId": { "$ref": "/hexSchema" },

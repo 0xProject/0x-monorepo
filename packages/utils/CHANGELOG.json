@@ -1,5 +1,43 @@
 [
     {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Add `should` prefix to names of properties in EncodingRules and DecodingRules",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add `logWithTime` to `logUtils`",
+                "pr": 1461
+            }
+        ]
+    },
+    {
+        "version": "2.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.0.7",
+        "changes": [
+            {
+                "note":
+                    "Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development."
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "timestamp": 1542821676,
         "version": "2.0.6",
         "changes": [

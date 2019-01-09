@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.2.1 - _January 9, 2019_
+
+    * Add `absolutePath` to `ContractSource` type (#1461)
+    * Add `SpyResolver` that records all resolved contracts data (#1461)
+
+## v1.1.1 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.1.0 - _December 11, 2018_
+
+    * NPMResolver now supports scoped packages (#1311)
+
 ## v1.0.17 - _November 21, 2018_
 
     * Dependencies updated

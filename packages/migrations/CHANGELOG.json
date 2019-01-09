@@ -1,5 +1,33 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Added migrations for Dutch Auction contract",
+                "pr": 1465
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {
@@ -14,7 +42,8 @@
                 "note": "Fund the Forwarder with ZRX for fees.",
                 "pr": 1309
             }
-        ]
+        ],
+        "timestamp": 1543401373
     },
     {
         "version": "2.1.0",

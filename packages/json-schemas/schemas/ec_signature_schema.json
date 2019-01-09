@@ -1,5 +1,5 @@
 {
-    "id": "/ECSignature",
+    "id": "/ecSignatureSchema",
     "properties": {
         "v": {
             "type": "number",

@@ -9,6 +9,7 @@ export interface ContractAddresses {
     assetProxyOwner: string;
     forwarder: string;
     orderValidator: string;
+    dutchAuction: string;
 }
 
 export enum NetworkId {
@@ -16,7 +17,10 @@ export enum NetworkId {
     Ropsten = 3,
     Rinkeby = 4,
     Kovan = 42,
+    Ganache = 50,
 }
+
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const networkToAddresses: { [networkId: number]: ContractAddresses } = {
     1: {
@@ -28,6 +32,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
+        // @todo hysz/dekz: Add mainnet address once deployed.
+        dutchAuction: NULL_ADDRESS,
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -38,16 +44,18 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b',
         forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
+        dutchAuction: '0x2df6b59309f35ada230ec7d61d7d97355017a1df',
     },
     4: {
-        erc20Proxy: '0x3e809c563c15a295e832e37053798ddc8d6c8dab',
-        erc721Proxy: '0x8e1ff02637cb5e39f2fa36c14706aa348b065b09',
-        zrxToken: '0x2727e688b8fd40b198cd5fe6e408e00494a06f07',
+        exchange: '0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e',
+        erc20Proxy: '0x2f5ae4f6106e89b4147651688a92256885c5f410',
+        erc721Proxy: '0x7656d773e11ff7383a14dcf09a9c50990481cd10',
+        zrxToken: '0x8080c7e4b81ecf23aa6f877cfbfd9b0c228c6ffa',
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
-        exchange: '0x22ebc052f43a88efa06379426120718170f2204e',
-        assetProxyOwner: '0x1da52d1d3a3acfa0a1836b737393b4e9931268fc',
-        forwarder: '0xd2dbf3250a764eaaa94fa0c84ed87c0edc8ed04e',
-        orderValidator: '0x39c3fc9f4d8430af2713306ce80c584752d9e1c7',
+        assetProxyOwner: '0xe1703da878afcebff5b7624a826902af475b9c03',
+        forwarder: '0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4',
+        orderValidator: '0x0c5173a51e26b29d6126c686756fb9fbef71f762',
+        dutchAuction: '0xdd7bd6437e67c422879364740ab5855fe3dc41f7',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -58,6 +66,19 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
         forwarder: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
+        dutchAuction: '0xe11667fb51f34c5367f40d7e379327ce32ee7150',
+    },
+    // NetworkId 50 represents our Ganache snapshot generated from migrations.
+    50: {
+        exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+        erc20Proxy: '0x1dc4c1cefef38a777b15aa20260a54e584b16c48',
+        erc721Proxy: '0x1d7022f5b17d2f8b695918fb48fa1089c9f85401',
+        zrxToken: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
+        etherToken: '0x0b1ba0af832d7c05fd64161e0db78e85978e8082',
+        assetProxyOwner: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
+        forwarder: '0xb69e673309512a9d726f87304c6984054f87a93b',
+        orderValidator: '0xe86bb98fcf9bff3512c74589b78fb168200cc546',
+        dutchAuction: '0xdc688d29394a3f1e6f1e5100862776691afaf3d2',
     },
 };
 

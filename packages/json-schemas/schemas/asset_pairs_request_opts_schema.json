@@ -1,5 +1,5 @@
 {
-    "id": "/AssetPairsRequestOpts",
+    "id": "/AssetPairsRequestOptsSchema",
     "type": "object",
     "properties": {
         "assetDataA": { "$ref": "/hexSchema" },

@@ -18,6 +18,7 @@ jobs:
                   name: yarn
                   command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
             - run: yarn build:ci:no_website
+            - run: yarn build:ts
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -40,7 +41,12 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci contracts
+            - run: yarn wsrun test:circleci @0x/contracts-multisig
+            - run: yarn wsrun test:circleci @0x/contracts-utils
+            - run: yarn wsrun test:circleci @0x/contracts-libs
+            - run: yarn wsrun test:circleci @0x/contracts-tokens
+            - run: yarn wsrun test:circleci @0x/contracts-extensions
+            - run: yarn wsrun test:circleci @0x/contracts-protocol
     test-contracts-geth:
         docker:
             - image: circleci/node:9
@@ -52,7 +58,12 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
             # initialized
-            - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
+            - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test @0x/contracts-multisig
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-utils
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-tokens
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-extensions
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-protocol
     test-publish:
         resource_class: medium+
         docker:
@@ -73,6 +84,20 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn test:generate_docs:circleci
+    test-pipeline:
+        docker:
+            - image: circleci/node:9
+            - image: postgres:11-alpine
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: ZEROEX_DATA_PIPELINE_TEST_DB_URL='postgresql://postgres@localhost/postgres' yarn wsrun test:circleci @0x/pipeline
+            - save_cache:
+                  key: coverage-pipeline-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/packages/pipeline/coverage/lcov.info
     test-rest:
         docker:
             - image: circleci/node:9
@@ -81,6 +106,7 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
@@ -162,9 +188,10 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: circleci/python
-            - image: 0xorg/ganache-cli
+            - image: 0xorg/ganache-cli:2.2.2
+            - image: 0xorg/launch-kit-ci
               command: |
-                  ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db /snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m "concert load couple harbor equip island argue ramp clarify fence smart topic"
+                  yarn start:ts -p 3000:3000
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -173,9 +200,25 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      python -m ensurepip
+                      python -m pip install .[dev]
+                      # HACK! installing the package should do the following
+                      # copy for us, but it's not working in CircleCI for some
+                      # reason.  Zendesk support ticket raised (#43979) with
+                      # CircleCI.
+                      mkdir /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
+                      cp -R src/zero_ex/json_schemas/schemas/* /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .[dev]
+            - run:
+                  command: |
+                      cd python-packages/sra_client
+                      python -m ensurepip
+                      python -m pip install .[dev]
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -187,12 +230,28 @@ jobs:
                       - '.tox'
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      coverage run setup.py test
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       coverage run setup.py test
+            - run:
+                  command: |
+                      cd python-packages/sra_client
+                      coverage run setup.py test
+            - save_cache:
+                  key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/json_schemas/.coverage
             - save_cache:
                   key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/order_utils/.coverage
+            - save_cache:
+                  key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/sra_client/.coverage
     test-rest-python:
         working_directory: ~/repo
         docker:
@@ -207,7 +266,7 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -233,14 +292,23 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
+                      cd python-packages/json_schemas
+                      python -m ensurepip
+                      python -m pip install .[dev]
+            - run:
+                  command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .[dev]
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
+            - run:
+                  command: |
+                      cd python-packages/json_schemas
+                      python setup.py lint
             - run:
                   command: |
                       cd python-packages/order_utils
@@ -315,6 +383,9 @@ jobs:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn report_coverage
 workflows:
@@ -329,6 +400,9 @@ workflows:
                   requires:
                       - build
             - test-contracts-geth:
+                  requires:
+                      - build
+            - test-pipeline:
                   requires:
                       - build
             - test-rest:

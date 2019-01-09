@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _January 9, 2019_
+
+    * Added Dutch Auction Wrapper (#1465)
+
+## v2.0.2 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _December 11, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _November 28, 2018_
+
+    * Update Exchange artifact to receive ZRX asset data as a constructor argument (#1309)
+
 ## v1.1.0 - _November 21, 2018_
 
     * `deployFrom0xArtifactAsync` additionally accepts artifacts that conform to the `SimpleContractArtifact` interface (#1298)

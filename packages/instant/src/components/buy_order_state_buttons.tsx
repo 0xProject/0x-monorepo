@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
+import { AffiliateInfo, Asset, OrderProcessState, ZeroExInstantError } from '../types';
 
 import { BuyButton } from './buy_button';
 import { PlacingOrderButton } from './placing_order_button';
@@ -21,6 +21,7 @@ export interface BuyOrderStateButtonProps {
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
+    selectedAsset?: Asset;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
@@ -60,6 +61,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
             assetBuyer={props.assetBuyer}
             web3Wrapper={props.web3Wrapper}
             affiliateInfo={props.affiliateInfo}
+            selectedAsset={props.selectedAsset}
             onValidationPending={props.onValidationPending}
             onValidationFail={props.onValidationFail}
             onSignatureDenied={props.onSignatureDenied}
@@ -69,3 +71,5 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         />
     );
 };
+
+BuyOrderStateButtons.displayName = 'BuyOrderStateButtons';

@@ -8,6 +8,7 @@ import { envUtil } from '../util/env';
 import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
+import { SectionHeader } from './section_header';
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -18,26 +19,18 @@ import { WalletPrompt } from './wallet_prompt';
 export interface PaymentMethodProps {
     account: Account;
     network: Network;
-    walletName: string;
+    walletDisplayName: string;
     onInstallWalletClick: () => void;
     onUnlockWalletClick: () => void;
 }
 
-export class PaymentMethod extends React.Component<PaymentMethodProps> {
+export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
-            <Container padding="20px" width="100%">
+            <Container width="100%" height="120px" padding="20px 20px 0px 20px">
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
-                        <Text
-                            letterSpacing="1px"
-                            fontColor={ColorOption.primaryColor}
-                            fontWeight={600}
-                            textTransform="uppercase"
-                            fontSize="14px"
-                        >
-                            {this._renderTitleText()}
-                        </Text>
+                        <SectionHeader>{this._renderTitleText()}</SectionHeader>
                         {this._renderTitleLabel()}
                     </Flex>
                 </Container>
@@ -62,11 +55,11 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         if (account.state === AccountState.Ready || account.state === AccountState.Locked) {
             const circleColor: ColorOption = account.state === AccountState.Ready ? ColorOption.green : ColorOption.red;
             return (
-                <Flex>
+                <Flex align="center">
                     <Circle diameter={8} color={circleColor} />
-                    <Container marginLeft="3px">
-                        <Text fontColor={ColorOption.darkGrey} fontSize="12px">
-                            {this.props.walletName}
+                    <Container marginLeft="5px">
+                        <Text fontColor={ColorOption.darkGrey} fontSize="12px" lineHeight="30px">
+                            {this.props.walletDisplayName}
                         </Text>
                     </Container>
                 </Flex>
@@ -83,16 +76,19 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         const colors = { primaryColor, secondaryColor };
         switch (account.state) {
             case AccountState.Loading:
-                // Just take up the same amount of space as the other states.
-                return <Container height="52px" />;
+                return null;
             case AccountState.Locked:
                 return (
                     <WalletPrompt
                         onClick={this.props.onUnlockWalletClick}
-                        image={<Icon width={13} icon="lock" color={ColorOption.black} />}
+                        image={
+                            <Container position="relative" top="2px">
+                                <Icon width={13} icon="lock" color={ColorOption.black} />
+                            </Container>
+                        }
                         {...colors}
                     >
-                        Please Unlock {this.props.walletName}
+                        Click to Connect {this.props.walletDisplayName}
                     </WalletPrompt>
                 );
             case AccountState.None:

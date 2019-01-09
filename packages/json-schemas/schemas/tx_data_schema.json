@@ -4,13 +4,13 @@
         "from": { "$ref": "/addressSchema" },
         "to": { "$ref": "/addressSchema" },
         "value": {
-            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumber" }]
+            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
         },
         "gas": {
-            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumber" }]
+            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
         },
         "gasPrice": {
-            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumber" }]
+            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
         },
         "data": {
             "type": "string",

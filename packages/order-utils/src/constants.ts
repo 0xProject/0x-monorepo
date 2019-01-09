@@ -1,16 +1,71 @@
 import { BigNumber } from '@0x/utils';
+import { MethodAbi } from 'ethereum-types';
+
+const ERC20_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'tokenContract',
+            type: 'address',
+        },
+    ],
+    name: 'ERC20Token',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
+
+const ERC721_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'tokenContract',
+            type: 'address',
+        },
+        {
+            name: 'tokenId',
+            type: 'uint256',
+        },
+    ],
+    name: 'ERC721Token',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
+
+const MULTI_ASSET_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'amounts',
+            type: 'uint256[]',
+        },
+        {
+            name: 'nestedAssetData',
+            type: 'bytes[]',
+        },
+    ],
+    name: 'MultiAsset',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     NULL_BYTES: '0x',
+    NULL_ERC20_ASSET_DATA: '0xf47261b00000000000000000000000000000000000000000000000000000000000000000',
     // tslint:disable-next-line:custom-no-magic-numbers
     UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
     TESTRPC_NETWORK_ID: 50,
     ADDRESS_LENGTH: 20,
-    ERC20_ASSET_DATA_BYTE_LENGTH: 36,
-    ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH: 53,
-    SELECTOR_LENGTH: 4,
-    BASE_16: 16,
+    ERC20_ASSET_DATA_MIN_CHAR_LENGTH_WITH_PREFIX: 74,
+    ERC721_ASSET_DATA_MIN_CHAR_LENGTH_WITH_PREFIX: 136,
+    MULTI_ASSET_DATA_MIN_CHAR_LENGTH_WITH_PREFIX: 266,
+    SELECTOR_CHAR_LENGTH_WITH_PREFIX: 10,
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
     ZERO_AMOUNT: new BigNumber(0),
     EIP712_DOMAIN_NAME: '0x Protocol',
@@ -48,4 +103,7 @@ export const constants = {
             { name: 'data', type: 'bytes' },
         ],
     },
+    ERC20_METHOD_ABI,
+    ERC721_METHOD_ABI,
+    MULTI_ASSET_METHOD_ABI,
 };

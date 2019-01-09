@@ -5,7 +5,8 @@
         "node": ">=6.12"
     },
     "workspaces": [
-        "packages/*"
+        "packages/*",
+        "contracts/*"
     ],
     "scripts": {
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
@@ -28,7 +29,7 @@
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
-        "clean": "wsrun clean $PKG --fast-exit -r --parallel",
+        "clean": "wsrun clean $PKG --fast-exit -r --parallel --exclude-missing",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",
@@ -62,7 +63,7 @@
         }
     },
     "devDependencies": {
-        "@0x-lerna-fork/lerna": "3.0.0-beta.25",
+        "@0x-lerna-fork/lerna": "3.0.0-beta.26",
         "@0xproject/npm-cli-login": "^0.0.11",
         "async-child-process": "^1.1.1",
         "bundlewatch": "^0.2.1",

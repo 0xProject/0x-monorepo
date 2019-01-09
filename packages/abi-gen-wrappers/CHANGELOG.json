@@ -1,12 +1,41 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added Dutch Auction Wrapper",
+                "pr": 1465
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
                 "pr": 1309,
                 "note": "Update Exchange artifact to receive ZRX asset data as a constructor argument"
             }
-        ]
+        ],
+        "timestamp": 1543401373
     },
     {
         "version": "1.1.0",

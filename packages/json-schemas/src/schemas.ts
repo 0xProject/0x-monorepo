@@ -8,7 +8,7 @@ import * as ecSignatureSchema from '../schemas/ec_signature_schema.json';
 import * as eip712TypedDataSchema from '../schemas/eip712_typed_data_schema.json';
 import * as hexSchema from '../schemas/hex_schema.json';
 import * as indexFilterValuesSchema from '../schemas/index_filter_values_schema.json';
-import * as jsNumber from '../schemas/js_number.json';
+import * as jsNumber from '../schemas/js_number_schema.json';
 import * as numberSchema from '../schemas/number_schema.json';
 import * as orderCancellationRequestsSchema from '../schemas/order_cancel_schema.json';
 import * as orderConfigRequestSchema from '../schemas/order_config_request_schema.json';
@@ -16,6 +16,8 @@ import * as orderFillOrKillRequestsSchema from '../schemas/order_fill_or_kill_re
 import * as orderFillRequestsSchema from '../schemas/order_fill_requests_schema.json';
 import * as orderHashSchema from '../schemas/order_hash_schema.json';
 import * as orderSchema from '../schemas/order_schema.json';
+import * as orderWatcherWebSocketRequestSchema from '../schemas/order_watcher_web_socket_request_schema.json';
+import * as orderWatcherWebSocketUtf8MessageSchema from '../schemas/order_watcher_web_socket_utf8_message_schema.json';
 import * as orderBookRequestSchema from '../schemas/orderbook_request_schema.json';
 import * as ordersRequestOptsSchema from '../schemas/orders_request_opts_schema.json';
 import * as ordersSchema from '../schemas/orders_schema.json';
@@ -66,6 +68,8 @@ export const schemas = {
     jsNumber,
     requestOptsSchema,
     pagedRequestOptsSchema,
+    orderWatcherWebSocketRequestSchema,
+    orderWatcherWebSocketUtf8MessageSchema,
     ordersRequestOptsSchema,
     orderBookRequestSchema,
     orderConfigRequestSchema,
