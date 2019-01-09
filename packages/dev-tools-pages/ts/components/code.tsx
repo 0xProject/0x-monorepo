@@ -198,7 +198,7 @@ class Code extends React.Component<CodeProps, CodeState> {
         } catch (error) {
             this.setState({ didCopy: false });
         }
-    };
+    }
 }
 
 export { Code };

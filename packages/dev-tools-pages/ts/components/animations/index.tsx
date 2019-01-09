@@ -52,7 +52,7 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
     private readonly _handleResize = () => {
         clearTimeout(this._timeout);
         this._timeout = window.setTimeout(this._updateAnimationSize, 50);
-    };
+    }
     private readonly _updateAnimationSize = () => {
         const windowWidth = window.innerWidth;
         let width;
@@ -66,7 +66,7 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
         }
 
         this.setState({ width, height });
-    };
+    }
 }
 
 const Container =
