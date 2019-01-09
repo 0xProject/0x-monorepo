@@ -4,6 +4,7 @@ import styled, { withTheme } from 'styled-components';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { colors } from 'ts/style/colors';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { utils } from 'ts/utils/utils';
 
 interface FormProps {
     theme: ThemeValuesInterface;
@@ -92,7 +93,7 @@ class Form extends React.Component<FormProps> {
         }
 
         try {
-            await fetch('https://website-api.0x.org/newsletter_subscriber/substack', {
+            await fetch(`${utils.getBackendBaseUrl()}/newsletter_subscriber/substack`, {
                 method: 'post',
                 mode: 'cors',
                 headers: {
