@@ -70,13 +70,13 @@ export interface Token {
 }
 
 export enum OrderStatus {
-    Invalid = 'INVALID',
-    InvalidMakerAssetAmount = 'INVALID_MAKER_ASSET_AMOUNT',
-    InvalidTakerAssetAmount = 'INVALID_TAKER_ASSET_AMOUNT',
-    Fillable = 'FILLABLE',
-    Expired = 'EXPIRED',
-    FullyFilled = 'FULLY_FILLED',
-    Cancelled = 'CANCELLED',
+    Invalid,
+    InvalidMakerAssetAmount,
+    InvalidTakerAssetAmount,
+    Fillable,
+    Expired,
+    FullyFilled,
+    Cancelled,
 }
 
 export enum ContractName {
