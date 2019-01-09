@@ -21,13 +21,7 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DutchAuctionContract;
-            const inputAbi = self._lookupAbi('getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})').inputs;
-            [order
-    ] = BaseContract._formatABIDataItemList(inputAbi, [order
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [order
-    ]);
-            const encodedData = self._lookupEthersInterface('getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})').functions.getAuctionDetails.encode([order
+            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -49,11 +43,7 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DutchAuctionContract;
-            const inputAbi = self._lookupAbi('getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})').inputs;
-            [order
-    ] = BaseContract._formatABIDataItemList(inputAbi, [order
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})').functions.getAuctionDetails.encode([order
+            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -70,11 +60,7 @@ export class DutchAuctionContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         ): string {
             const self = this as any as DutchAuctionContract;
-            const inputAbi = self._lookupAbi('getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})').inputs;
-            [order
-    ] = BaseContract._formatABIDataItemList(inputAbi, [order
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})').functions.getAuctionDetails.encode([order
+            const abiEncodedTransactionData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
             return abiEncodedTransactionData;
         },
@@ -85,15 +71,7 @@ export class DutchAuctionContract extends BaseContract {
         ): Promise<{beginTimeSeconds: BigNumber;endTimeSeconds: BigNumber;beginAmount: BigNumber;endAmount: BigNumber;currentAmount: BigNumber;currentTimeSeconds: BigNumber}
         > {
             const self = this as any as DutchAuctionContract;
-            const functionSignature = 'getAuctionDetails({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes})';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [order
-        ] = BaseContract._formatABIDataItemList(inputAbi, [order
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [order
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getAuctionDetails;
-            const encodedData = ethersFunction.encode([order
+            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -105,10 +83,8 @@ export class DutchAuctionContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'getAuctionDetails'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
+            const abiEncoder = self._lookupAbiEncoder('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
+            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
             return resultArray[0];
         },
     };
@@ -121,22 +97,7 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DutchAuctionContract;
-            const inputAbi = self._lookupAbi('matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)').inputs;
-            [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ] = BaseContract._formatABIDataItemList(inputAbi, [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ]);
-            const encodedData = self._lookupEthersInterface('matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)').functions.matchOrders.encode([buyOrder,
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
@@ -167,17 +128,7 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DutchAuctionContract;
-            const inputAbi = self._lookupAbi('matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)').inputs;
-            [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ] = BaseContract._formatABIDataItemList(inputAbi, [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)').functions.matchOrders.encode([buyOrder,
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
@@ -200,17 +151,7 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
         ): string {
             const self = this as any as DutchAuctionContract;
-            const inputAbi = self._lookupAbi('matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)').inputs;
-            [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ] = BaseContract._formatABIDataItemList(inputAbi, [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)').functions.matchOrders.encode([buyOrder,
+            const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
@@ -227,24 +168,7 @@ export class DutchAuctionContract extends BaseContract {
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
             const self = this as any as DutchAuctionContract;
-            const functionSignature = 'matchOrders({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},{address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},bytes,bytes)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [buyOrder,
-        sellOrder,
-        buySignature,
-        sellSignature
-        ] = BaseContract._formatABIDataItemList(inputAbi, [buyOrder,
-        sellOrder,
-        buySignature,
-        sellSignature
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [buyOrder,
-        sellOrder,
-        buySignature,
-        sellSignature
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.matchOrders;
-            const encodedData = ethersFunction.encode([buyOrder,
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
         sellOrder,
         buySignature,
         sellSignature
@@ -259,10 +183,8 @@ export class DutchAuctionContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'matchOrders'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
+            const abiEncoder = self._lookupAbiEncoder('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)');
+            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
             return resultArray[0];
         },
     };
@@ -316,7 +238,7 @@ export class DutchAuctionContract extends BaseContract {
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('DutchAuction', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method
