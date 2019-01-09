@@ -51,14 +51,14 @@ export abstract class DataType {
         return value;
     }
 
-    public decodeAsArray(returndata: string, rules?: DecodingRules): any {
+    public decodeAsArray(returndata: string, rules?: DecodingRules): any[] {
         const value = this.decode(returndata, rules);
         const valuesAsArray = _.isObject(value) ? _.values(value) : [value];
         return valuesAsArray;
     }
 
-    public getSignature(detailed?: boolean): string {
-        if (_.isEmpty(this._dataItem.name) || !detailed) {
+    public getSignature(isDetailed?: boolean): string {
+        if (_.isEmpty(this._dataItem.name) || !isDetailed) {
             return this.getSignatureType();
         }
         const name = this.getDataItem().name;

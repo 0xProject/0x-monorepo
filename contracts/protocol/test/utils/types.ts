@@ -3,6 +3,6 @@ import { BigNumber } from '@0x/utils';
 
 export interface AbiDecodedFillOrderData {
     order: SignedOrder;
-    akerAssetFillAmount: BigNumber;
+    makerAssetFillAmount: BigNumber;
     signature: string;
 }

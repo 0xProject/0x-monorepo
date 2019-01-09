@@ -40,19 +40,19 @@ export class ArrayDataType extends AbstractSetDataType {
         return this._computeSignature(false);
     }
 
-    public getSignature(detailed?: boolean): string {
-        if (_.isEmpty(this.getDataItem().name) || !detailed) {
+    public getSignature(isDetailed?: boolean): string {
+        if (_.isEmpty(this.getDataItem().name) || !isDetailed) {
             return this.getSignatureType();
         }
         const name = this.getDataItem().name;
         const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
         const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
         const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
-        const detailedSignature = `${shortName} ${this._computeSignature(detailed)}`;
+        const detailedSignature = `${shortName} ${this._computeSignature(isDetailed)}`;
         return detailedSignature;
     }
 
-    private _computeSignature(detailed?: boolean): string {
+    private _computeSignature(isDetailed?: boolean): string {
         // Compute signature for a single array element
         const elementDataItem: DataItem = {
             type: this._elementType,
@@ -63,7 +63,7 @@ export class ArrayDataType extends AbstractSetDataType {
             elementDataItem.components = elementComponents;
         }
         const elementDataType = this.getFactory().create(elementDataItem);
-        const elementSignature = elementDataType.getSignature(detailed);
+        const elementSignature = elementDataType.getSignature(isDetailed);
         // Construct signature for array of type `element`
         if (_.isUndefined(this._arrayLength)) {
             return `${elementSignature}[]`;

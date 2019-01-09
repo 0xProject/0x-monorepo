@@ -15,7 +15,7 @@ export class PointerDataType extends AbstractPointerDataType {
         return this._destination.getSignature(false);
     }
 
-    public getSignature(detailed?: boolean): string {
-        return this._destination.getSignature(detailed);
+    public getSignature(isDetailed?: boolean): string {
+        return this._destination.getSignature(isDetailed);
     }
 }

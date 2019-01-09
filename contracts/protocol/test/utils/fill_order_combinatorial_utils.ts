@@ -618,8 +618,8 @@ export class FillOrderCombinatorialUtils {
             params.takerAssetFillAmount,
             params.signature,
         );
-        const paramsDecodeddByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
-        expect(paramsDecodeddByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
+        const paramsDecodedByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
+        expect(paramsDecodedByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
     }
     private async _getTakerAssetFillAmountAsync(
         signedOrder: SignedOrder,

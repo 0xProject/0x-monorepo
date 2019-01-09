@@ -1,3 +1,4 @@
+import { ObjectMap } from '@0x/types';
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -140,7 +141,7 @@ export abstract class AbstractSetDataType extends DataType {
                     `Could not assign tuple to object: missing key '${memberName}' in object ${JSON.stringify(obj)}`,
                 );
             }
-            const memberValue: any = (obj as { [key: string]: any })[memberName];
+            const memberValue: any = (obj as ObjectMap<any>)[memberName];
             const memberBlock = this._members[memberIndex].generateCalldataBlock(memberValue, block);
             memberCalldataBlocks.push(memberBlock);
         });
@@ -149,11 +150,11 @@ export abstract class AbstractSetDataType extends DataType {
         return block;
     }
 
-    protected _computeSignatureOfMembers(detailed?: boolean): string {
+    protected _computeSignatureOfMembers(isDetailed?: boolean): string {
         // Compute signature of members
         let signature = `(`;
         _.each(this._members, (member: DataType, i: number) => {
-            signature += member.getSignature(detailed);
+            signature += member.getSignature(isDetailed);
             if (i < this._members.length - 1) {
                 signature += ',';
             }
