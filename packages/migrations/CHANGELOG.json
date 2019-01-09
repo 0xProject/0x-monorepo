@@ -6,7 +6,8 @@
                 "note": "Added migrations for Dutch Auction contract",
                 "pr": 1465
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "2.2.2",

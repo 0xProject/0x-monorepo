@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _January 9, 2019_
+
+    * Add `should` prefix to names of properties in EncodingRules and DecodingRules (#1363)
+
+## v2.1.0 - _Invalid date_
+
+    * Add `logWithTime` to `logUtils` (#1461)
+
 ## v2.0.8 - _December 13, 2018_
 
     * Dependencies updated

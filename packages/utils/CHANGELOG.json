@@ -6,7 +6,8 @@
                 "note": "Add `should` prefix to names of properties in EncodingRules and DecodingRules",
                 "pr": 1363
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "2.1.0",

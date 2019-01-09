@@ -14,7 +14,8 @@
                 "note": "Add newest solidity versions from 0.4.25 to 0.5.2",
                 "pr": 1496
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "1.1.16",
