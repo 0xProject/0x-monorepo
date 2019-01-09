@@ -76,7 +76,7 @@
         "@types/react-dom": "^16.0.8",
         "@types/react-redux": "^6.0.9",
         "@types/redux": "^3.6.0",
-        "@types/styled-components": "^4.0.1",
+        "@types/styled-components": "4.0.1",
         "awesome-typescript-loader": "^5.2.1",
         "dotenv-cli": "^1.4.0",
         "enzyme": "^3.6.0",

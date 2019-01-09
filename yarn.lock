@@ -2001,35 +2001,26 @@
   resolved "https://registry.npmjs.org/@types/solidity-parser-antlr/-/solidity-parser-antlr-0.2.1.tgz#29ff386773a72a06c8a9c40c666d2a1cea53c2ed"
   integrity sha512-fGa4xlSextuifvmX/ezhPhmeKrb6rDjSNlTwF4Vp0I5x8Fo6a90fzWpuaiUPqpoWvqYEbrM3N+pBkK+hJGeN6w==
 
-"@types/styled-components@^4.0.0":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.0.3.tgz#8287e54e446302369eecc521243a2f32cf9122ee"
-  integrity sha512-LzntHlOKEOxUxMkVmQPNG88TsldeHO2NlwNkzHnw4wL8qhHQgd7u+u3yw84hZgoFh4ugsLCbFtjYcbP7v5WC5Q==
+"@types/styled-components@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.0.0.tgz#33b47071885003878a62689e0883aa2fc59f970a"
+  integrity sha512-06GJvW+J7uueNBarChV4JNX2+xG912R2JU9pMPCWdqPhAi5zX9ogonIg8k+A1X9GtYxDpgnF6PQ2EQYD29KuTA==
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
 
-"@types/styled-components@^4.0.1":
+"@types/styled-components@4.0.1":
   version "4.0.1"
-  resolved "https://registry.npmjs.org/@types/styled-components/-/styled-components-4.0.1.tgz#5eb9a5474dbde3becab2bcc8f04e0b8e8dcf8c06"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.0.1.tgz#5eb9a5474dbde3becab2bcc8f04e0b8e8dcf8c06"
   integrity sha512-y6BV+wMRengSgc5GiMi2xwT8VqjgrZFF+x/OForTnIX/VMoYvZY+Kk6mUOeGBscVaUfiAU9PU0YLsKS2y8mP9A==
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
 
-"@types/styled-components@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.0.tgz#87d193ccfd4768c3b7606404646f3564c18830d0"
-  integrity sha512-B2OuPjx5LG+JIgDid7mR9WCYQ4XqWgOe9D6oyUtnEVES4D3S4rtyD0Vgp7BzAk6YAkLM6m4MqK/9Ityl5SwwTg==
-  dependencies:
-    "@types/node" "*"
-    "@types/react" "*"
-    csstype "^2.2.0"
-
-"@types/styled-components@^4.1.1":
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.5.tgz#6eca4dba53d167bd303d6555f57ebdccf1e061bf"
-  integrity sha512-TPFoJoOUszQ1yDymSDbz8kRry+DujKfjFoyGj/kokkm5pigTdoyH8tp3amclLLAJxuOsILVhjtTiCPbMq0sJMQ==
+"@types/styled-components@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.1.tgz#1a9f8ebff7ee5cbc9ddc08b486e55e5a152bb408"
+  integrity sha512-ye+XXSkaqs7BgCiQx4NQRIUnqo8LDrkRazE9qvBTG//rdAaHH77xshKE3OcWwVuLq283xH2wUW8C8z3eh1l+Wg==
   dependencies:
     "@types/node" "*"
     "@types/react" "*"
