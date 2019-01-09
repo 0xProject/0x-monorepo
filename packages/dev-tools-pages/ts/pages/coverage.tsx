@@ -2,7 +2,7 @@ import * as React from 'react';
 import { hydrate, render } from 'react-dom';
 import * as Loadable from 'react-loadable';
 
-import { context } from 'ts/context/cov';
+import { context } from 'ts/context/coverage';
 
 import { Base } from 'ts/components/base';
 import { Breakout } from 'ts/components/breakout';
@@ -25,7 +25,7 @@ const Animation = Loadable({
     },
 });
 
-const Cov: React.StatelessComponent<{}> = () => (
+const Coverage: React.StatelessComponent<{}> = () => (
     <Base context={context}>
         <Hero>
             <Animation />
@@ -78,14 +78,14 @@ const Cov: React.StatelessComponent<{}> = () => (
             </ContentBlock>
             <ContentBlock title="Installation">
                 <Breakout>
-                    <Code>npm install @0x/sol-cov --save</Code>
+                    <Code>npm install @0x/sol-coverage --save</Code>
                 </Breakout>
 
                 <p>
-                    Sol-cov is a subprovider that needs to be prepended to your <a href="#">provider engine</a>.
-                    Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-cov ships with
-                    the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with <a href="#">Sol-compiler</a>{' '}
-                    and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
+                    Sol-coverage is a subprovider that needs to be prepended to your <a href="#">provider engine</a>.
+                    Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-coverage ships
+                    with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
+                    <a href="#">Sol-compiler</a> and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
                     <a href="#">Truffle framework</a>. You can also write your own and support any artifact format.
                 </p>
 
@@ -124,7 +124,7 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 <Breakout>
                     <Code language="javascript">
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
-import { RevertTraceSubprovider } from '@0x/sol-cov';
+import { RevertTraceSubprovider } from '@0x/sol-coverage';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
 const revertTraceSubprovider = new RevertTraceSubprovider(artifactAdapter, defaultFromAddress);
@@ -143,7 +143,7 @@ providerEngine.start();`}
 const root = document.getElementById('app');
 
 if (root.hasChildNodes()) {
-    hydrate(<Cov />, root);
+    hydrate(<Coverage />, root);
 } else {
-    render(<Cov />, root);
+    render(<Coverage />, root);
 }

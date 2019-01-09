@@ -12,7 +12,7 @@ const pages = require('./pages');
 const config = {
     entry: {
         compiler: './ts/pages/compiler.tsx',
-        cov: './ts/pages/cov.tsx',
+        coverage: './ts/pages/coverage.tsx',
         profiler: './ts/pages/profiler.tsx',
         trace: './ts/pages/trace.tsx',
     },

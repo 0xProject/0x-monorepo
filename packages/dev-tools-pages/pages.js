@@ -18,9 +18,9 @@ const pages = [
     },
     {
         title: 'sol-cov',
-        filename: 'cov/index.html',
+        filename: 'coverage/index.html',
         template: 'assets/index.html',
-        chunks: ['cov'],
+        chunks: ['coverage'],
         favicon: 'assets/favicons/cov.ico',
         minify: true,
         meta: {
