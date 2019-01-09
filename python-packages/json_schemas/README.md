@@ -18,15 +18,13 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 
 ### Install Code and Dependencies
 
-Ensure that you have installed Python >=3.6 and Docker. Then:
-
 ```bash
 pip install -e .[dev]
 ```
 
 ### Test
 
-Tests depend on a running ganache instance with the 0x contracts deployed in it. For convenience, a docker container is provided that has ganache-cli and a snapshot containing the necessary contracts. A shortcut is provided to run that docker container: `./setup.py ganache`. With that running, the tests can be run with `./setup.py test`.
+`./setup.py test`.
 
 ### Clean
 
