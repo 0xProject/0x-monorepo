@@ -8,7 +8,7 @@ import { schemas } from './schemas';
  */
 export class SchemaValidator {
     private readonly _validator: Validator;
-    private static _assertSchemaNotUndefined(schema: Schema): void {
+    private static _assertSchemaDefined(schema: Schema): void {
         if (schema === undefined) {
             throw new Error(`Cannot add undefined schema`);
         }
@@ -19,7 +19,7 @@ export class SchemaValidator {
     constructor() {
         this._validator = new Validator();
         for (const schema of values(schemas)) {
-            SchemaValidator._assertSchemaNotUndefined(schema);
+            SchemaValidator._assertSchemaDefined(schema);
             this._validator.addSchema(schema, schema.id);
         }
     }
@@ -30,7 +30,7 @@ export class SchemaValidator {
      * @param schema The schema to add
      */
     public addSchema(schema: Schema): void {
-        SchemaValidator._assertSchemaNotUndefined(schema);
+        SchemaValidator._assertSchemaDefined(schema);
         this._validator.addSchema(schema, schema.id);
     }
     // In order to validate a complex JS object using jsonschema, we must replace any complex
@@ -44,7 +44,7 @@ export class SchemaValidator {
      * @returns The results of the validation
      */
     public validate(instance: any, schema: Schema): ValidatorResult {
-        SchemaValidator._assertSchemaNotUndefined(schema);
+        SchemaValidator._assertSchemaDefined(schema);
         const jsonSchemaCompatibleObject = JSON.parse(JSON.stringify(instance));
         return this._validator.validate(jsonSchemaCompatibleObject, schema);
     }
