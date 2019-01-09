@@ -337,18 +337,15 @@
         "version": "0.0.5",
         "changes": [
             {
-                "note":
-                    "Handle `reflection` type rendering so that anonymous function type declarations render properly",
+                "note": "Handle `reflection` type rendering so that anonymous function type declarations render properly",
                 "pr": 465
             },
             {
-                "note":
-                    "Rename `MethodSignature` to `Signature` and change it's props so that it can be used to render method and function signatures.",
+                "note": "Rename `MethodSignature` to `Signature` and change it's props so that it can be used to render method and function signatures.",
                 "pr": 465
             },
             {
-                "note":
-                    "Rename `MethodBlock` to `SignatureBlock` since it is not used to render method and function signature blocks.",
+                "note": "Rename `MethodBlock` to `SignatureBlock` since it is not used to render method and function signature blocks.",
                 "pr": 465
             },
             {
@@ -362,8 +359,7 @@
         "version": "0.0.3",
         "changes": [
             {
-                "note":
-                    "Move TS typings from devDependencies to dependencies since they are needed by the package user."
+                "note": "Move TS typings from devDependencies to dependencies since they are needed by the package user."
             }
         ],
         "timestamp": 1521298800

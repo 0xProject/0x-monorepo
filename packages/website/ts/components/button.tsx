@@ -58,10 +58,7 @@ Button.defaultProps = {
     borderColor: 'rgba(255, 255, 255, .4)',
 };
 
-const ButtonBase =
-    styled.button <
-    ButtonInterface >
-    `
+const ButtonBase = styled.button<ButtonInterface>`
     appearance: none;
     border: 1px solid transparent;
     display: inline-block;

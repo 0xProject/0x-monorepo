@@ -104,9 +104,8 @@ export const assetUtils = {
         return assetDataGroupIfExists[Network.Mainnet];
     },
     getERC20AssetsFromAssets: (assets: Asset[]): ERC20Asset[] => {
-        const erc20sOrUndefined = _.map(
-            assets,
-            asset => (asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined),
+        const erc20sOrUndefined = _.map(assets, asset =>
+            asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined,
         );
         return _.compact(erc20sOrUndefined);
     },

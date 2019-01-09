@@ -6,10 +6,10 @@ Token smart contracts that are used in the 0x protocol. Addresses of the deploye
 
 Token contracts that make up and interact with version 2.0.0 of the protocol can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
 
-*   [tokens](./contracts/tokens)
-    *   This directory contains implementations of different tokens and token standards, including [wETH](https://weth.io/), ZRX, [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), and [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+-   [tokens](./contracts/tokens)
+    -   This directory contains implementations of different tokens and token standards, including [wETH](https://weth.io/), ZRX, [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), and [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
+-   [test](./contracts/test)
+    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
 
 ## Bug bounty
 

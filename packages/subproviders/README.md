@@ -78,12 +78,12 @@ yarn run test:unit
 
 In order to run the integration tests, make sure you have a Ledger Nano S available.
 
-*   Setup your Ledger with the development mnemonic seed: `concert load couple harbor equip island argue ramp clarify fence smart topic`
-*   Plug it into your computer
-*   Unlock the device
-*   Open the on-device Ethereum app
-*   Make sure "browser support" and "contract data" are disabled
-*   Start [TestRPC](https://github.com/trufflesuite/ganache-cli) locally at port `8545`
+-   Setup your Ledger with the development mnemonic seed: `concert load couple harbor equip island argue ramp clarify fence smart topic`
+-   Plug it into your computer
+-   Unlock the device
+-   Open the on-device Ethereum app
+-   Make sure "browser support" and "contract data" are disabled
+-   Start [TestRPC](https://github.com/trufflesuite/ganache-cli) locally at port `8545`
 
 Then run:
 

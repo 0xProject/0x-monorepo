@@ -243,8 +243,7 @@
         "version": "0.3.4",
         "changes": [
             {
-                "note":
-                    "Update EthersJs to fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201"
+                "note": "Update EthersJs to fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201"
             }
         ],
         "timestamp": 1529397769

@@ -165,8 +165,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
+                "note": "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
                 "pr": 924
             }
         ],
@@ -295,8 +294,7 @@
         "version": "0.9.0",
         "changes": [
             {
-                "note":
-                    "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
+                "note": "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
                 "pr": 500
             },
             {
@@ -312,8 +310,7 @@
                 "pr": 507
             },
             {
-                "note":
-                    "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
+                "note": "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
                 "pr": 507
             },
             {
@@ -371,8 +368,7 @@
         "version": "0.7.0",
         "changes": [
             {
-                "note":
-                    "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
+                "note": "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
                 "pr": 437
             }
         ],
@@ -420,8 +416,7 @@
                 "pr": 355
             },
             {
-                "note":
-                    "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
+                "note": "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
                 "pr": 363
             }
         ],

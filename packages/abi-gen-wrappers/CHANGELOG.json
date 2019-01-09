@@ -41,8 +41,7 @@
         "version": "1.1.0",
         "changes": [
             {
-                "note":
-                    "`deployFrom0xArtifactAsync` additionally accepts artifacts that conform to the `SimpleContractArtifact` interface",
+                "note": "`deployFrom0xArtifactAsync` additionally accepts artifacts that conform to the `SimpleContractArtifact` interface",
                 "pr": 1298
             }
         ],

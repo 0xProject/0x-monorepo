@@ -60,10 +60,7 @@ const StyledInput = styled.input`
     }
 `;
 
-const InputWrapper =
-    styled.div <
-    InputProps >
-    `
+const InputWrapper = styled.div<InputProps>`
     position: relative;
     flex-grow: ${props => props.width === InputWidth.Full && 1};
     width: ${props => props.width === InputWidth.Half && `calc(50% - 15px)`};

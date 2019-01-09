@@ -98,9 +98,6 @@ const Rays = styled.g`
     transform-origin: 50% 50%;
 `;
 
-const Dot =
-    styled.circle <
-    { delay: number } >
-    `
+const Dot = styled.circle<{ delay: number }>`
     animation: ${fadeInOut} 4s ${props => `${props.delay}s`} infinite;
 `;

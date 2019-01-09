@@ -45,7 +45,8 @@ export const Interface: React.SFC<InterfaceProps> = (props: InterfaceProps): any
                         typeDefinitionByName={props.typeDefinitionByName}
                         isInPopover={props.isInPopover}
                     />
-                )},
+                )}
+                ,
             </span>
         );
     });

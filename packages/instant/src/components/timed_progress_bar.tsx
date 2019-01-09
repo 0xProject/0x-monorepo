@@ -68,10 +68,7 @@ interface ProgressProps {
     animationSettings?: WidthAnimationSettings;
 }
 
-export const Progress =
-    styled.div <
-    ProgressProps >
-    `
+export const Progress = styled.div<ProgressProps>`
     && {
         background-color: ${props => props.theme[ColorOption.primaryColor]};
         border-radius: 6px;
