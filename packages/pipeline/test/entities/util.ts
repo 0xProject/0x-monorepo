@@ -15,9 +15,9 @@ const expect = chai.expect;
  * @param entity An instance of a TypeORM entity which will be saved/retrieved from the database.
  */
 export async function testSaveAndFindEntityAsync<T>(repository: Repository<T>, entity: T): Promise<void> {
-    // Note(albrow): We are forced to use an 'as any' hack here because
+    // Note(albrow): We are forced to use an 'any' hack here because
     // TypeScript complains about stack depth when checking the types.
-    await repository.save(entity as any);
+    await repository.save<any>(entity);
     const gotEntity = await repository.findOneOrFail({
         where: entity,
     });

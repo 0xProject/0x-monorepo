@@ -1,6 +1,7 @@
 export * from './generated-wrappers/asset_proxy_owner';
 export * from './generated-wrappers/dummy_erc20_token';
 export * from './generated-wrappers/dummy_erc721_token';
+export * from './generated-wrappers/dutch_auction';
 export * from './generated-wrappers/erc20_proxy';
 export * from './generated-wrappers/erc20_token';
 export * from './generated-wrappers/erc721_proxy';

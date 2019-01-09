@@ -24,6 +24,7 @@ import { NextEcosystem } from 'ts/pages/ecosystem';
 import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
+import { NextMarketMaker } from 'ts/pages/market_maker';
 import { NextWhy } from 'ts/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -99,6 +100,11 @@ render(
                                 {/* Next (new site) routes */}
                                 <Route exact={true} path="/" component={NextLanding as any} />
                                 <Route exact={true} path={WebsitePaths.Why} component={NextWhy as any} />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.MarketMaker}
+                                    component={NextMarketMaker as any}
+                                />
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />

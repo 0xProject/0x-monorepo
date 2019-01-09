@@ -10,7 +10,8 @@
                 "note": "Add `SpyResolver` that records all resolved contracts data",
                 "pr": 1461
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "1.1.1",

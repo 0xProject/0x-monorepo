@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _January 9, 2019_
+
+    * Add sol-compiler watch mode with -w flag (#1461)
+    * Make error and warning colouring more visually pleasant and consistent with other compilers (#1461)
+    * Add newest solidity versions from 0.4.25 to 0.5.2 (#1496)
+
 ## v1.1.16 - _December 13, 2018_
 
     * Dependencies updated

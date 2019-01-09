@@ -1,9 +1,10 @@
+import { ContractAddresses } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { ExchangeContractErrs, OrderStateInvalid, OrderStateValid, SignedOrder } from '@0x/types';
+import { ExchangeContractErrs, OrderStateInvalid, SignedOrder } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -26,7 +27,7 @@ interface WsMessage {
     data: string;
 }
 
-describe.only('OrderWatcherWebSocketServer', async () => {
+describe('OrderWatcherWebSocketServer', async () => {
     let contractWrappers: ContractWrappers;
     let wsServer: OrderWatcherWebSocketServer;
     let wsClient: WebSocket.w3cwebsocket;
@@ -44,14 +45,16 @@ describe.only('OrderWatcherWebSocketServer', async () => {
     let orderHash: string;
     let addOrderPayload: AddOrderRequest;
     let removeOrderPayload: RemoveOrderRequest;
+    let networkId: number;
+    let contractAddresses: ContractAddresses;
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
 
     before(async () => {
         // Set up constants
-        const contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
-        const networkId = constants.TESTRPC_NETWORK_ID;
+        networkId = constants.TESTRPC_NETWORK_ID;
         const config = {
             networkId,
             contractAddresses,
@@ -93,17 +96,16 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             method: OrderWatcherMethod.RemoveOrder,
             params: { orderHash },
         };
-
-        // Prepare OrderWatcher WebSocket server
-        const orderWatcherConfig = {
-            isVerbose: true,
-        };
-        wsServer = new OrderWatcherWebSocketServer(provider, networkId, contractAddresses, orderWatcherConfig);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
     });
     beforeEach(async () => {
+        // Prepare OrderWatcher WebSocket server
+        const orderWatcherConfig = {
+            isVerbose: true,
+        };
+        wsServer = new OrderWatcherWebSocketServer(provider, networkId, contractAddresses, orderWatcherConfig);
         wsServer.start();
         await blockchainLifecycle.startAsync();
         wsClient = new WebSocket.w3cwebsocket('ws://127.0.0.1:8080/');
@@ -260,7 +262,9 @@ describe.only('OrderWatcherWebSocketServer', async () => {
             id: 1,
             jsonrpc: '2.0',
             method: 'ADD_ORDER',
-            signedOrder: nonZeroMakerFeeSignedOrder,
+            params: {
+                signedOrder: nonZeroMakerFeeSignedOrder,
+            },
         };
 
         // Set up a second client and have it add the order
@@ -278,15 +282,15 @@ describe.only('OrderWatcherWebSocketServer', async () => {
         // Check that both clients receive the emitted event by awaiting the onMessageAsync promises
         let updateMsg = await clientOneOnMessagePromise;
         let updateData = JSON.parse(updateMsg.data);
-        let orderState = updateData.result as OrderStateValid;
-        expect(orderState.isValid).to.be.true();
-        expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
+        let orderState = updateData.result as OrderStateInvalid;
+        expect(orderState.isValid).to.be.false();
+        expect(orderState.error).to.be.eq('INSUFFICIENT_MAKER_FEE_ALLOWANCE');
 
         updateMsg = await clientTwoOnMessagePromise;
         updateData = JSON.parse(updateMsg.data);
-        orderState = updateData.result as OrderStateValid;
-        expect(orderState.isValid).to.be.true();
-        expect(orderState.orderRelevantState.makerFeeProxyAllowance).to.be.eq('0');
+        orderState = updateData.result as OrderStateInvalid;
+        expect(orderState.isValid).to.be.false();
+        expect(orderState.error).to.be.eq('INSUFFICIENT_MAKER_FEE_ALLOWANCE');
 
         wsClientTwo.close();
         logUtils.log(`${new Date()} [Client] Closed.`);

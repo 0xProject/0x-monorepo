@@ -16,4 +16,10 @@ export { TokenOrderbookSnapshot } from './token_order';
 export { Transaction } from './transaction';
 export { ERC20ApprovalEvent } from './erc20_approval_event';
 
+export { CopperLead } from './copper_lead';
+export { CopperActivity } from './copper_activity';
+export { CopperOpportunity } from './copper_opportunity';
+export { CopperActivityType } from './copper_activity_type';
+export { CopperCustomField } from './copper_custom_field';
+
 export type ExchangeEvent = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;

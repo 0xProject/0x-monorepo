@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Add support for `MultiAssetProxy`",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
         "version": "2.3.0",
         "changes": [
             {

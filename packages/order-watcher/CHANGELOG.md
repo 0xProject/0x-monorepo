@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.4.0 - _January 9, 2019_
+
+    * Add support for `MultiAssetProxy` (#1363)
+
+## v2.3.0 - _Invalid date_
+
+    * Added a WebSocket interface to OrderWatcher so that it can be used by a client written in any language (#1427)
+
 ## v2.2.8 - _December 13, 2018_
 
     * Dependencies updated

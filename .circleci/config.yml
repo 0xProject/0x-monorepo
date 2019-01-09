@@ -4,7 +4,7 @@ jobs:
     build:
         resource_class: medium+
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         environment:
             CONTRACTS_COMMIT_HASH: '9ed05f5'
         working_directory: ~/repo
@@ -16,7 +16,7 @@ jobs:
                   command: sudo npm install --global yarn@1.9.4
             - run:
                   name: yarn
-                  command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
+                  command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - run: yarn build:ci:no_website
             - run: yarn build:ts
             - save_cache:
@@ -26,7 +26,7 @@ jobs:
     build-website:
         resource_class: medium+
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -35,7 +35,7 @@ jobs:
             - run: cd packages/website && yarn build:prod
     test-contracts-ganache:
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -49,7 +49,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-protocol
     test-contracts-geth:
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
             - image: 0xorg/devnet
         working_directory: ~/repo
         steps:
@@ -67,7 +67,7 @@ jobs:
     test-publish:
         resource_class: medium+
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
             - image: 0xorg/verdaccio
         working_directory: ~/repo
         steps:
@@ -77,7 +77,7 @@ jobs:
             - run: yarn test:publish:circleci
     test-doc-generation:
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -100,7 +100,7 @@ jobs:
                       - ~/repo/packages/pipeline/coverage/lcov.info
     test-rest:
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -188,9 +188,7 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: circleci/python
-            - image: 0xorg/ganache-cli
-              command: |
-                  ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db /snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m "concert load couple harbor equip island argue ramp clarify fence smart topic"
+            - image: 0xorg/ganache-cli:2.2.2
             - image: 0xorg/launch-kit-ci
               command: |
                   yarn start:ts -p 3000:3000
@@ -202,31 +200,34 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
-                      cd python-packages/order_utils
+                      cd python-packages
                       python -m ensurepip
-                      python -m pip install -e .[dev]
-            - run:
-                  command: |
-                      cd python-packages/sra_client
-                      python -m ensurepip
-                      python -m pip install -e .
+                      ./install
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
-                      - '.eggs'
-                      - '.mypy_cache'
-                      - '.pytest_cache'
-                      - '.tox'
             - run:
                   command: |
-                      cd python-packages/order_utils
-                      coverage run setup.py test
-            - run:
-                  command: |
-                      cd python-packages/sra_client
-                      coverage run setup.py test
+                      cd python-packages
+                      ./cmd_pkgs_in_dep_order.py coverage run setup.py test
+            - save_cache:
+                  key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_addresses/.coverage
+            - save_cache:
+                  key: coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_artifacts/.coverage
+            - save_cache:
+                  key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_demo/.coverage
+            - save_cache:
+                  key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/json_schemas/.coverage
             - save_cache:
                   key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -249,7 +250,7 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -275,22 +276,14 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
-                      cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
-            - save_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - '/usr/local/bin'
-                      - '/usr/local/lib/python3.7/site-packages'
-            - run:
-                  command: |
-                      cd python-packages/order_utils
-                      python setup.py lint
+                      cd python-packages
+                      ./install
+                      ./lint
     static-tests:
         working_directory: ~/repo
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         steps:
             - restore_cache:
                   keys:
@@ -301,7 +294,7 @@ jobs:
             - run: yarn bundlewatch
     submit-coverage:
         docker:
-            - image: circleci/node:9
+            - image: circleci/node:9-browsers
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -357,6 +350,21 @@ jobs:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn report_coverage
 workflows:
@@ -392,7 +400,9 @@ workflows:
                   requires:
                       - test-rest
                       - test-python
+            - static-tests-python:
+                  requires:
+                      - test-python
             - test-python
-            - static-tests-python
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             #- test-rest-python

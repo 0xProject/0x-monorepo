@@ -51,7 +51,7 @@ const defaultScalingSettings: ScalingSettings = {
     additionalInputSpaceInCh: 0.4,
 };
 
-export class ScalingInput extends React.Component<ScalingInputProps> {
+export class ScalingInput extends React.PureComponent<ScalingInputProps> {
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,

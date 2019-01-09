@@ -23,8 +23,12 @@ export function parseDdexOrders(
 ): TokenOrder[] {
     const aggregatedBids = aggregateOrders(ddexOrderbook.bids);
     const aggregatedAsks = aggregateOrders(ddexOrderbook.asks);
-    const parsedBids = aggregatedBids.map(order => parseDdexOrder(ddexMarket, observedTimestamp, 'bid', source, order));
-    const parsedAsks = aggregatedAsks.map(order => parseDdexOrder(ddexMarket, observedTimestamp, 'ask', source, order));
+    const parsedBids = aggregatedBids.map(order =>
+        parseDdexOrder(ddexMarket, observedTimestamp, OrderType.Bid, source, order),
+    );
+    const parsedAsks = aggregatedAsks.map(order =>
+        parseDdexOrder(ddexMarket, observedTimestamp, OrderType.Ask, source, order),
+    );
     return parsedBids.concat(parsedAsks);
 }
 

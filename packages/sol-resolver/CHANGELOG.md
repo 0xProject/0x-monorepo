@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.2.1 - _January 9, 2019_
+
+    * Add `absolutePath` to `ContractSource` type (#1461)
+    * Add `SpyResolver` that records all resolved contracts data (#1461)
+
 ## v1.1.1 - _December 13, 2018_
 
     * Dependencies updated

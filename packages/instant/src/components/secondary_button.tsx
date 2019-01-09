@@ -24,3 +24,4 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
 SecondaryButton.defaultProps = {
     width: '100%',
 };
+SecondaryButton.displayName = 'SecondaryButton';

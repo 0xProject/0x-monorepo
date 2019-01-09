@@ -38,6 +38,7 @@ export const docGenConfigs: DocGenConfigs = {
     // and getting confused. Any class name in this list will not have it's constructor rendered in our docs.
     CLASSES_WITH_HIDDEN_CONSTRUCTORS: [
         'AssetBuyer',
+        'DutchAuctionWrapper',
         'ERC20ProxyWrapper',
         'ERC20TokenWrapper',
         'ERC721ProxyWrapper',

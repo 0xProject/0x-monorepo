@@ -21,7 +21,7 @@ import { providerStateFactory } from '../util/provider_state_factory';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
-export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
+export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProviderProps> {
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
     private _buyQuoteHeartbeat?: Heartbeater;

@@ -1,4 +1,5 @@
 import * as AssetProxyOwner from '../artifacts/AssetProxyOwner.json';
+import * as DutchAuction from '../artifacts/DutchAuction.json';
 import * as DummyERC20Token from '../artifacts/DummyERC20Token.json';
 import * as DummyERC721Token from '../artifacts/DummyERC721Token.json';
 import * as ERC20Proxy from '../artifacts/ERC20Proxy.json';
@@ -15,6 +16,7 @@ import * as ZRXToken from '../artifacts/ZRXToken.json';
 
 export {
     AssetProxyOwner,
+    DutchAuction,
     DummyERC20Token,
     DummyERC721Token,
     ERC20Proxy,

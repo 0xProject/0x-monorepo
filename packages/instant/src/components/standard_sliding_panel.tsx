@@ -9,7 +9,7 @@ export interface StandardSlidingPanelProps extends StandardSlidingPanelSettings 
     onClose: () => void;
 }
 
-export class StandardSlidingPanel extends React.Component<StandardSlidingPanelProps> {
+export class StandardSlidingPanel extends React.PureComponent<StandardSlidingPanelProps> {
     public render(): React.ReactNode {
         const { animationState, content, onClose } = this.props;
         return (

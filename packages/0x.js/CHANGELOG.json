@@ -1,5 +1,16 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note":
+                    "Export `MultiAssetData`, `MultiAssetDataWithRecursiveDecoding`, `ObjectMap`, and `SingleAssetData` from types. No longer export `AssetData`.",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
         "version": "2.0.8",
         "changes": [
             {

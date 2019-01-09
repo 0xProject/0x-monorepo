@@ -32,7 +32,7 @@ export interface BuyButtonProps {
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
-export class BuyButton extends React.Component<BuyButtonProps> {
+export class BuyButton extends React.PureComponent<BuyButtonProps> {
     public static defaultProps = {
         onClick: util.boundNoop,
         onBuySuccess: util.boundNoop,

@@ -153,7 +153,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                 <Container className="flex mx-auto" height="100vh">
                     <Container
                         className="sm-hide xs-hide relative"
-                        width={234}
+                        width={270}
                         paddingLeft={22}
                         paddingRight={22}
                         paddingTop={0}
