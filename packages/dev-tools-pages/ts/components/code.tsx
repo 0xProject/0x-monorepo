@@ -164,7 +164,7 @@ class Code extends React.Component<CodeProps, CodeState> {
                     ) : null}
                 </Base>
                 {navigator.userAgent !== 'ReactSnap' && canCopy ? (
-                    <Button onClick={this._handleCopyAsync}>{this.state.didCopy ? 'Copied' : 'Copy'}</Button>
+                    <Button onClick={this._handleCopyAsync.bind(this)}>{this.state.didCopy ? 'Copied' : 'Copy'}</Button>
                 ) : null}
             </Container>
         );
@@ -182,7 +182,7 @@ class Code extends React.Component<CodeProps, CodeState> {
             });
         }
     }
-    private readonly _handleCopyAsync = async () => {
+    private async _handleCopyAsync(): Promise<void> {
         try {
             if ('clipboard' in navigator) {
                 await (navigator as any).clipboard.writeText(this.props.children);
