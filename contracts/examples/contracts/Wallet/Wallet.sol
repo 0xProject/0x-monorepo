@@ -21,10 +21,7 @@ pragma solidity 0.4.24;
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IWallet.sol";
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 
-
-contract Wallet is 
-    IWallet
-{
+contract Wallet is IWallet {
     using LibBytes for bytes;
 
     // The owner of this wallet.
@@ -33,7 +30,7 @@ contract Wallet is
 
     /// @dev constructs a new `Wallet` with a single owner.
     /// @param walletOwner The owner of this wallet.
-    constructor (address walletOwner) public {
+    constructor(address walletOwner) public {
         WALLET_OWNER = walletOwner;
     }
 
@@ -42,18 +39,12 @@ contract Wallet is
     /// @param hash Message hash that is signed.
     /// @param eip712Signature Proof of signing.
     /// @return Validity of signature.
-    function isValidSignature(
-        bytes32 hash,
-        bytes eip712Signature
-    )
+    function isValidSignature(bytes32 hash, bytes eip712Signature)
         external
         view
         returns (bool isValid)
     {
-        require(
-            eip712Signature.length == 65,
-            "LENGTH_65_REQUIRED"
-        );
+        require(eip712Signature.length == 65, "LENGTH_65_REQUIRED");
 
         uint8 v = uint8(eip712Signature[0]);
         bytes32 r = eip712Signature.readBytes32(1);

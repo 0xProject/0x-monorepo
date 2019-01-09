@@ -23,13 +23,9 @@ import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
 import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
 
-
-contract Whitelist is
-    Ownable
-{
-
+contract Whitelist is Ownable {
     // Mapping of address => whitelist status.
-    mapping (address => bool) public isWhitelisted;
+    mapping(address => bool) public isWhitelisted;
 
     // Exchange contract.
     // solhint-disable var-name-mixedcase
@@ -37,22 +33,20 @@ contract Whitelist is
     bytes internal TX_ORIGIN_SIGNATURE;
     // solhint-enable var-name-mixedcase
 
-    byte constant internal VALIDATOR_SIGNATURE_BYTE = "\x05";
+    byte internal constant VALIDATOR_SIGNATURE_BYTE = "\x05";
 
-    constructor (address _exchange)
-        public
-    {
+    constructor(address _exchange) public {
         EXCHANGE = IExchange(_exchange);
-        TX_ORIGIN_SIGNATURE = abi.encodePacked(address(this), VALIDATOR_SIGNATURE_BYTE);
+        TX_ORIGIN_SIGNATURE = abi.encodePacked(
+            address(this),
+            VALIDATOR_SIGNATURE_BYTE
+        );
     }
 
     /// @dev Adds or removes an address from the whitelist.
     /// @param target Address to add or remove from whitelist.
     /// @param isApproved Whitelist status to assign to address.
-    function updateWhitelistStatus(
-        address target,
-        bool isApproved
-    )
+    function updateWhitelistStatus(address target, bool isApproved)
         external
         onlyOwner
     {
@@ -70,11 +64,7 @@ contract Whitelist is
         bytes32 hash,
         address signerAddress,
         bytes signature
-    )
-        external
-        view
-        returns (bool isValid)
-    {
+    ) external view returns (bool isValid) {
         // solhint-disable-next-line avoid-tx-origin
         return signerAddress == tx.origin;
     }
@@ -93,9 +83,7 @@ contract Whitelist is
         uint256 takerAssetFillAmount,
         uint256 salt,
         bytes memory orderSignature
-    )
-        public
-    {
+    ) public {
         address takerAddress = msg.sender;
 
         // This contract must be the entry point for the transaction.
@@ -106,16 +94,10 @@ contract Whitelist is
         );
 
         // Check if maker is on the whitelist.
-        require(
-            isWhitelisted[order.makerAddress],
-            "MAKER_NOT_WHITELISTED"
-        );
+        require(isWhitelisted[order.makerAddress], "MAKER_NOT_WHITELISTED");
 
         // Check if taker is on the whitelist.
-        require(
-            isWhitelisted[takerAddress],
-            "TAKER_NOT_WHITELISTED"
-        );
+        require(isWhitelisted[takerAddress], "TAKER_NOT_WHITELISTED");
 
         // Encode arguments into byte array.
         bytes memory data = abi.encodeWithSelector(

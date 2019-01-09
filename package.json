@@ -12,6 +12,7 @@
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
+        "prettier:contracts": "prettier --write 'contracts/examples/**/*.sol' --config contracts/.prettierrc",
         "report_coverage": "lcov-result-merger './{packages/*/coverage/lcov.info,python-packages/*/.coverage}' | coveralls",
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "test:installation:local": "IS_LOCAL_PUBLISH=true node ./packages/monorepo-scripts/lib/test_installation.js",
@@ -73,6 +74,7 @@
         "lerna": "^3.0.0-beta.25",
         "npm-run-all": "^4.1.2",
         "prettier": "^1.11.1",
+        "prettier-plugin-solidity": "^1.0.0-alpha.16",
         "source-map-support": "^0.5.6",
         "typescript": "3.0.1",
         "wsrun": "^2.2.0"

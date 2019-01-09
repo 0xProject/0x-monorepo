@@ -22,16 +22,12 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
 
-
 contract ExchangeWrapper {
-
     // Exchange contract.
     // solhint-disable-next-line var-name-mixedcase
     IExchange internal EXCHANGE;
 
-    constructor (address _exchange)
-        public
-    {
+    constructor(address _exchange) public {
         EXCHANGE = IExchange(_exchange);
     }
 
@@ -44,9 +40,7 @@ contract ExchangeWrapper {
         uint256 targetOrderEpoch,
         uint256 salt,
         bytes makerSignature
-    )
-        external
-    {
+    ) external {
         address makerAddress = msg.sender;
 
         // Encode arguments into byte array.
@@ -56,12 +50,7 @@ contract ExchangeWrapper {
         );
 
         // Call `cancelOrdersUpTo` via `executeTransaction`.
-        EXCHANGE.executeTransaction(
-            salt,
-            makerAddress,
-            data,
-            makerSignature
-        );
+        EXCHANGE.executeTransaction(salt, makerAddress, data, makerSignature);
     }
 
     /// @dev Fills an order using `msg.sender` as the taker.
@@ -76,9 +65,7 @@ contract ExchangeWrapper {
         uint256 salt,
         bytes memory orderSignature,
         bytes memory takerSignature
-    )
-        public
-    {
+    ) public {
         address takerAddress = msg.sender;
 
         // Encode arguments into byte array.
@@ -90,11 +77,6 @@ contract ExchangeWrapper {
         );
 
         // Call `fillOrder` via `executeTransaction`.
-        EXCHANGE.executeTransaction(
-            salt,
-            takerAddress,
-            data,
-            takerSignature
-        );
+        EXCHANGE.executeTransaction(salt, takerAddress, data, takerSignature);
     }
 }

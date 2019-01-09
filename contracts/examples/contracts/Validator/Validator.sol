@@ -20,18 +20,14 @@ pragma solidity 0.4.24;
 
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IValidator.sol";
 
-
-contract Validator is 
-    IValidator
-{
-
+contract Validator is IValidator {
     // The single valid signer for this wallet.
     // solhint-disable-next-line var-name-mixedcase
     address internal VALID_SIGNER;
 
     /// @dev constructs a new `Validator` with a single valid signer.
     /// @param validSigner The sole, valid signer.
-    constructor (address validSigner) public {
+    constructor(address validSigner) public {
         VALID_SIGNER = validSigner;
     }
 
@@ -45,11 +41,7 @@ contract Validator is
         bytes32 hash,
         address signerAddress,
         bytes signature
-    )
-        external
-        view
-        returns (bool isValid)
-    {
+    ) external view returns (bool isValid) {
         return (signerAddress == VALID_SIGNER);
     }
     // solhint-enable no-unused-vars
