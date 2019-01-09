@@ -1,0 +1,27 @@
+{
+    "id": "/callDataSchema",
+    "properties": {
+        "from": { "$ref": "/addressSchema" },
+        "to": { "$ref": "/addressSchema" },
+        "value": {
+            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
+        },
+        "gas": {
+            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
+        },
+        "gasPrice": {
+            "oneOf": [{ "$ref": "/numberSchema" }, { "$ref": "/jsNumberSchema" }]
+        },
+        "data": {
+            "type": "string",
+            "pattern": "^0x[0-9a-f]*$"
+        },
+        "nonce": {
+            "type": "number",
+            "minimum": 0
+        }
+    },
+    "required": [],
+    "type": "object",
+    "additionalProperties": false
+}

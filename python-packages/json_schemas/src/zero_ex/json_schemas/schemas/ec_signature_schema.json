@@ -1,0 +1,14 @@
+{
+    "id": "/ecSignatureSchema",
+    "properties": {
+        "v": {
+            "type": "number",
+            "minimum": 27,
+            "maximum": 28
+        },
+        "r": { "$ref": "/ecSignatureParameterSchema" },
+        "s": { "$ref": "/ecSignatureParameterSchema" }
+    },
+    "required": ["v", "r", "s"],
+    "type": "object"
+}

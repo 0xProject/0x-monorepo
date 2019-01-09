@@ -21,7 +21,7 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        exit(pytest.main())
+        exit(pytest.main(["--doctest-modules"]))
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -165,9 +165,13 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
+        "0x-contract-addresses",
+        "0x-contract-artifacts",
         "0x-json-schemas",
         "eth-abi",
         "eth_utils",
+        "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
+        # above works around https://github.com/ethereum/web3.py/issues/1179
         "mypy_extensions",
         "web3",
     ],
@@ -189,10 +193,7 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={
-        "zero_ex.order_utils": ["py.typed"],
-        "zero_ex.contract_artifacts": ["artifacts/*"],
-    },
+    package_data={"zero_ex.order_utils": ["py.typed"]},
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(

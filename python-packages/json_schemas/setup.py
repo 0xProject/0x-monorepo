@@ -20,7 +20,7 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        exit(pytest.main())
+        exit(pytest.main(["--doctest-modules"]))
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -41,6 +41,15 @@ class LintCommand(distutils.command.build_py.build_py):
             "mypy src test setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
+            # HACK: ensure json schemas don't differ from the authoritative
+            # copies: this is a hack.  ideally we would symlink to the
+            # authoritative copies, but a problem with setuptools is preventing
+            # it from following symlinks when gathering package_data.  see
+            # https://github.com/pypa/setuptools/issues/415.
+            (
+                "diff src/zero_ex/json_schemas/schemas"
+                + " ../../packages/json-schemas/schemas"
+            ).split(),
             # general linter:
             "pylint src test setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable

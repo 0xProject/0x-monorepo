@@ -1,0 +1,8 @@
+{
+    "id": "/blockRangeSchema",
+    "properties": {
+        "fromBlock": { "$ref": "/blockParamSchema" },
+        "toBlock": { "$ref": "/blockParamSchema" }
+    },
+    "type": "object"
+}

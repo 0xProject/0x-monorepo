@@ -18,7 +18,7 @@ lib
 /contracts/extensions/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
-/python-packages/order_utils/src/zero_ex/contract_artifacts/artifacts
+/python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts
 /packages/json-schemas/schemas
 /python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 /packages/metacoin/src/contract_wrappers

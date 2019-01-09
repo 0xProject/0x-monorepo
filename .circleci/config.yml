@@ -200,46 +200,30 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
-                      cd python-packages/json_schemas
+                      cd python-packages
                       python -m ensurepip
-                      python -m pip install .[dev]
-                      # HACK! installing the package should do the following
-                      # copy for us, but it's not working in CircleCI for some
-                      # reason.  Zendesk support ticket raised (#43979) with
-                      # CircleCI.
-                      mkdir /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
-                      cp -R src/zero_ex/json_schemas/schemas/* /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
-            - run:
-                  command: |
-                      cd python-packages/order_utils
-                      python -m ensurepip
-                      python -m pip install .[dev]
-            - run:
-                  command: |
-                      cd python-packages/sra_client
-                      python -m ensurepip
-                      python -m pip install .[dev]
+                      ./install
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
-                      - '.eggs'
-                      - '.mypy_cache'
-                      - '.pytest_cache'
-                      - '.tox'
             - run:
                   command: |
-                      cd python-packages/json_schemas
-                      coverage run setup.py test
-            - run:
-                  command: |
-                      cd python-packages/order_utils
-                      coverage run setup.py test
-            - run:
-                  command: |
-                      cd python-packages/sra_client
-                      coverage run setup.py test
+                      cd python-packages
+                      ./cmd_pkgs_in_dep_order.py coverage run setup.py test
+            - save_cache:
+                  key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_addresses/.coverage
+            - save_cache:
+                  key: coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_artifacts/.coverage
+            - save_cache:
+                  key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/python-packages/contract_demo/.coverage
             - save_cache:
                   key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -292,27 +276,10 @@ jobs:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
-                      cd python-packages/json_schemas
                       python -m ensurepip
-                      python -m pip install .[dev]
-            - run:
-                  command: |
-                      cd python-packages/order_utils
-                      python -m ensurepip
-                      python -m pip install .[dev]
-            - save_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - '/usr/local/bin'
-                      - '/usr/local/lib/python3.7/site-packages'
-            - run:
-                  command: |
-                      cd python-packages/json_schemas
-                      python setup.py lint
-            - run:
-                  command: |
-                      cd python-packages/order_utils
-                      python setup.py lint
+                      cd python-packages
+                      ./install
+                      ./lint
     static-tests:
         working_directory: ~/repo
         docker:
@@ -386,6 +353,18 @@ jobs:
                       - coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn report_coverage
 workflows:
@@ -421,7 +400,9 @@ workflows:
                   requires:
                       - test-rest
                       - test-python
+            - static-tests-python:
+                  requires:
+                      - test-python
             - test-python
-            - static-tests-python
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             #- test-rest-python
