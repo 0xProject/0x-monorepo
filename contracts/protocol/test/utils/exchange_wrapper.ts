@@ -280,12 +280,7 @@ export class ExchangeWrapper {
     }
     public abiDecodeFillOrder(data: string): AbiDecodedFillOrderData {
         // Lookup fillOrder ABI in exchange abi
-        const fillOrderAbi = _.find(this._exchange.abi, (value: AbiDefinition) => {
-            if (value.type === 'function' && (value as any).name === 'fillOrder') {
-                return true;
-            }
-            return false;
-        }) as MethodAbi;
+        const fillOrderAbi = _.find(this._exchange.abi, { name: 'fillOrder' }) as MethodAbi;
         // Decode input data
         const abiEncoder = new AbiEncoder.Method(fillOrderAbi);
         const decodedData = abiEncoder.decode(data) as AbiDecodedFillOrderData;
