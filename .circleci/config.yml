@@ -188,9 +188,7 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: circleci/python
-            - image: 0xorg/ganache-cli
-              command: |
-                  ganache-cli --gasLimit 10000000 --noVMErrorsOnRPCResponse --db /snapshot --noVMErrorsOnRPCResponse -p 8545 --networkId 50 -m "concert load couple harbor equip island argue ramp clarify fence smart topic"
+            - image: 0xorg/ganache-cli:2.2.2
             - image: 0xorg/launch-kit-ci
               command: |
                   yarn start:ts -p 3000:3000

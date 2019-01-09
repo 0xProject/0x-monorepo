@@ -137,14 +137,8 @@ class GanacheCommand(distutils.command.build_py.build_py):
     def run(self):
         """Run ganache."""
         cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
-            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
-            + " --networkId 50 -m"
+            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
         ).split()
-        cmd_line.append(
-            "concert load couple harbor equip island argue ramp clarify fence"
-            + " smart topic"
-        )
         subprocess.call(cmd_line)  # nosec
 
 
