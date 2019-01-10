@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added migration for `MultiAssetProxy` contract"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
