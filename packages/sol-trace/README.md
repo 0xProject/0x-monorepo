@@ -1,6 +1,6 @@
 ## @0x/sol-trace
 
-Prints code traces when revert happens.
+Prints a stack trace when a revert is encountered.
 
 ### Read the [Documentation](https://0xproject.com/docs/sol-trace).
 
