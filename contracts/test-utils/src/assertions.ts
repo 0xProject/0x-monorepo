@@ -1,15 +1,56 @@
+import { AbiBySelector, decodeCallData } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
-import { logUtils } from '@0x/utils';
+import { AbiEncoder, logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import {
+    MethodAbi,
+    TransactionReceipt,
+    TransactionReceiptStatus,
+    TransactionReceiptWithDecodedLogs,
+} from 'ethereum-types';
+
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { web3Wrapper } from './web3_wrapper';
 
 const expect = chai.expect;
 
 let nodeType: NodeType | undefined;
+
+const ERROR_ABIS = _.map(
+    constants.ERROR_ABI_STRINGS,
+    (errorAbiString: string) => ethers.utils.parseSignature(errorAbiString) as MethodAbi,
+);
+const errorAbiBySelector: AbiBySelector = {};
+_.map(ERROR_ABIS, abi => {
+    const selector = new AbiEncoder.Method(abi).getSelector();
+    errorAbiBySelector[selector] = abi;
+});
+const solidityRevertSelector = new AbiEncoder.Method(ethers.utils.parseSignature(
+    constants.SOLIDITY_REVERT_ABI_STRING,
+) as MethodAbi).getSelector();
+const bytesRevertAbi = ethers.utils.parseSignature(constants.BYTES_REVERT_ABI_STRING) as MethodAbi;
+/**
+ * HACK: By default solidity encodes revert reasons as `Error(string)` we want to throw additional data
+ * so we encode that data using an error signature e.g. `function INVALID_ORDER_SIGNATURE(bytes32 orderHash)`.
+ * We pretend those encoded bytes are a string (Solidity lets us do that) and use it instead of a string revert reason.
+ * In order for us to decode the revert properly, we need to use ABI `Error(bytes)` NOT `Error(string)`. Solidity by default
+ * uses the selector for `Error(string)`, so we introduce a hack where we map that selector to the ABI definition for `Error(bytes)`.
+ * Doing so let's us decode the revert string AS BYTES! Which is what we need to do to avoid a selector <-> ABI mismatch.
+ */
+errorAbiBySelector[solidityRevertSelector] = bytesRevertAbi;
+
+interface InvalidOrderSignatureError {
+    reason: RevertReason.InvalidOrderSignature;
+    params: {
+        orderHash: string;
+    };
+}
+
+type SmartContractError = InvalidOrderSignatureError;
 
 // Represents the return value of a `sendTransaction` call. The Promise should
 // resolve with either a transaction receipt or a transaction hash.
@@ -81,6 +122,13 @@ export async function expectInsufficientFundsAsync<T>(p: Promise<T>): Promise<vo
 }
 
 /**
+ * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+ */
+function escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+/**
  * Resolves if the the sendTransaction call fails with the given revert reason.
  * However, since Geth does not support revert reasons for sendTransaction, this
  * falls back to expectTransactionFailedWithoutReasonAsync if the backing
@@ -104,7 +152,71 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
     }
     switch (nodeType) {
         case NodeType.Ganache:
-            return expect(p).to.be.rejectedWith(reason);
+            return expect(p).to.be.rejectedWith(
+                new RegExp(`^${constants.GANACHE_REVERT_REASON_PREFIX}${escapeRegExp(reason)}$`),
+            );
+        case NodeType.Geth:
+            logUtils.warn(
+                'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',
+            );
+            return expectTransactionFailedWithoutReasonAsync(p);
+        default:
+            throw new Error(`Unknown node type: ${nodeType}`);
+    }
+}
+
+/**
+ * Resolves if the the sendTransaction call fails with the given revert reason and decoded revert params.
+ * However, since Geth does not support revert reasons for sendTransaction, this
+ * falls back to expectTransactionFailedWithoutReasonAsync if the backing
+ * Ethereum node is Geth.
+ * @param p a Promise resulting from a sendTransaction call
+ * @param expectedError Expected revert reason with params
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export async function expectTransactionFailedWithParamsAsync(
+    p: sendTransactionResult,
+    expectedError: SmartContractError,
+): Promise<void> {
+    // HACK(albrow): This dummy `catch` should not be necessary, but if you
+    // remove it, there is an uncaught exception and the Node process will
+    // forcibly exit. It's possible this is a false positive in
+    // make-promises-safe.
+    p.catch(e => {
+        _.noop(e);
+    });
+
+    if (_.isUndefined(nodeType)) {
+        nodeType = await web3Wrapper.getNodeTypeAsync();
+    }
+    switch (nodeType) {
+        case NodeType.Ganache:
+            try {
+                await p;
+            } catch (err) {
+                if (_.startsWith(err.message, constants.GANACHE_REVERT_REASON_PREFIX)) {
+                    if (err.hashes.length !== 1) {
+                        throw new Error('Expected just one transaction hash in Ganache error object');
+                    }
+                    const txHash = err.hashes[0];
+                    const ganacheError = err.results[txHash];
+                    const returnData: string = ganacheError.return;
+                    const decodedReturnData = decodeCallData(errorAbiBySelector, returnData);
+                    const revertReasonHex = decodedReturnData.callParams.encodedRevertReasonWithAssociatedData;
+                    const decodedCallData = decodeCallData(errorAbiBySelector, revertReasonHex);
+                    const decodedError = {
+                        reason: decodedCallData.name,
+                        params: decodedCallData.callParams,
+                    };
+                    expect(expectedError).to.be.deep.equal(decodedError, 'Revert reason mismatch');
+                } else {
+                    throw new chai.AssertionError(
+                        `Expected a transaction to fail with a parametrised error reason, but got ${err}`,
+                    );
+                }
+            }
+            break;
         case NodeType.Geth:
             logUtils.warn(
                 'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',

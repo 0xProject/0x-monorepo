@@ -4,6 +4,7 @@ import {
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
     expectTransactionFailedAsync,
+    expectTransactionFailedWithParamsAsync,
     OrderFactory,
     provider,
     txDefaults,
@@ -16,7 +17,7 @@ import {
     ReentrantERC20TokenContract,
 } from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -1176,14 +1177,30 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            /**
+             * In order to enable call-data optimizations we make an assumption about asset data.
+             * rightOrder.makerAssetData = leftOrder.takerAssetData
+             * rightOrder.takerAssetData = leftOrder.makerAssetData
+             * And we enforce it on-chain by overriding the data in the right order even if it's different. The variable below emulates that.
+             */
+            const signedOrderRightWithOnChainDefaults = {
+                ...signedOrderRight,
+                takerAssetData: signedOrderLeft.makerAssetData,
+            };
+            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(
+                signedOrderRightWithOnChainDefaults,
+            );
             // Match orders
-            return expectTransactionFailedAsync(
+            return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 // We are assuming assetData fields of the right order are the
                 // reverse of the left order, rather than checking equality. This
                 // saves a bunch of gas, but as a result if the assetData fields are
                 // off then the failure ends up happening at signature validation
-                RevertReason.InvalidOrderSignature,
+                {
+                    reason: RevertReason.InvalidOrderSignature,
+                    params: { orderHash: orderHashRightWithOnChainDefaults },
+                },
             );
         });
 
@@ -1198,10 +1215,26 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            /**
+             * In order to enable call-data optimizations we make an assumption about asset data.
+             * rightOrder.makerAssetData = leftOrder.takerAssetData
+             * rightOrder.takerAssetData = leftOrder.makerAssetData
+             * And we enforce it on-chain by overriding the data in the right order even if it's different. The variable below emulates that.
+             */
+            const signedOrderRightWithOnChainDefaults = {
+                ...signedOrderRight,
+                makerAssetData: signedOrderLeft.takerAssetData,
+            };
+            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(
+                signedOrderRightWithOnChainDefaults,
+            );
             // Match orders
-            return expectTransactionFailedAsync(
+            return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReason.InvalidOrderSignature,
+                {
+                    reason: RevertReason.InvalidOrderSignature,
+                    params: { orderHash: orderHashRightWithOnChainDefaults },
+                },
             );
         });
 

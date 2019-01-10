@@ -354,7 +354,7 @@ contract MixinExchangeCore is
                     order.makerAddress,
                     signature
                 ),
-                "INVALID_ORDER_SIGNATURE"
+                string(abi.encodeWithSignature("INVALID_ORDER_SIGNATURE(bytes32)", orderInfo.orderHash))
             );
         }
     }

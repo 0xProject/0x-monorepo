@@ -6,6 +6,7 @@ export {
     expectContractCallFailedWithoutReasonAsync,
     expectContractCreationFailedAsync,
     expectContractCreationFailedWithoutReasonAsync,
+    expectTransactionFailedWithParamsAsync,
     expectInsufficientFundsAsync,
     expectTransactionFailedAsync,
     sendTransactionResult,

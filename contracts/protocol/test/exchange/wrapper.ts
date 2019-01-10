@@ -3,6 +3,7 @@ import {
     constants,
     ERC20BalancesByOwner,
     expectTransactionFailedAsync,
+    expectTransactionFailedWithParamsAsync,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
@@ -842,14 +843,22 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
+                const secondSignedOrderWithOnChainDefaults = {
+                    ...signedOrders[1],
+                    takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+                };
+                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderWithOnChainDefaults);
 
-                return expectTransactionFailedAsync(
+                return expectTransactionFailedWithParamsAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
                     // We simply use the takerAssetData from the first order for all orders.
                     // If they are not the same, the contract throws when validating the order signature
-                    RevertReason.InvalidOrderSignature,
+                    {
+                        reason: RevertReason.InvalidOrderSignature,
+                        params: { orderHash },
+                    },
                 );
             });
         });
@@ -1103,12 +1112,20 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
+                const secondSignedOrderWithOnChainDefaults = {
+                    ...signedOrders[1],
+                    makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                };
+                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderWithOnChainDefaults);
 
-                return expectTransactionFailedAsync(
+                return expectTransactionFailedWithParamsAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                    RevertReason.InvalidOrderSignature,
+                    {
+                        reason: RevertReason.InvalidOrderSignature,
+                        params: { orderHash },
+                    },
                 );
             });
         });

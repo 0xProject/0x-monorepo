@@ -3,6 +3,7 @@ import {
     constants,
     ERC20BalancesByOwner,
     expectTransactionFailedAsync,
+    expectTransactionFailedWithParamsAsync,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
@@ -241,10 +242,10 @@ describe('Exchange core', () => {
             const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
-            return expectTransactionFailedAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReason.InvalidOrderSignature,
-            );
+            return expectTransactionFailedWithParamsAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress), {
+                reason: RevertReason.InvalidOrderSignature,
+                params: { orderHash: orderHashUtils.getOrderHashHex(signedOrder) },
+            });
         });
 
         it('should throw if no value is filled', async () => {
