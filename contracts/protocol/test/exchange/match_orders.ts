@@ -1177,6 +1177,12 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            /**
+             * In order to enable call-data optimizations we make an assumption about asset data.
+             * rightOrder.makerAssetData = leftOrder.takerAssetData
+             * rightOrder.takerAssetData = leftOrder.makerAssetData
+             * And we enforce it on-chain by overriding the data in the right order even if it's different. The variable below emulates that.
+             */
             const signedOrderRightWithOnChainDefaults = {
                 ...signedOrderRight,
                 takerAssetData: signedOrderLeft.makerAssetData,
@@ -1209,9 +1215,15 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            /**
+             * In order to enable call-data optimizations we make an assumption about asset data.
+             * rightOrder.makerAssetData = leftOrder.takerAssetData
+             * rightOrder.takerAssetData = leftOrder.makerAssetData
+             * And we enforce it on-chain by overriding the data in the right order even if it's different. The variable below emulates that.
+             */
             const signedOrderRightWithOnChainDefaults = {
                 ...signedOrderRight,
-                makerAssetData: signedOrderLeft.makerAssetData,
+                makerAssetData: signedOrderLeft.takerAssetData,
             };
             const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(
                 signedOrderRightWithOnChainDefaults,
