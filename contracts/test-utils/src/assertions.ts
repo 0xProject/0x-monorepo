@@ -1,4 +1,4 @@
-import { abisToAbiBySelector, decodeCallData } from '@0x/order-utils';
+import { AbiBySelector, decodeCallData } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { AbiEncoder, logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
@@ -24,7 +24,11 @@ const ERROR_ABIS = _.map(
     constants.ERROR_ABI_STRINGS,
     (errorAbiString: string) => ethers.utils.parseSignature(errorAbiString) as MethodAbi,
 );
-const errorAbiBySelector = abisToAbiBySelector(ERROR_ABIS);
+const errorAbiBySelector: AbiBySelector = {};
+_.map(ERROR_ABIS, abi => {
+    const selector = new AbiEncoder.Method(abi).getSelector();
+    errorAbiBySelector[selector] = abi;
+});
 const solidityRevertSelector = new AbiEncoder.Method(ethers.utils.parseSignature(
     constants.SOLIDITY_REVERT_ABI,
 ) as MethodAbi).getSelector();

@@ -17,23 +17,6 @@ export interface DecodedCallData {
 export interface AbiBySelector {
     [selector: string]: MethodAbi;
 }
-/**
- * Converts the list of ABIs to the hash indexed by the 4-byte selector.
- */
-export function abisToAbiBySelector(abis: MethodAbi[]): AbiBySelector {
-    const abiBySelector = _.reduce<MethodAbi, AbiBySelector>(
-        abis,
-        (abiBySelectorAccumulator: AbiBySelector, methodAbi: MethodAbi) => {
-            const selector = new AbiEncoder.Method(methodAbi).getSelector();
-            return {
-                ...abiBySelectorAccumulator,
-                [selector]: methodAbi,
-            };
-        },
-        {},
-    );
-    return abiBySelector;
-}
 
 /**
  * Decoded call data into function name and params using the provided ABIs.
