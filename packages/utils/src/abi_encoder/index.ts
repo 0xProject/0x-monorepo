@@ -1,5 +1,4 @@
 export { EncodingRules, DecodingRules } from './utils/rules';
-export { constants } from './utils/constants';
 export {
     Address,
     Array,
