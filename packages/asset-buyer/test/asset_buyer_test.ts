@@ -46,6 +46,7 @@ const expectLiquidityResult = async (
     expect(liquidityResult).to.deep.equal(expectedLiquidityResult);
 };
 
+// tslint:disable:custom-no-magic-numbers
 describe('AssetBuyer', () => {
     describe('getLiquidityForAssetDataAsync', () => {
         const mockWeb3Provider = TypeMoq.Mock.ofType(Web3ProviderEngine);
@@ -92,9 +93,7 @@ describe('AssetBuyer', () => {
                 takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
             });
             const sellTenTokensFor10Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
-                // tslint:disable-next-line:custom-no-magic-numbers
                 makerAssetAmount: baseUnitAmount(10),
-                // tslint:disable-next-line:custom-no-magic-numbers
                 takerAssetAmount: baseUnitAmount(10, WETH_DECIMALS),
             });
 
@@ -149,11 +148,45 @@ describe('AssetBuyer', () => {
                     orders: [sellTwoTokensFor1Weth],
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1)],
                 };
-
                 const expectedResult = {
                     tokensAvailableInUnitAmount: baseUnitAmount(1).toNumber(),
-                    // tslint:disable-next-line:custom-no-magic-numbers
                     ethValueAvailableInWei: baseUnitAmount(0.5, WETH_DECIMALS).toNumber(),
+                };
+
+                await expectLiquidityResult(
+                    mockWeb3Provider.object,
+                    mockOrderProvider.object,
+                    ordersAndFillableAmounts,
+                    expectedResult,
+                );
+            });
+
+            it('should return correct computed value with multiple orders and fillable amounts', async () => {
+                const ordersAndFillableAmounts = {
+                    orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
+                    remainingFillableMakerAssetAmounts: [baseUnitAmount(1), baseUnitAmount(3)],
+                };
+                const expectedResult = {
+                    tokensAvailableInUnitAmount: baseUnitAmount(4).toNumber(),
+                    ethValueAvailableInWei: baseUnitAmount(3.5, WETH_DECIMALS).toNumber(),
+                };
+
+                await expectLiquidityResult(
+                    mockWeb3Provider.object,
+                    mockOrderProvider.object,
+                    ordersAndFillableAmounts,
+                    expectedResult,
+                );
+            });
+
+            it('should return 0s when no amounts fillable', async () => {
+                const ordersAndFillableAmounts = {
+                    orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
+                    remainingFillableMakerAssetAmounts: [baseUnitAmount(0), baseUnitAmount(0)],
+                };
+                const expectedResult = {
+                    tokensAvailableInUnitAmount: baseUnitAmount(0).toNumber(),
+                    ethValueAvailableInWei: baseUnitAmount(0, WETH_DECIMALS).toNumber(),
                 };
 
                 await expectLiquidityResult(
