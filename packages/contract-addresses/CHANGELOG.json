@@ -3,7 +3,8 @@
         "version": "2.2.0",
         "changes": [
             {
-                "note": "Added migration for `MultiAssetProxy` contract"
+                "note": "Added migration for `MultiAssetProxy` contract",
+                "pr": 1503
             }
         ]
     },
