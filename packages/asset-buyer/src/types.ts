@@ -75,6 +75,11 @@ export interface BuyQuoteRequestOpts {
     slippagePercentage: number;
 }
 
+/*
+ * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
+ */
+export interface LiquidityRequestOpts extends Pick<BuyQuoteRequestOpts, 'shouldForceOrderRefresh'> {}
+
 /**
  * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
