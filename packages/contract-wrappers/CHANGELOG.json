@@ -3,7 +3,7 @@
         "version": "5.0.0",
         "changes": [
             {
-                "note": "Renamed enum OrderStatus",
+                "note": "Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule",
                 "pr": 1474
             }
         ]

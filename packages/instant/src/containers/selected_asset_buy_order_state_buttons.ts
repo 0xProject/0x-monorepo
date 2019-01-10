@@ -92,7 +92,7 @@ const mapDispatchToProps = (
     },
     onValidationFail: (buyQuote, error) => {
         dispatch(actions.setBuyOrderStateNone());
-        if (error === ZeroExInstantError.InsufficientEth) {
+        if (error === ZeroExInstantError.InsufficientETH) {
             const errorMessage = "You don't have enough ETH";
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
         } else if (error === ZeroExInstantError.CouldNotSubmitTransaction) {

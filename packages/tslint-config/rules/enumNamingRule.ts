@@ -41,6 +41,7 @@ function walk(ctx: Lint.WalkContext<void>): void {
     }
 }
 
+// Modified from: https://github.com/jonschlinkert/pascalcase/
 function toPascalCase(str: string): string {
     let result = str.replace(/([a-z0-9\W])([A-Z])/g, '$1 $2');
     if (result.length === 1) {

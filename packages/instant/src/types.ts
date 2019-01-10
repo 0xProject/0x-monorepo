@@ -95,7 +95,7 @@ export enum Network {
 
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
-    InsufficientEth = 'INSUFFICIENT_ETH',
+    InsufficientETH = 'INSUFFICIENT_ETH', // tslint:disable-line:enum-naming
     CouldNotSubmitTransaction = 'COULD_NOT_SUBMIT_TRANSACTION',
 }
 

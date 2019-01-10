@@ -3,11 +3,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note": "Renamed enum member ZeroExInstantError.InsufficientETH -> ZeroExInstantError.InsufficientEth",
-                "pr": 1474
-            },
-            {
-                "note": "Renamed enum ActionTypes",
+                "note": "Renamed ActionTypes enum members to PascalCase to conform with tslint enum-naming rule",
                 "pr": 1474
             }
         ]
