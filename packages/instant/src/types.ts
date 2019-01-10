@@ -25,7 +25,7 @@ export enum QuoteFetchOrigin {
     Manual = 'Manual',
     Heartbeat = 'Heartbeat',
 }
-
+// tslint:disable:enum-naming
 export enum BaseCurrency {
     USD = 'USD',
     ETH = 'ETH',

@@ -20,6 +20,7 @@ function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | 
     return _.isUndefined(data) ? { type } : { type, data };
 }
 
+// tslint:disable:enum-naming
 export enum ActionTypes {
     SET_ACCOUNT_STATE_LOADING = 'SET_ACCOUNT_STATE_LOADING',
     SET_ACCOUNT_STATE_LOCKED = 'SET_ACCOUNT_STATE_LOCKED',

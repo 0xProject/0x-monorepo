@@ -34,7 +34,7 @@ interface NetworkConfig {
 interface ItemByNetworkId<T> {
     [networkId: string]: T;
 }
-
+// tslint:disable:enum-naming
 enum RequestedAssetType {
     ETH = 'ETH',
     WETH = 'WETH',

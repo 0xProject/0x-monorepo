@@ -29,7 +29,7 @@ export const evaluateIfEnabled = (fnCall: () => void) => {
         fnCall();
     }
 };
-
+// tslint:disable:enum-naming
 enum EventNames {
     INSTANT_OPENED = 'Instant - Opened',
     INSTANT_CLOSED = 'Instant - Closed',
