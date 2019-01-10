@@ -81,7 +81,7 @@ describe('AssetBuyer', () => {
             const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
             const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
             expect(liquidityResult).to.deep.equal({
-                tokensAvailableInUnitAmount: 0,
+                tokensAvailableInBaseUnits: 0,
                 ethValueAvailableInWei: 0,
             });
         });
@@ -106,41 +106,38 @@ describe('AssetBuyer', () => {
                     orders: [],
                     remainingFillableMakerAssetAmounts: [],
                 };
-                const mockedAssetBuyer = mockedAssetBuyerWithOrdersAndFillableAmounts(
+                const expectedResult = {
+                    tokensAvailableInBaseUnits: 0,
+                    ethValueAvailableInWei: 0,
+                };
+                await expectLiquidityResult(
                     mockWeb3Provider.object,
                     mockOrderProvider.object,
-                    FAKE_ASSET_DATA,
                     ordersAndFillableAmounts,
+                    expectedResult,
                 );
-
-                const liquidityResult = await mockedAssetBuyer.object.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
-                expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInUnitAmount: 0,
-                    ethValueAvailableInWei: 0,
-                });
             });
 
             it('should return correct computed value when orders provided with full fillableAmounts', async () => {
                 const orders: SignedOrder[] = [sellTwoTokensFor1Weth, sellTenTokensFor10Weth];
-                const remainingFillableMakerAssetAmounts: BigNumber[] = orders.map(o => o.makerAssetAmount);
-                const mockedAssetBuyer = mockedAssetBuyerWithOrdersAndFillableAmounts(
-                    mockWeb3Provider.object,
-                    mockOrderProvider.object,
-                    FAKE_ASSET_DATA,
-                    {
-                        orders,
-                        remainingFillableMakerAssetAmounts,
-                    },
-                );
+                const ordersAndFillableAmounts = {
+                    orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
+                    remainingFillableMakerAssetAmounts: orders.map(o => o.makerAssetAmount),
+                };
 
                 const expectedTokensAvailable = orders[0].makerAssetAmount.plus(orders[1].makerAssetAmount);
                 const expectedEthValueAvailable = orders[0].takerAssetAmount.plus(orders[1].takerAssetAmount);
-
-                const liquidityResult = await mockedAssetBuyer.object.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
-                expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInUnitAmount: expectedTokensAvailable.toNumber(),
+                const expectedResult = {
+                    tokensAvailableInBaseUnits: expectedTokensAvailable.toNumber(),
                     ethValueAvailableInWei: expectedEthValueAvailable.toNumber(),
-                });
+                };
+
+                await expectLiquidityResult(
+                    mockWeb3Provider.object,
+                    mockOrderProvider.object,
+                    ordersAndFillableAmounts,
+                    expectedResult,
+                );
             });
 
             it('should return correct computed value with one partial fillableAmounts', async () => {
@@ -149,7 +146,7 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1)],
                 };
                 const expectedResult = {
-                    tokensAvailableInUnitAmount: baseUnitAmount(1).toNumber(),
+                    tokensAvailableInBaseUnits: baseUnitAmount(1).toNumber(),
                     ethValueAvailableInWei: baseUnitAmount(0.5, WETH_DECIMALS).toNumber(),
                 };
 
@@ -167,7 +164,7 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1), baseUnitAmount(3)],
                 };
                 const expectedResult = {
-                    tokensAvailableInUnitAmount: baseUnitAmount(4).toNumber(),
+                    tokensAvailableInBaseUnits: baseUnitAmount(4).toNumber(),
                     ethValueAvailableInWei: baseUnitAmount(3.5, WETH_DECIMALS).toNumber(),
                 };
 
@@ -185,7 +182,7 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(0), baseUnitAmount(0)],
                 };
                 const expectedResult = {
-                    tokensAvailableInUnitAmount: baseUnitAmount(0).toNumber(),
+                    tokensAvailableInBaseUnits: baseUnitAmount(0).toNumber(),
                     ethValueAvailableInWei: baseUnitAmount(0, WETH_DECIMALS).toNumber(),
                 };
 

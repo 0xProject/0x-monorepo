@@ -126,6 +126,6 @@ export interface OrdersAndFillableAmounts {
  * Represents available liquidity for a given assetData
  */
 export interface LiquidityForAssetData {
-    tokensAvailableInUnitAmount: number;
+    tokensAvailableInBaseUnits: number;
     ethValueAvailableInWei: number;
 }

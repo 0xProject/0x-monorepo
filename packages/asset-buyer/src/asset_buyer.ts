@@ -45,19 +45,19 @@ const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAmounts):
             const tokensAvailableForCurrentOrder = availableMakerAssetAmount;
             const ethValueAvailableForCurrentOrder = orderUtils.getTakerFillAmount(order, availableMakerAssetAmount);
             return {
-                tokensAvailableInUnitAmount: acc.tokensAvailableInUnitAmount.plus(tokensAvailableForCurrentOrder),
+                tokensAvailableInBaseUnits: acc.tokensAvailableInBaseUnits.plus(tokensAvailableForCurrentOrder),
                 ethValueAvailableInWei: acc.ethValueAvailableInWei.plus(ethValueAvailableForCurrentOrder),
             };
         },
         {
-            tokensAvailableInUnitAmount: new BigNumber(0),
+            tokensAvailableInBaseUnits: new BigNumber(0),
             ethValueAvailableInWei: new BigNumber(0),
         },
     );
 
     // Turn into regular numbers
     return {
-        tokensAvailableInUnitAmount: liquidityInBigNumbers.tokensAvailableInUnitAmount.toNumber(),
+        tokensAvailableInBaseUnits: liquidityInBigNumbers.tokensAvailableInBaseUnits.toNumber(),
         ethValueAvailableInWei: liquidityInBigNumbers.ethValueAvailableInWei.toNumber(),
     };
 };
@@ -225,7 +225,7 @@ export class AssetBuyer {
         const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
         if (!assetPairs.includes(assetData)) {
             return {
-                tokensAvailableInUnitAmount: 0,
+                tokensAvailableInBaseUnits: 0,
                 ethValueAvailableInWei: 0,
             };
         }
