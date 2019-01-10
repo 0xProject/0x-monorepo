@@ -10,7 +10,7 @@ import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { AbiDefinition, MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ExchangeContract } from '../../generated-wrappers/exchange';

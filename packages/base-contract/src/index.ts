@@ -86,9 +86,13 @@ export class BaseContract {
     }
     protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
         if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
-            const revertReason = AbiEncoder.create('(string)').decodeAsArray(
+            const revertReasonArray = AbiEncoder.create('(string)').decodeAsArray(
                 ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
-            )[0];
+            );
+            if (revertReasonArray.length !== 1) {
+                throw new Error(`Cannot safely decode revert reason: Expected an array with one element, got ${revertReasonArray}`);
+            }
+            const revertReason = revertReasonArray[0];
             throw new Error(revertReason);
         }
     }
