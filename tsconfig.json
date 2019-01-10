@@ -32,6 +32,7 @@
         { "path": "./packages/0x.js" },
         { "path": "./packages/abi-gen-wrappers" },
         { "path": "./packages/abi-gen" },
+        { "path": "./packages/abi-encoder" },
         { "path": "./packages/assert" },
         { "path": "./packages/asset-buyer" },
         { "path": "./packages/base-contract" },

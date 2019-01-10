@@ -1,8 +1,8 @@
+import { BigNumber } from '@0x/utils';
 import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { BigNumber } from '../../configured_bignumber';
 import { DataTypeFactory } from '../abstract_data_types/interfaces';
 import { AbstractBlobDataType } from '../abstract_data_types/types/blob';
 import { RawCalldata } from '../calldata/raw_calldata';

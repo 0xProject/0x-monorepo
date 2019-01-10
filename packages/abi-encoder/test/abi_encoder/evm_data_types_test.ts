@@ -1,9 +1,10 @@
 /* tslint:disable max-file-line-count */
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import 'mocha';
 
-import { AbiEncoder, BigNumber } from '../../src/';
+import { AbiEncoder } from '../../src';
 import { chaiSetup } from '../utils/chai_setup';
 
 chaiSetup.configure();

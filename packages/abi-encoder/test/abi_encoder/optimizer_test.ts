@@ -1,7 +1,8 @@
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { AbiEncoder, BigNumber } from '../../src/';
+import { AbiEncoder } from '../../src/';
 import { chaiSetup } from '../utils/chai_setup';
 
 import * as OptimizedAbis from './abi_samples/optimizer_abis';

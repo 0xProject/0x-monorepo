@@ -1,14 +1,13 @@
+import { BigNumber } from '@0x/utils';
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { BigNumber } from '../../../configured_bignumber';
 import { SetCalldataBlock } from '../../calldata/blocks/set';
 import { CalldataBlock } from '../../calldata/calldata_block';
 import { RawCalldata } from '../../calldata/raw_calldata';
 import { constants } from '../../utils/constants';
 import { DecodingRules } from '../../utils/rules';
-
 import { DataType } from '../data_type';
 import { DataTypeFactory, MemberIndexByName } from '../interfaces';
 
