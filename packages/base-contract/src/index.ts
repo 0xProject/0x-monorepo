@@ -90,7 +90,9 @@ export class BaseContract {
                 ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
             );
             if (revertReasonArray.length !== 1) {
-                throw new Error(`Cannot safely decode revert reason: Expected an array with one element, got ${revertReasonArray}`);
+                throw new Error(
+                    `Cannot safely decode revert reason: Expected an array with one element, got ${revertReasonArray}`,
+                );
             }
             const revertReason = revertReasonArray[0];
             throw new Error(revertReason);

@@ -24,7 +24,9 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const method = new AbiEncoder.Method(ReturnValueAbis.singleStaticReturnValue);
         const returnValue = ['0x01020304'];
         const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
-        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, { shouldConvertStructsToObjects: false });
+        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, {
+            shouldConvertStructsToObjects: false,
+        });
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
@@ -33,7 +35,9 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const method = new AbiEncoder.Method(ReturnValueAbis.multipleStaticReturnValues);
         const returnValue = ['0x01020304', '0x05060708'];
         const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
-        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, { shouldConvertStructsToObjects: false });
+        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, {
+            shouldConvertStructsToObjects: false,
+        });
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
@@ -42,7 +46,9 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const method = new AbiEncoder.Method(ReturnValueAbis.singleDynamicReturnValue);
         const returnValue = ['0x01020304'];
         const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
-        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, { shouldConvertStructsToObjects: false });
+        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, {
+            shouldConvertStructsToObjects: false,
+        });
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
@@ -51,7 +57,9 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const method = new AbiEncoder.Method(ReturnValueAbis.multipleDynamicReturnValues);
         const returnValue = ['0x01020304', '0x05060708'];
         const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
-        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, { shouldConvertStructsToObjects: false });
+        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, {
+            shouldConvertStructsToObjects: false,
+        });
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
@@ -60,7 +68,9 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const method = new AbiEncoder.Method(ReturnValueAbis.mixedStaticAndDynamicReturnValues);
         const returnValue = ['0x01020304', '0x05060708'];
         const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
-        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, { shouldConvertStructsToObjects: false });
+        const decodedReturnValue = method.decodeReturnValues(encodedReturnValue, {
+            shouldConvertStructsToObjects: false,
+        });
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
