@@ -36,11 +36,10 @@ const bytesRevertAbi = ethers.utils.parseSignature(constants.BYTES_REVERT_ABI_ST
 /**
  * HACK: By default solidity encodes revert reasons as `Error(string)` we want to throw additional data
  * so we encode that data using an error signature e.g. `function INVALID_ORDER_SIGNATURE(bytes32 orderHash)`.
- * We pretend those encoded bytes are a string (Solidity lets us do that) and use it instead of a string revert reason. 
+ * We pretend those encoded bytes are a string (Solidity lets us do that) and use it instead of a string revert reason.
  * In order for us to decode the revert properly, we need to use ABI `Error(bytes)` NOT `Error(string)`. Solidity by default
- * uses the selector for `Error(string)`, so we introduce a hack where we map that selector to the ABI definition for `Error(bytes)`. 
+ * uses the selector for `Error(string)`, so we introduce a hack where we map that selector to the ABI definition for `Error(bytes)`.
  * Doing so let's us decode the revert string AS BYTES! Which is what we need to do to avoid a selector <-> ABI mismatch.
- 
  */
 errorAbiBySelector[solidityRevertSelector] = bytesRevertAbi;
 
