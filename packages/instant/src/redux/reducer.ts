@@ -72,11 +72,11 @@ export const DEFAULT_STATE: DefaultState = {
 export const createReducer = (initialState: State) => {
     const reducer = (state: State = initialState, action: Action): State => {
         switch (action.type) {
-            case ActionTypes.SET_ACCOUNT_STATE_LOADING:
+            case ActionTypes.SetAccountStateLoading:
                 return reduceStateWithAccount(state, LOADING_ACCOUNT);
-            case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
+            case ActionTypes.SetAccountStateLocked:
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
-            case ActionTypes.SET_ACCOUNT_STATE_READY: {
+            case ActionTypes.SetAccountStateReady: {
                 const address = action.data;
                 let newAccount: AccountReady = {
                     state: AccountState.Ready,
@@ -91,7 +91,7 @@ export const createReducer = (initialState: State) => {
                 }
                 return reduceStateWithAccount(state, newAccount);
             }
-            case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
+            case ActionTypes.UpdateAccountEthBalance: {
                 const { address, ethBalanceInWei } = action.data;
                 const currentAccount = state.providerState.account;
                 if (currentAccount.state !== AccountState.Ready || currentAccount.address !== address) {
@@ -104,17 +104,17 @@ export const createReducer = (initialState: State) => {
                     return reduceStateWithAccount(state, newAccount);
                 }
             }
-            case ActionTypes.UPDATE_ETH_USD_PRICE:
+            case ActionTypes.UpdateEthUsdPrice:
                 return {
                     ...state,
                     ethUsdPrice: action.data,
                 };
-            case ActionTypes.UPDATE_SELECTED_ASSET_UNIT_AMOUNT:
+            case ActionTypes.UpdateSelectedAssetUnitAmount:
                 return {
                     ...state,
                     selectedAssetUnitAmount: action.data,
                 };
-            case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
+            case ActionTypes.UpdateLatestBuyQuote:
                 const newBuyQuoteIfExists = action.data;
                 const shouldUpdate =
                     _.isUndefined(newBuyQuoteIfExists) || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
@@ -127,29 +127,29 @@ export const createReducer = (initialState: State) => {
                 } else {
                     return state;
                 }
-            case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
+            case ActionTypes.SetQuoteRequestStatePending:
                 return {
                     ...state,
                     latestBuyQuote: undefined,
                     quoteRequestState: AsyncProcessState.Pending,
                 };
-            case ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE:
+            case ActionTypes.SetQuoteRequestStateFailure:
                 return {
                     ...state,
                     latestBuyQuote: undefined,
                     quoteRequestState: AsyncProcessState.Failure,
                 };
-            case ActionTypes.SET_BUY_ORDER_STATE_NONE:
+            case ActionTypes.SetBuyOrderStateNone:
                 return {
                     ...state,
                     buyOrderState: { processState: OrderProcessState.None },
                 };
-            case ActionTypes.SET_BUY_ORDER_STATE_VALIDATING:
+            case ActionTypes.SetBuyOrderStateValidating:
                 return {
                     ...state,
                     buyOrderState: { processState: OrderProcessState.Validating },
                 };
-            case ActionTypes.SET_BUY_ORDER_STATE_PROCESSING:
+            case ActionTypes.SetBuyOrderStateProcessing:
                 const processingData = action.data;
                 const { startTimeUnix, expectedEndTimeUnix } = processingData;
                 return {
@@ -163,7 +163,7 @@ export const createReducer = (initialState: State) => {
                         },
                     },
                 };
-            case ActionTypes.SET_BUY_ORDER_STATE_FAILURE:
+            case ActionTypes.SetBuyOrderStateFailure:
                 const failureTxHash = action.data;
                 if ('txHash' in state.buyOrderState) {
                     if (state.buyOrderState.txHash === failureTxHash) {
@@ -179,7 +179,7 @@ export const createReducer = (initialState: State) => {
                     }
                 }
                 return state;
-            case ActionTypes.SET_BUY_ORDER_STATE_SUCCESS:
+            case ActionTypes.SetBuyOrderStateSuccess:
                 const successTxHash = action.data;
                 if ('txHash' in state.buyOrderState) {
                     if (state.buyOrderState.txHash === successTxHash) {
@@ -195,29 +195,29 @@ export const createReducer = (initialState: State) => {
                     }
                 }
                 return state;
-            case ActionTypes.SET_ERROR_MESSAGE:
+            case ActionTypes.SetErrorMessage:
                 return {
                     ...state,
                     latestErrorMessage: action.data,
                     latestErrorDisplayStatus: DisplayStatus.Present,
                 };
-            case ActionTypes.HIDE_ERROR:
+            case ActionTypes.HideError:
                 return {
                     ...state,
                     latestErrorDisplayStatus: DisplayStatus.Hidden,
                 };
-            case ActionTypes.CLEAR_ERROR:
+            case ActionTypes.ClearError:
                 return {
                     ...state,
                     latestErrorMessage: undefined,
                     latestErrorDisplayStatus: DisplayStatus.Hidden,
                 };
-            case ActionTypes.UPDATE_SELECTED_ASSET:
+            case ActionTypes.UpdateSelectedAsset:
                 return {
                     ...state,
                     selectedAsset: action.data,
                 };
-            case ActionTypes.RESET_AMOUNT:
+            case ActionTypes.ResetAmount:
                 return {
                     ...state,
                     latestBuyQuote: undefined,
@@ -225,12 +225,12 @@ export const createReducer = (initialState: State) => {
                     buyOrderState: { processState: OrderProcessState.None },
                     selectedAssetUnitAmount: undefined,
                 };
-            case ActionTypes.SET_AVAILABLE_ASSETS:
+            case ActionTypes.SetAvailableAssets:
                 return {
                     ...state,
                     availableAssets: action.data,
                 };
-            case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+            case ActionTypes.OpenStandardSlidingPanel:
                 return {
                     ...state,
                     standardSlidingPanelSettings: {
@@ -238,7 +238,7 @@ export const createReducer = (initialState: State) => {
                         animationState: 'slidIn',
                     },
                 };
-            case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+            case ActionTypes.CloseStandardSlidingPanel:
                 return {
                     ...state,
                     standardSlidingPanelSettings: {
@@ -246,7 +246,7 @@ export const createReducer = (initialState: State) => {
                         animationState: 'slidOut',
                     },
                 };
-            case ActionTypes.UPDATE_BASE_CURRENCY:
+            case ActionTypes.UpdateBaseCurrency:
                 return {
                     ...state,
                     baseCurrency: action.data,

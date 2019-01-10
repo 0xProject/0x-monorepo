@@ -68,7 +68,7 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
             analytics.trackBuyNotEnoughEth(buyQuote);
-            this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
+            this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientEth);
             return;
         }
         let txHash: string | undefined;
