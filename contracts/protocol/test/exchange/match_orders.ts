@@ -4,6 +4,7 @@ import {
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
     expectTransactionFailedAsync,
+    expectTransactionFailedWithParamsAsync,
     OrderFactory,
     provider,
     txDefaults,
@@ -28,9 +29,6 @@ import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync, expectTransactionFailedWithParamsAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';

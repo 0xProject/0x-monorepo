@@ -3,6 +3,7 @@ import {
     constants,
     ERC20BalancesByOwner,
     expectTransactionFailedAsync,
+    expectTransactionFailedWithParamsAsync,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
@@ -29,10 +30,6 @@ import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync, expectTransactionFailedWithParamsAsync } from '../utils/assertions';
-import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
