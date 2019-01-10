@@ -480,7 +480,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             case BalanceErrs.FaucetQueueIsFull:
                 return <div>Our test Ether faucet queue is full. Please try requesting test Ether again later.</div>;
 
-            case BalanceErrs.mintingFailed:
+            case BalanceErrs.MintingFailed:
                 return <div>Minting your test tokens failed unexpectedly. Please refresh the page and try again.</div>;
 
             case BalanceErrs.AllowanceSettingFailed:
@@ -522,7 +522,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             logUtils.log(`Unexpected error encountered: ${err}`);
             logUtils.log(err.stack);
             this.setState({
-                errorType: BalanceErrs.mintingFailed,
+                errorType: BalanceErrs.MintingFailed,
             });
             errorReporter.report(err);
             return false;

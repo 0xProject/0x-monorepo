@@ -50,23 +50,23 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     constructor(props: AssetPickerProps) {
         super(props);
         this.state = {
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
             hoveredAddress: undefined,
             chosenTrackTokenAddress: undefined,
             isAddingTokenToTracked: false,
         };
         this._dialogConfigsByAssetView = {
-            [AssetViews.ASSET_PICKER]: {
+            [AssetViews.AssetPicker]: {
                 title: 'Select token',
                 isModal: false,
                 actions: [],
             },
-            [AssetViews.NEW_TOKEN_FORM]: {
+            [AssetViews.NewTokenForm]: {
                 title: 'Add an ERC20 token',
                 isModal: false,
                 actions: [],
             },
-            [AssetViews.CONFIRM_TRACK_TOKEN]: {
+            [AssetViews.ConfirmTrackToken]: {
                 title: 'Tracking confirmation',
                 isModal: true,
                 actions: [
@@ -95,15 +95,15 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                 autoScrollBodyContent={true}
                 onRequestClose={this._onCloseDialog.bind(this)}
             >
-                {this.state.assetView === AssetViews.ASSET_PICKER && this._renderAssetPicker()}
-                {this.state.assetView === AssetViews.NEW_TOKEN_FORM && (
+                {this.state.assetView === AssetViews.AssetPicker && this._renderAssetPicker()}
+                {this.state.assetView === AssetViews.NewTokenForm && (
                     <NewTokenForm
                         blockchain={this.props.blockchain}
                         onNewTokenSubmitted={this._onNewTokenSubmitted.bind(this)}
                         tokenByAddress={this.props.tokenByAddress}
                     />
                 )}
-                {this.state.assetView === AssetViews.CONFIRM_TRACK_TOKEN && this._renderConfirmTrackToken()}
+                {this.state.assetView === AssetViews.ConfirmTrackToken && this._renderConfirmTrackToken()}
             </Dialog>
         );
     }
@@ -222,7 +222,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     }
     private _onCloseDialog(): void {
         this.setState({
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
         });
         this.props.onTokenChosen(this.props.currentTokenAddress);
     }
@@ -232,21 +232,21 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             this.props.onTokenChosen(tokenAddress);
         } else {
             this.setState({
-                assetView: AssetViews.CONFIRM_TRACK_TOKEN,
+                assetView: AssetViews.ConfirmTrackToken,
                 chosenTrackTokenAddress: tokenAddress,
             });
         }
     }
     private _onCustomAssetChosen(): void {
         this.setState({
-            assetView: AssetViews.NEW_TOKEN_FORM,
+            assetView: AssetViews.NewTokenForm,
         });
     }
     private _onNewTokenSubmitted(newToken: Token): void {
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newToken);
         this.props.dispatcher.addTokenToTokenByAddress(newToken);
         this.setState({
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
         });
         this.props.onTokenChosen(newToken.address);
     }
@@ -254,7 +254,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const resetState: AssetPickerState = {
             ...this.state,
             isAddingTokenToTracked: false,
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
             chosenTrackTokenAddress: undefined,
         };
         if (!didUserAcceptTracking) {

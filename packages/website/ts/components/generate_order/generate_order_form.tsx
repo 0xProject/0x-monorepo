@@ -76,7 +76,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         this.state = {
             globalErrMsg: '',
             shouldShowIncompleteErrs: false,
-            signingState: SigningState.UNSIGNED,
+            signingState: SigningState.Unsigned,
         };
     }
     public componentDidMount(): void {
@@ -215,7 +215,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     title="Order JSON"
                     titleStyle={{ fontWeight: 100 }}
                     modal={false}
-                    open={this.state.signingState === SigningState.SIGNED}
+                    open={this.state.signingState === SigningState.Signed}
                     onRequestClose={this._onCloseOrderJSONDialog.bind(this)}
                 >
                     <OrderJSON
@@ -247,7 +247,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         // orderHash will not collide with the previously generated orderHash.
         this.props.dispatcher.updateOrderSalt(generatePseudoRandomSalt());
         this.setState({
-            signingState: SigningState.UNSIGNED,
+            signingState: SigningState.Unsigned,
         });
     }
     private async _onSignClickedAsync(): Promise<boolean> {
@@ -305,13 +305,13 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
     }
     private async _signTransactionAsync(): Promise<PortalOrder | undefined> {
         this.setState({
-            signingState: SigningState.SIGNING,
+            signingState: SigningState.Signing,
         });
         const exchangeAddress = this.props.blockchain.getExchangeContractAddressIfExists();
         if (_.isUndefined(exchangeAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             this.setState({
-                signingState: SigningState.UNSIGNED,
+                signingState: SigningState.Unsigned,
             });
             return undefined;
         }
@@ -371,7 +371,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             }
         }
         this.setState({
-            signingState: globalErrMsg === '' ? SigningState.SIGNED : SigningState.UNSIGNED,
+            signingState: globalErrMsg === '' ? SigningState.Signed : SigningState.Unsigned,
             globalErrMsg,
         });
         return order;
