@@ -1,6 +1,6 @@
 import { abisToAbiBySelector, decodeCallData } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
-import { logUtils, AbiEncoder } from '@0x/utils';
+import { AbiEncoder, logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import {

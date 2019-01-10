@@ -46,11 +46,15 @@ export function decodeCallData(abiBySelector: AbiBySelector, callDataHex: string
     if (_.isUndefined(abi)) {
         throw new Error(`Unable to decode call data. Unknown selector ${selector}`);
     }
-    const decodedParams = new AbiEncoder.Method(abi).decode(
-        callDataHex,
-        AbiEncoder.constants.DEFAULT_DECODING_RULES,
-        selector,
-    );
+    const method = new AbiEncoder.Method(abi);
+    /**
+     * HACK(leo) Sometimes we want to decode smth as smth else. e.g. `Error(string)` as `Error(bytes)`.
+     * In that case `abiBySelector` has the ABI of the later and the `selector` of the first.
+     * `AbiEncoder.Method` will recompute it's own selector and check that it matches the one found in data.
+     * To suspend that behaviour we override it here.
+     */
+    (method as any)._methodSelector = selector;
+    const decodedParams = method.decode(callDataHex);
     // decodedParams have params as both an array and an object. We just want the object.
     const callParams = _.reduce<any, CallParams>(
         decodedParams,

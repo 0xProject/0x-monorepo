@@ -29,8 +29,8 @@ export class MethodDataType extends AbstractSetDataType {
         return calldata;
     }
 
-    public decode(calldata: string, rules?: DecodingRules, selector?: string): any[] | object {
-        const value = super.decode(calldata, rules, selector || this._methodSelector);
+    public decode(calldata: string, rules?: DecodingRules): any[] | object {
+        const value = super.decode(calldata, rules, this._methodSelector);
         return value;
     }
 
