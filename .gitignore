@@ -91,7 +91,7 @@ contracts/interfaces/generated-artifacts/
 contracts/tokens/generated-artifacts/
 contracts/examples/generated-artifacts/
 contracts/extensions/generated-artifacts/
-packages/sol-trace-based-tools-common/test/fixtures/artifacts/
+packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
 # generated contract wrappers

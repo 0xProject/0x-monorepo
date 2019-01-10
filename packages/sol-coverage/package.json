@@ -30,7 +30,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-coverage/README.md",
     "dependencies": {
         "@0x/subproviders": "^2.1.8",
-        "@0x/sol-trace-based-tools-common": "^2.1.16",
+        "@0x/sol-tracing-utils": "^2.1.16",
         "@0x/typescript-typings": "^3.0.6",
         "ethereum-types": "^1.1.4",
         "lodash": "^4.17.5"

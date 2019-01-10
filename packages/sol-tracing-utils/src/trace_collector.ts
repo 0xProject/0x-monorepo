@@ -51,7 +51,7 @@ export class TraceCollector {
         singleFileSubtraceHandler: SingleFileSubtraceHandler,
     ) {
         this._artifactAdapter = artifactAdapter;
-        this._logger = getLogger('sol-trace-based-tools-common');
+        this._logger = getLogger('sol-tracing-utils');
         this._logger.setLevel(isVerbose ? levels.TRACE : levels.ERROR);
         this._singleFileSubtraceHandler = singleFileSubtraceHandler;
     }

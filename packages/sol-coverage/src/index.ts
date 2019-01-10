@@ -4,7 +4,7 @@ export {
     TruffleArtifactAdapter,
     AbstractArtifactAdapter,
     ContractData,
-} from '@0x/sol-trace-based-tools-common';
+} from '@0x/sol-tracing-utils';
 
 export {
     JSONRPCRequestPayload,

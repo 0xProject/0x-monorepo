@@ -10,7 +10,7 @@ import {
     SourceSnippet,
     TraceCollectionSubprovider,
     utils,
-} from '@0x/sol-trace-based-tools-common';
+} from '@0x/sol-tracing-utils';
 import { stripHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 import { getLogger, levels, Logger } from 'loglevel';

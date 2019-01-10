@@ -3,7 +3,7 @@ export {
     SolCompilerArtifactAdapter,
     TruffleArtifactAdapter,
     ContractData,
-} from '@0x/sol-trace-based-tools-common';
+} from '@0x/sol-tracing-utils';
 
 // HACK: ProfilerSubprovider is a hacky way to do profiling using coverage tools. Not production ready
 export { ProfilerSubprovider } from './profiler_subprovider';

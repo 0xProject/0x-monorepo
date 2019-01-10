@@ -1,5 +1,5 @@
 {
-    "name": "@0x/sol-trace-based-tools-common",
+    "name": "@0x/sol-tracing-utils",
     "version": "2.1.16",
     "engines": {
         "node": ">=6.12"
@@ -40,7 +40,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-trace-based-tools-common/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-tracing-utils/README.md",
     "dependencies": {
         "@0x/dev-utils": "^1.0.21",
         "@0x/sol-compiler": "^1.1.16",

@@ -55,7 +55,7 @@
         { "path": "./packages/sol-coverage" },
         { "path": "./packages/sol-profiler" },
         { "path": "./packages/sol-trace" },
-        { "path": "./packages/sol-trace-based-tools-common" },
+        { "path": "./packages/sol-tracing-utils" },
         { "path": "./packages/sol-resolver" },
         { "path": "./packages/sra-spec" },
         { "path": "./packages/subproviders" },

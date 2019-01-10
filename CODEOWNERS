@@ -27,7 +27,7 @@ packages/sol-compiler/ @LogvinovLeon
 packages/sol-coverage/ @LogvinovLeon
 packages/sol-profiler/ @LogvinovLeon
 packages/sol-trace/ @LogvinovLeon
-packages/sol-trace-based-tools-common/ @LogvinovLeon
+packages/sol-tracing-utils/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
 packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
