@@ -49,7 +49,7 @@ export function decodeCallData(abiBySelector: AbiBySelector, callDataHex: string
     const method = new AbiEncoder.Method(abi);
     /**
      * HACK(leo) Sometimes we want to decode smth as smth else. e.g. `Error(string)` as `Error(bytes)`.
-     * In that case `abiBySelector` has the ABI of the later and the `selector` of the first.
+     * In that case `abiBySelector` has the ABI of the latter and the `selector` of the first.
      * `AbiEncoder.Method` will recompute it's own selector and check that it matches the one found in data.
      * To suspend that behaviour we override it here.
      */
