@@ -35,6 +35,7 @@ const bytesRevertAbi = ethers.utils.parseSignature(constants.BYTES_REVERT_ABI) a
  * After that we treat those bytes as string and use it instead of a revert reason. When we try to decode that malformed revert reason - we have a selector - ABI mismatch.
  */
 errorAbiBySelector[solidityRevertSelector] = bytesRevertAbi;
+
 interface InvalidOrderSignatureError {
     reason: RevertReason.InvalidOrderSignature;
     params: {
