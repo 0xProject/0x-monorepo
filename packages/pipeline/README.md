@@ -152,10 +152,10 @@ set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
 9.  If you added any new scripts or dependencies between scripts, you will need
     to make changes to https://github.com/0xProject/0x-pipeline-orchestration
     and make a separate PR there. Don't merge this yet!
-10. Ask @feuGeneA or @xianny to deploy your changes to the QA environment.
-    Check the [QA Airflow dashboard](http://airflow-qa.0x.org:8080) to make sure
-    everything works correctly in the QA environment.
-11. After code review, merge your PR to 0x-monorepo (and
+10. After your PR passes code review, ask @feuGeneA or @xianny to deploy your
+    changes to the QA environment. Check the [QA Airflow dashboard](http://airflow-qa.0x.org:8080)
+    to make sure everything works correctly in the QA environment.
+11. Merge your PR to 0x-monorepo (and
     https://github.com/0xProject/0x-pipeline-orchestration if needed). Then ask
     @feuGeneA or @xianny to deploy to production.
 12. Monitor the [production Airflow dashboard](http://airflow.0x.org:8080) to
@@ -178,3 +178,6 @@ set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
     floating point numbers.
 *   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
     helpful resource.
+*   Scripts/parsers should perform minimum data transformation/normalization.
+    The idea here is to have a raw data feed that will be cleaned up and
+    synthesized in a separate step.
