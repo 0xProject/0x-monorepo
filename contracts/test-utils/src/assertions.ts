@@ -3,7 +3,12 @@ import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import {
+    MethodAbi,
+    TransactionReceipt,
+    TransactionReceiptStatus,
+    TransactionReceiptWithDecodedLogs,
+} from 'ethereum-types';
 
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -17,7 +22,7 @@ let nodeType: NodeType | undefined;
 
 const ERROR_ABIS = _.map(
     constants.ERROR_ABI_STRINGS,
-    (errorAbiString: string) => ethers.utils.parseSignature(errorAbiString) as ethers.utils.FunctionFragment,
+    (errorAbiString: string) => ethers.utils.parseSignature(errorAbiString) as MethodAbi,
 );
 const errorAbiBySelector = abisToAbiBySelector(ERROR_ABIS);
 interface InvalidOrderSignatureError {

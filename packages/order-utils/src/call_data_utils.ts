@@ -1,10 +1,9 @@
-import ethUtil = require('ethereumjs-util');
+import { AbiEncoder, AbiDecoder } from '@0x/utils';
+import { MethodAbi } from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-
-export type MethodAbi = ethers.utils.FunctionFragment;
 
 export interface CallParams {
     [paramName: string]: any;
@@ -41,13 +40,7 @@ export function abisToAbiBySelector(abis: MethodAbi[]): AbiBySelector {
  * @param methodAbi Method ABI
  */
 export function getMethodSelector(methodAbi: MethodAbi): string {
-    const functionSignature = ethers.utils.formatSignature({ ...methodAbi, gas: ethers.utils.bigNumberify(0) });
-    const selector = ethUtil.addHexPrefix(
-        ethUtil
-            .sha3(functionSignature)
-            .slice(0, constants.SELECTOR_LENGTH)
-            .toString('hex'),
-    );
+    const selector = new AbiEncoder.Method(methodAbi).getSelector();
     return selector;
 }
 /**
@@ -57,12 +50,11 @@ export function getMethodSelector(methodAbi: MethodAbi): string {
  */
 export function decodeCallData(abiBySelector: AbiBySelector, callDataHex: string): DecodedCallData {
     const selector = ethers.utils.hexDataSlice(callDataHex, 0, constants.SELECTOR_LENGTH);
-    const paramsHex = ethers.utils.hexDataSlice(callDataHex, constants.SELECTOR_LENGTH);
     const abi = abiBySelector[selector];
     if (_.isUndefined(abi)) {
         throw new Error(`Unable to decode call data. Unknown selector ${selector}`);
     }
-    const decodedParams = ethers.utils.defaultAbiCoder.decode(abi.inputs, paramsHex);
+    const decodedParams = new AbiEncoder.Method(abi).decode(callDataHex);
     // decodedParams have params as both an array and an object. We just want the object.
     const callParams = _.reduce<any, CallParams>(
         decodedParams,
