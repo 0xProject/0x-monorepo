@@ -27,7 +27,7 @@ lib
 /packages/dev-tools-pages/ts/**/data.json
 package.json
 scripts/postpublish_utils.js
-packages/sol-cov/test/fixtures/artifacts
+packages/sol-coverage/test/fixtures/artifacts
 .pytest_cache
 .mypy_cache
 .tox

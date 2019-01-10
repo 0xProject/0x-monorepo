@@ -183,6 +183,7 @@ export enum ProviderType {
     CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
     TrustWallet = 'TRUST_WALLET',
+    Opera = 'OPERA',
     Fallback = 'FALLBACK',
 }
 

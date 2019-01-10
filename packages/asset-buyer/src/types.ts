@@ -102,7 +102,7 @@ export interface AssetBuyerOpts {
 }
 
 /**
- * Possible errors thrown by an AssetBuyer instance or associated static methods.
+ * Possible error messages thrown by an AssetBuyer instance or associated static methods.
  */
 export enum AssetBuyerError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',

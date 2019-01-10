@@ -1,12 +1,10 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
+import { DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
-import { Dispatcher } from 'ts/redux/dispatcher';
-import { State } from 'ts/redux/reducer';
-import { DocPackages, ScreenWidths } from 'ts/types';
-import { Translate } from 'ts/utils/translate';
+import { DocPackages } from 'ts/types';
+
+import { getMapStateToProps, mapDispatchToProps } from '../utils/documentation_container';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown = require('md/docs/asset_buyer/introduction');
@@ -25,7 +23,7 @@ const docsInfoConfig: DocsInfoConfig = {
     packageName: '@0x/asset-buyer',
     type: SupportedDocJson.TypeDoc,
     displayName: 'AssetBuyer',
-    packageUrl: 'https://github.com/0xProject/0x-monorepo',
+    packageUrl: 'https://github.com/0xProject/0x-monorepo/packages/asset-buyer',
     markdownMenu: {
         introduction: [markdownSections.introduction],
         install: [markdownSections.installation],
@@ -40,31 +38,7 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     markdownSections,
 };
-const docsInfo = new DocsInfo(docsInfoConfig);
-
-interface ConnectedState {
-    docsVersion: string;
-    availableDocVersions: string[];
-    docsInfo: DocsInfo;
-    translate: Translate;
-    screenWidth: ScreenWidths;
-}
-
-interface ConnectedDispatch {
-    dispatcher: Dispatcher;
-}
-
-const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
-    docsVersion: state.docsVersion,
-    availableDocVersions: state.availableDocVersions,
-    translate: state.translate,
-    docsInfo,
-    screenWidth: state.screenWidth,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
-    dispatcher: new Dispatcher(dispatch),
-});
+const mapStateToProps = getMapStateToProps(docsInfoConfig);
 
 export const Documentation: React.ComponentClass<DocPageProps> = connect(mapStateToProps, mapDispatchToProps)(
     DocPageComponent,

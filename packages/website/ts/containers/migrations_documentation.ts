@@ -23,7 +23,7 @@ const docsInfoConfig: DocsInfoConfig = {
     packageName: '@0x/migrations',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Migrations',
-    packageUrl: 'https://github.com/0xProject/0x-monorepo',
+    packageUrl: 'https://github.com/0xProject/0x-monorepo/packages/migrations',
     markdownMenu: {
         'getting-started': [markdownSections.introduction, markdownSections.installation],
     },

@@ -17,6 +17,8 @@ class ERC20AssetData(TypedDict):
     """Object interface to ERC20 asset data."""
 
     asset_proxy_id: str
+    """asset proxy id"""
+
     token_address: str
 
 
@@ -32,7 +34,7 @@ def encode_erc20_asset_data(token_address: str) -> str:
     """Encode an ERC20 token address into an asset data string.
 
     :param token_address: the ERC20 token's contract address.
-    :rtype: hex encoded asset data string, usable in the makerAssetData or
+    :returns: hex encoded asset data string, usable in the makerAssetData or
         takerAssetData fields in a 0x order.
 
     >>> encode_erc20_asset_data('0x1dc4c1cefef38a777b15aa20260a54e584b16c48')
@@ -85,7 +87,7 @@ def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
 
     :param token_address: the ERC721 token's contract address.
     :param token_id: the identifier of the asset's instance of the token.
-    :rtype: hex encoded asset data string, usable in the makerAssetData or
+    :returns: hex encoded asset data string, usable in the makerAssetData or
         takerAssetData fields in a 0x order.
 
     >>> encode_erc721_asset_data('0x1dc4c1cefef38a777b15aa20260a54e584b16c48', 1)
