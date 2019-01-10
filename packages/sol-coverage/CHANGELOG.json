@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note":
-                    "Initial release as a separate package. For historic entries check @0x/sol-trace-based-tools-common",
+                    "Initial release as a separate package. For historical entries see @0x/sol-trace-based-tools-common",
                 "pr": 1492
             }
         ]
