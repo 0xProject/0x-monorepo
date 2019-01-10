@@ -27,6 +27,7 @@ export {
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
+    MethodAbi,
 } from 'ethereum-types';
 
 export {
