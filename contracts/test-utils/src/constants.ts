@@ -53,6 +53,8 @@ export const constants = {
     WORD_LENGTH: 32,
     ZERO_AMOUNT: new BigNumber(0),
     PERCENTAGE_DENOMINATOR: new BigNumber(10).pow(18),
+    SOLIDITY_REVERT_ABI: 'function Error(string reason)',
+    BYTES_REVERT_ABI: 'function Error(bytes encodedRevertReasonWithAssociatedData)',
     ERROR_ABI_STRINGS: ['function INVALID_ORDER_SIGNATURE(bytes32 orderHash)'],
     FUNCTIONS_WITH_MUTEX: [
         'FILL_ORDER',

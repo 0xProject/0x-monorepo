@@ -1,4 +1,4 @@
-import { AbiEncoder, AbiDecoder } from '@0x/utils';
+import { AbiEncoder } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -54,7 +54,11 @@ export function decodeCallData(abiBySelector: AbiBySelector, callDataHex: string
     if (_.isUndefined(abi)) {
         throw new Error(`Unable to decode call data. Unknown selector ${selector}`);
     }
-    const decodedParams = new AbiEncoder.Method(abi).decode(callDataHex);
+    const decodedParams = new AbiEncoder.Method(abi).decode(
+        callDataHex,
+        AbiEncoder.constants.DEFAULT_DECODING_RULES,
+        selector,
+    );
     // decodedParams have params as both an array and an object. We just want the object.
     const callParams = _.reduce<any, CallParams>(
         decodedParams,

@@ -1,6 +1,6 @@
 import { abisToAbiBySelector, decodeCallData } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
-import { logUtils } from '@0x/utils';
+import { logUtils, AbiEncoder } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import {
@@ -25,6 +25,17 @@ const ERROR_ABIS = _.map(
     (errorAbiString: string) => ethers.utils.parseSignature(errorAbiString) as MethodAbi,
 );
 const errorAbiBySelector = abisToAbiBySelector(ERROR_ABIS);
+const solidityRevertSelector = new AbiEncoder.Method(ethers.utils.parseSignature(
+    constants.SOLIDITY_REVERT_ABI,
+) as MethodAbi).getSelector();
+const bytesRevertAbi = ethers.utils.parseSignature(constants.BYTES_REVERT_ABI) as MethodAbi;
+/**
+ * HACK: By default solidity encodes revert reasons as `Error(string)` we want to throw additional data
+ * so we encode that data using an error signature e.g. `function INVALID_ORDER_SIGNATURE(bytes32 orderHash)`.
+ * After that we treat those bytes as string and use it instead of a revert reason. When we try to decode that malformed revert reason - we have a selector - ABI mismatch.
+ * That's why we need this hack, so that the decoding function uses `bytesRevertAbi` for revert reasons.
+ */
+errorAbiBySelector[solidityRevertSelector] = bytesRevertAbi;
 interface InvalidOrderSignatureError {
     reason: RevertReason.InvalidOrderSignature;
     params: {
@@ -184,11 +195,8 @@ export async function expectTransactionFailedWithParamsAsync(
                     const txHash = err.hashes[0];
                     const ganacheError = err.results[txHash];
                     const returnData: string = ganacheError.return;
-                    const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
-                    const [revertReasonHex] = ethers.utils.defaultAbiCoder.decode(
-                        ['bytes'],
-                        ethers.utils.hexDataSlice(returnData, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
-                    );
+                    const decodedReturnData = decodeCallData(errorAbiBySelector, returnData);
+                    const revertReasonHex = decodedReturnData.callParams.encodedRevertReasonWithAssociatedData;
                     const decodedCallData = decodeCallData(errorAbiBySelector, revertReasonHex);
                     const decodedError = {
                         reason: decodedCallData.name,
