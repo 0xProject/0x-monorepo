@@ -44,8 +44,8 @@ export interface CopperActivityParentResponse {
 
 // custom activity types
 export enum CopperActivityTypeCategory {
-    user = 'user',
-    system = 'system',
+    User = 'user',
+    System = 'system',
 }
 export interface CopperActivityTypeResponse {
     id: number;
@@ -90,7 +90,7 @@ export enum CopperCustomFieldType {
     Date = 'Date',
     Checkbox = 'Checkbox',
     Float = 'Float',
-    URL = 'URL',
+    URL = 'URL', // tslint:disable-line:enum-naming
     Percentage = 'Percentage',
     Currency = 'Currency',
     Connect = 'Connect',
