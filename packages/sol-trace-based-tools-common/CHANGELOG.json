@@ -3,7 +3,7 @@
         "version": "3.0.0",
         "changes": [
             {
-                "note": "Move out specific tools and leave just the common part",
+                "note": "Move out specific tools and leave just the shared parts of the codebase",
                 "pr": 1492
             }
         ]
