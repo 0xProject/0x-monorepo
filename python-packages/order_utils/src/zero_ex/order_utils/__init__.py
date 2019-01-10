@@ -1,13 +1,11 @@
 """Order utilities for 0x applications.
 
-Some methods require the caller to pass in a `Web3.HTTPProvider` object.  For
-local testing one may construct such a provider pointing at an instance of
+Some methods require the caller to pass in a `Web3.BaseProvider`:code: object.
+For local testing one may construct such a provider pointing at an instance of
 `ganache-cli <https://www.npmjs.com/package/ganache-cli>`_ which has the 0x
 contracts deployed on it.  For convenience, a docker container is provided for
-just this purpose.  To start it: ``docker run -d -p 8545:8545 0xorg/ganache-cli
---gasLimit 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545
---networkId 50 -m "concert load couple harbor equip island argue ramp clarify
-fence smart topic"``.
+just this purpose.  To start it:
+`docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2`:code:.
 """
 
 from copy import copy
@@ -85,17 +83,53 @@ class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
     """A Web3-compatible representation of the Exchange.Order struct."""
 
     makerAddress: str
+    """Address that created the order."""
+
     takerAddress: str
+    """Address that is allowed to fill the order.
+
+    If set to 0, any address is allowed to fill the order.
+    """
+
     feeRecipientAddress: str
+    """Address that will recieve fees when order is filled."""
+
     senderAddress: str
+    """Address that is allowed to call Exchange contract methods that affect
+    this order. If set to 0, any address is allowed to call these methods.
+    """
+
     makerAssetAmount: int
+    """Amount of makerAsset being offered by maker. Must be greater than 0."""
+
     takerAssetAmount: int
+    """Amount of takerAsset being bid on by maker. Must be greater than 0."""
+
     makerFee: int
+    """Amount of ZRX paid to feeRecipient by maker when order is filled.  If
+    set to 0, no transfer of ZRX from maker to feeRecipient will be attempted.
+    """
+
     takerFee: int
+    """Amount of ZRX paid to feeRecipient by taker when order is filled.  If
+    set to 0, no transfer of ZRX from taker to feeRecipient will be attempted.
+    """
+
     expirationTimeSeconds: int
+    """Timestamp in seconds at which order expires."""
+
     salt: int
+    """Arbitrary number to facilitate uniqueness of the order's hash."""
+
     makerAssetData: bytes
+    """Encoded data that can be decoded by a specified proxy contract when
+    transferring makerAsset. The last byte references the id of this proxy.
+    """
+
     takerAssetData: bytes
+    """Encoded data that can be decoded by a specified proxy contract when
+    transferring takerAsset. The last byte references the id of this proxy.
+    """
 
 
 def make_empty_order() -> Order:
@@ -125,7 +159,7 @@ def order_to_jsdict(
 ) -> dict:
     """Convert a Web3-compatible order struct to a JSON-schema-compatible dict.
 
-    More specifically, do explicit decoding for the `bytes` fields.
+    More specifically, do explicit decoding for the `bytes`:code: fields.
 
     >>> import pprint
     >>> pprint.pprint(order_to_jsdict(
@@ -175,7 +209,7 @@ def order_to_jsdict(
 def jsdict_order_to_struct(jsdict: dict) -> Order:
     r"""Convert a JSON-schema-compatible dict order to a Web3-compatible struct.
 
-    More specifically, do explicit encoding of the `bytes` fields.
+    More specifically, do explicit encoding of the `bytes`:code: fields.
 
     >>> import pprint
     >>> pprint.pprint(jsdict_order_to_struct(
@@ -234,7 +268,7 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     :param order: The order to be hashed.  Must conform to `the 0x order JSON schema <https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_schema.json>`_.
     :param exchange_address: The address to which the 0x Exchange smart
         contract has been deployed.
-    :rtype: A string, of ASCII hex digits, representing the order hash.
+    :returns: A string, of ASCII hex digits, representing the order hash.
 
     >>> generate_order_hash_hex(
     ...     {
@@ -296,8 +330,13 @@ class OrderInfo(NamedTuple):
     """A Web3-compatible representation of the Exchange.OrderInfo struct."""
 
     order_status: str
+    """A `str`:code: describing the order's validity and fillability."""
+
     order_hash: bytes
+    """A `bytes`:code: object representing the EIP712 hash of the order."""
+
     order_taker_asset_filled_amount: int
+    """An `int`:code: indicating the amount that has already been filled."""
 
 
 def is_valid_signature(
@@ -305,15 +344,15 @@ def is_valid_signature(
 ) -> Tuple[bool, str]:
     """Check the validity of the supplied signature.
 
-    Check if the supplied ``signature`` corresponds to signing ``data`` with
-    the private key corresponding to ``signer_address``.
+    Check if the supplied `signature`:code: corresponds to signing `data`:code:
+    with the private key corresponding to `signer_address`:code:.
 
     :param provider: A Web3 provider able to access the 0x Exchange contract.
     :param data: The hex encoded data signed by the supplied signature.
     :param signature: The hex encoded signature.
     :param signer_address: The hex encoded address that signed the data to
         produce the supplied signature.
-    :rtype: Tuple consisting of a boolean and a string.  Boolean is true if
+    :returns: Tuple consisting of a boolean and a string.  Boolean is true if
         valid, false otherwise.  If false, the string describes the reason.
 
     >>> is_valid_signature(
@@ -428,8 +467,8 @@ def sign_hash(
     :param provider: A Web3 provider.
     :param signer_address: The address of the signing account.
     :param hash_hex: A hex string representing the hash, like that returned
-        from `generate_order_hash_hex()`.
-    :rtype: A string, of ASCII hex digits, representing the signature.
+        from `generate_order_hash_hex()`:code:.
+    :returns: A string, of ASCII hex digits, representing the signature.
 
     >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
     >>> sign_hash(

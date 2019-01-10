@@ -12,6 +12,7 @@ import { Icon } from 'ts/components/icon';
 import { Input, InputWidth } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
+import { utils } from 'ts/utils/utils';
 
 export enum ModalContactType {
     General = 'GENERAL',
@@ -279,7 +280,7 @@ export class ModalContact extends React.Component<Props> {
         try {
             // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
             // tslint:disable:no-unbound-method
-            const response = await fetch(`https://website-api.0xproject.com${endpoint}`, {
+            const response = await fetch(`${utils.getBackendBaseUrl()}${endpoint}`, {
                 method: 'post',
                 mode: 'cors',
                 credentials: 'same-origin',
