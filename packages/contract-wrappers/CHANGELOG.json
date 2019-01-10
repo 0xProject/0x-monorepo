@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Renamed enum OrderStatus",
+                "pr": 1474
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {

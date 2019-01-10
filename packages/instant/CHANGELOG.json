@@ -1,5 +1,18 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Renamed enum member ZeroExInstantError.InsufficientETH -> ZeroExInstantError.InsufficientEth",
+                "pr": 1474
+            },
+            {
+                "note": "Renamed enum ActionTypes",
+                "pr": 1474
+            }
+        ]
+    },
+    {
         "timestamp": 1542821676,
         "version": "1.0.1",
         "changes": [
