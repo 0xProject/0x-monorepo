@@ -30,9 +30,9 @@ _.map(ERROR_ABIS, abi => {
     errorAbiBySelector[selector] = abi;
 });
 const solidityRevertSelector = new AbiEncoder.Method(ethers.utils.parseSignature(
-    constants.SOLIDITY_REVERT_ABI,
+    constants.SOLIDITY_REVERT_ABI_STRING,
 ) as MethodAbi).getSelector();
-const bytesRevertAbi = ethers.utils.parseSignature(constants.BYTES_REVERT_ABI) as MethodAbi;
+const bytesRevertAbi = ethers.utils.parseSignature(constants.BYTES_REVERT_ABI_STRING) as MethodAbi;
 /**
  * HACK: By default solidity encodes revert reasons as `Error(string)` we want to throw additional data
  * so we encode that data using an error signature e.g. `function INVALID_ORDER_SIGNATURE(bytes32 orderHash)`.
