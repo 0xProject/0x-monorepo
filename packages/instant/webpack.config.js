@@ -141,12 +141,25 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
                 },
                 {
                     test: /\.js$/,
-                    loader: 'source-map-loader',
-                    exclude: [
-                        // instead of /\/node_modules\//
-                        path.join(process.cwd(), 'node_modules'),
-                        path.join(process.cwd(), '../..', 'node_modules'),
-                    ],
+                    use: [{
+                        loader: 'babel-loader',
+                        options: {
+                            "plugins": ["transform-runtime"],
+                            'presets': [
+                                ['env', {
+                                    'targets': {
+                                        "chrome": 41
+                                    },
+                                }],
+                            ],
+                        },
+                    }, {
+                        loader: 'source-map-loader',
+                    }],
+                    exclude: function(modulePath) {
+                        return /node_modules/.test(modulePath) &&
+                            /node_modules\/(core-js|lodash|react|websocket)/.test(modulePath);
+                    },
                 },
             ],
         },
