@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Make `promisify` resolve when the callback error is undefined.",
+                "pr": 1501
+            }
+        ]
+    },
+    {
         "version": "2.1.1",
         "changes": [
             {
