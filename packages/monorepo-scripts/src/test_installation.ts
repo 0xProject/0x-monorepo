@@ -45,7 +45,7 @@ function logIfDefined(x: any): void {
     const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
     const monorepoRootPath = path.join(__dirname, '../../..');
-    // We sort error messages according to package topology so that we can
+    // We sort error messages according to package topology so that we can see
     // them in a more intuitive order. E.g. if package A has an error and
     // package B imports it, the tests for both package A and package B will
     // fail. But package B only fails because of an error in package A.
