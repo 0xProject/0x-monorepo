@@ -9,6 +9,7 @@ export const docGenConfigs: DocGenConfigs = {
         Array: 'https://developer.mozilla.org/pt-PT/docs/Web/JavaScript/Reference/Global_Objects/Array',
         BigNumber: 'http://mikemcl.github.io/bignumber.js',
         Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+        ErrorConstructor: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
         Buffer: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L262',
         'solc.StandardContractOutput':
             'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',

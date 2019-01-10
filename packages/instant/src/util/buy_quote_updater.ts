@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
+import { SLIPPAGE_PERCENTAGE } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { AffiliateInfo, ERC20Asset, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
@@ -33,8 +34,12 @@ export const buyQuoteUpdater = {
         }
         const feePercentage = oc(options.affiliateInfo).feePercentage();
         let newBuyQuote: BuyQuote | undefined;
+        const slippagePercentage = SLIPPAGE_PERCENTAGE;
         try {
-            newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, { feePercentage });
+            newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, {
+                feePercentage,
+                slippagePercentage,
+            });
         } catch (error) {
             const errorMessage = assetUtils.assetBuyerErrorMessage(asset, error);
 
