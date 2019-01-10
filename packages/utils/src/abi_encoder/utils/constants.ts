@@ -11,7 +11,7 @@ export const constants = {
     HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA: 0,
     // Disable no-object-literal-type-assertion so we can enforce cast
     /* tslint:disable no-object-literal-type-assertion */
-    DEFAULT_DECODING_RULES: { shouldConvertStructsToObjects: false } as DecodingRules,
+    DEFAULT_DECODING_RULES: { shouldConvertStructsToObjects: true } as DecodingRules,
     DEFAULT_ENCODING_RULES: { shouldOptimize: true, shouldAnnotate: false } as EncodingRules,
     /* tslint:enable no-object-literal-type-assertion */
 };
