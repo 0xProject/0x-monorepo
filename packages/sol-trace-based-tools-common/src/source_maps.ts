@@ -12,7 +12,7 @@ export interface SourceLocation {
 }
 
 /**
- * Receives a string with newlines and returns a hash of byte offset to LineColumn
+ * Receives a string with newlines and returns a map of byte offset to LineColumn
  * @param str A string to process
  */
 export function getLocationByOffset(str: string): LocationByOffset {
