@@ -24,7 +24,7 @@ export function abisToAbiBySelector(abis: MethodAbi[]): AbiBySelector {
     const abiBySelector = _.reduce<MethodAbi, AbiBySelector>(
         abis,
         (abiBySelectorAccumulator: AbiBySelector, methodAbi: MethodAbi) => {
-            const selector = getMethodSelector(methodAbi);
+            const selector = new AbiEncoder.Method(methodAbi).getSelector();
             return {
                 ...abiBySelectorAccumulator,
                 [selector]: methodAbi,
@@ -35,14 +35,6 @@ export function abisToAbiBySelector(abis: MethodAbi[]): AbiBySelector {
     return abiBySelector;
 }
 
-/**
- * Computes the 4-byte selector of the method.
- * @param methodAbi Method ABI
- */
-export function getMethodSelector(methodAbi: MethodAbi): string {
-    const selector = new AbiEncoder.Method(methodAbi).getSelector();
-    return selector;
-}
 /**
  * Decoded call data into function name and params using the provided ABIs.
  * @param abiBySelector Hash of ABI indexed by 4-byte selector
