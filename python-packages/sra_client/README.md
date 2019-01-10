@@ -6,6 +6,35 @@ A Python client for interacting with servers conforming to [the Standard Relayer
 
 The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x-monorepo/tree/development/packages/json-schemas). Examples of each payload and response can be found in the 0x.js library's [test suite](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/test/schema_test.ts#L1).
 
+```bash
+pip install 0x-json-schemas
+```
+
+You can easily validate your API's payloads and responses using the [0x-json-schemas](https://github.com/0xProject/0x.js/tree/development/python-packages/json_schemas) package:
+
+```python
+from zero_ex.json_schemas import assert_valid
+from zero_ex.order_utils import Order
+
+order: Order = {
+    'makerAddress': "0x0000000000000000000000000000000000000000",
+    'takerAddress': "0x0000000000000000000000000000000000000000",
+    'feeRecipientAddress': "0x0000000000000000000000000000000000000000",
+    'senderAddress': "0x0000000000000000000000000000000000000000",
+    'makerAssetAmount': "1000000000000000000",
+    'takerAssetAmount': "1000000000000000000",
+    'makerFee': "0",
+    'takerFee': "0",
+    'expirationTimeSeconds': "12345",
+    'salt': "12345",
+    'makerAssetData': "0x0000000000000000000000000000000000000000",
+    'takerAssetData': "0x0000000000000000000000000000000000000000",
+    'exchangeAddress': "0x0000000000000000000000000000000000000000",
+}
+
+assert_valid(order, "/orderSchema")
+```
+
 # Pagination
 
 Requests that return potentially large collections should respond to the **?page** and **?perPage** parameters. For example:

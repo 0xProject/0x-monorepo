@@ -6,7 +6,8 @@
                 "pr": 1465,
                 "note": "Added artifact for Dutch Auction contract"
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "1.1.2",

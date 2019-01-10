@@ -17,6 +17,7 @@ export interface Web3Config {
     shouldThrowErrorsOnGanacheRPCResponse?: boolean; // default: true
     rpcUrl?: string; // default: localhost:8545
     shouldUseFakeGasEstimate?: boolean; // default: true
+    ganacheDatabasePath?: string; // default: undefined, creates a tmp dir
 }
 
 export const web3Factory = {
@@ -45,9 +46,14 @@ export const web3Factory = {
             const shouldThrowErrorsOnGanacheRPCResponse =
                 _.isUndefined(config.shouldThrowErrorsOnGanacheRPCResponse) ||
                 config.shouldThrowErrorsOnGanacheRPCResponse;
+            if (!_.isUndefined(config.ganacheDatabasePath)) {
+                // Saving the snapshot to a local db. Ganache requires this directory to exist
+                fs.mkdirSync(config.ganacheDatabasePath);
+            }
             provider.addProvider(
                 new GanacheSubprovider({
                     vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
+                    db_path: config.ganacheDatabasePath,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),

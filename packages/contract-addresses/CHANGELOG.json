@@ -6,7 +6,8 @@
                 "note": "Added testnet entries for Dutch Auction contract (kovan,rinkeby,ropsten)",
                 "pr": 1465
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "2.0.0",

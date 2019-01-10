@@ -6,7 +6,8 @@
                 "note": "Added types for Dutch Auction contract",
                 "pr": 1465
             }
-        ]
+        ],
+        "timestamp": 1547040760
     },
     {
         "version": "1.4.1",

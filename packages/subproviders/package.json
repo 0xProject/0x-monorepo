@@ -1,6 +1,6 @@
 {
     "name": "@0x/subproviders",
-    "version": "2.1.8",
+    "version": "2.1.9",
     "engines": {
         "node": ">=6.12"
     },
@@ -29,11 +29,11 @@
         }
     },
     "dependencies": {
-        "@0x/assert": "^1.0.20",
-        "@0x/types": "^1.4.1",
+        "@0x/assert": "^1.0.21",
+        "@0x/types": "^1.5.0",
         "@0x/typescript-typings": "^3.0.6",
-        "@0x/utils": "^2.0.8",
-        "@0x/web3-wrapper": "^3.2.1",
+        "@0x/utils": "^2.1.1",
+        "@0x/web3-wrapper": "^3.2.2",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "4.24.0",
         "@types/eth-lightwallet": "^3.0.0",
