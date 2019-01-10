@@ -1,3 +1,4 @@
+import { AbiEncoder } from '@0x/abi-encoder';
 import {
     AssetProxyId,
     ERC20AssetData,
@@ -6,7 +7,7 @@ import {
     MultiAssetDataWithRecursiveDecoding,
     SingleAssetData,
 } from '@0x/types';
-import { AbiEncoder, BigNumber } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';

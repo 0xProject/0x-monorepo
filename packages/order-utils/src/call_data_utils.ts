@@ -1,4 +1,4 @@
-import { AbiEncoder } from '@0x/utils';
+import { AbiEncoder } from '@0x/abi-encoder';
 import { MethodAbi } from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
