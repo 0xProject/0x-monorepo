@@ -18,9 +18,9 @@ import { utils } from 'ts/utils/utils';
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
 enum AssetViews {
-    ASSET_PICKER = 'ASSET_PICKER',
-    NEW_TOKEN_FORM = 'NEW_TOKEN_FORM',
-    CONFIRM_TRACK_TOKEN = 'CONFIRM_TRACK_TOKEN',
+    AssetPicker = 'ASSET_PICKER',
+    NewTokenForm = 'NEW_TOKEN_FORM',
+    ConfirmTrackToken = 'CONFIRM_TRACK_TOKEN',
 }
 
 interface AssetPickerProps {
@@ -44,7 +44,7 @@ interface AssetPickerState {
 
 export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerState> {
     public static defaultProps: Partial<AssetPickerProps> = {
-        tokenVisibility: TokenVisibility.ALL,
+        tokenVisibility: TokenVisibility.All,
     };
     private readonly _dialogConfigsByAssetView: { [assetView: string]: DialogConfigs };
     constructor(props: AssetPickerProps) {
@@ -138,19 +138,19 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const allTokens = _.values(this.props.tokenByAddress);
         // filter tokens based on visibility specified in props, do not show ZRX or ETHER as tracked or untracked
         const filteredTokens =
-            this.props.tokenVisibility === TokenVisibility.ALL
+            this.props.tokenVisibility === TokenVisibility.All
                 ? allTokens
                 : _.filter(allTokens, token => {
                       return (
                           token.symbol !== constants.ZRX_TOKEN_SYMBOL &&
                           token.symbol !== constants.ETHER_TOKEN_SYMBOL &&
-                          ((this.props.tokenVisibility === TokenVisibility.TRACKED && utils.isTokenTracked(token)) ||
-                              (this.props.tokenVisibility === TokenVisibility.UNTRACKED &&
+                          ((this.props.tokenVisibility === TokenVisibility.Tracked && utils.isTokenTracked(token)) ||
+                              (this.props.tokenVisibility === TokenVisibility.Untracked &&
                                   !utils.isTokenTracked(token)))
                       );
                   });
         // if we are showing tracked tokens, sort by date added, otherwise sort by symbol
-        const sortKey = this.props.tokenVisibility === TokenVisibility.TRACKED ? 'trackedTimestamp' : 'symbol';
+        const sortKey = this.props.tokenVisibility === TokenVisibility.Tracked ? 'trackedTimestamp' : 'symbol';
         const sortedTokens = filteredTokens.sort(firstBy(sortKey));
         if (_.isEmpty(sortedTokens)) {
             return <div className="mx-auto p4 h2">No tokens to remove.</div>;
@@ -188,7 +188,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             cursor: 'pointer',
             opacity: isHovered ? 0.6 : 1,
         };
-        if (this.props.tokenVisibility !== TokenVisibility.TRACKED) {
+        if (this.props.tokenVisibility !== TokenVisibility.Tracked) {
             gridTiles.push(
                 <div
                     key={otherTokenKey}

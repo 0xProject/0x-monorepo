@@ -36,9 +36,9 @@ import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
 enum SigningState {
-    UNSIGNED,
-    SIGNING,
-    SIGNED,
+    Unsigned,
+    Signing,
+    Signed,
 }
 
 interface GenerateOrderFormProps {
@@ -207,7 +207,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                             />
                         </div>
                         {this.state.globalErrMsg !== '' && (
-                            <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />
+                            <Alert type={AlertTypes.Error} message={this.state.globalErrMsg} />
                         )}
                     </div>
                 </div>

@@ -229,8 +229,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const isAssetPickerDialogOpen = this.state.tokenManagementState !== TokenManagementState.None;
         const tokenVisibility =
             this.state.tokenManagementState === TokenManagementState.Add
-                ? TokenVisibility.UNTRACKED
-                : TokenVisibility.TRACKED;
+                ? TokenVisibility.Untracked
+                : TokenVisibility.Tracked;
         return (
             <Container>
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
