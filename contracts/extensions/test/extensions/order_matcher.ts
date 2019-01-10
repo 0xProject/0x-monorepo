@@ -13,6 +13,7 @@ import {
     ERC20BalancesByOwner,
     expectContractCreationFailedAsync,
     expectTransactionFailedAsync,
+    expectTransactionFailedWithParamsAsync,
     LogDecoder,
     OrderFactory,
     provider,
@@ -22,7 +23,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { artifacts as tokenArtifacts, DummyERC20TokenContract, DummyERC721TokenContract } from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -668,14 +669,18 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            await expectTransactionFailedAsync(
+            const rightOrderHash = orderHashUtils.getOrderHashHex(signedOrderRight);
+            return expectTransactionFailedWithParamsAsync(
                 web3Wrapper.sendTransactionAsync({
                     data,
                     to: orderMatcher.address,
                     from: owner,
                     gas: constants.MAX_MATCH_ORDERS_GAS,
                 }),
-                RevertReason.InvalidOrderSignature,
+                {
+                    reason: RevertReason.InvalidOrderSignature,
+                    params: { orderHash: rightOrderHash },
+                },
             );
         });
         it('should revert with the correct reason if fillOrder call reverts', async () => {
