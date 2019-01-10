@@ -18,6 +18,8 @@ import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
  */
 export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
     const web3Wrapper = new Web3Wrapper(provider);
+    const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
+    const owner = accounts[0];
 
     // Proxies
     const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
@@ -48,24 +50,6 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         provider,
         txDefaults,
         zrxAssetData,
-    );
-
-    // Multisigs
-    const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
-    const owners = [accounts[0], accounts[1]];
-    const confirmationsRequired = new BigNumber(2);
-    const secondsRequired = new BigNumber(0);
-    const owner = accounts[0];
-
-    // AssetProxyOwner
-    const assetProxyOwner = await wrappers.AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-        artifacts.AssetProxyOwner,
-        provider,
-        txDefaults,
-        owners,
-        [erc20Proxy.address, erc721Proxy.address],
-        confirmationsRequired,
-        secondsRequired,
     );
 
     // Dummy ERC20 tokens
@@ -122,6 +106,14 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         }),
     );
 
+    // Register Asset Proxies to the MultiAssetProxy
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address),
+    );
+
     // Register the Asset Proxies to the Exchange
     await web3Wrapper.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(erc20Proxy.address),
@@ -158,6 +150,22 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         provider,
         txDefaults,
         exchange.address,
+    );
+
+    // Multisigs
+    const owners = [accounts[0], accounts[1]];
+    const confirmationsRequired = new BigNumber(2);
+    const secondsRequired = new BigNumber(0);
+
+    // AssetProxyOwner
+    const assetProxyOwner = await wrappers.AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+        artifacts.AssetProxyOwner,
+        provider,
+        txDefaults,
+        owners,
+        [erc20Proxy.address, erc721Proxy.address, multiAssetProxy.address],
+        confirmationsRequired,
+        secondsRequired,
     );
 
     // Transfer Ownership to the Asset Proxy Owner
