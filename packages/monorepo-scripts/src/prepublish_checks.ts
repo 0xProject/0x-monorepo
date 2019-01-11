@@ -17,6 +17,18 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkChangelogFormatAsync(updatedPublicPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
     await checkPublishRequiredSetupAsync();
+    await checkDockerHubSetupAsync();
+}
+
+async function checkDockerHubSetupAsync(): Promise<void> {
+    try {
+        utils.log('Checking that the user is logged in to docker command...');
+        await execAsync(`echo "$DOCKER_PASS" | docker login -u $DOCKER_USERNAME --password-stdin`);
+    } catch (err) {
+        throw new Error(
+            'Failed to log you into the `docker` commandline tool. Make sure you have environment variables `DOCKER_USERNAME` and `DOCKER_PASS` set.',
+        );
+    }
 }
 
 async function checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages: Package[]): Promise<void> {
