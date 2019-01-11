@@ -29,18 +29,23 @@ async function getOrderbookAsync(): Promise<void> {
     console.log(`Got ${rawOrders.records.length} orders.`);
     console.log('Parsing orders...');
     // Parse the sra orders, then add source url to each.
-    const orders = R.pipe(parseSraOrders, R.map(setSourceUrl(RADAR_RELAY_URL)))(rawOrders);
+    const orders = R.pipe(
+        parseSraOrders,
+        R.map(setSourceUrl(RADAR_RELAY_URL)),
+    )(rawOrders);
     // Save all the orders and update the observed time stamps in a single
     // transaction.
     console.log('Saving orders and updating timestamps...');
     const observedTimestamp = Date.now();
-    await connection.transaction(async (manager: EntityManager): Promise<void> => {
-        for (const order of orders) {
-            await manager.save(SraOrder, order);
-            const orderObservation = createObservedTimestampForOrder(order, observedTimestamp);
-            await manager.save(orderObservation);
-        }
-    });
+    await connection.transaction(
+        async (manager: EntityManager): Promise<void> => {
+            for (const order of orders) {
+                await manager.save(SraOrder, order);
+                const orderObservation = createObservedTimestampForOrder(order, observedTimestamp);
+                await manager.save(orderObservation);
+            }
+        },
+    );
 }
 
 const sourceUrlProp = R.lensProp('sourceUrl');
@@ -49,6 +54,8 @@ const sourceUrlProp = R.lensProp('sourceUrl');
  * Sets the source url for a single order. Returns a new order instead of
  * mutating the given one.
  */
-const setSourceUrl = R.curry((sourceURL: string, order: SraOrder): SraOrder => {
-    return R.set(sourceUrlProp, sourceURL, order);
-});
+const setSourceUrl = R.curry(
+    (sourceURL: string, order: SraOrder): SraOrder => {
+        return R.set(sourceUrlProp, sourceURL, order);
+    },
+);

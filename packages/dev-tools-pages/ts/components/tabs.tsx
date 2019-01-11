@@ -48,7 +48,9 @@ const Tabs: React.StatelessComponent<{}> = props => (
                 })}
             </StyledTabList>
 
-            {React.Children.map(props.children, child => <TabPanel>{child}</TabPanel>)}
+            {React.Children.map(props.children, child => (
+                <TabPanel>{child}</TabPanel>
+            ))}
         </ReactTabs>
     </Breakout>
 );

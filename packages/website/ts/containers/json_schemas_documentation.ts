@@ -65,6 +65,7 @@ const docsInfoConfig: DocsInfoConfig = {
 };
 const mapStateToProps = getMapStateToProps(docsInfoConfig);
 
-export const Documentation: React.ComponentClass<DocPageProps> = connect(mapStateToProps, mapDispatchToProps)(
-    DocPageComponent,
-);
+export const Documentation: React.ComponentClass<DocPageProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(DocPageComponent);

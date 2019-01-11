@@ -91,16 +91,14 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                     />
                 )}
                 {method.comment && <Comment comment={method.comment} className="py2" />}
-                {method.parameters &&
-                    !_.isEmpty(method.parameters) &&
-                    hasExclusivelyNamedParams && (
-                        <div>
-                            <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>
-                                ARGUMENTS
-                            </h4>
-                            {this._renderParameterDescriptions(method.parameters, method.name)}
-                        </div>
-                    )}
+                {method.parameters && !_.isEmpty(method.parameters) && hasExclusivelyNamedParams && (
+                    <div>
+                        <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>
+                            ARGUMENTS
+                        </h4>
+                        {this._renderParameterDescriptions(method.parameters, method.name)}
+                    </div>
+                )}
                 {method.returnComment && (
                     <div className="pt1 comment">
                         <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>

@@ -6,10 +6,10 @@ Smart contracts libs used in the 0x protocol.
 
 Contracts can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
 
-*   [libs](./contracts/protocol)
-    *   This directory contains the libs.
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+-   [libs](./contracts/protocol)
+    -   This directory contains the libs.
+-   [test](./contracts/test)
+    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
 
 ## Contributing
 

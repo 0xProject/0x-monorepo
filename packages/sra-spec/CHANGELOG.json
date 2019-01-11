@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1547225310,
+        "version": "1.0.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1547040760,
         "version": "1.0.14",
         "changes": [
@@ -130,8 +139,7 @@
         "version": "1.0.1-rc.6",
         "changes": [
             {
-                "note":
-                    "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
+                "note": "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
             },
             {
                 "note": "Fix relative path to introduction MD file"

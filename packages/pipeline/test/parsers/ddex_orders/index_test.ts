@@ -25,7 +25,6 @@ describe('ddex_orders', () => {
                 baseTokenDecimals: 2,
                 baseTokenAddress: '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81',
                 minOrderSize: '0.1',
-                maxOrderSize: '1000',
                 pricePrecision: 1,
                 priceDecimals: 1,
                 amountDecimals: 0,
@@ -39,14 +38,12 @@ describe('ddex_orders', () => {
             expected.observedTimestamp = observedTimestamp;
             expected.orderType = OrderType.Bid;
             expected.price = new BigNumber(0.5);
-            // ddex currently confuses base and quote assets.
-            // Switch them to maintain our internal consistency.
-            expected.baseAssetSymbol = 'ABC';
-            expected.baseAssetAddress = '0x0000000000000000000000000000000000000000';
-            expected.baseVolume = new BigNumber(10);
-            expected.quoteAssetSymbol = 'DEF';
-            expected.quoteAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
+            expected.quoteAssetSymbol = 'ABC';
+            expected.quoteAssetAddress = '0x0000000000000000000000000000000000000000';
             expected.quoteVolume = new BigNumber(5);
+            expected.baseAssetSymbol = 'DEF';
+            expected.baseAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
+            expected.baseVolume = new BigNumber(10);
 
             const actual = parseDdexOrder(ddexMarket, observedTimestamp, orderType, source, ddexOrder);
             expect(actual).deep.equal(expected);

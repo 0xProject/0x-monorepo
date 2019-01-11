@@ -6,10 +6,10 @@ Smart contracts utils used in the 0x protocol.
 
 Contracts can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
 
-*   [utils](./contracts/utils)
-    *   This directory contains libraries and utils.
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+-   [utils](./contracts/utils)
+    -   This directory contains libraries and utils.
+-   [test](./contracts/test)
+    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
 
 ## Contributing
 

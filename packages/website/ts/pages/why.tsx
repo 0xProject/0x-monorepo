@@ -229,10 +229,7 @@ interface SectionProps {
     isNotRelative?: boolean;
 }
 
-const SectionWrap =
-    styled.div <
-    SectionProps >
-    `
+const SectionWrap = styled.div<SectionProps>`
     position: ${props => !props.isNotRelative && 'relative'};
 
     & + & {
@@ -258,10 +255,7 @@ const SectionWrap =
 interface SectionTitleProps {
     isNoBorder?: boolean;
 }
-const SectionTitle =
-    styled(Heading) <
-    SectionTitleProps >
-    `
+const SectionTitle = styled(Heading)<SectionTitleProps>`
     position: relative;
 
     ${props =>
@@ -277,7 +271,6 @@ const SectionTitle =
             background-color: #3d3d3d;
         }
     `}
-
 
     @media (max-width: 768px) {
         &:before {

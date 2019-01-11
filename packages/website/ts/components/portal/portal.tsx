@@ -447,7 +447,8 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                                 render={this._renderAccountManagementItem.bind(this, item)}
                             />
                         );
-                    })}}
+                    })}
+                    }
                     <Route render={this._renderNotFoundMessage.bind(this)} />
                 </Switch>
                 <PortalDisclaimerDialog

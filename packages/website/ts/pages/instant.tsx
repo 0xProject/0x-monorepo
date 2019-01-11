@@ -100,7 +100,7 @@ export class Next0xInstant extends React.Component<Props> {
                         <div>
                             {[...Array(18)].map((item, index) => (
                                 <Card key={`card-${index}`} index={index}>
-                                    <img src={`/images/0x-instant/widget-${index % 6 + 1}.png`} />
+                                    <img src={`/images/0x-instant/widget-${(index % 6) + 1}.png`} />
                                 </Card>
                             ))}
                         </div>
@@ -189,13 +189,10 @@ const fadeUp = keyframes`
   }
 `;
 
-const ConfiguratorSection =
-    styled(Section) <
-    SectionProps >
-    `
-  @media (max-width: ${CONFIGURATOR_MIN_WIDTH_PX}px) {
-      display: none;
-  }
+const ConfiguratorSection = styled(Section)<SectionProps>`
+    @media (max-width: ${CONFIGURATOR_MIN_WIDTH_PX}px) {
+        display: none;
+    }
 `;
 
 // width = 370 * 12
@@ -233,29 +230,26 @@ const MarqueeWrap = styled.div`
     }
 `;
 
-const Card =
-    styled.div <
-    { index: number } >
-    `
-  opacity: 0;
-  flex-shrink: 0;
-  transform: translateY(10px);
-  will-change: opacity, transform;
-  animation: ${fadeUp} 0.75s ${props => `${props.index * 0.05}s`} forwards;
+const Card = styled.div<{ index: number }>`
+    opacity: 0;
+    flex-shrink: 0;
+    transform: translateY(10px);
+    will-change: opacity, transform;
+    animation: ${fadeUp} 0.75s ${props => `${props.index * 0.05}s`} forwards;
 
-  img {
-    height: auto;
-  }
-
-  @media (min-width: 768px) {
     img {
-      width: 370px;
+        height: auto;
     }
-  }
 
-  @media (max-width: 768px) {
-    img {
-      width: 300px;
+    @media (min-width: 768px) {
+        img {
+            width: 370px;
+        }
     }
-  }
+
+    @media (max-width: 768px) {
+        img {
+            width: 300px;
+        }
+    }
 `;
