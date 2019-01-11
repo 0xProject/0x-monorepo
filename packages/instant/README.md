@@ -17,9 +17,12 @@ The package is available as a UMD module named `zeroExInstant` at https://instan
 <body>
     <div id="zeroExInstantContainer"></div>
     <script>
-        zeroExInstant.render({
-            // Initialization options
-        }, '#zeroExInstantContainer');
+        zeroExInstant.render(
+            {
+                // Initialization options
+            },
+            '#zeroExInstantContainer',
+        );
     </script>
 </body>
 ```

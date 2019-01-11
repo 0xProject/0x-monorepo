@@ -361,28 +361,22 @@ const StyledDialogContent = styled(DialogContent)`
     }
 `;
 
-const Form =
-    styled.form <
-    FormProps >
-    `
+const Form = styled.form<FormProps>`
     position: relative;
-    transition: opacity 0.30s ease-in-out, visibility 0.30s ease-in-out;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 
     opacity: ${props => props.isSuccessful && `0`};
     visibility: ${props => props.isSuccessful && `hidden`};
 `;
 
-const Confirmation =
-    styled.div <
-    FormProps >
-    `
+const Confirmation = styled.div<FormProps>`
     position: absolute;
     top: 50%;
     text-align: center;
     width: 100%;
     left: 0;
-    transition: opacity 0.30s ease-in-out, visibility 0.30s ease-in-out;
-    transition-delay: 0.40s;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    transition-delay: 0.4s;
     padding: 60px 60px;
     transform: translateY(-50%);
     opacity: ${props => (props.isSuccessful ? `1` : `0`)};

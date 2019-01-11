@@ -123,10 +123,7 @@ const ButtonWrap = styled.div`
 // Note let's refactor this
 // is it absolutely necessary to have a stateless component
 // to pass props down into the styled icon?
-const Border =
-    styled.div <
-    BorderProps >
-    `
+const Border = styled.div<BorderProps>`
     position: absolute;
     background-image: ${props =>
         props.isBottom ? 'url(/images/banner/bottomofcta.png);' : 'url(/images/banner/topofcta.png);'};

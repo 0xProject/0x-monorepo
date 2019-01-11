@@ -55,10 +55,7 @@ export class MobileNav extends React.PureComponent<Props> {
     }
 }
 
-const Wrap =
-    styled.nav <
-    { isToggled: boolean } >
-    `
+const Wrap = styled.nav<{ isToggled: boolean }>`
     width: 100%;
     height: 357px;
     background-color: ${props => props.theme.mobileNavBgUpper};
@@ -99,19 +96,13 @@ const Overlay = styled.div`
 interface SectionProps {
     isDark?: boolean;
 }
-const Section =
-    styled.div <
-    SectionProps >
-    `
+const Section = styled.div<SectionProps>`
     width: 100%;
     padding: 15px 30px;
     background-color: ${props => (props.isDark ? props.theme.mobileNavBgLower : 'transparent')};
 `;
 
-const Grid =
-    styled(WrapGrid) <
-    WrapProps >
-    `
+const Grid = styled(WrapGrid)<WrapProps>`
     justify-content: flex-start;
 
     li {

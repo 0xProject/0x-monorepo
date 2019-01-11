@@ -4,9 +4,9 @@ import { createGlobalStyle } from '../style/theme';
 export interface CSSResetProps {}
 
 /*
-* Derived from
-* https://github.com/jtrost/Complete-CSS-Reset
-*/
+ * Derived from
+ * https://github.com/jtrost/Complete-CSS-Reset
+ */
 export const CSSReset = createGlobalStyle`
     .${INJECTED_DIV_CLASS} {
         a, abbr, area, article, aside, audio, b, bdo, blockquote, body, button,

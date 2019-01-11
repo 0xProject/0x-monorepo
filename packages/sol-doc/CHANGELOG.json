@@ -111,8 +111,7 @@
         "version": "1.0.0",
         "changes": [
             {
-                "note":
-                    "Utility to generate documentation for Solidity smart contracts, outputting a format compliant with @0xproject/types.DocAgnosticFormat",
+                "note": "Utility to generate documentation for Solidity smart contracts, outputting a format compliant with @0xproject/types.DocAgnosticFormat",
                 "pr": 1004
             }
         ]

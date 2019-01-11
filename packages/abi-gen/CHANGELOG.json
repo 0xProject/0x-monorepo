@@ -312,13 +312,11 @@
         "version": "0.2.4",
         "changes": [
             {
-                "note":
-                    "Add a `backend` parameter that allows you to specify the Ethereum library you use in your templates (`web3` or `ethers`). Ethers auto-converts small ints to numbers whereas Web3 doesn't. Defaults to `web3`",
+                "note": "Add a `backend` parameter that allows you to specify the Ethereum library you use in your templates (`web3` or `ethers`). Ethers auto-converts small ints to numbers whereas Web3 doesn't. Defaults to `web3`",
                 "pr": 413
             },
             {
-                "note":
-                    "Add support for [tuple types](https://solidity.readthedocs.io/en/develop/abi-spec.html#handling-tuple-types)",
+                "note": "Add support for [tuple types](https://solidity.readthedocs.io/en/develop/abi-spec.html#handling-tuple-types)",
                 "pr": 413
             },
             {
@@ -346,8 +344,7 @@
                 "pr": 346
             },
             {
-                "note":
-                    "Added CLI option to specify networkId, adding support for the JSON artifact format found in @0xproject/contracts",
+                "note": "Added CLI option to specify networkId, adding support for the JSON artifact format found in @0xproject/contracts",
                 "pr": 388
             }
         ],

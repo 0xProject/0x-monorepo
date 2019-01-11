@@ -49,8 +49,7 @@
         "version": "2.1.0",
         "changes": [
             {
-                "note":
-                    "Export all type declarations used by the public interface, as well as the `ContractAddresses` mapping",
+                "note": "Export all type declarations used by the public interface, as well as the `ContractAddresses` mapping",
                 "pr": 1301
             }
         ],
@@ -96,8 +95,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Contract artifacts have been moved to the new @0xproject/contract-artifacts package. v1 migrations have been removed. `runMigrationsAsync` returns the addresses of the contracts that were deployed.",
+                "note": "Contract artifacts have been moved to the new @0xproject/contract-artifacts package. v1 migrations have been removed. `runMigrationsAsync` returns the addresses of the contracts that were deployed.",
                 "pr": 1105
             }
         ],

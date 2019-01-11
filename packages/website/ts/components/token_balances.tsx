@@ -354,12 +354,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     {tokenState.isLoaded ? (
                         <span>
                             {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
-                            {this.state.isZRXSpinnerVisible &&
-                                token.symbol === ZRX_TOKEN_SYMBOL && (
-                                    <span className="pl1">
-                                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
-                                    </span>
-                                )}
+                            {this.state.isZRXSpinnerVisible && token.symbol === ZRX_TOKEN_SYMBOL && (
+                                <span className="pl1">
+                                    <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                </span>
+                            )}
                         </span>
                     ) : (
                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />

@@ -194,21 +194,19 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                         <div>{functionDefs}</div>
                     </div>
                 )}
-                {!_.isUndefined(docSection.events) &&
-                    docSection.events.length > 0 && (
-                        <div>
-                            <h2 style={headerStyle}>Events</h2>
-                            <div>{eventDefs}</div>
-                        </div>
-                    )}
+                {!_.isUndefined(docSection.events) && docSection.events.length > 0 && (
+                    <div>
+                        <h2 style={headerStyle}>Events</h2>
+                        <div>{eventDefs}</div>
+                    </div>
+                )}
                 {!_.isUndefined(docSection.externalExportToLink) &&
                     this._renderExternalExports(docSection.externalExportToLink)}
-                {!_.isUndefined(typeDefs) &&
-                    typeDefs.length > 0 && (
-                        <div>
-                            <div>{typeDefs}</div>
-                        </div>
-                    )}
+                {!_.isUndefined(typeDefs) && typeDefs.length > 0 && (
+                    <div>
+                        <div>{typeDefs}</div>
+                    </div>
+                )}
                 <div
                     style={{
                         width: '100%',

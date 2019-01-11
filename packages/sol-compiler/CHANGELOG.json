@@ -166,8 +166,7 @@
         "version": "1.1.0",
         "changes": [
             {
-                "note":
-                    "Quicken compilation by sending multiple contracts to the same solcjs invocation, batching them together based on compiler version requirements.",
+                "note": "Quicken compilation by sending multiple contracts to the same solcjs invocation, batching them together based on compiler version requirements.",
                 "pr": 965
             },
             {
@@ -381,8 +380,7 @@
                 "pr": 426
             },
             {
-                "note":
-                    "Add `bytecode`, `runtime_bytecode`, `source_map`, `source_map_runtime` and `sources` fields to artifacts",
+                "note": "Add `bytecode`, `runtime_bytecode`, `source_map`, `source_map_runtime` and `sources` fields to artifacts",
                 "pr": 426
             },
             {
@@ -390,8 +388,7 @@
                 "pr": 426
             },
             {
-                "note":
-                    "Allow deployer to accept a provider instead of port and host. This makes it possible to run it with in-process ganache-core",
+                "note": "Allow deployer to accept a provider instead of port and host. This makes it possible to run it with in-process ganache-core",
                 "pr": 426
             },
             {
@@ -412,8 +409,7 @@
                 "pr": 408
             },
             {
-                "note":
-                    "Improve an error message for when deployer is supplied with an incorrect number of constructor arguments",
+                "note": "Improve an error message for when deployer is supplied with an incorrect number of constructor arguments",
                 "pr": 419
             }
         ],

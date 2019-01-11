@@ -40,8 +40,7 @@
         "version": "1.3.0",
         "changes": [
             {
-                "note":
-                    "Add the `SimpleContractArtifact` type, which describes the artifact format published in the `@0x/contract-artifacts` package",
+                "note": "Add the `SimpleContractArtifact` type, which describes the artifact format published in the `@0x/contract-artifacts` package",
                 "pr": 1298
             }
         ],
@@ -268,8 +267,7 @@
                 "pr": 589
             },
             {
-                "note":
-                    "Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js",
+                "note": "Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js",
                 "pr": 579
             }
         ],

@@ -11,9 +11,7 @@ export interface GlobalStyle {
 }
 
 const GlobalStyles = withTheme(
-    createGlobalStyle <
-        GlobalStyle >
-        `
+    createGlobalStyle<GlobalStyle>`
     ${cssReset};
 
     html {

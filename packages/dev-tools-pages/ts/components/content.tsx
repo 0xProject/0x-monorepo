@@ -3,10 +3,7 @@ import styled from 'styled-components';
 
 import { Container } from './container';
 
-const StyledMain =
-    styled.div <
-    MainProps >
-    `
+const StyledMain = styled.div<MainProps>`
     padding-top: 6.25rem;
     padding-bottom: 6.25rem;
     ${props =>
