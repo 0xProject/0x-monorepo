@@ -14,7 +14,7 @@ const Hero: React.StatelessComponent<ContextInterface> = ({ children }) => (
                 <HeroContainer>
                     <Subtitle>{subtitle}</Subtitle>
                     <Tagline as="p">{tagline}</Tagline>
-                    <Button as="a" href={docLink} large={true}>
+                    <Button as="a" href={docLink} target="_blank" large={true}>
                         Read the Docs
                     </Button>
                 </HeroContainer>

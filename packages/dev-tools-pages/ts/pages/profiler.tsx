@@ -66,10 +66,17 @@ const Profiler: React.StatelessComponent<{}> = () => (
             <ContentBlock title="Prerequisites">
                 <List>
                     <ListItem>
-                        Use <a href="#">ganache-cli</a> as a backing node.
+                        Use{' '}
+                        <a href="https://www.npmjs.com/package/ganache-cli" target="_blank">
+                            ganache-cli
+                        </a>{' '}
+                        as a backing node.
                     </ListItem>
                     <ListItem>
-                        Understand and use <a href="#">web3-provider-engine</a>.
+                        Understand and use{' '}
+                        <a href="https://github.com/MetaMask/provider-engine" target="_blank">
+                            web3-provider-engine
+                        </a>.
                     </ListItem>
                 </List>
             </ContentBlock>
@@ -79,11 +86,18 @@ const Profiler: React.StatelessComponent<{}> = () => (
                 </Breakout>
 
                 <p>
-                    Sol-trace is a subprovider that needs to be prepended to your <a href="#">provider engine</a>.
-                    Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-trace ships
-                    with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
-                    <a href="#">Sol-compiler</a> and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
-                    <a href="#">Truffle framework</a>. You can also write your own and support any artifact format.
+                    Sol-trace is a subprovider that needs to be prepended to your{' '}
+                    <a href="https://github.com/MetaMask/provider-engine" target="_blank">
+                        provider engine
+                    </a>. Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-trace
+                    ships with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
+                    <a href="http://sol-compiler.com" target="_blank">
+                        Sol-compiler
+                    </a>{' '}
+                    and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
+                    <a href="https://truffleframework.com/truffle" target="_blank">
+                        Truffle framework
+                    </a>. You can also write your own and support any artifact format.
                 </p>
 
                 <Tabs>
@@ -115,19 +129,19 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 </Tabs>
                 <p>
                     Now that we have an <InlineCode>artifactAdapter</InlineCode>, we can create a{' '}
-                    <InlineCode>RevertTraceSubprovider</InlineCode> and append it to our provider engine.
+                    <InlineCode>ProfilerSubprovider</InlineCode> and append it to our provider engine.
                 </p>
 
                 <Breakout>
                     <Code language="javascript">
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
-import { RevertTraceSubprovider } from '@0x/sol-coverage';
+import { ProfilerSubprovider } from '@0x/sol-coverage';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
-const revertTraceSubprovider = new RevertTraceSubprovider(artifactAdapter, defaultFromAddress);
+const profilerSubprovider = new ProfilerSubprovider(artifactAdapter, defaultFromAddress);
 
 const providerEngine = new ProviderEngine();
-providerEngine.addProvider(revertTraceSubprovider);
+providerEngine.addProvider(profilerSubprovider);
 providerEngine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'}));
 providerEngine.start();`}
                     </Code>
