@@ -178,6 +178,7 @@ set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
     floating point numbers.
 -   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
     helpful resource.
+
 *   Scripts/parsers should perform minimum data transformation/normalization.
     The idea here is to have a raw data feed that will be cleaned up and
     synthesized in a separate step.
