@@ -9,6 +9,7 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
+        "test": "mocha ./lib/test/*.spec.js",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project ."
     },

@@ -150,7 +150,7 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
             }
             logUtils.log(`Unexpected error encountered: ${err}`);
             logUtils.log(err.stack);
-            this.props.onErrorOccurred(BalanceErrs.allowanceSettingFailed);
+            this.props.onErrorOccurred(BalanceErrs.AllowanceSettingFailed);
             errorReporter.report(err);
         }
     }

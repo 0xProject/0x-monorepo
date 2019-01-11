@@ -432,7 +432,7 @@ describe('OrderValidator', () => {
                 takerAddress,
             );
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfo.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
             expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.makerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -485,7 +485,7 @@ describe('OrderValidator', () => {
                 takerAddress,
             );
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfo.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
             expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.makerBalance).to.be.bignumber.equal(makerBalance);
@@ -514,10 +514,10 @@ describe('OrderValidator', () => {
             ] = await orderValidator.getOrdersAndTradersInfo.callAsync(orders, takers);
             const expectedOrderHash1 = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedOrderHash2 = orderHashUtils.getOrderHashHex(signedOrder2);
-            expect(orderInfo1.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfo1.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(orderInfo1.orderHash).to.be.equal(expectedOrderHash1);
             expect(orderInfo1.orderTakerAssetFilledAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(orderInfo2.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfo2.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(orderInfo2.orderHash).to.be.equal(expectedOrderHash2);
             expect(orderInfo2.orderTakerAssetFilledAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -581,10 +581,10 @@ describe('OrderValidator', () => {
             ] = await orderValidator.getOrdersAndTradersInfo.callAsync(orders, takers);
             const expectedOrderHash1 = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedOrderHash2 = orderHashUtils.getOrderHashHex(signedOrder2);
-            expect(orderInfo1.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfo1.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(orderInfo1.orderHash).to.be.equal(expectedOrderHash1);
             expect(orderInfo1.orderTakerAssetFilledAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(orderInfo2.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(orderInfo2.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(orderInfo2.orderHash).to.be.equal(expectedOrderHash2);
             expect(orderInfo2.orderTakerAssetFilledAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(makerBalance);
