@@ -3,8 +3,7 @@
         "version": "4.1.0",
         "changes": [
             {
-                "note":
-                    "Adds new public method getOrdersAndFillableAmountsAsync, and exposes getOrdersAndFillableAmountsAsync as public method"
+                "note": "Adds new public method getOrdersAndFillableAmountsAsync, and exposes getOrdersAndFillableAmountsAsync as public method"
             }
         ]
     },
