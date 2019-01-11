@@ -90,8 +90,7 @@
                 "pr": 1187
             },
             {
-                "note":
-                    "the `OrderProvider` now requires a new method `getAvailableMakerAssetDatasAsync` and the `StandardRelayerAPIOrderProvider` requires the network id at init.",
+                "note": "the `OrderProvider` now requires a new method `getAvailableMakerAssetDatasAsync` and the `StandardRelayerAPIOrderProvider` requires the network id at init.",
                 "pr": 1203
             },
             {
@@ -99,13 +98,11 @@
                 "pr": 1197
             },
             {
-                "note":
-                    "Fix bug where `BuyQuoteInfo` objects could return `totalEthAmount` and `feeEthAmount` that were not whole numbers",
+                "note": "Fix bug where `BuyQuoteInfo` objects could return `totalEthAmount` and `feeEthAmount` that were not whole numbers",
                 "pr": 1207
             },
             {
-                "note":
-                    "Fix bug where default values for `AssetBuyer` public facing methods could get overriden by `undefined` values",
+                "note": "Fix bug where default values for `AssetBuyer` public facing methods could get overriden by `undefined` values",
                 "pr": 1207
             },
             {
@@ -126,8 +123,7 @@
                 "pr": 1131
             },
             {
-                "note":
-                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
+                "note": "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
                 "pr": 1105
             },
             {

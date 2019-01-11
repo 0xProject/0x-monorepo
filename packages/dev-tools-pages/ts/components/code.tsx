@@ -45,11 +45,8 @@ const Container = styled.div`
     }
 `;
 
-const Base =
-    styled.div <
-    CodeProps >
-    `
-    font-size: .875rem;
+const Base = styled.div<CodeProps>`
+    font-size: 0.875rem;
     color: ${props => (_.isUndefined(props.language) ? colors.white : 'inherit')};
     background-color: ${props =>
         props.isLight ? 'rgba(255,255,255,.15)' : _.isUndefined(props.language) ? colors.black : '#F1F4F5'};
@@ -110,10 +107,7 @@ const StyledCodeDiff = styled(CodeDiff)`
     }
 `;
 
-const StyledPre =
-    styled.pre <
-    CodeProps >
-    `
+const StyledPre = styled.pre<CodeProps>`
     margin: 0;
     ${props =>
         !props.isDiff

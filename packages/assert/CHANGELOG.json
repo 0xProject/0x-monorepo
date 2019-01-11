@@ -193,8 +193,7 @@
         "version": "1.0.0",
         "changes": [
             {
-                "note":
-                    "Fix bug in string enum assertion. We erroneously were checking against the enum keys, not values",
+                "note": "Fix bug in string enum assertion. We erroneously were checking against the enum keys, not values",
                 "pr": 821
             }
         ]
@@ -339,8 +338,7 @@
                 "note": "Re-publish Assert previously published under NPM package @0xproject/0x-assert"
             },
             {
-                "note":
-                    "Added assertion isValidBaseUnitAmount which checks both that the value is a valid bigNumber and that it does not contain decimals."
+                "note": "Added assertion isValidBaseUnitAmount which checks both that the value is a valid bigNumber and that it does not contain decimals."
             }
         ],
         "timestamp": 1510585200

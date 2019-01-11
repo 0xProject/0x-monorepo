@@ -82,8 +82,7 @@
         "version": "3.1.1",
         "changes": [
             {
-                "note":
-                    "Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields).",
+                "note": "Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields).",
                 "pr": 1177
             }
         ],
@@ -97,8 +96,7 @@
                 "pr": 1102
             },
             {
-                "note":
-                    "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
+                "note": "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
                 "pr": 1102
             }
         ],
@@ -135,13 +133,11 @@
         "version": "3.0.0",
         "changes": [
             {
-                "note":
-                    "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined.",
+                "note": "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined.",
                 "pr": 1082
             },
             {
-                "note":
-                    "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
+                "note": "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
                 "pr": 1080
             }
         ],
@@ -151,8 +147,7 @@
         "version": "2.0.3",
         "changes": [
             {
-                "note":
-                    "Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined.",
+                "note": "Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined.",
                 "pr": 1079
             }
         ],
@@ -180,8 +175,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Export types:  `BlockParam`, `TxData`, `Provider`, `TransactionReceipt`, `Transaction`, `TraceParams`, `TransactionTrace``, BlockWithoutTransactionDat`a, `LogEntry`, `FilterObject`, `CallData`, `TransactionReceiptWithDecodedLogs`, `BlockWithTransactionData``, LogTopi`c, `JSONRPCRequestPayload`, `TransactionReceiptStatus`, `DecodedLogArgs`, `StructLog`, `JSONRPCErrorCallback``, BlockParamLitera`l, `ContractEventArg`, `DecodedLogEntry`, `LogEntryEvent`, `OpCode`, `TxDataPayable`, `JSONRPCResponsePayload``, RawLogEntr`y, `DecodedLogEntryEvent`, `LogWithDecodedArgs`, `AbiDefinition`, `RawLog`, `FunctionAbi`, `EventAbi`, `EventParameter``, MethodAb`i, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability` and `StateMutability`",
+                "note": "Export types:  `BlockParam`, `TxData`, `Provider`, `TransactionReceipt`, `Transaction`, `TraceParams`, `TransactionTrace``, BlockWithoutTransactionDat`a, `LogEntry`, `FilterObject`, `CallData`, `TransactionReceiptWithDecodedLogs`, `BlockWithTransactionData``, LogTopi`c, `JSONRPCRequestPayload`, `TransactionReceiptStatus`, `DecodedLogArgs`, `StructLog`, `JSONRPCErrorCallback``, BlockParamLitera`l, `ContractEventArg`, `DecodedLogEntry`, `LogEntryEvent`, `OpCode`, `TxDataPayable`, `JSONRPCResponsePayload``, RawLogEntr`y, `DecodedLogEntryEvent`, `LogWithDecodedArgs`, `AbiDefinition`, `RawLog`, `FunctionAbi`, `EventAbi`, `EventParameter``, MethodAb`i, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability` and `StateMutability`",
                 "pr": 924
             },
             {
@@ -328,8 +322,7 @@
                 "pr": 622
             },
             {
-                "note":
-                    "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
+                "note": "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
                 "pr": 688
             }
         ]
@@ -392,8 +385,7 @@
                 "pr": 485
             },
             {
-                "note":
-                    "Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs",
+                "note": "Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs",
                 "pr": 485
             },
             {
@@ -417,8 +409,7 @@
         "version": "0.3.0",
         "changes": [
             {
-                "note":
-                    "Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync`",
+                "note": "Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync`",
                 "pr": 426
             },
             {

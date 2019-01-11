@@ -6,8 +6,8 @@ Smart contract interfaces of the 0x protocol.
 
 Contracts that make up and interact with version 2.0.0 of the protocol can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
 
-*   [protocol](./contracts/protocol)
-    *   This directory contains the contract interfaces that make up version 2.0.0. A full specification can be found [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+-   [protocol](./contracts/protocol)
+    -   This directory contains the contract interfaces that make up version 2.0.0. A full specification can be found [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
 
 ## Bug bounty
 

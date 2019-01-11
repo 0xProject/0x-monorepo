@@ -107,10 +107,7 @@ interface TraceProps {
     background?: string;
 }
 
-const StyledSection =
-    styled.section <
-    TraceProps >
-    `
+const StyledSection = styled.section<TraceProps>`
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
@@ -137,10 +134,7 @@ const Wrapper = styled(Container)`
     `};
 `;
 
-const Block =
-    styled.div <
-    TraceProps >
-    `
+const Block = styled.div<TraceProps>`
     width: 50%;
     background: ${props => (props.background ? props.background : colors.black)};
     color: ${props => (props.background ? 'inherit' : colors.white)};
@@ -199,10 +193,7 @@ const Item = styled.li`
     }
 `;
 
-const Copy =
-    styled.div <
-    { dark: boolean } >
-    `
+const Copy = styled.div<{ dark: boolean }>`
     margin-right: 5.875rem;
     ${props =>
         props.dark &&

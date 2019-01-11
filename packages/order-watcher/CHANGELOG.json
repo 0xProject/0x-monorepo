@@ -13,8 +13,7 @@
         "version": "2.3.0",
         "changes": [
             {
-                "note":
-                    "Added a WebSocket interface to OrderWatcher so that it can be used by a client written in any language",
+                "note": "Added a WebSocket interface to OrderWatcher so that it can be used by a client written in any language",
                 "pr": 1427
             }
         ]
@@ -59,8 +58,7 @@
         "version": "2.2.4",
         "changes": [
             {
-                "note":
-                    "Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX",
+                "note": "Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX",
                 "pr": 1259
             }
         ],
@@ -74,8 +72,7 @@
                 "pr": 1227
             },
             {
-                "note":
-                    "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
+                "note": "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
             }
         ],
         "timestamp": 1542134075
@@ -106,8 +103,7 @@
                 "pr": 1118
             },
             {
-                "note":
-                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter.",
+                "note": "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter.",
                 "pr": 1105
             }
         ],
@@ -136,18 +132,15 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
+                "note": "Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
                 "pr": 1080
             },
             {
-                "note":
-                    "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "note": "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
                 "pr": 1080
             },
             {
-                "note":
-                    "Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction.",
+                "note": "Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction.",
                 "pr": 1087
             }
         ],
@@ -211,8 +204,7 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "note":
-                    "Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "note": "Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
                 "pr": 924
             },
             {

@@ -213,8 +213,7 @@
         "version": "0.4.7",
         "changes": [
             {
-                "note":
-                    "Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names",
+                "note": "Modified custom 'underscore-privates' rule, changing it to 'underscore-private-and-protected' requiring underscores to be prepended to both private and protected variable names",
                 "pr": 354
             }
         ],
@@ -224,12 +223,10 @@
         "version": "0.4.0",
         "changes": [
             {
-                "note":
-                    "Added custom 'underscore-privates' rule, requiring underscores to be prepended to private variable names"
+                "note": "Added custom 'underscore-privates' rule, requiring underscores to be prepended to private variable names"
             },
             {
-                "note":
-                    "Because our tools can be used in both a TS and JS environment, we want to make the private methods of any public facing interface show up at the bottom of auto-complete lists. Additionally, we wanted to remain consistent with respect to our usage of underscores in order to enforce this rule with a linter rule, rather then manual code reviews."
+                "note": "Because our tools can be used in both a TS and JS environment, we want to make the private methods of any public facing interface show up at the bottom of auto-complete lists. Additionally, we wanted to remain consistent with respect to our usage of underscores in order to enforce this rule with a linter rule, rather then manual code reviews."
             }
         ],
         "timestamp": 1514386800

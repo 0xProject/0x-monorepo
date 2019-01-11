@@ -52,8 +52,7 @@
         "version": "4.1.0",
         "changes": [
             {
-                "note":
-                    "Add a `nonce` field for `TxOpts` so that it's now possible to re-broadcast stuck transactions with a higher gas amount",
+                "note": "Add a `nonce` field for `TxOpts` so that it's now possible to re-broadcast stuck transactions with a higher gas amount",
                 "pr": 1292
             }
         ],
@@ -81,18 +80,15 @@
         "version": "4.0.0",
         "changes": [
             {
-                "note":
-                    "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
+                "note": "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
                 "pr": 1235
             },
             {
-                "note":
-                    "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
+                "note": "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
                 "pr": 1235
             },
             {
-                "note":
-                    "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
+                "note": "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
                 "pr": 1235
             }
         ],
@@ -123,28 +119,23 @@
                 "pr": 1105
             },
             {
-                "note":
-                    "Default contract addresses are no longer stored in artifacts and are instead loaded from the `@0xproject/contract-addresses` package.",
+                "note": "Default contract addresses are no longer stored in artifacts and are instead loaded from the `@0xproject/contract-addresses` package.",
                 "pr": 1105
             },
             {
-                "note":
-                    "Most contract addresses are now defined at instantiation time and are available as properties (e.g., `exchangeWrapper.address`) instead of methods (e.g., `exchangeWrapper.getContractAddress()`).",
+                "note": "Most contract addresses are now defined at instantiation time and are available as properties (e.g., `exchangeWrapper.address`) instead of methods (e.g., `exchangeWrapper.getContractAddress()`).",
                 "pr": 1105
             },
             {
-                "note":
-                    "Removed `setProvider` method in top-level `ContractWrapper` class and added new `unsubscribeAll` method.",
+                "note": "Removed `setProvider` method in top-level `ContractWrapper` class and added new `unsubscribeAll` method.",
                 "pr": 1105
             },
             {
-                "note":
-                    "Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly.",
+                "note": "Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly.",
                 "pr": 1105
             },
             {
-                "note":
-                    "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information.",
+                "note": "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information.",
                 "pr": 1105
             },
             {
@@ -180,13 +171,11 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
+                "note": "Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
                 "pr": 1080
             },
             {
-                "note":
-                    "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "note": "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
                 "pr": 1080
             }
         ],
@@ -235,18 +224,15 @@
                 "note": "Add `OrderValidatorWrapper`"
             },
             {
-                "note":
-                    "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`",
+                "note": "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`",
                 "pr": 1044
             },
             {
-                "note":
-                    "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations",
+                "note": "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations",
                 "pr": 1054
             },
             {
-                "note":
-                    "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
+                "note": "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
                 "pr": 1054
             }
         ],
@@ -265,13 +251,11 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "note":
-                    "Export missing types: `TransactionEncoder`, `ContractAbi`, `JSONRPCRequestPayload`, `JSONRPCResponsePayload`, `JSONRPCErrorCallback`, `AbiDefinition`, `FunctionAbi`, `EventAbi`, `EventParameter`, `DecodedLogArgs`, `MethodAbi`, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability`, `StateMutability` & `ExchangeSignatureValidatorApprovalEventArgs`",
+                "note": "Export missing types: `TransactionEncoder`, `ContractAbi`, `JSONRPCRequestPayload`, `JSONRPCResponsePayload`, `JSONRPCErrorCallback`, `AbiDefinition`, `FunctionAbi`, `EventAbi`, `EventParameter`, `DecodedLogArgs`, `MethodAbi`, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability`, `StateMutability` & `ExchangeSignatureValidatorApprovalEventArgs`",
                 "pr": 924
             },
             {
-                "note":
-                    "Remove superfluous exported types: `ContractEvent`, `Token`, `OrderFillRequest`, `ContractEventArgs`, `LogEvent`, `OnOrderStateChangeCallback`,     `ECSignature`, `OrderStateValid`, `OrderStateInvalid`, `OrderState`, `FilterObject`, `TransactionReceipt` & `TransactionReceiptWithDecodedLogs`",
+                "note": "Remove superfluous exported types: `ContractEvent`, `Token`, `OrderFillRequest`, `ContractEventArgs`, `LogEvent`, `OnOrderStateChangeCallback`,     `ECSignature`, `OrderStateValid`, `OrderStateInvalid`, `OrderState`, `FilterObject`, `TransactionReceipt` & `TransactionReceiptWithDecodedLogs`",
                 "pr": 924
             },
             {

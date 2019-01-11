@@ -3,8 +3,7 @@
         "version": "3.1.0",
         "changes": [
             {
-                "note":
-                    "Use new ABI encoder, add encoding/decoding logic for MultiAsset assetData, and add information to return values in orderStateUtils",
+                "note": "Use new ABI encoder, add encoding/decoding logic for MultiAsset assetData, and add information to return values in orderStateUtils",
                 "pr": 1363
             }
         ],
@@ -78,23 +77,19 @@
         "version": "3.0.0",
         "changes": [
             {
-                "note":
-                    "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
+                "note": "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
                 "pr": 1235
             },
             {
-                "note":
-                    "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
+                "note": "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
                 "pr": 1235
             },
             {
-                "note":
-                    "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
+                "note": "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
                 "pr": 1235
             },
             {
-                "note":
-                    "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
+                "note": "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
                 "pr": 1235
             }
         ],
@@ -113,8 +108,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`.",
+                "note": "Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`.",
                 "pr": 1102
             },
             {
@@ -145,8 +139,7 @@
         "version": "1.0.6",
         "changes": [
             {
-                "note":
-                    "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
+                "note": "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
                 "pr": 1096
             }
         ],
@@ -228,23 +221,19 @@
                 "pr": 953
             },
             {
-                "note":
-                    "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
+                "note": "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
                 "pr": 954
             },
             {
-                "note":
-                    "Instead of exporting signature util methods individually, they are now exported as `signatureUtils`",
+                "note": "Instead of exporting signature util methods individually, they are now exported as `signatureUtils`",
                 "pr": 924
             },
             {
-                "note":
-                    "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "note": "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
                 "pr": 924
             },
             {
-                "note":
-                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
+                "note": "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
                 "pr": 997
             },
             {
@@ -252,8 +241,7 @@
                 "pr": 997
             },
             {
-                "note":
-                    "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
+                "note": "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
                 "pr": 997
             }
         ],
@@ -264,12 +252,10 @@
         "changes": [
             {
                 "pr": 914,
-                "note":
-                    "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
+                "note": "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
             },
             {
-                "note":
-                    "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
+                "note": "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
                 "pr": 936
             },
             {
@@ -313,8 +299,7 @@
         "version": "1.0.0-rc.2",
         "changes": [
             {
-                "note":
-                    "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
+                "note": "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
             }
         ],
         "timestamp": 1532357734
@@ -377,8 +362,7 @@
         "version": "0.0.5",
         "changes": [
             {
-                "note":
-                    "Add orderStateUtils, a module for computing order state needed to decide if an order is still valid"
+                "note": "Add orderStateUtils, a module for computing order state needed to decide if an order is still valid"
             }
         ],
         "timestamp": 1527008794

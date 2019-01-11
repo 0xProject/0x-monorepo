@@ -53,7 +53,8 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                                 typeDefinitionByName={props.typeDefinitionByName}
                                 docsInfo={props.docsInfo}
                                 isInPopover={props.isInPopover}
-                            />[]
+                            />
+                            []
                         </span>
                     );
                 } else {
@@ -181,9 +182,11 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             });
             typeName = (
                 <div>
-                    [{_.reduce(tupleTypes, (prev: React.ReactNode, curr: React.ReactNode) => {
+                    [
+                    {_.reduce(tupleTypes, (prev: React.ReactNode, curr: React.ReactNode) => {
                         return [prev, ', ', curr];
-                    })}]
+                    })}
+                    ]
                 </div>
             );
             break;

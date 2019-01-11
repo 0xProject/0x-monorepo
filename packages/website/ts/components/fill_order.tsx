@@ -173,15 +173,14 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     private _renderOrderJsonNotices(): React.ReactNode {
         return (
             <div>
-                {!_.isUndefined(this.props.initialOrder) &&
-                    !this.state.didOrderValidationRun && (
-                        <div className="pt2">
-                            <span className="pr1">
-                                <i className="zmdi zmdi-spinner zmdi-hc-spin" />
-                            </span>
-                            <span>Validating order...</span>
-                        </div>
-                    )}
+                {!_.isUndefined(this.props.initialOrder) && !this.state.didOrderValidationRun && (
+                    <div className="pt2">
+                        <span className="pr1">
+                            <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                        </span>
+                        <span>Validating order...</span>
+                    </div>
+                )}
                 {!_.isEmpty(this.state.orderJSONErrMsg) && (
                     <Alert type={AlertTypes.ERROR} message={this.state.orderJSONErrMsg} />
                 )}

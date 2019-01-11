@@ -14,10 +14,7 @@ to {
 }
 `;
 
-export const FullRotation =
-    styled.div <
-    FullRotationProps >
-    `
+export const FullRotation = styled.div<FullRotationProps>`
     animation: ${rotatingKeyframes} 2s linear infinite;
     height: ${props => props.height};
     width: ${props => props.width};
