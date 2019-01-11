@@ -8,9 +8,9 @@ import { reducer, State } from 'ts/redux/reducer';
 const ONE_SECOND = 1000;
 
 export const store: ReduxStore<State> = createStore(
-    reducer as any,
+    reducer,
     stateStorage.getPersistedDefaultState(),
-    composeWithDevTools(applyMiddleware(analyticsMiddleware) as any) as any,
+    composeWithDevTools(applyMiddleware(analyticsMiddleware)),
 );
 store.subscribe(
     _.throttle(() => {
