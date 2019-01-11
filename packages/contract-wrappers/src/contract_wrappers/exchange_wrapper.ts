@@ -743,18 +743,20 @@ export class ExchangeWrapper extends ContractWrapper {
             rightSignedOrder.takerAssetData !== leftSignedOrder.makerAssetData
         ) {
             throw new Error(ExchangeWrapperError.AssetDataMismatch);
-        } else {
-            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
-            rightSignedOrder.makerAssetData = '0x';
-            rightSignedOrder.takerAssetData = '0x';
         }
+        // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
+        const optimizedRightSignedOrder = {
+            ...rightSignedOrder,
+            makerAssetData: '0x',
+            takerAssetData: '0x',
+        };
         const exchangeInstance = await this._getExchangeContractAsync();
         if (orderTransactionOpts.shouldValidate) {
             await exchangeInstance.matchOrders.callAsync(
                 leftSignedOrder,
-                rightSignedOrder,
+                optimizedRightSignedOrder,
                 leftSignedOrder.signature,
-                rightSignedOrder.signature,
+                optimizedRightSignedOrder.signature,
                 {
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
@@ -765,9 +767,9 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const txHash = await exchangeInstance.matchOrders.sendTransactionAsync(
             leftSignedOrder,
-            rightSignedOrder,
+            optimizedRightSignedOrder,
             leftSignedOrder.signature,
-            rightSignedOrder.signature,
+            optimizedRightSignedOrder.signature,
             {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
