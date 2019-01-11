@@ -4,6 +4,8 @@ import * as TypeMoq from 'typemoq';
 import { AssetBuyer } from '../../src/asset_buyer';
 import { OrderProvider, OrderProviderResponse, OrdersAndFillableAmounts } from '../../src/types';
 
+// tslint:disable:promise-function-async
+
 // Implementing dummy class for using in mocks, see https://github.com/florinn/typemoq/issues/3
 class OrderProviderClass implements OrderProvider {
     // tslint:disable-next-line:prefer-function-over-method
