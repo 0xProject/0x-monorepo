@@ -5,14 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.4 - _January 11, 2019_
+## v1.0.1 - _January 11, 2019_
 
     * Dependencies updated
 
-## v1.0.3 - _January 9, 2019_
+## v1.0.0 - _Invalid date_
 
-    * Dependencies updated
-
-## v1.0.2 - _December 13, 2018_
-
-    * Dependencies updated
+    * Initial release as a separate package. For historical entries see @0x/sol-tracing-utils (#1492)

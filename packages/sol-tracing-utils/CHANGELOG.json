@@ -6,7 +6,8 @@
                 "note": "Move out specific tools and leave just the shared parts of the codebase",
                 "pr": 1492
             }
-        ]
+        ],
+        "timestamp": 1547225310
     },
     {
         "timestamp": 1547040760,
