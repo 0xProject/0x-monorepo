@@ -1,3 +1,4 @@
+import { assetDataUtils } from '@0x/order-utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -9,6 +10,7 @@ import {
     INJECTED_DIV_ID,
     NPM_PACKAGE_VERSION,
 } from './constants';
+import { assetMetaDataMap } from './data/asset_meta_data_map';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
@@ -120,6 +122,16 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         }
     };
     window.onpopstate = onPopStateHandler;
+};
+
+export const assetDataForERC20TokenAddress = (tokenAddress: string): string => {
+    assert.isETHAddressHex('tokenAddress', tokenAddress);
+    return assetDataUtils.encodeERC20AssetData(tokenAddress);
+};
+
+export const hasMetaDataForAssetData = (assetData: string): boolean => {
+    assert.isHexString('assetData', assetData);
+    return assetMetaDataMap[assetData] !== undefined;
 };
 
 // Write version info to the exported object for debugging
