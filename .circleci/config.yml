@@ -16,7 +16,7 @@ jobs:
                   command: sudo npm install --global yarn@1.9.4
             - run:
                   name: yarn
-                  command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
+                  command: yarn --frozen-lockfile --ignore-engines install
             - run: yarn build:ci:no_website
             - run: yarn build:ts
             - save_cache:
@@ -118,7 +118,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/order-utils
             - run: yarn wsrun test:circleci @0x/order-watcher
             - run: yarn wsrun test:circleci @0x/sol-compiler
-            - run: yarn wsrun test:circleci @0x/sol-cov
+            - run: yarn wsrun test:circleci @0x/sol-tracing-utils
             - run: yarn wsrun test:circleci @0x/sol-doc
             - run: yarn wsrun test:circleci @0x/subproviders
             - run: yarn wsrun test:circleci @0x/web3-wrapper
@@ -169,9 +169,9 @@ jobs:
                   paths:
                       - ~/repo/packages/sol-compiler/coverage/lcov.info
             - save_cache:
-                  key: coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
+                  key: coverage-sol-tracing-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/sol-cov/coverage/lcov.info
+                      - ~/repo/packages/sol-tracing-utils/coverage/lcov.info
             - save_cache:
                   key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -335,7 +335,7 @@ jobs:
                       - coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
-                      - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
+                      - coverage-sol-tracing-utils-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}

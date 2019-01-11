@@ -78,7 +78,7 @@ const Cov: React.StatelessComponent<{}> = () => (
             </ContentBlock>
             <ContentBlock title="Installation">
                 <Breakout>
-                    <Code>npm install @0x/sol-cov --save</Code>
+                    <Code>npm install @0x/sol-coverage --save</Code>
                 </Breakout>
 
                 <p>
@@ -124,7 +124,7 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 <Breakout>
                     <Code language="javascript">
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
-import { RevertTraceSubprovider } from '@0x/sol-cov';
+import { RevertTraceSubprovider } from '@0x/sol-coverage';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
 const revertTraceSubprovider = new RevertTraceSubprovider(artifactAdapter, defaultFromAddress);

@@ -47,7 +47,6 @@
         "@0x/abi-gen": "^1.0.20",
         "@0x/dev-utils": "^1.0.22",
         "@0x/sol-compiler": "^2.0.0",
-        "@0x/sol-cov": "^2.1.17",
         "@0x/subproviders": "^2.1.9",
         "@0x/tslint-config": "^2.0.0",
         "@types/bn.js": "^4.11.0",

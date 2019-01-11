@@ -218,10 +218,26 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                'A Solidity code coverage tool. Sol-cov uses transaction traces to figure out which lines of your code has been covered by your tests.',
+                'A Solidity code coverage tool. Sol-coverage uses transaction traces to figure out which lines of your code has been covered by your tests.',
             link: {
-                title: '@0x/sol-cov',
-                to: WebsitePaths.SolCov,
+                title: '@0x/sol-coverage',
+                to: WebsitePaths.SolCoverage,
+            },
+        },
+        {
+            description:
+                'A Solidity profiler. Sol-profiler uses transaction traces to figure out line-by-line gas consumption.',
+            link: {
+                title: '@0x/sol-profiler',
+                to: WebsitePaths.SolProfiler,
+            },
+        },
+        {
+            description:
+                'A Solidity revert trace tool. Sol-trace prints human-readable revert trace whenever the revert happens.',
+            link: {
+                title: '@0x/sol-trace',
+                to: WebsitePaths.SolTrace,
             },
         },
         {

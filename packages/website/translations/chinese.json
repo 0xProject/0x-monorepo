@@ -7,48 +7,37 @@
     "FULL_LIST_PROMPT": "查看",
     "FULL_LIST_LINK": "完整列表",
     "TOKENIZED_SECTION_HEADER": "世界正走向代币化时代",
-    "TOKENIZED_SECTION_DESCRIPTION":
-        "以太坊区块链是一种开源的金融服务系统，全网无边界，统一使用加密代币充当各类资产。在未来，大多数数字资产和商品都将实现代币化。",
+    "TOKENIZED_SECTION_DESCRIPTION": "以太坊区块链是一种开源的金融服务系统，全网无边界，统一使用加密代币充当各类资产。在未来，大多数数字资产和商品都将实现代币化。",
     "CURRENCY": "货币",
     "TRADITIONAL_ASSETS": "传统资产",
     "DIGITAL_GOODS": "数字商品",
     "OFFCHAIN_ORDER_RELAY": "链下订单中继",
     "ONCHAIN_SETTLEMENT": "链上最终结算",
-    "OFFCHAIN_ONCHAIN_DESCRIPTION":
-        "在 0x 协议中，所有订单都通过链下传输，大幅削减了损耗成本，能够有效避免区块链膨胀。任何人都可以构建中继方，由中继方广播订单，每促成一笔交易，就可以收取一笔交易费。",
+    "OFFCHAIN_ONCHAIN_DESCRIPTION": "在 0x 协议中，所有订单都通过链下传输，大幅削减了损耗成本，能够有效避免区块链膨胀。任何人都可以构建中继方，由中继方广播订单，每促成一笔交易，就可以收取一笔交易费。",
     "RELAYERS_HEADER": "基于 0X 协议构建的中继方",
     "BENEFITS_HEADER": "0x 的好處",
     "BENEFIT_ONE_TITLE": "去信任化的交易机制",
-    "BENEFIT_ONE_DESCRIPTION":
-        "基于以太坊的分布式网络构建，去除中心体系单点故障，保证无间断运营，每笔交易都自动操作进行结算，完全解除交易对手风险。",
+    "BENEFIT_ONE_DESCRIPTION": "基于以太坊的分布式网络构建，去除中心体系单点故障，保证无间断运营，每笔交易都自动操作进行结算，完全解除交易对手风险。",
     "BENEFIT_TWO_TITLE": "共享流动性",
-    "BENEFIT_TWO_DESCRIPTION":
-        "通过共享标准 API，让中继方轻松聚集流动池，随着越来越多的中继方纷纷上线，将形成充裕的流动性，创造网络效应。",
+    "BENEFIT_TWO_DESCRIPTION": "通过共享标准 API，让中继方轻松聚集流动池，随着越来越多的中继方纷纷上线，将形成充裕的流动性，创造网络效应。",
     "BENEFIT_THREE_TITLE": "开源优势",
-    "BENEFIT_THREE_DESCRIPTION":
-        "0x 是一种开源协议，全网无边界，可供免费使用。用户可以直接联系已知的交易对象进行免费交易，还可以支付一定数额的 ZRX 代币，以访问中继方的流动池。",
+    "BENEFIT_THREE_DESCRIPTION": "0x 是一种开源协议，全网无边界，可供免费使用。用户可以直接联系已知的交易对象进行免费交易，还可以支付一定数额的 ZRX 代币，以访问中继方的流动池。",
     "BUILDING_BLOCK_SECTION_HEADER": "去中心化应用的构建块",
-    "BUILDING_BLOCK_SECTION_DESCRIPTION":
-        "0x 协议是需要交易功能的去中心化应用的可插构建块。如今许多开发人员都在使用 0x 协议构建 Web 应用程序和智能合约，赶快加入这一行列吧！",
+    "BUILDING_BLOCK_SECTION_DESCRIPTION": "0x 协议是需要交易功能的去中心化应用的可插构建块。如今许多开发人员都在使用 0x 协议构建 Web 应用程序和智能合约，赶快加入这一行列吧！",
     "DEV_TOOLS_PROMPT": "了解具体的构建方法，请参见",
     "SMART_CONTRACT": "智能合约  的文档",
     "DOCS": "",
     "AND": "和",
     "DECENTRALIZED_GOVERNANCE": "去中心化的治理",
-    "DECENTRALIZED_GOVERNANCE_DESCRIPTION":
-        "去中心化组织使用代币代表所有权，指引其治理逻辑。去中心化组织利用 0x 协议，可以无缝安全地进行启动资金所有权的交易。",
+    "DECENTRALIZED_GOVERNANCE_DESCRIPTION": "去中心化组织使用代币代表所有权，指引其治理逻辑。去中心化组织利用 0x 协议，可以无缝安全地进行启动资金所有权的交易。",
     "PREDICTION_MARKETS": "预测市场",
-    "PREDICTION_MARKETS_DESCRIPTION":
-        "去中心化预测市场平台会根据现实世界中发生的事件，按照其中包含的金融风险生成代币集合。使用 0x 协议，允许这些代币即刻交易。",
+    "PREDICTION_MARKETS_DESCRIPTION": "去中心化预测市场平台会根据现实世界中发生的事件，按照其中包含的金融风险生成代币集合。使用 0x 协议，允许这些代币即刻交易。",
     "STABLE_TOKENS": "稳定代币",
-    "STABLE_TOKENS_DESCRIPTION":
-        "StableCoins 等新型经济结构的成功建设有赖于高效的流动性市场的支持。0x 协议能有效促进底层经济机制，利于代币保持稳定。",
+    "STABLE_TOKENS_DESCRIPTION": "StableCoins 等新型经济结构的成功建设有赖于高效的流动性市场的支持。0x 协议能有效促进底层经济机制，利于代币保持稳定。",
     "DECENTRALIZED_LOANS": "去中心化的借贷模式",
-    "DECENTRALIZED_LOANS_DESCRIPTION":
-        "高效借贷需要流动性市场的支持，为投资者提供方便购买、转卖借贷商品的平台。使用 0x 协议能够为借款方搭建一个自组织的生态系统，高效地针对所有未偿贷款确定市场价格。",
+    "DECENTRALIZED_LOANS_DESCRIPTION": "高效借贷需要流动性市场的支持，为投资者提供方便购买、转卖借贷商品的平台。使用 0x 协议能够为借款方搭建一个自组织的生态系统，高效地针对所有未偿贷款确定市场价格。",
     "FUND_MANAGEMENT": "基金管理",
-    "FUND_MANAGEMENT_DESCRIPTION":
-        "去中心化基金管理通过划分需事先商定的资产类别，有效限制基金经理的投资行为。向基金管理智能合约中嵌入 0x 协议，可确保其遵守安全约束。",
+    "FUND_MANAGEMENT_DESCRIPTION": "去中心化基金管理通过划分需事先商定的资产类别，有效限制基金经理的投资行为。向基金管理智能合约中嵌入 0x 协议，可确保其遵守安全约束。",
     "FINAL_CALL_TO_ACTION": "开始构建去中心化的未来",
     "DOCUMENTATION": "文档",
     "COMMUNITY": "社区",
@@ -93,8 +82,7 @@
     "GITHUB": "github",
     "LIVE_CHAT": "live chat",
     "LIBRARIES_AND_TOOLS": "Libraries & Tools",
-    "LIBRARIES_AND_TOOLS_DESCRIPTION":
-        "A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum",
+    "LIBRARIES_AND_TOOLS_DESCRIPTION": "A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum",
     "MORE": "more",
     "LAUNCH_KIT": "0x launch kit",
     "LAUNCH_KIT_PITCH": "launch a relayer in under a minute.",
@@ -110,6 +98,5 @@
     "PERFECT_FOR_DEVELOPERS": "Perfect for developers who need a simple drop-in marketplace",
     "LEARN_MORE": "learn more",
     "START_BUILDING_ON_0X": "Start building on 0x",
-    "START_BUILDING_ON_0X_DESCRIPTION":
-        "Follow one of our \"Getting started\" guides to learn more about building ontop of 0x."
+    "START_BUILDING_ON_0X_DESCRIPTION": "Follow one of our \"Getting started\" guides to learn more about building ontop of 0x."
 }

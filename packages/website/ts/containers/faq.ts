@@ -22,4 +22,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const FAQ: React.ComponentClass<FAQProps> = connect(mapStateToProps, mapDispatchToProps)(FAQComponent);
+export const FAQ: React.ComponentClass<FAQProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(FAQComponent);

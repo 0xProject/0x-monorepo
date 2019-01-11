@@ -14,10 +14,7 @@ export interface FlexProps {
     flexGrow?: number | string;
 }
 
-export const Flex =
-    styled.div <
-    FlexProps >
-    `
+export const Flex = styled.div<FlexProps>`
     && {
         display: ${props => (props.inline ? 'inline-flex' : 'flex')};
         flex-direction: ${props => props.direction};

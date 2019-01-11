@@ -42,18 +42,21 @@ export const envUtil = {
         }
     },
     getProviderType(provider: Provider): ProviderType | undefined {
+        const anyProvider = provider as any;
         if (provider.constructor.name === 'EthereumProvider') {
             return ProviderType.Mist;
-        } else if ((provider as any).isTrust) {
+        } else if (anyProvider.isTrust) {
             return ProviderType.TrustWallet;
-        } else if ((provider as any).isParity) {
+        } else if (anyProvider.isParity) {
             return ProviderType.Parity;
-        } else if ((provider as any).isMetaMask) {
+        } else if (anyProvider.isMetaMask) {
             return ProviderType.MetaMask;
         } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
             return ProviderType.CoinbaseWallet;
         } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
             return ProviderType.Cipher;
+        } else if (envUtil.getBrowser() === Browser.Opera && !anyProvider.isMetaMask) {
+            return ProviderType.Opera;
         }
         return;
     },

@@ -6,10 +6,10 @@ MultiSig smart contracts
 
 Contracts can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
 
-*   [multisig](./contracts/multisig)
-    *   This directory contains the [Gnosis MultiSigWallet](https://github.com/gnosis/MultiSigWallet) and a custom extension that adds a timelock to transactions within the MultiSigWallet.
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+-   [multisig](./contracts/multisig)
+    -   This directory contains the [Gnosis MultiSigWallet](https://github.com/gnosis/MultiSigWallet) and a custom extension that adds a timelock to transactions within the MultiSigWallet.
+-   [test](./contracts/test)
+    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
 
 ## Contributing
 

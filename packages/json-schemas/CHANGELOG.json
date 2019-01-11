@@ -48,8 +48,7 @@
         "version": "2.1.0",
         "changes": [
             {
-                "note":
-                    "Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts",
+                "note": "Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts",
                 "pr": 1173
             },
             {
@@ -63,8 +62,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages.",
+                "note": "Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages.",
                 "pr": 1145
             }
         ],
@@ -255,8 +253,7 @@
         "version": "0.8.0",
         "changes": [
             {
-                "note":
-                    "Update Order & SignedOrder schemas, remove ECSignature schema and add Hex schema as part of V2 upgrades",
+                "note": "Update Order & SignedOrder schemas, remove ECSignature schema and add Hex schema as part of V2 upgrades",
                 "pr": 615
             }
         ],
