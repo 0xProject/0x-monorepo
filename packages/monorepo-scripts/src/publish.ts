@@ -95,6 +95,7 @@ async function confirmAsync(message: string): Promise<void> {
             utils.log("Publish successful, but couldn't auto-alert discord (", e.message, '), Please alert manually.');
         }
     }
+    process.exit(0);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
