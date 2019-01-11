@@ -17,7 +17,7 @@ const pages = [
         },
     },
     {
-        title: 'sol-cov',
+        title: 'sol-coverage',
         filename: 'coverage/index.html',
         template: 'assets/index.html',
         chunks: ['coverage'],
@@ -25,7 +25,7 @@ const pages = [
         minify: true,
         meta: {
             description: 'Solidity code coverage',
-            'og-title': { property: 'og:title', content: 'sol-cov' },
+            'og-title': { property: 'og:title', content: 'sol-coverage' },
             'og-description': { property: 'og:description', content: 'Solidity code coverage' },
             'og-type': { property: 'og:type', content: 'website' },
             'og-image': { property: 'og:image', content: '/images/og-cov' },
