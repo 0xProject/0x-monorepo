@@ -26,7 +26,9 @@ async function checkDockerHubSetupAsync(): Promise<void> {
         await execAsync(`echo "$DOCKER_PASS" | docker login -u $DOCKER_USERNAME --password-stdin`);
     } catch (err) {
         throw new Error(
-            'Failed to log you into the `docker` commandline tool. Make sure you have environment variables `DOCKER_USERNAME` and `DOCKER_PASS` set.',
+            `Failed to log you into the 'docker' commandline tool. Make sure you have environment variables 'DOCKER_USERNAME; and 'DOCKER_PASS' set. Full error: ${
+                err.message
+            }`,
         );
     }
 }
