@@ -32,13 +32,13 @@ describe('paradex_orders', () => {
                 quoteTokenAddress: '0x0000000000000000000000000000000000000000',
             };
             const observedTimestamp: number = Date.now();
-            const orderType: OrderType = 'bid';
+            const orderType: OrderType = OrderType.Bid;
             const source: string = 'paradex';
 
             const expected = new TokenOrder();
             expected.source = 'paradex';
             expected.observedTimestamp = observedTimestamp;
-            expected.orderType = 'bid';
+            expected.orderType = OrderType.Bid;
             expected.price = new BigNumber(0.1245);
             expected.baseAssetSymbol = 'DEF';
             expected.baseAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';

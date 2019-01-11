@@ -14,10 +14,7 @@ export interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const Input =
-    styled.input <
-    InputProps >
-    `
+export const Input = styled.input<InputProps>`
     && {
         all: initial;
         font-size: ${props => props.fontSize};
@@ -32,10 +29,11 @@ export const Input =
             color: ${props => props.theme[props.fontColor || 'white']} !important;
             opacity: 0.5 !important;
         }
-        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
-          }
+        }
     }
 `;
 

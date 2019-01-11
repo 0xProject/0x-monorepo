@@ -2,7 +2,7 @@ import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } f
 import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -150,39 +150,8 @@ export class FillScenarios {
         feeRecipientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
-        const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
-        if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            await this._increaseERC20BalanceAndAllowanceAsync(
-                decodedMakerAssetData.tokenAddress,
-                makerAddress,
-                makerFillableAmount,
-            );
-        } else {
-            if (!makerFillableAmount.equals(1)) {
-                throw new Error(`ERC721 makerFillableAmount should be equal 1. Found: ${makerFillableAmount}`);
-            }
-            await this._increaseERC721BalanceAndAllowanceAsync(
-                decodedMakerAssetData.tokenAddress,
-                makerAddress,
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                (decodedMakerAssetData as ERC721AssetData).tokenId,
-            );
-        }
-        const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
-        if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            const takerTokenAddress = decodedTakerAssetData.tokenAddress;
-            await this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
-        } else {
-            if (!takerFillableAmount.equals(1)) {
-                throw new Error(`ERC721 takerFillableAmount should be equal 1. Found: ${takerFillableAmount}`);
-            }
-            await this._increaseERC721BalanceAndAllowanceAsync(
-                decodedTakerAssetData.tokenAddress,
-                takerAddress,
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                (decodedMakerAssetData as ERC721AssetData).tokenId,
-            );
-        }
+        await this._increaseBalanceAndAllowanceWithAssetDataAsync(makerAssetData, makerAddress, makerFillableAmount);
+        await this._increaseBalanceAndAllowanceWithAssetDataAsync(takerAssetData, takerAddress, takerFillableAmount);
         // Fees
         await Promise.all([
             this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, makerAddress, makerFee),
@@ -297,5 +266,31 @@ export class FillScenarios {
             from: address,
         });
         await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+    }
+    private async _increaseBalanceAndAllowanceWithAssetDataAsync(
+        assetData: string,
+        userAddress: string,
+        amount: BigNumber,
+    ): Promise<void> {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            await this._increaseERC20BalanceAndAllowanceAsync(decodedAssetData.tokenAddress, userAddress, amount);
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            await this._increaseERC721BalanceAndAllowanceAsync(
+                decodedAssetData.tokenAddress,
+                userAddress,
+                decodedAssetData.tokenId,
+            );
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
+                const amountsElement = decodedAssetData.amounts[index];
+                const totalAmount = amount.times(amountsElement);
+                await this._increaseBalanceAndAllowanceWithAssetDataAsync(
+                    nestedAssetDataElement,
+                    userAddress,
+                    totalAmount,
+                );
+            }
+        }
     }
 }

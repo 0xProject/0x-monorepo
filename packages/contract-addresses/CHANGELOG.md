@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _January 9, 2019_
+
+    * Added testnet entries for Dutch Auction contract (kovan,rinkeby,ropsten) (#1465)
+
 ## v2.0.0 - _November 28, 2018_
 
     * Redeployed Rinkeby with testnet Exchange artifact (#1318)

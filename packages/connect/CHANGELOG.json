@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1547040760,
+        "version": "3.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.0.10",
         "changes": [
             {
@@ -219,8 +228,7 @@
         "version": "1.0.0",
         "changes": [
             {
-                "note":
-                    "Remove `WebSocketOrderbookChannel` from the public interface and replace with `orderbookChannelFactory`"
+                "note": "Remove `WebSocketOrderbookChannel` from the public interface and replace with `orderbookChannelFactory`"
             }
         ]
     },

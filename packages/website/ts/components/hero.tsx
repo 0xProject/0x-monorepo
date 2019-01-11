@@ -28,10 +28,7 @@ interface WrapProps {
     isFullWidth?: boolean;
     isCenteredMobile?: boolean;
 }
-const Wrap =
-    styled.div <
-    WrapProps >
-    `
+const Wrap = styled.div<WrapProps>`
     width: calc(100% - 60px);
     margin: 0 auto;
 
@@ -53,10 +50,7 @@ interface TitleProps {
     isLarge?: any;
     maxWidth?: string;
 }
-const Title =
-    styled.h1 <
-    TitleProps >
-    `
+const Title = styled.h1<TitleProps>`
     font-size: ${props => (props.isLarge ? '80px' : '50px')};
     font-weight: 300;
     line-height: 1.1;
@@ -87,10 +81,7 @@ const Description = styled.p`
     }
 `;
 
-const Content =
-    styled.div <
-    { width: string } >
-    `
+const Content = styled.div<{ width: string }>`
     width: 100%;
 
     @media (min-width: 768px) {

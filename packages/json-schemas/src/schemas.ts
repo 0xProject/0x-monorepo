@@ -8,7 +8,7 @@ import * as ecSignatureSchema from '../schemas/ec_signature_schema.json';
 import * as eip712TypedDataSchema from '../schemas/eip712_typed_data_schema.json';
 import * as hexSchema from '../schemas/hex_schema.json';
 import * as indexFilterValuesSchema from '../schemas/index_filter_values_schema.json';
-import * as jsNumber from '../schemas/js_number.json';
+import * as jsNumber from '../schemas/js_number_schema.json';
 import * as numberSchema from '../schemas/number_schema.json';
 import * as orderCancellationRequestsSchema from '../schemas/order_cancel_schema.json';
 import * as orderConfigRequestSchema from '../schemas/order_config_request_schema.json';

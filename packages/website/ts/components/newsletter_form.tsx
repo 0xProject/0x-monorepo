@@ -4,6 +4,7 @@ import styled, { withTheme } from 'styled-components';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { colors } from 'ts/style/colors';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { utils } from 'ts/utils/utils';
 
 interface FormProps {
     theme: ThemeValuesInterface;
@@ -92,7 +93,7 @@ class Form extends React.Component<FormProps> {
         }
 
         try {
-            await fetch('https://website-api.0x.org/newsletter_subscriber/substack', {
+            await fetch(`${utils.getBackendBaseUrl()}/newsletter_subscriber/substack`, {
                 method: 'post',
                 mode: 'cors',
                 headers: {
@@ -116,10 +117,7 @@ const StyledForm = styled.form`
     margin-top: 27px;
 `;
 
-const StyledInput =
-    styled.input <
-    InputProps >
-    `
+const StyledInput = styled.input<InputProps>`
     appearance: none;
     background-color: transparent;
     border: 0;
@@ -131,7 +129,7 @@ const StyledInput =
     width: 100%;
 
     &::placeholder {
-        color: #B1B1B1; // #9D9D9D on light theme
+        color: #b1b1b1; // #9D9D9D on light theme
     }
 `;
 
@@ -139,14 +137,11 @@ const InputWrapper = styled.div`
     position: relative;
 `;
 
-const InnerInputWrapper =
-    styled.div <
-    ArrowProps >
-    `
+const InnerInputWrapper = styled.div<ArrowProps>`
     opacity: ${props => props.isSubmitted && 0};
     visibility: ${props => props.isSubmitted && 'hidden'};
     transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
-    transition-delay: 0.30s;
+    transition-delay: 0.3s;
 `;
 
 const SubmitButton = styled.button`
@@ -173,11 +168,8 @@ const Text = styled.p`
     margin-top: 15px;
 `;
 
-const SuccessText =
-    styled.p <
-    ArrowProps >
-    `
-    color: #B1B1B1;
+const SuccessText = styled.p<ArrowProps>`
+    color: #b1b1b1;
     font-size: 1rem;
     font-weight: 300;
     line-height: 1.2em;
@@ -193,10 +185,7 @@ const SuccessText =
     transition-delay: 0.55s;
 `;
 
-const Arrow =
-    styled.svg <
-    ArrowProps >
-    `
+const Arrow = styled.svg<ArrowProps>`
     transform: ${props => props.isSubmitted && `translateX(44px)`};
     transition: transform 0.25s ease-in-out;
 `;

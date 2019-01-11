@@ -3,6 +3,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
+import { InsufficientAssetLiquidityError } from '../errors';
 import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
 
 import { orderUtils } from './order_utils';
@@ -33,7 +34,18 @@ export const buyQuoteCalculator = {
         });
         // if we do not have enough orders to cover the desired assetBuyAmount, throw
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            throw new Error(AssetBuyerError.InsufficientAssetLiquidity);
+            // We needed the amount they requested to buy, plus the amount for slippage
+            const totalAmountRequested = assetBuyAmount.plus(slippageBufferAmount);
+            const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
+            // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
+            // in order to get the total amount needed considering slippage
+            // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
+            const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
+            // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
+            // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
+            const amountAvailableToFillConsideringSlippage = amountAbleToFill.div(multiplierNeededWithSlippage).floor();
+
+            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
         }
         // if we are not buying ZRX:
         // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)

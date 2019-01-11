@@ -38,18 +38,17 @@ export const AboutPageLayout = (props: Props) => (
                         {props.description}
                     </AnimatedParagraph>
 
-                    {props.linkLabel &&
-                        (props.href || props.to) && (
-                            <AnimatedLink
-                                to={props.to}
-                                href={props.href}
-                                target={!_.isUndefined(props.href) ? '_blank' : undefined}
-                                isWithArrow={true}
-                                isAccentColor={true}
-                            >
-                                {props.linkLabel}
-                            </AnimatedLink>
-                        )}
+                    {props.linkLabel && (props.href || props.to) && (
+                        <AnimatedLink
+                            to={props.to}
+                            href={props.href}
+                            target={!_.isUndefined(props.href) ? '_blank' : undefined}
+                            isWithArrow={true}
+                            isAccentColor={true}
+                        >
+                            {props.linkLabel}
+                        </AnimatedLink>
+                    )}
                 </Column>
             </Column>
         </Section>

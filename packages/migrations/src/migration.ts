@@ -141,6 +141,14 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         zrxAssetData,
     );
 
+    // DutchAuction
+    const dutchAuction = await wrappers.DutchAuctionContract.deployFrom0xArtifactAsync(
+        artifacts.DutchAuction,
+        provider,
+        txDefaults,
+        exchange.address,
+    );
+
     // Fund the Forwarder with ZRX
     const zrxDecimals = await zrxToken.decimals.callAsync();
     const zrxForwarderAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5000), zrxDecimals);
@@ -157,6 +165,7 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         assetProxyOwner: assetProxyOwner.address,
         forwarder: forwarder.address,
         orderValidator: orderValidator.address,
+        dutchAuction: dutchAuction.address,
     };
 }
 

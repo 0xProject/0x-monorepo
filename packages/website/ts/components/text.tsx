@@ -27,10 +27,7 @@ interface ParagraphProps extends BaseTextInterface {
     fontWeight?: string | number;
 }
 
-const StyledHeading =
-    styled.h1 <
-    HeadingProps >
-    `
+const StyledHeading = styled.h1<HeadingProps>`
     max-width: ${props => props.maxWidth};
     color: ${props => props.color || props.theme.textColor};
     display: ${props => props.isFlex && `inline-flex`};
@@ -64,10 +61,7 @@ Heading.defaultProps = {
 // Note: this would be useful to be implemented the same way was "Heading"
 // and be more generic. e.g. <Text /> with a props asElement so we can use it
 // for literally anything =
-export const Paragraph =
-    styled.p <
-    ParagraphProps >
-    `
+export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => `var(--${props.size || 'default'}Paragraph)`};
     font-weight: ${props => props.fontWeight || 300};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};

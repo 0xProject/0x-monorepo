@@ -24,6 +24,7 @@ import { NextEcosystem } from 'ts/pages/ecosystem';
 import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
+import { NextMarketMaker } from 'ts/pages/market_maker';
 import { NextWhy } from 'ts/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -68,8 +69,14 @@ const LazySolCompilerDocumentation = createLazyComponent('Documentation', async 
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
 );
-const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+const LazySolCoverageDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solCoverageDocs" */ 'ts/containers/sol_coverage_documentation'),
+);
+const LazySolTraceDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solTraceDocs" */ 'ts/containers/sol_trace_documentation'),
+);
+const LazySolProfilerDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solProfilerDocs" */ 'ts/containers/sol_profiler_documentation'),
 );
 const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
@@ -99,6 +106,11 @@ render(
                                 {/* Next (new site) routes */}
                                 <Route exact={true} path="/" component={NextLanding as any} />
                                 <Route exact={true} path={WebsitePaths.Why} component={NextWhy as any} />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.MarketMaker}
+                                    component={NextMarketMaker as any}
+                                />
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
@@ -143,7 +155,18 @@ render(
                                     path={`${WebsitePaths.SolCompiler}/:version?`}
                                     component={LazySolCompilerDocumentation}
                                 />
-                                <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
+                                <Route
+                                    path={`${WebsitePaths.SolCoverage}/:version?`}
+                                    component={LazySolCoverageDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolTrace}/:version?`}
+                                    component={LazySolTraceDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolProfiler}/:version?`}
+                                    component={LazySolProfilerDocumentation}
+                                />
                                 <Route
                                     path={`${WebsitePaths.JSONSchemas}/:version?`}
                                     component={LazyJSONSchemasDocumentation}

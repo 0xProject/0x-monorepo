@@ -11,15 +11,15 @@ A full-page React component for rendering beautiful documentation for Solidity a
 
 #### Features
 
-*   Mobile optimized
-*   Reads Javadoc-style comments in your code to generate class/method/argument/return/type comments.
-*   Syntax highlighting support for TypeScript & Solidity
-*   Type declaration linking
-*   Type declaration popovers to avoid clicking through to the definition
-*   Section/method/type anchors for easily pointing others to a specific part of your docs.
-*   Version picker
-*   Customizable sidebar header
-*   Supports custom markdown sections so you can easily add an intro or installation instructions.
+-   Mobile optimized
+-   Reads Javadoc-style comments in your code to generate class/method/argument/return/type comments.
+-   Syntax highlighting support for TypeScript & Solidity
+-   Type declaration linking
+-   Type declaration popovers to avoid clicking through to the definition
+-   Section/method/type anchors for easily pointing others to a specific part of your docs.
+-   Version picker
+-   Customizable sidebar header
+-   Supports custom markdown sections so you can easily add an intro or installation instructions.
 
 ## Installation
 
@@ -45,9 +45,9 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 Feel free to contribute to these improvements!
 
-*   Allow user to pass in styling for all major elements similar to [Material-UI](http://www.material-ui.com/).
-*   Allow user to define an alternative font and have it change everywhere.
-*   Add source links to Solidity docs (currently unsupported by solc, which underlies sol-doc).
+-   Allow user to pass in styling for all major elements similar to [Material-UI](http://www.material-ui.com/).
+-   Allow user to define an alternative font and have it change everywhere.
+-   Add source links to Solidity docs (currently unsupported by solc, which underlies sol-doc).
 
 ## Contributing
 

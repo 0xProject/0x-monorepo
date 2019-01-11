@@ -36,17 +36,16 @@ const sections: FAQSection[] = [
                     <div>
                         At its core, 0x is an open and non-rent seeking protocol that facilitates trustless, low
                         friction exchange of Ethereum-based assets. Developers can use 0x as a platform to build
-                        exchange applications on top of (<a
-                            href={`${configs.BASE_URL}${WebsitePaths.ZeroExJs}#introduction`}
-                            target="blank"
-                        >
+                        exchange applications on top of (
+                        <a href={`${configs.BASE_URL}${WebsitePaths.ZeroExJs}#introduction`} target="blank">
                             0x.js
                         </a>{' '}
                         is a Javascript library for interacting with the 0x protocol). For end users, 0x will be the
                         infrastructure of a wide variety of user-facing applications i.e.{' '}
                         <a href={`${configs.BASE_URL}${WebsitePaths.Portal}`} target="blank">
                             0x Portal
-                        </a>, a decentralized application that facilitates trustless trading of Ethereum-based tokens
+                        </a>
+                        , a decentralized application that facilitates trustless trading of Ethereum-based tokens
                         between known counterparties.
                     </div>
                 ),
@@ -253,7 +252,8 @@ const sections: FAQSection[] = [
                             target="_blank"
                         >
                             development roadmap
-                        </a>.
+                        </a>
+                        .
                     </div>
                 ),
             },
@@ -360,7 +360,8 @@ const sections: FAQSection[] = [
                             target="_blank"
                         >
                             here
-                        </a>.
+                        </a>
+                        .
                     </div>
                 ),
             },
@@ -380,8 +381,9 @@ const sections: FAQSection[] = [
                         Join our{' '}
                         <a href={constants.URL_ZEROEX_CHAT} target="_blank">
                             Discord
-                        </a>! As an open source project, 0x will rely on a worldwide community of passionate developers
-                        to contribute proposals, ideas and code.
+                        </a>
+                        ! As an open source project, 0x will rely on a worldwide community of passionate developers to
+                        contribute proposals, ideas and code.
                     </div>
                 ),
             },

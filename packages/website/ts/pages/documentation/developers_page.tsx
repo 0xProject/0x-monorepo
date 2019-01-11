@@ -68,10 +68,7 @@ interface SidebarContainerProps {
     className?: string;
 }
 
-const SidebarContainer =
-    styled.div <
-    SidebarContainerProps >
-    `
+const SidebarContainer = styled.div<SidebarContainerProps>`
     ${scrollableContainerStyles}
     padding-top: 27px;
     padding-left: ${SIDEBAR_PADDING}px;
@@ -87,10 +84,7 @@ interface MainContentContainerProps {
     className?: string;
 }
 
-const MainContentContainer =
-    styled.div <
-    MainContentContainerProps >
-    `
+const MainContentContainer = styled.div<MainContentContainerProps>`
     ${scrollableContainerStyles}
     padding-top: 0px;
     padding-left: 50px;
@@ -153,7 +147,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                 <Container className="flex mx-auto" height="100vh">
                     <Container
                         className="sm-hide xs-hide relative"
-                        width={234}
+                        width={270}
                         paddingLeft={22}
                         paddingRight={22}
                         paddingTop={0}

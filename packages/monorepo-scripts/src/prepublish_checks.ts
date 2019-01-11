@@ -140,6 +140,13 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
         );
     }
 
+    // Check to see if discord URL is set up
+    if (_.isUndefined(constants.discordAlertWebhookUrl)) {
+        throw new Error(
+            'You must have a discord webhook URL set to an envVar named `DISCORD_GITHUB_RELEASE_WEBHOOK_URL`. Add it then try again.',
+        );
+    }
+
     // Check Yarn version is 1.X
     utils.log('Checking the yarn version...');
     const result = await execAsync(`yarn --version`);

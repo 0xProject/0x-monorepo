@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _January 9, 2019_
+
+    * Export `MultiAssetData`, `MultiAssetDataWithRecursiveDecoding`, `ObjectMap`, and `SingleAssetData` from types. No longer export `AssetData`. (#1363)
+
 ## v2.0.8 - _December 13, 2018_
 
     * Dependencies updated

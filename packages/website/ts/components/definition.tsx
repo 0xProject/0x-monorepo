@@ -5,7 +5,7 @@ import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
-interface Action {
+export interface Action {
     label: string;
     url?: string;
     onClick?: () => void;
@@ -69,10 +69,7 @@ export const Definition = (props: Props) => (
     </Wrap>
 );
 
-const Wrap =
-    styled.div <
-    Props >
-    `
+const Wrap = styled.div<Props>`
     max-width: ${props => props.isInline && '354px'};
 
     & + & {
@@ -97,10 +94,7 @@ const Wrap =
     }
 `;
 
-const TextWrap =
-    styled.div <
-    Props >
-    `
+const TextWrap = styled.div<Props>`
     width: 100%;
     max-width: 560px;
 

@@ -1,5 +1,24 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Make `promisify` resolve when the callback error is undefined.",
+                "pr": 1501
+            }
+        ]
+    },
+    {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Add `should` prefix to names of properties in EncodingRules and DecodingRules",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
@@ -21,8 +40,7 @@
         "version": "2.0.7",
         "changes": [
             {
-                "note":
-                    "Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development."
+                "note": "Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development."
             }
         ],
         "timestamp": 1544570656
@@ -153,8 +171,7 @@
                 "pr": 807
             },
             {
-                "note":
-                    "Store different ABIs for events with same function signature and different amount of indexed arguments",
+                "note": "Store different ABIs for events with same function signature and different amount of indexed arguments",
                 "pr": 933
             }
         ],
@@ -321,8 +338,7 @@
         "version": "0.4.3",
         "changes": [
             {
-                "note":
-                    "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
+                "note": "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
             }
         ],
         "timestamp": 1521298800
@@ -365,8 +381,7 @@
         "version": "0.3.0",
         "changes": [
             {
-                "note":
-                    "Fix a bug related to event signature collisions (argument indexes aren't included in event signatures) in the abi_decoder. The decoder used to throw on unknown events with identical signatures as a known event (except indexes).",
+                "note": "Fix a bug related to event signature collisions (argument indexes aren't included in event signatures) in the abi_decoder. The decoder used to throw on unknown events with identical signatures as a known event (except indexes).",
                 "pr": 366
             }
         ],

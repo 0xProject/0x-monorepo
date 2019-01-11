@@ -1,6 +1,6 @@
 {
     "name": "@0x/pipeline",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "private": true,
     "description": "Data pipeline for offline analysis",
     "scripts": {
@@ -16,7 +16,7 @@
         "test:coverage": "nyc npm run test:all --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project . --format stylish --exclude ./migrations/**/*",
+        "lint": "tslint --project . --format stylish --exclude ./migrations/**/* --exclude ./test/fixtures/**/**/*.json",
         "migrate:run": "yarn typeorm migration:run --config ./lib/src/ormconfig",
         "migrate:revert": "yarn typeorm migration:revert --config ./lib/src/ormconfig",
         "migrate:create": "yarn typeorm migration:create --config ./lib/src/ormconfig --dir migrations"
@@ -39,16 +39,16 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/connect": "^3.0.10",
-        "@0x/contract-addresses": "^2.0.0",
-        "@0x/contract-artifacts": "^1.0.1",
+        "@0x/connect": "^3.0.11",
+        "@0x/contract-addresses": "^2.1.0",
+        "@0x/contract-artifacts": "^1.2.0",
         "@0x/contract-wrappers": "^3.0.0",
-        "@0x/dev-utils": "^1.0.21",
-        "@0x/order-utils": "^2.0.0",
-        "@0x/subproviders": "^2.1.8",
-        "@0x/types": "^1.4.1",
-        "@0x/utils": "^2.0.8",
-        "@0x/web3-wrapper": "^3.2.1",
+        "@0x/dev-utils": "^1.0.22",
+        "@0x/order-utils": "^3.1.0",
+        "@0x/subproviders": "^2.1.9",
+        "@0x/types": "^1.5.0",
+        "@0x/utils": "^2.1.1",
+        "@0x/web3-wrapper": "^3.2.2",
         "@types/dockerode": "^2.5.9",
         "@types/p-limit": "^2.0.0",
         "async-parallel": "^1.2.3",

@@ -4,6 +4,7 @@ export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtil
 
 export {
     ContractWrappers,
+    DutchAuctionWrapper,
     ERC20TokenWrapper,
     ERC721TokenWrapper,
     EtherTokenWrapper,
@@ -27,6 +28,7 @@ export {
     OrderAndTraderInfo,
     TraderInfo,
     ValidateOrderFillableOpts,
+    DutchAuctionData,
 } from '@0x/contract-wrappers';
 
 export {
@@ -80,11 +82,16 @@ export {
     OrderState,
     AssetProxyId,
     AssetData,
+    SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
     SignatureType,
+    ObjectMap,
     OrderRelevantState,
     Stats,
+    DutchAuctionDetails,
 } from '@0x/types';
 
 export {

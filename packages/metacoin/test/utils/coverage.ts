@@ -1,5 +1,5 @@
 import { devConstants } from '@0x/dev-utils';
-import { CoverageSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
+import { CoverageSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-coverage';
 import * as _ from 'lodash';
 
 import { config } from './config';

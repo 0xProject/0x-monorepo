@@ -5,8 +5,8 @@ const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
     AMOUNT_DISPLAY_PRECSION: 5,
-    BACKEND_BASE_PROD_URL: 'https://website-api.0xproject.com',
-    BACKEND_BASE_STAGING_URL: 'https://staging-website-api.0xproject.com',
+    BACKEND_BASE_PROD_URL: 'https://website-api.0x.org',
+    BACKEND_BASE_STAGING_URL: 'https://staging-website-api.0x.org',
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
@@ -39,8 +39,8 @@ export const configs = {
     ] as OutdatedWrappedEtherByNetworkId[],
     // The order matters. We first try first node and only then fall back to others.
     PUBLIC_NODE_URLS_BY_NETWORK_ID: {
-        [1]: [`https://mainnet.infura.io/${INFURA_API_KEY}`, 'https://mainnet.0xproject.com'],
-        [42]: [`https://kovan.infura.io/${INFURA_API_KEY}`, 'https://kovan.0xproject.com'],
+        [1]: [`https://mainnet.infura.io/${INFURA_API_KEY}`, 'https://mainnet.0x.org'],
+        [42]: [`https://kovan.infura.io/${INFURA_API_KEY}`, 'https://kovan.0x.org'],
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,

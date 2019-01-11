@@ -23,8 +23,12 @@ export function parseDdexOrders(
 ): TokenOrder[] {
     const aggregatedBids = aggregateOrders(ddexOrderbook.bids);
     const aggregatedAsks = aggregateOrders(ddexOrderbook.asks);
-    const parsedBids = aggregatedBids.map(order => parseDdexOrder(ddexMarket, observedTimestamp, 'bid', source, order));
-    const parsedAsks = aggregatedAsks.map(order => parseDdexOrder(ddexMarket, observedTimestamp, 'ask', source, order));
+    const parsedBids = aggregatedBids.map(order =>
+        parseDdexOrder(ddexMarket, observedTimestamp, OrderType.Bid, source, order),
+    );
+    const parsedAsks = aggregatedAsks.map(order =>
+        parseDdexOrder(ddexMarket, observedTimestamp, OrderType.Ask, source, order),
+    );
     return parsedBids.concat(parsedAsks);
 }
 
@@ -54,14 +58,12 @@ export function parseDdexOrder(
     tokenOrder.orderType = orderType;
     tokenOrder.price = price;
 
-    // ddex currently confuses quote and base assets.
-    // We switch them here to maintain our internal consistency.
-    tokenOrder.baseAssetSymbol = ddexMarket.quoteToken;
-    tokenOrder.baseAssetAddress = ddexMarket.quoteTokenAddress;
+    tokenOrder.baseAssetSymbol = ddexMarket.baseToken;
+    tokenOrder.baseAssetAddress = ddexMarket.baseTokenAddress;
     tokenOrder.baseVolume = amount;
 
-    tokenOrder.quoteAssetSymbol = ddexMarket.baseToken;
-    tokenOrder.quoteAssetAddress = ddexMarket.baseTokenAddress;
+    tokenOrder.quoteAssetSymbol = ddexMarket.quoteToken;
+    tokenOrder.quoteAssetAddress = ddexMarket.quoteTokenAddress;
     tokenOrder.quoteVolume = price.times(amount);
     return tokenOrder;
 }

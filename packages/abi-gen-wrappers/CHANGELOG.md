@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _January 9, 2019_
+
+    * Added Dutch Auction Wrapper (#1465)
+
 ## v2.0.2 - _December 13, 2018_
 
     * Dependencies updated

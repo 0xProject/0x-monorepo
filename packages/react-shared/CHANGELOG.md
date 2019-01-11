@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _January 9, 2019_
+
+    * Change implementation to use react-router-dom NavLink instead of Link. Expose `activeStyle` prop. (#1448)
+
 ## v1.0.25 - _December 13, 2018_
 
     * Dependencies updated

@@ -1,8 +1,10 @@
-import { AssetBuyerError } from '@0x/asset-buyer';
+import { AssetBuyerError, InsufficientAssetLiquidityError } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
+import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
@@ -102,15 +104,29 @@ export const assetUtils = {
         return assetDataGroupIfExists[Network.Mainnet];
     },
     getERC20AssetsFromAssets: (assets: Asset[]): ERC20Asset[] => {
-        const erc20sOrUndefined = _.map(
-            assets,
-            asset => (asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined),
+        const erc20sOrUndefined = _.map(assets, asset =>
+            asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined,
         );
         return _.compact(erc20sOrUndefined);
     },
     assetBuyerErrorMessage: (asset: ERC20Asset, error: Error): string | undefined => {
         if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
+            if (
+                error instanceof InsufficientAssetLiquidityError &&
+                error.amountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)
+            ) {
+                const unitAmountAvailableToFill = Web3Wrapper.toUnitAmount(
+                    error.amountAvailableToFill,
+                    asset.metaData.decimals,
+                );
+                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.round(2, BigNumber.ROUND_DOWN);
+
+                if (roundedUnitAmountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)) {
+                    return `There are only ${roundedUnitAmountAvailableToFill} ${assetName} available to buy`;
+                }
+            }
+
             return `Not enough ${assetName} available`;
         } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
             return 'Not enough ZRX available';
