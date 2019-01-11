@@ -24,6 +24,8 @@ const expect = chai.expect;
 const FAKE_SRA_URL = 'https://fakeurl.com';
 const FAKE_ASSET_DATA = '0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48';
 const TOKEN_DECIMALS = 18;
+const DAI_ASSET_DATA = '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359"';
+const WETH_ASSET_DATA = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const WETH_DECIMALS = constants.ETHER_TOKEN_DECIMALS;
 
 const baseUnitAmount = (unitAmount: number, decimals = TOKEN_DECIMALS): BigNumber => {
@@ -75,14 +77,26 @@ describe('AssetBuyer', () => {
             });
         });
 
-        it('should return 0s when asset pair not supported', async () => {
-            mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, []);
+        describe('asset pair not supported', () => {
+            it('should return 0s when no asset pair not supported', async () => {
+                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, []);
 
-            const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
-            const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
-            expect(liquidityResult).to.deep.equal({
-                tokensAvailableInBaseUnits: 0,
-                ethValueAvailableInWei: 0,
+                const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
+                const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
+                expect(liquidityResult).to.deep.equal({
+                    tokensAvailableInBaseUnits: 0,
+                    ethValueAvailableInWei: 0,
+                });
+            });
+            it('should return 0s when only other asset pair supported', async () => {
+                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, [DAI_ASSET_DATA]);
+
+                const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
+                const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
+                expect(liquidityResult).to.deep.equal({
+                    tokensAvailableInBaseUnits: 0,
+                    ethValueAvailableInWei: 0,
+                });
             });
         });
 
@@ -98,7 +112,7 @@ describe('AssetBuyer', () => {
             });
 
             beforeEach(() => {
-                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, [FAKE_ASSET_DATA]);
+                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, [WETH_ASSET_DATA]);
             });
 
             it('should return 0s when no orders available', async () => {

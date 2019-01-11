@@ -1,4 +1,6 @@
+import { AssetBuyer } from '@0x/asset-buyer';
 import { assetDataUtils } from '@0x/order-utils';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -12,8 +14,10 @@ import {
 } from './constants';
 import { assetMetaDataMap } from './data/asset_meta_data_map';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
+import { Network, OrderSource } from './types';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
+import { providerFactory } from './util/provider_factory';
 import { util } from './util/util';
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
@@ -132,6 +136,32 @@ export const assetDataForERC20TokenAddress = (tokenAddress: string): string => {
 export const hasMetaDataForAssetData = (assetData: string): boolean => {
     assert.isHexString('assetData', assetData);
     return assetMetaDataMap[assetData] !== undefined;
+};
+
+export const getLiquidityForAssetDataAsync = async (
+    assetData: string,
+    orderSource: OrderSource,
+    networkId: Network = Network.Mainnet,
+    provider?: Provider,
+) => {
+    assert.isHexString('assetData', assetData);
+    assert.isValidOrderSource('orderSource', orderSource);
+    assert.isNumber('networkId', networkId);
+
+    if (provider !== undefined) {
+        assert.isWeb3Provider('provider', provider);
+    }
+
+    const bestProvider: Provider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
+
+    const assetBuyerOptions = { networkId };
+
+    const assetBuyer =
+        typeof orderSource === 'string'
+            ? AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(bestProvider, orderSource, assetBuyerOptions)
+            : AssetBuyer.getAssetBuyerForProvidedOrders(bestProvider, orderSource, assetBuyerOptions);
+
+    return assetBuyer.getLiquidityForAssetDataAsync(assetData);
 };
 
 // Write version info to the exported object for debugging

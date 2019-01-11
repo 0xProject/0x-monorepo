@@ -227,7 +227,8 @@ export class AssetBuyer {
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
 
         const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
-        if (!assetPairs.includes(assetData)) {
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        if (!assetPairs.includes(etherTokenAssetData)) {
             return {
                 tokensAvailableInBaseUnits: 0,
                 ethValueAvailableInWei: 0,
