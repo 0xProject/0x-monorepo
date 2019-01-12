@@ -83,15 +83,8 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         txDefaults,
     );
 
-    // Note: Perform all setup after contract deployments to have consistent addresses
-    // available in the snapshots
     await web3Wrapper.awaitTransactionSuccessAsync(
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-            from: owner,
-        }),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
             from: owner,
         }),
     );
@@ -101,12 +94,22 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         }),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+        await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
             from: owner,
         }),
     );
 
-    // Register Asset Proxies to the MultiAssetProxy
+    // MultiAssetProxy
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+            from: owner,
+        }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+            from: owner,
+        }),
+    );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address),
     );
