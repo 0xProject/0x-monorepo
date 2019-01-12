@@ -103,8 +103,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public authorities = {
@@ -128,8 +131,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public removeAuthorizedAddress = {
@@ -201,8 +207,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public owner = {
@@ -224,8 +233,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public removeAuthorizedAddressAtIndex = {
@@ -306,8 +318,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getProxyId = {
@@ -329,8 +344,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public authorized = {
@@ -354,8 +372,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getAuthorizedAddresses = {
@@ -377,8 +398,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string[]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transferOwnership = {
@@ -450,8 +474,11 @@ export class ERC721ProxyContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(

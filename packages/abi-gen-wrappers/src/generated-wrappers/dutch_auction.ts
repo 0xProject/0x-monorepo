@@ -84,8 +84,11 @@ export class DutchAuctionContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{beginTimeSeconds: BigNumber;endTimeSeconds: BigNumber;beginAmount: BigNumber;endAmount: BigNumber;currentAmount: BigNumber;currentTimeSeconds: BigNumber}
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public matchOrders = {
@@ -184,8 +187,11 @@ export class DutchAuctionContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(

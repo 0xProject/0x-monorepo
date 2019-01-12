@@ -44,16 +44,17 @@ export class MethodDataType extends AbstractSetDataType {
         return returnValues;
     }
 
-    public decodeReturnValuesAsArray(returnData: string, rules?: DecodingRules): any[] {
-        const returnValues = this.decodeReturnValues(returnData, rules);
-        const returnValuesAsArray = _.isObject(returnValues) ? _.values(returnValues) : [returnValues];
-        return returnValuesAsArray;
-    }
-
-    public decodeReturnValuesAsArrayOrNull(returnData: string, rules?: DecodingRules): any {
-        const returnValuesAsArray = this.decodeReturnValuesAsArray(returnData, rules);
-        const returnValue = _.isEmpty(returnValuesAsArray) ? [] : returnValuesAsArray;
-        return returnValue;
+    public strictDecodeReturnValue<T>(returndata: string, rules?: DecodingRules): T {
+        const returnValues = this._returnDataType.decode(returndata, rules);
+        const returnValuesAsArray: any = _.isObject(returnValues) ? _.values(returnValues) : [returnValues];
+        switch (returnValuesAsArray.length) {
+            case 0:
+                return undefined as any;
+            case 1:
+                return returnValuesAsArray[0];
+            default:
+                return returnValuesAsArray;
+        }
     }
 
     public getSignatureType(): string {

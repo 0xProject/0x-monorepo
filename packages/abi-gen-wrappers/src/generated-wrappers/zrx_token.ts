@@ -55,8 +55,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('name()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public approve = {
@@ -137,8 +140,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public totalSupply = {
@@ -160,8 +166,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transferFrom = {
@@ -251,8 +260,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public decimals = {
@@ -274,8 +286,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decimals()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<number
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public balanceOf = {
@@ -299,8 +314,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public symbol = {
@@ -322,8 +340,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('symbol()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transfer = {
@@ -404,8 +425,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public allowance = {
@@ -431,8 +455,11 @@ export class ZRXTokenContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(

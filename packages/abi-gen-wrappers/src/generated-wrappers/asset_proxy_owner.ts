@@ -118,8 +118,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owners(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public removeOwner = {
@@ -191,8 +194,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeOwner(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public revokeConfirmation = {
@@ -264,8 +270,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('revokeConfirmation(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public isOwner = {
@@ -289,8 +298,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isOwner(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public confirmations = {
@@ -316,8 +328,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmations(uint256,address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public executeRemoveAuthorizedAddressAtIndex = {
@@ -389,8 +404,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public secondsTimeLocked = {
@@ -412,8 +430,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('secondsTimeLocked()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getTransactionCount = {
@@ -439,8 +460,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionCount(bool,bool)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public registerAssetProxy = {
@@ -521,8 +545,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public addOwner = {
@@ -594,8 +621,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public isConfirmed = {
@@ -619,8 +649,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isConfirmed(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public changeTimeLock = {
@@ -692,8 +725,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeTimeLock(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public isAssetProxyRegistered = {
@@ -717,8 +753,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getConfirmationCount = {
@@ -742,8 +781,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmationCount(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transactions = {
@@ -767,8 +809,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactions(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, BigNumber, string, boolean]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getOwners = {
@@ -790,8 +835,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getOwners()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string[]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getTransactionIds = {
@@ -821,8 +869,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionIds(uint256,uint256,bool,bool)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber[]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getConfirmations = {
@@ -846,8 +897,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmations(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string[]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transactionCount = {
@@ -869,8 +923,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactionCount()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public changeRequirement = {
@@ -942,8 +999,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeRequirement(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public confirmTransaction = {
@@ -1015,8 +1075,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmTransaction(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public submitTransaction = {
@@ -1106,8 +1169,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('submitTransaction(address,uint256,bytes)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public confirmationTimes = {
@@ -1131,8 +1197,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmationTimes(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public MAX_OWNER_COUNT = {
@@ -1154,8 +1223,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('MAX_OWNER_COUNT()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public required = {
@@ -1177,8 +1249,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('required()');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public replaceOwner = {
@@ -1259,8 +1334,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('replaceOwner(address,address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public executeTransaction = {
@@ -1332,8 +1410,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(

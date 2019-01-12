@@ -16,6 +16,8 @@ async callAsync(
     const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
     BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
     const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
-    const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-    return resultArray{{#singleReturnValue}}[0]{{/singleReturnValue}};
+    // tslint:disable boolean-naming
+    const result = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
+    // tslint:enable boolean-naming
+    return result;
 },

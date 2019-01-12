@@ -38,8 +38,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getBalanceAndAllowance = {
@@ -65,8 +68,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getOrdersAndTradersInfo = {
@@ -92,8 +98,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getTradersInfo = {
@@ -119,8 +128,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getERC721TokenOwner = {
@@ -146,8 +158,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getBalancesAndAllowances = {
@@ -173,8 +188,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray;
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getTraderInfo = {
@@ -200,8 +218,11 @@ export class OrderValidatorContract extends BaseContract {
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)');
-            const resultArray = abiEncoder.decodeReturnValuesAsArrayOrNull(rawCallResult);
-            return resultArray[0];
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(
