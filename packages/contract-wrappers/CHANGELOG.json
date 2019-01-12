@@ -7,7 +7,7 @@
                 "pr": 1474
             },
             {
-                "note": "Prevent Exchange `matchOrdersAsync` input parameters being modified",
+                "note": "Remove Exchange `matchOrdersAsync` optimization",
                 "pr": 1514
             }
         ]

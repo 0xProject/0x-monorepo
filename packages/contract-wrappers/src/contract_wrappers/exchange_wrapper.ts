@@ -744,19 +744,13 @@ export class ExchangeWrapper extends ContractWrapper {
         ) {
             throw new Error(ExchangeWrapperError.AssetDataMismatch);
         }
-        // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
-        const optimizedRightSignedOrder = {
-            ...rightSignedOrder,
-            makerAssetData: '0x',
-            takerAssetData: '0x',
-        };
         const exchangeInstance = await this._getExchangeContractAsync();
         if (orderTransactionOpts.shouldValidate) {
             await exchangeInstance.matchOrders.callAsync(
                 leftSignedOrder,
-                optimizedRightSignedOrder,
+                rightSignedOrder,
                 leftSignedOrder.signature,
-                optimizedRightSignedOrder.signature,
+                rightSignedOrder.signature,
                 {
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
@@ -767,9 +761,9 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const txHash = await exchangeInstance.matchOrders.sendTransactionAsync(
             leftSignedOrder,
-            optimizedRightSignedOrder,
+            rightSignedOrder,
             leftSignedOrder.signature,
-            optimizedRightSignedOrder.signature,
+            rightSignedOrder.signature,
             {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
