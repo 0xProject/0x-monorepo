@@ -1288,7 +1288,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const expectedOrderStatus = OrderStatus.Fillable;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1303,7 +1303,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const expectedOrderStatus = OrderStatus.Fillable;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1317,7 +1317,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
-                    const expectedOrderStatus = OrderStatus.FULLY_FILLED;
+                    const expectedOrderStatus = OrderStatus.FullyFilled;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1331,7 +1331,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const expectedOrderStatus = OrderStatus.Cancelled;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1347,7 +1347,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const expectedOrderStatus = OrderStatus.Cancelled;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1363,7 +1363,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const expectedOrderStatus = OrderStatus.Expired;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1381,7 +1381,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const expectedOrderStatus = OrderStatus.Expired;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1408,7 +1408,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedUnfilledOrderHash = orderHashUtils.getOrderHashHex(unfilledOrder);
                 const expectedUnfilledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedUnfilledOrderStatus = OrderStatus.FILLABLE;
+                const expectedUnfilledOrderStatus = OrderStatus.Fillable;
                 const unfilledOrderInfo = ordersInfo[0];
                 expect(unfilledOrderInfo.orderHash).to.be.equal(expectedUnfilledOrderHash);
                 expect(unfilledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1418,7 +1418,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedPartialOrderHash = orderHashUtils.getOrderHashHex(partiallyFilledOrder);
                 const expectedPartialTakerAssetFilledAmount = partiallyFilledOrder.takerAssetAmount.div(2);
-                const expectedPartialOrderStatus = OrderStatus.FILLABLE;
+                const expectedPartialOrderStatus = OrderStatus.Fillable;
                 const partialOrderInfo = ordersInfo[1];
                 expect(partialOrderInfo.orderHash).to.be.equal(expectedPartialOrderHash);
                 expect(partialOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1428,7 +1428,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedFilledOrderHash = orderHashUtils.getOrderHashHex(fullyFilledOrder);
                 const expectedFilledTakerAssetFilledAmount = fullyFilledOrder.takerAssetAmount;
-                const expectedFilledOrderStatus = OrderStatus.FULLY_FILLED;
+                const expectedFilledOrderStatus = OrderStatus.FullyFilled;
                 const filledOrderInfo = ordersInfo[2];
                 expect(filledOrderInfo.orderHash).to.be.equal(expectedFilledOrderHash);
                 expect(filledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1438,7 +1438,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedCancelledOrderHash = orderHashUtils.getOrderHashHex(cancelledOrder);
                 const expectedCancelledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedCancelledOrderStatus = OrderStatus.CANCELLED;
+                const expectedCancelledOrderStatus = OrderStatus.Cancelled;
                 const cancelledOrderInfo = ordersInfo[3];
                 expect(cancelledOrderInfo.orderHash).to.be.equal(expectedCancelledOrderHash);
                 expect(cancelledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1448,7 +1448,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedExpiredOrderHash = orderHashUtils.getOrderHashHex(expiredOrder);
                 const expectedExpiredTakerAssetFilledAmount = new BigNumber(0);
-                const expectedExpiredOrderStatus = OrderStatus.EXPIRED;
+                const expectedExpiredOrderStatus = OrderStatus.Expired;
                 const expiredOrderInfo = ordersInfo[4];
                 expect(expiredOrderInfo.orderHash).to.be.equal(expectedExpiredOrderHash);
                 expect(expiredOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(

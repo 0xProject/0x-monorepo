@@ -6,10 +6,10 @@ Smart contracts that implement the 0x protocol. Addresses of the deployed contra
 
 Contracts that make up and interact with version 2.0.0 of the protocol can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
 
-*   [protocol](./contracts/protocol)
-    *   This directory contains the contracts that make up version 2.0.0. A full specification can be found [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+-   [protocol](./contracts/protocol)
+    -   This directory contains the contracts that make up version 2.0.0. A full specification can be found [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+-   [test](./contracts/test)
+    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
 
 ## Bug bounty
 

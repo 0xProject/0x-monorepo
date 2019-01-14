@@ -2,5 +2,5 @@ Welcome to the [0x smart contracts](https://github.com/0xProject/0x-monorepo/tre
 
 ### Helpful wiki articles:
 
-*   [Deployed smart contract addresses](https://0x.org/wiki#Deployed-Addresses)
-*   [0x Protocol Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md)
+-   [Deployed smart contract addresses](https://0x.org/wiki#Deployed-Addresses)
+-   [0x Protocol Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md)

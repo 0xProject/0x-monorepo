@@ -32,10 +32,7 @@ export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
     return null;
 };
 
-export const InlineIconWrap =
-    styled.div <
-    PaddingInterface >
-    `
+export const InlineIconWrap = styled.div<PaddingInterface>`
     margin: ${props => getCSSPadding(props.margin)};
     display: flex;
     align-items: center;
@@ -54,10 +51,7 @@ const _getSize = (size: string | number = 'small'): string => {
     return `${size}px`;
 };
 
-const StyledIcon =
-    styled.figure <
-    IconProps >
-    `
+const StyledIcon = styled.figure<IconProps>`
     width: ${props => _getSize(props.size)};
     height: ${props => _getSize(props.size)};
     margin: ${props => getCSSPadding(props.margin)};

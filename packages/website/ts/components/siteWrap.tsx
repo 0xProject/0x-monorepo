@@ -140,10 +140,7 @@ export class SiteWrap extends React.Component<Props, State> {
     }
 }
 
-const Main =
-    styled.main <
-    MainProps >
-    `
+const Main = styled.main<MainProps>`
     transition: transform 0.5s, opacity 0.5s;
     opacity: ${props => props.isNavToggled && '0.5'};
 `;

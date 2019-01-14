@@ -111,20 +111,19 @@ export class EthWethConversionDialog extends React.Component<
                         )}
                         <div className="pt1" style={{ fontSize: 12 }}>
                             <div className="left">1 ETH = 1 WETH</div>
-                            {this.props.direction === Side.Receive &&
-                                this.state.isEthTokenBalanceLoaded && (
-                                    <div
-                                        className="right"
-                                        onClick={this._onMaxClick.bind(this)}
-                                        style={{
-                                            color: colors.darkBlue,
-                                            textDecoration: 'underline',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        Max
-                                    </div>
-                                )}
+                            {this.props.direction === Side.Receive && this.state.isEthTokenBalanceLoaded && (
+                                <div
+                                    className="right"
+                                    onClick={this._onMaxClick.bind(this)}
+                                    style={{
+                                        color: colors.darkBlue,
+                                        textDecoration: 'underline',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    Max
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

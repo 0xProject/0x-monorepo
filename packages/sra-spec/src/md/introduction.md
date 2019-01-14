@@ -204,7 +204,7 @@ A good example of such a field is `remainingTakerAssetAmount`, which is a conven
 
 # Misc.
 
-*   All requests and responses should be of **application/json** content type
-*   All token amounts are sent in amounts of the smallest level of precision (base units). (e.g if a token has 18 decimal places, selling 1 token would show up as selling `'1000000000000000000'` units by this API).
-*   All addresses are sent as lower-case (non-checksummed) Ethereum addresses with the `0x` prefix.
-*   All parameters are to be written in `lowerCamelCase`.
+-   All requests and responses should be of **application/json** content type
+-   All token amounts are sent in amounts of the smallest level of precision (base units). (e.g if a token has 18 decimal places, selling 1 token would show up as selling `'1000000000000000000'` units by this API).
+-   All addresses are sent as lower-case (non-checksummed) Ethereum addresses with the `0x` prefix.
+-   All parameters are to be written in `lowerCamelCase`.

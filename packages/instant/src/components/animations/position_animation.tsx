@@ -95,10 +95,7 @@ const animationForSize = (
     return animationSettingsForSize && mediaFn`${generatePositionAnimationCss(animationSettingsForSize)}`;
 };
 
-export const PositionAnimation =
-    styled.div <
-    PositionAnimationProps >
-    `
+export const PositionAnimation = styled.div<PositionAnimationProps>`
     && {
         ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
         ${props => defaultAnimation(props.positionSettings)}
