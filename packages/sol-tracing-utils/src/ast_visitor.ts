@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as Parser from 'solidity-parser-antlr';
 
-import { BranchMap, FnMap, LocationByOffset, SingleFileSourceRange, StatementMap } from './types';
+import { BranchMap, FnMap, OffsetToLocation, SingleFileSourceRange, StatementMap } from './types';
 
 export interface CoverageEntriesDescription {
     fnMap: FnMap;
@@ -22,13 +22,13 @@ export class ASTVisitor {
     private readonly _branchMap: BranchMap = {};
     private readonly _modifiersStatementIds: number[] = [];
     private readonly _statementMap: StatementMap = {};
-    private readonly _locationByOffset: LocationByOffset;
+    private readonly _offsetToLocation: OffsetToLocation;
     private readonly _ignoreRangesBeginningAt: number[];
     // keep track of contract/function ranges that are to be ignored
     // so we can also ignore any children nodes within the contract/function
     private readonly _ignoreRangesWithin: Array<[number, number]> = [];
-    constructor(locationByOffset: LocationByOffset, ignoreRangesBeginningAt: number[] = []) {
-        this._locationByOffset = locationByOffset;
+    constructor(offsetToLocation: OffsetToLocation, ignoreRangesBeginningAt: number[] = []) {
+        this._offsetToLocation = offsetToLocation;
         this._ignoreRangesBeginningAt = ignoreRangesBeginningAt;
     }
     public getCollectedCoverageEntries(): CoverageEntriesDescription {
@@ -169,8 +169,8 @@ export class ASTVisitor {
     }
     private _getExpressionRange(ast: Parser.ASTNode): SingleFileSourceRange {
         const astRange = ast.range as [number, number];
-        const start = this._locationByOffset[astRange[0]];
-        const end = this._locationByOffset[astRange[1] + 1];
+        const start = this._offsetToLocation[astRange[0]];
+        const end = this._offsetToLocation[astRange[1] + 1];
         const range = {
             start,
             end,

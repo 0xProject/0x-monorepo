@@ -22,7 +22,7 @@ export {
     BranchMap,
     EvmCallStackEntry,
     FnMap,
-    LocationByOffset,
+    OffsetToLocation,
     StatementMap,
     TraceInfoBase,
     TraceInfoExistingContract,

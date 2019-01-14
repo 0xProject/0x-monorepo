@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { getPcToInstructionIndexMapping } from './instructions';
-import { LocationByOffset, SourceRange } from './types';
+import { OffsetToLocation, SourceRange } from './types';
 
 const RADIX = 10;
 
@@ -15,19 +15,19 @@ export interface SourceLocation {
  * Receives a string with newlines and returns a map of byte offset to LineColumn
  * @param str A string to process
  */
-export function getLocationByOffset(str: string): LocationByOffset {
-    const locationByOffset: LocationByOffset = { 0: { line: 1, column: 0 } };
+export function getOffsetToLocation(str: string): OffsetToLocation {
+    const offsetToLocation: OffsetToLocation = { 0: { line: 1, column: 0 } };
     let currentOffset = 0;
     for (const char of str.split('')) {
-        const location = locationByOffset[currentOffset];
+        const location = offsetToLocation[currentOffset];
         const isNewline = char === '\n';
-        locationByOffset[currentOffset + 1] = {
+        offsetToLocation[currentOffset + 1] = {
             line: location.line + (isNewline ? 1 : 0),
             column: isNewline ? 0 : location.column + 1,
         };
         currentOffset++;
     }
-    return locationByOffset;
+    return offsetToLocation;
 }
 
 /**
@@ -46,9 +46,9 @@ export function parseSourceMap(
 ): { [programCounter: number]: SourceRange } {
     const bytecode = Uint8Array.from(Buffer.from(bytecodeHex, 'hex'));
     const pcToInstructionIndex: { [programCounter: number]: number } = getPcToInstructionIndexMapping(bytecode);
-    const locationByOffsetByFileIndex: { [fileIndex: number]: LocationByOffset } = {};
+    const fileIndexToOffsetToLocation: { [fileIndex: number]: OffsetToLocation } = {};
     _.map(sourceCodes, (sourceCode: string, fileIndex: number) => {
-        locationByOffsetByFileIndex[fileIndex] = _.isUndefined(sourceCode) ? {} : getLocationByOffset(sourceCode);
+        fileIndexToOffsetToLocation[fileIndex] = _.isUndefined(sourceCode) ? {} : getOffsetToLocation(sourceCode);
     });
     const entries = srcMap.split(';');
     let lastParsedEntry: SourceLocation = {} as any;
@@ -69,12 +69,12 @@ export function parseSourceMap(
             length,
             fileIndex,
         };
-        if (parsedEntry.fileIndex !== -1 && !_.isUndefined(locationByOffsetByFileIndex[parsedEntry.fileIndex])) {
-            const locationByOffset = locationByOffsetByFileIndex[parsedEntry.fileIndex];
+        if (parsedEntry.fileIndex !== -1 && !_.isUndefined(fileIndexToOffsetToLocation[parsedEntry.fileIndex])) {
+            const offsetToLocation = fileIndexToOffsetToLocation[parsedEntry.fileIndex];
             const sourceRange = {
                 location: {
-                    start: locationByOffset[parsedEntry.offset],
-                    end: locationByOffset[parsedEntry.offset + parsedEntry.length],
+                    start: offsetToLocation[parsedEntry.offset],
+                    end: offsetToLocation[parsedEntry.offset + parsedEntry.length],
                 },
                 fileName: sources[parsedEntry.fileIndex],
             };

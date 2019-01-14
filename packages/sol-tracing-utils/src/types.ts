@@ -16,7 +16,7 @@ export interface SingleFileSourceRange {
     end: LineColumn;
 }
 
-export interface LocationByOffset {
+export interface OffsetToLocation {
     [offset: number]: LineColumn;
 }
 
