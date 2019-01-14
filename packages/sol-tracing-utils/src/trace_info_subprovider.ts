@@ -18,7 +18,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
         if (nodeType === NodeType.Geth) {
             // For very large traces we use a custom tracer that outputs a format compatible with a
             // regular trace. We only need the 2nd item on the stack when the instruction is a call.
-            // By not including othe stack values, we severly limit the amount of data to be collectd.
+            // By not including other stack values, we drastically limit the amount of data to be collected.
             const tracer = `
                 {
                     data: [],
