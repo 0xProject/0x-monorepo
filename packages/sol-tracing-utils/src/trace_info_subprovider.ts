@@ -19,6 +19,8 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
             // For very large traces we use a custom tracer that outputs a format compatible with a
             // regular trace. We only need the 2nd item on the stack when the instruction is a call.
             // By not including other stack values, we drastically limit the amount of data to be collected.
+            // There are no good docs about how to write those tracers, but you can find some example ones here:
+            // https://github.com/ethereum/go-ethereum/tree/master/eth/tracers/internal/tracers
             const tracer = `
                 {
                     data: [],
