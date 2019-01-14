@@ -76,13 +76,20 @@ export interface Coverage {
     };
 }
 
+export interface SourceCodes {
+    [sourceId: number]: string;
+}
+export interface Sources {
+    [sourceId: number]: string;
+}
+
 export interface ContractData {
     bytecode: string;
     sourceMap: string;
     runtimeBytecode: string;
     sourceMapRuntime: string;
-    sourceCodes: { [sourceId: number]: string };
-    sources: { [sourceId: number]: string };
+    sourceCodes: SourceCodes;
+    sources: Sources;
 }
 
 // Part of the trace executed within the same context
