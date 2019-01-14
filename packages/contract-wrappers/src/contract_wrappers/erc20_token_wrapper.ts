@@ -271,7 +271,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
 
         const fromAddressBalance = await this.getBalanceAsync(normalizedTokenAddress, normalizedFromAddress);
-        if (fromAddressBalance.lessThan(amountInBaseUnits)) {
+        if (fromAddressBalance.isLessThan(amountInBaseUnits)) {
             throw new Error(ContractWrappersError.InsufficientBalanceForTransfer);
         }
 
@@ -327,12 +327,12 @@ export class ERC20TokenWrapper extends ContractWrapper {
             normalizedFromAddress,
             normalizedSenderAddress,
         );
-        if (fromAddressAllowance.lessThan(amountInBaseUnits)) {
+        if (fromAddressAllowance.isLessThan(amountInBaseUnits)) {
             throw new Error(ContractWrappersError.InsufficientAllowanceForTransfer);
         }
 
         const fromAddressBalance = await this.getBalanceAsync(normalizedTokenAddress, normalizedFromAddress);
-        if (fromAddressBalance.lessThan(amountInBaseUnits)) {
+        if (fromAddressBalance.isLessThan(amountInBaseUnits)) {
             throw new Error(ContractWrappersError.InsufficientBalanceForTransfer);
         }
 

@@ -66,7 +66,7 @@ export class MatchOrderTester {
         const feePaidByRightMaker = new BigNumber(rightLog.makerFeePaid);
         const feePaidByTakerRight = new BigNumber(rightLog.takerFeePaid);
         // Derive amount received by taker
-        const amountReceivedByTaker = amountSoldByLeftMaker.sub(amountBoughtByRightMaker);
+        const amountReceivedByTaker = amountSoldByLeftMaker.minus(amountBoughtByRightMaker);
         // Assert log values - left order
         expect(amountBoughtByLeftMaker, 'Checking logged amount bought by left maker').to.be.bignumber.equal(
             expectedTransferAmounts.amountBoughtByLeftMaker,
@@ -267,14 +267,16 @@ export class MatchOrderTester {
         // Assert left order status
         const maxAmountBoughtByLeftMaker = signedOrderLeft.takerAssetAmount.minus(initialLeftOrderFilledAmount);
         const leftOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-        const leftExpectedStatus = expectedTransferAmounts.amountBoughtByLeftMaker.equals(maxAmountBoughtByLeftMaker)
+        const leftExpectedStatus = expectedTransferAmounts.amountBoughtByLeftMaker.isEqualTo(maxAmountBoughtByLeftMaker)
             ? OrderStatus.FullyFilled
             : OrderStatus.Fillable;
         expect(leftOrderInfo.orderStatus, 'Checking exchange status for left order').to.be.equal(leftExpectedStatus);
         // Assert right order status
         const maxAmountBoughtByRightMaker = signedOrderRight.takerAssetAmount.minus(initialRightOrderFilledAmount);
         const rightOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-        const rightExpectedStatus = expectedTransferAmounts.amountBoughtByRightMaker.equals(maxAmountBoughtByRightMaker)
+        const rightExpectedStatus = expectedTransferAmounts.amountBoughtByRightMaker.isEqualTo(
+            maxAmountBoughtByRightMaker,
+        )
             ? OrderStatus.FullyFilled
             : OrderStatus.Fillable;
         expect(rightOrderInfo.orderStatus, 'Checking exchange status for right order').to.be.equal(rightExpectedStatus);
@@ -364,13 +366,13 @@ export class MatchOrderTester {
             // Right Maker
             expectedNewERC20BalancesByOwner[makerAddressRight][
                 takerAssetAddressRight
-            ] = expectedNewERC20BalancesByOwner[makerAddressRight][takerAssetAddressRight].add(
+            ] = expectedNewERC20BalancesByOwner[makerAddressRight][takerAssetAddressRight].plus(
                 expectedTransferAmounts.amountBoughtByRightMaker,
             );
             // Taker
             expectedNewERC20BalancesByOwner[takerAddress][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
                 takerAddress
-            ][makerAssetAddressLeft].add(expectedTransferAmounts.amountReceivedByTaker);
+            ][makerAssetAddressLeft].plus(expectedTransferAmounts.amountReceivedByTaker);
         } else if (makerAssetProxyIdLeft === AssetProxyId.ERC721) {
             // Decode asset data
             const erc721AssetData = assetDataUtils.decodeERC721AssetData(signedOrderLeft.makerAssetData);
@@ -395,7 +397,7 @@ export class MatchOrderTester {
             // Left Maker
             expectedNewERC20BalancesByOwner[makerAddressLeft][takerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
                 makerAddressLeft
-            ][takerAssetAddressLeft].add(expectedTransferAmounts.amountBoughtByLeftMaker);
+            ][takerAssetAddressLeft].plus(expectedTransferAmounts.amountBoughtByLeftMaker);
             // Right Maker
             expectedNewERC20BalancesByOwner[makerAddressRight][
                 makerAssetAddressRight
@@ -426,19 +428,19 @@ export class MatchOrderTester {
         expectedNewERC20BalancesByOwner[takerAddress][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
             takerAddress
         ][this._feeTokenAddress].minus(
-            expectedTransferAmounts.feePaidByTakerLeft.add(expectedTransferAmounts.feePaidByTakerRight),
+            expectedTransferAmounts.feePaidByTakerLeft.plus(expectedTransferAmounts.feePaidByTakerRight),
         );
         // Left Fee Recipient Fees
         expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][
             this._feeTokenAddress
-        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][this._feeTokenAddress].add(
-            expectedTransferAmounts.feePaidByLeftMaker.add(expectedTransferAmounts.feePaidByTakerLeft),
+        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][this._feeTokenAddress].plus(
+            expectedTransferAmounts.feePaidByLeftMaker.plus(expectedTransferAmounts.feePaidByTakerLeft),
         );
         // Right Fee Recipient Fees
         expectedNewERC20BalancesByOwner[feeRecipientAddressRight][
             this._feeTokenAddress
-        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressRight][this._feeTokenAddress].add(
-            expectedTransferAmounts.feePaidByRightMaker.add(expectedTransferAmounts.feePaidByTakerRight),
+        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressRight][this._feeTokenAddress].plus(
+            expectedTransferAmounts.feePaidByRightMaker.plus(expectedTransferAmounts.feePaidByTakerRight),
         );
 
         return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];

@@ -48,7 +48,7 @@
         "@0x/typescript-typings": "^3.0.8",
         "@types/node": "*",
         "abortcontroller-polyfill": "^1.1.9",
-        "bignumber.js": "~4.1.0",
+        "bignumber.js": "~8.0.2",
         "chalk": "^2.4.1",
         "detect-node": "2.0.3",
         "ethereum-types": "^1.1.6",

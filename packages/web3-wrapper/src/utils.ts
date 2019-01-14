@@ -37,7 +37,7 @@ export const utils = {
         const hexBase = 16;
         const valueHex = valueBigNumber.toString(hexBase);
 
-        return valueBigNumber.lessThan(0) ? `-0x${valueHex.substr(1)}` : `0x${valueHex}`;
+        return valueBigNumber.isLessThan(0) ? `-0x${valueHex.substr(1)}` : `0x${valueHex}`;
     },
     numberToHex(value: number): string {
         if (!isFinite(value) && !utils.isHexStrict(value)) {

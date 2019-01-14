@@ -104,8 +104,9 @@ export const assetUtils = {
         return assetDataGroupIfExists[Network.Mainnet];
     },
     getERC20AssetsFromAssets: (assets: Asset[]): ERC20Asset[] => {
-        const erc20sOrUndefined = _.map(assets, asset =>
-            asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined,
+        const erc20sOrUndefined = _.map(
+            assets,
+            asset => (asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined),
         );
         return _.compact(erc20sOrUndefined);
     },
@@ -114,15 +115,15 @@ export const assetUtils = {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
             if (
                 error instanceof InsufficientAssetLiquidityError &&
-                error.amountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)
+                error.amountAvailableToFill.isGreaterThan(BIG_NUMBER_ZERO)
             ) {
                 const unitAmountAvailableToFill = Web3Wrapper.toUnitAmount(
                     error.amountAvailableToFill,
                     asset.metaData.decimals,
                 );
-                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.round(2, BigNumber.ROUND_DOWN);
+                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.integerValue(2, BigNumber.ROUND_DOWN);
 
-                if (roundedUnitAmountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)) {
+                if (roundedUnitAmountAvailableToFill.isGreaterThan(BIG_NUMBER_ZERO)) {
                     return `There are only ${roundedUnitAmountAvailableToFill} ${assetName} available to buy`;
                 }
             }

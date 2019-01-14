@@ -269,7 +269,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -278,13 +278,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
             );
         });
         it('should revert if the Exchange transaction function is not supported', async () => {
@@ -357,7 +357,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -367,7 +367,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid),
@@ -378,14 +378,14 @@ describe(ContractName.BalanceThresholdFilter, () => {
             );
 
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount.times(2)),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount.times(2)),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.times(2).add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.times(2).plus(takerFeePaid)),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -461,7 +461,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -471,7 +471,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid),
@@ -482,14 +482,14 @@ describe(ContractName.BalanceThresholdFilter, () => {
             );
 
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount.times(2)),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount.times(2)),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.times(2).add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.times(2).plus(takerFeePaid)),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -559,7 +559,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -569,7 +569,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid),
@@ -580,14 +580,14 @@ describe(ContractName.BalanceThresholdFilter, () => {
             );
 
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount.times(2)),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount.times(2)),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.times(2).add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.times(2).plus(takerFeePaid)),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -658,7 +658,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -667,13 +667,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
             );
         });
         it('should revert if maker does not meet the balance threshold', async () => {
@@ -736,7 +736,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -745,13 +745,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
             );
         });
         it('should revert if maker does not meet the balance threshold', async () => {
@@ -811,7 +811,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount_),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount_),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(makerFeePaid),
@@ -820,13 +820,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount_),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
             );
         });
         it('should revert if maker does not meet the balance threshold', async () => {
@@ -904,7 +904,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(validSignedOrder.makerAssetAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(validSignedOrder.takerAssetAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(validSignedOrder.takerAssetAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(validSignedOrder.makerFee),
@@ -914,7 +914,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount2),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid2),
@@ -924,7 +924,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(cumulativeTakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(cumulativeMakerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(cumulativeMakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
@@ -932,9 +932,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address]
-                    .add(validSignedOrder.makerFee)
-                    .add(makerFeePaid2)
-                    .add(takerFeePaid),
+                    .plus(validSignedOrder.makerFee)
+                    .plus(makerFeePaid2)
+                    .plus(takerFeePaid),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -1008,7 +1008,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(validSignedOrder.makerAssetAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(validSignedOrder.takerAssetAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(validSignedOrder.takerAssetAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(validSignedOrder.makerFee),
@@ -1018,7 +1018,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount2),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid2),
@@ -1028,7 +1028,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(cumulativeTakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(cumulativeMakerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(cumulativeMakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
@@ -1036,9 +1036,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address]
-                    .add(validSignedOrder.makerFee)
-                    .add(makerFeePaid2)
-                    .add(takerFeePaid),
+                    .plus(validSignedOrder.makerFee)
+                    .plus(makerFeePaid2)
+                    .plus(takerFeePaid),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -1104,7 +1104,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(validSignedOrder.makerAssetAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(validSignedOrder.takerAssetAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(validSignedOrder.takerAssetAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(validSignedOrder.makerFee),
@@ -1114,7 +1114,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount2),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid2),
@@ -1124,7 +1124,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(cumulativeTakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(cumulativeMakerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(cumulativeMakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
@@ -1132,9 +1132,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address]
-                    .add(validSignedOrder.makerFee)
-                    .add(makerFeePaid2)
-                    .add(takerFeePaid),
+                    .plus(validSignedOrder.makerFee)
+                    .plus(makerFeePaid2)
+                    .plus(takerFeePaid),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -1210,7 +1210,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress][defaultMakerAssetAddress].minus(validSignedOrder.makerAssetAmount),
             );
             expect(newBalances[validMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress][defaultTakerAssetAddress].add(validSignedOrder.takerAssetAmount),
+                erc20Balances[validMakerAddress][defaultTakerAssetAddress].plus(validSignedOrder.takerAssetAmount),
             );
             expect(newBalances[validMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress][zrxToken.address].minus(validSignedOrder.makerFee),
@@ -1220,7 +1220,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount2),
             );
             expect(newBalances[validMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[validMakerAddress2][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[validMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validMakerAddress2][zrxToken.address].minus(makerFeePaid2),
@@ -1230,7 +1230,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 erc20Balances[validTakerAddress][defaultTakerAssetAddress].minus(cumulativeTakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(cumulativeMakerAssetFillAmount),
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(cumulativeMakerAssetFillAmount),
             );
             expect(newBalances[validTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address].minus(takerFeePaid),
@@ -1238,9 +1238,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address]
-                    .add(validSignedOrder.makerFee)
-                    .add(makerFeePaid2)
-                    .add(takerFeePaid),
+                    .plus(validSignedOrder.makerFee)
+                    .plus(makerFeePaid2)
+                    .plus(takerFeePaid),
             );
         });
         it('should revert if one maker does not meet the balance threshold', async () => {
@@ -1329,7 +1329,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 newBalances[signedOrderLeft.makerAddress][defaultMakerAssetAddress],
                 'Checking left maker egress ERC20 account balance',
             ).to.be.bignumber.equal(
-                erc20Balances[signedOrderLeft.makerAddress][defaultMakerAssetAddress].sub(
+                erc20Balances[signedOrderLeft.makerAddress][defaultMakerAssetAddress].minus(
                     expectedTransferAmounts.amountSoldByLeftMaker,
                 ),
             );
@@ -1337,7 +1337,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 newBalances[signedOrderRight.makerAddress][defaultTakerAssetAddress],
                 'Checking right maker ingress ERC20 account balance',
             ).to.be.bignumber.equal(
-                erc20Balances[signedOrderRight.makerAddress][defaultTakerAssetAddress].sub(
+                erc20Balances[signedOrderRight.makerAddress][defaultTakerAssetAddress].minus(
                     expectedTransferAmounts.amountSoldByRightMaker,
                 ),
             );
@@ -1345,7 +1345,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 newBalances[validTakerAddress][defaultMakerAssetAddress],
                 'Checking taker ingress ERC20 account balance',
             ).to.be.bignumber.equal(
-                erc20Balances[validTakerAddress][defaultMakerAssetAddress].add(
+                erc20Balances[validTakerAddress][defaultMakerAssetAddress].plus(
                     expectedTransferAmounts.amountReceivedByTaker,
                 ),
             );
@@ -1353,7 +1353,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 newBalances[signedOrderLeft.makerAddress][defaultTakerAssetAddress],
                 'Checking left maker ingress ERC20 account balance',
             ).to.be.bignumber.equal(
-                erc20Balances[signedOrderLeft.makerAddress][defaultTakerAssetAddress].add(
+                erc20Balances[signedOrderLeft.makerAddress][defaultTakerAssetAddress].plus(
                     expectedTransferAmounts.amountBoughtByLeftMaker,
                 ),
             );
@@ -1361,7 +1361,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 newBalances[signedOrderRight.makerAddress][defaultMakerAssetAddress],
                 'Checking right maker egress ERC20 account balance',
             ).to.be.bignumber.equal(
-                erc20Balances[signedOrderRight.makerAddress][defaultMakerAssetAddress].add(
+                erc20Balances[signedOrderRight.makerAddress][defaultMakerAssetAddress].plus(
                     expectedTransferAmounts.amountBoughtByRightMaker,
                 ),
             );
@@ -1388,7 +1388,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             ).to.be.bignumber.equal(
                 erc20Balances[validTakerAddress][zrxToken.address]
                     .minus(expectedTransferAmounts.feePaidByTakerLeft)
-                    .sub(expectedTransferAmounts.feePaidByTakerRight),
+                    .minus(expectedTransferAmounts.feePaidByTakerRight),
             );
             // Received fees
             expect(
@@ -1396,10 +1396,10 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 'Checking left fee recipient ingress ERC20 account fees',
             ).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address]
-                    .add(expectedTransferAmounts.feePaidByLeftMaker)
-                    .add(expectedTransferAmounts.feePaidByRightMaker)
-                    .add(expectedTransferAmounts.feePaidByTakerLeft)
-                    .add(expectedTransferAmounts.feePaidByTakerRight),
+                    .plus(expectedTransferAmounts.feePaidByLeftMaker)
+                    .plus(expectedTransferAmounts.feePaidByRightMaker)
+                    .plus(expectedTransferAmounts.feePaidByTakerLeft)
+                    .plus(expectedTransferAmounts.feePaidByTakerRight),
             );
         });
         it('should revert if left maker does not meet the balance threshold', async () => {
@@ -1595,7 +1595,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                     signedOrder,
                 );
                 const saltAsBigNumber = new BigNumber(salt);
-                if (saltAsBigNumber.lessThanOrEqualTo(cancelOrdersUpToThisSalt)) {
+                if (saltAsBigNumber.isLessThanOrEqualTo(cancelOrdersUpToThisSalt)) {
                     return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
                 } else {
                     return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);
@@ -1631,7 +1631,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
                     signedOrder,
                 );
                 const saltAsBigNumber = new BigNumber(salt);
-                if (saltAsBigNumber.lessThanOrEqualTo(cancelOrdersUpToThisSalt)) {
+                if (saltAsBigNumber.isLessThanOrEqualTo(cancelOrdersUpToThisSalt)) {
                     return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Cancelled);
                 } else {
                     return expect(orderInfoAfterCancelling.orderStatus).to.be.equal(OrderStatus.Fillable);

@@ -38,8 +38,8 @@ export class IntDataType extends AbstractBlobDataType {
             throw new Error(`Tried to instantiate Int with bad input: ${dataItem}`);
         }
         this._width = IntDataType._decodeWidthFromType(dataItem.type);
-        this._minValue = new BigNumber(2).toPower(this._width - 1).times(-1);
-        this._maxValue = new BigNumber(2).toPower(this._width - 1).sub(1);
+        this._minValue = new BigNumber(2).exponentiatedBy(this._width - 1).times(-1);
+        this._maxValue = new BigNumber(2).exponentiatedBy(this._width - 1).minus(1);
     }
 
     public encodeValue(value: BigNumber | string | number): Buffer {
