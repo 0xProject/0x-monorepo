@@ -137,11 +137,12 @@ export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
 }
 
 export interface TrezorSubproviderConfig {
+    accountFetchingConfigs: AccountFetchingConfigs;
     trezorConnectClientApi: any;
     networkId: number;
 }
 
-export interface TrezorGetAddressResponsePayload {
+export interface TrezorGetPublicKeyResponsePayload {
     path: {
         [index: number]: number;
     };

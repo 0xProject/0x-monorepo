@@ -3,31 +3,34 @@ import { addressUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import * as _ from 'lodash';
 
-import hdkey from 'ethereumjs-wallet/hdkey';
+import HDNode = require('hdkey');
 
 import {
+    DerivedHDKeyInfo,
     PartialTxParams,
     TrezorConnectResponse,
-    TrezorGetAddressResponsePayload,
+    TrezorGetPublicKeyResponsePayload,
     TrezorResponseErrorPayload,
     TrezorSignMsgResponsePayload,
     TrezorSignTxResponsePayload,
     TrezorSubproviderConfig,
     WalletSubproviderErrors,
 } from '../types';
+import { walletUtils } from '../utils/wallet_utils';
 
 import { BaseWalletSubprovider } from './base_wallet_subprovider';
 
-const PRIVATE_KEY_PATH = `m/44'/60'/0'/0`;
+const PRIVATE_KEY_PATH = `44'/60'/0'/0`;
 const DEFAULT_NUM_ADDRESSES_TO_FETCH = 10;
+const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 export class TrezorSubprovider extends BaseWalletSubprovider {
     private readonly _privateKeyPath: string;
-    private _cachedAccounts: string[];
     private readonly _trezorConnectClientApi: any;
     private readonly _networkId: number;
+    private readonly _addressSearchLimit: number;
     /**
-     * Instantiates a TrezorSubprovider. Defaults to private key path set to `m/44'/60'/0'/0/`.
+     * Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'/0/`.
      * Must be initialized with trezor-connect API module https://github.com/trezor/connect.
      * @param TrezorSubprovider config object containing trezor-connect API
      * @return TrezorSubprovider instance
@@ -35,9 +38,13 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     constructor(config: TrezorSubproviderConfig) {
         super();
         this._privateKeyPath = PRIVATE_KEY_PATH;
-        this._cachedAccounts = [];
         this._trezorConnectClientApi = config.trezorConnectClientApi;
         this._networkId = config.networkId;
+        this._addressSearchLimit =
+            !_.isUndefined(config.accountFetchingConfigs) &&
+            !_.isUndefined(config.accountFetchingConfigs.addressSearchLimit)
+                ? config.accountFetchingConfigs.addressSearchLimit
+                : DEFAULT_ADDRESS_SEARCH_LIMIT;
     }
     /**
      * Retrieve a users Trezor account. This method is automatically called
@@ -46,25 +53,9 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
      * @return An array of accounts
      */
     public async getAccountsAsync(numberOfAccounts: number = DEFAULT_NUM_ADDRESSES_TO_FETCH): Promise<string[]> {
-        if (this._cachedAccounts.length) {
-            return this._cachedAccounts;
-        }
-        const accounts: string[] = [];
-
-        const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({ path: this._privateKeyPath });
-
-        if (response.success) {
-            const payload: TrezorGetAddressResponsePayload = response.payload;
-            const hdPubKey = hdkey.fromExtendedKey(payload.xpub);
-            for (let i = 0; i < numberOfAccounts; i++) {
-                accounts.push(hdPubKey.deriveChild(i).getWallet().getAddressString());
-            }
-            this._cachedAccounts = accounts;
-        } else {
-            const payload: TrezorResponseErrorPayload = response.payload;
-            throw new Error(payload.error);
-        }
-
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfos = walletUtils.calculateDerivedHDKeyInfos(initialDerivedKeyInfo, numberOfAccounts);
+        const accounts = _.map(derivedKeyInfos, k => k.address);
         return accounts;
     }
     /**
@@ -84,12 +75,12 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         txData.gas = txData.gas ? txData.gas : '0x0';
         txData.gasPrice = txData.gasPrice ? txData.gasPrice : '0x0';
 
-        const accountIndex = this._cachedAccounts.indexOf(txData.from);
-        if (accountIndex === -1) {
-            throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
-        }
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, txData.from);
+        const fullDerivationPath = derivedKeyInfo.derivationPath;
+
         const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignTransaction({
-            path: `${this._privateKeyPath}/${accountIndex}`,
+            path: fullDerivationPath,
             transaction: {
                 to: txData.to,
                 value: txData.value,
@@ -140,12 +131,13 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         }
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
-        const accountIndex = this._cachedAccounts.indexOf(address);
-        if (accountIndex === -1) {
-            throw new Error(WalletSubproviderErrors.AddressNotFound);
-        }
+
+        const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
+        const derivedKeyInfo = this._findDerivedKeyInfoForAddress(initialDerivedKeyInfo, address);
+        const fullDerivationPath = derivedKeyInfo.derivationPath;
+
         const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignMessage({
-            path: `${this._privateKeyPath}/${accountIndex}`,
+            path: fullDerivationPath,
             message: data,
             hex: false,
         });
@@ -167,5 +159,39 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     // tslint:disable-next-line:prefer-function-over-method
     public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
         throw new Error(WalletSubproviderErrors.MethodNotSupported);
+    }
+    private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
+        const parentKeyDerivationPath = `m/${this._privateKeyPath}`;
+
+        const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({ path: parentKeyDerivationPath });
+
+        if (response.success) {
+            const payload: TrezorGetPublicKeyResponsePayload = response.payload;
+            const hdKey = new HDNode();
+            hdKey.publicKey = new Buffer(payload.publicKey, 'hex');
+            hdKey.chainCode = new Buffer(payload.chainCode, 'hex');
+            const address = walletUtils.addressOfHDKey(hdKey);
+            const initialDerivedKeyInfo = {
+                hdKey,
+                address,
+                derivationPath: parentKeyDerivationPath,
+                baseDerivationPath: this._privateKeyPath,
+            };
+            return initialDerivedKeyInfo;
+        } else {
+            const payload: TrezorResponseErrorPayload = response.payload;
+            throw new Error(payload.error);
+        }
+    }
+    private _findDerivedKeyInfoForAddress(initalHDKey: DerivedHDKeyInfo, address: string): DerivedHDKeyInfo {
+        const matchedDerivedKeyInfo = walletUtils.findDerivedKeyInfoForAddressIfExists(
+            address,
+            initalHDKey,
+            this._addressSearchLimit,
+        );
+        if (_.isUndefined(matchedDerivedKeyInfo)) {
+            throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
+        }
+        return matchedDerivedKeyInfo;
     }
 }
