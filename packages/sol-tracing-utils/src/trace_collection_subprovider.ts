@@ -26,7 +26,7 @@ type AsyncFunc = (...args: any[]) => Promise<void>;
 // we need this because web3-provider-engine does not handler promises in
 // the after function of next(after).
 function logErrors(fn: AsyncFunc): AsyncFunc {
-    async function wrapped(...args: any[]): Promise<void> {
+    async function wrappedAsync(...args: any[]): Promise<void> {
         try {
             await fn(...args);
         } catch (e) {
@@ -35,7 +35,7 @@ function logErrors(fn: AsyncFunc): AsyncFunc {
             throw e;
         }
     }
-    return wrapped;
+    return wrappedAsync;
 }
 
 // Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
