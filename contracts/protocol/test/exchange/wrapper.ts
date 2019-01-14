@@ -493,15 +493,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].plus(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].plus(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -562,15 +562,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].plus(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].plus(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -647,15 +647,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].plus(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].plus(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -706,15 +706,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].plus(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].plus(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);

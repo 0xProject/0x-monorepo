@@ -43,7 +43,9 @@ export const buyQuoteCalculator = {
             const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
             // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
             // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
-            const amountAvailableToFillConsideringSlippage = amountAbleToFill.div(multiplierNeededWithSlippage).integerValue(BigNumber.ROUND_FLOOR);
+            const amountAvailableToFillConsideringSlippage = amountAbleToFill
+                .div(multiplierNeededWithSlippage)
+                .integerValue(BigNumber.ROUND_FLOOR);
 
             throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
         }
