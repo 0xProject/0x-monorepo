@@ -94,6 +94,39 @@ export class ASTVisitor {
     public InlineAssemblyStatement(ast: Parser.InlineAssemblyStatement): void {
         this._visitStatement(ast);
     }
+    public AssemblyLocalDefinition(ast: Parser.AssemblyLocalDefinition): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyCall(ast: Parser.AssemblyCall): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyIf(ast: Parser.AssemblyIf): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyBlock(ast: Parser.AssemblyBlock): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyExpression(ast: Parser.AssemblyExpression): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyAssignment(ast: Parser.AssemblyAssignment): void {
+        this._visitStatement(ast);
+    }
+    public LabelDefinition(ast: Parser.LabelDefinition): void {
+        this._visitStatement(ast);
+    }
+    public AssemblySwitch(ast: Parser.AssemblySwitch): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyFunctionDefinition(ast: Parser.AssemblyFunctionDefinition): void {
+        this._visitStatement(ast);
+    }
+    public AssemblyFor(ast: Parser.AssemblyFor): void {
+        this._visitStatement(ast);
+    }
+    public SubAssembly(ast: Parser.SubAssembly): void {
+        this._visitStatement(ast);
+    }
     public BinaryOperation(ast: Parser.BinaryOperation): void {
         const BRANCHING_BIN_OPS = ['&&', '||'];
         if (_.includes(BRANCHING_BIN_OPS, ast.operator)) {
