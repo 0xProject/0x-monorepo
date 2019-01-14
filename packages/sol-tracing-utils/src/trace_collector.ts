@@ -56,7 +56,7 @@ export class TraceCollector {
         this._singleFileSubtraceHandler = singleFileSubtraceHandler;
     }
     public async writeOutputAsync(): Promise<void> {
-        const finalCoverage = this._collector.getFinalCoverage();
+        const finalCoverage: Coverage = this._collector.getFinalCoverage();
         const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
         await mkdirpAsync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
@@ -80,14 +80,14 @@ export class TraceCollector {
         const bytecodeHex = stripHexPrefix(bytecode);
         const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
         const pcToSourceRange = parseSourceMap(contractData.sourceCodes, sourceMap, bytecodeHex, contractData.sources);
-        for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
+        _.map(contractData.sources, (_sourcePath: string, fileIndex: string) => {
             const singleFileCoverageForTrace = this._singleFileSubtraceHandler(
                 contractData,
                 traceInfo.subtrace,
                 pcToSourceRange,
-                fileIndex,
+                _.parseInt(fileIndex),
             );
             this._collector.add(singleFileCoverageForTrace);
-        }
+        });
     }
 }

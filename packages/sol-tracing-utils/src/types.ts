@@ -81,8 +81,8 @@ export interface ContractData {
     sourceMap: string;
     runtimeBytecode: string;
     sourceMapRuntime: string;
-    sourceCodes: string[];
-    sources: string[];
+    sourceCodes: { [sourceId: number]: string };
+    sources: { [sourceId: number]: string };
 }
 
 // Part of the trace executed within the same context

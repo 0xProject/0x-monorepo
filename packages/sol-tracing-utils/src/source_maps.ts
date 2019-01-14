@@ -33,20 +33,23 @@ export function getLocationByOffset(str: string): LocationByOffset {
 /**
  * Parses a sourcemap string.
  * The solidity sourcemap format is documented here: https://github.com/ethereum/solidity/blob/develop/docs/miscellaneous.rst#source-mappings
- * @param sourceCodes sources contents
+ * @param sourceCodes sources contents by index
  * @param srcMap source map string
  * @param bytecodeHex contract bytecode
- * @param sources sources file names
+ * @param sources sources file names by index
  */
 export function parseSourceMap(
-    sourceCodes: string[],
+    sourceCodes: { [fileIndex: number]: string },
     srcMap: string,
     bytecodeHex: string,
-    sources: string[],
+    sources: { [fileIndex: number]: string },
 ): { [programCounter: number]: SourceRange } {
     const bytecode = Uint8Array.from(Buffer.from(bytecodeHex, 'hex'));
     const pcToInstructionIndex: { [programCounter: number]: number } = getPcToInstructionIndexMapping(bytecode);
-    const locationByOffsetByFileIndex = _.map(sourceCodes, s => (_.isUndefined(s) ? {} : getLocationByOffset(s)));
+    const locationByOffsetByFileIndex: { [fileIndex: number]: LocationByOffset } = {};
+    _.map(sourceCodes, (sourceCode: string, fileIndex: number) => {
+        locationByOffsetByFileIndex[fileIndex] = _.isUndefined(sourceCode) ? {} : getLocationByOffset(sourceCode);
+    });
     const entries = srcMap.split(';');
     let lastParsedEntry: SourceLocation = {} as any;
     const instructionIndexToSourceRange: { [instructionIndex: number]: SourceRange } = {};
