@@ -45,7 +45,7 @@
         "@types/yargs": "^10.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-bignumber": "^2.0.1",
+        "chai-bignumber": "^2.0.2",
         "dirty-chai": "^2.0.1",
         "ethereumjs-abi": "0.6.5",
         "make-promises-safe": "^1.1.0",

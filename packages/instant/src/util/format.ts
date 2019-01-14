@@ -25,7 +25,7 @@ export const format = {
         if (_.isUndefined(ethUnitAmount)) {
             return defaultText;
         }
-        let roundedAmount = ethUnitAmount.integerValue(decimalPlaces).toDigits(decimalPlaces);
+        let roundedAmount = ethUnitAmount.decimalPlaces(decimalPlaces).precision(decimalPlaces);
 
         if (roundedAmount.eq(BIG_NUMBER_ZERO) && ethUnitAmount.isGreaterThan(BIG_NUMBER_ZERO)) {
             // Sometimes for small ETH amounts (i.e. 0.000045) the amount rounded to 4 decimalPlaces is 0

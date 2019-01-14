@@ -121,7 +121,10 @@ export const assetUtils = {
                     error.amountAvailableToFill,
                     asset.metaData.decimals,
                 );
-                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.integerValue(2, BigNumber.ROUND_DOWN);
+                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.decimalPlaces(
+                    2,
+                    BigNumber.ROUND_DOWN,
+                );
 
                 if (roundedUnitAmountAvailableToFill.isGreaterThan(BIG_NUMBER_ZERO)) {
                     return `There are only ${roundedUnitAmountAvailableToFill} ${assetName} available to buy`;
