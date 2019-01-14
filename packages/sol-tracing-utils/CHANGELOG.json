@@ -11,7 +11,7 @@
                 "pr": 1498
             },
             {
-                "note": "Use custom JS tracer to speed up tracing on clients that support it (Geth)",
+                "note": "Use custom JS tracer to speed up tracing on clients that support it (e.g., Geth)",
                 "pr": 1498
             },
             {
