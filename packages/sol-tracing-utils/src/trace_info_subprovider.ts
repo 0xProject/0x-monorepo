@@ -1,4 +1,3 @@
-import { StructLog } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -16,22 +15,24 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
         // For very large traces we use a custom tracer that outputs a format compatible with a
         // regular trace. We only need the 2nd item on the stack when the instruction is a call.
         // By not including othe stack values, we severly limit the amount of data to be collectd.
-        const tracer =
-            '{' +
-            '    data: [],' +
-            '    step: function(log) {' +
-            '        const op = log.op.toString();' +
-            '        const opn = 0 | log.op.toNumber();' +
-            '        const pc = 0 | log.getPC();' +
-            '        const depth = 0 | log.getDepth();' +
-            '        const gas = 0 | log.getGas();' +
-            '        const isCall = opn == 0xf1 || opn == 0xf2 || opn == 0xf4 || opn == 0xf5;' +
-            "        const stack = isCall ? ['0x'+log.stack.peek(1).toString(16), null] : null;" +
-            '        this.data.push({ pc, gas, depth, op, stack}); ' +
-            '    },' +
-            '    fault: function() { },' +
-            '    result: function() { return {structLogs: this.data}; }' +
-            '}';
+        const tracer = `
+            {
+                data: [],
+                step: function(log) {
+                    const op = log.op.toString();
+                    const opn = 0 | log.op.toNumber();
+                    const pc = 0 | log.getPC();
+                    const depth = 0 | log.getDepth();
+                    const gasCost = 0 | log.getCost();
+                    const gas = 0 | log.getGas();
+                    const isCall = opn == 0xf1 || opn == 0xf2 || opn == 0xf4 || opn == 0xf5;
+                    const stack = isCall ? ['0x'+log.stack.peek(1).toString(16), null] : null;
+                    this.data.push({ pc, gasCost, depth, op, stack, gas });
+                },
+                fault: function() { },
+                result: function() { return {structLogs: this.data}; }
+            }
+        `;
         const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, { tracer, timeout: '600s' });
         const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
         const subcallAddresses = _.keys(tracesByContractAddress);
