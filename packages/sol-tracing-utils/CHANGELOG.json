@@ -15,7 +15,7 @@
                 "pr": 1498
             },
             {
-                "note": "Log the errors in `TraceCollectionSubprovider`",
+                "note": "Log errors encountered in `TraceCollectionSubprovider`",
                 "pr": 1498
             },
             {
