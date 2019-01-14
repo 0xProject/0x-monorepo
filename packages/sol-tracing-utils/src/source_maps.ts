@@ -33,7 +33,7 @@ export function getLocationByOffset(str: string): LocationByOffset {
 /**
  * Parses a sourcemap string.
  * The solidity sourcemap format is documented here: https://github.com/ethereum/solidity/blob/develop/docs/miscellaneous.rst#source-mappings
- * @param sourceCodes sources contents by index
+ * @param indexToSourceCode index to source code
  * @param srcMap source map string
  * @param bytecodeHex contract bytecode
  * @param indexToSource index to source file path
