@@ -52,7 +52,7 @@ export class StringDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return SolidityTypes.String;
     }
     /* tslint:enable prefer-function-over-method */

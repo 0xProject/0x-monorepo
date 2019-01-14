@@ -2,6 +2,8 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { generateDataItemsFromSignature } from './utils/signature_parser';
+
 import { DataType } from './abstract_data_types/data_type';
 import { DataTypeFactory } from './abstract_data_types/interfaces';
 import { AddressDataType } from './evm_data_types/address';
@@ -128,5 +130,36 @@ export class EvmDataTypeFactory implements DataTypeFactory {
     /* tslint:enable prefer-function-over-method */
 
     private constructor() {}
+}
+
+/**
+ * Convenience function for creating a DataType from different inputs.
+ * @param input A single or set of DataItem or a DataType signature.
+ *              A signature in the form of '<type>' is interpreted as a `DataItem`
+ *              For example, 'string' is interpreted as {type: 'string'}
+ *              A signature in the form '(<type1>, <type2>, ..., <typen>)' is interpreted as `DataItem[]`
+ *              For eaxmple, '(string, uint256)' is interpreted as [{type: 'string'}, {type: 'uint256'}]
+ * @return DataType corresponding to input.
+ */
+export function create(input: DataItem | DataItem[] | string): DataType {
+    // Handle different types of input
+    const isSignature = typeof input === 'string';
+    const isTupleSignature = isSignature && (input as string).startsWith('(');
+    const shouldParseAsTuple = isTupleSignature || _.isArray(input);
+    // Create input `dataItem`
+    let dataItem: DataItem;
+    if (shouldParseAsTuple) {
+        const dataItems = isSignature ? generateDataItemsFromSignature(input as string) : (input as DataItem[]);
+        dataItem = {
+            name: '',
+            type: 'tuple',
+            components: dataItems,
+        };
+    } else {
+        dataItem = isSignature ? generateDataItemsFromSignature(input as string)[0] : (input as DataItem);
+    }
+    // Create data type
+    const dataType = EvmDataTypeFactory.getInstance().create(dataItem);
+    return dataType;
 }
 /* tslint:enable no-construct */

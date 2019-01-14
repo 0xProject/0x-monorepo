@@ -51,8 +51,26 @@ export abstract class DataType {
         return value;
     }
 
+    public decodeAsArray(returndata: string, rules?: DecodingRules): any[] {
+        const value = this.decode(returndata, rules);
+        const valuesAsArray = _.isObject(value) ? _.values(value) : [value];
+        return valuesAsArray;
+    }
+
+    public getSignature(isDetailed?: boolean): string {
+        if (_.isEmpty(this._dataItem.name) || !isDetailed) {
+            return this.getSignatureType();
+        }
+        const name = this.getDataItem().name;
+        const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
+        const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
+        const detailedSignature = `${shortName} ${this.getSignatureType()}`;
+        return detailedSignature;
+    }
+
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
     public abstract generateValue(calldata: RawCalldata, rules: DecodingRules): any;
-    public abstract getSignature(): string;
+    public abstract getSignatureType(): string;
     public abstract isStatic(): boolean;
 }

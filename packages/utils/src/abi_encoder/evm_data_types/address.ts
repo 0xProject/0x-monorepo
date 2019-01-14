@@ -39,10 +39,11 @@ export class AddressDataType extends AbstractBlobDataType {
         const valueBufPadded = calldata.popWord();
         const valueBuf = valueBufPadded.slice(AddressDataType._DECODED_ADDRESS_OFFSET_IN_BYTES);
         const value = ethUtil.bufferToHex(valueBuf);
-        return value;
+        const valueLowercase = _.toLower(value);
+        return valueLowercase;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return SolidityTypes.Address;
     }
     /* tslint:enable prefer-function-over-method */
