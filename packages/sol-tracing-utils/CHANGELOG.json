@@ -3,7 +3,7 @@
         "version": "4.0.0",
         "changes": [
             {
-                "note": "Fix the bug with incorrect parsing of `sourceMaps`",
+                "note": "Fix a bug with incorrect parsing of `sourceMaps` due to sources being in an array instead of a map",
                 "pr": 1498
             },
             {
