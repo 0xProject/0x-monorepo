@@ -7,8 +7,7 @@
                 "pr": 1498
             },
             {
-                "note":
-                    "Change the types of `ContractData.sources` and `ContractData.sourceCodes` to be objects instead of arrays",
+                "note": "Change the types of `ContractData.sources` and `ContractData.sourceCodes` to be objects instead of arrays",
                 "pr": 1498
             },
             {
@@ -193,8 +192,7 @@
         "version": "2.1.0",
         "changes": [
             {
-                "note":
-                    "Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback`",
+                "note": "Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback`",
                 "pr": 924
             }
         ],
@@ -204,8 +202,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Fix a bug when eth_call coverage was not computed because of silent schema validation failures",
+                "note": "Fix a bug when eth_call coverage was not computed because of silent schema validation failures",
                 "pr": 938
             },
             {
@@ -213,13 +210,11 @@
                 "pr": 938
             },
             {
-                "note":
-                    "Change the first param of `TruffleArtifactAdapter` to be the `projectRoot` instead of `sourcesDir`",
+                "note": "Change the first param of `TruffleArtifactAdapter` to be the `projectRoot` instead of `sourcesDir`",
                 "pr": 938
             },
             {
-                "note":
-                    "Throw a helpful error message if truffle artifacts were generated with a different solc version than the one passed in",
+                "note": "Throw a helpful error message if truffle artifacts were generated with a different solc version than the one passed in",
                 "pr": 938
             }
         ],
@@ -257,8 +252,7 @@
         "version": "1.0.0",
         "changes": [
             {
-                "note":
-                    "Add artifact adapter as a parameter for `CoverageSubprovider`. Export `AbstractArtifactAdapter`",
+                "note": "Add artifact adapter as a parameter for `CoverageSubprovider`. Export `AbstractArtifactAdapter`",
                 "pr": 589
             },
             {
@@ -314,8 +308,7 @@
                 "pr": 690
             },
             {
-                "note":
-                    "Fix a bug when in `TruffleArtifactsAdapter` causing it to throw if `compiler.json` is not there",
+                "note": "Fix a bug when in `TruffleArtifactsAdapter` causing it to throw if `compiler.json` is not there",
                 "pr": 690
             },
             {
