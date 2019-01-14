@@ -6,31 +6,25 @@ import semverSort = require('semver-sort');
 import { constants } from './constants';
 import { Package } from './types';
 import { changelogUtils } from './utils/changelog_utils';
+import { configs } from './utils/configs';
+import { dockerHubUtils } from './utils/docker_hub_utils';
 import { npmUtils } from './utils/npm_utils';
 import { utils } from './utils/utils';
 
 async function prepublishChecksAsync(): Promise<void> {
     const shouldIncludePrivate = false;
-    const updatedPublicPackages = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
+    // const updatedPublicPackages = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
 
-    await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicPackages);
-    await checkChangelogFormatAsync(updatedPublicPackages);
-    await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
-    await checkPublishRequiredSetupAsync();
+    // await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicPackages);
+    // await checkChangelogFormatAsync(updatedPublicPackages);
+    // await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
+    // await checkPublishRequiredSetupAsync();
     await checkDockerHubSetupAsync();
 }
 
 async function checkDockerHubSetupAsync(): Promise<void> {
-    try {
-        utils.log('Checking that the user is logged in to docker command...');
-        await execAsync(`echo "$DOCKER_PASS" | docker login -u $DOCKER_USERNAME --password-stdin`);
-    } catch (err) {
-        throw new Error(
-            `Failed to log you into the 'docker' commandline tool. Make sure you have environment variables 'DOCKER_USERNAME; and 'DOCKER_PASS' set. Full error: ${
-                err.message
-            }`,
-        );
-    }
+    await dockerHubUtils.checkUserAddedToOrganizationOrThrowAsync(configs.DOCKER_HUB_ORG);
+    await dockerHubUtils.loginUserToDockerCommandlineOrThrowAsync();
 }
 
 async function checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages: Package[]): Promise<void> {

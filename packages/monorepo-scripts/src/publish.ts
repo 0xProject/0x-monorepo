@@ -22,7 +22,6 @@ import { utils } from './utils/utils';
 
 const NPM_NAMESPACE = '@0x/';
 const TODAYS_TIMESTAMP = moment().unix();
-const DOCKER_ORG = '0xorg';
 
 async function confirmAsync(message: string): Promise<void> {
     prompt.start();
@@ -130,13 +129,13 @@ async function publishImagesToDockerHubAsync(allUpdatedPackages: Package[]): Pro
         // Tag the docker image with the latest version
         const version = pkg.packageJson.version;
         logUtils.log(`Tagging '${dockerHubRepo}' docker image with version ${version}...`);
-        await execAsync(`docker tag ${dockerHubRepo} ${DOCKER_ORG}/${dockerHubRepo}:${version}`);
-        await execAsync(`docker tag ${dockerHubRepo} ${DOCKER_ORG}/${dockerHubRepo}:latest`);
+        await execAsync(`docker tag ${dockerHubRepo} ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:${version}`);
+        await execAsync(`docker tag ${dockerHubRepo} ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:latest`);
 
         // Publish to DockerHub
         logUtils.log(`Pushing '${dockerHubRepo}' docker image to DockerHub...`);
-        await execAsync(`docker push ${DOCKER_ORG}/${dockerHubRepo}:${version}`);
-        await execAsync(`docker push ${DOCKER_ORG}/${dockerHubRepo}:latest`);
+        await execAsync(`docker push ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:${version}`);
+        await execAsync(`docker push ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:latest`);
     }
 }
 
