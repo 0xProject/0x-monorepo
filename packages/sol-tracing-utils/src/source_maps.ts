@@ -36,7 +36,7 @@ export function getLocationByOffset(str: string): LocationByOffset {
  * @param sourceCodes sources contents by index
  * @param srcMap source map string
  * @param bytecodeHex contract bytecode
- * @param sources sources file names by index
+ * @param indexToSource index to source file path
  */
 export function parseSourceMap(
     sourceCodes: { [fileIndex: number]: string },
