@@ -21,24 +21,6 @@ export interface TraceCollectionSubproviderConfig {
     shouldCollectGasEstimateTraces: boolean;
 }
 
-type AsyncFunc = (...args: any[]) => Promise<void>;
-
-// This wrapper outputs errors to console even if the promise gets ignored
-// we need this because web3-provider-engine does not handle promises in
-// the after function of next(after).
-function logAsyncErrors(fn: AsyncFunc): AsyncFunc {
-    async function wrappedAsync(...args: any[]): Promise<void> {
-        try {
-            await fn(...args);
-        } catch (err) {
-            // tslint:disable-next-line no-console
-            logUtils.error(err);
-            throw err;
-        }
-    }
-    return wrappedAsync;
-}
-
 // Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
 // On each call - we create a snapshot, execute the call as a transaction, get the trace, revert the snapshot.
 // That allows us to avoid influencing test behaviour.
@@ -93,7 +75,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const txData = payload.params[0];
-                        next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
+                        next(this._onTransactionSentAsync.bind(this, txData));
                     }
                     return;
 
@@ -102,7 +84,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const callData = payload.params[0];
-                        next(logAsyncErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, callData)));
+                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, callData));
                     }
                     return;
 
@@ -111,7 +93,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const estimateGasData = payload.params[0];
-                        next(logAsyncErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData)));
+                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData));
                     }
                     return;
 
@@ -145,31 +127,35 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         txHash: string | undefined,
         cb: Callback,
     ): Promise<void> {
-        if (!txData.isFakeTransaction) {
-            // This transaction is a usual transaction. Not a call executed as one.
-            // And we don't want it to be executed within a snapshotting period
-            await this._lock.acquire();
-        }
-        const NULL_ADDRESS = '0x0';
-        if (_.isNull(err)) {
-            const toAddress =
-                _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
-            await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
-        } else {
-            const latestBlock = await this._web3Wrapper.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
-            const transactions = latestBlock.transactions;
-            for (const transaction of transactions) {
+        try {
+            if (!txData.isFakeTransaction) {
+                // This transaction is a usual transaction. Not a call executed as one.
+                // And we don't want it to be executed within a snapshotting period
+                await this._lock.acquire();
+            }
+            const NULL_ADDRESS = '0x0';
+            if (_.isNull(err)) {
                 const toAddress =
                     _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
-                await this._recordTxTraceAsync(toAddress, transaction.input, transaction.hash);
+                await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
+            } else {
+                const latestBlock = await this._web3Wrapper.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
+                const transactions = latestBlock.transactions;
+                for (const transaction of transactions) {
+                    const toAddress =
+                        _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
+                    await this._recordTxTraceAsync(toAddress, transaction.input, transaction.hash);
+                }
             }
+            if (!txData.isFakeTransaction) {
+                // This transaction is a usual transaction. Not a call executed as one.
+                // And we don't want it to be executed within a snapshotting period
+                this._lock.release();
+            }
+            cb();
+        } catch (err) {
+            cb(err);
         }
-        if (!txData.isFakeTransaction) {
-            // This transaction is a usual transaction. Not a call executed as one.
-            // And we don't want it to be executed within a snapshotting period
-            this._lock.release();
-        }
-        cb();
     }
     private async _onCallOrGasEstimateExecutedAsync(
         callData: Partial<CallDataRPC>,
@@ -177,8 +163,12 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         _callResult: string,
         cb: Callback,
     ): Promise<void> {
-        await this._recordCallOrGasEstimateTraceAsync(callData);
-        cb();
+        try {
+            await this._recordCallOrGasEstimateTraceAsync(callData);
+            cb();
+        } catch (err) {
+            cb(err);
+        }
     }
     private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallDataRPC>): Promise<void> {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
