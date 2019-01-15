@@ -49,15 +49,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'assetProxies(bytes4)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [index_0
-        ] = BaseContract._formatABIDataItemList(inputAbi, [index_0
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [index_0
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.assetProxies;
-            const encodedData = ethersFunction.encode([index_0
+            const encodedData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -69,11 +61,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'assetProxies'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public addAuthorizedAddress = {
@@ -82,13 +75,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('addAuthorizedAddress(address)').inputs;
-            [target
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [target
-    ]);
-            const encodedData = self._lookupEthersInterface('addAuthorizedAddress(address)').functions.addAuthorizedAddress.encode([target
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -110,11 +97,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('addAuthorizedAddress(address)').inputs;
-            [target
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('addAuthorizedAddress(address)').functions.addAuthorizedAddress.encode([target
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -131,11 +114,7 @@ export class MultiAssetProxyContract extends BaseContract {
             target: string,
         ): string {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('addAuthorizedAddress(address)').inputs;
-            [target
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('addAuthorizedAddress(address)').functions.addAuthorizedAddress.encode([target
+            const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
             return abiEncodedTransactionData;
         },
@@ -146,15 +125,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'addAuthorizedAddress(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [target
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.addAuthorizedAddress;
-            const encodedData = ethersFunction.encode([target
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -166,11 +137,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'addAuthorizedAddress'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public authorities = {
@@ -181,15 +153,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'authorities(uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [index_0
-        ] = BaseContract._formatABIDataItemList(inputAbi, [index_0
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [index_0
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.authorities;
-            const encodedData = ethersFunction.encode([index_0
+            const encodedData = self._strictEncodeArguments('authorities(uint256)', [index_0
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -201,11 +165,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'authorities'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getAssetProxy = {
@@ -216,15 +181,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'getAssetProxy(bytes4)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [assetProxyId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [assetProxyId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [assetProxyId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getAssetProxy;
-            const encodedData = ethersFunction.encode([assetProxyId
+            const encodedData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -236,11 +193,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'getAssetProxy'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public removeAuthorizedAddress = {
@@ -249,13 +207,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('removeAuthorizedAddress(address)').inputs;
-            [target
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [target
-    ]);
-            const encodedData = self._lookupEthersInterface('removeAuthorizedAddress(address)').functions.removeAuthorizedAddress.encode([target
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -277,11 +229,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('removeAuthorizedAddress(address)').inputs;
-            [target
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('removeAuthorizedAddress(address)').functions.removeAuthorizedAddress.encode([target
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -298,11 +246,7 @@ export class MultiAssetProxyContract extends BaseContract {
             target: string,
         ): string {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('removeAuthorizedAddress(address)').inputs;
-            [target
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('removeAuthorizedAddress(address)').functions.removeAuthorizedAddress.encode([target
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
             return abiEncodedTransactionData;
         },
@@ -313,15 +257,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'removeAuthorizedAddress(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [target
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.removeAuthorizedAddress;
-            const encodedData = ethersFunction.encode([target
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -333,11 +269,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'removeAuthorizedAddress'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public owner = {
@@ -347,12 +284,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'owner()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.owner;
-            const encodedData = ethersFunction.encode([]);
+            const encodedData = self._strictEncodeArguments('owner()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -363,11 +295,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'owner'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public removeAuthorizedAddressAtIndex = {
@@ -377,16 +310,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('removeAuthorizedAddressAtIndex(address,uint256)').inputs;
-            [target,
-    index
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-    index
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [target,
-    index
-    ]);
-            const encodedData = self._lookupEthersInterface('removeAuthorizedAddressAtIndex(address,uint256)').functions.removeAuthorizedAddressAtIndex.encode([target,
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -411,13 +335,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('removeAuthorizedAddressAtIndex(address,uint256)').inputs;
-            [target,
-    index
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-    index
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('removeAuthorizedAddressAtIndex(address,uint256)').functions.removeAuthorizedAddressAtIndex.encode([target,
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -436,13 +354,7 @@ export class MultiAssetProxyContract extends BaseContract {
             index: BigNumber,
         ): string {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('removeAuthorizedAddressAtIndex(address,uint256)').inputs;
-            [target,
-    index
-    ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-    index
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('removeAuthorizedAddressAtIndex(address,uint256)').functions.removeAuthorizedAddressAtIndex.encode([target,
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
             return abiEncodedTransactionData;
@@ -455,18 +367,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'removeAuthorizedAddressAtIndex(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [target,
-        index
-        ] = BaseContract._formatABIDataItemList(inputAbi, [target,
-        index
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [target,
-        index
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.removeAuthorizedAddressAtIndex;
-            const encodedData = ethersFunction.encode([target,
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
         index
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -479,11 +380,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'removeAuthorizedAddressAtIndex'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getProxyId = {
@@ -493,12 +395,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'getProxyId()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getProxyId;
-            const encodedData = ethersFunction.encode([]);
+            const encodedData = self._strictEncodeArguments('getProxyId()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -509,11 +406,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'getProxyId'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public authorized = {
@@ -524,15 +422,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'authorized(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [index_0
-        ] = BaseContract._formatABIDataItemList(inputAbi, [index_0
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [index_0
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.authorized;
-            const encodedData = ethersFunction.encode([index_0
+            const encodedData = self._strictEncodeArguments('authorized(address)', [index_0
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -544,11 +434,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'authorized'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('authorized(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public registerAssetProxy = {
@@ -557,13 +448,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('registerAssetProxy(address)').inputs;
-            [assetProxy
-    ] = BaseContract._formatABIDataItemList(inputAbi, [assetProxy
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [assetProxy
-    ]);
-            const encodedData = self._lookupEthersInterface('registerAssetProxy(address)').functions.registerAssetProxy.encode([assetProxy
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -585,11 +470,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('registerAssetProxy(address)').inputs;
-            [assetProxy
-    ] = BaseContract._formatABIDataItemList(inputAbi, [assetProxy
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('registerAssetProxy(address)').functions.registerAssetProxy.encode([assetProxy
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -606,11 +487,7 @@ export class MultiAssetProxyContract extends BaseContract {
             assetProxy: string,
         ): string {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('registerAssetProxy(address)').inputs;
-            [assetProxy
-    ] = BaseContract._formatABIDataItemList(inputAbi, [assetProxy
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('registerAssetProxy(address)').functions.registerAssetProxy.encode([assetProxy
+            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
             return abiEncodedTransactionData;
         },
@@ -621,15 +498,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'registerAssetProxy(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [assetProxy
-        ] = BaseContract._formatABIDataItemList(inputAbi, [assetProxy
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [assetProxy
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.registerAssetProxy;
-            const encodedData = ethersFunction.encode([assetProxy
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -641,11 +510,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'registerAssetProxy'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getAuthorizedAddresses = {
@@ -655,12 +525,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<string[]
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'getAuthorizedAddresses()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getAuthorizedAddresses;
-            const encodedData = ethersFunction.encode([]);
+            const encodedData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -671,11 +536,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'getAuthorizedAddresses'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string[]
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transferOwnership = {
@@ -684,13 +550,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('transferOwnership(address)').inputs;
-            [newOwner
-    ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
-    ]);
-            const encodedData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -712,11 +572,7 @@ export class MultiAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('transferOwnership(address)').inputs;
-            [newOwner
-    ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -733,11 +589,7 @@ export class MultiAssetProxyContract extends BaseContract {
             newOwner: string,
         ): string {
             const self = this as any as MultiAssetProxyContract;
-            const inputAbi = self._lookupAbi('transferOwnership(address)').inputs;
-            [newOwner
-    ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             return abiEncodedTransactionData;
         },
@@ -748,15 +600,7 @@ export class MultiAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as MultiAssetProxyContract;
-            const functionSignature = 'transferOwnership(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [newOwner
-        ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.transferOwnership;
-            const encodedData = ethersFunction.encode([newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -768,11 +612,12 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'transferOwnership'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(
@@ -818,7 +663,7 @@ export class MultiAssetProxyContract extends BaseContract {
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('MultiAssetProxy', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method

@@ -6,7 +6,8 @@
                 "note": "Added migrations for `MultiAssetProxy` contract",
                 "pr": 1503
             }
-        ]
+        ],
+        "timestamp": 1547561734
     },
     {
         "timestamp": 1547225310,
