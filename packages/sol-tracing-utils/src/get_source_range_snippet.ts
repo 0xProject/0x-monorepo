@@ -13,7 +13,7 @@ interface ASTInfo {
 }
 
 // Parsing source code for each transaction/code is slow and therefore we cache it
-const parsedSourceByHash: { [sourceHash: string]: Parser.ASTNode } = {};
+const hashToParsedSource: { [sourceHash: string]: Parser.ASTNode } = {};
 
 /**
  * Gets the source range snippet by source range to be used by revert trace.
@@ -22,10 +22,10 @@ const parsedSourceByHash: { [sourceHash: string]: Parser.ASTNode } = {};
  */
 export function getSourceRangeSnippet(sourceRange: SourceRange, sourceCode: string): SourceSnippet | null {
     const sourceHash = ethUtil.sha3(sourceCode).toString('hex');
-    if (_.isUndefined(parsedSourceByHash[sourceHash])) {
-        parsedSourceByHash[sourceHash] = Parser.parse(sourceCode, { loc: true });
+    if (_.isUndefined(hashToParsedSource[sourceHash])) {
+        hashToParsedSource[sourceHash] = Parser.parse(sourceCode, { loc: true });
     }
-    const astNode = parsedSourceByHash[sourceHash];
+    const astNode = hashToParsedSource[sourceHash];
     const visitor = new ASTInfoVisitor();
     Parser.visit(astNode, visitor);
     const astInfo = visitor.getASTInfoForRange(sourceRange);

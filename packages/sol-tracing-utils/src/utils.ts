@@ -23,6 +23,12 @@ export const utils = {
             utils.compareLineColumn(childRange.end, parentRange.end) <= 0
         );
     },
+    isRangeEqual(childRange: SingleFileSourceRange, parentRange: SingleFileSourceRange): boolean {
+        return (
+            utils.compareLineColumn(parentRange.start, childRange.start) === 0 &&
+            utils.compareLineColumn(childRange.end, parentRange.end) === 0
+        );
+    },
     bytecodeToBytecodeRegex(bytecode: string): string {
         const bytecodeRegex = bytecode
             // Library linking placeholder: __ConvertLib____________________________

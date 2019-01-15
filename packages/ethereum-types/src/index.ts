@@ -306,6 +306,8 @@ export interface TraceParams {
     disableMemory?: boolean;
     disableStack?: boolean;
     disableStorage?: boolean;
+    tracer?: string;
+    timeout?: string;
 }
 
 export type OutputField =
