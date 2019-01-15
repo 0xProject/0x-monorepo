@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import 'mocha';
 import * as path from 'path';
 
-import { getLocationByOffset, parseSourceMap } from '../src/source_maps';
+import { getOffsetToLocation, parseSourceMap } from '../src/source_maps';
 
 const expect = chai.expect;
 
@@ -15,7 +15,7 @@ const simplestContract = fs.readFileSync(simplestContractFileName).toString();
 describe('source maps', () => {
     describe('#getLocationByOffset', () => {
         it('correctly computes location by offset', () => {
-            const locationByOffset = getLocationByOffset(simplestContract);
+            const offsetToLocation = getOffsetToLocation(simplestContract);
             const expectedLocationByOffset = {
                 '0': { line: 1, column: 0 },
                 '1': { line: 1, column: 1 },
@@ -41,7 +41,7 @@ describe('source maps', () => {
                 '21': { line: 2, column: 1 },
                 '22': { line: 3, column: 0 },
             };
-            expect(locationByOffset).to.be.deep.equal(expectedLocationByOffset);
+            expect(offsetToLocation).to.be.deep.equal(expectedLocationByOffset);
         });
     });
     describe('#parseSourceMap', () => {
