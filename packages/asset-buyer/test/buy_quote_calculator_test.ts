@@ -184,7 +184,7 @@ describe('buyQuoteCalculator', () => {
                         false,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, undefined);
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(0));
             });
         });
         it('should not throw if order is fillable', () => {
