@@ -1,7 +1,7 @@
-import BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { BigNumber } from '../../configured_bignumber';
 import { constants } from '../utils/constants';
 
 function sanityCheckBigNumberRange(
@@ -14,6 +14,8 @@ function sanityCheckBigNumberRange(
         throw new Error(`Tried to assign value of ${value}, which exceeds max value of ${maxValue}`);
     } else if (value.isLessThan(minValue)) {
         throw new Error(`Tried to assign value of ${value}, which exceeds min value of ${minValue}`);
+    } else if (value.isNaN) {
+        throw new Error(`Tried to assign NaN value`);
     }
 }
 function bigNumberToPaddedBuffer(value: BigNumber): Buffer {
