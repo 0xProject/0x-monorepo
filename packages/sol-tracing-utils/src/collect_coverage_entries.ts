@@ -3,24 +3,24 @@ import * as _ from 'lodash';
 import * as parser from 'solidity-parser-antlr';
 
 import { ASTVisitor, CoverageEntriesDescription } from './ast_visitor';
-import { getLocationByOffset } from './source_maps';
+import { getOffsetToLocation } from './source_maps';
 
 const IGNORE_RE = /\/\*\s*solcov\s+ignore\s+next\s*\*\/\s*/gm;
 
 // Parsing source code for each transaction/code is slow and therefore we cache it
-const coverageEntriesBySourceHash: { [sourceHash: string]: CoverageEntriesDescription } = {};
+const sourceHashToCoverageEntries: { [sourceHash: string]: CoverageEntriesDescription } = {};
 
 export const collectCoverageEntries = (contractSource: string) => {
     const sourceHash = ethUtil.sha3(contractSource).toString('hex');
-    if (_.isUndefined(coverageEntriesBySourceHash[sourceHash]) && !_.isUndefined(contractSource)) {
+    if (_.isUndefined(sourceHashToCoverageEntries[sourceHash]) && !_.isUndefined(contractSource)) {
         const ast = parser.parse(contractSource, { range: true });
-        const locationByOffset = getLocationByOffset(contractSource);
+        const offsetToLocation = getOffsetToLocation(contractSource);
         const ignoreRangesBegingingAt = gatherRangesToIgnore(contractSource);
-        const visitor = new ASTVisitor(locationByOffset, ignoreRangesBegingingAt);
+        const visitor = new ASTVisitor(offsetToLocation, ignoreRangesBegingingAt);
         parser.visit(ast, visitor);
-        coverageEntriesBySourceHash[sourceHash] = visitor.getCollectedCoverageEntries();
+        sourceHashToCoverageEntries[sourceHash] = visitor.getCollectedCoverageEntries();
     }
-    const coverageEntriesDescription = coverageEntriesBySourceHash[sourceHash];
+    const coverageEntriesDescription = sourceHashToCoverageEntries[sourceHash];
     return coverageEntriesDescription;
 };
 

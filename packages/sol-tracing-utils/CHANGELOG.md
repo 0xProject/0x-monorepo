@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _January 11, 2019_
+
+    * Move out specific tools and leave just the shared parts of the codebase (#1492)
+
 ## v2.1.17 - _January 9, 2019_
 
     * Dependencies updated

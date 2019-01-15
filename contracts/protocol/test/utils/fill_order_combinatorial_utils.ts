@@ -613,13 +613,13 @@ export class FillOrderCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
         const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
-        const expectedAbiEncodedData = this.exchangeWrapper.abiEncodeFillOrder(signedOrder, { takerAssetFillAmount });
-        const libsAbiEncodedData = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
+        const abiDataEncodedByContract = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
         );
-        expect(libsAbiEncodedData).to.be.equal(expectedAbiEncodedData, 'ABIEncodedFillOrderData');
+        const paramsDecodedByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
+        expect(paramsDecodedByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
     }
     private async _getTakerAssetFillAmountAsync(
         signedOrder: SignedOrder,
