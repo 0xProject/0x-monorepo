@@ -5,6 +5,10 @@
             {
                 "note": "Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule",
                 "pr": 1474
+            },
+            {
+                "note": "Remove Exchange `matchOrdersAsync` optimization",
+                "pr": 1514
             }
         ]
     },
