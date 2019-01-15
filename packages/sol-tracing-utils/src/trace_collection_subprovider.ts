@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { logUtils } from '@0x/utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subproviders';
 import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
@@ -25,14 +26,14 @@ type AsyncFunc = (...args: any[]) => Promise<void>;
 // This wrapper outputs errors to console even if the promise gets ignored
 // we need this because web3-provider-engine does not handle promises in
 // the after function of next(after).
-function logErrors(fn: AsyncFunc): AsyncFunc {
+function logAsyncErrors(fn: AsyncFunc): AsyncFunc {
     async function wrappedAsync(...args: any[]): Promise<void> {
         try {
             await fn(...args);
-        } catch (e) {
+        } catch (err) {
             // tslint:disable-next-line no-console
-            console.error(e);
-            throw e;
+            logUtils.error(err);
+            throw err;
         }
     }
     return wrappedAsync;
@@ -92,7 +93,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const txData = payload.params[0];
-                        next(logErrors(this._onTransactionSentAsync.bind(this, txData)));
+                        next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
                     }
                     return;
 
@@ -101,7 +102,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const callData = payload.params[0];
-                        next(logErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, callData)));
+                        next(logAsyncErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, callData)));
                     }
                     return;
 
@@ -110,7 +111,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const estimateGasData = payload.params[0];
-                        next(logErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData)));
+                        next(logAsyncErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData)));
                     }
                     return;
 
