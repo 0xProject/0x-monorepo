@@ -1,6 +1,6 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.5",
+    "version": "1.0.7",
     "engines": {
         "node": ">=6.12"
     },
@@ -41,18 +41,18 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
-        "@0x/assert": "^1.0.21",
-        "@0x/asset-buyer": "^3.0.5",
-        "@0x/json-schemas": "^2.1.5",
-        "@0x/order-utils": "^3.1.0",
-        "@0x/subproviders": "^2.1.9",
-        "@0x/types": "^1.5.0",
-        "@0x/typescript-typings": "^3.0.6",
-        "@0x/utils": "^2.1.1",
-        "@0x/web3-wrapper": "^3.2.2",
+        "@0x/assert": "^1.0.23",
+        "@0x/asset-buyer": "^4.0.1",
+        "@0x/json-schemas": "^2.1.7",
+        "@0x/order-utils": "^3.1.2",
+        "@0x/subproviders": "^2.1.11",
+        "@0x/types": "^1.5.2",
+        "@0x/typescript-typings": "^3.0.8",
+        "@0x/utils": "^3.0.1",
+        "@0x/web3-wrapper": "^3.2.4",
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",
-        "ethereum-types": "^1.1.4",
+        "ethereum-types": "^1.1.6",
         "lodash": "^4.17.5",
         "polished": "^2.2.0",
         "react": "^16.5.2",
@@ -65,7 +65,7 @@
         "ts-optchain": "^0.1.1"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^2.0.0",
+        "@0x/tslint-config": "^2.0.2",
         "@static/discharge": "https://github.com/0xProject/discharge.git",
         "@types/enzyme": "^3.1.14",
         "@types/enzyme-adapter-react-16": "^1.0.3",

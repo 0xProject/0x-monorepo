@@ -26,6 +26,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Dynamic size; Static elements', async () => {
             // Create DataType object
@@ -41,6 +45,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Fixed size; Dynamic elements', async () => {
             // Create DataType object
@@ -56,6 +64,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Dynamic size; Dynamic elements', async () => {
             // Create DataType object
@@ -71,6 +83,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Dynamic Size; Multidimensional; Dynamic Elements', async () => {
             // Create DataType object
@@ -89,6 +105,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Dynamic Size; Multidimensional; Static Elements', async () => {
             // Create DataType object
@@ -107,6 +127,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Static Size; Multidimensional; Static Elements', async () => {
             // Create DataType object
@@ -124,6 +148,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Static Size; Multidimensional; Dynamic Elements', async () => {
             // Create DataType object
@@ -141,6 +169,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Static size; Too Few Elements', async () => {
             // Create DataType object
@@ -197,6 +229,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args, encodingRules);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Dynamic elements only', async () => {
             // Create DataType object
@@ -217,6 +253,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Nested Static Array', async () => {
             // Create DataType object
@@ -237,6 +277,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Nested Dynamic Array', async () => {
             // Create DataType object
@@ -257,6 +301,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Nested Static Multidimensional Array', async () => {
             // Create DataType object
@@ -279,6 +327,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Nested Dynamic Multidimensional Array', async () => {
             // Create DataType object
@@ -301,6 +353,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Static and dynamic elements mixed', async () => {
             // Create DataType object
@@ -331,6 +387,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Missing Key', async () => {
             // Create DataType object
@@ -345,22 +405,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args, encodingRules);
-            }).to.throw('Could not assign tuple to object: missing keys field_2');
-        });
-        it('Bad Key', async () => {
-            // Create DataType object
-            const testDataItem = {
-                name: 'Tuple',
-                type: 'tuple',
-                components: [{ name: 'field_1', type: 'int32' }, { name: 'field_2', type: 'bool' }],
-            };
-            const dataType = new AbiEncoder.Tuple(testDataItem);
-            // Construct args to be encoded
-            const args = { unknown_field: new BigNumber(-5) };
-            // Encode Args and validate result
-            expect(() => {
-                dataType.encode(args, encodingRules);
-            }).to.throw("Could not assign tuple to object: unrecognized key 'unknown_field' in object Tuple");
+            }).to.throw('Could not assign tuple to object: missing key \'field_2\' in object {"field_1":"-5"}');
         });
     });
 
@@ -378,6 +423,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Invalid Address - input is not valid hex', async () => {
             // Create DataType object
@@ -417,6 +466,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('False', async () => {
             // Create DataType object
@@ -431,6 +484,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
     });
 
@@ -455,6 +512,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int256 - Negative Base Case', async () => {
             // Create DataType object
@@ -469,6 +530,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int256 - Positive Value', async () => {
             // Create DataType object
@@ -483,6 +548,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int256 - Negative Value', async () => {
             // Create DataType object
@@ -497,6 +566,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int256 - Value too large', async () => {
             // Create DataType object
@@ -533,6 +606,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int32 - Negative Base Case', async () => {
             // Create DataType object
@@ -547,6 +624,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int32 - Positive Value', async () => {
             // Create DataType object
@@ -561,6 +642,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int32 - Negative Value', async () => {
             // Create DataType object
@@ -575,6 +660,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Int32 - Value too large', async () => {
             // Create DataType object
@@ -621,6 +710,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('UInt256 - Positive Value', async () => {
             // Create DataType object
@@ -635,6 +728,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('UInt256 - Zero Value', async () => {
             // Create DataType object
@@ -649,6 +746,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('UInt256 - Value too large', async () => {
             // Create DataType object
@@ -685,6 +786,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('UInt32 - Positive Value', async () => {
             // Create DataType object
@@ -699,6 +804,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('UInt32 - Zero Value', async () => {
             // Create DataType object
@@ -713,6 +822,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('UInt32 - Value too large', async () => {
             // Create DataType object
@@ -752,6 +865,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Single Byte (bytes1)', async () => {
             // Create DataType object
@@ -766,6 +883,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('4 Bytes (bytes4)', async () => {
             // Create DataType object
@@ -780,6 +901,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('4 Bytes (bytes4); Encoder must pad input', async () => {
             // Create DataType object
@@ -796,6 +921,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodedArgs = dataType.decode(encodedArgs);
             const paddedArgs = '0x1a180000';
             expect(decodedArgs).to.be.deep.equal(paddedArgs);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('32 Bytes (bytes32)', async () => {
             // Create DataType object
@@ -810,6 +939,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('32 Bytes (bytes32); Encoder must pad input', async () => {
             // Create DataType object
@@ -826,6 +959,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodedArgs = dataType.decode(encodedArgs);
             const paddedArgs = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
             expect(decodedArgs).to.be.deep.equal(paddedArgs);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Should throw when pass in too many bytes (bytes4)', async () => {
             // Create DataType object
@@ -893,6 +1030,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Spans multiple EVM words', async () => {
             // Create DataType object
@@ -910,6 +1051,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Input as Buffer', async () => {
             // Create DataType object
@@ -927,6 +1072,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Should throw when pass in bad hex (no 0x prefix)', async () => {
             // Create DataType object
@@ -968,6 +1117,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('Spans multiple EVM words', async () => {
             // Create DataType object
@@ -985,6 +1138,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
         it('String that begins with 0x prefix', async () => {
             // Create DataType object
@@ -1002,6 +1159,10 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
     });
 });

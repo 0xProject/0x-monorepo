@@ -4,6 +4,8 @@ export {
     TruffleArtifactAdapter,
     AbstractArtifactAdapter,
     ContractData,
+    SourceCodes,
+    Sources,
 } from '@0x/sol-tracing-utils';
 
 export {

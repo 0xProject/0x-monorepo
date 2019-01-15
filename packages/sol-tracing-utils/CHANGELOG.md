@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _January 15, 2019_
+
+    * Fix a bug with incorrect parsing of `sourceMaps` due to sources being in an array instead of a map (#1498)
+    * Change the types of `ContractData.sources` and `ContractData.sourceCodes` to be objects instead of arrays (#1498)
+    * Use custom JS tracer to speed up tracing on clients that support it (e.g., Geth) (#1498)
+    * Log errors encountered in `TraceCollectionSubprovider` (#1498)
+    * Add support for assembly statements (#1498)
+
+## v3.0.0 - _January 11, 2019_
+
+    * Move out specific tools and leave just the shared parts of the codebase (#1492)
+
 ## v2.1.17 - _January 9, 2019_
 
     * Dependencies updated

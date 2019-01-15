@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _January 15, 2019_
+
+    * Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule (#1474)
+    * Remove Exchange `matchOrdersAsync` optimization (#1514)
+
+## v4.2.1 - _January 11, 2019_
+
+    * Dependencies updated
+
 ## v4.2.0 - _January 9, 2019_
 
     * Added Dutch Auction wrapper (#1465)

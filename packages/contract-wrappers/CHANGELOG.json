@@ -1,5 +1,28 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule",
+                "pr": 1474
+            },
+            {
+                "note": "Remove Exchange `matchOrdersAsync` optimization",
+                "pr": 1514
+            }
+        ],
+        "timestamp": 1547561734
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "4.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {

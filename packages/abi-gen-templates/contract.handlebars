@@ -85,7 +85,7 @@ export class {{contractName}}Contract extends BaseContract {
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('{{contractName}}', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method
