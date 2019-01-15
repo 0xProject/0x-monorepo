@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { getPcToInstructionIndexMapping } from './instructions';
-import { OffsetToLocation, SourceRange } from './types';
+import { OffsetToLocation, SourceCodes, SourceRange, Sources } from './types';
 
 const RADIX = 10;
 
@@ -39,10 +39,10 @@ export function getOffsetToLocation(str: string): OffsetToLocation {
  * @param indexToSource index to source file path
  */
 export function parseSourceMap(
-    sourceCodes: { [fileIndex: number]: string },
+    sourceCodes: SourceCodes,
     srcMap: string,
     bytecodeHex: string,
-    sources: { [fileIndex: number]: string },
+    sources: Sources,
 ): { [programCounter: number]: SourceRange } {
     const bytecode = Uint8Array.from(Buffer.from(bytecodeHex, 'hex'));
     const pcToInstructionIndex: { [programCounter: number]: number } = getPcToInstructionIndexMapping(bytecode);

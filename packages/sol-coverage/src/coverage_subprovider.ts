@@ -81,12 +81,12 @@ export const coverageHandler: SingleFileSubtraceHandler = (
     const branchIds = _.keys(coverageEntriesDescription.branchMap);
     for (const branchId of branchIds) {
         const branchDescription = coverageEntriesDescription.branchMap[branchId];
-        const isBranchCoveredByBranchIndex = _.map(branchDescription.locations, location => {
+        const branchIndexToIsBranchCovered = _.map(branchDescription.locations, location => {
             const isBranchCovered = _.some(sourceRanges, range => utils.isRangeInside(range.location, location));
             const timesBranchCovered = Number(isBranchCovered);
             return timesBranchCovered;
         });
-        branchCoverage[branchId] = isBranchCoveredByBranchIndex;
+        branchCoverage[branchId] = branchIndexToIsBranchCovered;
     }
     const statementCoverage: StatementCoverage = {};
     const statementIds = _.keys(coverageEntriesDescription.statementMap);

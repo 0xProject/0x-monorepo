@@ -5,7 +5,7 @@ import * as glob from 'glob';
 import * as _ from 'lodash';
 import * as path from 'path';
 
-import { ContractData } from '../types';
+import { ContractData, SourceCodes, Sources } from '../types';
 
 import { AbstractArtifactAdapter } from './abstract_artifact_adapter';
 
@@ -43,8 +43,8 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
                 logUtils.warn(`${artifactFileName} doesn't contain bytecode. Skipping...`);
                 continue;
             }
-            const sources: { [sourceId: number]: string } = {};
-            const sourceCodes: { [sourceId: number]: string } = {};
+            const sources: Sources = {};
+            const sourceCodes: SourceCodes = {};
             _.map(artifact.sources, (value: { id: number }, relativeFilePath: string) => {
                 const filePath = path.resolve(this._sourcesPath, relativeFilePath);
                 const fileContent = fs.readFileSync(filePath).toString();

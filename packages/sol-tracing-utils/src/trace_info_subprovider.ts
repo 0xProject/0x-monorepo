@@ -2,7 +2,7 @@ import { NodeType } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { getTracesByContractAddress } from './trace';
+import { getContractAddressToTraces } from './trace';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
 import { TraceInfo, TraceInfoExistingContract, TraceInfoNewContract } from './types';
 
@@ -50,13 +50,13 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                 disableStorage: true,
             });
         }
-        const tracesByContractAddress = getTracesByContractAddress(trace.structLogs, address);
-        const subcallAddresses = _.keys(tracesByContractAddress);
+        const contractAddressToTraces = getContractAddressToTraces(trace.structLogs, address);
+        const subcallAddresses = _.keys(contractAddressToTraces);
         if (address === constants.NEW_CONTRACT) {
             for (const subcallAddress of subcallAddresses) {
                 let traceInfo: TraceInfoNewContract | TraceInfoExistingContract;
                 if (subcallAddress === 'NEW_CONTRACT') {
-                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                    const traceForThatSubcall = contractAddressToTraces[subcallAddress];
                     traceInfo = {
                         subtrace: traceForThatSubcall,
                         txHash,
@@ -65,7 +65,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                     };
                 } else {
                     const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
-                    const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                    const traceForThatSubcall = contractAddressToTraces[subcallAddress];
                     traceInfo = {
                         subtrace: traceForThatSubcall,
                         txHash,
@@ -78,7 +78,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
         } else {
             for (const subcallAddress of subcallAddresses) {
                 const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
-                const traceForThatSubcall = tracesByContractAddress[subcallAddress];
+                const traceForThatSubcall = contractAddressToTraces[subcallAddress];
                 const traceInfo: TraceInfoExistingContract = {
                     subtrace: traceForThatSubcall,
                     txHash,

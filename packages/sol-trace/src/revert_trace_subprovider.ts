@@ -106,8 +106,8 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                 continue;
             }
 
-            const fileIndexByFileName = _.invert(contractData.sources);
-            const fileIndex = _.parseInt(fileIndexByFileName[sourceRange.fileName]);
+            const fileNameToFileIndex = _.invert(contractData.sources);
+            const fileIndex = _.parseInt(fileNameToFileIndex[sourceRange.fileName]);
             const sourceSnippet = getSourceRangeSnippet(sourceRange, contractData.sourceCodes[fileIndex]);
             if (sourceSnippet !== null) {
                 sourceSnippets.push(sourceSnippet);
