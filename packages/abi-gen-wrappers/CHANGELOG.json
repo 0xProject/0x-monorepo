@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added `MultiAssetProxy`",
+                "pr": 1503
+            }
+        ]
+    },
+    {
         "timestamp": 1547225310,
         "version": "2.1.1",
         "changes": [
