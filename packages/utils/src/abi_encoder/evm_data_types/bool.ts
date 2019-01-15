@@ -46,7 +46,7 @@ export class BoolDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return SolidityTypes.Bool;
     }
     /* tslint:enable prefer-function-over-method */

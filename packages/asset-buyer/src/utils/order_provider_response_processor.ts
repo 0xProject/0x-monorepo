@@ -105,7 +105,7 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
             // get corresponding on-chain state for the order
             const { orderInfo, traderInfo } = ordersAndTradersInfo[index];
             // if the order IS NOT fillable, do not add anything to the accumulations and continue iterating
-            if (orderInfo.orderStatus !== OrderStatus.FILLABLE) {
+            if (orderInfo.orderStatus !== OrderStatus.Fillable) {
                 return accOrders;
             }
             // if the order IS fillable, add the order and calculate the remaining fillable amount

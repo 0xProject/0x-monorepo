@@ -6,7 +6,8 @@
                 "note": "Make `promisify` resolve when the callback error is undefined.",
                 "pr": 1501
             }
-        ]
+        ],
+        "timestamp": 1547225310
     },
     {
         "version": "2.1.1",

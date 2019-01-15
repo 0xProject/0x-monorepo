@@ -36,9 +36,9 @@ interface ItemByNetworkId<T> {
 }
 
 enum RequestedAssetType {
-    ETH = 'ETH',
-    WETH = 'WETH',
-    ZRX = 'ZRX',
+    ETH = 'ETH', // tslint:disable-line:enum-naming
+    WETH = 'WETH', // tslint:disable-line:enum-naming
+    ZRX = 'ZRX', // tslint:disable-line:enum-naming
 }
 
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable

@@ -117,9 +117,9 @@ describe('OrderValidator', () => {
         it('should return correct on-chain order info for input orders', async () => {
             const firstOrderInfo = ordersInfo[0];
             const secondOrderInfo = ordersInfo[1];
-            expect(firstOrderInfo.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(firstOrderInfo.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(firstOrderInfo.orderTakerAssetFilledAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(secondOrderInfo.orderStatus).to.be.equal(OrderStatus.FILLABLE);
+            expect(secondOrderInfo.orderStatus).to.be.equal(OrderStatus.Fillable);
             expect(secondOrderInfo.orderTakerAssetFilledAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should return correct on-chain trader info for input takers', async () => {

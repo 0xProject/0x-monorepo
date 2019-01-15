@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _January 11, 2019_
+
+    * Make `promisify` resolve when the callback error is undefined. (#1501)
+
 ## v2.1.1 - _January 9, 2019_
 
     * Add `should` prefix to names of properties in EncodingRules and DecodingRules (#1363)

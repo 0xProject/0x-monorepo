@@ -36,7 +36,7 @@ export class StaticBytesDataType extends AbstractBlobDataType {
         this._width = StaticBytesDataType._decodeWidthFromType(dataItem.type);
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         // Note that `byte` reduces to `bytes1`
         return `${SolidityTypes.Bytes}${this._width}`;
     }

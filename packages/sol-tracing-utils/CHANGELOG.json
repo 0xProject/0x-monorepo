@@ -1,12 +1,38 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Fix a bug with incorrect parsing of `sourceMaps` due to sources being in an array instead of a map",
+                "pr": 1498
+            },
+            {
+                "note": "Change the types of `ContractData.sources` and `ContractData.sourceCodes` to be objects instead of arrays",
+                "pr": 1498
+            },
+            {
+                "note": "Use custom JS tracer to speed up tracing on clients that support it (e.g., Geth)",
+                "pr": 1498
+            },
+            {
+                "note": "Log errors encountered in `TraceCollectionSubprovider`",
+                "pr": 1498
+            },
+            {
+                "note": "Add support for assembly statements",
+                "pr": 1498
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
                 "note": "Move out specific tools and leave just the shared parts of the codebase",
                 "pr": 1492
             }
-        ]
+        ],
+        "timestamp": 1547225310
     },
     {
         "timestamp": 1547040760,

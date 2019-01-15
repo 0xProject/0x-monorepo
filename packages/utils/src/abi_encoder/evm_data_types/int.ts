@@ -47,13 +47,17 @@ export class IntDataType extends AbstractBlobDataType {
         return encodedValue;
     }
 
-    public decodeValue(calldata: RawCalldata): BigNumber {
+    public decodeValue(calldata: RawCalldata): BigNumber | number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, this._minValue, this._maxValue);
+        const numberOfBytesInUint8 = 8;
+        if (this._width === numberOfBytesInUint8) {
+            return value.toNumber();
+        }
         return value;
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         return `${SolidityTypes.Int}${this._width}`;
     }
 }

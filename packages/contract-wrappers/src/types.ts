@@ -177,13 +177,13 @@ export interface OrderInfo {
 }
 
 export enum OrderStatus {
-    INVALID = 0,
-    INVALID_MAKER_ASSET_AMOUNT,
-    INVALID_TAKER_ASSET_AMOUNT,
-    FILLABLE,
-    EXPIRED,
-    FULLY_FILLED,
-    CANCELLED,
+    Invalid = 0,
+    InvalidMakerAssetAmount,
+    InvalidTakerAssetAmount,
+    Fillable,
+    Expired,
+    FullyFilled,
+    Cancelled,
 }
 
 export interface TraderInfo {

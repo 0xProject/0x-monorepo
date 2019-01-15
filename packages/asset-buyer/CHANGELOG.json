@@ -6,7 +6,8 @@
                 "note": "Raise custom InsufficientAssetLiquidityError error with amountAvailableToFill attribute",
                 "pr": 1437
             }
-        ]
+        ],
+        "timestamp": 1547225310
     },
     {
         "timestamp": 1547040760,

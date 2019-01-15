@@ -182,7 +182,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     </div>
                 )}
                 {!_.isEmpty(this.state.orderJSONErrMsg) && (
-                    <Alert type={AlertTypes.ERROR} message={this.state.orderJSONErrMsg} />
+                    <Alert type={AlertTypes.Error} message={this.state.orderJSONErrMsg} />
                 )}
             </div>
         );
@@ -298,7 +298,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                 onClick={this._onCancelOrderClickFireAndForgetAsync.bind(this)}
                             />
                             {this.state.didCancelOrderSucceed && (
-                                <Alert type={AlertTypes.SUCCESS} message={this._renderCancelSuccessMsg()} />
+                                <Alert type={AlertTypes.Success} message={this._renderCancelSuccessMsg()} />
                             )}
                         </div>
                     ) : (
@@ -310,10 +310,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                                 onClick={this._onFillOrderClick.bind(this)}
                             />
                             {!_.isEmpty(this.state.globalErrMsg) && (
-                                <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />
+                                <Alert type={AlertTypes.Error} message={this.state.globalErrMsg} />
                             )}
                             {this.state.didFillOrderSucceed && (
-                                <Alert type={AlertTypes.SUCCESS} message={this._renderFillSuccessMsg()} />
+                                <Alert type={AlertTypes.Success} message={this._renderFillSuccessMsg()} />
                             )}
                         </div>
                     )}

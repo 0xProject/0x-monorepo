@@ -1,5 +1,23 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule",
+                "pr": 1474
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1547040760,
         "version": "1.0.3",
         "changes": [
