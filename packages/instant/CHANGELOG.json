@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Renamed ActionTypes enum members to PascalCase to conform with tslint enum-naming rule",
+                "pr": 1474
+            }
+        ]
+    },
+    {
         "timestamp": 1542821676,
         "version": "1.0.1",
         "changes": [

@@ -1,6 +1,6 @@
 {
     "name": "@0x/react-docs",
-    "version": "1.0.24",
+    "version": "1.0.25",
     "engines": {
         "node": ">=6.12"
     },
@@ -24,8 +24,8 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0x/dev-utils": "^1.0.23",
-        "@0x/tslint-config": "^2.0.1",
+        "@0x/dev-utils": "^1.0.24",
+        "@0x/tslint-config": "^2.0.2",
         "@types/compare-versions": "^3.0.0",
         "@types/styled-components": "4.0.0",
         "make-promises-safe": "^1.1.0",
@@ -34,9 +34,9 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/react-shared": "^1.1.1",
-        "@0x/types": "^1.5.1",
-        "@0x/utils": "^3.0.0",
+        "@0x/react-shared": "^1.1.2",
+        "@0x/types": "^1.5.2",
+        "@0x/utils": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "^0.20.0",
         "@types/node": "*",
@@ -47,13 +47,13 @@
         "compare-versions": "^3.0.1",
         "lodash": "^4.17.5",
         "material-ui": "^0.20.0",
-        "react": "^16.4.2",
-        "react-dom": "^16.4.2",
+        "react": "^16.5.2",
+        "react-dom": "^16.5.2",
         "react-markdown": "^3.2.2",
         "react-scroll": "0xproject/react-scroll#pr-330-and-replace-state",
         "react-tooltip": "^3.2.7",
         "semver": "5.5.0",
-        "styled-components": "^3.3.0"
+        "styled-components": "^4.0.1"
     },
     "publishConfig": {
         "access": "public"

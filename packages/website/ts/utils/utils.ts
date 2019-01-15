@@ -342,18 +342,18 @@ export const utils = {
     },
     getEnvironment(): Environments {
         if (utils.isDogfood()) {
-            return Environments.DOGFOOD;
+            return Environments.Dogfood;
         }
         if (utils.isDevelopment()) {
-            return Environments.DEVELOPMENT;
+            return Environments.Development;
         }
         if (utils.isStaging()) {
-            return Environments.STAGING;
+            return Environments.Staging;
         }
         if (utils.isProduction()) {
-            return Environments.PRODUCTION;
+            return Environments.Production;
         }
-        return Environments.UNKNOWN;
+        return Environments.Unknown;
     },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);

@@ -1,6 +1,6 @@
 {
     "name": "@0x/tslint-config",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,6 +9,7 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
+        "test": "mocha ./lib/test/*.spec.js",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project ."
     },

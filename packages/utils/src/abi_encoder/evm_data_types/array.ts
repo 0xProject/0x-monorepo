@@ -7,7 +7,6 @@ import { constants } from '../utils/constants';
 
 export class ArrayDataType extends AbstractSetDataType {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
-    private readonly _arraySignature: string;
     private readonly _elementType: string;
 
     public static matchType(type: string): boolean {
@@ -35,25 +34,36 @@ export class ArrayDataType extends AbstractSetDataType {
         super(dataItem, dataTypeFactory, isArray, arrayLength, arrayElementType);
         // Set array properties
         this._elementType = arrayElementType;
-        this._arraySignature = this._computeSignature();
     }
 
-    public getSignature(): string {
-        return this._arraySignature;
+    public getSignatureType(): string {
+        return this._computeSignature(false);
     }
 
-    private _computeSignature(): string {
+    public getSignature(isDetailed?: boolean): string {
+        if (_.isEmpty(this.getDataItem().name) || !isDetailed) {
+            return this.getSignatureType();
+        }
+        const name = this.getDataItem().name;
+        const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
+        const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
+        const detailedSignature = `${shortName} ${this._computeSignature(isDetailed)}`;
+        return detailedSignature;
+    }
+
+    private _computeSignature(isDetailed?: boolean): string {
         // Compute signature for a single array element
         const elementDataItem: DataItem = {
             type: this._elementType,
-            name: 'N/A',
+            name: '',
         };
         const elementComponents = this.getDataItem().components;
         if (!_.isUndefined(elementComponents)) {
             elementDataItem.components = elementComponents;
         }
         const elementDataType = this.getFactory().create(elementDataItem);
-        const elementSignature = elementDataType.getSignature();
+        const elementSignature = elementDataType.getSignature(isDetailed);
         // Construct signature for array of type `element`
         if (_.isUndefined(this._arrayLength)) {
             return `${elementSignature}[]`;

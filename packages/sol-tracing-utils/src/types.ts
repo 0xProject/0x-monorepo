@@ -16,7 +16,7 @@ export interface SingleFileSourceRange {
     end: LineColumn;
 }
 
-export interface LocationByOffset {
+export interface OffsetToLocation {
     [offset: number]: LineColumn;
 }
 
@@ -76,13 +76,20 @@ export interface Coverage {
     };
 }
 
+export interface SourceCodes {
+    [sourceId: number]: string;
+}
+export interface Sources {
+    [sourceId: number]: string;
+}
+
 export interface ContractData {
     bytecode: string;
     sourceMap: string;
     runtimeBytecode: string;
     sourceMapRuntime: string;
-    sourceCodes: string[];
-    sources: string[];
+    sourceCodes: SourceCodes;
+    sources: Sources;
 }
 
 // Part of the trace executed within the same context
