@@ -1,6 +1,6 @@
 {
     "name": "@0x/connect",
-    "version": "3.0.12",
+    "version": "3.0.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,12 +44,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0x/assert": "^1.0.22",
-        "@0x/json-schemas": "^2.1.6",
-        "@0x/order-utils": "^3.1.1",
-        "@0x/types": "^1.5.1",
-        "@0x/typescript-typings": "^3.0.7",
-        "@0x/utils": "^3.0.0",
+        "@0x/assert": "^1.0.23",
+        "@0x/json-schemas": "^2.1.7",
+        "@0x/order-utils": "^3.1.2",
+        "@0x/types": "^1.5.2",
+        "@0x/typescript-typings": "^3.0.8",
+        "@0x/utils": "^3.0.1",
         "lodash": "^4.17.5",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
@@ -57,7 +57,7 @@
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^2.0.1",
+        "@0x/tslint-config": "^2.0.2",
         "@types/fetch-mock": "^6.0.3",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
