@@ -76,6 +76,8 @@ export interface BuyQuoteRequestOpts {
 }
 
 /*
+ * Options for checking liquidity
+ *
  * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
  */
 export interface LiquidityRequestOpts extends Pick<BuyQuoteRequestOpts, 'shouldForceOrderRefresh'> {}
@@ -122,6 +124,10 @@ export enum AssetBuyerError {
     TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
+/**
+ * orders: An array of signed orders
+ * remainingFillableMakerAssetAmounts: A list of fillable amounts for the signed orders. The index of an item in the array associates the amount with the corresponding order.
+ */
 export interface OrdersAndFillableAmounts {
     orders: SignedOrder[];
     remainingFillableMakerAssetAmounts: BigNumber[];

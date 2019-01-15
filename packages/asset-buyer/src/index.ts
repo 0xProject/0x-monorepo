@@ -1,3 +1,4 @@
+import { LiquidityRequestOpts } from './../lib/src/types.d';
 export {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
@@ -19,6 +20,9 @@ export {
     BuyQuoteExecutionOpts,
     BuyQuoteInfo,
     BuyQuoteRequestOpts,
+    LiquidityForAssetData,
+    LiquidityRequestOpts,
+    OrdersAndFillableAmounts,
     OrderProvider,
     OrderProviderRequest,
     OrderProviderResponse,
