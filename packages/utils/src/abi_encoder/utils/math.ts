@@ -14,7 +14,7 @@ function sanityCheckBigNumberRange(
         throw new Error(`Tried to assign value of ${value}, which exceeds max value of ${maxValue}`);
     } else if (value.isLessThan(minValue)) {
         throw new Error(`Tried to assign value of ${value}, which exceeds min value of ${minValue}`);
-    } else if (value.isNaN) {
+    } else if (value.isNaN()) {
         throw new Error(`Tried to assign NaN value`);
     }
 }

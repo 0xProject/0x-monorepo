@@ -69,7 +69,7 @@ export class AbiDecoder {
             }
             if (param.type === SolidityTypes.Address) {
                 const baseHex = 16;
-                value = addressUtils.padZeros(new BigNumber((value as string).toLowerCase()).toString(baseHex));
+                value = addressUtils.padZeros(new BigNumber(value).toString(baseHex));
             } else if (param.type === SolidityTypes.Uint256 || param.type === SolidityTypes.Uint) {
                 value = new BigNumber(value);
             } else if (param.type === SolidityTypes.Uint8) {
