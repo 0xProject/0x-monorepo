@@ -5,7 +5,6 @@ import * as Ganache from 'ganache-core';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { utils } from '../src/utils';
 import { Web3Wrapper } from '../src/web3_wrapper';
 
 import { chaiSetup } from './utils/chai_setup';
