@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { logUtils } from '@0x/utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subproviders';
+import { logUtils } from '@0x/utils';
 import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -31,8 +31,7 @@ function logAsyncErrors(fn: AsyncFunc): AsyncFunc {
         try {
             await fn(...args);
         } catch (err) {
-            // tslint:disable-next-line no-console
-            logUtils.error(err);
+            logUtils.log(err);
             throw err;
         }
     }
