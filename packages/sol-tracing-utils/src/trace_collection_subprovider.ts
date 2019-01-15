@@ -23,7 +23,7 @@ export interface TraceCollectionSubproviderConfig {
 
 type AsyncFunc = (...args: any[]) => Promise<void>;
 
-// This wrapper outputs errors to console even if the promise gets ignored
+// HACK: This wrapper outputs errors to console even if the promise gets ignored
 // we need this because web3-provider-engine does not handle promises in
 // the after function of next(after).
 function logAsyncErrors(fn: AsyncFunc): AsyncFunc {
