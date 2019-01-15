@@ -205,7 +205,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args, encodingRules);
-            }).to.throw();
+            }).to.throw('Tried to assign NaN value');
         });
     });
 
