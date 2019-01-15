@@ -1,3 +1,4 @@
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { BlockParamLiteral, JSONRPCErrorCallback, JSONRPCRequestPayload, TransactionReceipt } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
@@ -118,7 +119,7 @@ describe('Web3Wrapper tests', () => {
                 throw new Error('Expected block to exist');
             }
             expect(blockIfExists.number).to.be.equal(0);
-            expect(utils.isBigNumber(blockIfExists.difficulty)).to.equal(true);
+            expect(BigNumber.isBigNumber(blockIfExists.difficulty)).to.equal(true);
             expect(_.isNumber(blockIfExists.gasLimit)).to.equal(true);
         });
         it('gets block when supplied a block number', async () => {
@@ -151,7 +152,7 @@ describe('Web3Wrapper tests', () => {
             const blockParamLiteral = BlockParamLiteral.Earliest;
             const block = await web3Wrapper.getBlockWithTransactionDataAsync(blockParamLiteral);
             expect(block.number).to.be.equal(0);
-            expect(utils.isBigNumber(block.difficulty)).to.equal(true);
+            expect(BigNumber.isBigNumber(block.difficulty)).to.equal(true);
             expect(_.isNumber(block.gasLimit)).to.equal(true);
         });
         it('should throw if supplied invalid blockParam value', async () => {
