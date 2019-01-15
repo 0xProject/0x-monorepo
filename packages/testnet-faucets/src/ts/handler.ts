@@ -178,8 +178,8 @@ export class Handler {
             exchangeAddress: networkConfig.contractWrappers.exchange.address,
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
-            // tslint:disable-next-line:custom-no-magic-numbers
             expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS)
+                // tslint:disable-next-line:custom-no-magic-numbers
                 .div(1000)
                 .integerValue(BigNumber.ROUND_FLOOR),
         };
