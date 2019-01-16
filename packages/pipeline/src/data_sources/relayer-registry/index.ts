@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { fetchSuccessfullyOrThrowAsync } from '../../utils';
 
 export interface RelayerResponse {
     name: string;
@@ -19,15 +19,13 @@ export interface RelayerResponseNetwork {
     };
 }
 
-export class RelayerRegistrySource {
-    private readonly _url: string;
+export interface RelayerResponses {
+    [uuid: string]: RelayerResponse;
+}
 
-    constructor(url: string) {
-        this._url = url;
-    }
-
-    public async getRelayerInfoAsync(): Promise<Map<string, RelayerResponse>> {
-        const resp = await axios.get<Map<string, RelayerResponse>>(this._url);
-        return resp.data;
-    }
+/**
+ * Get relayers from the relayer registry.
+ */
+export async function getRelayerInfoAsync(url: string): Promise<RelayerResponses> {
+    return fetchSuccessfullyOrThrowAsync(url);
 }

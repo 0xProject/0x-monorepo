@@ -1,4 +1,4 @@
-import { fetchAsync } from '@0x/utils';
+import { fetchSuccessfullyOrThrowAsync } from '../../utils';
 
 export interface ZeroExTrustedTokenMeta {
     address: string;
@@ -33,12 +33,4 @@ export async function getZeroExTrustedTokensAsync(url: string): Promise<ZeroExTr
  */
 export async function getMetamaskTrustedTokensAsync(url: string): Promise<MetamaskTrustedTokens> {
     return fetchSuccessfullyOrThrowAsync(url);
-}
-
-async function fetchSuccessfullyOrThrowAsync(url: string): Promise<any> {
-    const response = await fetchAsync(url);
-    if (!response.ok) {
-        throw new Error(`Unsuccessful HTTP status code (${response.status}): ${response.statusText}`);
-    }
-    return response.json();
 }

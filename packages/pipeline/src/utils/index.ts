@@ -1,4 +1,4 @@
-import { BigNumber } from '@0x/utils';
+import { BigNumber, fetchAsync } from '@0x/utils';
 export * from './transformers';
 export * from './constants';
 
@@ -50,4 +50,15 @@ export function handleError(e: any): void {
         console.error('(No stack trace)');
     }
     process.exit(1);
+}
+
+/**
+ * Does fetchAsync(), and checks the status code, throwing if it doesn't indicate success.
+ */
+export async function fetchSuccessfullyOrThrowAsync(url: string): Promise<any> {
+    const response = await fetchAsync(url);
+    if (!response.ok) {
+        throw new Error(`Unsuccessful HTTP status code (${response.status}): ${response.statusText}`);
+    }
+    return response.json();
 }

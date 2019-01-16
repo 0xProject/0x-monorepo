@@ -3,7 +3,7 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { logUtils } from '@0x/utils';
 
-import { RelayerRegistrySource } from '../data_sources/relayer-registry';
+import { getRelayerInfoAsync } from '../data_sources/relayer-registry';
 import { Relayer } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseRelayers } from '../parsers/relayer_registry';
@@ -25,8 +25,7 @@ let connection: Connection;
 async function getRelayersAsync(): Promise<void> {
     logUtils.log('Getting latest relayer info...');
     const relayerRepository = connection.getRepository(Relayer);
-    const relayerSource = new RelayerRegistrySource(RELAYER_REGISTRY_URL);
-    const relayersResp = await relayerSource.getRelayerInfoAsync();
+    const relayersResp = await getRelayerInfoAsync(RELAYER_REGISTRY_URL);
     const relayers = parseRelayers(relayersResp);
     logUtils.log('Saving relayer info...');
     await relayerRepository.save(relayers);
