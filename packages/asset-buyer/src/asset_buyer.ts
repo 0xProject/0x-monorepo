@@ -194,7 +194,7 @@ export class AssetBuyer {
         const shouldForceOrderRefresh =
             options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
         assert.isString('assetData', assetData);
-        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
+        assert.isBoolean('options.shouldForceOrderRefresh', shouldForceOrderRefresh);
 
         const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
         const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
