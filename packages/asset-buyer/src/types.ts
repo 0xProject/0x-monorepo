@@ -80,7 +80,7 @@ export interface BuyQuoteRequestOpts {
  *
  * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
  */
-export interface LiquidityRequestOpts extends Pick<BuyQuoteRequestOpts, 'shouldForceOrderRefresh'> {}
+export type LiquidityRequestOpts = Pick<BuyQuoteRequestOpts, 'shouldForceOrderRefresh'>;
 
 /**
  * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
