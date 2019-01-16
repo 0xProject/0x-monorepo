@@ -1,4 +1,4 @@
-import { AssetBuyer } from '@0x/asset-buyer';
+import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { assetDataUtils } from '@0x/order-utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -138,12 +138,12 @@ export const hasMetaDataForAssetData = (assetData: string): boolean => {
     return assetMetaDataMap[assetData] !== undefined;
 };
 
-export const getLiquidityForAssetDataAsync = async (
+export const hasLiquidityForAssetDataAsync = async (
     assetData: string,
     orderSource: OrderSource,
     networkId: Network = Network.Mainnet,
     provider?: Provider,
-) => {
+): Promise<boolean> => {
     assert.isHexString('assetData', assetData);
     assert.isValidOrderSource('orderSource', orderSource);
     assert.isNumber('networkId', networkId);
@@ -161,7 +161,8 @@ export const getLiquidityForAssetDataAsync = async (
             ? AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(bestProvider, orderSource, assetBuyerOptions)
             : AssetBuyer.getAssetBuyerForProvidedOrders(bestProvider, orderSource, assetBuyerOptions);
 
-    return assetBuyer.getLiquidityForAssetDataAsync(assetData);
+    const liquidity = await assetBuyer.getLiquidityForAssetDataAsync(assetData);
+    return liquidity.ethValueAvailableInWei.gt(new BigNumber(0));
 };
 
 // Write version info to the exported object for debugging
