@@ -1,6 +1,11 @@
 import * as R from 'ramda';
 
-import { MetamaskTrustedTokenMeta, ZeroExTrustedTokenMeta } from '../../data_sources/trusted_tokens';
+import {
+    MetamaskTrustedTokenMeta,
+    MetamaskTrustedTokens,
+    ZeroExTrustedTokenMeta,
+    ZeroExTrustedTokens,
+} from '../../data_sources/trusted_tokens';
 import { TokenMetadata } from '../../entities';
 import { toBigNumberOrNull } from '../../utils';
 
@@ -8,7 +13,7 @@ import { toBigNumberOrNull } from '../../utils';
  * Parses Metamask's trusted tokens list.
  * @param rawResp raw response from the metamask json file.
  */
-export function parseMetamaskTrustedTokens(rawResp: Map<string, MetamaskTrustedTokenMeta>): TokenMetadata[] {
+export function parseMetamaskTrustedTokens(rawResp: MetamaskTrustedTokens): TokenMetadata[] {
     const parsedAsObject = R.mapObjIndexed(parseMetamaskTrustedToken, rawResp);
     return R.values(parsedAsObject);
 }
@@ -17,7 +22,7 @@ export function parseMetamaskTrustedTokens(rawResp: Map<string, MetamaskTrustedT
  * Parses 0x's trusted tokens list.
  * @param rawResp raw response from the 0x trusted tokens file.
  */
-export function parseZeroExTrustedTokens(rawResp: ZeroExTrustedTokenMeta[]): TokenMetadata[] {
+export function parseZeroExTrustedTokens(rawResp: ZeroExTrustedTokens): TokenMetadata[] {
     return R.map(parseZeroExTrustedToken, rawResp);
 }
 

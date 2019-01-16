@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { fetchAsync } from '@0x/utils';
 
 export interface ZeroExTrustedTokenMeta {
     address: string;
@@ -6,6 +6,8 @@ export interface ZeroExTrustedTokenMeta {
     symbol: string;
     decimals: number;
 }
+
+export type ZeroExTrustedTokens = ZeroExTrustedTokenMeta[];
 
 export interface MetamaskTrustedTokenMeta {
     address: string;
@@ -15,15 +17,28 @@ export interface MetamaskTrustedTokenMeta {
     decimals: number;
 }
 
-export class TrustedTokenSource<T> {
-    private readonly _url: string;
+export interface MetamaskTrustedTokens {
+    [contractAddress: string]: MetamaskTrustedTokenMeta;
+}
 
-    constructor(url: string) {
-        this._url = url;
-    }
+/**
+ * Get the tokens trusted by 0x from the given url.
+ */
+export async function getZeroExTrustedTokensAsync(url: string): Promise<ZeroExTrustedTokens> {
+    return fetchSuccessfullyOrThrowAsync(url);
+}
 
-    public async getTrustedTokenMetaAsync(): Promise<T> {
-        const resp = await axios.get<T>(this._url);
-        return resp.data;
+/**
+ * Get tokens trusted by Metamask from the given url.
+ */
+export async function getMetamaskTrustedTokensAsync(url: string): Promise<MetamaskTrustedTokens> {
+    return fetchSuccessfullyOrThrowAsync(url);
+}
+
+async function fetchSuccessfullyOrThrowAsync(url: string): Promise<any> {
+    const response = await fetchAsync(url);
+    if (!response.ok) {
+        throw new Error(`Unsuccessful HTTP status code (${response.status}): ${response.statusText}`);
     }
+    return response.json();
 }

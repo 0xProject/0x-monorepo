@@ -3,7 +3,7 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { logUtils } from '@0x/utils';
 
-import { MetamaskTrustedTokenMeta, TrustedTokenSource, ZeroExTrustedTokenMeta } from '../data_sources/trusted_tokens';
+import { getMetamaskTrustedTokensAsync, getZeroExTrustedTokensAsync } from '../data_sources/trusted_tokens';
 import { TokenMetadata } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseMetamaskTrustedTokens, parseZeroExTrustedTokens } from '../parsers/token_metadata';
@@ -18,30 +18,26 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getMetamaskTrustedTokensAsync();
-    await getZeroExTrustedTokensAsync();
+    await getAndSaveMetamaskTrustedTokensAsync();
+    await getAndSaveZeroExTrustedTokensAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getMetamaskTrustedTokensAsync(): Promise<void> {
+async function getAndSaveMetamaskTrustedTokensAsync(): Promise<void> {
     logUtils.log('Getting latest metamask trusted tokens list ...');
     const trustedTokensRepository = connection.getRepository(TokenMetadata);
-    const trustedTokensSource = new TrustedTokenSource<Map<string, MetamaskTrustedTokenMeta>>(
-        METAMASK_TRUSTED_TOKENS_URL,
-    );
-    const resp = await trustedTokensSource.getTrustedTokenMetaAsync();
-    const trustedTokens = parseMetamaskTrustedTokens(resp);
+    const metamaskTrustedTokens = await getMetamaskTrustedTokensAsync(METAMASK_TRUSTED_TOKENS_URL);
+    const trustedTokens = parseMetamaskTrustedTokens(metamaskTrustedTokens);
     logUtils.log('Saving metamask trusted tokens list');
     await trustedTokensRepository.save(trustedTokens);
     logUtils.log('Done saving metamask trusted tokens.');
 }
 
-async function getZeroExTrustedTokensAsync(): Promise<void> {
+async function getAndSaveZeroExTrustedTokensAsync(): Promise<void> {
     logUtils.log('Getting latest 0x trusted tokens list ...');
     const trustedTokensRepository = connection.getRepository(TokenMetadata);
-    const trustedTokensSource = new TrustedTokenSource<ZeroExTrustedTokenMeta[]>(ZEROEX_TRUSTED_TOKENS_URL);
-    const resp = await trustedTokensSource.getTrustedTokenMetaAsync();
-    const trustedTokens = parseZeroExTrustedTokens(resp);
+    const zeroexTrustedTokens = await getZeroExTrustedTokensAsync(ZEROEX_TRUSTED_TOKENS_URL);
+    const trustedTokens = parseZeroExTrustedTokens(zeroexTrustedTokens);
     logUtils.log('Saving metamask trusted tokens list');
     await trustedTokensRepository.save(trustedTokens);
     logUtils.log('Done saving metamask trusted tokens.');
