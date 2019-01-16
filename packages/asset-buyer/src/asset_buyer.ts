@@ -200,8 +200,8 @@ export class AssetBuyer {
         const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
         if (!assetPairs.includes(etherTokenAssetData)) {
             return {
-                tokensAvailableInBaseUnits: 0,
-                ethValueAvailableInWei: 0,
+                tokensAvailableInBaseUnits: new BigNumber(0),
+                ethValueAvailableInWei: new BigNumber(0),
             };
         }
 

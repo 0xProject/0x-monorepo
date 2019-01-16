@@ -84,8 +84,8 @@ describe('AssetBuyer', () => {
                 const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
                 const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
                 expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: 0,
-                    ethValueAvailableInWei: 0,
+                    tokensAvailableInBaseUnits: new BigNumber(0),
+                    ethValueAvailableInWei: new BigNumber(0),
                 });
             });
             it('should return 0s when only other asset pair supported', async () => {
@@ -94,8 +94,8 @@ describe('AssetBuyer', () => {
                 const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
                 const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
                 expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: 0,
-                    ethValueAvailableInWei: 0,
+                    tokensAvailableInBaseUnits: new BigNumber(0),
+                    ethValueAvailableInWei: new BigNumber(0),
                 });
             });
         });
@@ -121,8 +121,8 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [],
                 };
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: 0,
-                    ethValueAvailableInWei: 0,
+                    tokensAvailableInBaseUnits: new BigNumber(0),
+                    ethValueAvailableInWei: new BigNumber(0),
                 };
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
@@ -142,8 +142,8 @@ describe('AssetBuyer', () => {
                 const expectedTokensAvailable = orders[0].makerAssetAmount.plus(orders[1].makerAssetAmount);
                 const expectedEthValueAvailable = orders[0].takerAssetAmount.plus(orders[1].takerAssetAmount);
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: expectedTokensAvailable.toNumber(),
-                    ethValueAvailableInWei: expectedEthValueAvailable.toNumber(),
+                    tokensAvailableInBaseUnits: expectedTokensAvailable,
+                    ethValueAvailableInWei: expectedEthValueAvailable,
                 };
 
                 await expectLiquidityResult(
@@ -160,8 +160,8 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1)],
                 };
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: baseUnitAmount(1).toNumber(),
-                    ethValueAvailableInWei: baseUnitAmount(0.5, WETH_DECIMALS).toNumber(),
+                    tokensAvailableInBaseUnits: baseUnitAmount(1),
+                    ethValueAvailableInWei: baseUnitAmount(0.5, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(
@@ -178,8 +178,8 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1), baseUnitAmount(3)],
                 };
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: baseUnitAmount(4).toNumber(),
-                    ethValueAvailableInWei: baseUnitAmount(3.5, WETH_DECIMALS).toNumber(),
+                    tokensAvailableInBaseUnits: baseUnitAmount(4),
+                    ethValueAvailableInWei: baseUnitAmount(3.5, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(
@@ -196,8 +196,8 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(0), baseUnitAmount(0)],
                 };
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: baseUnitAmount(0).toNumber(),
-                    ethValueAvailableInWei: baseUnitAmount(0, WETH_DECIMALS).toNumber(),
+                    tokensAvailableInBaseUnits: baseUnitAmount(0),
+                    ethValueAvailableInWei: baseUnitAmount(0, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(

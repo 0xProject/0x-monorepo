@@ -28,7 +28,7 @@ export const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAm
 
     // Turn into regular numbers
     return {
-        tokensAvailableInBaseUnits: liquidityInBigNumbers.tokensAvailableInBaseUnits.toNumber(),
-        ethValueAvailableInWei: liquidityInBigNumbers.ethValueAvailableInWei.toNumber(),
+        tokensAvailableInBaseUnits: liquidityInBigNumbers.tokensAvailableInBaseUnits,
+        ethValueAvailableInWei: liquidityInBigNumbers.ethValueAvailableInWei,
     };
 };
