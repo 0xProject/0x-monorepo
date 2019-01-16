@@ -1,4 +1,3 @@
-import { LiquidityRequestOpts } from './../lib/src/types.d';
 export {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
