@@ -67,16 +67,24 @@ const Profiler: React.StatelessComponent<{}> = () => (
                 <List>
                     <ListItem>
                         Use{' '}
-                        <a href="https://www.npmjs.com/package/ganache-cli" target="_blank">
-                            ganache-cli
+                        <a href="https://github.com/ethereum/go-ethereum" target="_blank">
+                            Geth
                         </a>{' '}
-                        as a backing node.
+                        as a backing node. We recommend using our{' '}
+                        <a href="https://hub.docker.com/r/0xorg/devnet" target="_blank">
+                            Devnet Docker container
+                        </a>{' '}
+                        which sets up a Geth node for testing purposes.{' '}
+                        <a href="https://github.com/0xProject/0x-monorepo/issues/1520" target="_blank">
+                            Ganache support is a work in progress.
+                        </a>
                     </ListItem>
                     <ListItem>
                         Understand and use{' '}
                         <a href="https://github.com/MetaMask/provider-engine" target="_blank">
                             web3-provider-engine
-                        </a>.
+                        </a>
+                        .
                     </ListItem>
                 </List>
             </ContentBlock>
@@ -89,15 +97,17 @@ const Profiler: React.StatelessComponent<{}> = () => (
                     Sol-trace is a subprovider that needs to be prepended to your{' '}
                     <a href="https://github.com/MetaMask/provider-engine" target="_blank">
                         provider engine
-                    </a>. Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-trace
-                    ships with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
+                    </a>
+                    . Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-trace ships
+                    with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
                     <a href="http://sol-compiler.com" target="_blank">
                         Sol-compiler
                     </a>{' '}
                     and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
                     <a href="https://truffleframework.com/truffle" target="_blank">
                         Truffle framework
-                    </a>. You can also write your own and support any artifact format.
+                    </a>
+                    . You can also write your own and support any artifact format.
                 </p>
 
                 <Tabs>
