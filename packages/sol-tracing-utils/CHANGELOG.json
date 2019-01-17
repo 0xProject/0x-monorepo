@@ -3,7 +3,11 @@
         "version": "4.0.1",
         "changes": [
             {
-                "note": "Fix a bug when a custom Geth tracer didn't return stack entries for `DELEGATECALL`",
+                "note": "Fix a bug when a custom `Geth` tracer didn't return stack entries for `DELEGATECALL`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Fix a bug when `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction",
                 "pr": "TODO"
             }
         ]
