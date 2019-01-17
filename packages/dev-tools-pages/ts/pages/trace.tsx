@@ -6,6 +6,7 @@ import { context } from 'ts/context/trace';
 
 import { Base } from 'ts/components/base';
 import { Breakout } from 'ts/components/breakout';
+import { CallToAction } from 'ts/components/call_to_action';
 import { Code } from 'ts/components/code';
 import { Content } from 'ts/components/content';
 import { ContentBlock } from 'ts/components/content-block';
@@ -126,8 +127,10 @@ providerEngine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'})
 providerEngine.start();`}
                     </Code>
                 </Breakout>
+                <p>Stack traces will now be printed whenever your contracts revert!</p>
             </ContentBlock>
         </Content>
+        <CallToAction />
     </Base>
 );
 

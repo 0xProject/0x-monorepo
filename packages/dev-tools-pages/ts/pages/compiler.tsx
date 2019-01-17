@@ -6,6 +6,7 @@ import { context } from 'ts/context/compiler';
 
 import { Base } from 'ts/components/base';
 import { Breakout } from 'ts/components/breakout';
+import { CallToAction } from 'ts/components/call_to_action';
 import { Code } from 'ts/components/code';
 import { Compiler as CompilerComponent } from 'ts/components/compiler';
 import { Content } from 'ts/components/content';
@@ -166,6 +167,9 @@ const Compiler: React.StatelessComponent<{}> = () => (
                 </Breakout>
             </ContentBlock>
         </Content>
+        <div style={{ paddingTop: '5rem' }}>
+            <CallToAction />
+        </div>
     </Base>
 );
 

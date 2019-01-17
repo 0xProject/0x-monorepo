@@ -6,6 +6,7 @@ import { context } from 'ts/context/coverage';
 
 import { Base } from 'ts/components/base';
 import { Breakout } from 'ts/components/breakout';
+import { CallToAction } from 'ts/components/call_to_action';
 import { Code } from 'ts/components/code';
 import { Content } from 'ts/components/content';
 import { ContentBlock } from 'ts/components/content-block';
@@ -161,6 +162,7 @@ providerEngine.start();`}
                 </Breakout>
             </ContentBlock>
         </Content>
+        <CallToAction />
     </Base>
 );
 
