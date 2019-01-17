@@ -193,7 +193,7 @@ export class AssetBuyer {
     ): Promise<LiquidityForAssetData> {
         const shouldForceOrderRefresh =
             options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
-        assert.isString('assetData', assetData);
+        assetDataUtils.decodeAssetDataOrThrow(assetData);
         assert.isBoolean('options.shouldForceOrderRefresh', shouldForceOrderRefresh);
 
         const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);

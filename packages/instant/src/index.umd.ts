@@ -156,10 +156,9 @@ export const hasLiquidityForAssetDataAsync = async (
 
     const assetBuyerOptions = { networkId };
 
-    const assetBuyer =
-        typeof orderSource === 'string'
-            ? AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(bestProvider, orderSource, assetBuyerOptions)
-            : AssetBuyer.getAssetBuyerForProvidedOrders(bestProvider, orderSource, assetBuyerOptions);
+    const assetBuyer = _.isString(orderSource)
+        ? AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(bestProvider, orderSource, assetBuyerOptions)
+        : AssetBuyer.getAssetBuyerForProvidedOrders(bestProvider, orderSource, assetBuyerOptions);
 
     const liquidity = await assetBuyer.getLiquidityForAssetDataAsync(assetData);
     return liquidity.ethValueAvailableInWei.gt(new BigNumber(0));
