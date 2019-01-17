@@ -370,9 +370,7 @@ workflows:
                       - test-rest
                       - test-pipeline
                       - test-python
-            - static-tests-python:
-                  requires:
-                      - test-python
+            - static-tests-python
             - test-python
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             #- test-rest-python
