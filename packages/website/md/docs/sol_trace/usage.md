@@ -53,10 +53,4 @@ const traceSubprovider = new TraceSubprovider(artifactsAdapter, defaultFromAddre
 provider.addProvider(traceSubprovider);
 ```
 
-After your test suite is complete (e.g in the Mocha global `after` hook), you'll need to call:
-
-```typescript
-await traceSubprovider.writeTraceAsync();
-```
-
-This will create a `trace.json` file in a `trace` directory. This file has an [Istanbul format](https://github.com/gotwarlost/istanbul/blob/master/trace.json.md) - so you can use it with any of the existing Istanbul reporters.
+Now when you run your tests, it should print out stack traces when encountering an error.
