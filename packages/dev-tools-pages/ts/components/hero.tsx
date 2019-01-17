@@ -18,7 +18,7 @@ const Hero: React.StatelessComponent<ContextInterface> = ({ children }) => (
                         Read the Docs
                     </Button>
                 </HeroContainer>
-                {navigator.userAgent !== 'ReactSnap' ? children : null}
+                {children}
             </StyledHero>
         )}
     </ThemeContext.Consumer>

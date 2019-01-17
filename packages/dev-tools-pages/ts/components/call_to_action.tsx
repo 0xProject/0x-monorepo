@@ -14,7 +14,7 @@ const CallToAction: React.StatelessComponent<ContextInterface> = ({ children }) 
                         Read the Docs
                     </Button>
                 </CallToActionContainer>
-                {navigator.userAgent !== 'ReactSnap' ? children : null}
+                {children}
             </StyledCallToAction>
         )}
     </ThemeContext.Consumer>

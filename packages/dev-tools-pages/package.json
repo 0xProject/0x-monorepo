@@ -7,7 +7,7 @@
     "private": true,
     "description": "0x Dev tools pages",
     "scripts": {
-        "build": "node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production && react-snap",
+        "build": "node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
         "build:ci": "yarn build",
         "build:dev": "../../node_modules/.bin/webpack --mode development",
         "clean": "shx rm -f public/bundle*",
@@ -61,7 +61,6 @@
         "less-loader": "^4.1.0",
         "make-promises-safe": "^1.1.0",
         "raw-loader": "^0.5.1",
-        "react-snap": "^1.19.0",
         "react-svg-loader": "^2.1.0",
         "shx": "^0.2.2",
         "source-map-loader": "^0.2.4",
@@ -76,11 +75,4 @@
         "webpack-cli": "3.1.2",
         "webpack-dev-server": "^3.1.9"
     },
-    "reactSnap": {
-        "source": "public",
-        "puppeteerArgs": [
-            "--no-sandbox",
-            "--disable-setuid-sandbox"
-        ]
-    }
 }
