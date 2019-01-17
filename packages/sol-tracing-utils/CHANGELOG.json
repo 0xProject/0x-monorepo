@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Fix a bug when a custom Geth tracer didn't return stack entries for `DELEGATECALL`",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
