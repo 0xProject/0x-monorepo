@@ -10,7 +10,8 @@
                 "note": "Remove Exchange `matchOrdersAsync` optimization",
                 "pr": 1514
             }
-        ]
+        ],
+        "timestamp": 1547561734
     },
     {
         "timestamp": 1547225310,

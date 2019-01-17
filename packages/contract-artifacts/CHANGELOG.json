@@ -6,7 +6,8 @@
                 "note": "Added artifact for `MultiAssetProxy` contract",
                 "pr": 1503
             }
-        ]
+        ],
+        "timestamp": 1547561734
     },
     {
         "version": "1.2.0",
