@@ -1,6 +1,6 @@
 {
     "name": "@0x/website",
-    "version": "0.0.66",
+    "version": "0.0.67",
     "engines": {
         "node": ">=6.12"
     },
@@ -20,9 +20,9 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/asset-buyer": "^4.0.1",
+        "@0x/asset-buyer": "^4.0.2",
         "@0x/contract-addresses": "^2.2.0",
-        "@0x/contract-wrappers": "^5.0.0",
+        "@0x/contract-wrappers": "^5.0.1",
         "@0x/json-schemas": "^2.1.7",
         "@0x/order-utils": "^3.1.2",
         "@0x/react-docs": "^1.0.25",
