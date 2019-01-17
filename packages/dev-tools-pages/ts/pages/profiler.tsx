@@ -101,7 +101,7 @@ const Profiler: React.StatelessComponent<{}> = () => (
                     </a>
                     . Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-trace ships
                     with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
-                    <a href="http://sol-compiler.com" target="_blank">
+                    <a href="https://sol-compiler.com" target="_blank">
                         Sol-compiler
                     </a>{' '}
                     and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
