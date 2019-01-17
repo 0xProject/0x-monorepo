@@ -316,6 +316,9 @@ jobs:
                       - coverage-order-watcher-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-pipeline-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-python-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
@@ -365,6 +368,7 @@ workflows:
             - submit-coverage:
                   requires:
                       - test-rest
+                      - test-pipeline
                       - test-python
             - static-tests-python:
                   requires:
