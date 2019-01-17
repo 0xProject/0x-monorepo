@@ -139,7 +139,6 @@ class Code extends React.Component<CodeProps, CodeState> {
     public render(): React.ReactNode {
         const { language, isLight, isDiff, children, gutterLength, canCopy } = this.props;
         const { hlCode } = this.state;
-
         return (
             <Container>
                 <Base language={language} isDiff={isDiff} isLight={isLight}>

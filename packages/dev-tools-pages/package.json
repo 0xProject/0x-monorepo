@@ -12,7 +12,17 @@
         "build:dev": "../../node_modules/.bin/webpack --mode development",
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
-        "dev": "webpack-dev-server --mode development --content-base public"
+        "dev": "webpack-dev-server --mode development --content-base public",
+        "deploy:all": "npm run build; npm run deploy:compiler; npm run deploy:compiler:index; npm run deploy:coverage; npm run deploy:coverage:index; npm run deploy:profiler; npm run deploy:profiler:index; npm run deploy:trace; npm run deploy:trace:index;",
+        "deploy:compiler": "DIR_NAME=./public/. BUCKET=s3://sol-compiler.com yarn s3:sync --exclude 'bundle-cov*' --exclude 'bundle-trace*' --exclude 'bundle-profiler*'",
+        "deploy:coverage": "DIR_NAME=./public/. BUCKET=s3://sol-coverage.com yarn s3:sync --exclude 'bundle-compiler*' --exclude 'bundle-trace*' --exclude 'bundle-profiler*'",
+        "deploy:profiler": "DIR_NAME=./public/. BUCKET=s3://sol-profiler.com yarn s3:sync --exclude 'bundle-cov*' --exclude 'bundle-trace*' --exclude 'bundle-compiler*'",
+        "deploy:trace": "DIR_NAME=./public/. BUCKET=s3://sol-trace.com yarn s3:sync --exclude 'bundle-cov*' --exclude 'bundle-compiler*' --exclude 'bundle-profiler*'",
+        "deploy:compiler:index": "DIR_NAME=./public/compiler/. BUCKET=s3://sol-compiler.com yarn s3:sync",
+        "deploy:coverage:index": "DIR_NAME=./public/coverage/. BUCKET=s3://sol-coverage.com yarn s3:sync",
+        "deploy:profiler:index": "DIR_NAME=./public/profiler/. BUCKET=s3://sol-profiler.com yarn s3:sync",
+        "deploy:trace:index": "DIR_NAME=./public/trace/. BUCKET=s3://sol-trace.com yarn s3:sync",
+        "s3:sync": "aws s3 sync $DIR_NAME $BUCKET --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js --exclude 'profiler/*' --exclude 'trace/*' --exclude 'coverage/*' --exclude 'compiler/*'"
     },
     "license": "Apache-2.0",
     "dependencies": {
