@@ -95,7 +95,7 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                             {`import { TruffleArtifactAdapter } from '@0x/sol-trace';
 
 const projectRoot = '.';
-const solcVersion = '0.4.24';
+const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`}
                         </Code>
                     </TabBlock>
@@ -110,19 +110,19 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 </Tabs>
                 <p>
                     Now that we have an <InlineCode>artifactAdapter</InlineCode>, we can create a{' '}
-                    <InlineCode>TraceSubprovider</InlineCode> and append it to our provider engine.
+                    <InlineCode>revertTraceSubprovider</InlineCode> and append it to our provider engine.
                 </p>
 
                 <Breakout>
                     <Code language="javascript">
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
-import { TraceSubprovider } from '@0x/sol-coverage';
+import { RevertTraceSubprovider } from '@0x/sol-trace';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
-const traceSubprovider = new TraceSubprovider(artifactAdapter, defaultFromAddress);
+const revertTraceSubprovider = new RevertTraceSubprovider(artifactAdapter, defaultFromAddress);
 
 const providerEngine = new ProviderEngine();
-providerEngine.addProvider(traceSubprovider);
+providerEngine.addProvider(revertTraceSubprovider);
 providerEngine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'}));
 providerEngine.start();`}
                     </Code>

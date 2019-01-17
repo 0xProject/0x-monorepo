@@ -125,7 +125,7 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                             {`import { TruffleArtifactAdapter } from '@0x/sol-trace';
 
 const projectRoot = '.';
-const solcVersion = '0.4.24';
+const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`}
                         </Code>
                     </TabBlock>
@@ -146,7 +146,7 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 <Breakout>
                     <Code language="javascript">
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
-import { ProfilerSubprovider } from '@0x/sol-coverage';
+import { ProfilerSubprovider } from '@0x/sol-profiler';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
 const profilerSubprovider = new ProfilerSubprovider(artifactAdapter, defaultFromAddress);
