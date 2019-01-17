@@ -64,3 +64,11 @@ await coverageSubprovider.writeCoverageAsync();
 ```
 
 This will create a `coverage.json` file in a `coverage` directory. This file has an [Istanbul format](https://github.com/gotwarlost/istanbul/blob/master/coverage.json.md) - so you can use it with any of the existing Istanbul reporters.
+
+```bash
+yarn add -D istanbul
+istanbul report html
+open coverage/index.html
+```
+
+Use [Geth](https://github.com/ethereum/go-ethereum) as a backing node. We recommend using our [Devnet Docker container](https://hub.docker.com/r/0xorg/devnet) which sets up a Geth node for testing purposes. Ganache support is a [work in progress](https://github.com/0xProject/0x-monorepo/issues/1520).
