@@ -212,30 +212,11 @@ jobs:
                   command: |
                       cd python-packages
                       ./cmd_pkgs_in_dep_order.py coverage run setup.py test
+                      coverage combine */.coverage
             - save_cache:
-                  key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+                  key: coverage-python-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/python-packages/contract_addresses/.coverage
-            - save_cache:
-                  key: coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/contract_artifacts/.coverage
-            - save_cache:
-                  key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/contract_demo/.coverage
-            - save_cache:
-                  key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/json_schemas/.coverage
-            - save_cache:
-                  key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/order_utils/.coverage
-            - save_cache:
-                  key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/sra_client/.coverage
+                      - ~/repo/python-packages/.coverage
     test-rest-python:
         working_directory: ~/repo
         docker:
@@ -350,22 +331,7 @@ jobs:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
-                      - coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
+                      - coverage-python-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn report_coverage
 workflows:
     version: 2
