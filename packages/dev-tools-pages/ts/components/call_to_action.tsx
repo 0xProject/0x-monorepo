@@ -9,7 +9,7 @@ import { Beta } from './typography';
 
 const CallToAction: React.StatelessComponent<ContextInterface> = ({ children }) => (
     <ThemeContext.Consumer>
-        {({ subtitle, tagline, docLink }: ContextInterface) => (
+        {({ docLink }: ContextInterface) => (
             <StyledCallToAction>
                 <CallToActionContainer>
                     <Button as="a" href={docLink} target="_blank" large={true}>

@@ -94,7 +94,7 @@ const Coverage: React.StatelessComponent<{}> = () => (
             </ContentBlock>
             <ContentBlock title="Installation">
                 <Breakout>
-                    <Code>npm install @0x/sol-coverage --save</Code>
+                    <Code canCopy={true}>npm install @0x/sol-coverage --save</Code>
                 </Breakout>
 
                 <p>
@@ -120,7 +120,7 @@ const Coverage: React.StatelessComponent<{}> = () => (
 
                 <Tabs>
                     <TabBlock title="Sol-compiler">
-                        <Code language="javascript">
+                        <Code language="javascript" canCopy={true}>
                             {`import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
 
 // Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
@@ -128,7 +128,7 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                         </Code>
                     </TabBlock>
                     <TabBlock title="Truffle">
-                        <Code language="javascript">
+                        <Code language="javascript" canCopy={true}>
                             {`import { TruffleArtifactAdapter } from '@0x/sol-trace';
 
 const projectRoot = '.';
@@ -137,7 +137,7 @@ const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`}
                         </Code>
                     </TabBlock>
                     <TabBlock title="Custom">
-                        <Code language="javascript">
+                        <Code language="javascript" canCopy={true}>
                             {`import { AbstractArtifactAdapter } from '@0x/sol-trace';
 
 class YourCustomArtifactsAdapter extends AbstractArtifactAdapter {...};
@@ -151,7 +151,7 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 </p>
 
                 <Breakout>
-                    <Code language="javascript">
+                    <Code language="javascript" canCopy={true}>
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
 import { CoverageSubprovider } from '@0x/sol-coverage';
 

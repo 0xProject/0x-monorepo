@@ -44,7 +44,7 @@ const Compiler: React.StatelessComponent<{}> = () => (
 
             <ContentBlock title="Run">
                 <Breakout>
-                    <Code>cd /your_project_dir && sol-compiler</Code>
+                    <Code canCopy={true}>cd /your_project_dir && sol-compiler</Code>
                 </Breakout>
             </ContentBlock>
 
@@ -53,11 +53,11 @@ const Compiler: React.StatelessComponent<{}> = () => (
                     Configure via a <InlineCode>compiler.json</InlineCode> file.
                 </p>
                 <Breakout>
-                    <Code>mkdir compiler.json</Code>
+                    <Code canCopy={true}>mkdir compiler.json</Code>
                 </Breakout>
                 <p>Example of settings:</p>
                 <Breakout>
-                    <Code language="json">
+                    <Code language="json" canCopy={true}>
                         {`{
     "contractsDir": "contracts",
     "artifactsDir": "artifacts",
