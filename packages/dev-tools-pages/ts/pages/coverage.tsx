@@ -110,8 +110,12 @@ const Coverage: React.StatelessComponent<{}> = () => (
                     and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
                     <a href="https://truffleframework.com/truffle" target="_blank">
                         Truffle framework
-                    </a>
-                    . You can also write your own and support any artifact format.
+                    </a>{' '}
+                    (Also see our{' '}
+                    <a href="https://github.com/0xProject/dev-tools-truffle-example" target="_blank">
+                        Truffle example project
+                    </a>{' '}
+                    for a complete walk-through). You can also write your own and support any artifact format.
                 </p>
 
                 <Tabs>
