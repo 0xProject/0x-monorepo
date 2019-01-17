@@ -1,5 +1,4 @@
 import { StructLog } from 'ethereum-types';
-import * as Parser from 'solidity-parser-antlr';
 
 export interface LineColumn {
     line: number;
