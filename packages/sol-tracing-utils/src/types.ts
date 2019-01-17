@@ -126,8 +126,5 @@ export type EvmCallStack = EvmCallStackEntry[];
 export interface SourceSnippet {
     source: string;
     fileName: string;
-    type: string;
-    node: Parser.ASTNode;
-    name: string | null;
     range: SingleFileSourceRange;
 }

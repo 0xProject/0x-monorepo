@@ -9,6 +9,10 @@
             {
                 "note": "Fix a bug when `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction",
                 "pr": "TODO"
+            },
+            {
+                "note": "Fix/simplify handling of revert trace snippets",
+                "pr": "TODO"
             }
         ]
     },
