@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -38,7 +38,7 @@
     "dependencies": {
         "@0x/assert": "^1.0.23",
         "@0x/connect": "^3.0.13",
-        "@0x/contract-wrappers": "^5.0.0",
+        "@0x/contract-wrappers": "^5.0.1",
         "@0x/json-schemas": "^2.1.7",
         "@0x/order-utils": "^3.1.2",
         "@0x/subproviders": "^2.1.11",

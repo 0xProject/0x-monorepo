@@ -1,5 +1,23 @@
 [
     {
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Fix a bug where a custom `Geth` tracer didn't return stack entries for `DELEGATECALL`",
+                "pr": 1521
+            },
+            {
+                "note": "Fix a bug where `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction",
+                "pr": 1521
+            },
+            {
+                "note": "Fix/simplify handling of revert trace snippets",
+                "pr": 1521
+            }
+        ],
+        "timestamp": 1547747677
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {

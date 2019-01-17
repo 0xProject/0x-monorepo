@@ -1,6 +1,6 @@
 {
     "name": "@0x/metacoin",
-    "version": "0.0.35",
+    "version": "0.0.36",
     "engines": {
         "node": ">=6.12"
     },
@@ -32,9 +32,9 @@
         "@0x/abi-gen": "^1.0.22",
         "@0x/abi-gen-templates": "^1.0.2",
         "@0x/base-contract": "^3.0.13",
-        "@0x/sol-coverage": "^1.0.2",
-        "@0x/sol-profiler": "^1.0.2",
-        "@0x/sol-trace": "^1.0.2",
+        "@0x/sol-coverage": "^1.0.3",
+        "@0x/sol-profiler": "^1.0.3",
+        "@0x/sol-trace": "^1.0.3",
         "@0x/subproviders": "^2.1.11",
         "@0x/tslint-config": "^2.0.2",
         "@0x/types": "^1.5.2",

@@ -7953,7 +7953,7 @@ got@^6.7.1:
 
 graceful-fs@4.1.15, graceful-fs@^3.0.0, graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@~1.2.0:
   version "4.1.15"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
+  resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
 
 "graceful-readlink@>= 1.0.0":
   version "1.0.1"
@@ -13604,7 +13604,7 @@ react-helmet@^5.2.0:
     prop-types "^15.5.4"
     react-side-effect "^1.1.0"
 
-react-highlight@0xproject/react-highlight#699ac4d9529e33520bff4b9bd9c624d21efbba75:
+react-highlight@0xproject/react-highlight#fix/react-version:
   version "1.0.0"
   resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/699ac4d9529e33520bff4b9bd9c624d21efbba75"
   dependencies:

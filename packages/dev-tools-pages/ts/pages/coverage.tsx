@@ -2,10 +2,11 @@ import * as React from 'react';
 import { hydrate, render } from 'react-dom';
 import * as Loadable from 'react-loadable';
 
-import { context } from 'ts/context/cov';
+import { context } from 'ts/context/coverage';
 
 import { Base } from 'ts/components/base';
 import { Breakout } from 'ts/components/breakout';
+import { CallToAction } from 'ts/components/call_to_action';
 import { Code } from 'ts/components/code';
 import { Content } from 'ts/components/content';
 import { ContentBlock } from 'ts/components/content-block';
@@ -25,7 +26,7 @@ const Animation = Loadable({
     },
 });
 
-const Cov: React.StatelessComponent<{}> = () => (
+const Coverage: React.StatelessComponent<{}> = () => (
     <Base context={context}>
         <Hero>
             <Animation />
@@ -33,9 +34,9 @@ const Cov: React.StatelessComponent<{}> = () => (
         <Intro>
             <IntroLead title="Measure your tests">
                 <p>
-                    When it comes to writing smart contracts, testing is one of the most important steps of the process.
-                    In order to quantify the robustness of your Solidity testing suite, you need to measure its code
-                    coverage.
+                    When it comes to writing secure smart contracts, testing is one of the most important steps in the
+                    process. In order to quantify the robustness of your Solidity testing suite, you need to measure its
+                    code coverage.
                 </p>
             </IntroLead>
             <IntroAside>
@@ -69,29 +70,57 @@ const Cov: React.StatelessComponent<{}> = () => (
             <ContentBlock title="Prerequisites">
                 <List>
                     <ListItem>
-                        Use <a href="#">ganache-cli</a> as a backing node.
+                        Use{' '}
+                        <a href="https://github.com/ethereum/go-ethereum" target="_blank">
+                            Geth
+                        </a>{' '}
+                        as a backing node. We recommend using our{' '}
+                        <a href="https://hub.docker.com/r/0xorg/devnet" target="_blank">
+                            Devnet Docker container
+                        </a>{' '}
+                        which sets up a Geth node for testing purposes.{' '}
+                        <a href="https://github.com/0xProject/0x-monorepo/issues/1520" target="_blank">
+                            Ganache support is a work in progress.
+                        </a>
                     </ListItem>
                     <ListItem>
-                        Understand and use <a href="#">web3-provider-engine</a>.
+                        Understand and use{' '}
+                        <a href="https://github.com/MetaMask/provider-engine" target="_blank">
+                            web3-provider-engine
+                        </a>
+                        .
                     </ListItem>
                 </List>
             </ContentBlock>
             <ContentBlock title="Installation">
                 <Breakout>
-                    <Code>npm install @0x/sol-coverage --save</Code>
+                    <Code canCopy={true}>npm install @0x/sol-coverage --save</Code>
                 </Breakout>
 
                 <p>
-                    Sol-cov is a subprovider that needs to be prepended to your <a href="#">provider engine</a>.
-                    Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-cov ships with
-                    the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with <a href="#">Sol-compiler</a>{' '}
+                    Sol-coverage is a subprovider that needs to be prepended to your{' '}
+                    <a href="https://github.com/MetaMask/provider-engine" target="_blank">
+                        provider engine
+                    </a>
+                    . Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-coverage
+                    ships with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with{' '}
+                    <a href="https://sol-compiler.com" target="_blank">
+                        Sol-compiler
+                    </a>{' '}
                     and <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the{' '}
-                    <a href="#">Truffle framework</a>. You can also write your own and support any artifact format.
+                    <a href="https://truffleframework.com/truffle" target="_blank">
+                        Truffle framework
+                    </a>{' '}
+                    (Also see our{' '}
+                    <a href="https://github.com/0xProject/dev-tools-truffle-example" target="_blank">
+                        Truffle example project
+                    </a>{' '}
+                    for a complete walk-through). You can also write your own and support any artifact format.
                 </p>
 
                 <Tabs>
                     <TabBlock title="Sol-compiler">
-                        <Code language="javascript">
+                        <Code language="javascript" canCopy={true}>
                             {`import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
 
 // Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
@@ -99,16 +128,16 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                         </Code>
                     </TabBlock>
                     <TabBlock title="Truffle">
-                        <Code language="javascript">
+                        <Code language="javascript" canCopy={true}>
                             {`import { TruffleArtifactAdapter } from '@0x/sol-trace';
 
 const projectRoot = '.';
-const solcVersion = '0.4.24';
+const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`}
                         </Code>
                     </TabBlock>
                     <TabBlock title="Custom">
-                        <Code language="javascript">
+                        <Code language="javascript" canCopy={true}>
                             {`import { AbstractArtifactAdapter } from '@0x/sol-trace';
 
 class YourCustomArtifactsAdapter extends AbstractArtifactAdapter {...};
@@ -118,32 +147,33 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
                 </Tabs>
                 <p>
                     Now that we have an <InlineCode>artifactAdapter</InlineCode>, we can create a{' '}
-                    <InlineCode>RevertTraceSubprovider</InlineCode> and append it to our provider engine.
+                    <InlineCode>CoverageSubprovider</InlineCode> and append it to our provider engine.
                 </p>
 
                 <Breakout>
-                    <Code language="javascript">
+                    <Code language="javascript" canCopy={true}>
                         {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
-import { RevertTraceSubprovider } from '@0x/sol-coverage';
+import { CoverageSubprovider } from '@0x/sol-coverage';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
-const revertTraceSubprovider = new RevertTraceSubprovider(artifactAdapter, defaultFromAddress);
+const coverageSubprovider = new CoverageSubprovider(artifactAdapter, defaultFromAddress);
 
 const providerEngine = new ProviderEngine();
-providerEngine.addProvider(revertTraceSubprovider);
+providerEngine.addProvider(coverageSubprovider);
 providerEngine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'}));
 providerEngine.start();`}
                     </Code>
                 </Breakout>
             </ContentBlock>
         </Content>
+        <CallToAction />
     </Base>
 );
 
 const root = document.getElementById('app');
 
 if (root.hasChildNodes()) {
-    hydrate(<Cov />, root);
+    hydrate(<Coverage />, root);
 } else {
-    render(<Cov />, root);
+    render(<Coverage />, root);
 }

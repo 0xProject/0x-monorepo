@@ -3,9 +3,10 @@ import Icon from 'ts/icons/logos/cov.svg';
 import { ContextInterface } from './index';
 
 export const context: ContextInterface = {
-    title: 'sol-cov',
-    name: 'cov',
+    title: 'sol-coverage',
+    name: 'coverage',
     subtitle: 'Solidity code coverage',
+    docLink: 'https://0x.org/docs/sol-coverage',
     tagline: 'Measure Solidity code coverage',
     icon: Icon,
     colors: {

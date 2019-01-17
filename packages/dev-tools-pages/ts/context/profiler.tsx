@@ -5,6 +5,7 @@ import { ContextInterface } from './index';
 export const context: ContextInterface = {
     title: 'sol-profiler',
     name: 'profiler',
+    docLink: 'https://0x.org/docs/sol-profiler',
     subtitle: 'Gas profiling for Solidity',
     tagline: "Implement data-guided optimizations by profiling your contract's gas usage",
     icon: Icon,
