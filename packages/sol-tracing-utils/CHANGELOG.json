@@ -7,7 +7,7 @@
                 "pr": 1521
             },
             {
-                "note": "Fix a bug when `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction",
+                "note": "Fix a bug where `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction",
                 "pr": 1521
             },
             {
