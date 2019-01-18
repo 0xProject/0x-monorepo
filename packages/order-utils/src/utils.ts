@@ -10,13 +10,13 @@ export const utils = {
     },
     getCurrentUnixTimestampSec(): BigNumber {
         const milisecondsInSecond = 1000;
-        return new BigNumber(Date.now() / milisecondsInSecond).round();
+        return new BigNumber(Date.now() / milisecondsInSecond).integerValue();
     },
     getPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
         const fillMakerTokenAmount = numerator
-            .mul(target)
+            .multipliedBy(target)
             .div(denominator)
-            .round(0);
+            .integerValue(0);
         return fillMakerTokenAmount;
     },
 };

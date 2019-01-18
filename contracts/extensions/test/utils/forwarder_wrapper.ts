@@ -29,7 +29,7 @@ export class ForwarderWrapper {
                     feeOrder.takerAssetAmount
                         .times(remainingFeeAmount)
                         .dividedBy(feeAvailable)
-                        .ceil(),
+                        .integerValue(BigNumber.ROUND_CEIL),
                 );
                 remainingFeeAmount = new BigNumber(0);
             } else if (!remainingFeeAmount.isZero()) {

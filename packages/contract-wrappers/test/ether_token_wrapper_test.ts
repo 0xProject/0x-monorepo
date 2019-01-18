@@ -116,7 +116,7 @@ describe('EtherTokenWrapper', () => {
             const preETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
 
             const extraETHBalance = Web3Wrapper.toWei(new BigNumber(5));
-            const overETHBalanceinWei = preETHBalance.add(extraETHBalance);
+            const overETHBalanceinWei = preETHBalance.plus(extraETHBalance);
 
             return expect(
                 contractWrappers.etherToken.depositAsync(wethContractAddress, overETHBalanceinWei, addressWithETH),
@@ -153,7 +153,7 @@ describe('EtherTokenWrapper', () => {
             );
 
             expect(postWETHBalanceInBaseUnits).to.be.bignumber.equal(0);
-            const expectedETHBalance = preETHBalance.add(depositWeiAmount).round(decimalPlaces);
+            const expectedETHBalance = preETHBalance.plus(depositWeiAmount).integerValue(decimalPlaces);
             gasCost = expectedETHBalance.minus(postETHBalance);
             expect(gasCost).to.be.bignumber.lte(MAX_REASONABLE_GAS_COST_IN_WEI);
         });
@@ -165,7 +165,7 @@ describe('EtherTokenWrapper', () => {
             expect(preWETHBalance).to.be.bignumber.equal(0);
 
             // tslint:disable-next-line:custom-no-magic-numbers
-            const overWETHBalance = preWETHBalance.add(999999999);
+            const overWETHBalance = preWETHBalance.plus(999999999);
 
             return expect(
                 contractWrappers.etherToken.withdrawAsync(wethContractAddress, overWETHBalance, addressWithETH),

@@ -162,7 +162,7 @@ describe('RemainingFillableCalculator', () => {
                     remainingMakeAssetAmount,
                 );
                 const calculatedFillableAmount = calculator.computeRemainingFillable();
-                expect(calculatedFillableAmount.lessThanOrEqualTo(transferrableMakeAssetAmount)).to.be.true();
+                expect(calculatedFillableAmount.isLessThanOrEqualTo(transferrableMakeAssetAmount)).to.be.true();
                 expect(calculatedFillableAmount).to.be.bignumber.greaterThan(new BigNumber(0));
                 const orderToFeeRatio = signedOrder.makerAssetAmount.dividedBy(signedOrder.makerFee);
                 const calculatedFeeAmount = calculatedFillableAmount.dividedBy(orderToFeeRatio);

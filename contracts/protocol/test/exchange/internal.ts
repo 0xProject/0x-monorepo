@@ -90,14 +90,14 @@ describe('Exchange core internal functions', () => {
         if (target.eq(0)) {
             return false;
         }
-        const product = numerator.mul(target);
+        const product = numerator.multipliedBy(target);
         const remainder = product.mod(denominator);
-        const remainderTimes1000 = remainder.mul('1000');
+        const remainderTimes1000 = remainder.multipliedBy('1000');
         const isError = remainderTimes1000.gte(product);
-        if (product.greaterThan(MAX_UINT256)) {
+        if (product.isGreaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
-        if (remainderTimes1000.greaterThan(MAX_UINT256)) {
+        if (remainderTimes1000.isGreaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
         return isError;
@@ -117,15 +117,15 @@ describe('Exchange core internal functions', () => {
         if (target.eq(0)) {
             return false;
         }
-        const product = numerator.mul(target);
+        const product = numerator.multipliedBy(target);
         const remainder = product.mod(denominator);
-        const error = denominator.sub(remainder).mod(denominator);
-        const errorTimes1000 = error.mul('1000');
+        const error = denominator.minus(remainder).mod(denominator);
+        const errorTimes1000 = error.multipliedBy('1000');
         const isError = errorTimes1000.gte(product);
-        if (product.greaterThan(MAX_UINT256)) {
+        if (product.isGreaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
-        if (errorTimes1000.greaterThan(MAX_UINT256)) {
+        if (errorTimes1000.isGreaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
         return isError;
@@ -143,8 +143,8 @@ describe('Exchange core internal functions', () => {
         if (isRoundingError) {
             throw roundingErrorForCall;
         }
-        const product = numerator.mul(target);
-        if (product.greaterThan(MAX_UINT256)) {
+        const product = numerator.multipliedBy(target);
+        if (product.isGreaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
         return product.dividedToIntegerBy(denominator);
@@ -177,8 +177,8 @@ describe('Exchange core internal functions', () => {
                 _.cloneDeep(totalFillResults),
                 singleFillResults,
                 (totalVal: BigNumber, singleVal: BigNumber) => {
-                    const newTotal = totalVal.add(singleVal);
-                    if (newTotal.greaterThan(MAX_UINT256)) {
+                    const newTotal = totalVal.plus(singleVal);
+                    if (newTotal.isGreaterThan(MAX_UINT256)) {
                         throw overflowErrorForCall;
                     }
                     return newTotal;
@@ -271,8 +271,8 @@ describe('Exchange core internal functions', () => {
             if (denominator.eq(0)) {
                 throw divisionByZeroErrorForCall;
             }
-            const product = numerator.mul(target);
-            if (product.greaterThan(MAX_UINT256)) {
+            const product = numerator.multipliedBy(target);
+            if (product.isGreaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
             return product.dividedToIntegerBy(denominator);
@@ -301,16 +301,16 @@ describe('Exchange core internal functions', () => {
             if (denominator.eq(0)) {
                 throw divisionByZeroErrorForCall;
             }
-            const product = numerator.mul(target);
-            const offset = product.add(denominator.sub(1));
-            if (offset.greaterThan(MAX_UINT256)) {
+            const product = numerator.multipliedBy(target);
+            const offset = product.plus(denominator.minus(1));
+            if (offset.isGreaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
-                expect(result.mul(denominator)).to.be.bignumber.eq(product);
+                expect(result.multipliedBy(denominator)).to.be.bignumber.eq(product);
             } else {
-                expect(result.mul(denominator)).to.be.bignumber.gt(product);
+                expect(result.multipliedBy(denominator)).to.be.bignumber.gt(product);
             }
             return result;
         }
@@ -358,16 +358,16 @@ describe('Exchange core internal functions', () => {
             if (isRoundingError) {
                 throw roundingErrorForCall;
             }
-            const product = numerator.mul(target);
-            const offset = product.add(denominator.sub(1));
-            if (offset.greaterThan(MAX_UINT256)) {
+            const product = numerator.multipliedBy(target);
+            const offset = product.plus(denominator.minus(1));
+            if (offset.isGreaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
-                expect(result.mul(denominator)).to.be.bignumber.eq(product);
+                expect(result.multipliedBy(denominator)).to.be.bignumber.eq(product);
             } else {
-                expect(result.mul(denominator)).to.be.bignumber.gt(product);
+                expect(result.multipliedBy(denominator)).to.be.bignumber.gt(product);
             }
             return result;
         }
@@ -433,8 +433,8 @@ describe('Exchange core internal functions', () => {
             // tslint:disable-next-line:no-unused-variable
             orderHash: string,
         ): Promise<BigNumber> {
-            const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
-            if (totalFilledAmount.greaterThan(MAX_UINT256)) {
+            const totalFilledAmount = takerAssetFilledAmount.plus(orderTakerAssetFilledAmount);
+            if (totalFilledAmount.isGreaterThan(MAX_UINT256)) {
                 throw overflowErrorForSendTransaction;
             }
             return totalFilledAmount;
