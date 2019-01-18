@@ -60,7 +60,7 @@ jobs:
             # initialized
             - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test @0x/contracts-multisig
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-utils
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-exchange-libs
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-tokens
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-extensions
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-protocol

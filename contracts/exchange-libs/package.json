@@ -1,5 +1,5 @@
 {
-    "name": "@0x/contracts-libs",
+    "name": "@0x/contracts-exchange-libs",
     "version": "1.0.6",
     "engines": {
         "node": ">=6.12"
