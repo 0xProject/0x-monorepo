@@ -37,11 +37,10 @@ const Footer: React.StatelessComponent<{}> = () => (
                 <Icon as={MainIcon} />
                 <Small>
                     0x is an open, permissionless protocol allowing for tokens to be traded on the Ethereum blockchain.
-                    Interested in building tools like this with the 0x core team? Apply directly at{' '}
+                    Interested in joining our team?{' '}
                     <a href="https://0x.org/careers" target="_blank">
-                        0x.org/careers
-                    </a>{' '}
-                    — we'd be excited to hear from you!
+                        We're hiring
+                    </a>
                 </Small>
             </Media>
         </Container>
