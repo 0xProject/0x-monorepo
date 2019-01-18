@@ -179,7 +179,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 "A library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
             link: {
                 title: '0x-order-utils',
-                to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
+                to: 'https://pypi.org/project/0x-order-utils/',
                 shouldOpenInNewTab: true,
             },
         },
@@ -195,8 +195,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description: 'Package containing the addresses at which the 0x smart contracts have been deployed',
             link: {
                 title: '0x-contract-addresses',
-                to:
-                    'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/contract_addresses/README.md',
+                to: 'https://pypi.org/project/0x-contract-addresses/',
                 shouldOpenInNewTab: true,
             },
         },
@@ -204,8 +203,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description: 'Package containing the 0x smart contract compilation artifacts',
             link: {
                 title: '0x-contract-artifacts',
-                to:
-                    'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/contract_artifacts/README.md',
+                to: 'https://pypi.org/project/0x-contract-artifacts/',
                 shouldOpenInNewTab: true,
             },
         },
@@ -213,7 +211,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description: '0x JSON schemas for those developing on top of 0x protocol',
             link: {
                 title: '0x-json-schemas',
-                to: 'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/json_schemas/README.md',
+                to: 'https://pypi.org/project/0x-json-schemas/',
                 shouldOpenInNewTab: true,
             },
         },
