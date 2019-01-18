@@ -8,6 +8,7 @@ import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 // This is the minimum length of valid contract bytecode. The Solidity compiler
 // metadata is 86 bytes. If you add the '0x' prefix, we get 88.
 const MIN_CONTRACT_BYTECODE_LENGTH = 88;
+const STATICCALL_GAS_COST = 40;
 
 export const utils = {
     compareLineColumn(lhs: LineColumn, rhs: LineColumn): number {
@@ -76,10 +77,17 @@ export const utils = {
     normalizeStructLogs(structLogs: StructLog[]): StructLog[] {
         if (structLogs[0].depth === 1) {
             // Geth uses 1-indexed depth counter whilst ganache starts from 0
-            const newStructLogs = _.map(structLogs, structLog => ({
-                ...structLog,
-                depth: structLog.depth - 1,
-            }));
+            const newStructLogs = _.map(structLogs, structLog => {
+                const newStructLog = {
+                    ...structLog,
+                    depth: structLog.depth - 1,
+                };
+                if (newStructLog.op === 'STATICCALL') {
+                    // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+                    newStructLog.gasCost = STATICCALL_GAS_COST;
+                }
+                return newStructLog;
+            });
             return newStructLogs;
         }
         return structLogs;

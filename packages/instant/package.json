@@ -1,6 +1,6 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,7 +42,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
         "@0x/assert": "^1.0.23",
-        "@0x/asset-buyer": "^4.0.1",
+        "@0x/asset-buyer": "^4.0.2",
         "@0x/json-schemas": "^2.1.7",
         "@0x/order-utils": "^3.1.2",
         "@0x/subproviders": "^2.1.11",

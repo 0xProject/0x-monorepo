@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-tokens",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -45,7 +45,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/tokens/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^1.0.22",
-        "@0x/contracts-test-utils": "^2.0.0",
+        "@0x/contracts-test-utils": "^2.0.1",
         "@0x/dev-utils": "^1.0.24",
         "@0x/sol-compiler": "^2.0.2",
         "@0x/subproviders": "^2.1.11",
@@ -70,10 +70,10 @@
     },
     "dependencies": {
         "@0x/base-contract": "^3.0.13",
-        "@0x/contracts-interfaces": "^1.0.5",
-        "@0x/contracts-libs": "^1.0.5",
-        "@0x/contracts-multisig": "^1.0.5",
-        "@0x/contracts-utils": "^1.0.5",
+        "@0x/contracts-interfaces": "^1.0.6",
+        "@0x/contracts-libs": "^1.0.6",
+        "@0x/contracts-multisig": "^1.0.6",
+        "@0x/contracts-utils": "^1.0.6",
         "@0x/order-utils": "^3.1.2",
         "@0x/types": "^1.5.2",
         "@0x/typescript-typings": "^3.0.8",

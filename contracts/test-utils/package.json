@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-test-utils",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,9 +44,9 @@
         "@0x/dev-utils": "^1.0.24",
         "@0x/order-utils": "^3.1.2",
         "@0x/sol-compiler": "^2.0.2",
-        "@0x/sol-coverage": "^1.0.2",
-        "@0x/sol-profiler": "^1.0.2",
-        "@0x/sol-trace": "^1.0.2",
+        "@0x/sol-coverage": "^1.0.3",
+        "@0x/sol-profiler": "^1.0.3",
+        "@0x/sol-trace": "^1.0.3",
         "@0x/subproviders": "^2.1.11",
         "@0x/tslint-config": "^2.0.2",
         "@0x/types": "^1.5.2",
