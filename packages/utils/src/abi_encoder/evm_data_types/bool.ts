@@ -37,11 +37,11 @@ export class BoolDataType extends AbstractBlobDataType {
         const valueBuf = calldata.popWord();
         const valueHex = ethUtil.bufferToHex(valueBuf);
         const valueNumber = new BigNumber(valueHex, constants.HEX_BASE);
-        if (!(valueNumber.equals(0) || valueNumber.equals(1))) {
+        if (!(valueNumber.isEqualTo(0) || valueNumber.isEqualTo(1))) {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }
         /* tslint:disable boolean-naming */
-        const value: boolean = !valueNumber.equals(0);
+        const value: boolean = !valueNumber.isEqualTo(0);
         /* tslint:enable boolean-naming */
         return value;
     }

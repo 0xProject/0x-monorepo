@@ -38,7 +38,7 @@ export class UIntDataType extends AbstractBlobDataType {
             throw new Error(`Tried to instantiate UInt with bad input: ${dataItem}`);
         }
         this._width = UIntDataType._decodeWidthFromType(dataItem.type);
-        this._maxValue = new BigNumber(2).toPower(this._width).sub(1);
+        this._maxValue = new BigNumber(2).exponentiatedBy(this._width).minus(1);
     }
 
     public encodeValue(value: BigNumber | string | number): Buffer {
