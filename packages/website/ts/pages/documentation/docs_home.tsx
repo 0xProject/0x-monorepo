@@ -215,6 +215,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 shouldOpenInNewTab: true,
             },
         },
+        {
+            description: 'Demo project showing how to interact with the 0x smart contracts using Python',
+            link: {
+                title: '0x-contract-demo',
+                to: 'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/contract_demo/README.md',
+                shouldOpenInNewTab: true,
+            },
+        },
     ],
     [Categories.Ethereum]: [
         {
