@@ -3,7 +3,7 @@
         "version": "2.1.12",
         "changes": [
             {
-                "note": "Update ganache-core to v2.1.2",
+                "note": "Update ganache-core to v2.3.3",
                 "pr": 1518
             }
         ]
