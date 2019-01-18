@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.24;
 
-import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
+import "./LibBytes.sol";
 
 
 library LibAddressArray {

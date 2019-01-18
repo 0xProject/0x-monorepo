@@ -13,8 +13,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { TestLibsContract } from '../../generated-wrappers/test_libs';
-import { artifacts } from '../../src/artifacts';
+import { TestLibsContract } from '../generated-wrappers/test_libs';
+import { artifacts } from '../src/artifacts';
 
 chaiSetup.configure();
 const expect = chai.expect;
