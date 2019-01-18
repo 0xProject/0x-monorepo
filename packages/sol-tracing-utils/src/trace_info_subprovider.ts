@@ -31,7 +31,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                         const depth = 0 | log.getDepth();
                         const gasCost = 0 | log.getCost();
                         const gas = 0 | log.getGas();
-                        const isCall = opn == 0xf1 || opn == 0xf2 || opn == 0xf4 || opn == 0xf5;
+                        const isCall = opn == 0xf1 || opn == 0xf2 || opn == 0xf4 || opn == 0xf5 || opn == 0xfa;
                         const stack = isCall ? ['0x'+log.stack.peek(1).toString(16), null] : null;
                         this.data.push({ pc, gasCost, depth, op, stack, gas });
                     },

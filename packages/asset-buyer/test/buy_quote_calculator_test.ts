@@ -168,7 +168,7 @@ describe('buyQuoteCalculator', () => {
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(1));
             });
-            it('should throw without amount available to fill if amount rounds to 0', () => {
+            it('should throw with 0 available to fill if amount rounds to 0', () => {
                 const smallOrder = orderFactory.createSignedOrderFromPartial({
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),

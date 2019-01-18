@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-interfaces",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,8 +42,8 @@
     },
     "dependencies": {
         "@0x/base-contract": "^3.0.13",
-        "@0x/contracts-libs": "^1.0.5",
-        "@0x/contracts-utils": "^1.0.5",
+        "@0x/contracts-libs": "^1.0.6",
+        "@0x/contracts-utils": "^1.0.6",
         "@0x/types": "^1.5.2",
         "@0x/typescript-typings": "^3.0.8",
         "@0x/utils": "^3.0.1",

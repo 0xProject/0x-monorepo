@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -74,9 +74,9 @@
     "dependencies": {
         "@0x/assert": "^1.0.23",
         "@0x/base-contract": "^3.0.13",
-        "@0x/contract-wrappers": "^5.0.0",
+        "@0x/contract-wrappers": "^5.0.1",
         "@0x/order-utils": "^3.1.2",
-        "@0x/order-watcher": "^2.4.2",
+        "@0x/order-watcher": "^2.4.3",
         "@0x/subproviders": "^2.1.11",
         "@0x/types": "^1.5.2",
         "@0x/typescript-typings": "^3.0.8",
