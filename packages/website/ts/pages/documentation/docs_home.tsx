@@ -55,7 +55,7 @@ const TUTORIALS: TutorialInfo[] = [
 ];
 
 const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
-    [Categories.ZeroExProtocol]: [
+    [Categories.ZeroExProtocolTypescript]: [
         {
             description:
                 'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0x.org/docs/order-utils) and [contract-wrappers](https://0x.org/docs/contract-wrappers).',
@@ -88,23 +88,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '0x smart contracts',
                 to: WebsitePaths.SmartContracts,
-            },
-        },
-        {
-            description:
-                "A Python library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
-            link: {
-                title: '0x-order-utils.py',
-                to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description: 'A Python Standard Relayer API client',
-            link: {
-                title: '0x-sra-client.py',
-                to: 'https://pypi.org/project/0x-sra-client/',
-                shouldOpenInNewTab: true,
             },
         },
         {
@@ -187,6 +170,51 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '@0x/asset-buyer',
                 to: WebsitePaths.AssetBuyer,
+            },
+        },
+    ],
+    [Categories.ZeroExProtocolPython]: [
+        {
+            description:
+                "A library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
+            link: {
+                title: '0x-order-utils.py',
+                to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'A Standard Relayer API client',
+            link: {
+                title: '0x-sra-client.py',
+                to: 'https://pypi.org/project/0x-sra-client/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Package containing the addresses at which the 0x smart contracts have been deployed',
+            link: {
+                title: '0x-contract-addresses.py',
+                to:
+                    'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/contract_addresses/README.md',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Package containing the 0x smart contract compilation artifacts',
+            link: {
+                title: '0x-contract-artifacts.py',
+                to:
+                    'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/contract_artifacts/README.md',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: '0x JSON schemas for those developing on top of 0x protocol',
+            link: {
+                title: '0x-json-schemas.py',
+                to: 'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/json_schemas/README.md',
+                shouldOpenInNewTab: true,
             },
         },
     ],
@@ -409,7 +437,10 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                     title: this.props.translate.get(tutorialInfo.link.title as Key, Deco.Cap),
                 };
             }),
-            [Categories.ZeroExProtocol]: _.map(CATEGORY_TO_PACKAGES[Categories.ZeroExProtocol], pkg => pkg.link),
+            [Categories.ZeroExProtocolTypescript]: _.map(
+                CATEGORY_TO_PACKAGES[Categories.ZeroExProtocolTypescript],
+                pkg => pkg.link,
+            ),
             [Categories.Ethereum]: _.map(CATEGORY_TO_PACKAGES[Categories.Ethereum], pkg => pkg.link),
             [Categories.CommunityMaintained]: _.map(
                 CATEGORY_TO_PACKAGES[Categories.CommunityMaintained],
