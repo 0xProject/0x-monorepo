@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Adds new public method getLiquidityForAssetDataAsync, and exposes getOrdersAndFillableAmountsAsync as public method",
+                "pr": 1512
+            }
+        ]
+    },
+    {
         "timestamp": 1547747677,
         "version": "4.0.2",
         "changes": [
