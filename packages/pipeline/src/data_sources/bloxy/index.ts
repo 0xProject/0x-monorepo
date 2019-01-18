@@ -1,5 +1,7 @@
-import axios from 'axios';
+import { stringify } from 'querystring';
 import * as R from 'ramda';
+
+import { fetchSuccessfullyOrThrowAsync } from '../../utils';
 
 // URL to use for getting dex trades from Bloxy.
 export const BLOXY_DEX_TRADES_URL = 'https://bloxy.info/api/dex/trades';
@@ -51,7 +53,6 @@ interface BloxyError {
 }
 
 type BloxyResponse<T> = T | BloxyError;
-type BloxyTradeResponse = BloxyResponse<BloxyTrade[]>;
 
 function isError<T>(response: BloxyResponse<T>): response is BloxyError {
     return (response as BloxyError).error !== undefined;
@@ -107,18 +108,20 @@ export class BloxySource {
     }
 
     private async _getTradesWithOffsetAsync(numberOfDays: number, offset: number): Promise<BloxyTrade[]> {
-        const resp = await axios.get<BloxyTradeResponse>(BLOXY_DEX_TRADES_URL, {
-            params: {
+        const response: BloxyTrade[] | BloxyError = await fetchSuccessfullyOrThrowAsync(
+            `${BLOXY_DEX_TRADES_URL}/?${stringify({
                 key: this._apiKey,
                 days: numberOfDays,
                 limit: TRADES_PER_QUERY,
                 offset,
-            },
-        });
-        if (isError(resp.data)) {
-            throw new Error(`Error in Bloxy API response: ${resp.data.error}`);
+            })}`,
+        );
+
+        if (isError(response)) {
+            throw new Error(`Error in Bloxy API response: ${response.error}`);
         }
-        return resp.data;
+
+        return response;
     }
 }
 
