@@ -9,6 +9,10 @@
             {
                 "note": "Removed `owner` in Migrations. `txDefaults` is now a non-Partial type",
                 "pr": 1533
+            },
+            {
+                "note": "Convert `from` to lower case",
+                "pr": 1533
             }
         ]
     },
