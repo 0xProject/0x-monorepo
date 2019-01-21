@@ -26,6 +26,7 @@
         "build": "wsrun build $PKG --fast-exit -r --stages --exclude-missing",
         "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
         "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
+        "build:contracts": "wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
@@ -34,12 +35,14 @@
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
+        "test:contracts": "wsrun test -p ${npm_package_config_contractsPackages} -c --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
     "config": {
+        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-examples @0x/contracts-exchange @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-interfaces @0x/contracts-multisig @0x/contracts-test-utils @0x/contracts-tokens @0x/contracts-utils",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer migrations"
     },
