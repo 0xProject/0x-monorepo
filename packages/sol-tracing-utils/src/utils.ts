@@ -1,13 +1,10 @@
-import { addressUtils, BigNumber } from '@0x/utils';
+import { addressUtils, BigNumber, logUtils } from '@0x/utils';
 import { OpCode, StructLog } from 'ethereum-types';
 import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 
-// This is the minimum length of valid contract bytecode. The Solidity compiler
-// metadata is 86 bytes. If you add the '0x' prefix, we get 88.
-const MIN_CONTRACT_BYTECODE_LENGTH = 88;
 const STATICCALL_GAS_COST = 40;
 
 const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
@@ -54,22 +51,24 @@ export const utils = {
         if (bytecodeToContractDataIfExists.hasOwnProperty(bytecode)) {
             return bytecodeToContractDataIfExists[bytecode];
         }
-        const contractData = _.find(contractsData, contractDataCandidate => {
+        const contractDataCandidates = _.filter(contractsData, contractDataCandidate => {
             const bytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
-            // If the bytecode is less than the minimum length, we are probably
-            // dealing with an interface. This isn't what we're looking for.
-            if (bytecodeRegex.length < MIN_CONTRACT_BYTECODE_LENGTH) {
-                return false;
-            }
             const runtimeBytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.runtimeBytecode);
-            if (runtimeBytecodeRegex.length < MIN_CONTRACT_BYTECODE_LENGTH) {
-                return false;
-            }
             // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
             // collisions are practically impossible and it allows us to reuse that code
             return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
         });
-        return (bytecodeToContractDataIfExists[bytecode] = contractData);
+        if (contractDataCandidates.length > 1) {
+            const candidates = contractDataCandidates.map(
+                contractDataCandidate => _.values(contractDataCandidate.sources)[0],
+            );
+            const errMsg =
+                "We've found more than one artifact that contains the exact same bytecode and therefore are unable to detect which contract was executed. " +
+                "We'll be assigning all traces to the first one.";
+            logUtils.warn(errMsg);
+            logUtils.warn(candidates);
+        }
+        return (bytecodeToContractDataIfExists[bytecode] = contractDataCandidates[0]);
     },
     isCallLike(op: OpCode): boolean {
         return _.includes([OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall], op);

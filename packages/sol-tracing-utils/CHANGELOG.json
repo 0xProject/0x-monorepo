@@ -13,6 +13,10 @@
             {
                 "note": "`SolCompilerArtifactAdapter` now doesn't return the `ContractData` for interfaces",
                 "pr": "TODO"
+            },
+            {
+                "note": "Print resasonable error message on bytecode collision",
+                "pr": "TODO"
             }
         ]
     },
