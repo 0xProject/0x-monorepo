@@ -5,6 +5,10 @@
             {
                 "note": "`SolCompilerArtifactsAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly",
                 "pr": "TODO"
+            },
+            {
+                "note": "Cache the `utils.getContractDataIfExists` leading to faster execution",
+                "pr": "TODO"
             }
         ]
     },

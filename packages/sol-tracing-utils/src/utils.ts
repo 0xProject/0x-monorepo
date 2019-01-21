@@ -10,6 +10,8 @@ import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 const MIN_CONTRACT_BYTECODE_LENGTH = 88;
 const STATICCALL_GAS_COST = 40;
 
+const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
+
 export const utils = {
     compareLineColumn(lhs: LineColumn, rhs: LineColumn): number {
         return lhs.line !== rhs.line ? lhs.line - rhs.line : lhs.column - rhs.column;
@@ -47,6 +49,11 @@ export const utils = {
         if (!bytecode.startsWith('0x')) {
             throw new Error(`0x hex prefix missing: ${bytecode}`);
         }
+        // HACK(leo): We want to cache the values that are possibly undefined.
+        // That's why we can't check for undefined as we usually do, but need to use `hasOwnProperty`.
+        if (bytecodeToContractDataIfExists.hasOwnProperty(bytecode)) {
+            return bytecodeToContractDataIfExists[bytecode];
+        }
         const contractData = _.find(contractsData, contractDataCandidate => {
             const bytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
             // If the bytecode is less than the minimum length, we are probably
@@ -62,7 +69,7 @@ export const utils = {
             // collisions are practically impossible and it allows us to reuse that code
             return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
         });
-        return contractData;
+        return (bytecodeToContractDataIfExists[bytecode] = contractData);
     },
     isCallLike(op: OpCode): boolean {
         return _.includes([OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall], op);
