@@ -503,4 +503,4 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
         });
         return menuItems;
     }
-}
+} // tslint:disable:max-file-line-count
