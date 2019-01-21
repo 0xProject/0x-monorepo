@@ -1,0 +1,4 @@
+export * from '../../generated-wrappers/erc20_proxy';
+export * from '../../generated-wrappers/erc721_proxy';
+export * from '../../generated-wrappers/mixin_authorizable';
+export * from '../../generated-wrappers/multi_asset_proxy';

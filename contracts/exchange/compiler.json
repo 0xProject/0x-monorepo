@@ -19,10 +19,10 @@
         }
     },
     "contracts": [
-        "AssetProxyOwner",
-        "MultiSigWallet",
-        "MultiSigWalletWithTimeLock",
-        "TestAssetProxyOwner",
-        "TestRejectEther"
+        "Exchange",
+        "TestAssetProxyDispatcher",
+        "TestExchangeInternals",
+        "TestSignatureValidator",
+        "TestStaticCallReceiver"
     ]
 }

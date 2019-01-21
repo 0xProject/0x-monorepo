@@ -18,11 +18,5 @@
             }
         }
     },
-    "contracts": [
-        "AssetProxyOwner",
-        "MultiSigWallet",
-        "MultiSigWalletWithTimeLock",
-        "TestAssetProxyOwner",
-        "TestRejectEther"
-    ]
+    "contracts": ["ERC20Proxy", "ERC721Proxy", "MixinAuthorizable", "MultiAssetProxy"]
 }
