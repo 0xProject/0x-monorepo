@@ -4,8 +4,7 @@ import { AssetProxyId } from '@0x/types';
 import { BigNumber, errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ERC20Wrapper } from './erc20_wrapper';
-import { ERC721Wrapper } from './erc721_wrapper';
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 
 interface ProxyIdToAssetWrappers {
     [proxyId: string]: AbstractAssetWrapper;
@@ -28,11 +27,13 @@ export class AssetWrapper {
         const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 const balance = await erc20Wrapper.getBalanceAsync(userAddress, assetData);
                 return balance;
             }
             case AssetProxyId.ERC721: {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const assetProxyData = assetDataUtils.decodeERC721AssetData(assetData);
                 const isOwner = await assetWrapper.isOwnerAsync(
@@ -51,6 +52,7 @@ export class AssetWrapper {
         const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 await erc20Wrapper.setBalanceAsync(userAddress, assetData, desiredBalance);
                 return;
@@ -59,6 +61,7 @@ export class AssetWrapper {
                 if (!desiredBalance.eq(0) && !desiredBalance.eq(1)) {
                     throw new Error(`Balance for ERC721 token can only be set to 0 or 1. Got: ${desiredBalance}`);
                 }
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const assetProxyData = assetDataUtils.decodeERC721AssetData(assetData);
                 const doesTokenExist = erc721Wrapper.doesTokenExistAsync(
@@ -109,11 +112,13 @@ export class AssetWrapper {
         const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 const allowance = await erc20Wrapper.getProxyAllowanceAsync(userAddress, assetData);
                 return allowance;
             }
             case AssetProxyId.ERC721: {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const erc721ProxyData = assetDataUtils.decodeERC721AssetData(assetData);
                 const isProxyApprovedForAll = await assetWrapper.isProxyApprovedForAllAsync(
@@ -143,6 +148,7 @@ export class AssetWrapper {
         const proxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc20Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC20Wrapper;
                 await erc20Wrapper.setAllowanceAsync(userAddress, assetData, desiredAllowance);
                 return;
@@ -157,6 +163,7 @@ export class AssetWrapper {
                         `Allowance for ERC721 token can only be set to 0, 1 or 2^256-1. Got: ${desiredAllowance}`,
                     );
                 }
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 const assetProxyData = assetDataUtils.decodeERC721AssetData(assetData);
 

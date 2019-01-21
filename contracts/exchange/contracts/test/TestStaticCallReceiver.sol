@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "@0x/contracts-tokens/contracts/ERC20Token/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 
 
 // solhint-disable no-unused-vars

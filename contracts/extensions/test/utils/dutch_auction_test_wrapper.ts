@@ -1,6 +1,7 @@
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
+import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { LogDecoder } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -19,7 +20,8 @@ export class DutchAuctionTestWrapper {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, {
             ...artifacts,
-            ...tokensArtifacts,
+            ...erc20Artifacts,
+            ...erc721Artifacts,
             ...exchangeArtifacts,
         });
     }

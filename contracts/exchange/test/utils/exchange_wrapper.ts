@@ -1,3 +1,5 @@
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
+import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import {
     FillResults,
     formatters,
@@ -6,15 +8,13 @@ import {
     orderUtils,
     SignedTransaction,
 } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { artifacts } from '../../src/artifacts';
+import { artifacts, ExchangeContract } from '../../src';
 
 import { AbiDecodedFillOrderData } from './types';
 
@@ -25,7 +25,7 @@ export class ExchangeWrapper {
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...tokensArtifacts });
+        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...erc20Artifacts, ...erc721Artifacts });
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,

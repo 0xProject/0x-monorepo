@@ -16,10 +16,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import * as _ from 'lodash';
 
-import {
-    FillOrderCombinatorialUtils,
-    fillOrderCombinatorialUtilsFactoryAsync,
-} from './utils/fill_order_combinatorial_utils';
+import { FillOrderCombinatorialUtils, fillOrderCombinatorialUtilsFactoryAsync } from '../src';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);

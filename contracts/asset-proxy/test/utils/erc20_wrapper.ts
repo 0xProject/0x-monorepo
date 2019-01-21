@@ -1,5 +1,5 @@
+import { artifacts as tokensArtifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants, ERC20BalancesByOwner, txDefaults } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts, DummyERC20TokenContract } from '@0x/contracts-tokens';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

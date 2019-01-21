@@ -1,3 +1,4 @@
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import {
     addressUtils,
     chaiSetup,
@@ -9,7 +10,6 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
@@ -78,7 +78,7 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokensArtifacts });
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...erc20Artifacts });
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,

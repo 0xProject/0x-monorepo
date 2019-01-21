@@ -88,7 +88,8 @@ contracts/asset-proxy/generated-artifacts/
 contracts/multisig/generated-artifacts/
 contracts/utils/generated-artifacts/
 contracts/exchange-libs/generated-artifacts/
-contracts/tokens/generated-artifacts/
+contracts/erc20/generated-artifacts/
+contracts/erc721/generated-artifacts/
 contracts/extensions/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
@@ -100,7 +101,8 @@ contracts/asset-proxy/generated-wrappers/
 contracts/multisig/generated-wrappers/
 contracts/utils/generated-wrappers/
 contracts/exchange-libs/generated-wrappers/
-contracts/tokens/generated-wrappers/
+contracts/erc20/generated-wrappers/
+contracts/erc721/generated-wrappers/
 contracts/extensions/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 

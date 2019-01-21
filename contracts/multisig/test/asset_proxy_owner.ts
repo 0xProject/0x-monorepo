@@ -19,16 +19,15 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
+    artifacts,
     AssetProxyOwnerAssetProxyRegistrationEventArgs,
     AssetProxyOwnerContract,
     AssetProxyOwnerExecutionEventArgs,
     AssetProxyOwnerExecutionFailureEventArgs,
     AssetProxyOwnerSubmissionEventArgs,
-} from '../generated-wrappers/asset_proxy_owner';
-import { TestAssetProxyOwnerContract } from '../generated-wrappers/test_asset_proxy_owner';
-import { artifacts } from '../src/artifacts';
-
-import { AssetProxyOwnerWrapper } from './utils/asset_proxy_owner_wrapper';
+    AssetProxyOwnerWrapper,
+    TestAssetProxyOwnerContract,
+} from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

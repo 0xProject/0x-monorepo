@@ -16,8 +16,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { TestExchangeInternalsContract } from '../generated-wrappers/test_exchange_internals';
-import { artifacts } from '../src/artifacts';
+import { artifacts, TestExchangeInternalsContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

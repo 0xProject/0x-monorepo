@@ -1,6 +1,7 @@
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
+import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { constants, formatters, LogDecoder, MarketSellOrders } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -62,7 +63,8 @@ export class ForwarderWrapper {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, {
             ...artifacts,
-            ...tokensArtifacts,
+            ...erc20Artifacts,
+            ...erc721Artifacts,
             ...exchangeArtifacts,
         });
     }

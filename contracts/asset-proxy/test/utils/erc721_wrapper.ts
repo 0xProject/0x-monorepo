@@ -1,5 +1,5 @@
+import { artifacts as tokensArtifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { constants, ERC721TokenIdsByOwner, txDefaults } from '@0x/contracts-test-utils';
-import { artifacts as tokensArtifacts, DummyERC721TokenContract } from '@0x/contracts-tokens';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

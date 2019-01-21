@@ -1,3 +1,4 @@
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
     ERC20BalancesByOwner,
@@ -15,8 +16,6 @@ import * as _ from 'lodash';
 
 import { TransactionReceiptWithDecodedLogs } from '../../../../node_modules/ethereum-types';
 
-import { ERC20Wrapper } from './erc20_wrapper';
-import { ERC721Wrapper } from './erc721_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
 
 chaiSetup.configure();

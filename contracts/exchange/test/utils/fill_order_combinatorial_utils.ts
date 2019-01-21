@@ -1,4 +1,5 @@
-import { artifacts as libsArtifacts, TestLibsContract } from '@0x/contracts-libs';
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { artifacts as libsArtifacts, TestLibsContract } from '@0x/contracts-exchange-libs';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -32,12 +33,9 @@ import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrappers/exchange';
-import { artifacts } from '../../src/artifacts';
+import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
 
 import { AssetWrapper } from './asset_wrapper';
-import { ERC20Wrapper } from './erc20_wrapper';
-import { ERC721Wrapper } from './erc721_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';

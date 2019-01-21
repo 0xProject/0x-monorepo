@@ -10,8 +10,10 @@ lib
 /contracts/utils/generated-artifacts
 /contracts/exchange-libs/generated-wrappers
 /contracts/exchange-libs/generated-artifacts
-/contracts/tokens/generated-wrappers
-/contracts/tokens/generated-artifacts
+/contracts/erc20/generated-wrappers
+/contracts/erc20/generated-artifacts
+/contracts/erc721/generated-wrappers
+/contracts/erc721/generated-artifacts
 /contracts/extensions/generated-wrappers
 /contracts/extensions/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers

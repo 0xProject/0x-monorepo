@@ -1,3 +1,4 @@
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
     AssetDataScenario,
     constants,
@@ -8,7 +9,6 @@ import {
     OrderScenario,
     TakerScenario,
 } from '@0x/contracts-test-utils';
-import { DummyERC721TokenContract } from '@0x/contracts-tokens';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { BigNumber, errorUtils } from '@0x/utils';

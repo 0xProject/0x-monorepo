@@ -1,4 +1,6 @@
-import { ERC20ProxyContract, ERC721ProxyContract } from '@0x/contracts-asset-proxy';
+import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, ReentrantERC20TokenContract } from '@0x/contracts-erc20';
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
     chaiSetup,
     constants,
@@ -10,12 +12,6 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import {
-    artifacts as tokensArtifacts,
-    DummyERC20TokenContract,
-    DummyERC721TokenContract,
-    ReentrantERC20TokenContract,
-} from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
@@ -24,14 +20,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../generated-wrappers/exchange';
-import { TestExchangeInternalsContract } from '../generated-wrappers/test_exchange_internals';
-import { artifacts } from '../src/artifacts';
-
-import { ERC20Wrapper } from './utils/erc20_wrapper';
-import { ERC721Wrapper } from './utils/erc721_wrapper';
-import { ExchangeWrapper } from './utils/exchange_wrapper';
-import { MatchOrderTester } from './utils/match_order_tester';
+import { artifacts, ExchangeContract, ExchangeWrapper, MatchOrderTester, TestExchangeInternalsContract } from '../src';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -142,7 +131,7 @@ describe('matchOrders', () => {
         );
 
         reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            tokensArtifacts.ReentrantERC20Token,
+            erc20Artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
             exchange.address,
