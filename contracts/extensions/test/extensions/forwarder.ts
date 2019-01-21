@@ -1,10 +1,10 @@
 import {
-    artifacts as protocolArtifacts,
+    artifacts as exchangeArtifacts,
     ERC20Wrapper,
     ERC721Wrapper,
     ExchangeContract,
     ExchangeWrapper,
-} from '@0x/contracts-protocol';
+} from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -107,7 +107,7 @@ describe(ContractName.Forwarder, () => {
         wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
         zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            protocolArtifacts.Exchange,
+            exchangeArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
@@ -178,7 +178,7 @@ describe(ContractName.Forwarder, () => {
     describe('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                protocolArtifacts.Exchange,
+                exchangeArtifacts.Exchange,
                 provider,
                 txDefaults,
                 zrxAssetData,

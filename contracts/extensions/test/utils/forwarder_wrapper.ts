@@ -1,4 +1,4 @@
-import { artifacts as protocolArtifacts } from '@0x/contracts-protocol';
+import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { constants, formatters, LogDecoder, MarketSellOrders } from '@0x/contracts-test-utils';
 import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
@@ -63,7 +63,7 @@ export class ForwarderWrapper {
         this._logDecoder = new LogDecoder(this._web3Wrapper, {
             ...artifacts,
             ...tokensArtifacts,
-            ...protocolArtifacts,
+            ...exchangeArtifacts,
         });
     }
     public async marketSellOrdersWithEthAsync(

@@ -8,12 +8,12 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
-    artifacts as protocolArtifacts,
+    artifacts as exchangeArtifacts,
     ERC20Wrapper,
     ERC721Wrapper,
     ExchangeContract,
     ExchangeWrapper,
-} from '@0x/contracts-protocol';
+} from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -134,7 +134,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy Exchange contract
         exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            protocolArtifacts.Exchange,
+            exchangeArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,

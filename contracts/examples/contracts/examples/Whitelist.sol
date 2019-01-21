@@ -20,8 +20,8 @@ pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
-import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
-import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
+import "@0x/contracts-utils/contracts/utils/Ownable.sol";
 
 
 contract Whitelist is

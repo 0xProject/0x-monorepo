@@ -19,8 +19,8 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
-import "@0x/contracts-libs/contracts/libs/LibFillResults.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibFillResults.sol";
 
 
 contract IForwarderCore {

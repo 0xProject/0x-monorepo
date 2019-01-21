@@ -60,8 +60,7 @@
     "dependencies": {
         "@0x/base-contract": "^3.0.13",
         "@0x/contracts-interfaces": "^1.0.6",
-        "@0x/contracts-libs": "^1.0.6",
-        "@0x/contracts-multisig": "^1.0.6",
+        "@0x/contracts-exchange-libs": "^1.0.6",
         "@0x/contracts-tokens": "^1.0.6",
         "@0x/contracts-utils": "^1.0.6",
         "@0x/order-utils": "^3.1.2",

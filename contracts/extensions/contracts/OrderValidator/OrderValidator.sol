@@ -20,10 +20,10 @@ pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
-import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
 import "@0x/contracts-tokens/contracts/tokens/ERC20Token/IERC20Token.sol";
 import "@0x/contracts-tokens/contracts/tokens/ERC721Token/IERC721Token.sol";
-import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
+import "@0x/contracts-utils/contracts/utils/LibBytes.sol";
 
 
 contract OrderValidator {

@@ -1,12 +1,11 @@
+import { artifacts as proxyArtifacts, ERC20ProxyContract, ERC721ProxyContract } from '@0x/contracts-asset-proxy';
 import {
-    artifacts as protocolArtifacts,
-    ERC20ProxyContract,
+    artifacts as exchangeArtifacts,
     ERC20Wrapper,
-    ERC721ProxyContract,
     ExchangeContract,
     ExchangeFillEventArgs,
     ExchangeWrapper,
-} from '@0x/contracts-protocol';
+} from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -102,13 +101,13 @@ describe('OrderMatcher', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC721 proxy
         erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(
-            protocolArtifacts.ERC721Proxy,
+            proxyArtifacts.ERC721Proxy,
             provider,
             txDefaults,
         );
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            protocolArtifacts.Exchange,
+            exchangeArtifacts.Exchange,
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
@@ -197,7 +196,7 @@ describe('OrderMatcher', () => {
     describe('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                protocolArtifacts.Exchange,
+                exchangeArtifacts.Exchange,
                 provider,
                 txDefaults,
                 constants.NULL_BYTES,
@@ -451,7 +450,7 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts, ...protocolArtifacts });
+            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts, ...exchangeArtifacts });
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -489,7 +488,7 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts, ...protocolArtifacts });
+            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts, ...exchangeArtifacts });
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,

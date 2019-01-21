@@ -20,7 +20,7 @@
 pragma solidity ^0.4.24;
 
 import "./mixins/MExchangeCalldata.sol";
-import "@0x/contracts-libs/contracts/libs/LibAddressArray.sol";
+import "@0x/contracts-utils/contracts/utils/LibAddressArray.sol";
 
 
 contract MixinExchangeCalldata is 

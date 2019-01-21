@@ -24,10 +24,10 @@ import "./mixins/MWeth.sol";
 import "./mixins/MAssets.sol";
 import "./mixins/MExchangeWrapper.sol";
 import "./interfaces/IForwarderCore.sol";
-import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
-import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
-import "@0x/contracts-libs/contracts/libs/LibFillResults.sol";
-import "@0x/contracts-libs/contracts/libs/LibMath.sol";
+import "@0x/contracts-utils/contracts/utils/LibBytes.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibFillResults.sol";
+import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibMath.sol";
 
 
 contract MixinForwarderCore is

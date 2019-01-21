@@ -1,4 +1,4 @@
-import { artifacts as protocolArtifacts } from '@0x/contracts-protocol';
+import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { LogDecoder } from '@0x/contracts-test-utils';
 import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { DutchAuctionDetails, SignedOrder } from '@0x/types';
@@ -20,7 +20,7 @@ export class DutchAuctionTestWrapper {
         this._logDecoder = new LogDecoder(this._web3Wrapper, {
             ...artifacts,
             ...tokensArtifacts,
-            ...protocolArtifacts,
+            ...exchangeArtifacts,
         });
     }
     /**

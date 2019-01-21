@@ -1,4 +1,4 @@
-import { artifacts as protocolArtifacts, ExchangeContract } from '@0x/contracts-protocol';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import {
     FillResults,
     formatters,
@@ -36,7 +36,7 @@ export class BalanceThresholdWrapper {
         this._logDecoder = new LogDecoder(this._web3Wrapper, {
             ...artifacts,
             ...tokensArtifacts,
-            ...protocolArtifacts,
+            ...exchangeArtifacts,
         });
     }
     public async fillOrderAsync(
