@@ -18,8 +18,8 @@
 
 pragma solidity 0.4.24;
 
-import "@0x/contracts-utils/contracts/utils/Ownable.sol";
-import "../../tokens/ERC20Token/MintableERC20Token.sol";
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "../../ERC20Token/MintableERC20Token.sol";
 
 
 contract DummyERC20Token is 

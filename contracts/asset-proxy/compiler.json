@@ -18,5 +18,13 @@
             }
         }
     },
-    "contracts": ["ERC20Proxy", "ERC721Proxy", "MixinAuthorizable", "MultiAssetProxy"]
+    "contracts": [
+        "IAssetData",
+        "IAssetProxy",
+        "IAuthorizable",
+        "ERC20Proxy",
+        "ERC721Proxy",
+        "MixinAuthorizable",
+        "MultiAssetProxy"
+    ]
 }

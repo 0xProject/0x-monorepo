@@ -19,10 +19,10 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../exchange-libs/LibMath.sol";
-import "../exchange-libs/LibOrder.sol";
-import "../exchange-libs/LibFillResults.sol";
-import "../exchange-libs/LibAbiEncoder.sol";
+import "../src/LibMath.sol";
+import "../src/LibOrder.sol";
+import "../src/LibFillResults.sol";
+import "../src/LibAbiEncoder.sol";
 
 
 contract TestLibs is 

@@ -18,8 +18,8 @@
 
 pragma solidity 0.4.24;
 
-import "../exchange/MixinSignatureValidator.sol";
-import "../exchange/MixinTransactions.sol";
+import "../src/MixinSignatureValidator.sol";
+import "../src/MixinTransactions.sol";
 
 
 contract TestSignatureValidator is

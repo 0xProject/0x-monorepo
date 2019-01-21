@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/utils/Ownable.sol";
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibConstants.sol";
 import "./MixinMatchOrders.sol";
 import "./MixinAssets.sol";

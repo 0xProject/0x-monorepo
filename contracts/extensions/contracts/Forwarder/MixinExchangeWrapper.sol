@@ -21,10 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
 import "./mixins/MExchangeWrapper.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibAbiEncoder.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibFillResults.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibMath.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibAbiEncoder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 
 
 contract MixinExchangeWrapper is

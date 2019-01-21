@@ -20,9 +20,9 @@ pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibFillResults.sol";
-import "@0x/contracts-utils/contracts/utils/Ownable.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 
 
 contract MixinMatchOrders is

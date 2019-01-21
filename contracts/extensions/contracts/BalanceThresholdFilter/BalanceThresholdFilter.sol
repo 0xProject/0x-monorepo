@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "./interfaces/IThresholdAsset.sol";
 import "./MixinBalanceThresholdFilterCore.sol";
 

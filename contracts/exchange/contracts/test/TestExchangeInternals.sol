@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../exchange/Exchange.sol";
+import "../src/Exchange.sol";
 
 
 // solhint-disable no-empty-blocks

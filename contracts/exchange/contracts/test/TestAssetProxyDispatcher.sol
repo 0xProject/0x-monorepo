@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../exchange/MixinAssetProxyDispatcher.sol";
+import "../src/MixinAssetProxyDispatcher.sol";
 
 
 contract TestAssetProxyDispatcher is 

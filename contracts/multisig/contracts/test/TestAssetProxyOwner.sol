@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../multisig/AssetProxyOwner.sol";
+import "../src/AssetProxyOwner.sol";
 
 
 // solhint-disable no-empty-blocks

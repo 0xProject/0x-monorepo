@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../../tokens/ERC721Token/IERC721Receiver.sol";
+import "../../ERC721Token/IERC721Receiver.sol";
 
 
 contract DummyERC721Receiver is

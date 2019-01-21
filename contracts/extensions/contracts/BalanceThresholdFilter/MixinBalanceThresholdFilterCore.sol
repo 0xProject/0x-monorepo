@@ -18,8 +18,8 @@
 
 pragma solidity ^0.4.24;
 
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibExchangeSelectors.sol";
-import "@0x/contracts-exchange-libs/contracts/exchange-libs/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "./mixins/MBalanceThresholdFilterCore.sol";
 import "./MixinExchangeCalldata.sol";
 

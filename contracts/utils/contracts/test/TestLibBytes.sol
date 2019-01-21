@@ -18,7 +18,7 @@
 
 pragma solidity ^0.4.24;
 
-import "../utils/LibBytes.sol";
+import "../src/LibBytes.sol";
 
 
 contract TestLibBytes {

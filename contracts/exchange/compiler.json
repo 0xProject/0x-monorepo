@@ -20,9 +20,22 @@
     },
     "contracts": [
         "Exchange",
+        "IAssetProxyDispatcher",
+        "IExchange",
+        "IExchangeCore",
+        "IMatchOrders",
+        "ISignatureValidator",
+        "ITransactions",
+        "IValidator",
+        "IWallet",
+        "IWrapperFunctions",
         "TestAssetProxyDispatcher",
         "TestExchangeInternals",
         "TestSignatureValidator",
-        "TestStaticCallReceiver"
+        "TestStaticCallReceiver",
+        "ExchangeWrapper",
+        "Validator",
+        "Wallet",
+        "Whitelist"
     ]
 }

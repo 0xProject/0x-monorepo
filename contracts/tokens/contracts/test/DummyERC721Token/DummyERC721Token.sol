@@ -18,8 +18,8 @@
 
 pragma solidity 0.4.24;
 
-import "../../tokens/ERC721Token/MintableERC721Token.sol";
-import "@0x/contracts-utils/contracts/utils/Ownable.sol";
+import "../../ERC721Token/MintableERC721Token.sol";
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 
 
 // solhint-disable no-empty-blocks

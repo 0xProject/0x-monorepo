@@ -1,4 +1,3 @@
-import { artifacts as examplesArtifacts, ValidatorContract, WalletContract } from '@0x/contracts-examples';
 import {
     addressUtils,
     chaiSetup,
@@ -23,6 +22,8 @@ import {
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
     TestStaticCallReceiverContract,
+    ValidatorContract,
+    WalletContract,
 } from '../src';
 
 chaiSetup.configure();
@@ -61,13 +62,13 @@ describe('MixinSignatureValidator', () => {
             txDefaults,
         );
         testWallet = await WalletContract.deployFrom0xArtifactAsync(
-            examplesArtifacts.Wallet,
+            artifacts.Wallet,
             provider,
             txDefaults,
             signerAddress,
         );
         testValidator = await ValidatorContract.deployFrom0xArtifactAsync(
-            examplesArtifacts.Validator,
+            artifacts.Validator,
             provider,
             txDefaults,
             signerAddress,
