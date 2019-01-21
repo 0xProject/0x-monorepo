@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "`SolCompilerArtifactsAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "5.0.0",
         "changes": [
             {
