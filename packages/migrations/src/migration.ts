@@ -16,11 +16,8 @@ import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
  * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
-export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
+export async function runMigrationsAsync(provider: Provider, txDefaults: TxData): Promise<ContractAddresses> {
     const web3Wrapper = new Web3Wrapper(provider);
-    if (_.isUndefined(txDefaults.from)) {
-        throw new Error('from address must be specified');
-    }
 
     // Proxies
     const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
@@ -206,10 +203,7 @@ let _cachedContractAddresses: ContractAddresses;
  * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
-export async function runMigrationsOnceAsync(
-    provider: Provider,
-    txDefaults: Partial<TxData>,
-): Promise<ContractAddresses> {
+export async function runMigrationsOnceAsync(provider: Provider, txDefaults: TxData): Promise<ContractAddresses> {
     if (!_.isUndefined(_cachedContractAddresses)) {
         return _cachedContractAddresses;
     }

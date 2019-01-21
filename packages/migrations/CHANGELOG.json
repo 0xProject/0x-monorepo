@@ -5,6 +5,10 @@
             {
                 "note": "Upgrade the bignumber.js to v8.0.2",
                 "pr": 1517
+            },
+            {
+                "note": "Removed `owner` in Migrations. `txDefaults` is now a non-Partial type",
+                "pr": 1533
             }
         ]
     },
