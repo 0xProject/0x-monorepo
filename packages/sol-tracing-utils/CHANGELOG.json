@@ -3,11 +3,15 @@
         "version": "6.0.0",
         "changes": [
             {
-                "note": "`SolCompilerArtifactsAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly",
+                "note": "`SolCompilerArtifactAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly",
                 "pr": "TODO"
             },
             {
                 "note": "Cache the `utils.getContractDataIfExists` leading to faster execution",
+                "pr": "TODO"
+            },
+            {
+                "note": "`SolCompilerArtifactAdapter` now doesn't return the `ContractData` for interfaces",
                 "pr": "TODO"
             }
         ]
