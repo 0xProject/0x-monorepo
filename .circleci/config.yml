@@ -49,6 +49,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-extensions
             - run: yarn wsrun test:circleci @0x/contracts-asset-proxy
             - run: yarn wsrun test:circleci @0x/contracts-exchange
+            - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
@@ -68,6 +69,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-extensions
             - run: yarn wsrun test:circleci @0x/contracts-asset-proxy
             - run: yarn wsrun test:circleci @0x/contracts-exchange
+            - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
     test-publish:
         resource_class: medium+
         docker:

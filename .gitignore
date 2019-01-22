@@ -91,6 +91,7 @@ contracts/exchange-libs/generated-artifacts/
 contracts/erc20/generated-artifacts/
 contracts/erc721/generated-artifacts/
 contracts/extensions/generated-artifacts/
+contracts/exchange-forwarder/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
@@ -104,6 +105,7 @@ contracts/exchange-libs/generated-wrappers/
 contracts/erc20/generated-wrappers/
 contracts/erc721/generated-wrappers/
 contracts/extensions/generated-wrappers/
+contracts/exchange-forwarder/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

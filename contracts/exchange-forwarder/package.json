@@ -1,10 +1,10 @@
 {
-    "name": "@0x/contracts-utils",
-    "version": "1.0.6",
+    "name": "@0x/contracts-exchange-forwarder",
+    "version": "1.2.3",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Smart contract utils of 0x protocol",
+    "description": "Smart contract extensions of 0x protocol",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -32,7 +32,7 @@
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "generated-artifacts/@(IOwnable|Ownable|LibBytes|ReentrancyGuard|SafeMath|TestConstants|TestLibBytes).json"
+        "abis": "generated-artifacts/@(Forwarder).json"
     },
     "repository": {
         "type": "git",
@@ -42,16 +42,16 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/utils/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/extensions/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^1.0.22",
+        "@0x/contract-wrappers": "^5.0.1",
         "@0x/contracts-test-utils": "^2.0.1",
         "@0x/dev-utils": "^1.0.24",
         "@0x/sol-compiler": "^2.0.2",
         "@0x/tslint-config": "^2.0.2",
         "@types/lodash": "4.14.104",
         "@types/node": "*",
-        "@types/bn.js": "^4.11.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
@@ -66,14 +66,18 @@
     },
     "dependencies": {
         "@0x/base-contract": "^3.0.13",
+        "@0x/contracts-asset-proxy": "^2.2.3",
+        "@0x/contracts-exchange-libs": "^1.0.6",
+        "@0x/contracts-exchange": "^2.2.3",
+        "@0x/contracts-erc20": "^1.0.6",
+        "@0x/contracts-erc721": "^1.0.6",
+        "@0x/contracts-utils": "^1.0.6",
         "@0x/order-utils": "^3.1.2",
         "@0x/types": "^1.5.2",
         "@0x/typescript-typings": "^3.0.8",
         "@0x/utils": "^3.0.1",
         "@0x/web3-wrapper": "^3.2.4",
-        "bn.js": "^4.11.8",
         "ethereum-types": "^1.1.6",
-        "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.5"
     },
     "publishConfig": {
