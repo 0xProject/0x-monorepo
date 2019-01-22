@@ -1,10 +1,14 @@
-## Contract extensions
+## Exchange Forwarder
 
-Smart contracts that implement extensions for the 0x protocol.
+This package contains the implementation of the [`Forwarder`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md) contract. This contract is intended to improve the UX of interacting with the 0x [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange) contract by abstracting user approvals, converting ETH to WETH, and paying fees. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
-## Usage
+## Installation
 
-Contract extensions of the protocol can be found in the [contracts](./contracts) directory. This directory contains contracts that interact with the 2.0.0 contracts and will be used in production, such as the [Forwarder](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md) contract.
+**Install**
+
+```bash
+npm install @0x/contracts-exchange-forwarder --save
+```
 
 ## Bug bounty
 
@@ -37,13 +41,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-extensions yarn build
+PKG=@0x/contracts-exchange-forwarder yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-extensions yarn watch
+PKG=@0x/contracts-exchange-forwarder yarn watch
 ```
 
 ### Clean

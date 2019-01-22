@@ -1,15 +1,14 @@
-## Token contracts
+## ERC20 Tokens
 
-Token smart contracts that are used in the 0x protocol. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [CHANGELOG](./CHANGELOG.json) of this package.
+This package contains implementations of various [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md) tokens, including WETH (Wrapped Ether) and ZRX. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
-## Usage
+## Installation
 
-Token contracts that make up and interact with version 2.0.0 of the protocol can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
+**Install**
 
--   [tokens](./contracts/tokens)
-    -   This directory contains implementations of different tokens and token standards, including [wETH](https://weth.io/), ZRX, [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), and [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
--   [test](./contracts/test)
-    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+```bash
+npm install @0x/contracts-erc20 --save
+```
 
 ## Bug bounty
 
@@ -42,13 +41,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-tokens yarn build
+PKG=@0x/contracts-erc20 yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-tokens yarn watch
+PKG=@0x/contracts-erc20 yarn watch
 ```
 
 ### Clean

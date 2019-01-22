@@ -5,44 +5,11 @@
         "changes": [
             {
                 "note": "Add MultiAssetProxy implementation",
-                "pr": 1224
-            }
-        ]
-    },
-    {
-        "name": "OrderValidator",
-        "version": "1.0.0",
-        "changes": [
-            {
-                "note": "remove `getApproved` check from ERC721 approval query",
-                "pr": 1149
-            }
-        ]
-    },
-    {
-        "name": "OrderValidator",
-        "version": "1.0.0",
-        "changes": [
-            {
-                "note": "protocol v2 deploy",
+                "pr": 1224,
                 "networks": {
-                    "1": "0x9463e518dea6810309563c81d5266c1b1d149138",
-                    "3": "0x90431a90516ab49af23a0530e04e8c7836e7122f",
-                    "42": "0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d"
-                }
-            }
-        ]
-    },
-    {
-        "name": "Exchange",
-        "version": "2.0.0",
-        "changes": [
-            {
-                "note": "protocol v2 deploy",
-                "networks": {
-                    "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
-                    "3": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
-                    "42": "0x35dd2932454449b14cee11a94d3674a936d5d7b2"
+                    "3": "0xab8fbd189c569ccdee3a4d929bb7f557be4028f6",
+                    "4": "0xb34cde0ad3a83d04abebc0b66e75196f22216621",
+                    "42": "0xf6313a772c222f51c28f2304c0703b8cf5428fd8"
                 }
             }
         ]
@@ -56,6 +23,7 @@
                 "networks": {
                     "1": "0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
                     "3": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
+                    "4": "0x3e809c563c15a295e832e37053798ddc8d6c8dab",
                     "42": "0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e"
                 }
             }
@@ -70,21 +38,8 @@
                 "networks": {
                     "1": "0x208e41fb445f1bb1b6780d58356e81405f3e6127",
                     "3": "0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4",
+                    "4": "0x8e1ff02637cb5e39f2fa36c14706aa348b065b09",
                     "42": "0x2a9127c745688a165106c11cd4d647d2220af821"
-                }
-            }
-        ]
-    },
-    {
-        "name": "AssetProxyOwner",
-        "version": "1.0.0",
-        "changes": [
-            {
-                "note": "protocol v2 deploy",
-                "networks": {
-                    "1": "0x17992e4ffb22730138e4b62aaa6367fa9d3699a6",
-                    "3": "0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b",
-                    "42": "0x2c824d2882baa668e0d5202b1e7f2922278703f8"
                 }
             }
         ]

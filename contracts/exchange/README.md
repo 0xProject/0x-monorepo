@@ -1,15 +1,14 @@
-## Contracts
+## Exchange
 
-Smart contracts that implement the 0x protocol. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [CHANGELOG](./CHANGELOG.json) of this package.
+This package contains the implementation of the [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange). This contract is responsible for settling trades and is typically the entry point for all transactions that interact with the 0x protocol. Lightweight examples of how external contracts can interct with the `Exchange` contract can be found in the [examples](./contracts/examples) directory. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
-## Usage
+## Installation
 
-Contracts that make up and interact with version 2.0.0 of the protocol can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
+**Install**
 
--   [protocol](./contracts/protocol)
-    -   This directory contains the contracts that make up version 2.0.0. A full specification can be found [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
--   [test](./contracts/test)
-    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+```bash
+npm install @0x/contracts-exchange --save
+```
 
 ## Bug bounty
 
@@ -42,13 +41,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-protocol yarn build
+PKG=@0x/contracts-exchange yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-protocol yarn watch
+PKG=@0x/contracts-exchange yarn watch
 ```
 
 ### Clean

@@ -1,15 +1,14 @@
-## Contracts libs
+## Exchange Libraries
 
-Smart contracts libs used in the 0x protocol.
+This package contains the implementations of various libraries and utilities used within the [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange) contract. These libraries may be useful when creating external contracts that interact with the `Exchange` contract. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
-## Usage
+## Installation
 
-Contracts can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
+**Install**
 
--   [libs](./contracts/protocol)
-    -   This directory contains the libs.
--   [test](./contracts/test)
-    -   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+```bash
+npm install @0x/contracts-exchange-libs --save
+```
 
 ## Contributing
 
@@ -38,13 +37,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-libs yarn build
+PKG=@0x/contracts-exchange-libs yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-libs yarn watch
+PKG=@0x/contracts-exchange-libs yarn watch
 ```
 
 ### Clean
