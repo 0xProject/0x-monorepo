@@ -8,7 +8,7 @@
             },
             {
                 "note": "Cache the `utils.getContractDataIfExists` leading to faster execution",
-                "pr": "TODO"
+                "pr": "1535"
             },
             {
                 "note": "`SolCompilerArtifactAdapter` now doesn't return the `ContractData` for interfaces",
