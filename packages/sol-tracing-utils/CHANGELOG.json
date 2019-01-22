@@ -16,7 +16,7 @@
             },
             {
                 "note": "Print resasonable error message on bytecode collision",
-                "pr": "TODO"
+                "pr": "1535"
             }
         ]
     },
