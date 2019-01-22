@@ -66,8 +66,8 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
                 runtimeBytecode: artifact.compilerOutput.evm.deployedBytecode.object,
                 sourceMapRuntime: artifact.compilerOutput.evm.deployedBytecode.sourceMap,
             };
-            if (contractData.bytecode === '0x' && contractData.runtimeBytecode === '0x') {
-                // That's an interface contract
+            const isInterfaceContract = contractData.bytecode === '0x' && contractData.runtimeBytecode === '0x';
+            if (isInterfaceContract) {
                 continue;
             }
             contractsData.push(contractData);
