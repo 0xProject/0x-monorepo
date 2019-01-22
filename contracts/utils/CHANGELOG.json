@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Fix imports in `TestConstants` and `TestLibBytes` to be relative. This way they show up correctly in coverage reports",
-                "pr": "TODO"
+                "pr": "1535"
             }
         ]
     },
