@@ -15,7 +15,7 @@ export const collectCoverageEntries = (contractSource: string, ignoreRegexp?: Re
         const offsetToLocation = getOffsetToLocation(contractSource);
         const ignoreRangesBegingingAt = _.isUndefined(ignoreRegexp)
             ? []
-            : gatherRangesToIgnore(contractSource, ignoreRegexp as RegExp);
+            : gatherRangesToIgnore(contractSource, ignoreRegexp);
         const visitor = new ASTVisitor(offsetToLocation, ignoreRangesBegingingAt);
         parser.visit(ast, visitor);
         sourceHashToCoverageEntries[sourceHash] = visitor.getCollectedCoverageEntries();
