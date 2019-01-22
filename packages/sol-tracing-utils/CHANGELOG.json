@@ -4,19 +4,19 @@
         "changes": [
             {
                 "note": "`SolCompilerArtifactAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly",
-                "pr": "1535"
+                "pr": 1535
             },
             {
                 "note": "Cache the `utils.getContractDataIfExists` leading to faster execution",
-                "pr": "1535"
+                "pr": 1535
             },
             {
                 "note": "`SolCompilerArtifactAdapter` now doesn't return the `ContractData` for interfaces",
-                "pr": "1535"
+                "pr": 1535
             },
             {
                 "note": "Print resasonable error message on bytecode collision",
-                "pr": "1535"
+                "pr": 1535
             }
         ]
     },
