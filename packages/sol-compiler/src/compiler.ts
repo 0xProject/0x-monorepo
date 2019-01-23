@@ -10,6 +10,7 @@ import {
     URLResolver,
 } from '@0x/sol-resolver';
 import { logUtils } from '@0x/utils';
+import { execSync } from 'child_process';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as fs from 'fs';
@@ -23,10 +24,11 @@ import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
     addHexPrefixToContractBytecode,
-    compile,
+    compileDocker,
+    compileSolcJS,
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
-    getSolcAsync,
+    getSolcJSAsync,
     getSourcesWithDependencies,
     getSourceTreeHash,
     parseSolidityVersionRange,
@@ -40,6 +42,7 @@ const ALL_CONTRACTS_IDENTIFIER = '*';
 const ALL_FILES_IDENTIFIER = '*';
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
+const DEFAULT_USE_DOCKERISED_SOLC = false;
 // Solc compiler settings cannot be configured from the commandline.
 // If you need this configured, please create a `compiler.json` config file
 // with your desired configurations.
@@ -80,10 +83,12 @@ export class Compiler {
     private readonly _resolver: Resolver;
     private readonly _nameResolver: NameResolver;
     private readonly _contractsDir: string;
+    private readonly _workspaceDir: string;
     private readonly _compilerSettings: solc.CompilerSettings;
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    private readonly _useDockerisedSolc: boolean;
     /**
      * Instantiates a new instance of the Compiler class.
      * @param opts Optional compiler options
@@ -97,16 +102,23 @@ export class Compiler {
             : {};
         const passedOpts = opts || {};
         assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
-        this._contractsDir = passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR;
+        this._contractsDir = path.resolve(passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR);
+        this._workspaceDir = path.resolve(passedOpts.workspaceDir || config.workspaceDir || this._contractsDir);
+        if (!this._contractsDir.includes(this._workspaceDir)) {
+            throw new Error(
+                `Contracts dir ${this._contractsDir} is outside of the workspace dir ${this._workspaceDir}`,
+            );
+        }
         this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
         this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
-        this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
+        this._useDockerisedSolc =
+            passedOpts.useDockerisedSolc || config.useDockerisedSolc || DEFAULT_USE_DOCKERISED_SOLC;
+        this._nameResolver = new NameResolver(this._contractsDir);
         const resolver = new FallthroughResolver();
         resolver.appendResolver(new URLResolver());
-        const packagePath = path.resolve('');
-        resolver.appendResolver(new NPMResolver(packagePath));
+        resolver.appendResolver(new NPMResolver(this._contractsDir, this._workspaceDir));
         resolver.appendResolver(new RelativeFSResolver(this._contractsDir));
         resolver.appendResolver(new FSResolver());
         resolver.appendResolver(this._nameResolver);
@@ -205,11 +217,12 @@ export class Compiler {
 
         // map contract paths to data about them for later verification and persistence
         const contractPathToData: ContractPathToData = {};
+        const spyResolver = new SpyResolver(this._resolver);
 
         for (const contractName of contractNames) {
-            const contractSource = this._resolver.resolve(contractName);
+            const contractSource = spyResolver.resolve(contractName);
             const sourceTreeHashHex = getSourceTreeHash(
-                this._resolver,
+                spyResolver,
                 path.join(this._contractsDir, contractSource.path),
             ).toString('hex');
             const contractData = {
@@ -242,6 +255,30 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
+        const allTouchedFiles = spyResolver.resolvedContractSources.map(
+            contractSource => `${contractSource.absolutePath}`,
+        );
+        const NODE_MODULES = 'node_modules';
+        const allTouchedDependencies = _.filter(allTouchedFiles, filePath => filePath.includes(NODE_MODULES));
+        const dependencyNameToPackagePath: { [dependencyName: string]: string } = {};
+        _.map(allTouchedDependencies, dependencyFilePath => {
+            const lastNodeModulesStart = dependencyFilePath.lastIndexOf(NODE_MODULES);
+            const lastNodeModulesEnd = lastNodeModulesStart + NODE_MODULES.length;
+            const importPath = dependencyFilePath.substr(lastNodeModulesEnd + 1);
+            let packageName;
+            let packageScopeIfExists;
+            let dependencyName;
+            if (_.startsWith(importPath, '@')) {
+                [packageScopeIfExists, packageName] = importPath.split('/');
+                dependencyName = `${packageScopeIfExists}/${packageName}`;
+            } else {
+                [packageName] = importPath.split('/');
+                dependencyName = `${packageName}`;
+            }
+            const dependencyPackagePath = path.join(dependencyFilePath.substr(0, lastNodeModulesEnd), dependencyName);
+            dependencyNameToPackagePath[dependencyName] = dependencyPackagePath;
+        });
+
         const compilerOutputs: StandardOutput[] = [];
 
         const solcVersions = _.keys(versionToInputs);
@@ -252,12 +289,31 @@ export class Compiler {
                     input.contractsToCompile
                 }) with Solidity v${solcVersion}...`,
             );
+            let compilerOutput;
+            let fullSolcVersion;
+            if (this._useDockerisedSolc) {
+                const dockerCommand = `docker run ethereum/solc:${solcVersion} --version`;
+                const versionCommandOutput = execSync(dockerCommand).toString();
+                const versionCommandOutputParts = versionCommandOutput.split(' ');
+                fullSolcVersion = versionCommandOutputParts[versionCommandOutputParts.length - 1].trim();
+                compilerOutput = compileDocker(
+                    this._resolver,
+                    this._contractsDir,
+                    this._workspaceDir,
+                    solcVersion,
+                    dependencyNameToPackagePath,
+                    input.standardInput,
+                );
+            } else {
+                fullSolcVersion = binPaths[solcVersion];
+                const solcInstance = await getSolcJSAsync(solcVersion);
+                compilerOutput = compileSolcJS(this._resolver, solcInstance, input.standardInput);
+            }
 
-            const { solcInstance, fullSolcVersion } = await getSolcAsync(solcVersion);
-            const compilerOutput = compile(this._resolver, solcInstance, input.standardInput);
             compilerOutputs.push(compilerOutput);
 
             for (const contractPath of input.contractsToCompile) {
+                // console.log('contractsPath', contractPath);
                 const contractName = contractPathToData[contractPath].contractName;
 
                 const compiledContract = compilerOutput.contracts[contractPath][contractName];

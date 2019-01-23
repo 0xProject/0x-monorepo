@@ -8,9 +8,11 @@ import { Resolver } from './resolver';
 
 export class NPMResolver extends Resolver {
     private readonly _packagePath: string;
-    constructor(packagePath: string) {
+    private readonly _workspacePath: string;
+    constructor(packagePath: string, workspacePath: string) {
         super();
         this._packagePath = packagePath;
+        this._workspacePath = workspacePath;
     }
     public resolveIfExists(importPath: string): ContractSource | undefined {
         if (!importPath.startsWith('/')) {
@@ -23,9 +25,11 @@ export class NPMResolver extends Resolver {
                 [packageName, ...other] = importPath.split('/');
             }
             const pathWithinPackage = path.join(...other);
-            let currentPath = this._packagePath;
-            const ROOT_PATH = '/';
-            while (currentPath !== ROOT_PATH) {
+            for (
+                let currentPath = this._packagePath;
+                currentPath.includes(this._workspacePath);
+                currentPath = path.dirname(currentPath)
+            ) {
                 const packagePath = _.isUndefined(packageScopeIfExists)
                     ? packageName
                     : path.join(packageScopeIfExists, packageName);
@@ -34,7 +38,6 @@ export class NPMResolver extends Resolver {
                     const fileContent = fs.readFileSync(lookupPath).toString();
                     return { source: fileContent, path: importPath, absolutePath: lookupPath };
                 }
-                currentPath = path.dirname(currentPath);
             }
         }
         return undefined;

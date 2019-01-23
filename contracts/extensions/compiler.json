@@ -1,6 +1,8 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
+    "workspaceDir": "../..",
+    "useDockerisedSolc": true,
     "compilerSettings": {
         "optimizer": {
             "enabled": true,

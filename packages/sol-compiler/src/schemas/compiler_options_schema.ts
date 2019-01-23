@@ -2,6 +2,7 @@ export const compilerOptionsSchema = {
     id: '/CompilerOptions',
     properties: {
         contractsDir: { type: 'string' },
+        workspaceDir: { type: 'string' },
         artifactsDir: { type: 'string' },
         solcVersion: { type: 'string', pattern: '^\\d+.\\d+.\\d+$' },
         compilerSettings: { type: 'object' },
@@ -19,6 +20,7 @@ export const compilerOptionsSchema = {
                 },
             ],
         },
+        useDockerisedSolc: { type: 'boolean' },
     },
     type: 'object',
     required: [],

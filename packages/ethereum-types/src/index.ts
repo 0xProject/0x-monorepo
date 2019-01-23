@@ -503,19 +503,23 @@ export interface Source {
 
 /**
  * Options you can specify (as flags or in a compiler.json file) when invoking sol-compiler
- * contractsDir: Directory containing your project's Solidity contracts. Can contain nested directories.
+ * contractsDir: Directory containing your package's Solidity contracts. Can contain nested directories.
+ * workspaceDir: Directory containing your project's Solidity contracts. All the contracts used in compilation must be withing it. Similar to --allow-paths in Solidity.
  * artifactsDir: Directory where you want the generated artifacts.json written to
  * compilerSettings: Desired settings to pass to the Solidity compiler during compilation.
  * (http://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#compiler-input-and-output-json-description)
  * contracts: List of contract names you wish to compile, or alternatively ['*'] to compile all contracts in the
  * specified directory.
+ * useDockerisedSolc: If set to true - sol-compiler will try using docker to achieve faster compilation times. Otherwise and by default - solcjs will be used.
  * solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
  * contracts to compile with the the version specified here.
  */
 export interface CompilerOptions {
     contractsDir?: string;
+    workspaceDir?: string;
     artifactsDir?: string;
     compilerSettings?: CompilerSettings;
     contracts?: string[] | '*';
+    useDockerisedSolc?: boolean;
     solcVersion?: string;
 } // tslint:disable-line:max-file-line-count
