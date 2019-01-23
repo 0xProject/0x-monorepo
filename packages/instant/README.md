@@ -8,7 +8,7 @@ Check out a live sample integration [here](https://www.rexrelay.com/instant).
 
 ## Installation
 
-The package is available as a UMD module named `zeroExInstant` at https://instant.0xproject.com/instant.js.
+The package is available as a UMD module named `zeroExInstant` at https://instant.0x.org/instant.js.
 
 ```html
 <head>
