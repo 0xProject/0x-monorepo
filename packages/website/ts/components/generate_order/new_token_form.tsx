@@ -93,7 +93,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
                         onClickAsyncFn={this._onAddNewTokenClickAsync.bind(this)}
                     />
                 </div>
-                {this.state.globalErrMsg !== '' && <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />}
+                {this.state.globalErrMsg !== '' && <Alert type={AlertTypes.Error} message={this.state.globalErrMsg} />}
             </div>
         );
     }

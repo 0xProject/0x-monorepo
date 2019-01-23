@@ -83,12 +83,12 @@ export interface Fill {
 }
 
 export enum BalanceErrs {
-    incorrectNetworkForFaucet,
-    faucetRequestFailed,
-    faucetQueueIsFull,
-    mintingFailed,
-    sendFailed,
-    allowanceSettingFailed,
+    IncorrectNetworkForFaucet,
+    FaucetRequestFailed,
+    FaucetQueueIsFull,
+    MintingFailed,
+    SendFailed,
+    AllowanceSettingFailed,
 }
 
 export enum ActionTypes {
@@ -209,8 +209,8 @@ export enum ScreenWidths {
 }
 
 export enum AlertTypes {
-    ERROR,
-    SUCCESS,
+    Error,
+    Success,
 }
 
 export enum BlockchainErrs {
@@ -228,11 +228,11 @@ export enum BlockchainCallErrs {
 }
 
 export enum Environments {
-    DEVELOPMENT = 'DEVELOPMENT',
-    DOGFOOD = 'DOGFOOD',
-    STAGING = 'STAGING',
-    PRODUCTION = 'PRODUCTION',
-    UNKNOWN = 'UNKNOWN',
+    Development = 'DEVELOPMENT',
+    Dogfood = 'DOGFOOD',
+    Staging = 'STAGING',
+    Production = 'PRODUCTION',
+    Unknown = 'UNKNOWN',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
@@ -323,9 +323,9 @@ export interface DialogConfigs {
 }
 
 export enum TokenVisibility {
-    ALL = 'ALL',
-    UNTRACKED = 'UNTRACKED',
-    TRACKED = 'TRACKED',
+    All = 'ALL',
+    Untracked = 'UNTRACKED',
+    Tracked = 'TRACKED',
 }
 
 export interface VersionToFilePath {
@@ -350,7 +350,7 @@ export enum WebsitePaths {
     Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
-    FAQ = '/faq',
+    FAQ = '/faq', // tslint:disable-line:enum-naming
     About = '/about',
     AboutMission = '/about/mission',
     AboutTeam = '/about/team',
@@ -370,7 +370,9 @@ export enum WebsitePaths {
     OrderWatcher = '/docs/order-watcher',
     SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
-    SolCov = '/docs/sol-cov',
+    SolCoverage = '/docs/sol-coverage',
+    SolProfiler = '/docs/sol-profiler',
+    SolTrace = '/docs/sol-trace',
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
@@ -386,7 +388,9 @@ export enum DocPackages {
     Web3Wrapper = 'WEB3_WRAPPER',
     SolCompiler = 'SOL_COMPILER',
     JSONSchemas = 'JSON_SCHEMAS',
-    SolCov = 'SOL_COV',
+    SolCoverage = 'SOL_COVERAGE',
+    SolTrace = 'SOL_TRACE',
+    SolProfiler = 'SOL_PROFILER',
     Subproviders = 'SUBPROVIDERS',
     OrderUtils = 'ORDER_UTILS',
     EthereumTypes = 'ETHEREUM_TYPES',
@@ -625,7 +629,7 @@ export enum BrowserType {
 
 export enum OperatingSystemType {
     Android = 'Android',
-    iOS = 'iOS',
+    iOS = 'iOS', // tslint:disable-line:enum-naming
     Mac = 'Mac',
     Windows = 'Windows',
     WindowsPhone = 'WindowsPhone',
@@ -651,8 +655,9 @@ export interface TutorialInfo {
 }
 
 export enum Categories {
-    ZeroExProtocol = '0x Protocol',
-    Ethereum = 'Ethereum',
+    ZeroExProtocolTypescript = '0x Protocol (Typescript/Javascript)',
+    ZeroExProtocolPython = '0x Protocol (Python)',
+    Ethereum = 'Ethereum (Typescript/Javascript)',
     CommunityMaintained = 'Community Maintained',
 }
 

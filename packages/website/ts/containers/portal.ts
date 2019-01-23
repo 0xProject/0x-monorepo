@@ -87,6 +87,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Portal: React.ComponentClass<PortalComponentProps> = connect(mapStateToProps, mapDispatchToProps)(
-    PortalComponent,
-);
+export const Portal: React.ComponentClass<PortalComponentProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(PortalComponent);

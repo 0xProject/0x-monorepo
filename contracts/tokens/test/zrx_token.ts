@@ -117,7 +117,7 @@ describe('ZRXToken', () => {
             const amountToTransfer = ownerBalance;
 
             const spenderAllowance = await zrxToken.allowance.callAsync(owner, spender);
-            const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
+            const isSpenderAllowanceInsufficient = spenderAllowance.comparedTo(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
             const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {

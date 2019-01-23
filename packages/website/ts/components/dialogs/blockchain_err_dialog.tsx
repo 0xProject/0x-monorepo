@@ -148,15 +148,17 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                     If you are using{' '}
                     <a href={constants.URL_METAMASK_CHROME_STORE} target="_blank">
                         Metamask
-                    </a>, you can switch networks in the top left corner of the extension popover.
+                    </a>
+                    , you can switch networks in the top left corner of the extension popover.
                 </div>
                 <h4>Parity Signer</h4>
                 <div>
                     If using the{' '}
                     <a href={constants.URL_PARITY_CHROME_STORE} target="_blank">
                         Parity Signer Chrome extension
-                    </a>, make sure to start your local Parity node with `parity ui` or `parity --chain Kovan ui` in
-                    order to connect to mainnet \ or Kovan respectively.
+                    </a>
+                    , make sure to start your local Parity node with `parity ui` or `parity --chain Kovan ui` in order
+                    to connect to mainnet \ or Kovan respectively.
                 </div>
             </div>
         );

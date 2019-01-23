@@ -62,4 +62,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, _ownProps: LatestErrorPr
     },
 });
 
-export const LatestError = connect(mapStateToProps, mapDispatchToProps)(LatestErrorComponent);
+export const LatestError = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(LatestErrorComponent);

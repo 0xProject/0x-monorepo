@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.2 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _January 11, 2019_
+
+    * Raise custom InsufficientAssetLiquidityError error with amountAvailableToFill attribute (#1437)
+
 ## v3.0.5 - _January 9, 2019_
 
     * Dependencies updated

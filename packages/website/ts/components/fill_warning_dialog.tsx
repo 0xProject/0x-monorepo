@@ -37,7 +37,8 @@ export const FillWarningDialog = (props: FillWarningDialogProps) => {
                     be counterfeit. It is your responsibility to verify the token addresses on Etherscan (
                     <a href="https://0x.org/wiki#Verifying-Custom-Tokens" target="_blank">
                         See this how-to guide
-                    </a>) before filling an order. <b>This action may result in the loss of funds</b>.
+                    </a>
+                    ) before filling an order. <b>This action may result in the loss of funds</b>.
                 </div>
             </div>
         </Dialog>

@@ -19,6 +19,7 @@
         "./artifacts/Forwarder.json",
         "./artifacts/IValidator.json",
         "./artifacts/IWallet.json",
+        "./artifacts/MultiAssetProxy.json",
         "./artifacts/OrderValidator.json",
         "./artifacts/WETH9.json",
         "./artifacts/ZRXToken.json"

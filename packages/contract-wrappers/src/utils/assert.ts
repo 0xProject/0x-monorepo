@@ -70,7 +70,7 @@ export const assert = {
     /*
      * Asserts that all the orders have the same value for the provided propertyName
      * If the value parameter is provided, this asserts that all orders have the prope
-    */
+     */
     ordersHaveAtMostOneUniqueValueForProperty(orders: Order[], propertyName: string, value?: any): void {
         const allValues = _.map(orders, order => _.get(order, propertyName));
         sharedAssert.hasAtMostOneUniqueValue(

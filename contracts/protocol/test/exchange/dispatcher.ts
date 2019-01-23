@@ -205,7 +205,7 @@ describe('AssetProxyDispatcher', () => {
                 erc20Balances[makerAddress][zrxToken.address].minus(amount),
             );
             expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][zrxToken.address].add(amount),
+                erc20Balances[takerAddress][zrxToken.address].plus(amount),
             );
         });
 

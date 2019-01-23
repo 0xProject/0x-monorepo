@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.2 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v3.1.1 - _January 11, 2019_
+
+    * Dependencies updated
+
 ## v3.1.0 - _January 9, 2019_
 
     * Use new ABI encoder, add encoding/decoding logic for MultiAsset assetData, and add information to return values in orderStateUtils (#1363)

@@ -27,8 +27,8 @@ export enum QuoteFetchOrigin {
 }
 
 export enum BaseCurrency {
-    USD = 'USD',
-    ETH = 'ETH',
+    USD = 'USD', // tslint:disable-line:enum-naming
+    ETH = 'ETH', // tslint:disable-line:enum-naming
 }
 
 export interface SimulatedProgress {
@@ -95,7 +95,7 @@ export enum Network {
 
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
-    InsufficientETH = 'INSUFFICIENT_ETH',
+    InsufficientETH = 'INSUFFICIENT_ETH', // tslint:disable-line:enum-naming
     CouldNotSubmitTransaction = 'COULD_NOT_SUBMIT_TRANSACTION',
 }
 
@@ -168,7 +168,7 @@ export enum WalletSuggestion {
 
 export enum OperatingSystem {
     Android = 'ANDROID',
-    iOS = 'IOS',
+    iOS = 'IOS', // tslint:disable-line:enum-naming
     Mac = 'MAC',
     Windows = 'WINDOWS',
     WindowsPhone = 'WINDOWS_PHONE',
@@ -183,6 +183,7 @@ export enum ProviderType {
     CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
     TrustWallet = 'TRUST_WALLET',
+    Opera = 'OPERA',
     Fallback = 'FALLBACK',
 }
 

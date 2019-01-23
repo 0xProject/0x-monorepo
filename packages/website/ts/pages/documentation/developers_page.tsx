@@ -68,10 +68,7 @@ interface SidebarContainerProps {
     className?: string;
 }
 
-const SidebarContainer =
-    styled.div <
-    SidebarContainerProps >
-    `
+const SidebarContainer = styled.div<SidebarContainerProps>`
     ${scrollableContainerStyles}
     padding-top: 27px;
     padding-left: ${SIDEBAR_PADDING}px;
@@ -87,10 +84,7 @@ interface MainContentContainerProps {
     className?: string;
 }
 
-const MainContentContainer =
-    styled.div <
-    MainContentContainerProps >
-    `
+const MainContentContainer = styled.div<MainContentContainerProps>`
     ${scrollableContainerStyles}
     padding-top: 0px;
     padding-left: 50px;

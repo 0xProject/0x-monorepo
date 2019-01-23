@@ -106,8 +106,10 @@ export const utils = {
         return nextVersionIfValid;
     },
     async getRemoteGitTagsAsync(): Promise<string[]> {
+        const TEN_MEGA_BYTES = 1024 * 1024 * 10; // tslint:disable-line custom-no-magic-numbers
         const result = await execAsync(`git ls-remote --tags`, {
             cwd: constants.monorepoRootPath,
+            maxBuffer: TEN_MEGA_BYTES,
         });
         const tagsString = result.stdout;
         const tagOutputs: string[] = tagsString.split('\n');

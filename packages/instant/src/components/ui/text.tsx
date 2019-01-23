@@ -31,10 +31,7 @@ export const Text: React.StatelessComponent<TextProps> = ({ href, onClick, ...re
 };
 
 const opacityOnHoverAmount = 0.5;
-export const StyledText =
-    styled.div <
-    TextProps >
-    `
+export const StyledText = styled.div<TextProps>`
     && {
         font-family: 'Inter UI', sans-serif;
         font-style: ${props => props.fontStyle};

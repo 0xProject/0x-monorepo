@@ -214,10 +214,10 @@ export class OrderStateUtils {
         const remainingFillableTakerAssetAmountGivenTakersStatus = orderRelevantTakerState.remainingFillableAssetAmount;
 
         // The min of these two in the actualy max fillable by either party
-        const fillableTakerAssetAmount = BigNumber.min([
+        const fillableTakerAssetAmount = BigNumber.min(
             remainingFillableTakerAssetAmountGivenMakersStatus,
             remainingFillableTakerAssetAmountGivenTakersStatus,
-        ]);
+        );
 
         return fillableTakerAssetAmount;
     }
@@ -260,8 +260,8 @@ export class OrderStateUtils {
             traderAddress,
         );
 
-        const transferrableTraderAssetAmount = BigNumber.min([traderProxyAllowance, traderBalance]);
-        const transferrableFeeAssetAmount = BigNumber.min([traderFeeProxyAllowance, traderFeeBalance]);
+        const transferrableTraderAssetAmount = BigNumber.min(traderProxyAllowance, traderBalance);
+        const transferrableFeeAssetAmount = BigNumber.min(traderFeeProxyAllowance, traderFeeBalance);
 
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
@@ -312,7 +312,7 @@ export class OrderStateUtils {
             const tokenAddress = decodedAssetData.tokenAddress;
             balances[tokenAddress] = _.isUndefined(initialBalances[tokenAddress])
                 ? balance
-                : balances[tokenAddress].add(balance);
+                : balances[tokenAddress].plus(balance);
         } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
             for (const assetDataElement of decodedAssetData.nestedAssetData) {
                 balances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, balances);
@@ -335,7 +335,7 @@ export class OrderStateUtils {
             const tokenAddress = decodedAssetData.tokenAddress;
             allowances[tokenAddress] = _.isUndefined(initialAllowances[tokenAddress])
                 ? allowance
-                : allowances[tokenAddress].add(allowance);
+                : allowances[tokenAddress].plus(allowance);
         } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
             for (const assetDataElement of decodedAssetData.nestedAssetData) {
                 allowances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, allowances);

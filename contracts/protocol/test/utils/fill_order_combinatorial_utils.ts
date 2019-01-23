@@ -469,7 +469,7 @@ export class FillOrderCombinatorialUtils {
         const remainingTakerAmountToFill = signedOrder.takerAssetAmount.minus(alreadyFilledTakerAmount);
         const expFilledTakerAmount = takerAssetFillAmount.gt(remainingTakerAmountToFill)
             ? remainingTakerAmountToFill
-            : alreadyFilledTakerAmount.add(takerAssetFillAmount);
+            : alreadyFilledTakerAmount.plus(takerAssetFillAmount);
 
         const expFilledMakerAmount = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
@@ -613,13 +613,13 @@ export class FillOrderCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
         const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
-        const expectedAbiEncodedData = this.exchangeWrapper.abiEncodeFillOrder(signedOrder, { takerAssetFillAmount });
-        const libsAbiEncodedData = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
+        const abiDataEncodedByContract = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
         );
-        expect(libsAbiEncodedData).to.be.equal(expectedAbiEncodedData, 'ABIEncodedFillOrderData');
+        const paramsDecodedByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
+        expect(paramsDecodedByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
     }
     private async _getTakerAssetFillAmountAsync(
         signedOrder: SignedOrder,
@@ -644,7 +644,7 @@ export class FillOrderCombinatorialUtils {
                 break;
 
             case TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount.add(1);
+                takerAssetFillAmount = fillableTakerAssetAmount.plus(1);
                 break;
 
             case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
@@ -657,7 +657,7 @@ export class FillOrderCombinatorialUtils {
                         'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
                     );
                 }
-                takerAssetFillAmount = fillableTakerAssetAmount.div(2).floor();
+                takerAssetFillAmount = fillableTakerAssetAmount.div(2).integerValue(BigNumber.ROUND_FLOOR);
                 break;
 
             default:

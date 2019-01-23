@@ -31,7 +31,6 @@ import { NextWhy } from 'ts/pages/why';
 tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
-import 'basscss/css/basscss.css';
 import 'less/all.less';
 
 // We pass modulePromise returning lambda instead of module promise,
@@ -69,8 +68,14 @@ const LazySolCompilerDocumentation = createLazyComponent('Documentation', async 
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
 );
-const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+const LazySolCoverageDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solCoverageDocs" */ 'ts/containers/sol_coverage_documentation'),
+);
+const LazySolTraceDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solTraceDocs" */ 'ts/containers/sol_trace_documentation'),
+);
+const LazySolProfilerDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solProfilerDocs" */ 'ts/containers/sol_profiler_documentation'),
 );
 const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
@@ -149,7 +154,18 @@ render(
                                     path={`${WebsitePaths.SolCompiler}/:version?`}
                                     component={LazySolCompilerDocumentation}
                                 />
-                                <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
+                                <Route
+                                    path={`${WebsitePaths.SolCoverage}/:version?`}
+                                    component={LazySolCoverageDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolTrace}/:version?`}
+                                    component={LazySolTraceDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolProfiler}/:version?`}
+                                    component={LazySolProfilerDocumentation}
+                                />
                                 <Route
                                     path={`${WebsitePaths.JSONSchemas}/:version?`}
                                     component={LazyJSONSchemasDocumentation}

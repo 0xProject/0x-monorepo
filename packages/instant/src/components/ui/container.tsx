@@ -51,10 +51,7 @@ const getBackgroundColor = (theme: any, backgroundColor?: ColorOption, rawBackgr
     return 'none';
 };
 
-export const Container =
-    styled.div <
-    ContainerProps >
-    `
+export const Container = styled.div<ContainerProps>`
     && {
         box-sizing: border-box;
         ${props => cssRuleIfExists(props, 'flex-grow')}

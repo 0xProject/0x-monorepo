@@ -1,13 +1,11 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
+import { DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import { Networks } from '@0x/react-shared';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
-import { Dispatcher } from 'ts/redux/dispatcher';
-import { State } from 'ts/redux/reducer';
-import { DocPackages, ScreenWidths, SmartContractDocSections as Sections } from 'ts/types';
-import { Translate } from 'ts/utils/translate';
+import { DocPackages, SmartContractDocSections as Sections } from 'ts/types';
+
+import { getMapStateToProps, mapDispatchToProps } from '../utils/documentation_container';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown1 = require('md/docs/smart_contracts/1/introduction');
@@ -91,32 +89,9 @@ const docsInfoConfig: DocsInfoConfig = {
         },
     },
 };
-const docsInfo = new DocsInfo(docsInfoConfig);
+const mapStateToProps = getMapStateToProps(docsInfoConfig);
 
-interface ConnectedState {
-    docsVersion: string;
-    availableDocVersions: string[];
-    translate: Translate;
-    screenWidth: ScreenWidths;
-}
-
-interface ConnectedDispatch {
-    dispatcher: Dispatcher;
-    docsInfo: DocsInfo;
-}
-
-const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
-    docsVersion: state.docsVersion,
-    availableDocVersions: state.availableDocVersions,
-    translate: state.translate,
-    screenWidth: state.screenWidth,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
-    dispatcher: new Dispatcher(dispatch),
-    docsInfo,
-});
-
-export const Documentation: React.ComponentClass<DocPageProps> = connect(mapStateToProps, mapDispatchToProps)(
-    DocPageComponent,
-);
+export const Documentation: React.ComponentClass<DocPageProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(DocPageComponent);

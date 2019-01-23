@@ -87,7 +87,9 @@ class HeaderBase extends React.Component<HeaderProps> {
                         </Link>
 
                         <NavLinks>
-                            {_.map(navItems, (link, index) => <NavItem key={`navlink-${index}`} link={link} />)}
+                            {_.map(navItems, (link, index) => (
+                                <NavItem key={`navlink-${index}`} link={link} />
+                            ))}
                         </NavLinks>
 
                         <MediaQuery minWidth={990}>
@@ -130,10 +132,7 @@ const NavItem = (props: { link: NavItemProps; key: string }) => {
     );
 };
 
-const StyledHeader =
-    styled.header <
-    HeaderProps >
-    `
+const StyledHeader = styled.header<HeaderProps>`
     padding: 30px;
     background-color: ${props => props.theme.bgColor};
 `;
@@ -200,10 +199,7 @@ const NavLinks = styled.ul`
     }
 `;
 
-const DropdownWrap =
-    styled.div <
-    DropdownWrapInterface >
-    `
+const DropdownWrap = styled.div<DropdownWrapInterface>`
     width: ${props => props.width || 280}px;
     padding: 15px 0;
     border: 1px solid transparent;
@@ -219,27 +215,28 @@ const DropdownWrap =
     transition: opacity 0.35s, transform 0.35s, visibility 0s 0.35s;
     z-index: 20;
 
-    &:after, &:before {
-    	bottom: 100%;
-    	left: 50%;
-    	border: solid transparent;
-    	content: " ";
-    	height: 0;
-    	width: 0;
-    	position: absolute;
-    	pointer-events: none;
+    &:after,
+    &:before {
+        bottom: 100%;
+        left: 50%;
+        border: solid transparent;
+        content: ' ';
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
     }
     &:after {
-    	border-color: rgba(255, 255, 255, 0);
-    	border-bottom-color: ${props => props.theme.dropdownBg};
-    	border-width: 10px;
-    	margin-left: -10px;
+        border-color: rgba(255, 255, 255, 0);
+        border-bottom-color: ${props => props.theme.dropdownBg};
+        border-width: 10px;
+        margin-left: -10px;
     }
     &:before {
-    	border-color: rgba(255, 0, 0, 0);
-    	border-bottom-color: ${props => props.theme.dropdownBorderColor};
-    	border-width: 11px;
-    	margin-left: -11px;
+        border-color: rgba(255, 0, 0, 0);
+        border-bottom-color: ${props => props.theme.dropdownBorderColor};
+        border-width: 11px;
+        margin-left: -11px;
     }
 
     @media (max-width: 768px) {

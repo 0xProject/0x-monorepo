@@ -190,7 +190,7 @@ describe('Exchange wrappers', () => {
                 erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
             );
             expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[makerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
@@ -199,20 +199,20 @@ describe('Exchange wrappers', () => {
                 erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
+                erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
             );
         });
 
         it('should throw if a signedOrder is expired', async () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const signedOrder = await orderFactory.newSignedOrderAsync({
-                expirationTimeSeconds: new BigNumber(currentTimestamp).sub(10),
+                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
 
             return expectTransactionFailedAsync(
@@ -285,7 +285,7 @@ describe('Exchange wrappers', () => {
                 erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
             );
             expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                erc20Balances[makerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
             );
             expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
@@ -294,13 +294,13 @@ describe('Exchange wrappers', () => {
                 erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
             expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
+                erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFilledAmount),
             );
             expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
             );
         });
 
@@ -494,15 +494,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].add(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].add(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -511,7 +511,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(makerFee.add(takerFee));
+                    ].plus(makerFee.plus(takerFee));
                 });
 
                 await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
@@ -563,15 +563,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].add(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].add(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -580,7 +580,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(makerFee.add(takerFee));
+                    ].plus(makerFee.plus(takerFee));
                 });
 
                 await exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
@@ -648,15 +648,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].add(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].add(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -665,7 +665,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(makerFee.add(takerFee));
+                    ].plus(makerFee.plus(takerFee));
                 });
 
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
@@ -707,15 +707,15 @@ describe('Exchange wrappers', () => {
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
                         makerAssetAddress
                     ].minus(makerAssetFilledAmount);
-                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][takerAssetAddress].add(
-                        takerAssetFillAmount,
-                    );
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         makerFee,
                     );
-                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][makerAssetAddress].add(
-                        makerAssetFilledAmount,
-                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
                     erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
                         takerAssetAddress
                     ].minus(takerAssetFillAmount);
@@ -724,7 +724,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(makerFee.add(takerFee));
+                    ].plus(makerFee.plus(takerFee));
                 });
 
                 const newOrders = [invalidOrder, ...validOrders];
@@ -774,16 +774,16 @@ describe('Exchange wrappers', () => {
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
-                const makerAssetFilledAmount = signedOrders[0].makerAssetAmount.add(
+                const makerAssetFilledAmount = signedOrders[0].makerAssetAmount.plus(
                     signedOrders[1].makerAssetAmount.dividedToIntegerBy(2),
                 );
-                const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
+                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
+                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
                 expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
                 );
                 expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
                 );
                 expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
@@ -792,13 +792,13 @@ describe('Exchange wrappers', () => {
                     erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
                 );
                 expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
+                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFilledAmount),
                 );
                 expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
                 );
                 expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+                    erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
                 );
             });
 
@@ -810,13 +810,13 @@ describe('Exchange wrappers', () => {
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
-                    ].add(signedOrder.takerAssetAmount);
+                    ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         signedOrder.makerFee,
                     );
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
-                    ].add(signedOrder.makerAssetAmount);
+                    ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
@@ -825,7 +825,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
                 await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
@@ -899,16 +899,16 @@ describe('Exchange wrappers', () => {
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
-                const makerAssetFilledAmount = signedOrders[0].makerAssetAmount.add(
+                const makerAssetFilledAmount = signedOrders[0].makerAssetAmount.plus(
                     signedOrders[1].makerAssetAmount.dividedToIntegerBy(2),
                 );
-                const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
+                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
+                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
                 expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
                 );
                 expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
                 );
                 expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
@@ -917,13 +917,13 @@ describe('Exchange wrappers', () => {
                     erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
                 );
                 expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFilledAmount),
+                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFilledAmount),
                 );
                 expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
                 );
                 expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+                    erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
                 );
             });
 
@@ -935,13 +935,13 @@ describe('Exchange wrappers', () => {
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
-                    ].add(signedOrder.takerAssetAmount);
+                    ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         signedOrder.makerFee,
                     );
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
-                    ].add(signedOrder.makerAssetAmount);
+                    ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
@@ -950,7 +950,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
@@ -980,13 +980,13 @@ describe('Exchange wrappers', () => {
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
-                    ].add(signedOrder.takerAssetAmount);
+                    ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         signedOrder.makerFee,
                     );
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
-                    ].add(signedOrder.makerAssetAmount);
+                    ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
@@ -995,7 +995,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
@@ -1043,16 +1043,16 @@ describe('Exchange wrappers', () => {
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
-                const makerAmountBought = signedOrders[0].takerAssetAmount.add(
+                const makerAmountBought = signedOrders[0].takerAssetAmount.plus(
                     signedOrders[1].takerAssetAmount.dividedToIntegerBy(2),
                 );
-                const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
+                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
+                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
                 expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
                 );
                 expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].add(makerAmountBought),
+                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(makerAmountBought),
                 );
                 expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
@@ -1061,13 +1061,13 @@ describe('Exchange wrappers', () => {
                     erc20Balances[takerAddress][defaultTakerAssetAddress].minus(makerAmountBought),
                 );
                 expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
                 );
                 expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
                 );
                 expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+                    erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
                 );
             });
 
@@ -1079,13 +1079,13 @@ describe('Exchange wrappers', () => {
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
-                    ].add(signedOrder.takerAssetAmount);
+                    ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         signedOrder.makerFee,
                     );
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
-                    ].add(signedOrder.makerAssetAmount);
+                    ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
@@ -1094,7 +1094,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
                 await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
@@ -1166,16 +1166,16 @@ describe('Exchange wrappers', () => {
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
-                const makerAmountBought = signedOrders[0].takerAssetAmount.add(
+                const makerAmountBought = signedOrders[0].takerAssetAmount.plus(
                     signedOrders[1].takerAssetAmount.dividedToIntegerBy(2),
                 );
-                const makerFee = signedOrders[0].makerFee.add(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.add(signedOrders[1].takerFee.dividedToIntegerBy(2));
+                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
+                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
                 expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
                 );
                 expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].add(makerAmountBought),
+                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(makerAmountBought),
                 );
                 expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
@@ -1184,13 +1184,13 @@ describe('Exchange wrappers', () => {
                     erc20Balances[takerAddress][defaultTakerAssetAddress].minus(makerAmountBought),
                 );
                 expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
                 );
                 expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                     erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
                 );
                 expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFee.add(takerFee)),
+                    erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
                 );
             });
 
@@ -1202,13 +1202,13 @@ describe('Exchange wrappers', () => {
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
-                    ].add(signedOrder.takerAssetAmount);
+                    ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         signedOrder.makerFee,
                     );
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
-                    ].add(signedOrder.makerAssetAmount);
+                    ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
@@ -1217,7 +1217,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
@@ -1248,13 +1248,13 @@ describe('Exchange wrappers', () => {
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
-                    ].add(signedOrder.takerAssetAmount);
+                    ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][zrxToken.address] = erc20Balances[makerAddress][zrxToken.address].minus(
                         signedOrder.makerFee,
                     );
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
-                    ].add(signedOrder.makerAssetAmount);
+                    ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
@@ -1263,7 +1263,7 @@ describe('Exchange wrappers', () => {
                     );
                     erc20Balances[feeRecipientAddress][zrxToken.address] = erc20Balances[feeRecipientAddress][
                         zrxToken.address
-                    ].add(signedOrder.makerFee.add(signedOrder.takerFee));
+                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
@@ -1305,7 +1305,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const expectedOrderStatus = OrderStatus.Fillable;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1320,7 +1320,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const expectedOrderStatus = OrderStatus.Fillable;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1334,7 +1334,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
-                    const expectedOrderStatus = OrderStatus.FULLY_FILLED;
+                    const expectedOrderStatus = OrderStatus.FullyFilled;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1348,7 +1348,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const expectedOrderStatus = OrderStatus.Cancelled;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1364,7 +1364,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const expectedOrderStatus = OrderStatus.Cancelled;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1380,7 +1380,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const expectedOrderStatus = OrderStatus.Expired;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1398,7 +1398,7 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const expectedOrderStatus = OrderStatus.Expired;
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
@@ -1425,7 +1425,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedUnfilledOrderHash = orderHashUtils.getOrderHashHex(unfilledOrder);
                 const expectedUnfilledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedUnfilledOrderStatus = OrderStatus.FILLABLE;
+                const expectedUnfilledOrderStatus = OrderStatus.Fillable;
                 const unfilledOrderInfo = ordersInfo[0];
                 expect(unfilledOrderInfo.orderHash).to.be.equal(expectedUnfilledOrderHash);
                 expect(unfilledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1435,7 +1435,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedPartialOrderHash = orderHashUtils.getOrderHashHex(partiallyFilledOrder);
                 const expectedPartialTakerAssetFilledAmount = partiallyFilledOrder.takerAssetAmount.div(2);
-                const expectedPartialOrderStatus = OrderStatus.FILLABLE;
+                const expectedPartialOrderStatus = OrderStatus.Fillable;
                 const partialOrderInfo = ordersInfo[1];
                 expect(partialOrderInfo.orderHash).to.be.equal(expectedPartialOrderHash);
                 expect(partialOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1445,7 +1445,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedFilledOrderHash = orderHashUtils.getOrderHashHex(fullyFilledOrder);
                 const expectedFilledTakerAssetFilledAmount = fullyFilledOrder.takerAssetAmount;
-                const expectedFilledOrderStatus = OrderStatus.FULLY_FILLED;
+                const expectedFilledOrderStatus = OrderStatus.FullyFilled;
                 const filledOrderInfo = ordersInfo[2];
                 expect(filledOrderInfo.orderHash).to.be.equal(expectedFilledOrderHash);
                 expect(filledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1455,7 +1455,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedCancelledOrderHash = orderHashUtils.getOrderHashHex(cancelledOrder);
                 const expectedCancelledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedCancelledOrderStatus = OrderStatus.CANCELLED;
+                const expectedCancelledOrderStatus = OrderStatus.Cancelled;
                 const cancelledOrderInfo = ordersInfo[3];
                 expect(cancelledOrderInfo.orderHash).to.be.equal(expectedCancelledOrderHash);
                 expect(cancelledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
@@ -1465,7 +1465,7 @@ describe('Exchange wrappers', () => {
 
                 const expectedExpiredOrderHash = orderHashUtils.getOrderHashHex(expiredOrder);
                 const expectedExpiredTakerAssetFilledAmount = new BigNumber(0);
-                const expectedExpiredOrderStatus = OrderStatus.EXPIRED;
+                const expectedExpiredOrderStatus = OrderStatus.Expired;
                 const expiredOrderInfo = ordersInfo[4];
                 expect(expiredOrderInfo.orderHash).to.be.equal(expectedExpiredOrderHash);
                 expect(expiredOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
