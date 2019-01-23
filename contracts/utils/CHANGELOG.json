@@ -1,5 +1,22 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Add LibAddressArray contract",
+                "pr": 1539
+            },
+            {
+                "note": "Do not nest contracts in redundant directories",
+                "pr": 1539
+            },
+            {
+                "note": "Rename utils directory to src",
+                "pr": 1539
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {

@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Rename contracts-libs to contracts-exchange-libs",
+                "pr": 1539
+            },
+            {
+                "note": "Move LibAddressArray contract to contracts-utils",
+                "pr": 1539
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {

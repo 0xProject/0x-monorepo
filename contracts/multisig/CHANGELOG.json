@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Add AssetProxyOwner contract",
+                "pr": 1539
+            },
+            {
+                "note": "Rename multisig directory to src",
+                "pr": 1539
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {

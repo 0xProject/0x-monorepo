@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Move Forwarder contract into new package",
+                "pr": 1539
+            },
+            {
+                "note": "Nest extensions under src directory",
+                "pr": 1539
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
