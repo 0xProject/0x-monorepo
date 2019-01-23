@@ -1,10 +1,14 @@
-## Contract extensions
+## Extensions
 
-Smart contracts that implement extensions for the 0x protocol.
+This package implements various extensions to the 0x protocol. Extension contracts can add various rules around how orders are settled while still getting the interoperability and security benefits of using the underlying 0x protocol contracts. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
-## Usage
+## Installation
 
-Contract extensions of the protocol can be found in the [contracts](./contracts) directory. This directory contains contracts that interact with the 2.0.0 contracts and will be used in production, such as the [Forwarder](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md) contract.
+**Install**
+
+```bash
+npm install @0x/contracts-extensions --save
+```
 
 ## Bug bounty
 
