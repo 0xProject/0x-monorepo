@@ -7,11 +7,15 @@
                 "pr": 1517
             },
             {
-                "note": "Removed `owner` in Migrations. `txDefaults` is now a non-Partial type",
+                "note": "Removed `owner` in Migrations",
                 "pr": 1533
             },
             {
-                "note": "Convert `from` to lower case",
+                "note": "`txDefaults` parameter now requires the `from` field",
+                "pr": 1533
+            },
+            {
+                "note": "Convert `from` to lower case when passed in via cli",
                 "pr": 1533
             }
         ]
