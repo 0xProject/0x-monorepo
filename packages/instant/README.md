@@ -12,7 +12,7 @@ The package is available as a UMD module named `zeroExInstant` at https://instan
 
 ```html
 <head>
-    <script type="text/javascript" src="https://instant.0xproject.com/instant.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://instant.0x.org/instant.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="zeroExInstantContainer"></div>
@@ -47,7 +47,7 @@ To build and deploy to this bundle, run
 yarn deploy_staging
 ```
 
-Finally, we have our live production bundle that is only meant to be updated with stable, polished releases: https://instant.0xproject.com/instant.js
+Finally, we have our live production bundle that is only meant to be updated with stable, polished releases: https://instant.0x.org/instant.js
 
 To build and deploy to this bundle, run
 
