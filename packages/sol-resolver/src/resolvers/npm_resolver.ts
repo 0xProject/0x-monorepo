@@ -9,7 +9,7 @@ import { Resolver } from './resolver';
 export class NPMResolver extends Resolver {
     private readonly _packagePath: string;
     private readonly _workspacePath: string;
-    constructor(packagePath: string, workspacePath: string) {
+    constructor(packagePath: string, workspacePath: string = '/') {
         super();
         this._packagePath = packagePath;
         this._workspacePath = workspacePath;
