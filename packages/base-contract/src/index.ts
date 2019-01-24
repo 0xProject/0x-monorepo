@@ -1,4 +1,4 @@
-import { AbiEncoder, abiUtils } from '@0x/utils';
+import { AbiEncoder, abiUtils, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -43,7 +43,7 @@ export class BaseContract {
         return type === 'address' ? value.toLowerCase() : value;
     }
     protected static _bigNumberToString(_type: string, value: any): any {
-        return _.isObject(value) && value.isBigNumber ? value.toString() : value;
+        return BigNumber.isBigNumber(value) ? value.toString() : value;
     }
     protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
         const constructorAbiIfExists = _.find(

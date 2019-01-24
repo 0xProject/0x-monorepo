@@ -1,5 +1,23 @@
 [
     {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ]
+    },
+    {
+        "timestamp": 1547747677,
+        "version": "5.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "5.0.0",
         "changes": [
             {

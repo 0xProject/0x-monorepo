@@ -205,7 +205,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             amount: orderMakerAmount
                 .times(takerAssetToken.amount)
                 .div(orderTakerAmount)
-                .floor(),
+                .integerValue(BigNumber.ROUND_FLOOR),
             symbol: makerToken.symbol,
         };
         const fillAssetToken = {
@@ -219,7 +219,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             const orderReceiveAmountBigNumber = orderMakerAmount
                 .times(this.props.orderFillAmount)
                 .dividedBy(orderTakerAmount)
-                .floor();
+                .integerValue(BigNumber.ROUND_FLOOR);
             orderReceiveAmount = this._formatCurrencyAmount(orderReceiveAmountBigNumber, makerToken.decimals);
         }
         const isUserMaker =

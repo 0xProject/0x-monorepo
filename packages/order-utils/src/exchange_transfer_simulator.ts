@@ -88,14 +88,14 @@ export class ExchangeTransferSimulator {
                 }
                 const balance = await this._store.getBalanceAsync(assetData, from);
                 const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, from);
-                if (proxyAllowance.lessThan(amountInBaseUnits)) {
+                if (proxyAllowance.isLessThan(amountInBaseUnits)) {
                     ExchangeTransferSimulator._throwValidationError(
                         FailureReason.ProxyAllowance,
                         tradeSide,
                         transferType,
                     );
                 }
-                if (balance.lessThan(amountInBaseUnits)) {
+                if (balance.isLessThan(amountInBaseUnits)) {
                     ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, tradeSide, transferType);
                 }
                 await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);

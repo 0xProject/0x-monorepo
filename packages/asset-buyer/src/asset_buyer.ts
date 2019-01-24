@@ -16,14 +16,16 @@ import {
     BuyQuote,
     BuyQuoteExecutionOpts,
     BuyQuoteRequestOpts,
+    LiquidityForAssetData,
+    LiquidityRequestOpts,
     OrderProvider,
-    OrderProviderResponse,
     OrdersAndFillableAmounts,
 } from './types';
 
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
+import { calculateLiquidity } from './utils/calculate_liquidity';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 
 interface OrdersEntry {
@@ -138,10 +140,10 @@ export class AssetBuyer {
         // get the relevant orders for the makerAsset and fees
         // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
+            this.getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
             isMakerAssetZrxToken
                 ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
@@ -177,6 +179,41 @@ export class AssetBuyer {
         const buyQuote = this.getBuyQuoteAsync(assetData, assetBuyAmount, options);
         return buyQuote;
     }
+    /**
+     * Returns information about available liquidity for an asset
+     * Does not factor in slippage or fees
+     * @param   assetData           The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   options             Options for the request. See type definition for more information.
+     *
+     * @return  An object that conforms to LiquidityForAssetData that satisfies the request. See type definition for more information.
+     */
+    public async getLiquidityForAssetDataAsync(
+        assetData: string,
+        options: Partial<LiquidityRequestOpts> = {},
+    ): Promise<LiquidityForAssetData> {
+        const shouldForceOrderRefresh =
+            options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
+        assert.isString('assetData', assetData);
+        assetDataUtils.decodeAssetDataOrThrow(assetData);
+        assert.isBoolean('options.shouldForceOrderRefresh', shouldForceOrderRefresh);
+
+        const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        if (!assetPairs.includes(etherTokenAssetData)) {
+            return {
+                tokensAvailableInBaseUnits: new BigNumber(0),
+                ethValueAvailableInWei: new BigNumber(0),
+            };
+        }
+
+        const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
+            assetData,
+            shouldForceOrderRefresh,
+        );
+
+        return calculateLiquidity(ordersAndFillableAmounts);
+    }
+
     /**
      * Given a BuyQuote and desired rate, attempt to execute the buy.
      * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
@@ -260,8 +297,10 @@ export class AssetBuyer {
     }
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
+     * @param assetData                The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param shouldForceOrderRefresh  If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs.
      */
-    private async _getOrdersAndFillableAmountsAsync(
+    public async getOrdersAndFillableAmountsAsync(
         assetData: string,
         shouldForceOrderRefresh: boolean,
     ): Promise<OrdersAndFillableAmounts> {

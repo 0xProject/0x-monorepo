@@ -1,0 +1,11 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Move all AssetProxy contracts out of contracts-protocol to new package",
+                "pr": 1539
+            }
+        ]
+    }
+]

@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-tracing-utils",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,6 +44,7 @@
     "dependencies": {
         "@0x/dev-utils": "^1.0.24",
         "@0x/sol-compiler": "^2.0.2",
+        "@0x/sol-resolver": "^1.2.3",
         "@0x/subproviders": "^2.1.11",
         "@0x/typescript-typings": "^3.0.8",
         "@0x/utils": "^3.0.1",

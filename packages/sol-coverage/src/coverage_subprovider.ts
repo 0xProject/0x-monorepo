@@ -50,6 +50,8 @@ export class CoverageSubprovider extends TraceInfoSubprovider {
     }
 }
 
+const IGNORE_REGEXP = /\/\*\s*solcov\s+ignore\s+next\s*\*\/\s*/gm;
+
 /**
  * Computed partial coverage for a single file & subtrace.
  * @param contractData      Contract metadata (source, srcMap, bytecode)
@@ -65,7 +67,7 @@ export const coverageHandler: SingleFileSubtraceHandler = (
     fileIndex: number,
 ): Coverage => {
     const absoluteFileName = contractData.sources[fileIndex];
-    const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
+    const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex], IGNORE_REGEXP);
 
     // if the source wasn't provided for the fileIndex, we can't cover the file
     if (_.isUndefined(coverageEntriesDescription)) {

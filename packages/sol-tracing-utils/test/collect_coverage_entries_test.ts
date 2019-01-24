@@ -130,7 +130,8 @@ describe('Collect coverage entries', () => {
                 solcovIgnoreContractBaseName,
             );
             const solcovIgnoreContract = fs.readFileSync(solcovIgnoreContractFileName).toString();
-            const coverageEntries = collectCoverageEntries(solcovIgnoreContract);
+            const IGNORE_REGEXP = /\/\*\s*solcov\s+ignore\s+next\s*\*\/\s*/gm;
+            const coverageEntries = collectCoverageEntries(solcovIgnoreContract, IGNORE_REGEXP);
             const fnIds = _.keys(coverageEntries.fnMap);
 
             expect(fnIds.length).to.be.equal(1);

@@ -9,8 +9,8 @@ export const orderUtils = {
     },
     willOrderExpire(order: SignedOrder, secondsFromNow: number): boolean {
         const millisecondsInSecond = 1000;
-        const currentUnixTimestampSec = new BigNumber(Date.now() / millisecondsInSecond).round();
-        return order.expirationTimeSeconds.lessThan(currentUnixTimestampSec.plus(secondsFromNow));
+        const currentUnixTimestampSec = new BigNumber(Date.now() / millisecondsInSecond).integerValue();
+        return order.expirationTimeSeconds.isLessThan(currentUnixTimestampSec.plus(secondsFromNow));
     },
     isOpenOrder(order: SignedOrder): boolean {
         return order.takerAddress === constants.NULL_ADDRESS;
@@ -20,43 +20,43 @@ export const orderUtils = {
         const remainingMakerAmount = remainingTakerAmount
             .times(order.makerAssetAmount)
             .div(order.takerAssetAmount)
-            .floor();
+            .integerValue(BigNumber.ROUND_FLOOR);
         return remainingMakerAmount;
     },
     // given a desired amount of makerAsset, calculate how much takerAsset is required to fill that amount
     getTakerFillAmount(order: SignedOrder, makerFillAmount: BigNumber): BigNumber {
         // Round up because exchange rate favors Maker
         const takerFillAmount = makerFillAmount
-            .mul(order.takerAssetAmount)
+            .multipliedBy(order.takerAssetAmount)
             .div(order.makerAssetAmount)
-            .ceil();
+            .integerValue(BigNumber.ROUND_CEIL);
         return takerFillAmount;
     },
     // given a desired amount of takerAsset to fill, calculate how much fee is required by the taker to fill that amount
     getTakerFeeAmount(order: SignedOrder, takerFillAmount: BigNumber): BigNumber {
         // Round down because Taker fee rate favors Taker
         const takerFeeAmount = takerFillAmount
-            .mul(order.takerFee)
+            .multipliedBy(order.takerFee)
             .div(order.takerAssetAmount)
-            .floor();
+            .integerValue(BigNumber.ROUND_FLOOR);
         return takerFeeAmount;
     },
     // given a desired amount of takerAsset to fill, calculate how much makerAsset will be filled
     getMakerFillAmount(order: SignedOrder, takerFillAmount: BigNumber): BigNumber {
         // Round down because exchange rate favors Maker
         const makerFillAmount = takerFillAmount
-            .mul(order.makerAssetAmount)
+            .multipliedBy(order.makerAssetAmount)
             .div(order.takerAssetAmount)
-            .floor();
+            .integerValue(BigNumber.ROUND_FLOOR);
         return makerFillAmount;
     },
     // given a desired amount of makerAsset, calculate how much fee is required by the maker to fill that amount
     getMakerFeeAmount(order: SignedOrder, makerFillAmount: BigNumber): BigNumber {
         // Round down because Maker fee rate favors Maker
         const makerFeeAmount = makerFillAmount
-            .mul(order.makerFee)
+            .multipliedBy(order.makerFee)
             .div(order.makerAssetAmount)
-            .floor();
+            .integerValue(BigNumber.ROUND_FLOOR);
         return makerFeeAmount;
     },
     // given a desired amount of ZRX from a fee order, calculate how much takerAsset is required to fill that amount
@@ -64,9 +64,9 @@ export const orderUtils = {
     getTakerFillAmountForFeeOrder(order: SignedOrder, makerFillAmount: BigNumber): [BigNumber, BigNumber] {
         // For each unit of TakerAsset we buy (MakerAsset - TakerFee)
         const adjustedTakerFillAmount = makerFillAmount
-            .mul(order.takerAssetAmount)
-            .div(order.makerAssetAmount.sub(order.takerFee))
-            .ceil();
+            .multipliedBy(order.takerAssetAmount)
+            .div(order.makerAssetAmount.minus(order.takerFee))
+            .integerValue(BigNumber.ROUND_CEIL);
         // The amount that we buy will be greater than makerFillAmount, since we buy some amount for fees.
         const adjustedMakerFillAmount = orderUtils.getMakerFillAmount(order, adjustedTakerFillAmount);
         return [adjustedTakerFillAmount, adjustedMakerFillAmount];

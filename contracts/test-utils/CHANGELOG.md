@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _January 17, 2019_
+
+    * Dependencies updated
+
 ## v2.0.0 - _January 15, 2019_
 
     * Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule (#1474)

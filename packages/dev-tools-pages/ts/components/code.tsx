@@ -139,7 +139,6 @@ class Code extends React.Component<CodeProps, CodeState> {
     public render(): React.ReactNode {
         const { language, isLight, isDiff, children, gutterLength, canCopy } = this.props;
         const { hlCode } = this.state;
-
         return (
             <Container>
                 <Base language={language} isDiff={isDiff} isLight={isLight}>
@@ -157,7 +156,7 @@ class Code extends React.Component<CodeProps, CodeState> {
                         <StyledCopyInput readOnly={true} aria-hidden="true" ref={this._code} value={children} />
                     ) : null}
                 </Base>
-                {navigator.userAgent !== 'ReactSnap' && canCopy ? (
+                {canCopy ? (
                     <Button onClick={this._handleCopyAsync.bind(this)}>{this.state.didCopy ? 'Copied' : 'Copy'}</Button>
                 ) : null}
             </Container>
