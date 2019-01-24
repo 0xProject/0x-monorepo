@@ -1,0 +1,22 @@
+{
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
+    "compilerSettings": {
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    },
+    "contracts": ["TEC"]
+}
