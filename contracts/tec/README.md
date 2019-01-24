@@ -1,6 +1,6 @@
 ## Extensions
 
-This package implements various extensions to the 0x protocol. Extension contracts can add various rules around how orders are settled while still getting the interoperability and security benefits of using the underlying 0x protocol contracts. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more TECs (Trade Execution Coordinators). Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
