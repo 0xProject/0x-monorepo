@@ -13,6 +13,7 @@ import { binPaths } from '../solc/bin_paths';
 import { constants } from './constants';
 import { fsWrapper } from './fs_wrapper';
 import { CompilationError } from './types';
+import { ImportFile, ResolverEngine } from 'resolver-engine';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.
@@ -122,14 +123,15 @@ export function parseDependencies(contractSource: ContractSource): string[] {
  * @param standardInput Solidity standard JSON input
  */
 export function compile(
-    resolver: Resolver,
+    // resolver: Resolver,
     solcInstance: solc.SolcInstance,
     standardInput: solc.StandardInput,
 ): solc.StandardOutput {
     const standardInputStr = JSON.stringify(standardInput);
     const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr, importPath => {
-        const sourceCodeIfExists = resolver.resolve(importPath);
-        return { contents: sourceCodeIfExists.source };
+        // HACK(squadack) i don't want to use callback
+        // all sources should be resolved beforehand
+        throw Error('used callback');
     });
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
     if (!_.isUndefined(compiled.errors)) {
@@ -163,15 +165,16 @@ function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]): void {
  * Gets the source tree hash for a file and its dependencies.
  * @param fileName Name of contract file.
  */
-export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffer {
-    const contractSource = resolver.resolve(importPath);
+export async function getSourceTreeHash(resolver: ResolverEngine<ImportFile>, importPath: string): Promise<Buffer> {
+    const imFile: ImportFile = await resolver.require(importPath);
+    const contractSource = { source: imFile.source, path: imFile.url, absolutePath: imFile.url };
     const dependencies = parseDependencies(contractSource);
     const sourceHash = ethUtil.sha3(contractSource.source);
     if (dependencies.length === 0) {
         return sourceHash;
     } else {
-        const dependencySourceTreeHashes = _.map(dependencies, (dependency: string) =>
-            getSourceTreeHash(resolver, dependency),
+        const dependencySourceTreeHashes = await Promise.all(
+            _.map(dependencies, async (dependency: string) => getSourceTreeHash(resolver, dependency)),
         );
         const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
         const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
@@ -187,14 +190,15 @@ export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffe
  * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
  * disk (via the aforementioned `resolver.source`).
  */
-export function getSourcesWithDependencies(
-    resolver: Resolver,
+export async function getSourcesWithDependencies(
+    resolver: ResolverEngine<ImportFile>,
     contractPath: string,
     fullSources: { [sourceName: string]: { id: number } },
-): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
+): Promise<{ sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } }> {
     const sources = { [contractPath]: { id: fullSources[contractPath].id } };
-    const sourceCodes = { [contractPath]: resolver.resolve(contractPath).source };
-    recursivelyGatherDependencySources(
+    const pamparampam = await resolver.require(contractPath);
+    const sourceCodes = { [contractPath]: pamparampam.source };
+    await recursivelyGatherDependencySources(
         resolver,
         contractPath,
         sourceCodes[contractPath],
@@ -205,14 +209,14 @@ export function getSourcesWithDependencies(
     return { sourceCodes, sources };
 }
 
-function recursivelyGatherDependencySources(
-    resolver: Resolver,
+async function recursivelyGatherDependencySources(
+    resolver: ResolverEngine<ImportFile>,
     contractPath: string,
     contractSource: string,
     fullSources: { [sourceName: string]: { id: number } },
     sourcesToAppendTo: { [sourceName: string]: { id: number } },
     sourceCodesToAppendTo: { [sourceName: string]: string },
-): void {
+): Promise<void> {
     const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
     if (importStatementMatches === null) {
         return;
@@ -247,17 +251,24 @@ function recursivelyGatherDependencySources(
              * while others are absolute ("Token.sol", "@0x/contracts/Wallet.sol")
              * And we need to append the base path for relative imports.
              */
-            importPath = path.resolve(`/${contractFolder}`, importPath).replace('/', '');
+            importPath = path.resolve(`/${contractFolder}`, importPath);
+            // HACK(squadack)
+            // chcemy uciąć wiodący slash tylko jeśli jest to faktycznie ścieżka bezwględna
+            // TODO obejść to jakoś
+            if (!importPath.startsWith('/home')) {
+                importPath = importPath.replace('/', '');
+            }
         }
 
         if (_.isUndefined(sourcesToAppendTo[importPath])) {
             sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
-            sourceCodesToAppendTo[importPath] = resolver.resolve(importPath).source;
+            const sialala = await resolver.require(importPath);
+            sourceCodesToAppendTo[importPath] = sialala.source;
 
-            recursivelyGatherDependencySources(
+            await recursivelyGatherDependencySources(
                 resolver,
                 importPath,
-                resolver.resolve(importPath).source,
+                sialala.source,
                 fullSources,
                 sourcesToAppendTo,
                 sourceCodesToAppendTo,

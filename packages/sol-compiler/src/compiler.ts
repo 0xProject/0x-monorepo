@@ -9,6 +9,7 @@ import {
     SpyResolver,
     URLResolver,
 } from '@0x/sol-resolver';
+import { SolidityImportResolver, ImportFile, gatherSources, ResolverEngine } from 'resolver-engine';
 import { logUtils } from '@0x/utils';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
@@ -77,7 +78,8 @@ interface ContractData {
  * to artifact files.
  */
 export class Compiler {
-    private readonly _resolver: Resolver;
+    private readonly _oldResolver: Resolver;
+    private readonly _resolver: ResolverEngine<ImportFile>;
     private readonly _nameResolver: NameResolver;
     private readonly _contractsDir: string;
     private readonly _compilerSettings: solc.CompilerSettings;
@@ -110,7 +112,8 @@ export class Compiler {
         resolver.appendResolver(new RelativeFSResolver(this._contractsDir));
         resolver.appendResolver(new FSResolver());
         resolver.appendResolver(this._nameResolver);
-        this._resolver = resolver;
+        this._resolver = SolidityImportResolver();
+        this._oldResolver = resolver;
     }
     /**
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
@@ -166,19 +169,22 @@ export class Compiler {
             onFileChangedAsync(); // tslint:disable-line no-floating-promises
         });
     }
+
+    //TODO (squadack) przywrócić działanie - SpyResolver
     private _getPathsToWatch(): string[] {
-        const contractNames = this._getContractNamesToCompile();
-        const spyResolver = new SpyResolver(this._resolver);
-        for (const contractName of contractNames) {
-            const contractSource = spyResolver.resolve(contractName);
-            // NOTE: We ignore the return value here. We don't want to compute the source tree hash.
-            // We just want to call a SpyResolver on each contracts and it's dependencies and
-            // this is a convenient way to reuse the existing code that does that.
-            // We can then get all the relevant paths from the `spyResolver` below.
-            getSourceTreeHash(spyResolver, contractSource.path);
-        }
-        const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
-        return pathsToWatch;
+        // const contractNames = this._getContractNamesToCompile();
+        // const spyResolver = new SpyResolver(this._resolver);
+        // for (const contractName of contractNames) {
+        //     const contractSource = spyResolver.resolve(contractName);
+        //     // NOTE: We ignore the return value here. We don't want to compute the source tree hash.
+        //     // We just want to call a SpyResolver on each contracts and it's dependencies and
+        //     // this is a convenient way to reuse the existing code that does that.
+        //     // We can then get all the relevant paths from the `spyResolver` below.
+        //     getSourceTreeHash(spyResolver, contractSource.path);
+        // }
+        // const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
+        // return pathsToWatch;
+        return [];
     }
     private _getContractNamesToCompile(): string[] {
         let contractNamesToCompile;
@@ -207,11 +213,15 @@ export class Compiler {
         const contractPathToData: ContractPathToData = {};
 
         for (const contractName of contractNames) {
-            const contractSource = this._resolver.resolve(contractName);
-            const sourceTreeHashHex = getSourceTreeHash(
-                this._resolver,
-                path.join(this._contractsDir, contractSource.path),
-            ).toString('hex');
+            // const contractSource = await this._resolver.require(contractName);
+            // TODO stary resolver!
+            const oldContractSource = this._oldResolver.resolve(contractName);
+            const contractSource: ImportFile = {
+                source: oldContractSource.source,
+                url: oldContractSource.absolutePath,
+            };
+            const kek = await getSourceTreeHash(this._resolver, contractSource.url);
+            const sourceTreeHashHex = kek.toString('hex');
             const contractData = {
                 contractName,
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
@@ -220,7 +230,7 @@ export class Compiler {
             if (!this._shouldCompile(contractData)) {
                 continue;
             }
-            contractPathToData[contractSource.path] = contractData;
+            contractPathToData[contractSource.url] = contractData;
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
                 ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
@@ -236,10 +246,11 @@ export class Compiler {
                 };
             }
             // add input to the right version batch
-            versionToInputs[solcVersion].standardInput.sources[contractSource.path] = {
-                content: contractSource.source,
-            };
-            versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
+            // versionToInputs[solcVersion].standardInput.sources[contractSource.path] = {
+            //        content: contractSource.source,
+            // };
+            // versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
+            versionToInputs[solcVersion].contractsToCompile.push(contractSource.url);
         }
 
         const compilerOutputs: StandardOutput[] = [];
@@ -253,8 +264,15 @@ export class Compiler {
                 }) with Solidity v${solcVersion}...`,
             );
 
+            const depList = await gatherSources(input.contractsToCompile, process.cwd());
+            for (const infile of depList) {
+                input.standardInput.sources[infile.url] = {
+                    content: infile.source,
+                };
+            }
+
             const { solcInstance, fullSolcVersion } = await getSolcAsync(solcVersion);
-            const compilerOutput = compile(this._resolver, solcInstance, input.standardInput);
+            const compilerOutput = compile(solcInstance, input.standardInput);
             compilerOutputs.push(compilerOutput);
 
             for (const contractPath of input.contractsToCompile) {
@@ -309,7 +327,7 @@ export class Compiler {
         // contains listings for every contract compiled during the compiler invocation that compiled the contract
         // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
         // the relevant sources:
-        const { sourceCodes, sources } = getSourcesWithDependencies(
+        const { sourceCodes, sources } = await getSourcesWithDependencies(
             this._resolver,
             contractPath,
             compilerOutput.sources,
