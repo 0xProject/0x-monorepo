@@ -106,11 +106,10 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                 continue;
             }
 
-            const fileIndex = contractData.sources.indexOf(sourceRange.fileName);
+            const fileNameToFileIndex = _.invert(contractData.sources);
+            const fileIndex = _.parseInt(fileNameToFileIndex[sourceRange.fileName]);
             const sourceSnippet = getSourceRangeSnippet(sourceRange, contractData.sourceCodes[fileIndex]);
-            if (sourceSnippet !== null) {
-                sourceSnippets.push(sourceSnippet);
-            }
+            sourceSnippets.push(sourceSnippet);
         }
         const filteredSnippets = filterSnippets(sourceSnippets);
         if (filteredSnippets.length > 0) {
@@ -134,9 +133,7 @@ function filterSnippets(sourceSnippets: SourceSnippet[]): SourceSnippet[] {
     const results: SourceSnippet[] = [sourceSnippets[0]];
     let prev = sourceSnippets[0];
     for (const sourceSnippet of sourceSnippets) {
-        if (sourceSnippet.type === 'IfStatement') {
-            continue;
-        } else if (sourceSnippet.source === prev.source) {
+        if (sourceSnippet.source === prev.source) {
             prev = sourceSnippet;
             continue;
         }
@@ -156,12 +153,5 @@ function getStackTraceString(sourceSnippet: SourceSnippet): string {
 }
 
 function getSourceSnippetString(sourceSnippet: SourceSnippet): string {
-    switch (sourceSnippet.type) {
-        case 'ContractDefinition':
-            return `contract ${sourceSnippet.name}`;
-        case 'FunctionDefinition':
-            return `function ${sourceSnippet.name}`;
-        default:
-            return `${sourceSnippet.source}`;
-    }
+    return `${sourceSnippet.source}`;
 }

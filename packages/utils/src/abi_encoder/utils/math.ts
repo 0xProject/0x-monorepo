@@ -1,7 +1,7 @@
-import BigNumber from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { BigNumber } from '../../configured_bignumber';
 import { constants } from '../utils/constants';
 
 function sanityCheckBigNumberRange(
@@ -10,10 +10,12 @@ function sanityCheckBigNumberRange(
     maxValue: BigNumber,
 ): void {
     const value = new BigNumber(value_, 10);
-    if (value.greaterThan(maxValue)) {
+    if (value.isGreaterThan(maxValue)) {
         throw new Error(`Tried to assign value of ${value}, which exceeds max value of ${maxValue}`);
-    } else if (value.lessThan(minValue)) {
+    } else if (value.isLessThan(minValue)) {
         throw new Error(`Tried to assign value of ${value}, which exceeds min value of ${minValue}`);
+    } else if (value.isNaN()) {
+        throw new Error(`Tried to assign NaN value`);
     }
 }
 function bigNumberToPaddedBuffer(value: BigNumber): Buffer {
@@ -30,7 +32,7 @@ function bigNumberToPaddedBuffer(value: BigNumber): Buffer {
 export function encodeNumericValue(value_: BigNumber | string | number): Buffer {
     const value = new BigNumber(value_, 10);
     // Case 1/2: value is non-negative
-    if (value.greaterThanOrEqualTo(0)) {
+    if (value.isGreaterThanOrEqualTo(0)) {
         const encodedPositiveValue = bigNumberToPaddedBuffer(value);
         return encodedPositiveValue;
     }
@@ -74,7 +76,7 @@ export function decodeNumericValue(encodedValue: Buffer, minValue: BigNumber): B
     const valueHex = ethUtil.bufferToHex(encodedValue);
     // Case 1/3: value is definitely non-negative because of numeric boundaries
     const value = new BigNumber(valueHex, constants.HEX_BASE);
-    if (!minValue.lessThan(0)) {
+    if (!minValue.isLessThan(0)) {
         return value;
     }
     // Case 2/3: value is non-negative because there is no leading 1 (encoded as two's-complement)

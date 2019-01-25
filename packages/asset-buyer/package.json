@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "3.0.5",
+    "version": "4.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,27 +36,27 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
     "dependencies": {
-        "@0x/assert": "^1.0.21",
-        "@0x/connect": "^3.0.11",
-        "@0x/contract-wrappers": "^4.2.0",
-        "@0x/json-schemas": "^2.1.5",
-        "@0x/order-utils": "^3.1.0",
-        "@0x/subproviders": "^2.1.9",
-        "@0x/types": "^1.5.0",
-        "@0x/typescript-typings": "^3.0.6",
-        "@0x/utils": "^2.1.1",
-        "@0x/web3-wrapper": "^3.2.2",
-        "ethereum-types": "^1.1.4",
+        "@0x/assert": "^1.0.23",
+        "@0x/connect": "^3.0.13",
+        "@0x/contract-wrappers": "^5.0.1",
+        "@0x/json-schemas": "^2.1.7",
+        "@0x/order-utils": "^3.1.2",
+        "@0x/subproviders": "^2.1.11",
+        "@0x/types": "^1.5.2",
+        "@0x/typescript-typings": "^3.0.8",
+        "@0x/utils": "^3.0.1",
+        "@0x/web3-wrapper": "^3.2.4",
+        "ethereum-types": "^1.1.6",
         "lodash": "^4.17.5"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^2.0.0",
+        "@0x/tslint-config": "^2.0.2",
         "@types/lodash": "^4.14.116",
         "@types/mocha": "^2.2.42",
         "@types/node": "*",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-bignumber": "^2.0.1",
+        "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
@@ -65,6 +65,7 @@
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typedoc": "0.13.0",
+        "typemoq": "^2.1.0",
         "typescript": "3.0.1"
     },
     "publishConfig": {

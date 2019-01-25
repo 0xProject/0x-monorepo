@@ -1,12 +1,31 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ]
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
                 "note": "Make `promisify` resolve when the callback error is undefined.",
                 "pr": 1501
             }
-        ]
+        ],
+        "timestamp": 1547225310
     },
     {
         "version": "2.1.1",
@@ -40,8 +59,7 @@
         "version": "2.0.7",
         "changes": [
             {
-                "note":
-                    "Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development."
+                "note": "Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development."
             }
         ],
         "timestamp": 1544570656
@@ -172,8 +190,7 @@
                 "pr": 807
             },
             {
-                "note":
-                    "Store different ABIs for events with same function signature and different amount of indexed arguments",
+                "note": "Store different ABIs for events with same function signature and different amount of indexed arguments",
                 "pr": 933
             }
         ],
@@ -340,8 +357,7 @@
         "version": "0.4.3",
         "changes": [
             {
-                "note":
-                    "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
+                "note": "Add `@types/node` to dependencies since `intervalUtils` has the `NodeJS` type as part of its public interface."
             }
         ],
         "timestamp": 1521298800
@@ -384,8 +400,7 @@
         "version": "0.3.0",
         "changes": [
             {
-                "note":
-                    "Fix a bug related to event signature collisions (argument indexes aren't included in event signatures) in the abi_decoder. The decoder used to throw on unknown events with identical signatures as a known event (except indexes).",
+                "note": "Fix a bug related to event signature collisions (argument indexes aren't included in event signatures) in the abi_decoder. The decoder used to throw on unknown events with identical signatures as a known event (except indexes).",
                 "pr": 366
             }
         ],

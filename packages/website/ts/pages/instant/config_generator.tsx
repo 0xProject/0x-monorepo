@@ -318,13 +318,10 @@ interface CheckboxTextProps {
     isSelected?: boolean;
 }
 
-const CheckboxText =
-    styled.span <
-    CheckboxTextProps >
-    `
+const CheckboxText = styled.span<CheckboxTextProps>`
     font-size: 14px;
     line-height: 18px;
-    color: ${props => (props.isSelected ? colors.brandDark : '#666666')}
+    color: ${props => (props.isSelected ? colors.brandDark : '#666666')};
 `;
 
 const OptionalAction = styled(OptionalText)`

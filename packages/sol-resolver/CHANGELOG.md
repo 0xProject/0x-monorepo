@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.2.3 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v1.2.2 - _January 11, 2019_
+
+    * Dependencies updated
+
 ## v1.2.1 - _January 9, 2019_
 
     * Add `absolutePath` to `ContractSource` type (#1461)

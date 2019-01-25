@@ -151,7 +151,9 @@ export class NextAboutJobs extends React.Component<NextAboutJobsProps, NextAbout
                 <Section id={OPEN_POSITIONS_HASH} isFlex={true} maxWidth="1170px" wrapWidth="100%">
                     <Column>
                         <Heading size="medium">
-                            Current<br />Openings
+                            Current
+                            <br />
+                            Openings
                         </Heading>
                     </Column>
 

@@ -1,7 +1,7 @@
 import * as AssetProxyOwner from '../artifacts/AssetProxyOwner.json';
-import * as DutchAuction from '../artifacts/DutchAuction.json';
 import * as DummyERC20Token from '../artifacts/DummyERC20Token.json';
 import * as DummyERC721Token from '../artifacts/DummyERC721Token.json';
+import * as DutchAuction from '../artifacts/DutchAuction.json';
 import * as ERC20Proxy from '../artifacts/ERC20Proxy.json';
 import * as ERC20Token from '../artifacts/ERC20Token.json';
 import * as ERC721Proxy from '../artifacts/ERC721Proxy.json';
@@ -10,6 +10,7 @@ import * as Exchange from '../artifacts/Exchange.json';
 import * as Forwarder from '../artifacts/Forwarder.json';
 import * as IValidator from '../artifacts/IValidator.json';
 import * as IWallet from '../artifacts/IWallet.json';
+import * as MultiAssetProxy from '../artifacts/MultiAssetProxy.json';
 import * as OrderValidator from '../artifacts/OrderValidator.json';
 import * as WETH9 from '../artifacts/WETH9.json';
 import * as ZRXToken from '../artifacts/ZRXToken.json';
@@ -27,6 +28,7 @@ export {
     Forwarder,
     IValidator,
     IWallet,
+    MultiAssetProxy,
     OrderValidator,
     WETH9,
     ZRXToken,

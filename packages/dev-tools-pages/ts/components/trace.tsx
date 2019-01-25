@@ -25,7 +25,7 @@ const Trace: React.StatelessComponent<{}> = () => (
                             troublemaking line of code. The only hint you'll get is a generic error.
                         </MainCopy>
                         <Breakout>
-                            <Code isLight={true}>Error: VM Exception while processing transaction: rever</Code>
+                            <Code isLight={true}>Error: VM Exception while processing transaction: revert</Code>
                         </Breakout>
 
                         <List>
@@ -44,8 +44,8 @@ const Trace: React.StatelessComponent<{}> = () => (
                                 <Copy dark={true}>
                                     <Gamma as="h3">Time-consuming</Gamma>
                                     <p>
-                                        Working with a large code-base that contains hundreds of smart contracts,
-                                        finding the failing line of code quickly becomes a daunting task.
+                                        Working within a large code-base that contains many smart contracts, finding the
+                                        failing line of code quickly becomes a daunting task.
                                     </p>
                                 </Copy>
                                 <Icon as={TimeConsuming} />
@@ -78,8 +78,8 @@ const Trace: React.StatelessComponent<{}> = () => (
                                 <Copy>
                                     <Gamma as="h3">Exact location</Gamma>
                                     <p>
-                                        It shows you the exact location of the specific code linen and where it was
-                                        called from.
+                                        It shows you the exact location of the offending line and where it was called
+                                        from.
                                     </p>
                                 </Copy>
                                 <Icon as={ExactLocation} />
@@ -90,8 +90,7 @@ const Trace: React.StatelessComponent<{}> = () => (
                                     <Gamma as="h3">Time-saving</Gamma>
                                     <p>
                                         Turning "Your code failed somewhere, good luck debugging it" into "Your code
-                                        failed on line X of contract Y", it drastically improves the developer
-                                        experience.
+                                        failed on line X of contract Y", drastically improves the developer experience.
                                     </p>
                                 </Copy>
                                 <Icon as={TimeSaving} />
@@ -108,10 +107,7 @@ interface TraceProps {
     background?: string;
 }
 
-const StyledSection =
-    styled.section <
-    TraceProps >
-    `
+const StyledSection = styled.section<TraceProps>`
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
@@ -138,10 +134,7 @@ const Wrapper = styled(Container)`
     `};
 `;
 
-const Block =
-    styled.div <
-    TraceProps >
-    `
+const Block = styled.div<TraceProps>`
     width: 50%;
     background: ${props => (props.background ? props.background : colors.black)};
     color: ${props => (props.background ? 'inherit' : colors.white)};
@@ -200,10 +193,7 @@ const Item = styled.li`
     }
 `;
 
-const Copy =
-    styled.div <
-    { dark: boolean } >
-    `
+const Copy = styled.div<{ dark: boolean }>`
     margin-right: 5.875rem;
     ${props =>
         props.dark &&

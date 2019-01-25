@@ -16,10 +16,7 @@ export const Hamburger: React.FunctionComponent<Props> = (props: Props) => {
     );
 };
 
-const StyledHamburger =
-    styled.button <
-    Props >
-    `
+const StyledHamburger = styled.button<Props>`
     background: none;
     border: 0;
     width: 22px;
@@ -41,9 +38,8 @@ const StyledHamburger =
         height: 2px;
         margin-bottom: 5px;
         transform-origin: 4px 0px;
-        transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-            background-color 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-            opacity 0.55s ease;
+        transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+            background-color 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
 
         &:first-child {
             //transform-origin: 0% 0%;

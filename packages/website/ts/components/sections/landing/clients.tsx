@@ -86,10 +86,7 @@ export const SectionLandingClients = () => (
     </Section>
 );
 
-const StyledProject =
-    styled.div <
-    StyledProjectInterface >
-    `
+const StyledProject = styled.div<StyledProjectInterface>`
     flex-shrink: 0;
 
     img {
@@ -99,7 +96,7 @@ const StyledProject =
     }
 
     @media (min-width: 768px) {
-        width:  auto;
+        width: auto;
         height: 50px;
         margin: 30px;
     }

@@ -5,10 +5,7 @@ import styledNormalize from 'styled-normalize';
 import { ContextInterface } from 'ts/context';
 import { media } from 'ts/variables';
 
-const GlobalStyles =
-    createGlobalStyle <
-    ContextInterface >
-    `
+const GlobalStyles = createGlobalStyle<ContextInterface>`
     ${styledNormalize}
     ${hljsStyles}
 

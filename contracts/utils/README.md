@@ -1,15 +1,14 @@
 ## Contracts utils
 
-Smart contracts utils used in the 0x protocol.
+This package contains smart contract utilities and libraries that are used throughout the entire codebase of smart contracts. These contracts are all generic and may helpful to use outside of the context of 0x protocol.
 
-## Usage
+## Installation
 
-Contracts can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
+**Install**
 
-*   [utils](./contracts/utils)
-    *   This directory contains libraries and utils.
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+```bash
+npm install @0x/contracts-utils --save
+```
 
 ## Contributing
 

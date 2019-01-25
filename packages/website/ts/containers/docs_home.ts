@@ -26,6 +26,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const DocsHome: React.ComponentClass<DocsHomeProps> = connect(mapStateToProps, mapDispatchToProps)(
-    DocsHomeComponent,
-);
+export const DocsHome: React.ComponentClass<DocsHomeProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(DocsHomeComponent);

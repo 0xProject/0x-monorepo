@@ -109,7 +109,7 @@ describe('ExchangeWrapper', () => {
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
-                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
         describe('#fillOrKillOrderAsync', () => {
@@ -157,7 +157,7 @@ describe('ExchangeWrapper', () => {
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
-                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
         describe('#marketSellOrdersAsync', () => {
@@ -183,7 +183,7 @@ describe('ExchangeWrapper', () => {
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
-                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
         describe('#batchFillOrdersNoThrowAsync', () => {
@@ -197,9 +197,9 @@ describe('ExchangeWrapper', () => {
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 let orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
-                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
                 orderInfo = await contractWrappers.exchange.getOrderInfoAsync(anotherSignedOrder);
-                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+                expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
         describe('#batchFillOrKillOrdersAsync', () => {

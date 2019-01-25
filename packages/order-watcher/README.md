@@ -36,7 +36,7 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 **Environmental Variables**
 Several environmental variables can be set to configure the server:
 
-*   `ORDER_WATCHER_HTTP_PORT` specifies the port that the http server will listen on
+-   `ORDER_WATCHER_HTTP_PORT` specifies the port that the http server will listen on
     and accept connections from. When this is not set, we default to 8080.
 
 **Requests**
@@ -58,10 +58,10 @@ wsClient = create_connection("ws://127.0.0.1:8080")
 
 With the connection established, you prepare the payload for your request. The payload is a json object with a format established by the [JSON RPC specification](https://www.jsonrpc.org/specification):
 
-*   `id`: All requests require you to specify a numerical `id`. When the server responds to the request, the response will have the same `id` as the one supplied with your request.
-*   `jsonrpc`: This is always the string `'2.0'`.
-*   `method`: This specifies the OrderWatcher method you want to call. I.e., `'ADD_ORDER'`, `'REMOVE_ORDER'` or `'GET_STATS'`.
-*   `params`: These contain the parameters needed by OrderWatcher to execute the method you called. For `ADD_ORDER`, provide `{ signedOrder: <your signedOrder> }`. For `REMOVE_ORDER`, provide `{ orderHash: <your orderHash> }`. For `GET_STATS`, no parameters are needed, so you may leave this empty.
+-   `id`: All requests require you to specify a numerical `id`. When the server responds to the request, the response will have the same `id` as the one supplied with your request.
+-   `jsonrpc`: This is always the string `'2.0'`.
+-   `method`: This specifies the OrderWatcher method you want to call. I.e., `'ADD_ORDER'`, `'REMOVE_ORDER'` or `'GET_STATS'`.
+-   `params`: These contain the parameters needed by OrderWatcher to execute the method you called. For `ADD_ORDER`, provide `{ signedOrder: <your signedOrder> }`. For `REMOVE_ORDER`, provide `{ orderHash: <your orderHash> }`. For `GET_STATS`, no parameters are needed, so you may leave this empty.
 
 Next, convert the payload to a string and send it through the connection.
 In Javascript:
@@ -92,11 +92,11 @@ wsClient.send(json.dumps(remove_order_payload));
 **Response**
 The server responds to all requests in a similar format. In the data field, you'll find another object containing the following fields:
 
-*   `id`: The id corresponding to the request that the server is responding to. `UPDATE` responses are not based on any requests so the `id` field is omitted`.
-*   `jsonrpc`: Always `'2.0'`.
-*   `method`: The method the server is responding to. Eg. `ADD_ORDER`. When order states change the server may also initiate a response. In this case, method will be listed as `UPDATE`.
-*   `result`: This field varies based on the method. `UPDATE` responses contain the new order state. `GET_STATS` responses contain the current order count. When there are errors, this field is omitted.
-*   `error`: When there is an error executing a request, the [JSON RPC](https://www.jsonrpc.org/specification) error object is listed here. When the server responds successfully, this field is omitted.
+-   `id`: The id corresponding to the request that the server is responding to. `UPDATE` responses are not based on any requests so the `id` field is omitted`.
+-   `jsonrpc`: Always `'2.0'`.
+-   `method`: The method the server is responding to. Eg. `ADD_ORDER`. When order states change the server may also initiate a response. In this case, method will be listed as `UPDATE`.
+-   `result`: This field varies based on the method. `UPDATE` responses contain the new order state. `GET_STATS` responses contain the current order count. When there are errors, this field is omitted.
+-   `error`: When there is an error executing a request, the [JSON RPC](https://www.jsonrpc.org/specification) error object is listed here. When the server responds successfully, this field is omitted.
 
 In Javascript, the responses can be parsed using the `onmessage` callback:
 

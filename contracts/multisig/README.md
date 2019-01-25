@@ -1,15 +1,14 @@
-## MultisSig Contracts
+## MultiSignature Contracts
 
-MultiSig smart contracts
+This package contains various types of multisignature wallet contracts, including the [`AssetProxyOwner`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxyowner) contract that is responsible for upgrading the 0x protocol smart contracts. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
-## Usage
+## Installation
 
-Contracts can be found in the [contracts](./contracts) directory. The contents of this directory are broken down into the following subdirectories:
+**Install**
 
-*   [multisig](./contracts/multisig)
-    *   This directory contains the [Gnosis MultiSigWallet](https://github.com/gnosis/MultiSigWallet) and a custom extension that adds a timelock to transactions within the MultiSigWallet.
-*   [test](./contracts/test)
-    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+```bash
+npm install @0x/contracts-multisig --save
+```
 
 ## Contributing
 

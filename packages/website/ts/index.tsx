@@ -31,7 +31,6 @@ import { NextWhy } from 'ts/pages/why';
 tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
-import 'basscss/css/basscss.css';
 import 'less/all.less';
 
 // We pass modulePromise returning lambda instead of module promise,

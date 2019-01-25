@@ -105,15 +105,12 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
             // get corresponding on-chain state for the order
             const { orderInfo, traderInfo } = ordersAndTradersInfo[index];
             // if the order IS NOT fillable, do not add anything to the accumulations and continue iterating
-            if (orderInfo.orderStatus !== OrderStatus.FILLABLE) {
+            if (orderInfo.orderStatus !== OrderStatus.Fillable) {
                 return accOrders;
             }
             // if the order IS fillable, add the order and calculate the remaining fillable amount
-            const transferrableAssetAmount = BigNumber.min([traderInfo.makerAllowance, traderInfo.makerBalance]);
-            const transferrableFeeAssetAmount = BigNumber.min([
-                traderInfo.makerZrxAllowance,
-                traderInfo.makerZrxBalance,
-            ]);
+            const transferrableAssetAmount = BigNumber.min(traderInfo.makerAllowance, traderInfo.makerBalance);
+            const transferrableFeeAssetAmount = BigNumber.min(traderInfo.makerZrxAllowance, traderInfo.makerZrxBalance);
             const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
             const remainingMakerAssetAmount = orderUtils.getRemainingMakerAmount(order, remainingTakerAssetAmount);
             const remainingFillableCalculator = new RemainingFillableCalculator(

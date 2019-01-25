@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0x/monorepo-scripts",
-    "version": "1.0.16",
+    "version": "1.0.19",
     "engines": {
         "node": ">=6.12"
     },
@@ -47,7 +47,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/utils": "^2.0.8",
+        "@0x/utils": "^3.0.1",
         "@lerna/batch-packages": "^3.0.0-beta.18",
         "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",

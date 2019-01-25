@@ -61,6 +61,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Documentation: React.ComponentClass<DocPageProps> = connect(mapStateToProps, mapDispatchToProps)(
-    DocPageComponent,
-);
+export const Documentation: React.ComponentClass<DocPageProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(DocPageComponent);

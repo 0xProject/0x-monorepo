@@ -1,0 +1,15 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Move Exchange contract out of contracts-protocol to new package",
+                "pr": 1539
+            },
+            {
+                "note": "Move example contracts out of contracts-examples to new package",
+                "pr": 1539
+            }
+        ]
+    }
+]

@@ -1,5 +1,4 @@
 import { StructLog } from 'ethereum-types';
-import * as Parser from 'solidity-parser-antlr';
 
 export interface LineColumn {
     line: number;
@@ -16,7 +15,7 @@ export interface SingleFileSourceRange {
     end: LineColumn;
 }
 
-export interface LocationByOffset {
+export interface OffsetToLocation {
     [offset: number]: LineColumn;
 }
 
@@ -76,13 +75,20 @@ export interface Coverage {
     };
 }
 
+export interface SourceCodes {
+    [sourceId: number]: string;
+}
+export interface Sources {
+    [sourceId: number]: string;
+}
+
 export interface ContractData {
     bytecode: string;
     sourceMap: string;
     runtimeBytecode: string;
     sourceMapRuntime: string;
-    sourceCodes: string[];
-    sources: string[];
+    sourceCodes: SourceCodes;
+    sources: Sources;
 }
 
 // Part of the trace executed within the same context
@@ -119,8 +125,5 @@ export type EvmCallStack = EvmCallStackEntry[];
 export interface SourceSnippet {
     source: string;
     fileName: string;
-    type: string;
-    node: Parser.ASTNode;
-    name: string | null;
     range: SingleFileSourceRange;
 }

@@ -41,7 +41,11 @@ export interface PackageJSON {
     main?: string;
     scripts?: { [command: string]: string };
     config?: {
-        additionalTsTypings?: string[];
+        postpublish?: {
+            assets?: string[];
+            docOmitExports?: string[];
+            dockerHubRepo?: string;
+        };
     };
 }
 

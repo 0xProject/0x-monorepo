@@ -39,7 +39,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
                     nestedAssetDataElement,
                     userAddress,
                 )).dividedToIntegerBy(nestedAmountElement);
-                if (_.isUndefined(balance) || nestedAssetBalance.lessThan(balance)) {
+                if (_.isUndefined(balance) || nestedAssetBalance.isLessThan(balance)) {
                     balance = nestedAssetBalance;
                 }
             }
@@ -81,7 +81,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
                     nestedAssetDataElement,
                     userAddress,
                 )).dividedToIntegerBy(nestedAmountElement);
-                if (_.isUndefined(proxyAllowance) || nestedAssetAllowance.lessThan(proxyAllowance)) {
+                if (_.isUndefined(proxyAllowance) || nestedAssetAllowance.isLessThan(proxyAllowance)) {
                     proxyAllowance = nestedAssetAllowance;
                 }
             }
