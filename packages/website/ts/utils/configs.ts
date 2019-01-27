@@ -11,7 +11,7 @@ export const configs = {
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
     // WARNING: ZRX & WETH MUST always be default trackedTokens
-    DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
+    DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX', 'USDC'],
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
     DOMAIN_DOGFOOD: 'dogfood.0x.org',
     DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1'],

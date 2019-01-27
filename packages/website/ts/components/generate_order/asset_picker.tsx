@@ -12,7 +12,7 @@ import { TokenIcon } from 'ts/components/ui/token_icon';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DialogConfigs, Token, TokenByAddress, TokenVisibility } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { configs } from 'ts/utils/configs';
 import { utils } from 'ts/utils/utils';
 
 const TOKEN_ICON_DIMENSION = 100;
@@ -142,8 +142,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                 ? allTokens
                 : _.filter(allTokens, token => {
                       return (
-                          token.symbol !== constants.ZRX_TOKEN_SYMBOL &&
-                          token.symbol !== constants.ETHER_TOKEN_SYMBOL &&
+                          _.findIndex(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, t => t === token.symbol) === -1 &&
                           ((this.props.tokenVisibility === TokenVisibility.Tracked && utils.isTokenTracked(token)) ||
                               (this.props.tokenVisibility === TokenVisibility.Untracked &&
                                   !utils.isTokenTracked(token)))

@@ -45,6 +45,13 @@ export const backendClient = {
     },
     async getTokenInfosAsync(): Promise<WebsiteBackendTokenInfo[]> {
         const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), TOKENS_ENDPOINT);
+        // TEMPORARY: Until backend is updated with USDC, this appends the metadata for USDC
+        result.push({
+            address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            decimals: 6,
+            name: 'US Dollar Coin',
+            symbol: 'USDC',
+        });
         return result;
     },
     async getWikiArticlesBySectionAsync(): Promise<ArticlesBySection> {

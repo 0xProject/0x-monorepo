@@ -339,6 +339,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             tokenState.price,
             !tokenState.isLoaded,
         );
+        // console.log("primaryText", primaryText, "secondaryText", secondaryText)
         const accessoryItemConfig: AccessoryItemConfig = {
             wrappedEtherDirection,
             allowanceStateToggleConfig: {
@@ -346,6 +347,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 tokenState,
             },
         };
+        // console.log("accessoryItemConfig", accessoryItemConfig)
         const key = token.address;
         return this._renderBalanceRow(key, icon, primaryText, secondaryText, accessoryItemConfig);
     }
