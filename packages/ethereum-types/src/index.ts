@@ -503,8 +503,7 @@ export interface Source {
 
 /**
  * Options you can specify (as flags or in a compiler.json file) when invoking sol-compiler
- * contractsDir: Directory containing your package's Solidity contracts. Can contain nested directories.
- * workspaceDir: Directory containing your project's Solidity contracts. All the contracts used in compilation must be withing it. Similar to --allow-paths in Solidity.
+ * contractsDir: Directory containing your project's Solidity contracts. Can contain nested directories.
  * artifactsDir: Directory where you want the generated artifacts.json written to
  * compilerSettings: Desired settings to pass to the Solidity compiler during compilation.
  * (http://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#compiler-input-and-output-json-description)
@@ -516,7 +515,6 @@ export interface Source {
  */
 export interface CompilerOptions {
     contractsDir?: string;
-    workspaceDir?: string;
     artifactsDir?: string;
     compilerSettings?: CompilerSettings;
     contracts?: string[] | '*';

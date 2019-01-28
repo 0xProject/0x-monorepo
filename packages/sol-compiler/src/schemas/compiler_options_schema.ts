@@ -2,7 +2,6 @@ export const compilerOptionsSchema = {
     id: '/CompilerOptions',
     properties: {
         contractsDir: { type: 'string' },
-        workspaceDir: { type: 'string' },
         artifactsDir: { type: 'string' },
         solcVersion: { type: 'string', pattern: '^\\d+.\\d+.\\d+$' },
         compilerSettings: { type: 'object' },

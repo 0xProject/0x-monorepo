@@ -118,76 +118,35 @@ export function parseDependencies(contractSource: ContractSource): string[] {
 
 /**
  * Compiles the contracts and prints errors/warnings
- * @param resolver Resolver
- * @param solcInstance Instance of a solc compiler
+ * @param solcVersion Version of a solc compiler
  * @param standardInput Solidity standard JSON input
  */
-export function compileSolcJS(
-    resolver: Resolver,
-    solcInstance: solc.SolcInstance,
+export async function compileSolcJSAsync(
+    solcVersion: string,
     standardInput: solc.StandardInput,
-): solc.StandardOutput {
+): Promise<solc.StandardOutput> {
+    const solcInstance = await getSolcJSAsync(solcVersion);
     const standardInputStr = JSON.stringify(standardInput);
-    const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr, importPath => {
-        const sourceCodeIfExists = resolver.resolve(importPath);
-        return { contents: sourceCodeIfExists.source };
-    });
+    const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr);
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
-    if (!_.isUndefined(compiled.errors)) {
-        printCompilationErrorsAndWarnings(compiled.errors);
-    }
     return compiled;
 }
 
 /**
  * Compiles the contracts and prints errors/warnings
- * @param resolver Resolver
- * @param contractsDir Contracts directory
- * @param workspaceDir Workspace directory
  * @param solcVersion Version of a solc compiler
- * @param dependencyNameToPackagePath Mapping of dependency name to it's package path
  * @param standardInput Solidity standard JSON input
  */
-export function compileDocker(
-    resolver: Resolver,
-    contractsDir: string,
-    workspaceDir: string,
+export async function compileDockerAsync(
     solcVersion: string,
-    dependencyNameToPackagePath: { [dependencyName: string]: string },
     standardInput: solc.StandardInput,
-): solc.StandardOutput {
-    const standardInputDocker = _.cloneDeep(standardInput);
-    standardInputDocker.settings.remappings = _.map(
-        dependencyNameToPackagePath,
-        (dependencyPackagePath: string, dependencyName: string) => `${dependencyName}=${dependencyPackagePath}`,
-    );
-    standardInputDocker.sources = _.mapKeys(
-        standardInputDocker.sources,
-        (_source: solc.Source, sourcePath: string) => resolver.resolve(sourcePath).absolutePath,
-    );
-
-    const standardInputStrDocker = JSON.stringify(standardInputDocker, null, 2);
+): Promise<solc.StandardOutput> {
+    const standardInputStr = JSON.stringify(standardInput, null, 2);
     const dockerCommand =
-        `docker run -i -a stdin -a stdout -a stderr -v ${workspaceDir}:${workspaceDir} ethereum/solc:${solcVersion} ` +
-        `solc --standard-json --allow-paths ${workspaceDir}`;
-    const standardOutputStrDocker = execSync(dockerCommand, { input: standardInputStrDocker }).toString();
-    const compiledDocker: solc.StandardOutput = JSON.parse(standardOutputStrDocker);
-
-    if (!_.isUndefined(compiledDocker.errors)) {
-        printCompilationErrorsAndWarnings(compiledDocker.errors);
-    }
-
-    compiledDocker.sources = makeContractPathsRelative(
-        compiledDocker.sources,
-        contractsDir,
-        dependencyNameToPackagePath,
-    );
-    compiledDocker.contracts = makeContractPathsRelative(
-        compiledDocker.contracts,
-        contractsDir,
-        dependencyNameToPackagePath,
-    );
-    return compiledDocker;
+        `docker run -i -a stdin -a stdout -a stderr ethereum/solc:${solcVersion} ` + `solc --standard-json`;
+    const standardOutputStr = execSync(dockerCommand, { input: standardInputStr }).toString();
+    const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
+    return compiled;
 }
 
 function makeContractPathRelative(
@@ -202,7 +161,13 @@ function makeContractPathRelative(
     return contractPath;
 }
 
-function makeContractPathsRelative(
+/**
+ * Makes the path relative removing all system-dependent data. Converts absolute paths to a format suitable for artifacts.
+ * @param absolutePathToSmth Absolute path to contract or source
+ * @param contractsDir Current package contracts directory location
+ * @param dependencyNameToPackagePath Mapping of dependency name to package path
+ */
+export function makeContractPathsRelative(
     absolutePathToSmth: { [absoluteContractPath: string]: any },
     contractsDir: string,
     dependencyNameToPackagePath: { [dependencyName: string]: string },
@@ -216,7 +181,7 @@ function makeContractPathsRelative(
  * Separates errors from warnings, formats the messages and prints them. Throws if there is any compilation error (not warning).
  * @param solcErrors The errors field of standard JSON output that contains errors and warnings.
  */
-function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]): void {
+export function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]): void {
     const SOLIDITY_WARNING = 'warning';
     const errors = _.filter(solcErrors, entry => entry.severity !== SOLIDITY_WARNING);
     const warnings = _.filter(solcErrors, entry => entry.severity === SOLIDITY_WARNING);
@@ -391,4 +356,36 @@ export function addHexPrefixToContractBytecode(compiledContract: solc.StandardCo
             );
         }
     }
+}
+
+/**
+ * Takes the list of resolved contract sources from `SpyResolver` and produces a mapping from dependency name
+ * to package path used in `remappings` later.
+ * @param contractSources The list of resolved contract sources
+ */
+export function getDependencyNameToPackagePath(
+    contractSources: ContractSource[],
+): { [dependencyName: string]: string } {
+    const allTouchedFiles = contractSources.map(contractSource => `${contractSource.absolutePath}`);
+    const NODE_MODULES = 'node_modules';
+    const allTouchedDependencies = _.filter(allTouchedFiles, filePath => filePath.includes(NODE_MODULES));
+    const dependencyNameToPackagePath: { [dependencyName: string]: string } = {};
+    _.map(allTouchedDependencies, dependencyFilePath => {
+        const lastNodeModulesStart = dependencyFilePath.lastIndexOf(NODE_MODULES);
+        const lastNodeModulesEnd = lastNodeModulesStart + NODE_MODULES.length;
+        const importPath = dependencyFilePath.substr(lastNodeModulesEnd + 1);
+        let packageName;
+        let packageScopeIfExists;
+        let dependencyName;
+        if (_.startsWith(importPath, '@')) {
+            [packageScopeIfExists, packageName] = importPath.split('/');
+            dependencyName = `${packageScopeIfExists}/${packageName}`;
+        } else {
+            [packageName] = importPath.split('/');
+            dependencyName = `${packageName}`;
+        }
+        const dependencyPackagePath = path.join(dependencyFilePath.substr(0, lastNodeModulesEnd), dependencyName);
+        dependencyNameToPackagePath[dependencyName] = dependencyPackagePath;
+    });
+    return dependencyNameToPackagePath;
 }
