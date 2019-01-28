@@ -24,12 +24,11 @@ import { compilerOptionsSchema } from './schemas/compiler_options_schema';
 import { binPaths } from './solc/bin_paths';
 import {
     addHexPrefixToContractBytecode,
-    compileDocker,
-    compileSolcJS,
+    compileDockerAsync,
+    compileSolcJSAsync,
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getDependencyNameToPackagePath,
-    getSolcJSAsync,
     getSourcesWithDependencies,
     getSourceTreeHash,
     makeContractPathsRelative,
@@ -276,10 +275,10 @@ export class Compiler {
                 const versionCommandOutput = execSync(dockerCommand).toString();
                 const versionCommandOutputParts = versionCommandOutput.split(' ');
                 fullSolcVersion = versionCommandOutputParts[versionCommandOutputParts.length - 1].trim();
-                compilerOutput = compileDocker(solcVersion, input.standardInput);
+                compilerOutput = await compileDockerAsync(solcVersion, input.standardInput);
             } else {
                 fullSolcVersion = binPaths[solcVersion];
-                compilerOutput = compileSolcJS(solcVersion, input.standardInput);
+                compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput);
             }
             compilerOutput.sources = makeContractPathsRelative(
                 compilerOutput.sources,
@@ -294,8 +293,6 @@ export class Compiler {
             if (!_.isUndefined(compilerOutput.errors)) {
                 printCompilationErrorsAndWarnings(compilerOutput.errors);
             }
-
-            compilerOutputs.push(compilerOutput);
 
             for (const contractPath of input.contractsToCompile) {
                 const contractName = contractPathToData[contractPath].contractName;
@@ -320,6 +317,8 @@ export class Compiler {
                     );
                 }
             }
+
+            compilerOutputs.push(compilerOutput);
         }
 
         return compilerOutputs;
