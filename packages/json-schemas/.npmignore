@@ -1,8 +1,0 @@
-.*
-yarn-error.log
-/src/
-/scripts/
-/schemas/
-test/
-tsconfig.json
-/lib/src/monorepo_scripts/

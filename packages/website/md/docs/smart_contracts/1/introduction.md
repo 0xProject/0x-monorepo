@@ -1,1 +1,0 @@
-Welcome to the [0x smart contracts](https://github.com/0xProject/0x-monorepo/tree/development/contracts/core) documentation! This documentation is intended for dApp developers who want to integrate 0x exchange functionality directly into their own smart contracts.

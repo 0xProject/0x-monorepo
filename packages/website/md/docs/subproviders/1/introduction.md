@@ -1,1 +1,0 @@
-Welcome to the [Subproviders](https://github.com/0xProject/0x-monorepo/tree/development/packages/subproviders) documentation! Subproviders is a package containing useful [subproviders](https://0x.org/wiki#Web3-Provider-Explained) that can be used with the [Web3 Provider Engine](https://github.com/MetaMask/provider-engine) library.

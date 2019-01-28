@@ -1,1 +1,0 @@
-Welcome to the [ethereum-types](https://github.com/0xProject/0x-monorepo/packages/ethereum-types) documentation! This package provides ethereum specific (but not library-specific) types that are meant to be shared between other ethereum packages.

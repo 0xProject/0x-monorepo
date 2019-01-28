@@ -1,1 +1,0 @@
-Welcome to the [asset-buyer](https://github.com/0xProject/0x-monorepo/tree/development/packages/asset-buyer) documentation! AssetBuyer is a library that provides an easy way to buy any asset with ETH in one click, leveraging 0x liquidity and the [Forwarder contract](https://0x.org/docs/contracts#Forwarder).

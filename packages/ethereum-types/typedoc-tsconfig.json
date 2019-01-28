@@ -1,8 +1,0 @@
-{
-    "extends": "../../typedoc-tsconfig",
-    "compilerOptions": {
-        "typeRoots": ["../../node_modules/@types"],
-        "outDir": "lib"
-    },
-    "include": ["src/**/*"]
-}

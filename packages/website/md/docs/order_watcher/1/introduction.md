@@ -1,1 +1,0 @@
-Welcome to the [@0xproject/order-watcher](https://github.com/0xProject/0x-monorepo/tree/development/packages/order-watcher) documentation! OrderWatcher is a daemon that efficiently watches a set of orders, emitting events whenever the validity of an order changes. It can be used by relayers to prune an orderbook, or by traders to keep orders fetched from a Relayer up-to-date.
