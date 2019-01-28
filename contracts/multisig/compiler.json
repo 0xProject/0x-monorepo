@@ -19,5 +19,11 @@
             }
         }
     },
-    "contracts": ["MultiSigWallet", "MultiSigWalletWithTimeLock", "TestRejectEther"]
+    "contracts": [
+        "AssetProxyOwner",
+        "MultiSigWallet",
+        "MultiSigWalletWithTimeLock",
+        "TestAssetProxyOwner",
+        "TestRejectEther"
+    ]
 }

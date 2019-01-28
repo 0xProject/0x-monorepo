@@ -1,0 +1,35 @@
+{
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
+    "useDockerisedSolc": true,
+    "compilerSettings": {
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    },
+    "contracts": [
+        "DummyERC20Token",
+        "DummyMultipleReturnERC20Token",
+        "DummyNoReturnERC20Token",
+        "ReentrantERC20Token",
+        "ERC20Token",
+        "IERC20Token",
+        "MintableERC20Token",
+        "UnlimitedAllowanceERC20Token",
+        "IEtherToken",
+        "WETH9",
+        "ZRXToken"
+    ]
+}

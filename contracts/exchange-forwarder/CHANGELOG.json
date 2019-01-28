@@ -1,0 +1,11 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Move Forwarder contract out of contracts-extensions into new package",
+                "pr": 1539
+            }
+        ]
+    }
+]
