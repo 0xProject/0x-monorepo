@@ -9,10 +9,11 @@ import {
     SpyResolver,
     URLResolver,
 } from '@0x/sol-resolver';
-import { logUtils } from '@0x/utils';
+import { logUtils, promisify } from '@0x/utils';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as fs from 'fs';
+import glob = require('glob');
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as pluralize from 'pluralize';
@@ -34,7 +35,11 @@ import {
 } from './utils/compiler';
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
+// TODO rename panoramix XD
+import { NameResolver as panoramix } from './utils/name_resolver';
 import { utils } from './utils/utils';
+
+const globAsync = promisify<string[]>(glob);
 
 type TYPE_ALL_FILES_IDENTIFIER = '*';
 const ALL_CONTRACTS_IDENTIFIER = '*';
@@ -112,7 +117,8 @@ export class Compiler {
         resolver.appendResolver(new RelativeFSResolver(this._contractsDir));
         resolver.appendResolver(new FSResolver());
         resolver.appendResolver(this._nameResolver);
-        this._resolver = SolidityImportResolver();
+        this._contractsDir = path.resolve(this._contractsDir);
+        this._resolver = SolidityImportResolver().addResolver(panoramix(this._contractsDir));
         this._oldResolver = resolver;
     }
     /**
@@ -121,7 +127,7 @@ export class Compiler {
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(constants.SOLC_BIN_DIR);
-        await this._compileContractsAsync(this._getContractNamesToCompile(), true);
+        await this._compileContractsAsync(await this._getContractNamesToCompileAsync(), true);
     }
     /**
      * Compiles Solidity files specified during instantiation, and returns the
@@ -132,7 +138,7 @@ export class Compiler {
      * that version.
      */
     public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
-        const promisedOutputs = this._compileContractsAsync(this._getContractNamesToCompile(), false);
+        const promisedOutputs = this._compileContractsAsync(await this._getContractNamesToCompileAsync(), false);
         return promisedOutputs;
     }
     public async watchAsync(): Promise<void> {
@@ -170,7 +176,7 @@ export class Compiler {
         });
     }
 
-    //TODO (squadack) przywrócić działanie - SpyResolver
+    // TODO (squadack) przywrócić działanie - SpyResolver
     private _getPathsToWatch(): string[] {
         // const contractNames = this._getContractNamesToCompile();
         // const spyResolver = new SpyResolver(this._resolver);
@@ -186,12 +192,12 @@ export class Compiler {
         // return pathsToWatch;
         return [];
     }
-    private _getContractNamesToCompile(): string[] {
+    private async _getContractNamesToCompileAsync(): Promise<string[]> {
         let contractNamesToCompile;
         if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
-            const allContracts = this._nameResolver.getAll();
+            const allContracts = await globAsync(this._contractsDir + '/**/*' + constants.SOLIDITY_FILE_EXTENSION);
             contractNamesToCompile = _.map(allContracts, contractSource =>
-                path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
+                path.basename(contractSource, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
             contractNamesToCompile = this._specifiedContracts.map(specifiedContract =>
@@ -213,13 +219,13 @@ export class Compiler {
         const contractPathToData: ContractPathToData = {};
 
         for (const contractName of contractNames) {
-            // const contractSource = await this._resolver.require(contractName);
-            // TODO stary resolver!
-            const oldContractSource = this._oldResolver.resolve(contractName);
-            const contractSource: ImportFile = {
-                source: oldContractSource.source,
-                url: oldContractSource.absolutePath,
-            };
+            const contractSource = await this._resolver.require(contractName);
+            // const oldContractSource = this._oldResolver.resolve(contractName);
+            // const contractSource: ImportFile = {
+            //     source: oldContractSource.source,
+            //     url: oldContractSource.absolutePath,
+            // };
+            // TODO rename kek xD
             const kek = await getSourceTreeHash(this._resolver, contractSource.url);
             const sourceTreeHashHex = kek.toString('hex');
             const contractData = {
