@@ -94,5 +94,12 @@ contract MixinSignatureValidator {
             );
             return signerAddress;
         }
+
+        // Anything else is illegal (We do not return false because
+        // the signature may actually be valid, just not in a format
+        // that we currently support. In this case returning false
+        // may lead the caller to incorrectly believe that the
+        // signature was invalid.)
+        revert("SIGNATURE_UNSUPPORTED");
     }
 }

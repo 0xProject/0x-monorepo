@@ -63,8 +63,7 @@ contract MixinTECApprovalVerifier is
         if (
             exchangeFunctionSelector == FILL_ORDER_SELECTOR ||
             exchangeFunctionSelector == FILL_ORDER_NO_THROW_SELECTOR ||
-            exchangeFunctionSelector == FILL_OR_KILL_ORDER_SELECTOR ||
-            exchangeFunctionSelector == CANCEL_ORDER_SELECTOR
+            exchangeFunctionSelector == FILL_OR_KILL_ORDER_SELECTOR
         ) {
             // Decode single order
             (LibOrder.Order memory order) = abi.decode(
@@ -87,8 +86,7 @@ contract MixinTECApprovalVerifier is
             exchangeFunctionSelector == MARKET_BUY_ORDERS_SELECTOR ||
             exchangeFunctionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
             exchangeFunctionSelector == MARKET_SELL_ORDERS_SELECTOR ||
-            exchangeFunctionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR ||
-            exchangeFunctionSelector == BATCH_CANCEL_ORDERS_SELECTOR
+            exchangeFunctionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
             // Decode all orders
             (LibOrder.Order[] memory orders) = abi.decode(
@@ -124,8 +122,12 @@ contract MixinTECApprovalVerifier is
                 approvalExpirationTimeSeconds,
                 approvalSignatures
             );
-        } else if (exchangeFunctionSelector == CANCEL_ORDERS_UP_TO_SELECTOR) {
-            // `cancelOrdersUpTo` is always permitted
+        } else if (
+            exchangeFunctionSelector == CANCEL_ORDERS_UP_TO_SELECTOR ||
+            exchangeFunctionSelector == CANCEL_ORDER_SELECTOR ||
+            exchangeFunctionSelector == BATCH_CANCEL_ORDERS_SELECTOR
+        ) {
+            // All cancel functions are always permitted
             return;
         } else {
             revert("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR");
