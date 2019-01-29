@@ -1,4 +1,3 @@
-import { ContractSource, Resolver } from '@0x/sol-resolver';
 import { fetchAsync, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import { ContractArtifact } from 'ethereum-types';
@@ -89,12 +88,14 @@ export function getNormalizedErrMsg(errMsg: string): string {
     return normalizedErrMsg;
 }
 
+//TODO squadack - czy tego po prostu nie wywalic? mamy swoją funkcję do wyciągania dependencies
 /**
  * Parses the contract source code and extracts the dendencies
  * @param  source Contract source code
  * @return List of dependendencies
  */
-export function parseDependencies(contractSource: ContractSource): string[] {
+// export function parseDependencies(contractSource: ContractSource): string[] {
+export function parseDependencies(contractSource: ImportFile): string[] {
     // TODO: Use a proper parser
     const source = contractSource.source;
     const IMPORT_REGEX = /(import\s)/;
@@ -107,7 +108,7 @@ export function parseDependencies(contractSource: ContractSource): string[] {
             if (!_.isNull(dependencyMatch)) {
                 let dependencyPath = dependencyMatch[1];
                 if (dependencyPath.startsWith('.')) {
-                    dependencyPath = path.join(path.dirname(contractSource.path), dependencyPath);
+                    dependencyPath = path.join(path.dirname(contractSource.url), dependencyPath); // TODO squadack implicite zamieniłem path na absolutePath(url)
                 }
                 dependencies.push(dependencyPath);
             }
@@ -168,7 +169,7 @@ function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]): void {
 export async function getSourceTreeHash(resolver: ResolverEngine<ImportFile>, importPath: string): Promise<Buffer> {
     const imFile: ImportFile = await resolver.require(importPath);
     const contractSource = { source: imFile.source, path: imFile.url, absolutePath: imFile.url };
-    const dependencies = parseDependencies(contractSource);
+    const dependencies = parseDependencies(imFile);
     const sourceHash = ethUtil.sha3(contractSource.source);
     if (dependencies.length === 0) {
         return sourceHash;

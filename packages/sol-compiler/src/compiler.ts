@@ -1,14 +1,4 @@
 import { assert } from '@0x/assert';
-import {
-    FallthroughResolver,
-    FSResolver,
-    NameResolver,
-    NPMResolver,
-    RelativeFSResolver,
-    Resolver,
-    SpyResolver,
-    URLResolver,
-} from '@0x/sol-resolver';
 import { logUtils, promisify } from '@0x/utils';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
@@ -83,9 +73,7 @@ interface ContractData {
  * to artifact files.
  */
 export class Compiler {
-    private readonly _oldResolver: Resolver;
     private readonly _resolver: ResolverEngine<ImportFile>;
-    private readonly _nameResolver: NameResolver;
     private readonly _contractsDir: string;
     private readonly _compilerSettings: solc.CompilerSettings;
     private readonly _artifactsDir: string;
@@ -109,17 +97,8 @@ export class Compiler {
         this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
-        this._nameResolver = new NameResolver(path.resolve(this._contractsDir));
-        const resolver = new FallthroughResolver();
-        resolver.appendResolver(new URLResolver());
-        const packagePath = path.resolve('');
-        resolver.appendResolver(new NPMResolver(packagePath));
-        resolver.appendResolver(new RelativeFSResolver(this._contractsDir));
-        resolver.appendResolver(new FSResolver());
-        resolver.appendResolver(this._nameResolver);
         this._contractsDir = path.resolve(this._contractsDir);
         this._resolver = SolidityImportResolver().addResolver(panoramix(this._contractsDir));
-        this._oldResolver = resolver;
     }
     /**
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.

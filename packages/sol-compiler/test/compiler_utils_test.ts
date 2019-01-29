@@ -52,7 +52,9 @@ describe('Compiler utils', () => {
             const source = await fsWrapper.readFileAsync(path, {
                 encoding: 'utf8',
             });
-            const dependencies = parseDependencies({ source, path, absolutePath: path });
+            // const dependencies = parseDependencies({ source, path, absolutePath: path });
+            // TODO squadack weryfikacja
+            const dependencies = parseDependencies({ source, url: path });
             const expectedDependencies = [
                 'zeppelin-solidity/contracts/token/ERC20/ERC20.sol',
                 'packages/sol-compiler/lib/test/fixtures/contracts/TokenTransferProxy.sol',
@@ -68,7 +70,9 @@ describe('Compiler utils', () => {
             const source = await fsWrapper.readFileAsync(path, {
                 encoding: 'utf8',
             });
-            expect(parseDependencies({ source, path, absolutePath: path })).to.be.deep.equal([
+            // TODO squadack weyfikacja
+            // expect(parseDependencies({ source, path, absolutePath: path })).to.be.deep.equal([
+            expect(parseDependencies({ source, url: path })).to.be.deep.equal([
                 'zeppelin-solidity/contracts/ownership/Ownable.sol',
                 'zeppelin-solidity/contracts/token/ERC20/ERC20.sol',
             ]);
@@ -77,7 +81,9 @@ describe('Compiler utils', () => {
         it.skip('correctly parses commented out dependencies', async () => {
             const path = '';
             const source = `// import "./TokenTransferProxy.sol";`;
-            expect(parseDependencies({ path, source, absolutePath: path })).to.be.deep.equal([]);
+            // TODO squadack weryfikacja
+            // expect(parseDependencies({ path, source, absolutePath: path })).to.be.deep.equal([]);
+            expect(parseDependencies({ source, url: path })).to.be.deep.equal([]);
         });
     });
 });
