@@ -6,6 +6,7 @@ import { colors } from 'ts/style/colors';
 
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
+import { FormEvent } from 'react';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
@@ -357,7 +358,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
-    private async _onSubmitAsync(e: Event): Promise<void> {
+    private async _onSubmitAsync(e: FormEvent): Promise<void> {
         e.preventDefault();
 
         let jsonBody;
