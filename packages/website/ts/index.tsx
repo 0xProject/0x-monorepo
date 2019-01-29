@@ -21,6 +21,7 @@ import { NextAboutMission } from 'ts/pages/about/mission';
 import { NextAboutPress } from 'ts/pages/about/press';
 import { NextAboutTeam } from 'ts/pages/about/team';
 import { NextEcosystem } from 'ts/pages/ecosystem';
+import { Governance } from 'ts/pages/governance/governance';
 import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
@@ -113,6 +114,7 @@ render(
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact={true} path={WebsitePaths.Governance} component={Governance as any} />
                                 <Route
                                     exact={true}
                                     path={WebsitePaths.AboutMission}
