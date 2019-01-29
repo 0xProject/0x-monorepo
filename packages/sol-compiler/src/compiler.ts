@@ -9,7 +9,6 @@ import {
     SpyResolver,
     URLResolver,
 } from '@0x/sol-resolver';
-import { SolidityImportResolver, ImportFile, gatherSources, ResolverEngine } from 'resolver-engine';
 import { logUtils } from '@0x/utils';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
@@ -17,6 +16,7 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as pluralize from 'pluralize';
+import { gatherSources, ImportFile, ResolverEngine, SolidityImportResolver } from 'resolver-engine';
 import * as semver from 'semver';
 import solc = require('solc');
 
