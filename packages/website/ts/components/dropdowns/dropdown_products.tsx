@@ -17,6 +17,11 @@ const navData = [
         description: 'Build on the 0x protocol',
         url: WebsitePaths.LaunchKit,
     },
+    {
+        title: 'Governance',
+        description: 'xxxxxxxxx',
+        url: WebsitePaths.Governance,
+    },
 ];
 
 export const DropdownProducts: React.FunctionComponent<{}> = () => (
