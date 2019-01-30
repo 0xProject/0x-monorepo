@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Improve error messages when unable to find matching bytecode",
+                "pr": 1558
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
