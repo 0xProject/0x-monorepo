@@ -156,10 +156,10 @@ export async function compileDockerAsync(
 function makeContractPathRelative(
     absolutePath: string,
     contractsDir: string,
-    dependencyNameToPackagePath: { [dependencyName: string]: string },
+    dependencyNameToPath: { [dependencyName: string]: string },
 ): string {
     let contractPath = absolutePath.replace(`${contractsDir}/`, '');
-    _.map(dependencyNameToPackagePath, (packagePath: string, dependencyName: string) => {
+    _.map(dependencyNameToPath, (packagePath: string, dependencyName: string) => {
         contractPath = contractPath.replace(packagePath, dependencyName);
     });
     return contractPath;
@@ -169,15 +169,15 @@ function makeContractPathRelative(
  * Makes the path relative removing all system-dependent data. Converts absolute paths to a format suitable for artifacts.
  * @param absolutePathToSmth Absolute path to contract or source
  * @param contractsDir Current package contracts directory location
- * @param dependencyNameToPackagePath Mapping of dependency name to package path
+ * @param dependencyNameToPath Mapping of dependency name to package path
  */
 export function makeContractPathsRelative(
     absolutePathToSmth: { [absoluteContractPath: string]: any },
     contractsDir: string,
-    dependencyNameToPackagePath: { [dependencyName: string]: string },
+    dependencyNameToPath: { [dependencyName: string]: string },
 ): { [contractPath: string]: any } {
     return _.mapKeys(absolutePathToSmth, (_val: any, absoluteContractPath: string) =>
-        makeContractPathRelative(absoluteContractPath, contractsDir, dependencyNameToPackagePath),
+        makeContractPathRelative(absoluteContractPath, contractsDir, dependencyNameToPath),
     );
 }
 
@@ -373,7 +373,7 @@ export function getDependencyNameToPackagePath(
     const allTouchedFiles = contractSources.map(contractSource => `${contractSource.absolutePath}`);
     const NODE_MODULES = 'node_modules';
     const allTouchedDependencies = _.filter(allTouchedFiles, filePath => filePath.includes(NODE_MODULES));
-    const dependencyNameToPackagePath: { [dependencyName: string]: string } = {};
+    const dependencyNameToPath: { [dependencyName: string]: string } = {};
     _.map(allTouchedDependencies, dependencyFilePath => {
         const lastNodeModulesStart = dependencyFilePath.lastIndexOf(NODE_MODULES);
         const lastNodeModulesEnd = lastNodeModulesStart + NODE_MODULES.length;
@@ -389,7 +389,7 @@ export function getDependencyNameToPackagePath(
             dependencyName = `${packageName}`;
         }
         const dependencyPackagePath = path.join(dependencyFilePath.substr(0, lastNodeModulesEnd), dependencyName);
-        dependencyNameToPackagePath[dependencyName] = dependencyPackagePath;
+        dependencyNameToPath[dependencyName] = dependencyPackagePath;
     });
-    return dependencyNameToPackagePath;
+    return dependencyNameToPath;
 }

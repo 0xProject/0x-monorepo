@@ -254,7 +254,7 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
-        const dependencyNameToPackagePath = getDependencyNameToPackagePath(resolvedContractSources);
+        const dependencyNameToPath = getDependencyNameToPackagePath(resolvedContractSources);
 
         const compilerOutputs: StandardOutput[] = [];
         for (const solcVersion of _.keys(versionToInputs)) {
@@ -267,7 +267,7 @@ export class Compiler {
             let compilerOutput;
             let fullSolcVersion;
             input.standardInput.settings.remappings = _.map(
-                dependencyNameToPackagePath,
+                dependencyNameToPath,
                 (dependencyPackagePath: string, dependencyName: string) => `${dependencyName}=${dependencyPackagePath}`,
             );
             if (this._useDockerisedSolc) {
@@ -286,12 +286,12 @@ export class Compiler {
             compilerOutput.sources = makeContractPathsRelative(
                 compilerOutput.sources,
                 this._contractsDir,
-                dependencyNameToPackagePath,
+                dependencyNameToPath,
             );
             compilerOutput.contracts = makeContractPathsRelative(
                 compilerOutput.contracts,
                 this._contractsDir,
-                dependencyNameToPackagePath,
+                dependencyNameToPath,
             );
 
             for (const contractPath of input.contractsToCompile) {
