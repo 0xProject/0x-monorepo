@@ -142,7 +142,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                 ? allTokens
                 : _.filter(allTokens, token => {
                       return (
-                          _.findIndex(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, t => t === token.symbol) === -1 &&
+                        !_.includes(configs.DEFAULT_TRACKED_TOKEN_SYMBOLS, token.symbol) &&
                           ((this.props.tokenVisibility === TokenVisibility.Tracked && utils.isTokenTracked(token)) ||
                               (this.props.tokenVisibility === TokenVisibility.Untracked &&
                                   !utils.isTokenTracked(token)))

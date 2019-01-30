@@ -514,7 +514,6 @@ export class Blockchain {
         this._dispatcher.updateBlockchainIsLoaded(false);
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
-
         const trackedTokensByAddress = _.isUndefined(this._userAddressIfExists)
             ? {}
             : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);

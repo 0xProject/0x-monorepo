@@ -317,6 +317,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                 .thenBy((t: Token) => t.symbol !== constants.ZRX_TOKEN_SYMBOL)
                 .thenBy('trackedTimestamp'),
         );
+        // console.log("trackedTokensStartingWithEtherToken", trackedTokens, trackedTokensStartingWithEtherToken);
         return _.map(trackedTokensStartingWithEtherToken, this._renderTokenRow.bind(this));
     }
     private _renderTokenRow(token: Token): React.ReactNode {
