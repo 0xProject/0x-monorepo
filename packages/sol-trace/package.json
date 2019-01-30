@@ -34,7 +34,7 @@
         "@0x/typescript-typings": "^3.0.8",
         "ethereum-types": "^1.1.6",
         "ethereumjs-util": "^5.1.1",
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "loglevel": "^1.6.1"
     },
     "devDependencies": {

@@ -33,14 +33,8 @@
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/tslint-config/README.md",
-    "devDependencies": {
-        "@types/lodash": "4.14.104",
-        "make-promises-safe": "^1.1.0",
-        "shx": "^0.2.2",
-        "typescript": "3.0.1"
-    },
     "dependencies": {
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "tslint": "5.11.0",
         "tslint-eslint-rules": "5.4.0",
         "tslint-react": "^3.2.0",
