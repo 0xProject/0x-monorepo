@@ -142,8 +142,7 @@ export async function compileDockerAsync(
     standardInput: solc.StandardInput,
 ): Promise<solc.StandardOutput> {
     const standardInputStr = JSON.stringify(standardInput, null, 2);
-    const dockerCommand =
-        `docker run -i -a stdin -a stdout -a stderr ethereum/solc:${solcVersion} ` + `solc --standard-json`;
+    const dockerCommand = `docker run -i -a stdin -a stdout -a stderr ethereum/solc:${solcVersion} solc --standard-json`;
     const standardOutputStr = execSync(dockerCommand, { input: standardInputStr }).toString();
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
     return compiled;
