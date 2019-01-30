@@ -11,15 +11,26 @@ export interface DecodedCalldata {
     functionName: string;
     functionSignature: string;
     functionArguments: any;
-    contractName: string;
-    deployedAddress?: string;
-    deployedNeworkId?: string;
 }
 
 interface AbiEncoderBySelectorElement {
     abiEncoder: AbiEncoder.Method;
     contractName?: string;
     contractAddress?: string;
+    networkId?: number;
+}
+
+interface TransactionDecoderInfo {
+    abiEncoder: AbiEncoder.Method;
+    contractName?: string;
+    contractAddress?: string;
+    networkId?: number;
+}
+
+interface TransactionProperties {
+    contractName?: string;
+    contractAddress?: string;
+    networkId?: number;
 }
 
 interface AbiEncoderByNeworkId {
@@ -30,17 +41,23 @@ interface AbiEncoderBySelector {
     [index: string]: AbiEncoderByNeworkId;
 }
 
-interface DeployedContractInfoByNetwork {
-    [index: number]: string;
+interface DeployedContractInfo {
+    contractAddress?: string;
+    networkId?: number;
 }
 
 interface DeployedContractInfoByName {
-    [index: string]: DeployedContractInfoByNetwork;
+    [index: string]: DeployedContractInfo[];
+}
+
+interface TransactionDecodersBySelector {
+    [index: string]: TransactionDecoderInfo[];
 }
 
 export class CalldataDecoder {
     private readonly _deployedContractInfoByName = {} as DeployedContractInfoByName;
     private readonly _abiEncoderBySelector: AbiEncoderBySelector = {};
+    private readonly _txDecoders: TransactionDecodersBySelector = {};
     private static _instance: CalldataDecoder;
 
     public static getInstance(): CalldataDecoder {
@@ -52,15 +69,23 @@ export class CalldataDecoder {
 
     private constructor() {
         // Load addresses by contract name
-        _.each(NetworkId, (networkId: NetworkId) => {
-            const contractAddressesForNetwork = getContractAddressesForNetworkOrThrow(networkId);
+        _.each(NetworkId, (networkId: any) => {
+            if (typeof networkId !== 'number') return;
+            const networkIdAsNumber = networkId as number;
+            const contractAddressesForNetwork = getContractAddressesForNetworkOrThrow(networkIdAsNumber);
             _.each(contractAddressesForNetwork, (contractAddress: string, contractName: string) => {
-                this._deployedContractInfoByName[contractName][networkId as number] = contractAddress;
+                const contractNameLowercase = _.toLower(contractName);
+                if (_.isUndefined(this._deployedContractInfoByName[contractNameLowercase])) {
+                    this._deployedContractInfoByName[contractNameLowercase] = [];
+                }
+                this._deployedContractInfoByName[contractNameLowercase].push({contractAddress, networkId: networkIdAsNumber});
             });
         });
         // Load contract artifacts
         _.each(ContractArtifacts, (contractArtifactAsJson: any) => {
             const conractArtifact = contractArtifactAsJson as SimpleContractArtifact;
+            const contractName = conractArtifact.contractName;
+            const contractNameLowercase = _.toLower(contractName);
             const contractAbi: ContractAbi = conractArtifact.compilerOutput.abi;
             const functionAbis = _.filter(contractAbi, (abiEntry) => {return abiEntry.type === 'function'}) as MethodAbi[];
             _.each(functionAbis, (functionAbi) => {
@@ -69,13 +94,25 @@ export class CalldataDecoder {
                 if (_.has(this._abiEncoderBySelector, functionSelector)) {
                     return;
                 }
-                this._abiEncoderBySelector[functionSelector][conractArtifact.contractName] = {abiEncoder};
+                if (!(functionSelector in this._txDecoders)) this._txDecoders[functionSelector] = [];
+                // Recored deployed versions of this decoder
+                _.each(this._deployedContractInfoByName[contractNameLowercase], (deployedContract) => {
+                    this._txDecoders[functionSelector].push({
+                        abiEncoder,
+                        contractName,
+                        contractAddress: deployedContract.contractAddress,
+                        networkId: deployedContract.networkId,
+                    });
+                });
+                // If there isn't a deployed version of this contract, record it without address/network id
+                if (_.isUndefined(this._deployedContractInfoByName[contractNameLowercase])) {
+                    this._txDecoders[functionSelector].push({
+                        abiEncoder,
+                        contractName,
+                    });
+                }
             });
         });
-    }
-
-    public static registerContractAbi(contractArtifact: SimpleContractArtifact, deployedAddress?: string, deployedNeworkId?: number) {
-
     }
 
     private static getFunctionSelector(calldata: string): string {
@@ -86,62 +123,30 @@ export class CalldataDecoder {
         return functionSelector;
     }
 
-    public static decodeWithContractAddress(calldata: string, contractAddress: string, networkId?: number): DecodedCalldata {
+    public static decode(calldata: string, txProperties_?: TransactionProperties): DecodedCalldata {
         const functionSelector = CalldataDecoder.getFunctionSelector(calldata);
+        const txProperties = _.isUndefined(txProperties_) ? {} : txProperties_;
         const instance = CalldataDecoder.getInstance();
-        const contractName = _.findKey(instance._deployedContractInfoByName, (info: DeployedContractInfoByNetwork) => {
-            return (!_.isUndefined(networkId) && info[networkId] === contractAddress) || (_.isUndefined(networkId) && contractAddress in info);
+        const txDecodersByFunctionSelector = instance._txDecoders[functionSelector];
+        if (_.isUndefined(txDecodersByFunctionSelector)) {
+            throw new Error(`No decoder registered for function selector '${functionSelector}'`);
+        }
+        const txDecoderWithProperties = _.find(txDecodersByFunctionSelector, (txDecoder) => {
+            return  (_.isUndefined(txProperties.contractName) || _.toLower(txDecoder.contractName) === _.toLower(txProperties.contractName)) &&
+                    (_.isUndefined(txProperties.contractAddress) || txDecoder.contractAddress === txProperties.contractAddress) &&
+                    (_.isUndefined(txProperties.networkId) || txDecoder.networkId === txProperties.networkId);
         });
-        if (_.isUndefined(contractName)) {
-            throw new Error(`Could not find contract name: ${contractName}`);
+        if (_.isUndefined(txDecoderWithProperties)) {
+            throw new Error(`No decoder registered with properties: ${JSON.stringify(txProperties)}.`);
         }
-        const abiEncoder = instance._abiEncoderBySelector[functionSelector][contractName];
-        if (_.isUndefined(abiEncoder)) {
-            throw new Error(`Could not find matching abi encoder for selector '${functionSelector}'`);
-        }
-        
-    }
-
-    public static decodeWithContractName(calldata: string, contractName: string): DecodedCalldata {
-        const functionSelector = CalldataDecoder.getFunctionSelector(calldata);
-        const instance = CalldataDecoder.getInstance();
-        const abiEncoder = instance._abiEncoderBySelector[functionSelector][contractName];
-        if (_.isUndefined(abiEncoder)) {
-            throw new Error(`Could not find matching abi encoder for selector '${functionSelector}'`);
-        }
-    }
-
-    public static decodeWithoutContractInfo(calldata: string): DecodedCalldata {
-        const functionSelector = CalldataDecoder.getFunctionSelector(calldata);
-        const instance = CalldataDecoder.getInstance();
-        const abiEncoder = _.find(instance._abiEncoderBySelector[functionSelector], () => {return true});
-        if (_.isUndefined(abiEncoder)) {
-            throw new Error(`Could not find matching abi encoder for selector '${functionSelector}'`);
-        }
-        return {
-            functionName: string;
-            functionSignature: string;
-            functionArguments: any;
-            contractName: string;
-            deployedAddress?: string;
-            deployedNeworkId?: string;
-        };
-    }
-
-    public static decode(calldata: string, contractName?: string, contractAddress?: string, networkId?: number, rules?: AbiEncoder.DecodingRules): DecodedCalldata {
-        
-
-        
-
-        /*
-        const functionName = abiEncoder.getDataItem().name;
-        const functionSignature = abiEncoder.getSignatureType();
-        const functionArguments = abiEncoder.decode(calldata, rules);
+        const functionName = txDecoderWithProperties.abiEncoder.getDataItem().name;
+        const functionSignature = txDecoderWithProperties.abiEncoder.getSignatureType();
+        const functionArguments = txDecoderWithProperties.abiEncoder.decode(calldata);
         const decodedCalldata = {
             functionName,
             functionSignature,
             functionArguments
         }
-        return decodedCalldata;*/
+        return decodedCalldata;
     }
 }
