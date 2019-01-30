@@ -27,6 +27,7 @@ export interface BloxyTrade {
     tx_time: string;
     tx_date: string;
     tx_sender: string;
+    tradeIndex: string;
     smart_contract_id: number;
     smart_contract_address: string;
     contract_type: string;

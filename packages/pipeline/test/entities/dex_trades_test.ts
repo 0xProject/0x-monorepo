@@ -33,6 +33,7 @@ const baseTrade = {
     takerAnnotation: '',
     protocol: 'Kyber Network Proxy',
     sellAddress: '0xbf2179859fc6d5bee9bf9158632dc51678a4100e',
+    tradeIndex: '3',
 };
 
 const tradeWithNullAddresses: DexTrade = R.merge(baseTrade, {
