@@ -152,6 +152,11 @@ const team: TeamMember[] = [
         name: 'Brent Oshiro',
         title: 'community engagement lead',
     },
+    {
+        imageUrl: '/images/team/marcs.jpg',
+        name: 'Marc Savino',
+        title: 'technical sourcer',
+    },
 ];
 
 const advisors: TeamMember[] = [
