@@ -280,6 +280,9 @@ export class Compiler {
                 fullSolcVersion = binPaths[solcVersion];
                 compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput);
             }
+            if (!_.isUndefined(compilerOutput.errors)) {
+                printCompilationErrorsAndWarnings(compilerOutput.errors);
+            }
             compilerOutput.sources = makeContractPathsRelative(
                 compilerOutput.sources,
                 this._contractsDir,
@@ -290,9 +293,6 @@ export class Compiler {
                 this._contractsDir,
                 dependencyNameToPackagePath,
             );
-            if (!_.isUndefined(compilerOutput.errors)) {
-                printCompilationErrorsAndWarnings(compilerOutput.errors);
-            }
 
             for (const contractPath of input.contractsToCompile) {
                 const contractName = contractPathToData[contractPath].contractName;
