@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as R from 'ramda';
 
 import { logUtils } from '@0x/utils';
+
 // URL to use for getting dex trades from Bloxy.
 export const BLOXY_DEX_TRADES_URL = 'https://bloxy.info/api/dex/trades';
 // Number of trades to get at once. Must be less than or equal to MAX_OFFSET.
@@ -76,8 +77,11 @@ export class BloxySource {
      */
     public async getDexTradesAsync(lastSeenTimestamp: number): Promise<BloxyTrade[]> {
         const allTrades = await this._scrapeAllDexTradesAsync(lastSeenTimestamp);
-        logUtils.log('Removing duplicate entries');
-        const uniqueTrades = R.uniqBy(R.toString, allTrades) as BloxyTrade[];
+        logUtils.log(`Removing duplicates from ${allTrades.length} entries`);
+        const uniqueTrades = R.uniqBy(
+            (trade: BloxyTrade) => `${trade.tradeIndex}-${trade.tx_hash}`,
+            allTrades,
+        ) as BloxyTrade[];
         logUtils.log(`Removed ${allTrades.length - uniqueTrades.length} duplicate entries`);
         return uniqueTrades;
     }
