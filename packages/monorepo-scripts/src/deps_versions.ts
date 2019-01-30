@@ -17,17 +17,25 @@ interface VersionsByDependency {
     [depName: string]: Versions;
 }
 
+interface ParsedDependencies {
+    ignored: VersionsByDependency;
+    included: VersionsByDependency;
+}
+
 const PACKAGE_JSON_GLOB = '../../*/package.json';
-const ignore: string[] = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../../../package.json')).toString(),
-).config.dependenciesWithMultipleVersions.split(' ');
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../package.json')).toString()).config;
+const ignore: string[] = config.ignoreDependencyVersions.split(' ');
+const ignorePackages: string[] = config.ignoreDependencyVersionsForPackage.split(' ');
 
 if (require.main === module) {
-    const versions = getVersionsByDependency();
-    const multiples = getDependenciesWithMultipleVersions(versions);
+    const dependencies = parseDependencies();
+    const ignoredMultiples = getDependenciesWithMultipleVersions(dependencies.ignored);
+    const multiples = getDependenciesWithMultipleVersions(dependencies.included);
     printVersionsByDependency(multiples);
+    utils.log(`├── ${chalk.bold('IGNORED PACKAGES')}`);
+    printVersionsByDependency(ignoredMultiples);
     if (!(Object.keys(multiples).length === 0)) {
-        console.log(`Add space-separated exceptions to root package.json config.dependenciesWithMultipleVersions`);
+        console.log(`Add space-separated exceptions to root package.json config.ignoreDependencyVersions`);
         process.exit(1);
     }
 }
@@ -42,22 +50,26 @@ function getDependencies(_path: string): Dependencies {
     return dependencies;
 }
 
-export function getVersionsByDependency(): VersionsByDependency {
+export function parseDependencies(): ParsedDependencies {
     const files = globSync(path.join(__dirname, PACKAGE_JSON_GLOB));
-    const versionsByDependency: VersionsByDependency = {};
+    const parsedDependencies: ParsedDependencies = {
+        ignored: {},
+        included: {},
+    };
     files.map(_path => {
         const pathParts = _path.split('/');
         const packageName = pathParts[pathParts.length - 2];
+        const category = ignorePackages.includes(packageName) ? 'ignored' : 'included';
         const dependencies = getDependencies(_path);
         Object.keys(dependencies).forEach((depName: string) => {
-            if (versionsByDependency[depName] === undefined) {
-                versionsByDependency[depName] = {};
+            if (parsedDependencies[category][depName] === undefined) {
+                parsedDependencies[category][depName] = {};
             }
             const version = dependencies[depName];
-            versionsByDependency[depName][packageName] = version;
+            parsedDependencies[category][depName][packageName] = version;
         });
     });
-    return versionsByDependency;
+    return parsedDependencies;
 }
 
 export function getDependenciesWithMultipleVersions(versionsByDependency: VersionsByDependency): VersionsByDependency {
