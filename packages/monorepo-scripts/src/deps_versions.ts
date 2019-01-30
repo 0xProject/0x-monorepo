@@ -35,7 +35,7 @@ if (require.main === module) {
     utils.log(`├── ${chalk.bold('IGNORED PACKAGES')}`);
     printVersionsByDependency(ignoredMultiples);
     if (!(Object.keys(multiples).length === 0)) {
-        console.log(`Add space-separated exceptions to root package.json config.ignoreDependencyVersions`);
+        utils.log(`Add space-separated exceptions to root package.json config.ignoreDependencyVersions`);
         process.exit(1);
     }
 }
@@ -50,7 +50,7 @@ function getDependencies(_path: string): Dependencies {
     return dependencies;
 }
 
-export function parseDependencies(): ParsedDependencies {
+function parseDependencies(): ParsedDependencies {
     const files = globSync(path.join(__dirname, PACKAGE_JSON_GLOB));
     const parsedDependencies: ParsedDependencies = {
         ignored: {},
@@ -72,20 +72,16 @@ export function parseDependencies(): ParsedDependencies {
     return parsedDependencies;
 }
 
-export function getDependenciesWithMultipleVersions(versionsByDependency: VersionsByDependency): VersionsByDependency {
+function getDependenciesWithMultipleVersions(versionsByDependency: VersionsByDependency): VersionsByDependency {
     return Object.keys(versionsByDependency)
         .filter((depName: string) => !ignore.includes(depName) && hasMultipleVersions(versionsByDependency[depName]))
-        .reduce((obj: VersionsByDependency, depName: string) => {
+        .reduce<VersionsByDependency>((obj, depName: string) => {
             obj[depName] = versionsByDependency[depName];
             return obj;
         }, {});
 }
-export function hasAnyMultipleVersions(versionsByDependency: VersionsByDependency): boolean {
-    const multiples = getDependenciesWithMultipleVersions(versionsByDependency);
-    return !(Object.keys(multiples).length === 0);
-}
 
-export function printVersionsByDependency(versionsByDependency: VersionsByDependency): void {
+function printVersionsByDependency(versionsByDependency: VersionsByDependency): void {
     Object.keys(versionsByDependency).forEach((depName: string) => {
         const versions: Versions = versionsByDependency[depName];
         utils.log(chalk.bold(depName));
