@@ -21,6 +21,10 @@
             {
                 "note": "Fix the bug in `ASTVisitor` causing the 'cannot read property `range` of `null`' error",
                 "pr": 1557
+            },
+            {
+                "note": "Improve error messages when unable to find matching bytecode",
+                "pr": 1558
             }
         ]
     },
