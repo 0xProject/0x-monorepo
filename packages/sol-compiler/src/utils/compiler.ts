@@ -148,6 +148,11 @@ export async function compileDockerAsync(
     return compiled;
 }
 
+/**
+ * Example "relative" paths:
+ * /user/leo/0x-monorepo/contracts/extensions/contracts/extension.sol -> extension.sol
+ * /user/leo/0x-monorepo/node_modules/@0x/contracts-protocol/contracts/exchange.sol -> @0x/contracts-protocol/contracts/exchange.sol
+ */
 function makeContractPathRelative(
     absolutePath: string,
     contractsDir: string,
