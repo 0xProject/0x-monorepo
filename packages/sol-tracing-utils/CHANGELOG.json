@@ -17,6 +17,10 @@
             {
                 "note": "Print resasonable error message on bytecode collision",
                 "pr": 1535
+            },
+            {
+                "note": "Fix the bug in `ASTVisitor` causing the 'cannot read property `range` of `null`' error",
+                "pr": 1557
             }
         ]
     },
