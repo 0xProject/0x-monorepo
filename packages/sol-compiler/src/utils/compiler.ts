@@ -360,7 +360,7 @@ export function addHexPrefixToContractBytecode(compiledContract: solc.StandardCo
 
 /**
  * Takes the list of resolved contract sources from `SpyResolver` and produces a mapping from dependency name
- * to package path used in `remappings` later.
+ * to package path used in `remappings` later, as well as in generating the "relative" source paths saved to the artifact files.
  * @param contractSources The list of resolved contract sources
  */
 export function getDependencyNameToPackagePath(
