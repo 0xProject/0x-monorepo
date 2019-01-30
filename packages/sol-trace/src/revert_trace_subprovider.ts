@@ -74,7 +74,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             if (_.isUndefined(contractData)) {
                 const shortenHex = (hex: string) => {
                     /**
-                     * Length chooses so that both error messages are of the same length
+                     * Length choosen so that both error messages are of the same length
                      * and it's enough data to figure out which artifact has a problem.
                      */
                     const length = 18;
