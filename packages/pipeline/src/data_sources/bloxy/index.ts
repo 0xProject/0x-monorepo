@@ -78,10 +78,7 @@ export class BloxySource {
     public async getDexTradesAsync(lastSeenTimestamp: number): Promise<BloxyTrade[]> {
         const allTrades = await this._scrapeAllDexTradesAsync(lastSeenTimestamp);
         logUtils.log(`Removing duplicates from ${allTrades.length} entries`);
-        const uniqueTrades = R.uniqBy(
-            (trade: BloxyTrade) => `${trade.tradeIndex}-${trade.tx_hash}`,
-            allTrades,
-        ) as BloxyTrade[];
+        const uniqueTrades = R.uniqBy((trade: BloxyTrade) => `${trade.tradeIndex}-${trade.tx_hash}`, allTrades);
         logUtils.log(`Removed ${allTrades.length - uniqueTrades.length} duplicate entries`);
         return uniqueTrades;
     }
