@@ -18,13 +18,18 @@ interface VersionsByDependency {
 }
 
 const PACKAGE_JSON_GLOB = '../../*/package.json';
-const excludes: string[] = JSON.parse(
+const ignore: string[] = JSON.parse(
     fs.readFileSync(path.join(__dirname, '../../../package.json')).toString(),
 ).config.dependenciesWithMultipleVersions.split(' ');
 
 if (require.main === module) {
     const versions = getVersionsByDependency();
-    printVersionsByDependency(versions);
+    const multiples = getDependenciesWithMultipleVersions(versions);
+    printVersionsByDependency(multiples);
+    if (!(Object.keys(multiples).length === 0)) {
+        console.log(`Add space-separated exceptions to root package.json config.dependenciesWithMultipleVersions`);
+        process.exit(1);
+    }
 }
 
 function getDependencies(_path: string): Dependencies {
@@ -39,7 +44,6 @@ function getDependencies(_path: string): Dependencies {
 
 export function getVersionsByDependency(): VersionsByDependency {
     const files = globSync(path.join(__dirname, PACKAGE_JSON_GLOB));
-    console.log(files);
     const versionsByDependency: VersionsByDependency = {};
     files.map(_path => {
         const pathParts = _path.split('/');
@@ -56,28 +60,26 @@ export function getVersionsByDependency(): VersionsByDependency {
     return versionsByDependency;
 }
 
+export function getDependenciesWithMultipleVersions(versionsByDependency: VersionsByDependency): VersionsByDependency {
+    return Object.keys(versionsByDependency)
+        .filter((depName: string) => !ignore.includes(depName) && hasMultipleVersions(versionsByDependency[depName]))
+        .reduce((obj: VersionsByDependency, depName: string) => {
+            obj[depName] = versionsByDependency[depName];
+            return obj;
+        }, {});
+}
 export function hasAnyMultipleVersions(versionsByDependency: VersionsByDependency): boolean {
-    Object.keys(versionsByDependency)
-        .filter((depName: string) => !excludes.includes(depName))
-        .forEach((depName: string): false | undefined => {
-            const versions = versionsByDependency[depName];
-            if (hasMultipleVersions(versions)) {
-                return false;
-            }
-            return;
-        });
-    return true;
+    const multiples = getDependenciesWithMultipleVersions(versionsByDependency);
+    return !(Object.keys(multiples).length === 0);
 }
 
 export function printVersionsByDependency(versionsByDependency: VersionsByDependency): void {
-    Object.keys(versionsByDependency).forEach(depName => {
-        const versions = versionsByDependency[depName];
-        if (!excludes.includes(depName) && hasMultipleVersions(versions)) {
-            utils.log(chalk.bold(depName));
-            Object.keys(versions).forEach(packageName => {
-                utils.log(`├── ${packageName} -> ${versions[packageName]}`);
-            });
-        }
+    Object.keys(versionsByDependency).forEach((depName: string) => {
+        const versions: Versions = versionsByDependency[depName];
+        utils.log(chalk.bold(depName));
+        Object.keys(versions).forEach((packageName: string) => {
+            utils.log(`├── ${packageName} -> ${versions[packageName]}`);
+        });
     });
 }
 
