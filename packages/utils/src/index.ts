@@ -11,4 +11,4 @@ export { errorUtils } from './error_utils';
 export { fetchAsync } from './fetch_async';
 export { signTypedDataUtils } from './sign_typed_data_utils';
 export import AbiEncoder = require('./abi_encoder');
-export { CalldataDecoder } from './calldata_decoder';
+export { ZeroExTransactionDecoder } from './calldata_decoder';
