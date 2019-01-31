@@ -264,14 +264,13 @@ async function recursivelyGatherDependencySources(
 
         if (_.isUndefined(sourcesToAppendTo[importPath])) {
             sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
-            //TODO squadack rename sialala
-            const sialala = await resolver.require(importPath);
-            sourceCodesToAppendTo[importPath] = sialala.source;
+            const importFile = await resolver.require(importPath);
+            sourceCodesToAppendTo[importPath] = importFile.source;
 
             await recursivelyGatherDependencySources(
                 resolver,
                 importPath,
-                sialala.source,
+                importFile.source,
                 fullSources,
                 sourcesToAppendTo,
                 sourceCodesToAppendTo,
