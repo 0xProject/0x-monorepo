@@ -95,7 +95,6 @@ export function getNormalizedErrMsg(errMsg: string): string {
  * @param  source Contract source code
  * @return List of dependendencies
  */
-// export function parseDependencies(contractSource: ContractSource): string[] {
 export function parseDependencies(contractSource: ImportFile): string[] {
     // TODO: Use a proper parser
     const source = contractSource.source;
@@ -120,20 +119,13 @@ export function parseDependencies(contractSource: ImportFile): string[] {
 
 /**
  * Compiles the contracts and prints errors/warnings
- * @param resolver Resolver
  * @param solcInstance Instance of a solc compiler
  * @param standardInput Solidity standard JSON input
  */
-export function compile(
-    // resolver: Resolver,
-    solcInstance: solc.SolcInstance,
-    standardInput: solc.StandardInput,
-): solc.StandardOutput {
+export function compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
     const standardInputStr = JSON.stringify(standardInput);
     const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr, importPath => {
-        // HACK(squadack) i don't want to use callback
-        // all sources should be resolved beforehand
-        throw Error('used callback');
+        throw Error('Used callback. All sources should be resolved beforehand.');
     });
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
     if (!_.isUndefined(compiled.errors)) {
@@ -257,10 +249,10 @@ async function recursivelyGatherDependencySourcesAsync(
              * And we need to append the base path for relative imports.
              */
             importPath = path.resolve(`/${contractFolder}`, importPath);
-            // HACK(squadack)
-            // chcemy uciąć wiodący slash tylko jeśli jest to faktycznie ścieżka bezwględna
-            // TODO obejść to jakoś
-            if (!importPath.startsWith('/home')) {
+
+            // NOTE we want to remove leading slash ONLY if the path to contract
+            // folder is not an absolute path (e.g. path to npm package)
+            if (!contractFolder.startsWith('/')) {
                 importPath = importPath.replace('/', '');
             }
         }

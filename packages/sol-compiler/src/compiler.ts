@@ -226,11 +226,6 @@ export class Compiler {
                     contractsToCompile: [],
                 };
             }
-            // add input to the right version batch
-            // versionToInputs[solcVersion].standardInput.sources[contractSource.path] = {
-            //        content: contractSource.source,
-            // };
-            // versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.url);
         }
 
