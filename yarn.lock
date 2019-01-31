@@ -1551,13 +1551,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-loadable@^5.4.1":
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/@types/react-loadable/-/react-loadable-5.4.1.tgz#bc76978c6d9039e5808797b5ee35f6ae18b7329f"
-  dependencies:
-    "@types/react" "*"
-    "@types/webpack" "*"
-
 "@types/react-loadable@^5.4.2":
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/@types/react-loadable/-/react-loadable-5.4.3.tgz#b3891da6609a869b021319494b27ba85aaa83634"
