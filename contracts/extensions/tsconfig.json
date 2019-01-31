@@ -9,7 +9,6 @@
     "files": [
         "./generated-artifacts/BalanceThresholdFilter.json",
         "./generated-artifacts/DutchAuction.json",
-        "./generated-artifacts/Forwarder.json",
         "./generated-artifacts/OrderMatcher.json",
         "./generated-artifacts/OrderValidator.json"
     ],

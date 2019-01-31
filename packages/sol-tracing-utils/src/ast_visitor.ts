@@ -89,7 +89,9 @@ export class ASTVisitor {
         this._visitStatement(ast);
     }
     public ExpressionStatement(ast: Parser.ExpressionStatement): void {
-        this._visitStatement(ast.expression);
+        if (!_.isNull(ast.expression)) {
+            this._visitStatement(ast.expression);
+        }
     }
     public InlineAssemblyStatement(ast: Parser.InlineAssemblyStatement): void {
         this._visitStatement(ast);

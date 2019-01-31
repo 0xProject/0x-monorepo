@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.1 - _January 17, 2019_
+
+    * Fix a bug where a custom `Geth` tracer didn't return stack entries for `DELEGATECALL` (#1521)
+    * Fix a bug where `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction (#1521)
+    * Fix/simplify handling of revert trace snippets (#1521)
+
 ## v4.0.0 - _January 15, 2019_
 
     * Fix a bug with incorrect parsing of `sourceMaps` due to sources being in an array instead of a map (#1498)

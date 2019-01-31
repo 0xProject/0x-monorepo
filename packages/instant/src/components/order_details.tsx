@@ -77,7 +77,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     }
 
     private _hadErrorFetchingUsdPrice(): boolean {
-        return this.props.ethUsdPrice ? this.props.ethUsdPrice.equals(BIG_NUMBER_ZERO) : false;
+        return this.props.ethUsdPrice ? this.props.ethUsdPrice.isEqualTo(BIG_NUMBER_ZERO) : false;
     }
 
     private _totalCostSecondaryValue(): React.ReactNode {
@@ -156,7 +156,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
         return !_.isUndefined(assetTotalInWei) &&
             !_.isUndefined(selectedAssetUnitAmount) &&
             !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
-            ? assetTotalInWei.div(selectedAssetUnitAmount).ceil()
+            ? assetTotalInWei.div(selectedAssetUnitAmount).integerValue(BigNumber.ROUND_CEIL)
             : undefined;
     }
 

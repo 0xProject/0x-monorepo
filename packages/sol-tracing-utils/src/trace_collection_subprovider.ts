@@ -144,7 +144,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         txHash: string | undefined,
         cb: Callback,
     ): Promise<void> {
-        if (!txData.isFakeTransaction) {
+        if (!(txData.isFakeTransaction || txData.from === txData.to)) {
             // This transaction is a usual transaction. Not a call executed as one.
             // And we don't want it to be executed within a snapshotting period
             await this._lock.acquire();

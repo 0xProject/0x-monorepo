@@ -1,7 +1,7 @@
 **Install**
 
 ```bash
-yarn add @0x/sol-profiler
+yarn add -D @0x/sol-profiler
 ```
 
 **Import**

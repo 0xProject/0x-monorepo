@@ -8,7 +8,7 @@
         "eip158Block": 3,
         "byzantiumBlock": 4,
         "clique": {
-            "period": 1,
+            "period": 0,
             "epoch": 30000
         }
     },

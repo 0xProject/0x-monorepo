@@ -21,7 +21,7 @@ export class OrderFactory {
         const currentBlockTimestamp = await getLatestBlockTimestampAsync();
         const order = ({
             senderAddress: constants.NULL_ADDRESS,
-            expirationTimeSeconds: new BigNumber(currentBlockTimestamp).add(tenMinutesInSeconds),
+            expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds),
             salt: generatePseudoRandomSalt(),
             takerAddress: constants.NULL_ADDRESS,
             ...this._defaultOrderParams,

@@ -13,6 +13,6 @@ export function generatePseudoRandomSalt(): BigNumber {
     // Source: https://mikemcl.github.io/bignumber.js/#random
     const randomNumber = BigNumber.random(MAX_DIGITS_IN_UNSIGNED_256_INT);
     const factor = new BigNumber(10).pow(MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
-    const salt = randomNumber.times(factor).round();
+    const salt = randomNumber.times(factor).integerValue();
     return salt;
 }
