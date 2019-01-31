@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Fix OrderValidatorWrapper constructor to use the correct address",
+                "pr": 1568
+            }
+        ]
+    },
+    {
         "version": "6.0.0",
         "changes": [
             {
