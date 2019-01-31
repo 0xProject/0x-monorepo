@@ -53,7 +53,7 @@
         "files": [
             {
                 "path": "packages/0x.js/_bundles/index.min.js",
-                "maxSize": "700kB"
+                "maxSize": "800kB"
             },
             {
                 "path": "packages/instant/umd/instant.js",
