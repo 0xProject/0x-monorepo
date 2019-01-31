@@ -7,7 +7,10 @@ import glob = require('glob');
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as pluralize from 'pluralize';
-import { gatherSources, ImportFile, ResolverEngine, SolidityImportResolver } from 'resolver-engine';
+
+import { ResolverEngine } from '@resolver-engine/core';
+import { gatherSources, gatherSourcesAndCanonizeImports, ImportFile } from '@resolver-engine/imports';
+import { ImportsFsEngine } from '@resolver-engine/imports-fs';
 import * as semver from 'semver';
 import solc = require('solc');
 
@@ -98,7 +101,7 @@ export class Compiler {
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._contractsDir = path.resolve(this._contractsDir);
-        this._resolver = SolidityImportResolver().addResolver(panoramix(this._contractsDir));
+        this._resolver = ImportsFsEngine().addResolver(panoramix(this._contractsDir));
     }
     /**
      * Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
@@ -249,7 +252,7 @@ export class Compiler {
                 }) with Solidity v${solcVersion}...`,
             );
 
-            const depList = await gatherSources(input.contractsToCompile, process.cwd());
+            const depList = await gatherSources(input.contractsToCompile, process.cwd(), this._resolver);
             for (const infile of depList) {
                 input.standardInput.sources[infile.url] = {
                     content: infile.source,

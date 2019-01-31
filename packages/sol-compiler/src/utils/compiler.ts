@@ -1,4 +1,6 @@
 import { fetchAsync, logUtils } from '@0x/utils';
+import { ResolverEngine } from '@resolver-engine/core';
+import { ImportFile } from '@resolver-engine/imports';
 import chalk from 'chalk';
 import { ContractArtifact } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
@@ -12,7 +14,6 @@ import { binPaths } from '../solc/bin_paths';
 import { constants } from './constants';
 import { fsWrapper } from './fs_wrapper';
 import { CompilationError } from './types';
-import { ImportFile, ResolverEngine } from 'resolver-engine';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.
@@ -263,6 +264,7 @@ async function recursivelyGatherDependencySources(
 
         if (_.isUndefined(sourcesToAppendTo[importPath])) {
             sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
+            //TODO squadack rename sialala
             const sialala = await resolver.require(importPath);
             sourceCodesToAppendTo[importPath] = sialala.source;
 
