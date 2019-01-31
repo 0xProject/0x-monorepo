@@ -163,10 +163,9 @@ export async function getSourceTreeHashAsync(
     resolver: ResolverEngine<ImportFile>,
     importPath: string,
 ): Promise<Buffer> {
-    const imFile: ImportFile = await resolver.require(importPath);
-    const contractSource = { source: imFile.source, path: imFile.url, absolutePath: imFile.url };
-    const dependencies = parseDependencies(imFile);
-    const sourceHash = ethUtil.sha3(contractSource.source);
+    const importFile: ImportFile = await resolver.require(importPath);
+    const dependencies = parseDependencies(importFile);
+    const sourceHash = ethUtil.sha3(importFile.source);
     if (dependencies.length === 0) {
         return sourceHash;
     } else {

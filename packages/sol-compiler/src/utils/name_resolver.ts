@@ -10,7 +10,6 @@ const SOLIDITY_FILE_EXTENSION = '.sol';
 /**
  * This resolver finds and returns (given only contract name) path to contract file in given directory.
  */
-
 export function NameResolver(contractDir: string): SubResolver {
     return async (resolvePath: string) => {
         const results = await globAsync(`${contractDir}/**/${resolvePath}${SOLIDITY_FILE_EXTENSION}`);
