@@ -102,7 +102,7 @@ export class NextWhy extends React.Component {
                 <DocumentTitle title="Features & Benefits - 0x" />
                 <Hero
                     title="The exchange layer for the crypto economy"
-                    description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."
+                    description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."
                     actions={buildAction}
                 />
 
@@ -110,7 +110,7 @@ export class NextWhy extends React.Component {
                     <Definition
                         title="Support for all Ethereum Standards"
                         titleSize="small"
-                        description="0x Protocol facitilites the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets."
+                        description="0x Protocol facilitates the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets."
                         icon="supportForAllEthereumStandards"
                         iconSize="large"
                         isInline={true}
