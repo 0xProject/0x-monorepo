@@ -89,7 +89,7 @@ export function getNormalizedErrMsg(errMsg: string): string {
     return normalizedErrMsg;
 }
 
-//TODO squadack - czy tego po prostu nie wywalic? mamy swoją funkcję do wyciągania dependencies
+// TODO consider replacing parseDependencies() with resolver-engine's findImports()
 /**
  * Parses the contract source code and extracts the dendencies
  * @param  source Contract source code
@@ -167,7 +167,10 @@ function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]): void {
  * Gets the source tree hash for a file and its dependencies.
  * @param fileName Name of contract file.
  */
-export async function getSourceTreeHash(resolver: ResolverEngine<ImportFile>, importPath: string): Promise<Buffer> {
+export async function getSourceTreeHashAsync(
+    resolver: ResolverEngine<ImportFile>,
+    importPath: string,
+): Promise<Buffer> {
     const imFile: ImportFile = await resolver.require(importPath);
     const contractSource = { source: imFile.source, path: imFile.url, absolutePath: imFile.url };
     const dependencies = parseDependencies(imFile);
@@ -176,7 +179,7 @@ export async function getSourceTreeHash(resolver: ResolverEngine<ImportFile>, im
         return sourceHash;
     } else {
         const dependencySourceTreeHashes = await Promise.all(
-            _.map(dependencies, async (dependency: string) => getSourceTreeHash(resolver, dependency)),
+            _.map(dependencies, async (dependency: string) => getSourceTreeHashAsync(resolver, dependency)),
         );
         const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
         const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
@@ -192,7 +195,7 @@ export async function getSourceTreeHash(resolver: ResolverEngine<ImportFile>, im
  * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
  * disk (via the aforementioned `resolver.source`).
  */
-export async function getSourcesWithDependencies(
+export async function getSourcesWithDependenciesAsync(
     resolver: ResolverEngine<ImportFile>,
     contractPath: string,
     fullSources: { [sourceName: string]: { id: number } },
@@ -200,7 +203,7 @@ export async function getSourcesWithDependencies(
     const sources = { [contractPath]: { id: fullSources[contractPath].id } };
     const pamparampam = await resolver.require(contractPath);
     const sourceCodes = { [contractPath]: pamparampam.source };
-    await recursivelyGatherDependencySources(
+    await recursivelyGatherDependencySourcesAsync(
         resolver,
         contractPath,
         sourceCodes[contractPath],
@@ -211,7 +214,7 @@ export async function getSourcesWithDependencies(
     return { sourceCodes, sources };
 }
 
-async function recursivelyGatherDependencySources(
+async function recursivelyGatherDependencySourcesAsync(
     resolver: ResolverEngine<ImportFile>,
     contractPath: string,
     contractSource: string,
@@ -267,7 +270,7 @@ async function recursivelyGatherDependencySources(
             const importFile = await resolver.require(importPath);
             sourceCodesToAppendTo[importPath] = importFile.source;
 
-            await recursivelyGatherDependencySources(
+            await recursivelyGatherDependencySourcesAsync(
                 resolver,
                 importPath,
                 importFile.source,

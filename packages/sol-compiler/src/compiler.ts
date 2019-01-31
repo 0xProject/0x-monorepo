@@ -22,8 +22,8 @@ import {
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getSolcAsync,
-    getSourcesWithDependencies,
-    getSourceTreeHash,
+    getSourcesWithDependenciesAsync,
+    getSourceTreeHashAsync,
     parseSolidityVersionRange,
 } from './utils/compiler';
 import { constants } from './utils/constants';
@@ -145,7 +145,7 @@ export class Compiler {
                 }
             }
 
-            const pathsToWatch = await this._getPathsToWatch();
+            const pathsToWatch = await this._getPathsToWatchAsync();
             watcher.add(pathsToWatch);
         };
         await onFileChangedAsync();
@@ -158,7 +158,7 @@ export class Compiler {
         });
     }
 
-    private async _getPathsToWatch(): Promise<string[]> {
+    private async _getPathsToWatchAsync(): Promise<string[]> {
         const contractNames = await this._getContractNamesToCompileAsync();
         const spyResolver = new SpyResolver(this._resolver);
         for (const contractName of contractNames) {
@@ -167,7 +167,7 @@ export class Compiler {
             // We just want to call a SpyResolver on each contracts and it's dependencies and
             // this is a convenient way to reuse the existing code that does that.
             // We can then get all the relevant paths from the `spyResolver` below.
-            getSourceTreeHash(spyResolver, contractSource.url);
+            await getSourceTreeHashAsync(spyResolver, contractSource.url);
         }
         const pathsToWatch: string[] = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.url));
         return pathsToWatch;
@@ -176,7 +176,7 @@ export class Compiler {
     private async _getContractNamesToCompileAsync(): Promise<string[]> {
         let contractNamesToCompile;
         if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
-            const allContracts = await globAsync(this._contractsDir + '/**/*' + constants.SOLIDITY_FILE_EXTENSION);
+            const allContracts = await globAsync(`${this._contractsDir}/**/*${constants.SOLIDITY_FILE_EXTENSION}`);
             contractNamesToCompile = _.map(allContracts, contractSource =>
                 path.basename(contractSource, constants.SOLIDITY_FILE_EXTENSION),
             );
@@ -201,7 +201,7 @@ export class Compiler {
 
         for (const contractName of contractNames) {
             const contractSource = await this._resolver.require(contractName);
-            const sourceTreeHash = await getSourceTreeHash(this._resolver, contractSource.url);
+            const sourceTreeHash = await getSourceTreeHashAsync(this._resolver, contractSource.url);
             const sourceTreeHashHex = sourceTreeHash.toString('hex');
             const contractData = {
                 contractName,
@@ -308,7 +308,7 @@ export class Compiler {
         // contains listings for every contract compiled during the compiler invocation that compiled the contract
         // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
         // the relevant sources:
-        const { sourceCodes, sources } = await getSourcesWithDependencies(
+        const { sourceCodes, sources } = await getSourcesWithDependenciesAsync(
             this._resolver,
             contractPath,
             compilerOutput.sources,
