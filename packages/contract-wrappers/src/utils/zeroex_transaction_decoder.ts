@@ -4,8 +4,7 @@ import { SimpleContractArtifact } from '@0x/types';
 import { AbiDefinition, ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { TransactionDecoder } from './transaction_decoder';
-import { DeployedContractInfo, DeployedContractInfoByName, TransactionData, TransactionProperties } from './types';
+import { DeployedContractInfo, DeployedContractInfoByName, TransactionData, TransactionDecoder, TransactionProperties } from '@0x/utils';
 
 export class ZeroExTransactionDecoder extends TransactionDecoder {
     private static _instance: ZeroExTransactionDecoder;
