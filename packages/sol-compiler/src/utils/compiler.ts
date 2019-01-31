@@ -125,7 +125,7 @@ export function parseDependencies(contractSource: ImportFile): string[] {
 export function compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
     const standardInputStr = JSON.stringify(standardInput);
     const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr, importPath => {
-        throw Error('Used callback. All sources should be resolved beforehand.');
+        throw new Error('Used callback. All sources should be resolved beforehand.');
     });
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
     if (!_.isUndefined(compiled.errors)) {
