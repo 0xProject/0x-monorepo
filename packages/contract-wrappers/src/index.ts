@@ -37,6 +37,7 @@ export { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapp
 export { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
+export { ZeroExTransactionDecoder } from './utils/zeroex_transaction_decoder';
 
 export {
     ContractWrappersError,

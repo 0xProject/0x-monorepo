@@ -6,29 +6,43 @@ import { DeployedContractInfo, FunctionInfoBySelector, TransactionData, Transact
 
 export class TransactionDecoder {
     private readonly _functionInfoBySelector: FunctionInfoBySelector = {};
-
-    private static _getFunctionSelector(calldata: string): string {
+    /**
+     * Retrieves the function selector from tranasction data.
+     * @param txData hex-encoded transaction data.
+     * @return hex-encoded function selector.
+     */
+    private static _getFunctionSelector(txData: string): string {
         const functionSelectorLength = 10;
-        if (!calldata.startsWith('0x') || calldata.length < functionSelectorLength) {
+        if (!txData.startsWith('0x') || txData.length < functionSelectorLength) {
             throw new Error(
-                `Malformed calldata. Must include hex prefix '0x' and 4-byte function selector. Got '${calldata}'`,
+                `Malformed transaction data. Must include a hex prefix '0x' and 4-byte function selector. Got '${txData}'`,
             );
         }
         const functionSelector = calldata.substr(0, functionSelectorLength);
         return functionSelector;
     }
-
-    public addABI(abiArray: AbiDefinition[], contractName: string, deploymentInfos?: DeployedContractInfo[]): void {
-        const functionAbis: MethodAbi[] = _.filter(abiArray, abiEntry => {
+    /**
+     * Adds a set of ABI definitions, after which transaction data targeting these ABI's can be decoded.
+     * Additional properties can be included to disambiguate similar ABI's. For example, if two functions
+     * have the same signature but different parameter names, then their ABI definitions can be disambiguated
+     * by specifying a contract name.
+     * @param abiDefinitions ABI definitions for a given contract.
+     * @param contractName Name of contract that encapsulates the ABI definitions (optional).
+     * @param deploymentInfos A collection of network/address pairs where this contract is deployed (optional).
+     */
+    public addABI(abiDefinitions: AbiDefinition[], contractName?: string, deploymentInfos?: DeployedContractInfo[]): void {
+        // Disregard definitions that are not functions
+        const functionAbis: MethodAbi[] = _.filter(abiDefinitions, abiEntry => {
             return abiEntry.type === 'function';
         });
+        // Record function ABI's
         _.each(functionAbis, functionAbi => {
             const abiEncoder = new AbiEncoder.Method(functionAbi);
             const functionSelector = abiEncoder.getSelector();
             if (!(functionSelector in this._functionInfoBySelector)) {
                 this._functionInfoBySelector[functionSelector] = [];
             }
-            // Recored deployed versions of this decoder
+            // Recored a copy of this ABI for each deployment
             const functionSignature = abiEncoder.getSignature();
             _.each(deploymentInfos, deploymentInfo => {
                 this._functionInfoBySelector[functionSelector].push({
@@ -39,7 +53,7 @@ export class TransactionDecoder {
                     networkId: deploymentInfo.networkId,
                 });
             });
-            // If there isn't a deployed version of this contract, record it without address/network id
+            // There is no deployment info for this contract; record it without an address/network id
             if (_.isEmpty(deploymentInfos)) {
                 this._functionInfoBySelector[functionSelector].push({
                     functionSignature,
@@ -49,9 +63,15 @@ export class TransactionDecoder {
             }
         });
     }
-
-    public decode(calldata: string, txProperties_?: TransactionProperties): TransactionData {
-        const functionSelector = TransactionDecoder._getFunctionSelector(calldata);
+    /**
+     * Decodes transaction data for a known ABI.
+     * @param txData hex-encoded transaction data.
+     * @param txProperties Properties about the transaction used to disambiguate similar ABI's (optional).
+     * @return Decoded transaction data. Includes: function name and signature, along with the decoded arguments.
+     */
+    public decode(txData: string, txProperties_?: TransactionProperties): TransactionData {
+        // Lookup 
+        const functionSelector = TransactionDecoder._getFunctionSelector(txData);
         const txProperties = _.isUndefined(txProperties_) ? {} : txProperties_;
         const candidateFunctionInfos = this._functionInfoBySelector[functionSelector];
         if (_.isUndefined(candidateFunctionInfos)) {
@@ -75,7 +95,7 @@ export class TransactionDecoder {
         }
         const functionName = functionInfo.abiEncoder.getDataItem().name;
         const functionSignature = functionInfo.abiEncoder.getSignatureType();
-        const functionArguments = functionInfo.abiEncoder.decode(calldata);
+        const functionArguments = functionInfo.abiEncoder.decode(txData);
         const decodedCalldata = {
             functionName,
             functionSignature,
