@@ -1,26 +1,27 @@
 import { AbiDefinition, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
+
 import { AbiEncoder } from '.';
-import { FunctionInfoBySelector, TransactionData, TransactionProperties, DeployedContractInfo } from './types';
+import { DeployedContractInfo, FunctionInfoBySelector, TransactionData, TransactionProperties } from './types';
 
 export class TransactionDecoder {
-    private _functionInfoBySelector: FunctionInfoBySelector = {};
-    
-    private static getFunctionSelector(calldata: string): string {
-        if (!calldata.startsWith('0x') || calldata.length < 10) {
-            throw new Error(`Malformed calldata. Must include hex prefix '0x' and 4-byte function selector. Got '${calldata}'`);
+    private readonly _functionInfoBySelector: FunctionInfoBySelector = {};
+
+    private static _getFunctionSelector(calldata: string): string {
+        const functionSelectorLength = 10;
+        if (!calldata.startsWith('0x') || calldata.length < functionSelectorLength) {
+            throw new Error(
+                `Malformed calldata. Must include hex prefix '0x' and 4-byte function selector. Got '${calldata}'`,
+            );
         }
-        const functionSelector = calldata.substr(0, 10);
+        const functionSelector = calldata.substr(0, functionSelectorLength);
         return functionSelector;
     }
 
     public addABI(abiArray: AbiDefinition[], contractName: string, deploymentInfos?: DeployedContractInfo[]): void {
-        if (_.isEmpty(abiArray)) {
-            return;
-        }
-        const functionAbis = _.filter(abiArray, abiEntry => {
+        const functionAbis: MethodAbi[] = _.filter(abiArray, abiEntry => {
             return abiEntry.type === 'function';
-        }) as MethodAbi[];
+        });
         _.each(functionAbis, functionAbi => {
             const abiEncoder = new AbiEncoder.Method(functionAbi);
             const functionSelector = abiEncoder.getSelector();
@@ -50,21 +51,27 @@ export class TransactionDecoder {
     }
 
     public decode(calldata: string, txProperties_?: TransactionProperties): TransactionData {
-        const functionSelector = TransactionDecoder.getFunctionSelector(calldata);
+        const functionSelector = TransactionDecoder._getFunctionSelector(calldata);
         const txProperties = _.isUndefined(txProperties_) ? {} : txProperties_;
         const candidateFunctionInfos = this._functionInfoBySelector[functionSelector];
         if (_.isUndefined(candidateFunctionInfos)) {
             throw new Error(`No functions registered for selector '${functionSelector}'`);
         }
-        const functionInfo = _.find(candidateFunctionInfos, (txDecoder) => {
-            return  (_.isUndefined(txProperties.contractName) || _.toLower(txDecoder.contractName) === _.toLower(txProperties.contractName)) &&
-                    (_.isUndefined(txProperties.contractAddress) || txDecoder.contractAddress === txProperties.contractAddress) &&
-                    (_.isUndefined(txProperties.networkId) || txDecoder.networkId === txProperties.networkId);
+        const functionInfo = _.find(candidateFunctionInfos, txDecoder => {
+            return (
+                (_.isUndefined(txProperties.contractName) ||
+                    _.toLower(txDecoder.contractName) === _.toLower(txProperties.contractName)) &&
+                (_.isUndefined(txProperties.contractAddress) ||
+                    txDecoder.contractAddress === txProperties.contractAddress) &&
+                (_.isUndefined(txProperties.networkId) || txDecoder.networkId === txProperties.networkId)
+            );
         });
         if (_.isUndefined(functionInfo)) {
             throw new Error(`No function registered with properties: ${JSON.stringify(txProperties)}.`);
         } else if (_.isUndefined(functionInfo.abiEncoder)) {
-            throw new Error(`Function ABI Encoder is not defined, for function with properties: ${JSON.stringify(txProperties)}.`);
+            throw new Error(
+                `Function ABI Encoder is not defined, for function with properties: ${JSON.stringify(txProperties)}.`,
+            );
         }
         const functionName = functionInfo.abiEncoder.getDataItem().name;
         const functionSignature = functionInfo.abiEncoder.getSignatureType();
@@ -72,9 +79,8 @@ export class TransactionDecoder {
         const decodedCalldata = {
             functionName,
             functionSignature,
-            functionArguments
-        }
+            functionArguments,
+        };
         return decodedCalldata;
     }
 }
-
