@@ -108,7 +108,7 @@ export function parseDependencies(contractSource: ImportFile): string[] {
             if (!_.isNull(dependencyMatch)) {
                 let dependencyPath = dependencyMatch[1];
                 if (dependencyPath.startsWith('.')) {
-                    dependencyPath = path.join(path.dirname(contractSource.url), dependencyPath); // TODO squadack implicite zamieniłem path na absolutePath(url)
+                    dependencyPath = path.join(path.dirname(contractSource.url), dependencyPath);
                 }
                 dependencies.push(dependencyPath);
             }
