@@ -18,7 +18,7 @@ export class TransactionDecoder {
                 `Malformed transaction data. Must include a hex prefix '0x' and 4-byte function selector. Got '${txData}'`,
             );
         }
-        const functionSelector = calldata.substr(0, functionSelectorLength);
+        const functionSelector = txData.substr(0, functionSelectorLength);
         return functionSelector;
     }
     /**
@@ -32,9 +32,9 @@ export class TransactionDecoder {
      */
     public addABI(abiDefinitions: AbiDefinition[], contractName?: string, deploymentInfos?: DeployedContractInfo[]): void {
         // Disregard definitions that are not functions
-        const functionAbis: MethodAbi[] = _.filter(abiDefinitions, abiEntry => {
+        const functionAbis = _.filter(abiDefinitions, abiEntry => {
             return abiEntry.type === 'function';
-        });
+        }) as MethodAbi[];
         // Record function ABI's
         _.each(functionAbis, functionAbi => {
             const abiEncoder = new AbiEncoder.Method(functionAbi);
