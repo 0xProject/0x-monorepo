@@ -202,7 +202,7 @@ jobs:
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
@@ -250,7 +250,7 @@ jobs:
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
@@ -278,7 +278,7 @@ jobs:
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
