@@ -329,14 +329,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
         {
-            description: 'A node.js SDK for trading on the DDEX relayer',
-            link: {
-                to: 'https://www.npmjs.com/package/ddex-api',
-                title: 'DDEX Node.js SDK',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
             description: "The ERCdEX Trade Widget let's any website provide token liquidity to it's users",
             link: {
                 to: 'https://github.com/ERCdEX/widget',
