@@ -51,6 +51,17 @@ export const orderHashUtils = {
      * @return  A Buffer containing the resulting orderHash from hashing the supplied order
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
+        try {
+            assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
+        } catch (error) {
+            if (_.includes(error.message, INVALID_TAKER_FORMAT)) {
+                const errMsg =
+                    'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
+                throw new Error(errMsg);
+            }
+            throw error;
+        }
+
         const typedData = eip712Utils.createOrderTypedData(order);
         const orderHashBuff = signTypedDataUtils.generateTypedDataHash(typedData);
         return orderHashBuff;
