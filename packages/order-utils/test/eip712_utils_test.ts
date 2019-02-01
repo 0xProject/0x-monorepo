@@ -29,14 +29,12 @@ describe('EIP712 Utils', () => {
     });
     describe('createTypedData', () => {
         it('adds in the EIP712DomainSeparator', () => {
-            const typedData = eip712Utils.createZeroExTransactionTypedData(
-                {
-                    salt: new BigNumber('0'),
-                    data: constants.NULL_BYTES,
-                    signerAddress: constants.NULL_ADDRESS,
-                },
-                constants.NULL_ADDRESS,
-            );
+            const typedData = eip712Utils.createZeroExTransactionTypedData({
+                salt: new BigNumber('0'),
+                data: constants.NULL_BYTES,
+                signerAddress: constants.NULL_ADDRESS,
+                verifyingContractAddress: constants.NULL_ADDRESS,
+            });
             expect(typedData.primaryType).to.eq(constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.name);
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
         });

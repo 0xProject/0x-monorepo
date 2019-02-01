@@ -63,11 +63,8 @@ export const eip712Utils = {
      * @param   exchangeAddress The address of the exchange contract
      * @return  A typed data object
      */
-    createZeroExTransactionTypedData: (
-        zeroExTransaction: ZeroExTransaction,
-        exchangeAddress: string,
-    ): EIP712TypedData => {
-        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+    createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
+        assert.isETHAddressHex('verifyingContractAddress', zeroExTransaction.verifyingContractAddress);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
@@ -76,7 +73,7 @@ export const eip712Utils = {
             constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.name,
             { ZeroExTransaction: constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
-            exchangeAddress,
+            zeroExTransaction.verifyingContractAddress,
         );
         return typedData;
     },

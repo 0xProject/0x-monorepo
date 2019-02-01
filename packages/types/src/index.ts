@@ -45,9 +45,14 @@ export interface SignedOrder extends Order {
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */
 export interface ZeroExTransaction {
+    verifyingContractAddress: string;
     salt: BigNumber;
     signerAddress: string;
     data: string;
+}
+
+export interface SignedZeroExTransaction extends ZeroExTransaction {
+    signature: string;
 }
 
 /**
