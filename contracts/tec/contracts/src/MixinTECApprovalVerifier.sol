@@ -151,6 +151,11 @@ contract MixinTECApprovalVerifier is
         internal
         view
     {
+        // Do not check approval if sender is the feeRecipient of the order
+        if (order.feeRecipientAddress == msg.sender) {
+            return;
+        }
+
         // Create approval message
         TECApproval memory approval = TECApproval({
             transactionHash: transactionHash,
@@ -221,14 +226,17 @@ contract MixinTECApprovalVerifier is
         
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i < ordersLength; i++) {
-            // Get index of feeRecipient in list of approval signers
-            (bool doesExist,) = approvalSignerAddresses.indexOf(orders[i].feeRecipientAddress);
+            // Only check approval if sender is not feeRecipient of order
+            if (orders[i].feeRecipientAddress != msg.sender) {
+                // Get index of feeRecipient in list of approval signers
+                (bool doesExist,) = approvalSignerAddresses.indexOf(orders[i].feeRecipientAddress);
 
-            // Ensure approval signer exists
-            require(
-                doesExist,
-                "INVALID_APPROVAL_SIGNATURE"
-            );
+                // Ensure approval signer exists
+                require(
+                    doesExist,
+                    "INVALID_APPROVAL_SIGNATURE"
+                );
+            }
         }
     }
 }
