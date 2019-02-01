@@ -32,7 +32,7 @@
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "generated-artifacts/@(TEC).json"
+        "abis": "generated-artifacts/@(TEC|TestLibs).json"
     },
     "repository": {
         "type": "git",
