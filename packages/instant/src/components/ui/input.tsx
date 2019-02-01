@@ -25,7 +25,7 @@ export const Input = styled.input<InputProps>`
         background: transparent;
         outline: none;
         border: none;
-        &[type="number"] {
+        &[type='number'] {
             -moz-appearance: textfield;
         }
         &::placeholder {
