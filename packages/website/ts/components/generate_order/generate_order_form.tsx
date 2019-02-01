@@ -1,6 +1,7 @@
-import { ECSignature, Order, ZeroEx } from '0x.js';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
+import { colors } from '@0x/react-shared';
+import { Order as ZeroExOrder } from '@0x/types';
+import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -19,7 +20,16 @@ import { SwapIcon } from 'ts/components/ui/swap_icon';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, HashData, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import {
+    AlertTypes,
+    BlockchainErrs,
+    HashData,
+    PortalOrder,
+    Side,
+    SideToAssetToken,
+    Token,
+    TokenByAddress,
+} from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -40,12 +50,14 @@ interface GenerateOrderFormProps {
     orderExpiryTimestamp: BigNumber;
     networkId: number;
     userAddress: string;
-    orderECSignature: ECSignature;
+    orderSignature: string;
     orderTakerAddress: string;
     orderSalt: BigNumber;
     sideToAssetToken: SideToAssetToken;
     tokenByAddress: TokenByAddress;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface GenerateOrderFormState {
@@ -55,6 +67,10 @@ interface GenerateOrderFormState {
 }
 
 export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, GenerateOrderFormState> {
+    public static defaultProps: Partial<GenerateOrderFormProps> = {
+        isFullWidth: false,
+        shouldHideHeader: false,
+    };
     constructor(props: GenerateOrderFormProps) {
         super(props);
         this.state = {
@@ -63,10 +79,10 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             signingState: SigningState.UNSIGNED,
         };
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public render() {
+    public render(): React.ReactNode {
         const dispatcher = this.props.dispatcher;
         const depositTokenAddress = this.props.sideToAssetToken[Side.Deposit].address;
         const depositToken = this.props.tokenByAddress[depositTokenAddress];
@@ -78,11 +94,16 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                                   specified, anyone is able to fill it.';
         const exchangeContractIfExists = this.props.blockchain.getExchangeContractAddressIfExists();
         const initialTakerAddress =
-            this.props.orderTakerAddress === ZeroEx.NULL_ADDRESS ? '' : this.props.orderTakerAddress;
+            this.props.orderTakerAddress === constants.NULL_ADDRESS ? '' : this.props.orderTakerAddress;
+        const rootClassName = this.props.isFullWidth ? 'clearfix mb2' : 'clearfix mb2 lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix mb2 lg-px4 md-px4 sm-px2">
-                <h3>Generate an order</h3>
-                <Divider />
+            <div className={rootClassName}>
+                {!this.props.shouldHideHeader && (
+                    <div>
+                        <h3>Generate an order</h3>
+                        <Divider />
+                    </div>
+                )}
                 <div className="mx-auto" style={{ maxWidth: 580 }}>
                     <div className="pt3">
                         <div className="mx-auto clearfix">
@@ -200,7 +221,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     <OrderJSON
                         exchangeContractIfExists={exchangeContractIfExists}
                         orderExpiryTimestamp={this.props.orderExpiryTimestamp}
-                        orderECSignature={this.props.orderECSignature}
+                        orderSignature={this.props.orderSignature}
                         orderTakerAddress={this.props.orderTakerAddress}
                         orderMakerAddress={this.props.userAddress}
                         orderSalt={this.props.orderSalt}
@@ -214,17 +235,17 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             </div>
         );
     }
-    private _onTokenAmountChange(token: Token, side: Side, isValid: boolean, amount?: BigNumber) {
+    private _onTokenAmountChange(token: Token, side: Side, _isValid: boolean, amount?: BigNumber): void {
         this.props.dispatcher.updateChosenAssetToken(side, {
             address: token.address,
             amount,
         });
     }
-    private _onCloseOrderJSONDialog() {
+    private _onCloseOrderJSONDialog(): void {
         // Upon closing the order JSON dialog, we update the orderSalt stored in the Redux store
         // with a new value so that if a user signs the identical order again, the newly signed
         // orderHash will not collide with the previously generated orderHash.
-        this.props.dispatcher.updateOrderSalt(ZeroEx.generatePseudoRandomSalt());
+        this.props.dispatcher.updateOrderSalt(generatePseudoRandomSalt());
         this.setState({
             signingState: SigningState.UNSIGNED,
         });
@@ -242,7 +263,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             userAddressIfExists,
             debitToken.address,
         );
-        const receiveAmount = this.props.sideToAssetToken[Side.Receive].amount;
+        const receiveToken = this.props.sideToAssetToken[Side.Receive];
+        const receiveAmount = receiveToken.amount;
         if (
             !_.isUndefined(debitToken.amount) &&
             !_.isUndefined(receiveAmount) &&
@@ -252,24 +274,28 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             debitBalance.gte(debitToken.amount) &&
             debitAllowance.gte(debitToken.amount)
         ) {
-            const didSignSuccessfully = await this._signTransactionAsync();
-            if (didSignSuccessfully) {
-                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-                const eventLabel = `${this.props.tokenByAddress[debitToken.address].symbol}-${networkName}`;
-                analytics.logEvent('Portal', 'Sign Order Success', eventLabel, debitToken.amount.toNumber());
+            const signedOrder = await this._signTransactionAsync();
+            const doesSignedOrderExist = !_.isUndefined(signedOrder);
+            if (doesSignedOrderExist) {
+                analytics.trackOrderEvent('Sign Order Success', signedOrder);
                 this.setState({
                     globalErrMsg: '',
                     shouldShowIncompleteErrs: false,
                 });
             }
-            return didSignSuccessfully;
+            return doesSignedOrderExist;
         } else {
             let globalErrMsg = 'You must fix the above errors in order to generate a valid order';
             if (this.props.userAddress === '') {
                 globalErrMsg = 'You must enable wallet communication';
                 this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             }
-            analytics.logEvent('Portal', 'Sign Order Failure', globalErrMsg);
+            analytics.track('Sign Order Failure', {
+                makerTokenAmount: debitToken.amount.toString(),
+                makerToken: this.props.tokenByAddress[debitToken.address].symbol,
+                takerTokenAmount: receiveToken.amount.toString(),
+                takerToken: this.props.tokenByAddress[receiveToken.address].symbol,
+            });
             this.setState({
                 globalErrMsg,
                 shouldShowIncompleteErrs: true,
@@ -277,41 +303,45 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             return false;
         }
     }
-    private async _signTransactionAsync(): Promise<boolean> {
+    private async _signTransactionAsync(): Promise<PortalOrder | undefined> {
         this.setState({
             signingState: SigningState.SIGNING,
         });
-        const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
-        if (_.isUndefined(exchangeContractAddr)) {
+        const exchangeAddress = this.props.blockchain.getExchangeContractAddressIfExists();
+        if (_.isUndefined(exchangeAddress)) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             this.setState({
                 signingState: SigningState.UNSIGNED,
             });
-            return false;
+            return undefined;
         }
         const hashData = this.props.hashData;
 
-        const zeroExOrder: Order = {
-            exchangeContractAddress: exchangeContractAddr,
-            expirationUnixTimestampSec: hashData.orderExpiryTimestamp,
-            feeRecipient: hashData.feeRecipientAddress,
-            maker: hashData.orderMakerAddress,
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(hashData.depositTokenContractAddr);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(hashData.receiveTokenContractAddr);
+        const zeroExOrder: ZeroExOrder = {
+            senderAddress: constants.NULL_ADDRESS,
+            exchangeAddress,
+            expirationTimeSeconds: hashData.orderExpiryTimestamp,
+            feeRecipientAddress: hashData.feeRecipientAddress,
+            makerAddress: hashData.orderMakerAddress,
             makerFee: hashData.makerFee,
-            makerTokenAddress: hashData.depositTokenContractAddr,
-            makerTokenAmount: hashData.depositAmount,
+            makerAssetData,
+            makerAssetAmount: hashData.depositAmount,
             salt: hashData.orderSalt,
-            taker: hashData.orderTakerAddress,
+            takerAddress: hashData.orderTakerAddress,
             takerFee: hashData.takerFee,
-            takerTokenAddress: hashData.receiveTokenContractAddr,
-            takerTokenAmount: hashData.receiveAmount,
+            takerAssetData,
+            takerAssetAmount: hashData.receiveAmount,
         };
-        const orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
+        const orderHash = orderHashUtils.getOrderHashHex(zeroExOrder);
 
         let globalErrMsg = '';
+        let order;
         try {
-            const ecSignature = await this.props.blockchain.signOrderHashAsync(orderHash);
-            const order = utils.generateOrder(
-                exchangeContractAddr,
+            const signature = await this.props.blockchain.signOrderHashAsync(orderHash);
+            order = utils.generateOrder(
+                exchangeAddress,
                 this.props.sideToAssetToken,
                 hashData.orderExpiryTimestamp,
                 this.props.orderTakerAddress,
@@ -319,7 +349,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 hashData.makerFee,
                 hashData.takerFee,
                 hashData.feeRecipientAddress,
-                ecSignature,
+                signature,
                 this.props.tokenByAddress,
                 hashData.orderSalt,
             );
@@ -337,18 +367,18 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 globalErrMsg = 'An unexpected error occured. Please try refreshing the page';
                 logUtils.log(`Unexpected error occured: ${err}`);
                 logUtils.log(err.stack);
-                await errorReporter.reportAsync(err);
+                errorReporter.report(err);
             }
         }
         this.setState({
             signingState: globalErrMsg === '' ? SigningState.SIGNED : SigningState.UNSIGNED,
             globalErrMsg,
         });
-        return globalErrMsg === '';
+        return order;
     }
     private _updateOrderAddress(address?: string): void {
         if (!_.isUndefined(address)) {
-            const normalizedAddress = _.isEmpty(address) ? ZeroEx.NULL_ADDRESS : address;
+            const normalizedAddress = _.isEmpty(address) ? constants.NULL_ADDRESS : address;
             this.props.dispatcher.updateOrderTakerAddress(normalizedAddress);
         }
     }

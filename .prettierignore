@@ -1,7 +1,14 @@
 lib
 .nyc_output
-/packages/contracts/src/artifacts
+/packages/contracts/generated-wrappers
+/packages/contracts/generated-artifacts
+/packages/abi-gen-wrappers/src/generated-wrappers
+/packages/contract-artifacts/artifacts
+/python-packages/order_utils/src/zero_ex/contract_artifacts/artifacts
+/packages/json-schemas/schemas
+/packages/metacoin/src/contract_wrappers
 /packages/metacoin/artifacts
-/packages/migrations/src/artifacts
+/packages/sra-spec/public/
 package.json
 scripts/postpublish_utils.js
+packages/sol-cov/test/fixtures/artifacts

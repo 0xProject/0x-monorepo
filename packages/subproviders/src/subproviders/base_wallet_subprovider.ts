@@ -1,20 +1,20 @@
-import { assert } from '@0xproject/assert';
-import { JSONRPCRequestPayload, JSONRPCResponsePayload } from '@0xproject/types';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { addressUtils } from '@0x/utils';
+import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Callback, ErrorCallback, PartialTxParams, ResponseWithTxParams, WalletSubproviderErrors } from '../types';
+import { Callback, ErrorCallback, PartialTxParams, WalletSubproviderErrors } from '../types';
 
 import { Subprovider } from './subprovider';
 
 export abstract class BaseWalletSubprovider extends Subprovider {
-    protected static _validateTxParams(txParams: PartialTxParams) {
+    protected static _validateTxParams(txParams: PartialTxParams): void {
         if (!_.isUndefined(txParams.to)) {
             assert.isETHAddressHex('to', txParams.to);
         }
         assert.isHexString('nonce', txParams.nonce);
     }
-    private static _validateSender(sender: string) {
+    private static _validateSender(sender: string): void {
         if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
             throw new Error(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
         }
@@ -23,6 +23,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
     public abstract async getAccountsAsync(): Promise<string[]>;
     public abstract async signTransactionAsync(txParams: PartialTxParams): Promise<string>;
     public abstract async signPersonalMessageAsync(data: string, address: string): Promise<string>;
+    public abstract async signTypedDataAsync(address: string, typedData: any): Promise<string>;
 
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -33,9 +34,11 @@ export abstract class BaseWalletSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         let accounts;
         let txParams;
+        let address;
+        let typedData;
         switch (payload.method) {
             case 'eth_coinbase':
                 try {
@@ -86,10 +89,19 @@ export abstract class BaseWalletSubprovider extends Subprovider {
             case 'eth_sign':
             case 'personal_sign':
                 const data = payload.method === 'eth_sign' ? payload.params[1] : payload.params[0];
-                const address = payload.method === 'eth_sign' ? payload.params[0] : payload.params[1];
+                address = payload.method === 'eth_sign' ? payload.params[0] : payload.params[1];
                 try {
                     const ecSignatureHex = await this.signPersonalMessageAsync(data, address);
                     end(null, ecSignatureHex);
+                } catch (err) {
+                    end(err);
+                }
+                return;
+            case 'eth_signTypedData':
+                [address, typedData] = payload.params;
+                try {
+                    const signature = await this.signTypedDataAsync(address, typedData);
+                    end(null, signature);
                 } catch (err) {
                     end(err);
                 }

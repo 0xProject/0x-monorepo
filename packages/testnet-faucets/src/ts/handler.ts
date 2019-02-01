@@ -1,27 +1,34 @@
-import { Order, SignedOrder, ZeroEx } from '0x.js';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    Order,
+    orderHashUtils,
+    Provider,
+    RPCSubprovider,
+    signatureUtils,
+    SignedOrder,
+    Web3ProviderEngine,
+} from '0x.js';
+import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
+import { logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as express from 'express';
 import * as _ from 'lodash';
-import * as Web3 from 'web3';
-
-// HACK: web3 injects XMLHttpRequest into the global scope and ProviderEngine checks XMLHttpRequest
-// to know whether it is running in a browser or node environment. We need it to be undefined since
-// we are not running in a browser env.
-// Filed issue: https://github.com/ethereum/web3.js/issues/844
-(global as any).XMLHttpRequest = undefined;
-import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
-import ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { configs } from './configs';
+import { constants } from './constants';
 import { DispatchQueue } from './dispatch_queue';
 import { dispenseAssetTasks } from './dispense_asset_tasks';
 import { rpcUrls } from './rpc_urls';
+import { TOKENS_BY_NETWORK } from './tokens';
 
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
-    web3: Web3;
-    zeroEx: ZeroEx;
+    web3Wrapper: Web3Wrapper;
+    contractWrappers: ContractWrappers;
+    networkId: number;
 }
 
 interface ItemByNetworkId<T> {
@@ -35,43 +42,45 @@ enum RequestedAssetType {
 }
 
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const ZERO = new BigNumber(0);
+const ASSET_AMOUNT = new BigNumber(0.1);
 
 export class Handler {
-    private _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
-    private static _createProviderEngine(rpcUrl: string) {
+    private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
+    private static _createProviderEngine(rpcUrl: string): Provider {
         if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
             throw new Error('Dispenser Private key not found');
         }
-        const engine = new ProviderEngine();
+        const engine = new Web3ProviderEngine();
         engine.addProvider(new NonceTrackerSubprovider());
         engine.addProvider(new PrivateKeyWalletSubprovider(configs.DISPENSER_PRIVATE_KEY));
-        engine.addProvider(
-            new RpcSubprovider({
-                rpcUrl,
-            }),
-        );
+        engine.addProvider(new RPCSubprovider(rpcUrl));
         engine.start();
         return engine;
     }
     constructor() {
-        _.forIn(rpcUrls, (rpcUrl: string, networkId: string) => {
+        _.forIn(rpcUrls, (rpcUrl: string, networkIdString: string) => {
             const providerObj = Handler._createProviderEngine(rpcUrl);
-            const web3 = new Web3(providerObj);
-            const zeroExConfig = {
-                networkId: +networkId,
+            const web3Wrapper = new Web3Wrapper(providerObj);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            const networkId = parseInt(networkIdString, 10);
+            const contractWrappersConfig = {
+                networkId,
             };
-            const zeroEx = new ZeroEx(web3.currentProvider, zeroExConfig);
+            const contractWrappers = new ContractWrappers(providerObj, contractWrappersConfig);
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
-                web3,
-                zeroEx,
+                web3Wrapper,
+                contractWrappers,
+                networkId,
             };
         });
     }
-    public getQueueInfo(req: express.Request, res: express.Response) {
+    public getQueueInfo(_req: express.Request, res: express.Response): void {
         res.setHeader('Content-Type', 'application/json');
-        const queueInfo = _.mapValues(rpcUrls, (rpcUrl: string, networkId: string) => {
+        const queueInfo = _.mapValues(rpcUrls, (_rpcUrl: string, networkId: string) => {
             const dispatchQueue = this._networkConfigByNetworkId[networkId].dispatchQueue;
             return {
                 full: dispatchQueue.isFull(),
@@ -79,35 +88,44 @@ export class Handler {
             };
         });
         const payload = JSON.stringify(queueInfo);
-        res.status(200).send(payload);
+        res.status(constants.SUCCESS_STATUS).send(payload);
     }
-    public dispenseEther(req: express.Request, res: express.Response) {
+    public dispenseEther(req: express.Request, res: express.Response): void {
         this._dispenseAsset(req, res, RequestedAssetType.ETH);
     }
-    public dispenseZRX(req: express.Request, res: express.Response) {
+    public dispenseZRX(req: express.Request, res: express.Response): void {
         this._dispenseAsset(req, res, RequestedAssetType.ZRX);
     }
-    public async dispenseWETHOrder(req: express.Request, res: express.Response) {
-        await this._dispenseOrder(req, res, RequestedAssetType.WETH);
+    public async dispenseWETHOrderAsync(req: express.Request, res: express.Response): Promise<void> {
+        await this._dispenseOrderAsync(req, res, RequestedAssetType.WETH);
     }
-    public async dispenseZRXOrder(req: express.Request, res: express.Response, next: express.NextFunction) {
-        await this._dispenseOrder(req, res, RequestedAssetType.ZRX);
+    public async dispenseZRXOrderAsync(
+        req: express.Request,
+        res: express.Response,
+        _next: express.NextFunction,
+    ): Promise<void> {
+        await this._dispenseOrderAsync(req, res, RequestedAssetType.ZRX);
     }
-    private _dispenseAsset(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
+    private _dispenseAsset(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType): void {
         const networkId = req.params.networkId;
         const recipient = req.params.recipient;
-        const networkConfig = this._networkConfigByNetworkId[networkId];
+        const networkConfig = _.get(this._networkConfigByNetworkId, networkId);
+        if (_.isUndefined(networkConfig)) {
+            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
+            return;
+        }
         let dispenserTask;
         switch (requestedAssetType) {
             case RequestedAssetType.ETH:
-                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3);
+                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3Wrapper);
                 break;
             case RequestedAssetType.WETH:
             case RequestedAssetType.ZRX:
                 dispenserTask = dispenseAssetTasks.dispenseTokenTask(
                     recipient,
                     requestedAssetType,
-                    networkConfig.zeroEx,
+                    networkConfig.networkId,
+                    networkConfig.contractWrappers.erc20Token,
                 );
                 break;
             default:
@@ -115,55 +133,66 @@ export class Handler {
         }
         const didAddToQueue = networkConfig.dispatchQueue.add(dispenserTask);
         if (!didAddToQueue) {
-            res.status(503).send('QUEUE_IS_FULL');
+            res.status(constants.SERVICE_UNAVAILABLE_STATUS).send('QUEUE_IS_FULL');
             return;
         }
         logUtils.log(`Added ${recipient} to queue: ${requestedAssetType} networkId: ${networkId}`);
-        res.status(200).end();
+        res.status(constants.SUCCESS_STATUS).end();
     }
-    private async _dispenseOrder(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType) {
+    private async _dispenseOrderAsync(
+        req: express.Request,
+        res: express.Response,
+        requestedAssetType: RequestedAssetType,
+    ): Promise<void> {
         const networkConfig = _.get(this._networkConfigByNetworkId, req.params.networkId);
         if (_.isUndefined(networkConfig)) {
-            res.status(400).send('UNSUPPORTED_NETWORK_ID');
+            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
-        const zeroEx = networkConfig.zeroEx;
         res.setHeader('Content-Type', 'application/json');
-        const makerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(requestedAssetType);
-        if (_.isUndefined(makerToken)) {
+        const makerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, requestedAssetType]);
+        if (_.isUndefined(makerTokenIfExists)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
-        const takerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(takerTokenSymbol);
-        if (_.isUndefined(takerToken)) {
-            throw new Error(`Unsupported asset type: ${requestedAssetType}`);
+        const takerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, takerTokenSymbol]);
+        if (_.isUndefined(takerTokenIfExists)) {
+            throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
-        const makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), makerToken.decimals);
-        const takerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), takerToken.decimals);
+
+        const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, makerTokenIfExists.decimals);
+        const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenIfExists.address);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenIfExists.address);
         const order: Order = {
-            maker: configs.DISPENSER_ADDRESS,
-            taker: req.params.recipient,
-            makerFee: new BigNumber(0),
-            takerFee: new BigNumber(0),
-            makerTokenAmount,
-            takerTokenAmount,
-            makerTokenAddress: makerToken.address,
-            takerTokenAddress: takerToken.address,
-            salt: ZeroEx.generatePseudoRandomSalt(),
-            exchangeContractAddress: zeroEx.exchange.getContractAddress(),
-            feeRecipient: ZeroEx.NULL_ADDRESS,
-            expirationUnixTimestampSec: new BigNumber(Date.now() + FIVE_DAYS_IN_MS),
+            makerAddress: configs.DISPENSER_ADDRESS,
+            takerAddress: req.params.recipient as string,
+            makerFee: ZERO,
+            takerFee: ZERO,
+            makerAssetAmount,
+            takerAssetAmount,
+            makerAssetData,
+            takerAssetData,
+            salt: generatePseudoRandomSalt(),
+            exchangeAddress: networkConfig.contractWrappers.exchange.address,
+            feeRecipientAddress: NULL_ADDRESS,
+            senderAddress: NULL_ADDRESS,
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
         };
-        const orderHash = ZeroEx.getOrderHashHex(order);
-        const signature = await zeroEx.signOrderHashAsync(orderHash, configs.DISPENSER_ADDRESS, false);
-        const signedOrder = {
+        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const signature = await signatureUtils.ecSignHashAsync(
+            networkConfig.web3Wrapper.getProvider(),
+            orderHash,
+            configs.DISPENSER_ADDRESS,
+        );
+        const signedOrder: SignedOrder = {
             ...order,
-            ecSignature: signature,
+            signature,
         };
-        const signedOrderHash = ZeroEx.getOrderHashHex(signedOrder);
         const payload = JSON.stringify(signedOrder);
         logUtils.log(`Dispensed signed order: ${payload}`);
-        res.status(200).send(payload);
+        res.status(constants.SUCCESS_STATUS).send(payload);
     }
 }

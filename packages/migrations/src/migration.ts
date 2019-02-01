@@ -1,88 +1,175 @@
-import { Deployer } from '@0xproject/deployer';
-import { BigNumber, NULL_BYTES } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as wrappers from '@0x/abi-gen-wrappers';
+import { ContractAddresses } from '@0x/contract-addresses';
+import * as artifacts from '@0x/contract-artifacts';
+import { assetDataUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import { Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ContractName } from './types';
-import { tokenInfo } from './utils/token_info';
+import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
 
 /**
- * Custom migrations should be defined in this function. This will be called with the CLI 'migrate' command.
- * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
- * the migration should be written to run synchronously.
- * @param deployer Deployer instance.
+ * Creates and deploys all the contracts that are required for the latest
+ * version of the 0x protocol. Custom migrations can be defined here. This will
+ * be called with the CLI 'migrate:v2' command.
+ * @param provider  Web3 provider instance.
+ * @param txDefaults Default transaction values to use when deploying contracts.
+ * @returns The addresses of the contracts that were deployed.
  */
-export const runMigrationsAsync = async (deployer: Deployer) => {
-    const web3Wrapper: Web3Wrapper = deployer.web3Wrapper;
+export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
+    const web3Wrapper = new Web3Wrapper(provider);
+
+    // Proxies
+    const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
+        artifacts.ERC20Proxy,
+        provider,
+        txDefaults,
+    );
+    const erc721Proxy = await wrappers.ERC721ProxyContract.deployFrom0xArtifactAsync(
+        artifacts.ERC721Proxy,
+        provider,
+        txDefaults,
+    );
+
+    // ZRX
+    const zrxToken = await wrappers.ZRXTokenContract.deployFrom0xArtifactAsync(
+        artifacts.ZRXToken,
+        provider,
+        txDefaults,
+    );
+
+    // Ether token
+    const etherToken = await wrappers.WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
+
+    // Exchange
+    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+    const exchange = await wrappers.ExchangeContract.deployFrom0xArtifactAsync(
+        artifacts.Exchange,
+        provider,
+        txDefaults,
+    );
+
+    // Multisigs
     const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
-
-    const tokenTransferProxy = await deployer.deployAndSaveAsync(ContractName.TokenTransferProxy);
-    const zrxToken = await deployer.deployAndSaveAsync(ContractName.ZRXToken);
-    const etherToken = await deployer.deployAndSaveAsync(ContractName.WETH9);
-    const tokenReg = await deployer.deployAndSaveAsync(ContractName.TokenRegistry);
-
-    const exchangeArgs = [zrxToken.address, tokenTransferProxy.address];
     const owners = [accounts[0], accounts[1]];
     const confirmationsRequired = new BigNumber(2);
     const secondsRequired = new BigNumber(0);
-    const multiSigArgs = [owners, confirmationsRequired, secondsRequired, tokenTransferProxy.address];
-    const exchange = await deployer.deployAndSaveAsync(ContractName.Exchange, exchangeArgs);
-    const multiSig = await deployer.deployAndSaveAsync(
-        ContractName.MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,
-        multiSigArgs,
+    const owner = accounts[0];
+
+    // AssetProxyOwner
+    const assetProxyOwner = await wrappers.AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+        artifacts.AssetProxyOwner,
+        provider,
+        txDefaults,
+        owners,
+        [erc20Proxy.address, erc721Proxy.address],
+        confirmationsRequired,
+        secondsRequired,
     );
 
-    const owner = accounts[0];
-    await tokenTransferProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner });
-    await tokenTransferProxy.transferOwnership.sendTransactionAsync(multiSig.address, { from: owner });
-    const addTokenGasEstimate = await tokenReg.addToken.estimateGasAsync(
-        zrxToken.address,
-        tokenInfo[0].name,
-        tokenInfo[0].symbol,
-        tokenInfo[0].decimals,
-        tokenInfo[0].ipfsHash,
-        tokenInfo[0].swarmHash,
-        { from: owner },
-    );
-    await tokenReg.addToken.sendTransactionAsync(
-        zrxToken.address,
-        '0x Protocol Token',
-        'ZRX',
-        18,
-        NULL_BYTES,
-        NULL_BYTES,
-        {
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
             from: owner,
-            gas: addTokenGasEstimate,
-        },
+        }),
     );
-    await tokenReg.addToken.sendTransactionAsync(
-        etherToken.address,
-        'Ether Token',
-        'WETH',
-        18,
-        NULL_BYTES,
-        NULL_BYTES,
-        {
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc20Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, {
             from: owner,
-            gas: addTokenGasEstimate,
-        },
+        }),
     );
-    for (const token of tokenInfo) {
-        const totalSupply = new BigNumber(100000000000000000000);
-        const args = [token.name, token.symbol, token.decimals, totalSupply];
-        const dummyToken = await deployer.deployAsync(ContractName.DummyToken, args);
-        await tokenReg.addToken.sendTransactionAsync(
-            dummyToken.address,
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            from: owner,
+        }),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, {
+            from: owner,
+        }),
+    );
+
+    // Register the Asset Proxies to the Exchange
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(erc20Proxy.address),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(erc721Proxy.address),
+    );
+
+    // Dummy ERC20 tokens
+    for (const token of erc20TokenInfo) {
+        const totalSupply = new BigNumber(1000000000000000000000000000);
+        // tslint:disable-next-line:no-unused-variable
+        const dummyErc20Token = await wrappers.DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
             token.name,
             token.symbol,
             token.decimals,
-            token.ipfsHash,
-            token.swarmHash,
-            {
-                from: owner,
-                gas: addTokenGasEstimate,
-            },
+            totalSupply,
         );
     }
-};
+
+    // ERC721
+    // tslint:disable-next-line:no-unused-variable
+    const cryptoKittieToken = await wrappers.DummyERC721TokenContract.deployFrom0xArtifactAsync(
+        artifacts.DummyERC721Token,
+        provider,
+        txDefaults,
+        erc721TokenInfo[0].name,
+        erc721TokenInfo[0].symbol,
+    );
+
+    // Forwarder
+    const forwarder = await wrappers.ForwarderContract.deployFrom0xArtifactAsync(
+        artifacts.Forwarder,
+        provider,
+        txDefaults,
+        exchange.address,
+        assetDataUtils.encodeERC20AssetData(zrxToken.address),
+        assetDataUtils.encodeERC20AssetData(etherToken.address),
+    );
+
+    // OrderValidator
+    const orderValidator = await wrappers.OrderValidatorContract.deployFrom0xArtifactAsync(
+        artifacts.OrderValidator,
+        provider,
+        txDefaults,
+        exchange.address,
+        zrxAssetData,
+    );
+
+    return {
+        erc20Proxy: erc20Proxy.address,
+        erc721Proxy: erc721Proxy.address,
+        zrxToken: zrxToken.address,
+        etherToken: etherToken.address,
+        exchange: exchange.address,
+        assetProxyOwner: assetProxyOwner.address,
+        forwarder: forwarder.address,
+        orderValidator: orderValidator.address,
+    };
+}
+
+let _cachedContractAddresses: ContractAddresses;
+
+/**
+ * Exactly like runMigrationsAsync but will only run the migrations the first
+ * time it is called. Any subsequent calls will return the cached contract
+ * addresses.
+ * @param provider  Web3 provider instance.
+ * @param txDefaults Default transaction values to use when deploying contracts.
+ * @returns The addresses of the contracts that were deployed.
+ */
+export async function runMigrationsOnceAsync(
+    provider: Provider,
+    txDefaults: Partial<TxData>,
+): Promise<ContractAddresses> {
+    if (!_.isUndefined(_cachedContractAddresses)) {
+        return _cachedContractAddresses;
+    }
+    _cachedContractAddresses = await runMigrationsAsync(provider, txDefaults);
+    return _cachedContractAddresses;
+}

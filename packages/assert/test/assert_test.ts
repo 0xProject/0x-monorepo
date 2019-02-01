@@ -1,5 +1,5 @@
-import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
+import { schemas } from '@0x/json-schemas';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import 'mocha';
@@ -10,6 +10,7 @@ chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 
+// tslint:disable:custom-no-magic-numbers
 describe('Assertions', () => {
     const variableName = 'variable';
     describe('#isBigNumber', () => {
@@ -48,7 +49,7 @@ describe('Assertions', () => {
     });
     describe('#isFunction', () => {
         it('should not throw for valid input', () => {
-            const validInputs = [BigNumber, assert.isString];
+            const validInputs = [BigNumber, assert.isString.bind(assert)];
             validInputs.forEach(input => expect(assert.isFunction.bind(assert, variableName, input)).to.not.throw());
         });
         it('should throw for invalid input', () => {
@@ -251,3 +252,4 @@ describe('Assertions', () => {
         });
     });
 });
+// tslint:enable:custom-no-magic-numbers

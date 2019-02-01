@@ -1,0 +1,11 @@
+.*
+tsconfig.json
+webpack.config.js
+yarn-error.log
+test/
+/src/
+/_bundles/
+/contract_templates/
+/generated_docs/
+/scripts/
+/lib/src/monorepo_scripts/

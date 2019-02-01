@@ -1,11 +1,9 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
 import * as chai from 'chai';
+import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
 import * as _ from 'lodash';
-import Web3 = require('web3');
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { LedgerSubprovider } from '../../src';
+import { LedgerSubprovider, Web3ProviderEngine } from '../../src';
 import {
     DoneCallback,
     LedgerCommunicationClient,
@@ -20,6 +18,7 @@ import { reportCallbackErrors } from '../utils/report_callback_errors';
 chaiSetup.configure();
 const expect = chai.expect;
 const FAKE_ADDRESS = '0xb088a3bc93f71b4de97b9de773e9647645983688';
+const DEFAULT_NUM_ACCOUNTS = 10;
 
 describe('LedgerSubprovider', () => {
     const networkId: number = 42;
@@ -47,7 +46,7 @@ describe('LedgerSubprovider', () => {
                     };
                     return ecSignature;
                 },
-                signTransaction: async (derivationPath: string, txHex: string) => {
+                signTransaction: async (_derivationPath: string, _txHex: string) => {
                     const ecSignature = {
                         v: '77',
                         r: '88a95ef1378487bc82be558e82c8478baf840c545d5b887536bb1da63673a98b',
@@ -56,7 +55,7 @@ describe('LedgerSubprovider', () => {
                     return ecSignature;
                 },
                 transport: {
-                    close: _.noop,
+                    close: _.noop.bind(_),
                 } as LedgerCommunicationClient,
             };
             // tslint:enable:no-object-literal-type-assertion
@@ -72,7 +71,7 @@ describe('LedgerSubprovider', () => {
             it('returns default number of accounts', async () => {
                 const accounts = await ledgerSubprovider.getAccountsAsync();
                 expect(accounts[0]).to.be.equal(FAKE_ADDRESS);
-                expect(accounts.length).to.be.equal(10);
+                expect(accounts.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
             });
             it('returns requested number of accounts', async () => {
                 const numberOfAccounts = 20;
@@ -118,7 +117,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.length).to.be.equal(10);
+                    expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
                     expect(response.result[0]).to.be.equal(FAKE_ADDRESS);
                     done();
                 });
@@ -175,7 +174,8 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.raw.length).to.be.equal(192);
+                    const rawTxLength = 192;
+                    expect(response.result.raw.length).to.be.equal(rawTxLength);
                     expect(response.result.raw.substr(0, 2)).to.be.equal('0x');
                     done();
                 });
@@ -191,7 +191,7 @@ describe('LedgerSubprovider', () => {
                     params: [FAKE_ADDRESS, nonHexMessage],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -206,7 +206,7 @@ describe('LedgerSubprovider', () => {
                     params: [nonHexMessage, FAKE_ADDRESS],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal('Expected data to be of type HexString, encountered: hello world');
                     done();
@@ -224,7 +224,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();
@@ -243,7 +243,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                const callback = reportCallbackErrors(done)((err: Error, _response: JSONRPCResponsePayload) => {
                     expect(err).to.not.be.a('null');
                     expect(err.message).to.be.equal(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
                     done();

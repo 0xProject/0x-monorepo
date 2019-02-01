@@ -1,0 +1,10 @@
+{
+    "id": "/zeroExTransactionSchema",
+    "properties": {
+        "data": { "$ref": "/hexSchema" },
+        "signerAddress": { "$ref": "/addressSchema" },
+        "salt": { "$ref": "/wholeNumberSchema" }
+    },
+    "required": ["data", "salt", "signerAddress"],
+    "type": "object"
+}

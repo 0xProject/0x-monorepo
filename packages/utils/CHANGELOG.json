@@ -1,12 +1,228 @@
 [
     {
+        "timestamp": 1539871071,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538693146,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538475601,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Make abi_decoder compatible with ethers ^4.0.0",
+                "pr": 1069
+            }
+        ],
+        "timestamp": 1538157789
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535133899,
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Increased BigNumber decimal precision from 20 to 78",
+                "pr": 807
+            },
+            {
+                "note":
+                    "Store different ABIs for events with same function signature and different amount of indexed arguments",
+                "pr": 933
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Add `AbortController` polyfill to `fetchAsync`",
+                "pr": 903
+            }
+        ],
+        "timestamp": 1532357734
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `fetchAsync` which adds a default timeout to all requests",
+                "pr": 874
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Added errorUtils.spawnSwitchErr"
+            },
+            {
+                "note": "Add logUtils.warn",
+                "pr": 589
+            },
+            {
+                "note": "Fixes uncaught Error in abi_decoder",
+                "pr": 763
+            }
+        ],
+        "timestamp": 1531149657
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.7.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Incorrect publish that was unpublished"
+            }
+        ],
+        "timestamp": 1527810075
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.6.0",
         "changes": [
             {
                 "note": "Update ethers-contracts to ethers.js",
                 "pr": 540
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.5.2",

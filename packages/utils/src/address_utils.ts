@@ -1,7 +1,10 @@
+import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
+import * as _ from 'lodash';
 
 const BASIC_ADDRESS_REGEX = /^(0x)?[0-9a-f]{40}$/i;
 const SAME_CASE_ADDRESS_REGEX = /^(0x)?([0-9a-f]{40}|[0-9A-F]{40})$/;
+const ADDRESS_LENGTH = 40;
 
 export const addressUtils = {
     isChecksumAddress(address: string): boolean {
@@ -9,11 +12,15 @@ export const addressUtils = {
         const unprefixedAddress = address.replace('0x', '');
         const addressHash = jsSHA3.keccak256(unprefixedAddress.toLowerCase());
 
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < ADDRESS_LENGTH; i++) {
             // The nth letter should be uppercase if the nth digit of casemap is 1
+            const hexBase = 16;
+            const lowercaseRange = 7;
             if (
-                (parseInt(addressHash[i], 16) > 7 && unprefixedAddress[i].toUpperCase() !== unprefixedAddress[i]) ||
-                (parseInt(addressHash[i], 16) <= 7 && unprefixedAddress[i].toLowerCase() !== unprefixedAddress[i])
+                (parseInt(addressHash[i], hexBase) > lowercaseRange &&
+                    unprefixedAddress[i].toUpperCase() !== unprefixedAddress[i]) ||
+                (parseInt(addressHash[i], hexBase) <= lowercaseRange &&
+                    unprefixedAddress[i].toLowerCase() !== unprefixedAddress[i])
             ) {
                 return false;
             }
@@ -32,5 +39,8 @@ export const addressUtils = {
             const isValidChecksummedAddress = addressUtils.isChecksumAddress(address);
             return isValidChecksummedAddress;
         }
+    },
+    padZeros(address: string): string {
+        return addHexPrefix(_.padStart(stripHexPrefix(address), ADDRESS_LENGTH, '0'));
     },
 };

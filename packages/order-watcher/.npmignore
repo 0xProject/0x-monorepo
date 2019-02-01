@@ -1,0 +1,9 @@
+.*
+tsconfig.json
+webpack.config.js
+yarn-error.log
+test/
+/src/
+/_bundles/
+/generated_docs/
+/scripts/

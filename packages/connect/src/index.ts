@@ -1,20 +1,20 @@
 export { HttpClient } from './http_client';
-export { WebSocketOrderbookChannel } from './ws_orderbook_channel';
+export { ordersChannelFactory } from './orders_channel_factory';
+export { Client, OrdersChannel, OrdersChannelHandler } from './types';
 export {
-    Client,
-    FeesRequest,
-    FeesResponse,
-    OrderbookChannel,
-    OrderbookChannelHandler,
-    OrderbookChannelSubscriptionOpts,
+    APIOrder,
+    AssetPairsRequestOpts,
+    AssetPairsResponse,
+    FeeRecipientsResponse,
     OrderbookRequest,
     OrderbookResponse,
+    OrderConfigRequest,
+    OrderConfigResponse,
+    OrdersChannelSubscriptionOpts,
     OrdersRequestOpts,
+    OrdersResponse,
     PagedRequestOpts,
-    TokenPairsItem,
-    TokenPairsRequestOpts,
-    TokenTradeInfo,
-    WebSocketOrderbookChannelConfig,
-} from './types';
-
-export { ECSignature, Order, SignedOrder } from '@0xproject/types';
+    PaginatedCollection,
+    RequestOpts,
+    SignedOrder,
+} from '@0x/types';

@@ -5,7 +5,7 @@ import { ContractSource } from '../types';
 import { Resolver } from './resolver';
 
 export class FallthroughResolver extends Resolver {
-    private _resolvers: Resolver[] = [];
+    private readonly _resolvers: Resolver[] = [];
     public appendResolver(resolver: Resolver): void {
         this._resolvers.push(resolver);
     }

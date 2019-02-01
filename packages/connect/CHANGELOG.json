@@ -1,5 +1,221 @@
 [
     {
+        "timestamp": 1539871071,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Change /order_config request to a POST instead of GET",
+                "pr": 1091
+            }
+        ],
+        "timestamp": 1538157789
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Import SRA-related types from @0xproject/types",
+                "pr": 1085
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537369748,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Change `OrderConfigRequest` to use BigNumber instead of string for relevant fields.",
+                "pr": 1058
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
+        "version": "2.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
+        "version": "2.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Updated for SRA v2",
+                "pr": 974
+            },
+            {
+                "note": "Stopped exporting `Order` type",
+                "pr": 924
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note":
+                    "Remove `WebSocketOrderbookChannel` from the public interface and replace with `orderbookChannelFactory`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.6.17",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.6.16",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.6.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527616612,
+        "version": "0.6.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527008270,
+        "version": "0.6.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1524044013,
         "version": "0.6.10",
         "changes": [

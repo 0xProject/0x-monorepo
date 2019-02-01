@@ -1,5 +1,287 @@
 [
     {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note":
+                    "Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields).",
+                "pr": 1177
+            }
+        ]
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `signTypedData` to perform EIP712 `eth_signTypedData`.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
+                "pr": 1102
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note":
+                    "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined.",
+                "pr": 1082
+            },
+            {
+                "note":
+                    "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
+                "pr": 1080
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note":
+                    "Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined.",
+                "pr": 1079
+            }
+        ],
+        "timestamp": 1537541580
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535377027,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Export types:  `BlockParam`, `TxData`, `Provider`, `TransactionReceipt`, `Transaction`, `TraceParams`, `TransactionTrace``, BlockWithoutTransactionDat`a, `LogEntry`, `FilterObject`, `CallData`, `TransactionReceiptWithDecodedLogs`, `BlockWithTransactionData``, LogTopi`c, `JSONRPCRequestPayload`, `TransactionReceiptStatus`, `DecodedLogArgs`, `StructLog`, `JSONRPCErrorCallback``, BlockParamLitera`l, `ContractEventArg`, `DecodedLogEntry`, `LogEntryEvent`, `OpCode`, `TxDataPayable`, `JSONRPCResponsePayload``, RawLogEntr`y, `DecodedLogEntryEvent`, `LogWithDecodedArgs`, `AbiDefinition`, `RawLog`, `FunctionAbi`, `EventAbi`, `EventParameter``, MethodAb`i, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability` and `StateMutability`",
+                "pr": 924
+            },
+            {
+                "note": "Stop exporting types: `CallTxDataBaseRPC` and `AbstractBlockRPC`",
+                "pr": 924
+            },
+            {
+                "note": "Export `AbiDecoder` class",
+                "pr": 924
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Export marshaller to convert between RPC and user-space data formats",
+                "pr": 938
+            },
+            {
+                "note": "Export RPC types",
+                "pr": 938
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "timestamp": 1532619515,
+        "version": "1.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add `getTransactionByHashAsync` method",
+                "pr": 847
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Stop exporting `marshaller` utility file.",
+                "pr": 902
+            },
+            {
+                "note": "Export `marshaller` utility file.",
+                "pr": 829
+            },
+            {
+                "note": "Add `getNodeTypeAsync` method",
+                "pr": 812
+            },
+            {
+                "note": "Stop exporting uniqueVersionIds object",
+                "pr": 897
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.7.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.7.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.7.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1528070400,
+        "version": "0.7.0",
+        "changes": [
+            {
+                "note": "Add `web3Wrapper.getContractCodeAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getTransactionTraceAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add `web3Wrapper.getBlockWithTransactionDataAsync`",
+                "pr": 675
+            },
+            {
+                "note": "Add exported uniqueVersionIds object",
+                "pr": 622
+            },
+            {
+                "note": "Update increaseTimeAsync to work with Geth",
+                "pr": 622
+            },
+            {
+                "note": "Make callAsync throw if raw call result is 0x (null)",
+                "pr": 622
+            },
+            {
+                "note": "Add new setHeadAsync method",
+                "pr": 622
+            },
+            {
+                "note":
+                    "Improve performance of awaitTransactionMinedAsync by immediately checking if the transaction was already mined instead of waiting for the first interval.",
+                "pr": 688
+            }
+        ]
+    },
+    {
+        "timestamp": 1527009133,
+        "version": "0.6.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.6.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525428773,
+        "version": "0.6.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1524044013,
         "version": "0.6.1",
         "changes": [

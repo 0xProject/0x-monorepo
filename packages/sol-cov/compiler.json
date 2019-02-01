@@ -1,0 +1,18 @@
+{
+    "contracts": ["SimpleStorage"],
+    "contractsDir": "test/fixtures/contracts",
+    "artifactsDir": "test/fixtures/artifacts",
+    "compilerSettings": {
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    }
+}

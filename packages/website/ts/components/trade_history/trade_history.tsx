@@ -13,6 +13,9 @@ interface TradeHistoryProps {
     tokenByAddress: TokenByAddress;
     userAddress: string;
     networkId: number;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
+    isScrollable?: boolean;
 }
 
 interface TradeHistoryState {
@@ -20,6 +23,11 @@ interface TradeHistoryState {
 }
 
 export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistoryState> {
+    public static defaultProps: Partial<TradeHistoryProps> = {
+        isFullWidth: false,
+        shouldHideHeader: false,
+        isScrollable: true,
+    };
     private _fillPollingIntervalId: number;
     public constructor(props: TradeHistoryProps) {
         super(props);
@@ -28,27 +36,36 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
             sortedFills,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         this._startPollingForFills();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._stopPollingForFills();
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public render() {
+    public render(): React.ReactNode {
+        const rootClassName = !this.props.isFullWidth ? 'lg-px4 md-px4 sm-px2' : undefined;
         return (
-            <div className="lg-px4 md-px4 sm-px2">
-                <h3>Trade history</h3>
-                <Divider />
-                <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
-                    {this._renderTrades()}
-                </div>
+            <div className={rootClassName}>
+                {!this.props.shouldHideHeader && (
+                    <div>
+                        <h3>Trade history</h3>
+                        <Divider />
+                    </div>
+                )}
+                {this.props.isScrollable ? (
+                    <div className="pt2" style={{ height: 608, overflow: 'scroll' }}>
+                        {this._renderTrades()}
+                    </div>
+                ) : (
+                    this._renderTrades()
+                )}
             </div>
         );
     }
-    private _renderTrades() {
+    private _renderTrades(): React.ReactNode {
         const numNonCustomFills = this._numFillsWithoutCustomERC20Tokens();
         if (numNonCustomFills === 0) {
             return this._renderEmptyNotice();
@@ -66,14 +83,14 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
             );
         });
     }
-    private _renderEmptyNotice() {
+    private _renderEmptyNotice(): React.ReactNode {
         return (
             <Paper className="mt1 p2 mx-auto center" style={{ width: '80%' }}>
                 No filled orders yet.
             </Paper>
         );
     }
-    private _numFillsWithoutCustomERC20Tokens() {
+    private _numFillsWithoutCustomERC20Tokens(): number {
         let numNonCustomFills = 0;
         const tokens = _.values(this.props.tokenByAddress);
         _.each(this.state.sortedFills, fill => {
@@ -93,7 +110,7 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
         });
         return numNonCustomFills;
     }
-    private _startPollingForFills() {
+    private _startPollingForFills(): void {
         this._fillPollingIntervalId = window.setInterval(() => {
             const sortedFills = this._getSortedFills();
             if (!utils.deepEqual(sortedFills, this.state.sortedFills)) {
@@ -103,10 +120,10 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
             }
         }, FILL_POLLING_INTERVAL);
     }
-    private _stopPollingForFills() {
+    private _stopPollingForFills(): void {
         clearInterval(this._fillPollingIntervalId);
     }
-    private _getSortedFills() {
+    private _getSortedFills(): Fill[] {
         const fillsByHash = tradeHistoryStorage.getUserFillsByHash(this.props.userAddress, this.props.networkId);
         const fills = _.values(fillsByHash);
         const sortedFills = _.sortBy(fills, [(fill: Fill) => fill.blockTimestamp * -1]);

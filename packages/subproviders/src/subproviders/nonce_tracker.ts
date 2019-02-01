@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { BlockParamLiteral, JSONRPCRequestPayload } from '@0xproject/types';
+import { BlockParamLiteral, JSONRPCRequestPayload } from 'ethereum-types';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import providerEngineUtils = require('web3-provider-engine/util/rpc-cache-utils');
@@ -17,7 +17,7 @@ const NONCE_TOO_LOW_ERROR_MESSAGE = 'Transaction nonce is too low';
  * We added the additional feature of clearing the cached nonce value when a `nonce value too low` error occurs.
  */
 export class NonceTrackerSubprovider extends Subprovider {
-    private _nonceCache: { [address: string]: string } = {};
+    private readonly _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: JSONRPCRequestPayload): EthereumTx {
         const raw = payload.params[0];
         if (_.isUndefined(raw)) {
@@ -75,7 +75,7 @@ export class NonceTrackerSubprovider extends Subprovider {
                     return next();
                 }
             case 'eth_sendRawTransaction':
-                return next((sendTransactionError: Error | null, txResult: any, cb: Callback) => {
+                return next((sendTransactionError: Error | null, _txResult: any, cb: Callback) => {
                     if (_.isNull(sendTransactionError)) {
                         this._handleSuccessfulTransaction(payload);
                     } else {
@@ -93,7 +93,8 @@ export class NonceTrackerSubprovider extends Subprovider {
         // Increment the nonce from the previous successfully submitted transaction
         let nonce = ethUtil.bufferToInt(transaction.nonce);
         nonce++;
-        let nextHexNonce = nonce.toString(16);
+        const hexBase = 16;
+        let nextHexNonce = nonce.toString(hexBase);
         if (nextHexNonce.length % 2) {
             nextHexNonce = `0${nextHexNonce}`;
         }

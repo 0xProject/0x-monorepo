@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
@@ -8,7 +8,7 @@ interface FillWarningDialogProps {
     onToggleDialog: (didUserCancel: boolean) => void;
 }
 
-export function FillWarningDialog(props: FillWarningDialogProps) {
+export const FillWarningDialog = (props: FillWarningDialogProps) => {
     const didCancel = true;
     return (
         <Dialog
@@ -18,16 +18,16 @@ export function FillWarningDialog(props: FillWarningDialogProps) {
                 <FlatButton
                     key="fillWarningCancel"
                     label="Cancel"
-                    onTouchTap={props.onToggleDialog.bind(this, didCancel)}
+                    onClick={() => props.onToggleDialog(didCancel)} // tslint:disable-line:jsx-no-lambda
                 />,
                 <FlatButton
                     key="fillWarningContinue"
                     label="Fill Order"
-                    onTouchTap={props.onToggleDialog.bind(this, !didCancel)}
+                    onClick={() => props.onToggleDialog(!didCancel)} // tslint:disable-line:jsx-no-lambda
                 />,
             ]}
             open={props.isOpen}
-            onRequestClose={props.onToggleDialog.bind(this)}
+            onRequestClose={() => props.onToggleDialog(didCancel)} // tslint:disable-line:jsx-no-lambda
             autoScrollBodyContent={true}
             modal={true}
         >
@@ -42,4 +42,4 @@ export function FillWarningDialog(props: FillWarningDialogProps) {
             </div>
         </Dialog>
     );
-}
+};

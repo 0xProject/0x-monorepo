@@ -1,0 +1,45 @@
+{
+    "name": "ethereum-types",
+    "version": "1.1.1",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Ethereum types",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib generated_docs",
+        "lint": "tslint --format stylish --project .",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+    },
+    "config": {
+        "postpublish": {
+            "assets": []
+        }
+    },
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethereum-types/README.md",
+    "devDependencies": {
+        "@0x/tslint-config": "^1.0.9",
+        "make-promises-safe": "^1.1.0",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typescript": "3.0.1"
+    },
+    "dependencies": {
+        "@types/node": "*",
+        "bignumber.js": "~4.1.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

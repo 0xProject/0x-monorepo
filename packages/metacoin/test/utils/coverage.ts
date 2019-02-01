@@ -1,5 +1,5 @@
-import { devConstants } from '@0xproject/dev-utils';
-import { CoverageSubprovider } from '@0xproject/sol-cov';
+import { devConstants } from '@0x/dev-utils';
+import { CoverageSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
 import * as _ from 'lodash';
 
 import { config } from './config';
@@ -15,6 +15,7 @@ export const coverage = {
     },
     _getCoverageSubprovider(): CoverageSubprovider {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
-        return new CoverageSubprovider(config.artifactsDir, config.contractsDir, config.networkId, defaultFromAddress);
+        const zeroExArtifactsAdapter = new SolCompilerArtifactAdapter(config.artifactsDir, config.contractsDir);
+        return new CoverageSubprovider(zeroExArtifactsAdapter, defaultFromAddress);
     },
 };

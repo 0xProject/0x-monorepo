@@ -1,8 +1,10 @@
-import { Order, ZeroEx } from '0x.js';
-import { Styles } from '@0xproject/react-shared';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { Styles } from '@0x/react-shared';
+import { Order } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');
+
 import { Blockchain } from 'ts/blockchain';
 import { FakeTextField } from 'ts/components/ui/fake_text_field';
 import { HashData } from 'ts/types';
@@ -27,7 +29,7 @@ interface HashInputProps {
 interface HashInputState {}
 
 export class HashInput extends React.Component<HashInputProps, HashInputState> {
-    public render() {
+    public render(): React.ReactNode {
         const msgHashHex = this.props.blockchainIsLoaded ? this._generateMessageHashHex() : '';
         return (
             <div>
@@ -40,24 +42,27 @@ export class HashInput extends React.Component<HashInputProps, HashInputState> {
             </div>
         );
     }
-    private _generateMessageHashHex() {
-        const exchangeContractAddress = this.props.blockchain.getExchangeContractAddressIfExists();
+    private _generateMessageHashHex(): string {
+        const exchangeAddress = this.props.blockchain.getExchangeContractAddressIfExists();
         const hashData = this.props.hashData;
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(hashData.depositTokenContractAddr);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(hashData.receiveTokenContractAddr);
         const order: Order = {
-            exchangeContractAddress,
-            expirationUnixTimestampSec: hashData.orderExpiryTimestamp,
-            feeRecipient: hashData.feeRecipientAddress,
-            maker: _.isEmpty(hashData.orderMakerAddress) ? constants.NULL_ADDRESS : hashData.orderMakerAddress,
+            senderAddress: constants.NULL_ADDRESS,
+            exchangeAddress,
+            expirationTimeSeconds: hashData.orderExpiryTimestamp,
+            feeRecipientAddress: hashData.feeRecipientAddress,
+            makerAddress: _.isEmpty(hashData.orderMakerAddress) ? constants.NULL_ADDRESS : hashData.orderMakerAddress,
             makerFee: hashData.makerFee,
-            makerTokenAddress: hashData.depositTokenContractAddr,
-            makerTokenAmount: hashData.depositAmount,
+            makerAssetData,
+            makerAssetAmount: hashData.depositAmount,
             salt: hashData.orderSalt,
-            taker: hashData.orderTakerAddress,
+            takerAddress: hashData.orderTakerAddress,
             takerFee: hashData.takerFee,
-            takerTokenAddress: hashData.receiveTokenContractAddr,
-            takerTokenAmount: hashData.receiveAmount,
+            takerAssetData,
+            takerAssetAmount: hashData.receiveAmount,
         };
-        const orderHash = ZeroEx.getOrderHashHex(order);
+        const orderHash = orderHashUtils.getOrderHashHex(order);
         return orderHash;
     }
 }

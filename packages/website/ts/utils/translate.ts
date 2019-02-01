@@ -42,10 +42,10 @@ export class Translate {
         }
         this.setLanguage(language);
     }
-    public getLanguage() {
+    public getLanguage(): Language {
         return this._selectedLanguage;
     }
-    public setLanguage(language: Language) {
+    public setLanguage(language: Language): void {
         const isLanguageSupported = !_.isUndefined(languageToTranslations[language]);
         if (!isLanguageSupported) {
             throw new Error(`${language} not supported`);
@@ -53,8 +53,21 @@ export class Translate {
         this._selectedLanguage = language;
         this._translation = languageToTranslations[language];
     }
-    public get(key: Key, decoration?: Deco) {
+    public get(key: Key, decoration?: Deco): string {
         let text = this._translation[key];
+        // if a translation does not exist for a certain language, fallback to english
+        // if it still doesn't exist in english, throw an error
+        if (_.isUndefined(text)) {
+            const englishTranslation: Translation = languageToTranslations[Language.English];
+            const englishText = englishTranslation[key];
+            if (!_.isUndefined(englishText)) {
+                text = englishText;
+            } else {
+                throw new Error(
+                    `Translation key not available in ${this._selectedLanguage} or ${Language.English}: ${key}`,
+                );
+            }
+        }
         if (!_.isUndefined(decoration) && !_.includes(languagesWithoutCaps, this._selectedLanguage)) {
             switch (decoration) {
                 case Deco.Cap:
@@ -67,7 +80,12 @@ export class Translate {
 
                 case Deco.CapWords:
                     const words = text.split(' ');
-                    const capitalizedWords = _.map(words, w => this._capitalize(w));
+                    const capitalizedWords = _.map(words, (w: string, i: number) => {
+                        if (w.length === 1) {
+                            return w;
+                        }
+                        return this._capitalize(w);
+                    });
                     text = capitalizedWords.join(' ');
                     break;
 
@@ -77,7 +95,7 @@ export class Translate {
         }
         return text;
     }
-    private _capitalize(text: string) {
+    private _capitalize(text: string): string {
         return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
     }
 }

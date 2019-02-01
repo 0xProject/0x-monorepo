@@ -1,25 +1,40 @@
-## @0xproject/utils
+## @0x/utils
 
 Utils to be shared across 0x projects and packages
 
 ## Installation
 
 ```bash
-yarn add @0xproject/utils
+yarn add @0x/utils
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
 ## Usage
 
 ```javascript
-import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0xproject/utils';
+import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0x/utils';
+```
+
+## Troubleshooting
+
+If you are still seeing TS type errors complaining about missing DOM types such as `Response`:
+
+```
+error TS2304: Cannot find name 'Response'.
+```
+
+Then you need to explicitly add the `dom` lib to your compiler options in `tsconfig.json`. The `dom` library is included by default, but customizing the `lib` option can cause it to be dropped.
+
+```
+"compilerOptions": {
+    "lib": [..., "dom"],
 ```
 
 ## Contributing
@@ -44,28 +59,16 @@ yarn install
 
 ### Build
 
-If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=@0x/utils yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-yarn dev
-```
-
-You can also build this specific package by running the following from within its directory:
-
-```bash
-yarn build
-```
-
-or continuously rebuild on change:
-
-```bash
-yarn build:watch
+PKG=@0x/utils yarn watch
 ```
 
 ### Clean

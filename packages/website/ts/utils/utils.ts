@@ -1,28 +1,43 @@
-import { ECSignature, ExchangeContractErrs, ZeroEx, ZeroExError } from '0x.js';
-import { constants as sharedConstants, EtherscanLinkSuffixes, Networks } from '@0xproject/react-shared';
-import { Provider } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ContractWrappersError } from '@0x/contract-wrappers';
+import { assetDataUtils, OrderError } from '@0x/order-utils';
+import { constants as sharedConstants, Networks } from '@0x/react-shared';
+import { ExchangeContractErrs } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Environments, Order, Providers, ScreenWidths, Side, SideToAssetToken, Token, TokenByAddress } from 'ts/types';
+import * as numeral from 'numeral';
+
+import { Provider } from 'ethereum-types';
+import {
+    AccountState,
+    BlockchainCallErrs,
+    BrowserType,
+    Environments,
+    OperatingSystemType,
+    PortalOrder,
+    Providers,
+    ProviderType,
+    ScreenWidths,
+    Side,
+    SideToAssetToken,
+    Token,
+    TokenByAddress,
+    TokenState,
+} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import * as u2f from 'ts/vendor/u2f_api';
 
-const LG_MIN_EM = 64;
-const MD_MIN_EM = 52;
-
 export const utils = {
-    assert(condition: boolean, message: string) {
+    assert(condition: boolean, message: string): void {
         if (!condition) {
             throw new Error(message);
         }
     },
-    spawnSwitchErr(name: string, value: any) {
-        return new Error(`Unexpected switch value: ${value} encountered for ${name}`);
-    },
-    isNumeric(n: string) {
+    isNumeric(n: string): boolean {
         return !isNaN(parseFloat(n)) && isFinite(Number(n));
     },
     // This default unix timestamp is used for orders where the user does not specify an expiry date.
@@ -45,40 +60,41 @@ export const utils = {
         return moment.unix(unixTimestampSec.toNumber());
     },
     convertToReadableDateTimeFromUnixTimestamp(unixTimestampSec: BigNumber): string {
-        const m = this.convertToMomentFromUnixTimestamp(unixTimestampSec);
+        const m = utils.convertToMomentFromUnixTimestamp(unixTimestampSec);
         const formattedDate: string = m.format('h:MMa MMMM D YYYY');
         return formattedDate;
     },
     generateOrder(
-        exchangeContractAddress: string,
+        exchangeAddress: string,
         sideToAssetToken: SideToAssetToken,
-        expirationUnixTimestampSec: BigNumber,
+        expirationTimeSeconds: BigNumber,
         orderTakerAddress: string,
         orderMakerAddress: string,
         makerFee: BigNumber,
         takerFee: BigNumber,
-        feeRecipient: string,
-        ecSignature: ECSignature,
+        feeRecipientAddress: string,
+        signature: string,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
-    ): Order {
+    ): PortalOrder {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
             signedOrder: {
-                maker: orderMakerAddress,
-                taker: orderTakerAddress,
-                makerFee: makerFee.toString(),
-                takerFee: takerFee.toString(),
-                makerTokenAmount: sideToAssetToken[Side.Deposit].amount.toString(),
-                takerTokenAmount: sideToAssetToken[Side.Receive].amount.toString(),
-                makerTokenAddress: makerToken.address,
-                takerTokenAddress: takerToken.address,
-                expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
-                feeRecipient,
-                salt: orderSalt.toString(),
-                ecSignature,
-                exchangeContractAddress,
+                senderAddress: constants.NULL_ADDRESS,
+                makerAddress: orderMakerAddress,
+                takerAddress: orderTakerAddress,
+                makerFee,
+                takerFee,
+                makerAssetAmount: sideToAssetToken[Side.Deposit].amount,
+                takerAssetAmount: sideToAssetToken[Side.Receive].amount,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(makerToken.address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken.address),
+                expirationTimeSeconds,
+                feeRecipientAddress,
+                salt: orderSalt,
+                signature,
+                exchangeAddress,
             },
             metadata: {
                 makerToken: {
@@ -95,13 +111,13 @@ export const utils = {
         };
         return order;
     },
-    async sleepAsync(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    async sleepAsync(ms: number): Promise<NodeJS.Timer> {
+        return new Promise<NodeJS.Timer>(resolve => setTimeout(resolve, ms));
     },
-    deepEqual(actual: any, expected: any, opts?: { strict: boolean }) {
+    deepEqual(actual: any, expected: any, opts?: { strict: boolean }): boolean {
         return deepEqual(actual, expected, opts);
     },
-    getColSize(items: number) {
+    getColSize(items: number): number {
         const bassCssGridSize = 12; // Source: http://basscss.com/#basscss-grid
         const colSize = bassCssGridSize / items;
         if (!_.isInteger(colSize)) {
@@ -109,7 +125,7 @@ export const utils = {
         }
         return colSize;
     },
-    getScreenWidth() {
+    getScreenWidth(): ScreenWidths {
         const documentEl = document.documentElement;
         const body = document.getElementsByTagName('body')[0];
         const widthInPx = window.innerWidth || documentEl.clientWidth || body.clientWidth;
@@ -118,9 +134,9 @@ export const utils = {
 
         // This logic mirrors the CSS media queries in BassCSS for the `lg-`, `md-` and `sm-` CSS
         // class prefixes. Do not edit these.
-        if (widthInEm > LG_MIN_EM) {
+        if (widthInEm > ScreenWidths.Lg) {
             return ScreenWidths.Lg;
-        } else if (widthInEm > MD_MIN_EM) {
+        } else if (widthInEm > ScreenWidths.Md) {
             return ScreenWidths.Md;
         } else {
             return ScreenWidths.Sm;
@@ -141,7 +157,7 @@ export const utils = {
                 const intervalId = setTimeout(() => {
                     resolve(false);
                 }, getApiVersionTimeoutMs);
-                u2f.getApiVersion((version: number) => {
+                u2f.getApiVersion((_version: number) => {
                     clearTimeout(intervalId);
                     resolve(true);
                 });
@@ -151,7 +167,7 @@ export const utils = {
     // This checks the error message returned from an injected Web3 instance on the page
     // after a user was prompted to sign a message or send a transaction and decided to
     // reject the request.
-    didUserDenyWeb3Request(errMsg: string) {
+    didUserDenyWeb3Request(errMsg: string): boolean {
         const metamaskDenialErrMsg = 'User denied';
         const paritySignerDenialErrMsg = 'Request has been rejected';
         const ledgerDenialErrMsg = 'Invalid status 6985';
@@ -161,23 +177,44 @@ export const utils = {
             _.includes(errMsg, ledgerDenialErrMsg);
         return isUserDeniedErrMsg;
     },
-    getCurrentEnvironment() {
-        switch (location.host) {
-            case configs.DOMAIN_DEVELOPMENT:
-                return 'development';
-            case configs.DOMAIN_STAGING:
-                return 'staging';
-            case configs.DOMAIN_PRODUCTION:
-                return 'production';
-            default:
-                return 'production';
-        }
-    },
     getAddressBeginAndEnd(address: string): string {
         const truncatedAddress = `${address.substring(0, 6)}...${address.substr(-4)}`; // 0x3d5a...b287
         return truncatedAddress;
     },
-    hasUniqueNameAndSymbol(tokens: Token[], token: Token) {
+    getReadableAccountState(accountState: AccountState, userAddress: string): string {
+        switch (accountState) {
+            case AccountState.Loading:
+                return 'Loading...';
+            case AccountState.Ready:
+                return utils.getAddressBeginAndEnd(userAddress);
+            case AccountState.Locked:
+                return 'Please Unlock';
+            case AccountState.Disconnected:
+                return 'Connect a Wallet';
+            default:
+                return '';
+        }
+    },
+    getAccountState(
+        isBlockchainReady: boolean,
+        providerType: ProviderType,
+        injectedProviderName: string,
+        userAddress?: string,
+    ): AccountState {
+        const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
+        const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
+        if (!isBlockchainReady) {
+            return AccountState.Loading;
+        } else if (isAddressAvailable) {
+            return AccountState.Ready;
+            // tslint:disable-next-line: prefer-conditional-expression
+        } else if (isExternallyInjectedProvider) {
+            return AccountState.Locked;
+        } else {
+            return AccountState.Disconnected;
+        }
+    },
+    hasUniqueNameAndSymbol(tokens: Token[], token: Token): boolean {
         if (token.isRegistered) {
             return true; // Since it's registered, it is the canonical token
         }
@@ -192,33 +229,22 @@ export const utils = {
         const isUniqueSymbol = _.isUndefined(tokenWithSameSymbolIfExists);
         return isUniqueName && isUniqueSymbol;
     },
-    zeroExErrToHumanReadableErrMsg(error: ZeroExError | ExchangeContractErrs, takerAddress: string): string {
-        const ZeroExErrorToHumanReadableError: { [error: string]: string } = {
-            [ZeroExError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
-            [ZeroExError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-            [ZeroExError.TokenTransferProxyContractDoesNotExist]: 'TokenTransferProxy contract does not exist',
-            [ZeroExError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
-            [ZeroExError.TokenContractDoesNotExist]: 'Token contract does not exist',
-            [ZeroExError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
-            [ZeroExError.UnhandledError]: 'Unhandled error occured',
-            [ZeroExError.UserHasNoAssociatedAddress]: 'User has no addresses available',
-            [ZeroExError.InvalidSignature]: 'Order signature is not valid',
-            [ZeroExError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
-            [ZeroExError.InvalidJump]: 'Invalid jump occured while executing the transaction',
-            [ZeroExError.OutOfGas]: 'Transaction ran out of gas',
-            [ZeroExError.NoNetworkId]: 'No network id detected',
+    zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
+        const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
+            [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
+            [OrderError.InvalidSignature]: 'Order signature is not valid',
+            [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+            [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+            [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
         };
         const exchangeContractErrorToHumanReadableError: {
             [error: string]: string;
         } = {
             [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
             [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
-            [ExchangeContractErrs.OrderCancelAmountZero]: "Order cancel amount can't be 0",
-            [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]:
-                'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderCancelled]: 'This order has been cancelled',
             [ExchangeContractErrs.OrderFillAmountZero]: "Order fill amount can't be 0",
-            [ExchangeContractErrs.OrderRemainingFillAmountZero]:
-                'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderRemainingFillAmountZero]: 'This order has already been completely filled',
             [ExchangeContractErrs.OrderFillRoundingError]:
                 'Rounding error will occur when filling this order. Please try filling a different amount.',
             [ExchangeContractErrs.InsufficientTakerBalance]:
@@ -239,7 +265,7 @@ export const utils = {
             [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
         };
         const humanReadableErrorMsg =
-            exchangeContractErrorToHumanReadableError[error] || ZeroExErrorToHumanReadableError[error];
+            exchangeContractErrorToHumanReadableError[error] || ContractWrappersErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
     isParityNode(nodeVersion: string): boolean {
@@ -259,23 +285,23 @@ export const utils = {
         );
         return isTestNetwork;
     },
-    getCurrentBaseUrl() {
+    getCurrentBaseUrl(): string {
         const port = window.location.port;
         const hasPort = !_.isUndefined(port);
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
-    async onPageLoadAsync(): Promise<void> {
+    onPageLoadPromise: new Promise<void>((resolve, _reject) => {
         if (document.readyState === 'complete') {
-            return; // Already loaded
+            resolve();
+            return;
         }
-        return new Promise<void>((resolve, reject) => {
-            window.onload = () => resolve();
-        });
-    },
+        window.onload = () => resolve();
+    }),
     getProviderType(provider: Provider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
+        // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
         switch (constructorName) {
             case 'EthereumProvider':
                 parsedProviderName = Providers.Mist;
@@ -289,13 +315,169 @@ export const utils = {
             parsedProviderName = Providers.Parity;
         } else if ((provider as any).isMetaMask) {
             parsedProviderName = Providers.Metamask;
+        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+            parsedProviderName = Providers.CoinbaseWallet;
+        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+            parsedProviderName = Providers.Cipher;
         }
         return parsedProviderName;
     },
-    isDevelopment() {
-        return configs.ENVIRONMENT === Environments.DEVELOPMENT;
+    getBackendBaseUrl(): string {
+        return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
     },
-    isStaging() {
+    isDevelopment(): boolean {
+        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.host);
+    },
+    isStaging(): boolean {
         return _.includes(window.location.href, configs.DOMAIN_STAGING);
+    },
+    isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
+        return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
+    },
+    isDogfood(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
+    },
+    isProduction(): boolean {
+        return _.includes(window.location.href, configs.DOMAIN_PRODUCTION);
+    },
+    getEnvironment(): Environments {
+        if (utils.isDogfood()) {
+            return Environments.DOGFOOD;
+        }
+        if (utils.isDevelopment()) {
+            return Environments.DEVELOPMENT;
+        }
+        if (utils.isStaging()) {
+            return Environments.STAGING;
+        }
+        if (utils.isProduction()) {
+            return Environments.PRODUCTION;
+        }
+        return Environments.UNKNOWN;
+    },
+    getEthToken(tokenByAddress: TokenByAddress): Token {
+        return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);
+    },
+    getZrxToken(tokenByAddress: TokenByAddress): Token {
+        return utils.getTokenBySymbol(constants.ZRX_TOKEN_SYMBOL, tokenByAddress);
+    },
+    getTokenBySymbol(symbol: string, tokenByAddress: TokenByAddress): Token {
+        const tokens = _.values(tokenByAddress);
+        const token = _.find(tokens, { symbol });
+        return token;
+    },
+    getTrackedTokens(tokenByAddress: TokenByAddress): Token[] {
+        const allTokens = _.values(tokenByAddress);
+        const trackedTokens = _.filter(allTokens, t => utils.isTokenTracked(t));
+        return trackedTokens;
+    },
+    getFormattedAmountFromToken(token: Token, tokenState: TokenState): string {
+        return utils.getFormattedAmount(tokenState.balance, token.decimals);
+    },
+    format(value: BigNumber, format: string): string {
+        const formattedAmount = numeral(value).format(format);
+        if (_.isNaN(formattedAmount)) {
+            // https://github.com/adamwdraper/Numeral-js/issues/596
+            return numeral(new BigNumber(0)).format(format);
+        }
+        return formattedAmount;
+    },
+    getFormattedAmount(amount: BigNumber, decimals: number): string {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
+        // if the unit amount is greater than or equal to 1, show only 2 decimal places
+        const lessThanOnePrecision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
+        const greaterThanOnePrecision = 2;
+        const precision = unitAmount.lt(1) ? lessThanOnePrecision : greaterThanOnePrecision;
+        const format = `0,0.${_.repeat('0', precision)}`;
+        return utils.format(unitAmount, format);
+    },
+    getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const value = unitAmount.mul(price);
+        return utils.format(value, constants.NUMERAL_USD_FORMAT);
+    },
+    openUrl(url: string): void {
+        window.open(url, '_blank');
+    },
+    isMobileWidth(screenWidth: ScreenWidths): boolean {
+        return screenWidth === ScreenWidths.Sm;
+    },
+    isMobileOperatingSystem(): boolean {
+        return bowser.mobile;
+    },
+    getBrowserType(): BrowserType {
+        if (bowser.chrome) {
+            return BrowserType.Chrome;
+        } else if (bowser.firefox) {
+            return BrowserType.Firefox;
+        } else if (bowser.opera) {
+            return BrowserType.Opera;
+        } else if (bowser.msedge) {
+            return BrowserType.Edge;
+        } else if (bowser.safari) {
+            return BrowserType.Safari;
+        } else {
+            return BrowserType.Other;
+        }
+    },
+    getOperatingSystem(): OperatingSystemType {
+        if (bowser.android) {
+            return OperatingSystemType.Android;
+        } else if (bowser.ios) {
+            return OperatingSystemType.iOS;
+        } else if (bowser.mac) {
+            return OperatingSystemType.Mac;
+        } else if (bowser.windows) {
+            return OperatingSystemType.Windows;
+        } else if (bowser.windowsphone) {
+            return OperatingSystemType.WindowsPhone;
+        } else if (bowser.linux) {
+            return OperatingSystemType.Linux;
+        } else {
+            return OperatingSystemType.Other;
+        }
+    },
+    isTokenTracked(token: Token): boolean {
+        return !_.isUndefined(token.trackedTimestamp);
+    },
+    // Returns a [downloadLink, isOnMobile] tuple.
+    getBestWalletDownloadLinkAndIsMobile(): [string, boolean] {
+        const browserType = utils.getBrowserType();
+        const isOnMobile = utils.isMobileOperatingSystem();
+        const operatingSystem = utils.getOperatingSystem();
+        let downloadLink;
+        if (isOnMobile) {
+            switch (operatingSystem) {
+                case OperatingSystemType.Android:
+                    downloadLink = constants.URL_COINBASE_WALLET_ANDROID_APP_STORE;
+                    break;
+                case OperatingSystemType.iOS:
+                    downloadLink = constants.URL_COINBASE_WALLET_IOS_APP_STORE;
+                    break;
+                default:
+                    // Coinbase wallet is only supported on these mobile OSes - just default to iOS
+                    downloadLink = constants.URL_COINBASE_WALLET_IOS_APP_STORE;
+            }
+        } else {
+            switch (browserType) {
+                case BrowserType.Chrome:
+                    downloadLink = constants.URL_METAMASK_CHROME_STORE;
+                    break;
+                case BrowserType.Firefox:
+                    downloadLink = constants.URL_METAMASK_FIREFOX_STORE;
+                    break;
+                case BrowserType.Opera:
+                    downloadLink = constants.URL_METAMASK_OPERA_STORE;
+                    break;
+                default:
+                    downloadLink = constants.URL_METAMASK_HOMEPAGE;
+            }
+        }
+        return [downloadLink, isOnMobile];
+    },
+    getTokenIconUrl(symbol: string): string {
+        const result = `/images/token_icons/${symbol}.png`;
+        return result;
     },
 };

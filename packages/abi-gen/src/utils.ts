@@ -1,7 +1,8 @@
-import { AbiType, ConstructorAbi, DataItem } from '@0xproject/types';
+import { AbiType, ConstructorAbi, DataItem } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
+import toSnakeCase = require('to-snake-case');
 
 import { ContractsBackend, ParamKind } from './types';
 
@@ -56,7 +57,7 @@ export const utils = {
                     const componentType = `${component.name}: ${componentValueType}`;
                     return componentType;
                 });
-                const tsType = `{${componentsType}}`;
+                const tsType = `{${componentsType.join(';')}}`;
                 return tsType;
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
@@ -91,5 +92,28 @@ export const utils = {
             payable: false,
             inputs: [],
         };
+    },
+    makeOutputFileName(name: string): string {
+        let fileName = toSnakeCase(name);
+        // HACK: Snake case doesn't make a lot of sense for abbreviated names but we can't reliably detect abbreviations
+        // so we special-case the abbreviations we use.
+        fileName = fileName.replace('z_r_x', 'zrx').replace('e_r_c', 'erc');
+        return fileName;
+    },
+    writeOutputFile(filePath: string, renderedTsCode: string): void {
+        fs.writeFileSync(filePath, renderedTsCode);
+    },
+    isOutputFileUpToDate(abiFile: string, outputFile: string): boolean {
+        const abiFileModTimeMs = fs.statSync(abiFile).mtimeMs;
+        try {
+            const outFileModTimeMs = fs.statSync(outputFile).mtimeMs;
+            return outFileModTimeMs > abiFileModTimeMs;
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                return false;
+            } else {
+                throw err;
+            }
+        }
     },
 };

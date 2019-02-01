@@ -1,7 +1,8 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+
+import { CallToAction } from 'ts/components/ui/button';
 
 const DEFAULT_STYLE = {
     color: colors.darkestGrey,
@@ -11,7 +12,7 @@ interface TopBarMenuItemProps {
     title: string;
     path?: string;
     isPrimary?: boolean;
-    isExternal: boolean;
+    shouldOpenInNewTab?: boolean;
     style?: React.CSSProperties;
     className?: string;
     isNightVersion?: boolean;
@@ -24,40 +25,22 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         isPrimary: false,
         style: DEFAULT_STYLE,
         className: '',
+        shouldOpenInNewTab: false,
         isNightVersion: false,
     };
-    public render() {
-        const primaryStyles = this.props.isPrimary
-            ? {
-                  borderRadius: 4,
-                  border: `1px solid ${this.props.isNightVersion ? colors.grey : colors.greyishPink}`,
-                  marginTop: 15,
-                  paddingLeft: 9,
-                  paddingRight: 9,
-                  minWidth: 77,
-              }
-            : {};
+    public render(): React.ReactNode {
         const menuItemColor = this.props.isNightVersion ? 'white' : this.props.style.color;
         const linkColor = _.isUndefined(menuItemColor) ? colors.darkestGrey : menuItemColor;
+        const itemContent = this.props.isPrimary ? (
+            <CallToAction padding="0.8em 1.5em">{this.props.title}</CallToAction>
+        ) : (
+            this.props.title
+        );
         return (
-            <div
-                className={`center ${this.props.className}`}
-                style={{ ...this.props.style, ...primaryStyles, color: menuItemColor }}
-            >
-                {this.props.isExternal ? (
-                    <a
-                        className="text-decoration-none"
-                        style={{ color: linkColor }}
-                        target="_blank"
-                        href={this.props.path}
-                    >
-                        {this.props.title}
-                    </a>
-                ) : (
-                    <Link to={this.props.path} className="text-decoration-none" style={{ color: linkColor }}>
-                        {this.props.title}
-                    </Link>
-                )}
+            <div className={`center ${this.props.className}`} style={{ ...this.props.style, color: menuItemColor }}>
+                <Link to={this.props.path} shouldOpenInNewTab={this.props.shouldOpenInNewTab} fontColor={linkColor}>
+                    {itemContent}
+                </Link>
             </div>
         );
     }

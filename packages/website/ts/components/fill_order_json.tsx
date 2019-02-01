@@ -1,5 +1,5 @@
-import { ZeroEx } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
@@ -19,7 +19,7 @@ interface FillOrderJSONProps {
 interface FillOrderJSONState {}
 
 export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrderJSONState> {
-    public render() {
+    public render(): React.ReactNode {
         const tokenAddresses = _.keys(this.props.tokenByAddress);
         const exchangeContract = this.props.blockchain.getExchangeContractAddressIfExists();
         const hintSideToAssetToken = {
@@ -33,12 +33,8 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
             },
         };
         const hintOrderExpiryTimestamp = utils.initialOrderExpiryUnixTimestampSec();
-        const hintECSignature = {
-            r: '0xf01103f759e2289a28593eaf22e5820032...',
-            s: '937862111edcba395f8a9e0cc1b2c5e12320...',
-            v: 27,
-        };
-        const hintSalt = ZeroEx.generatePseudoRandomSalt();
+        const hintECSignature = '0x012761a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33';
+        const hintSalt = generatePseudoRandomSalt();
         const feeRecipient = constants.NULL_ADDRESS;
         const hintOrder = utils.generateOrder(
             exchangeContract,

@@ -1,4 +1,3 @@
-{{#hasReturnValue}}
 async callAsync(
 {{> typed_params inputs=inputs}}
     callData: Partial<CallData> = {},
@@ -8,20 +7,22 @@ async callAsync(
     const functionSignature = '{{this.functionSignature}}';
     const inputAbi = self._lookupAbi(functionSignature).inputs;
     [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
-    const ethersFunction = self._lookupEthersInterface(functionSignature).functions.{{this.name}}(
-        {{> params inputs=inputs}}
-    ) as ethers.CallDescription;
-    const encodedData = ethersFunction.data;
-    const callDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+    BaseContract.strictArgumentEncodingCheck(inputAbi, [{{> params inputs=inputs}}]);
+    const ethersFunction = self._lookupEthersInterface(functionSignature).functions.{{this.name}};
+    const encodedData = ethersFunction.encode([{{> params inputs=inputs}}]);
+    const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
         {
+            to: self.address,
+            ...callData,
             data: encodedData,
-        }
-    )
+        },
+        self._web3Wrapper.getContractDefaults(),
+    );
     const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-    let resultArray = ethersFunction.parse(rawCallResult);
+    BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+    let resultArray = ethersFunction.decode(rawCallResult);
     const outputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).outputs;
     resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
     resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
     return resultArray{{#singleReturnValue}}[0]{{/singleReturnValue}};
 },
-{{/hasReturnValue}}

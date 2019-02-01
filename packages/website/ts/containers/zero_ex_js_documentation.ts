@@ -1,193 +1,76 @@
-import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
-import * as _ from 'lodash';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, Environments, WebsitePaths } from 'ts/types';
-import { configs } from 'ts/utils/configs';
-import { constants } from 'ts/utils/constants';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/0xjs/introduction');
-const InstallationMarkdown = require('md/docs/0xjs/installation');
-const AsyncMarkdown = require('md/docs/0xjs/async');
-const ErrorsMarkdown = require('md/docs/0xjs/errors');
-const versioningMarkdown = require('md/docs/0xjs/versioning');
+const IntroMarkdownV0 = require('md/docs/0xjs/0.0.1/introduction');
+const InstallationMarkdownV0 = require('md/docs/0xjs/0.0.1/installation');
+const AsyncMarkdownV0 = require('md/docs/0xjs/0.0.1/async');
+const ErrorsMarkdownV0 = require('md/docs/0xjs/0.0.1/errors');
+const versioningMarkdownV0 = require('md/docs/0xjs/0.0.1/versioning');
+
+const IntroMarkdown1 = require('md/docs/0xjs/1.0.1/introduction');
+const InstallationMarkdown1 = require('md/docs/0xjs/1.0.1/installation');
+const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.1/async');
+const ErrorsMarkdownV1 = ErrorsMarkdownV0;
+const versioningMarkdownV1 = require('md/docs/0xjs/1.0.1/versioning');
+
 /* tslint:enable:no-var-requires */
 
-const zeroExJsDocSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     testrpc: 'testrpc',
     async: 'async',
     errors: 'errors',
     versioning: 'versioning',
-    zeroEx: 'zeroEx',
-    exchange: 'exchange',
-    token: 'token',
-    tokenRegistry: 'tokenRegistry',
-    etherToken: 'etherToken',
-    proxy: 'proxy',
-    orderWatcher: 'orderWatcher',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.ZeroExJs,
+    packageName: '0x.js',
     type: SupportedDocJson.TypeDoc,
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [zeroExJsDocSections.introduction],
-        install: [zeroExJsDocSections.installation],
-        topics: [zeroExJsDocSections.async, zeroExJsDocSections.errors, zeroExJsDocSections.versioning],
-        zeroEx: [zeroExJsDocSections.zeroEx],
-        contracts: [
-            zeroExJsDocSections.exchange,
-            zeroExJsDocSections.token,
-            zeroExJsDocSections.tokenRegistry,
-            zeroExJsDocSections.etherToken,
-            zeroExJsDocSections.proxy,
-        ],
-        orderWatcher: [zeroExJsDocSections.orderWatcher],
-        types: [zeroExJsDocSections.types],
-    },
-    sectionNameToMarkdown: {
-        [zeroExJsDocSections.introduction]: IntroMarkdown,
-        [zeroExJsDocSections.installation]: InstallationMarkdown,
-        [zeroExJsDocSections.async]: AsyncMarkdown,
-        [zeroExJsDocSections.errors]: ErrorsMarkdown,
-        [zeroExJsDocSections.versioning]: versioningMarkdown,
-    },
-    sectionNameToModulePath: {
-        [zeroExJsDocSections.zeroEx]: ['"0x.js/src/0x"', '"src/0x"'],
-        [zeroExJsDocSections.exchange]: [
-            '"0x.js/src/contract_wrappers/exchange_wrapper"',
-            '"src/contract_wrappers/exchange_wrapper"',
-        ],
-        [zeroExJsDocSections.tokenRegistry]: [
-            '"0x.js/src/contract_wrappers/token_registry_wrapper"',
-            '"src/contract_wrappers/token_registry_wrapper"',
-        ],
-        [zeroExJsDocSections.token]: [
-            '"0x.js/src/contract_wrappers/token_wrapper"',
-            '"src/contract_wrappers/token_wrapper"',
-        ],
-        [zeroExJsDocSections.etherToken]: [
-            '"0x.js/src/contract_wrappers/ether_token_wrapper"',
-            '"src/contract_wrappers/ether_token_wrapper"',
-        ],
-        [zeroExJsDocSections.proxy]: [
-            '"0x.js/src/contract_wrappers/proxy_wrapper"',
-            '"0x.js/src/contract_wrappers/token_transfer_proxy_wrapper"',
-            '"src/contract_wrappers/token_transfer_proxy_wrapper"',
-        ],
-        [zeroExJsDocSections.orderWatcher]: [
-            '"0x.js/src/order_watcher/order_state_watcher"',
-            '"src/order_watcher/order_state_watcher"',
-        ],
-        [zeroExJsDocSections.types]: [
-            '"0x.js/src/types"',
-            '"src/types"',
-            '"types/src/index"',
-            '"0x.js/src/contract_wrappers/generated/ether_token"',
-            '"0x.js/src/contract_wrappers/generated/token"',
-            '"0x.js/src/contract_wrappers/generated/exchange"',
+    markdownMenu: {
+        'getting-started': [
+            markdownSections.introduction,
+            markdownSections.installation,
+            markdownSections.async,
+            markdownSections.errors,
+            markdownSections.versioning,
         ],
     },
-    menuSubsectionToVersionWhenIntroduced: {
-        [zeroExJsDocSections.etherToken]: '0.7.1',
-        [zeroExJsDocSections.proxy]: '0.8.0',
-        [zeroExJsDocSections.orderWatcher]: '0.27.1',
-    },
-    sections: zeroExJsDocSections,
-    visibleConstructors: [zeroExJsDocSections.zeroEx],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :( Make sure to only
-        // ADD types here, DO NOT REMOVE types since they might still be needed for older supported versions
-        publicTypes: [
-            'Order',
-            'SignedOrder',
-            'ECSignature',
-            'ZeroExError',
-            'EventCallback',
-            'EventCallbackAsync',
-            'EventCallbackSync',
-            'ExchangeContractErrs',
-            'ContractEvent',
-            'Token',
-            'Provider',
-            'ExchangeEvents',
-            'IndexedFilterValues',
-            'SubscriptionOpts',
-            'BlockRange',
-            'BlockParam',
-            'OrderFillOrKillRequest',
-            'OrderCancellationRequest',
-            'OrderFillRequest',
-            'ContractEventEmitter',
-            'Web3Provider',
-            'ContractEventArgs',
-            'LogCancelArgs',
-            'LogFillArgs',
-            'LogErrorContractEventArgs',
-            'LogFillContractEventArgs',
-            'LogCancelContractEventArgs',
-            'EtherTokenContractEventArgs',
-            'WithdrawalContractEventArgs',
-            'DepositContractEventArgs',
-            'TokenEvents',
-            'ExchangeContractEventArgs',
-            'TransferContractEventArgs',
-            'ApprovalContractEventArgs',
-            'TokenContractEventArgs',
-            'ZeroExConfig',
-            'TransactionReceipt',
-            'TransactionReceiptWithDecodedLogs',
-            'LogWithDecodedArgs',
-            'EtherTokenEvents',
-            'BlockParamLiteral',
-            'DecodedLogArgs',
-            'MethodOpts',
-            'ValidateOrderFillableOpts',
-            'OrderTransactionOpts',
-            'TransactionOpts',
-            'ContractEventArg',
-            'LogEvent',
-            'DecodedLogEvent',
-            'EventWatcherCallback',
-            'OnOrderStateChangeCallback',
-            'OrderStateValid',
-            'OrderStateInvalid',
-            'OrderState',
-            'OrderStateWatcherConfig',
-            'FilterObject',
-            'OrderRelevantState',
-            'JSONRPCRequestPayload',
-            'JSONRPCResponsePayload',
-            'JSONRPCErrorCallback',
-            'LogEntryEvent',
-            'LogEntry',
-        ],
-        typeNameToPrefix: {},
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
+    sectionNameToMarkdownByVersion: {
+        '0.0.1': {
+            [markdownSections.introduction]: IntroMarkdownV0,
+            [markdownSections.installation]: InstallationMarkdownV0,
+            [markdownSections.versioning]: versioningMarkdownV0,
+            [markdownSections.async]: AsyncMarkdownV0,
+            [markdownSections.errors]: ErrorsMarkdownV0,
         },
-        typeNameToDocSection: {
-            ExchangeWrapper: 'exchange',
-            TokenWrapper: 'token',
-            TokenRegistryWrapper: 'tokenRegistry',
-            EtherTokenWrapper: 'etherToken',
-            ProxyWrapper: 'proxy',
-            TokenTransferProxyWrapper: 'proxy',
-            OrderStateWatcher: 'orderWatcher',
+        '1.0.1': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.versioning]: versioningMarkdownV1,
+            [markdownSections.async]: AsyncMarkdownV1,
+            [markdownSections.errors]: ErrorsMarkdownV1,
+        },
+        '2.0.0': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.versioning]: versioningMarkdownV1,
+            [markdownSections.async]: AsyncMarkdownV1,
+            [markdownSections.errors]: ErrorsMarkdownV1,
         },
     },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -196,17 +79,19 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: DocPageProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState => ({
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     docsInfo,
     translate: state.translate,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

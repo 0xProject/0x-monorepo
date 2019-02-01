@@ -4,12 +4,11 @@ This package allows you to generate TypeScript contract wrappers from ABI files.
 It's heavily inspired by [Geth abigen](https://github.com/ethereum/go-ethereum/wiki/Native-DApps:-Go-bindings-to-Ethereum-contracts) but takes a different approach.
 You can write your custom handlebars templates which will allow you to seamlessly integrate the generated code into your existing codebase with existing conventions.
 
-For an example of the generated [wrapper files](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/src/contract_wrappers/generated) check out 0x.js.
-[Here](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/contract_templates) are the templates used to generate those files.
+[Here](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/contract_templates) are the templates used to generate the contract wrappers used by 0x.js.e
 
 ## Installation
 
-`yarn add -g @0xproject/abi-gen`
+`yarn add -g @0x/abi-gen`
 
 ## Usage
 
@@ -45,7 +44,7 @@ You need to also specify the location of your main template used for every contr
 
 ## How to write custom templates?
 
-The best way to get started is to copy [0x.js templates](https://github.com/0xProject/0x-monorepo/tree/development/packages/0x.js/contract_templates) and start adjusting them for your needs.
+The best way to get started is to copy [0x.js templates](https://github.com/0xProject/0x-monorepo/tree/development/packages/contract_templates) and start adjusting them for your needs.
 We use [handlebars](http://handlebarsjs.com/) template engine under the hood.
 You need to have a master template called `contract.mustache`. it will be used to generate each contract wrapper. Although - you don't need and probably shouldn't write all your logic in a single template file. You can write [partial templates](http://handlebarsjs.com/partials.html) and as long as they are within a partials folder - they will be registered and available.
 
@@ -80,28 +79,16 @@ yarn install
 
 ### Build
 
-If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=@0x/abi-gen yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-yarn dev
-```
-
-You can also build this specific package by running the following from within its directory:
-
-```bash
-yarn build
-```
-
-or continuously rebuild on change:
-
-```bash
-yarn build:watch
+PKG=@0x/abi-gen yarn watch
 ```
 
 ### Clean

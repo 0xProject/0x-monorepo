@@ -1,6 +1,4 @@
-import { ECSignature } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
+import { BigNumber } from '@0x/utils';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Blockchain } from 'ts/blockchain';
@@ -13,13 +11,15 @@ interface GenerateOrderFormProps {
     blockchain: Blockchain;
     hashData: HashData;
     dispatcher: Dispatcher;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface ConnectedState {
     blockchainErr: BlockchainErrs;
     blockchainIsLoaded: boolean;
     orderExpiryTimestamp: BigNumber;
-    orderECSignature: ECSignature;
+    orderSignature: string;
     userAddress: string;
     orderTakerAddress: string;
     orderSalt: BigNumber;
@@ -29,11 +29,11 @@ interface ConnectedState {
     lastForceTokenStateRefetch: number;
 }
 
-const mapStateToProps = (state: State, ownProps: GenerateOrderFormProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: GenerateOrderFormProps): ConnectedState => ({
     blockchainErr: state.blockchainErr,
     blockchainIsLoaded: state.blockchainIsLoaded,
     orderExpiryTimestamp: state.orderExpiryTimestamp,
-    orderECSignature: state.orderECSignature,
+    orderSignature: state.orderSignature,
     orderTakerAddress: state.orderTakerAddress,
     orderSalt: state.orderSalt,
     networkId: state.networkId,

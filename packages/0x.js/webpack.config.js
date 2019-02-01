@@ -2,7 +2,7 @@
  * This is to generate the umd bundle only
  */
 const _ = require('lodash');
-const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const production = process.env.NODE_ENV === 'production';
 
@@ -15,6 +15,7 @@ if (production) {
 
 module.exports = {
     entry,
+    mode: 'production',
     output: {
         path: path.resolve(__dirname, '_bundles'),
         filename: '[name].js',
@@ -26,13 +27,18 @@ module.exports = {
         extensions: ['.ts', '.js', '.json'],
     },
     devtool: 'source-map',
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            minimize: true,
-            sourceMap: true,
-            include: /\.min\.js$/,
-        }),
-    ],
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                sourceMap: true,
+                terserOptions: {
+                    mangle: {
+                        reserved: ['BigNumber'],
+                    },
+                },
+            }),
+        ],
+    },
     module: {
         rules: [
             {
@@ -40,16 +46,17 @@ module.exports = {
                 use: [
                     {
                         loader: 'awesome-typescript-loader',
+                        // tsconfig.json contains some options required for
+                        // project references which do not work with webback.
+                        // We override those options here.
                         query: {
                             declaration: false,
+                            declarationMap: false,
+                            composite: false,
                         },
                     },
                 ],
                 exclude: /node_modules/,
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader',
             },
         ],
     },

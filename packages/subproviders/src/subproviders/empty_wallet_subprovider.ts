@@ -1,4 +1,4 @@
-import { JSONRPCRequestPayload } from '@0xproject/types';
+import { JSONRPCRequestPayload } from 'ethereum-types';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -18,7 +18,7 @@ export class EmptyWalletSubprovider extends Subprovider {
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
-    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback) {
+    public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         switch (payload.method) {
             case 'eth_accounts':
                 end(null, []);

@@ -1,5 +1,5 @@
-import { colors } from '@0xproject/react-shared';
-import { addressUtils } from '@0xproject/utils';
+import { colors } from '@0x/react-shared';
+import { addressUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
@@ -29,14 +29,14 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
             errMsg: '',
         };
     }
-    public componentWillReceiveProps(nextProps: AddressInputProps) {
+    public componentWillReceiveProps(nextProps: AddressInputProps): void {
         if (nextProps.shouldShowIncompleteErrs && this.props.isRequired && this.state.address === '') {
             this.setState({
                 errMsg: 'Address is required',
             });
         }
     }
-    public render() {
+    public render(): React.ReactNode {
         const label = this.props.isRequired ? <RequiredLabel label={this.props.label} /> : this.props.label;
         const labelDisplay = this.props.shouldHideLabel ? 'hidden' : 'block';
         const hintText = this.props.hintText ? this.props.hintText : '';
@@ -57,7 +57,7 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
             </div>
         );
     }
-    private _onOrderTakerAddressUpdated(e: any) {
+    private _onOrderTakerAddressUpdated(e: any): void {
         const address = e.target.value.toLowerCase();
         const isValidAddress = addressUtils.isAddress(address) || address === '';
         const errMsg = isValidAddress ? '' : 'Invalid ethereum address';

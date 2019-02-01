@@ -1,61 +1,117 @@
-export { ZeroEx } from './0x';
+export { ContractAddresses } from '@0x/contract-addresses';
+
+export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
 
 export {
-    ZeroExError,
-    EventCallback,
-    ExchangeContractErrs,
-    ContractEvent,
-    Token,
+    ContractWrappers,
+    ERC20TokenWrapper,
+    ERC721TokenWrapper,
+    EtherTokenWrapper,
+    ExchangeWrapper,
+    ERC20ProxyWrapper,
+    ERC721ProxyWrapper,
+    ForwarderWrapper,
+    OrderValidatorWrapper,
     IndexedFilterValues,
     BlockRange,
-    OrderCancellationRequest,
-    OrderFillRequest,
-    ContractEventArgs,
-    ZeroExConfig,
+    ContractWrappersConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
-    LogEvent,
+    OrderStatus,
+    OrderInfo,
+    EventCallback,
     DecodedLogEvent,
-    EventWatcherCallback,
-    OnOrderStateChangeCallback,
+    TransactionEncoder,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
+    ValidateOrderFillableOpts,
+} from '@0x/contract-wrappers';
+
+export {
+    WETH9Events,
+    WETH9WithdrawalEventArgs,
+    WETH9ApprovalEventArgs,
+    WETH9EventArgs,
+    WETH9DepositEventArgs,
+    WETH9TransferEventArgs,
+    ERC20TokenTransferEventArgs,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenEventArgs,
+    ERC721TokenApprovalEventArgs,
+    ERC721TokenApprovalForAllEventArgs,
+    ERC721TokenTransferEventArgs,
+    ERC721TokenEvents,
+    ERC721TokenEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+} from '@0x/abi-gen-wrappers';
+
+export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0x/order-watcher';
+
+export import Web3ProviderEngine = require('web3-provider-engine');
+
+export {
+    RPCSubprovider,
+    Callback,
+    JSONRPCRequestPayloadWithMethod,
+    ErrorCallback,
+    MetamaskSubprovider,
+} from '@0x/subproviders';
+
+export { AbiDecoder } from '@0x/utils';
+
+export { BigNumber } from '@0x/utils';
+
+export {
+    ExchangeContractErrs,
+    Order,
+    SignedOrder,
+    ECSignature,
     OrderStateValid,
     OrderStateInvalid,
     OrderState,
-} from './types';
+    AssetProxyId,
+    AssetData,
+    ERC20AssetData,
+    ERC721AssetData,
+    SignatureType,
+    OrderRelevantState,
+    Stats,
+} from '@0x/types';
 
 export {
     BlockParamLiteral,
-    FilterObject,
+    ContractAbi,
     BlockParam,
-    ContractEventArg,
     LogWithDecodedArgs,
-    Order,
+    ContractEventArg,
     Provider,
-    SignedOrder,
-    ECSignature,
-    TransactionReceipt,
-    TransactionReceiptWithDecodedLogs,
-} from '@0xproject/types';
-
-export {
-    EtherTokenContractEventArgs,
-    WithdrawalContractEventArgs,
-    DepositContractEventArgs,
-    EtherTokenEvents,
-} from './contract_wrappers/generated/ether_token';
-
-export {
-    TransferContractEventArgs,
-    ApprovalContractEventArgs,
-    TokenContractEventArgs,
-    TokenEvents,
-} from './contract_wrappers/generated/token';
-
-export {
-    LogErrorContractEventArgs,
-    LogCancelContractEventArgs,
-    LogFillContractEventArgs,
-    ExchangeContractEventArgs,
-    ExchangeEvents,
-} from './contract_wrappers/generated/exchange';
+    JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
+    JSONRPCErrorCallback,
+    JSONRPCResponseError,
+    LogEntry,
+    DecodedLogArgs,
+    LogEntryEvent,
+    DecodedLogEntry,
+    DecodedLogEntryEvent,
+    RawLog,
+    AbiDefinition,
+    FunctionAbi,
+    EventAbi,
+    EventParameter,
+    MethodAbi,
+    ConstructorAbi,
+    FallbackAbi,
+    DataItem,
+    ConstructorStateMutability,
+    StateMutability,
+} from 'ethereum-types';

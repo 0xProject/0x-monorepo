@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as React from 'react';
 import { InputLabel } from 'ts/components/ui/input_label';
 
@@ -21,7 +21,7 @@ interface FakeTextFieldProps {
     children?: any;
 }
 
-export function FakeTextField(props: FakeTextFieldProps) {
+export const FakeTextField = (props: FakeTextFieldProps) => {
     return (
         <div className="relative">
             {props.label !== '' && <InputLabel text={props.label} />}
@@ -31,4 +31,4 @@ export function FakeTextField(props: FakeTextFieldProps) {
             <hr style={styles.hr} />
         </div>
     );
-}
+};

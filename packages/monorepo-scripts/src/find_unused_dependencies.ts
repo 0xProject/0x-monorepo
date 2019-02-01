@@ -1,29 +1,26 @@
 #!/usr/bin/env node
 
 import * as depcheckAsync from 'depcheck';
-import * as fs from 'fs';
-import lernaGetPackages = require('lerna-get-packages');
 import * as _ from 'lodash';
-import { exec as execAsync } from 'promisify-child-process';
 
 import { constants } from './constants';
-import { utils } from './utils';
+import { utils } from './utils/utils';
 
 // For some reason, `depcheck` hangs on some packages. Add them here.
-const IGNORE_PACKAGES = ['@0xproject/deployer'];
+const IGNORE_PACKAGES = ['@0x/sol-compiler'];
 
 (async () => {
     utils.log('*** NOTE: Not all deps listed here are actually not required. ***');
     utils.log("*** `depcheck` isn't perfect so double check before actually removing any. ***\n");
-    const lernaPackages = lernaGetPackages(constants.monorepoRootPath);
-    for (const lernaPackage of lernaPackages) {
-        if (_.includes(IGNORE_PACKAGES, lernaPackage.package.name)) {
+    const packages = utils.getPackages(constants.monorepoRootPath);
+    for (const pkg of packages) {
+        if (_.includes(IGNORE_PACKAGES, pkg.packageJson.name)) {
             continue; // skip
         }
-        utils.log(`Checking ${lernaPackage.package.name} for unused deps. This might take a while...`);
+        utils.log(`Checking ${pkg.packageJson.name} for unused deps. This might take a while...`);
 
         const configs = {};
-        const { dependencies } = await depcheckAsync(lernaPackage.location, configs);
+        const { dependencies } = await depcheckAsync(pkg.location, configs);
         if (!_.isEmpty(dependencies)) {
             _.each(dependencies, dep => {
                 utils.log(dep);

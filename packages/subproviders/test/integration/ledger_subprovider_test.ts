@@ -1,24 +1,23 @@
-import { JSONRPCResponsePayload } from '@0xproject/types';
-import { promisify } from '@0xproject/utils';
+import { DoneCallback } from '@0x/types';
+import { promisify } from '@0x/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This dependency is optional and tslint skips optional dependencies
 // tslint:disable-next-line:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 import * as chai from 'chai';
+import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
-import * as _ from 'lodash';
-import Web3 = require('web3');
-import Web3ProviderEngine = require('web3-provider-engine');
-import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
-import { LedgerSubprovider } from '../../src';
-import { DoneCallback, LedgerEthereumClient } from '../../src/types';
+import { LedgerSubprovider, RPCSubprovider, Web3ProviderEngine } from '../../src';
+import { LedgerEthereumClient } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';
 import { reportCallbackErrors } from '../utils/report_callback_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
+const DEFAULT_NUM_ACCOUNTS = 10;
+const EXPECTED_SIGNATURE_LENGTH = 132;
 
 async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumClient> {
     const ledgerConnection = await TransportNodeHid.create();
@@ -40,7 +39,7 @@ describe('LedgerSubprovider', () => {
         it('returns default number of accounts', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
             expect(accounts[0]).to.not.be.an('undefined');
-            expect(accounts.length).to.be.equal(10);
+            expect(accounts.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
         });
         it('returns the expected accounts from a ledger set up with the test mnemonic', async () => {
             const accounts = await ledgerSubprovider.getAccountsAsync();
@@ -85,9 +84,7 @@ describe('LedgerSubprovider', () => {
         before(() => {
             ledgerProvider = new Web3ProviderEngine();
             ledgerProvider.addProvider(ledgerSubprovider);
-            const httpProvider = new RpcSubprovider({
-                rpcUrl: 'http://localhost:8545',
-            });
+            const httpProvider = new RPCSubprovider('http://localhost:8545');
             ledgerProvider.addProvider(httpProvider);
             ledgerProvider.start();
 
@@ -104,7 +101,7 @@ describe('LedgerSubprovider', () => {
             };
             const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                 expect(err).to.be.a('null');
-                expect(response.result.length).to.be.equal(10);
+                expect(response.result.length).to.be.equal(DEFAULT_NUM_ACCOUNTS);
                 done();
             });
             ledgerProvider.sendAsync(payload, callback);
@@ -122,7 +119,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.length).to.be.equal(132);
+                    expect(response.result.length).to.be.equal(EXPECTED_SIGNATURE_LENGTH);
                     expect(response.result.substr(0, 2)).to.be.equal('0x');
                     done();
                 });
@@ -142,7 +139,7 @@ describe('LedgerSubprovider', () => {
                 };
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
-                    expect(response.result.length).to.be.equal(132);
+                    expect(response.result.length).to.be.equal(EXPECTED_SIGNATURE_LENGTH);
                     expect(response.result.substr(0, 2)).to.be.equal('0x');
                     done();
                 });
@@ -179,7 +176,7 @@ describe('LedgerSubprovider', () => {
                     params: [tx],
                     id: 1,
                 };
-                await promisify(defaultProvider.sendAsync, defaultProvider)(payload);
+                await promisify(defaultProvider.sendAsync.bind(defaultProvider))(payload);
 
                 // Send transaction from Ledger
                 tx = {
@@ -196,7 +193,8 @@ describe('LedgerSubprovider', () => {
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     const result = response.result;
-                    expect(result.length).to.be.equal(66);
+                    const signedTxLength = 66;
+                    expect(result.length).to.be.equal(signedTxLength);
                     expect(result.substr(0, 2)).to.be.equal('0x');
                     done();
                 });

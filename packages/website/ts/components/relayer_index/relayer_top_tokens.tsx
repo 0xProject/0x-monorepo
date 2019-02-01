@@ -1,46 +1,61 @@
-import { colors, EtherscanLinkSuffixes, Styles, utils as sharedUtils } from '@0xproject/react-shared';
+import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { TokenIcon } from 'ts/components/ui/token_icon';
-import { Token } from 'ts/types';
+import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
+import { WebsiteBackendTokenInfo } from 'ts/types';
+import { analytics } from 'ts/utils/analytics';
+import { utils } from 'ts/utils/utils';
 
 export interface TopTokensProps {
-    tokens: Token[];
+    tokens: WebsiteBackendTokenInfo[];
     networkId: number;
 }
-
-const styles: Styles = {
-    tokenLabel: {
-        textDecoration: 'none',
-        color: colors.mediumBlue,
-    },
-    followingTokenLabel: {
-        paddingLeft: 16,
-    },
-};
 
 export const TopTokens: React.StatelessComponent<TopTokensProps> = (props: TopTokensProps) => {
     return (
         <div className="flex">
-            {_.map(props.tokens, (token: Token, index: number) => {
-                const firstItemStyle = { ...styles.tokenLabel, ...styles.followingTokenLabel };
-                const style = index !== 0 ? firstItemStyle : styles.tokenLabel;
+            {_.map(props.tokens, (tokenInfo: WebsiteBackendTokenInfo) => {
                 return (
-                    <a
-                        key={token.address}
-                        href={tokenLinkFromToken(token, props.networkId)}
-                        target="_blank"
-                        style={style}
-                    >
-                        {token.symbol}
-                    </a>
+                    <Container key={tokenInfo.address} marginRight="16px">
+                        <TokenLink tokenInfo={tokenInfo} networkId={props.networkId} />
+                    </Container>
                 );
             })}
         </div>
     );
 };
 
-function tokenLinkFromToken(token: Token, networkId: number) {
-    return sharedUtils.getEtherScanLinkIfExists(token.address, networkId, EtherscanLinkSuffixes.Address);
+interface TokenLinkProps {
+    tokenInfo: WebsiteBackendTokenInfo;
+    networkId: number;
+}
+interface TokenLinkState {}
+
+class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
+    constructor(props: TokenLinkProps) {
+        super(props);
+        this.state = {
+            isHovering: false,
+        };
+    }
+    public render(): React.ReactNode {
+        const onClick = (event: React.MouseEvent<HTMLElement>) => {
+            event.stopPropagation();
+            analytics.track('Token Click', {
+                tokenSymbol: this.props.tokenInfo.symbol,
+            });
+            const tokenLink = this._tokenLinkFromToken(this.props.tokenInfo, this.props.networkId);
+            utils.openUrl(tokenLink);
+        };
+        return (
+            <Text fontSize="14px" fontColor={colors.mediumBlue} onClick={onClick}>
+                {this.props.tokenInfo.symbol}
+            </Text>
+        );
+    }
+    private _tokenLinkFromToken(tokenInfo: WebsiteBackendTokenInfo, networkId: number): string {
+        return sharedUtils.getEtherScanLinkIfExists(tokenInfo.address, networkId, EtherscanLinkSuffixes.Address);
+    }
 }

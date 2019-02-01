@@ -4,11 +4,9 @@ This repository contains a few helpful scripts for working with this mono repo.
 
 #### Scripts
 
-**`yarn deps_versions`**: Since we use Lerna + Yarn workspaces, shared dependencies between packages in the monorepo get hoisted to a top-level `node_modules` directory. If two packages use different versions of the same dependency however, both get installed. To avoid having many versions of a dependency installed, we try to keep dependency versions the same across packages in the monorepo. This script will list any dependencies for which we have multiple versions installed. We can then go through them and try to consolidate to a single version where possible.
+**`yarn deps_versions`**: Since we are a Yarn workspaces monorepo, shared dependencies between packages in the monorepo get hoisted to a top-level `node_modules` directory. If two packages use different versions of the same dependency however, both get installed. To avoid having many versions of a dependency installed, we try to keep dependency versions the same across packages in the monorepo. This script will list any dependencies for which we have multiple versions installed. We can then go through them and try to consolidate to a single version where possible.
 
 **`yarn find_unused_deps`**: Sometimes we accidentally leave dependencies listed in `package.json` that are no longer being used. This script finds potential dependencies that might no longer be in use. Please verify that it is no longer in use before removing, the `depcheck` package we use under-the-hood doesn't handle some TS quirks perfectly.
-
-**`yarn remove_tags`**: Our publishing script calls `lerna publish` under-the-hood. If this command fails, it might have created new versioned git tags for each package. Removing these manually is tedious, so you can also run this command instead. Before doing so, check to see if `lerna` already created the publish commit. If so, first revert that with `git reset --hard HEAD~1`, then run this command.
 
 **`yarn test:publish`**: Execute a test-run of the publish script. This dry run won't actually publish, nor will it commit/push anything to Github.
 
@@ -46,28 +44,16 @@ yarn install
 
 ### Build
 
-If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=@0x/monorepo-scripts yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-yarn dev
-```
-
-You can also build this specific package by running the following from within its directory:
-
-```bash
-yarn build
-```
-
-or continuously rebuild on change:
-
-```bash
-yarn build:watch
+PKG=@0x/monorepo-scripts yarn watch
 ```
 
 ### Clean

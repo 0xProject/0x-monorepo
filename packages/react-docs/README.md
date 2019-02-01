@@ -1,6 +1,8 @@
-## @0xproject/react-docs
+## @0x/react-docs
 
-A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [Doxity](https://github.com/0xproject/doxity). See a [live example](http://react-docs-example.s3-website-us-east-1.amazonaws.com/).
+#### WARNING: Alpha software. Expect things to break when trying to use.
+
+A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [sol-doc](https://github.com/0xProject/0x-monorepo/tree/development/packages/sol-doc).
 
 <div style="text-align: center;">
 <img src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/screenshot.png" style="padding-bottom: 20px; padding-top: 20px;" width="80%" />
@@ -22,12 +24,10 @@ A full-page React component for rendering beautiful documentation for Solidity a
 ## Installation
 
 ```bash
-yarn add @0xproject/react-docs
+yarn add @0x/react-docs
 ```
 
 ## Usage
-
-View the [live example](http://react-docs-example.s3-website-us-east-1.amazonaws.com/) that renders the [@0xproject/web3-wrapper](https://github.com/0xProject/0x-monorepo/tree/development/packages/web3-wrapper) Typescript package. It's source code is in the [react-docs-example](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs-example) 0x monorepo subpackage.
 
 This package exposes both a single `Documentation` react component that will render a docs page, as well as all of it's sub-components in case someone wants to build their own layout.
 
@@ -37,7 +37,7 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -47,7 +47,7 @@ Feel free to contribute to these improvements!
 
 *   Allow user to pass in styling for all major elements similar to [Material-UI](http://www.material-ui.com/).
 *   Allow user to define an alternative font and have it change everywhere.
-*   Add source links to Solidity docs (currently unsupported by Doxity).
+*   Add source links to Solidity docs (currently unsupported by solc, which underlies sol-doc).
 
 ## Contributing
 
@@ -71,28 +71,16 @@ yarn install
 
 ### Build
 
-If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=@0x/react-docs yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-yarn dev
-```
-
-You can also build this specific package by running the following from within its directory:
-
-```bash
-yarn build
-```
-
-or continuously rebuild on change:
-
-```bash
-yarn build:watch
+PKG=@0x/react-docs yarn watch
 ```
 
 ### Clean

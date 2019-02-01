@@ -1,9 +1,138 @@
 <!--
-This file is auto-generated using the monorepo-scripts package. Don't edit directly.
+changelogUtils.file is auto-generated using the monorepo-scripts package. Don't edit directly.
 Edit the package's CHANGELOG.json file only.
 -->
 
 CHANGELOG
+
+## v2.0.0 - _October 18, 2018_
+
+    * Add support for `eth_signTypedData`. (#1102)
+    * Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints. (#1102)
+    * Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`. (#1102)
+    * Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers (#1105)
+    * Make web3-provider-engine types a 'dependency' so it's available to users of the library (#1105)
+    * Export new `AssetData` type from types (#1131)
+
+## v1.0.8 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v1.0.7 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v1.0.6 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _September 19, 2018_
+
+    * Drastically reduce the bundle size by removing unused parts of included contract artifacts.
+
+## v1.0.2 - _September 18, 2018_
+
+    * Add ZRX & WETH mainnet contract addresses into the included artifacts
+
+## v1.0.1 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Fix missing `BlockParamLiteral` type import issue
+
+## v1.0.1-rc.5 - _Invalid date_
+
+    * Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js
+
+## v1.0.1-rc.4 - _August 24, 2018_
+
+    * Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher` (#963)
+
+## v1.0.1-rc.3 - _August 14, 2018_
+
+    * Dependencies updated
+    * Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts (#914)
+
+## v1.0.1-rc.2 - _July 26, 2018_
+
+    * Fixed bug caused by importing non-existent dep
+
+## v1.0.1-rc.1 - _July 26, 2018_
+
+    * Dependencies updated
+
+## v1.0.0 - _July 23, 2018_
+
+    * Dependencies updated
+
+## v1.0.0-rc.2 - _July 19, 2018_
+
+    * Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`
+
+## v1.0.0-rc.1 - _July 19, 2018_
+
+    * Remove tokenRegistry wrapper (#863)
+    * Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token` (#863)
+    * Rename `zeroEx.proxy` to `zeroEx.erc20Proxy` and add `zeroEx.erc721Proxy` (#863)
+    * Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types (#863)
+    * Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too. (#863)
+    * Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2 (#863)
+    * 0x.js exports renamed contract events and event arg types (#863)
+    * Export `ZeroEx.assetData` with methods to decode/encode assetData fields found in 0x orders (#884)
+
+## v0.38.6 - _July 18, 2018_
+
+    * Dependencies updated
+
+## v0.38.5 - _July 9, 2018_
+
+    * Dependencies updated
+
+## v0.38.4 - _June 19, 2018_
+
+    * Dependencies updated
+
+## v0.38.3 - _May 29, 2018_
+
+    * Dependencies updated
+
+## v0.38.2 - _May 29, 2018_
+
+    * Dependencies updated
+
+## v0.38.1 - _May 29, 2018_
+
+    * Dependencies updated
+
+## v0.38.0 - _May 22, 2018_
+
+    * Renamed createOrderStateWatcher to createOrderWatcherAsync since it is now async (#579)
+    * Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage (#579)
+
+## v0.37.2 - _May 4, 2018_
+
+    * Dependencies updated
+
+## v0.37.1 - _May 4, 2018_
+
+    * Dependencies updated
+
+## v0.37.0 - _May 4, 2018_
+
+    * Fixed expiration watcher comparator to handle orders with equal expiration times (#526)
+    * Update Web3 Provider Engine to 14.0.4 (#555)
+    * Add `zeroEx.getProvider()` (#559)
+    * Move `ZeroExError.InvalidSignature` to `@0xproject/order-utils` `OrderError.InvalidSignature` (#559)
 
 ## v0.36.3 - _April 18, 2018_
 

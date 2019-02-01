@@ -1,19 +1,17 @@
-import { ZeroEx } from '0x.js';
 import {
-    colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
     Networks,
     Styles,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+} from '@0x/react-shared';
+import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -22,11 +20,11 @@ import ReactTooltip = require('react-tooltip');
 import firstBy = require('thenby');
 import { Blockchain } from 'ts/blockchain';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
-import { AllowanceToggle } from 'ts/components/inputs/allowance_toggle';
 import { SendButton } from 'ts/components/send_button';
 import { HelpTooltip } from 'ts/components/ui/help_tooltip';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { TokenIcon } from 'ts/components/ui/token_icon';
+import { AllowanceStateToggle } from 'ts/containers/inputs/allowance_state_toggle';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
@@ -57,7 +55,7 @@ const TOKEN_COL_SPAN_SM = 1;
 
 const styles: Styles = {
     bgColor: {
-        backgroundColor: colors.grey50,
+        backgroundColor: 'transparent',
     },
 };
 
@@ -73,18 +71,23 @@ interface TokenBalancesProps {
     userEtherBalanceInWei: BigNumber;
     networkId: number;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
 }
 
 interface TokenBalancesState {
     errorType: BalanceErrs;
+    trackedTokenStateByAddress: TokenStateByAddress;
     isBalanceSpinnerVisible: boolean;
     isZRXSpinnerVisible: boolean;
     isTokenPickerOpen: boolean;
     isAddingToken: boolean;
-    trackedTokenStateByAddress: TokenStateByAddress;
 }
 
 export class TokenBalances extends React.Component<TokenBalancesProps, TokenBalancesState> {
+    public static defaultProps: Partial<TokenBalancesProps> = {
+        userEtherBalanceInWei: new BigNumber(0),
+        isFullWidth: false,
+    };
     private _isUnmounted: boolean;
     public constructor(props: TokenBalancesProps) {
         super(props);
@@ -99,19 +102,19 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
         // tslint:disable-next-line:no-floating-promises
         this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public componentWillReceiveProps(nextProps: TokenBalancesProps) {
+    public componentWillReceiveProps(nextProps: TokenBalancesProps): void {
         if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
                 const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
-                const receivedAmountInEth = ZeroEx.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
+                const receivedAmountInEth = Web3Wrapper.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
                 const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
                 this.props.dispatcher.showFlashMessage(
                     `Received ${receivedAmountInEth.toString(10)} ${networkName} Ether`,
@@ -153,20 +156,19 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
         }
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public render() {
+    public render(): React.ReactNode {
         const errorDialogActions = [
             <FlatButton
                 key="errorOkBtn"
                 label="Ok"
                 primary={true}
-                onTouchTap={this._onErrorDialogToggle.bind(this, false)}
+                onClick={this._onErrorDialogToggle.bind(this, false)}
             />,
         ];
         const isTestNetwork = utils.isTestNetwork(this.props.networkId);
-        const isKovanTestNetwork = this.props.networkId === constants.NETWORK_ID_KOVAN;
         const stubColumnStyle = {
             display: isTestNetwork ? 'none' : 'table-cell',
         };
@@ -180,12 +182,13 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                   token balances in order to execute trades.<br> \
                                   Toggling sets an allowance for the<br> \
                                   smart contract so you can start trading that token.';
-        const userEtherBalanceInEth = ZeroEx.toUnitAmount(
+        const userEtherBalanceInEth = Web3Wrapper.toUnitAmount(
             this.props.userEtherBalanceInWei,
             constants.DECIMAL_PLACES_ETH,
         );
+        const rootClassName = this.props.isFullWidth ? 'pb2' : 'lg-px4 md-px4 sm-px1 pb2';
         return (
-            <div className="lg-px4 md-px4 sm-px1 pb2">
+            <div className={rootClassName}>
                 <h3>{isTestNetwork ? 'Test ether' : 'Ether'}</h3>
                 <Divider />
                 <div className="pt2 pb2">
@@ -201,11 +204,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             <TableHeaderColumn>Currency</TableHeaderColumn>
                             <TableHeaderColumn>Balance</TableHeaderColumn>
                             <TableRowColumn className="sm-hide xs-hide" style={stubColumnStyle} />
-                            {isTestNetwork && (
-                                <TableHeaderColumn style={{ paddingLeft: 3 }}>
-                                    {isSmallScreen ? 'Faucet' : 'Request from faucet'}
-                                </TableHeaderColumn>
-                            )}
+                            {isTestNetwork && <TableHeaderColumn style={{ paddingLeft: 3 }}>Action</TableHeaderColumn>}
+                            <TableHeaderColumn>Send</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody displayRowCheckbox={false}>
@@ -232,6 +232,20 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                     />
                                 </TableRowColumn>
                             )}
+                            <TableRowColumn>
+                                <SendButton
+                                    userAddress={this.props.userAddress}
+                                    networkId={this.props.networkId}
+                                    blockchain={this.props.blockchain}
+                                    dispatcher={this.props.dispatcher}
+                                    asset="ETH"
+                                    onError={this._onSendFailed.bind(this)}
+                                    lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
+                                    // This is not necessary for ETH.
+                                    // tslint:disable:jsx-no-lambda
+                                    refetchTokenStateAsync={() => undefined}
+                                />
+                            </TableRowColumn>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -265,7 +279,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 <div className="inline-block">Allowance</div>
                                 <HelpTooltip style={{ paddingLeft: 4 }} explanation={allowanceExplanation} />
                             </TableHeaderColumn>
-                            <TableHeaderColumn>Action</TableHeaderColumn>
+                            {isTestNetwork && <TableHeaderColumn>Action</TableHeaderColumn>}
                             {this.props.screenWidth !== ScreenWidths.Sm && <TableHeaderColumn>Send</TableHeaderColumn>}
                         </TableRow>
                     </TableHeader>
@@ -294,7 +308,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </div>
         );
     }
-    private _renderTokenTableRows() {
+    private _renderTokenTableRows(): React.ReactNode {
         if (!this.props.blockchainIsLoaded || this.props.blockchainErr !== BlockchainErrs.NoError) {
             return '';
         }
@@ -305,7 +319,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const trackedTokensStartingWithEtherToken = trackedTokens.sort(
             firstBy((t: Token) => t.symbol !== ETHER_TOKEN_SYMBOL)
                 .thenBy((t: Token) => t.symbol !== ZRX_TOKEN_SYMBOL)
-                .thenBy('address'),
+                .thenBy('trackedTimestamp'),
         );
         const tableRows = _.map(
             trackedTokensStartingWithEtherToken,
@@ -313,7 +327,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         );
         return tableRows;
     }
-    private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token) {
+    private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token): React.ReactNode {
         const tokenState = this.state.trackedTokenStateByAddress[token.address];
         const tokenLink = sharedUtils.getEtherScanLinkIfExists(
             token.address,
@@ -323,14 +337,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const isMintable =
             (_.includes(configs.SYMBOLS_OF_MINTABLE_KOVAN_TOKENS, token.symbol) &&
                 this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
-            (_.includes(configs.SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS, token.symbol) &&
-                _.includes(
-                    [
-                        sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                        sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
-                    ],
-                    this.props.networkId,
-                ));
+            (_.includes(configs.SYMBOLS_OF_MINTABLE_ROPSTEN_TOKENS, token.symbol) &&
+                this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten]);
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>
@@ -358,37 +366,28 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     )}
                 </TableRowColumn>
                 <TableRowColumn>
-                    <AllowanceToggle
-                        networkId={this.props.networkId}
-                        blockchain={this.props.blockchain}
-                        dispatcher={this.props.dispatcher}
-                        token={token}
-                        tokenState={tokenState}
-                        onErrorOccurred={this._onErrorOccurred.bind(this)}
-                        userAddress={this.props.userAddress}
-                        isDisabled={!tokenState.isLoaded}
-                        refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
-                    />
-                </TableRowColumn>
-                <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
-                    {isMintable && (
-                        <LifeCycleRaisedButton
-                            labelReady="Mint"
-                            labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
-                            labelComplete="Minted!"
-                            onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
+                    <div className="flex justify-center">
+                        <AllowanceStateToggle
+                            blockchain={this.props.blockchain}
+                            token={token}
+                            tokenState={tokenState}
+                            onErrorOccurred={this._onErrorOccurred.bind(this)}
+                            refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
                         />
-                    )}
-                    {token.symbol === ZRX_TOKEN_SYMBOL &&
-                        utils.isTestNetwork(this.props.networkId) && (
+                    </div>
+                </TableRowColumn>
+                {utils.isTestNetwork(this.props.networkId) && (
+                    <TableRowColumn style={{ paddingLeft: actionPaddingX, paddingRight: actionPaddingX }}>
+                        {isMintable && (
                             <LifeCycleRaisedButton
-                                labelReady="Request"
-                                labelLoading="Sending..."
-                                labelComplete="Sent!"
-                                onClickAsyncFn={this._faucetRequestAsync.bind(this, false)}
+                                labelReady="Mint"
+                                labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
+                                labelComplete="Minted!"
+                                onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
                             />
                         )}
-                </TableRowColumn>
+                    </TableRowColumn>
+                )}
                 {this.props.screenWidth !== ScreenWidths.Sm && (
                     <TableRowColumn
                         style={{
@@ -401,7 +400,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                             networkId={this.props.networkId}
                             blockchain={this.props.blockchain}
                             dispatcher={this.props.dispatcher}
-                            token={token}
+                            asset={token}
                             onError={this._onSendFailed.bind(this)}
                             lastForceTokenStateRefetch={this.props.lastForceTokenStateRefetch}
                             refetchTokenStateAsync={this._refetchTokenStateAsync.bind(this, token.address)}
@@ -411,7 +410,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </TableRow>
         );
     }
-    private _onAssetTokenPicked(tokenAddress: string) {
+    private _onAssetTokenPicked(tokenAddress: string): void {
         if (_.isEmpty(tokenAddress)) {
             this.setState({
                 isTokenPickerOpen: false,
@@ -423,9 +422,9 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         if (!this.state.isAddingToken && !isDefaultTrackedToken) {
             if (token.isRegistered) {
                 // Remove the token from tracked tokens
-                const newToken = {
+                const newToken: Token = {
                     ...token,
-                    isTracked: false,
+                    trackedTimestamp: undefined,
                 };
                 this.props.dispatcher.updateTokenByAddress([newToken]);
             } else {
@@ -439,16 +438,16 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isTokenPickerOpen: false,
         });
     }
-    private _onSendFailed() {
+    private _onSendFailed(): void {
         this.setState({
             errorType: BalanceErrs.sendFailed,
         });
     }
-    private _renderAmount(amount: BigNumber, decimals: number) {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+    private _renderAmount(amount: BigNumber, decimals: number): React.ReactNode {
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         return unitAmount.toNumber().toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     }
-    private _renderTokenName(token: Token) {
+    private _renderTokenName(token: Token): React.ReactNode {
         const tooltipId = `tooltip-${token.address}`;
         return (
             <div className="flex">
@@ -460,7 +459,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             </div>
         );
     }
-    private _renderErrorDialogBody() {
+    private _renderErrorDialogBody(): React.ReactNode {
         switch (this.state.errorType) {
             case BalanceErrs.incorrectNetworkForFaucet:
                 return (
@@ -496,10 +495,10 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 return null; // No error to show
 
             default:
-                throw utils.spawnSwitchErr('errorType', this.state.errorType);
+                throw errorUtils.spawnSwitchErr('errorType', this.state.errorType);
         }
     }
-    private _onErrorOccurred(errorType: BalanceErrs) {
+    private _onErrorOccurred(errorType: BalanceErrs): void {
         this.setState({
             errorType,
         });
@@ -508,7 +507,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         try {
             await this.props.blockchain.mintTestTokensAsync(token);
             await this._refetchTokenStateAsync(token.address);
-            const amount = ZeroEx.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
+            const amount = Web3Wrapper.toUnitAmount(constants.MINT_AMOUNT, token.decimals);
             this.props.dispatcher.showFlashMessage(`Successfully minted ${amount.toString(10)} ${token.symbol}`);
             return true;
         } catch (err) {
@@ -525,7 +524,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.setState({
                 errorType: BalanceErrs.mintingFailed,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return false;
         }
     }
@@ -547,7 +546,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         await utils.sleepAsync(ARTIFICIAL_FAUCET_REQUEST_DELAY);
 
         const segment = isEtherRequest ? 'ether' : 'zrx';
-        const response = await fetch(
+        const response = await fetchAsync(
             `${constants.URL_TESTNET_FAUCET}/${segment}/${this.props.userAddress}?networkId=${this.props.networkId}`,
         );
         const responseBody = await response.text();
@@ -560,7 +559,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             this.setState({
                 errorType,
             });
-            await errorReporter.reportAsync(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
+            errorReporter.report(new Error(`Faucet returned non-200: ${JSON.stringify(response)}`));
             return false;
         }
 
@@ -577,24 +576,24 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
         return true;
     }
-    private _onErrorDialogToggle(isOpen: boolean) {
+    private _onErrorDialogToggle(_isOpen: boolean): void {
         this.setState({
             errorType: undefined,
         });
     }
-    private _onAddTokenClicked() {
+    private _onAddTokenClicked(): void {
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: true,
         });
     }
-    private _onRemoveTokenClicked() {
+    private _onRemoveTokenClicked(): void {
         this.setState({
             isTokenPickerOpen: true,
             isAddingToken: false,
         });
     }
-    private async _startPollingZrxBalanceAsync() {
+    private async _startPollingZrxBalanceAsync(): Promise<void> {
         const tokens = _.values(this.props.tokenByAddress);
         const zrxToken = _.find(tokens, t => t.symbol === ZRX_TOKEN_SYMBOL);
 
@@ -609,7 +608,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             isZRXSpinnerVisible: false,
         });
     }
-    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]) {
+    private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         for (const tokenAddress of tokenAddresses) {
@@ -629,7 +628,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             });
         }
     }
-    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]) {
+    private _getInitialTrackedTokenStateByAddress(trackedTokens: Token[]): TokenStateByAddress {
         const trackedTokenStateByAddress: TokenStateByAddress = {};
         _.each(trackedTokens, token => {
             trackedTokenStateByAddress[token.address] = {
@@ -640,7 +639,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         });
         return trackedTokenStateByAddress;
     }
-    private async _refetchTokenStateAsync(tokenAddress: string) {
+    private async _refetchTokenStateAsync(tokenAddress: string): Promise<void> {
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const [balance, allowance] = await this.props.blockchain.getTokenBalanceAndAllowanceAsync(
             userAddressIfExists,

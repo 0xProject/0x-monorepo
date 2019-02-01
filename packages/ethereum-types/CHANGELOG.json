@@ -1,0 +1,147 @@
+[
+    {
+        "version": "1.1.1",
+        "changes": [
+            {
+                "note": "Add `JSONRPCResponseError` and error field on `JSONRPCResponsePayload`.",
+                "pr": 1102
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Unpublished package."
+            }
+        ]
+    },
+    {
+        "timestamp": 1538693146,
+        "version": "1.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538475601,
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1535133899,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1534210131,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532614997,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532605697,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add `TraceParams` interface for `debug_traceTransaction` parameters",
+                "pr": 675
+            },
+            {
+                "note": "Add `TransactionReceiptStatus` type",
+                "pr": 812
+            },
+            {
+                "note": "Add Artifact types: `CompilerSettings`, `CompilerOptions`, `OutputField`",
+                "pr": 924
+            }
+        ]
+    },
+    {
+        "version": "0.0.2",
+        "changes": [
+            {
+                "note": "Initial publish",
+                "pr": "642"
+            }
+        ],
+        "timestamp": 1527811200
+    }
+]

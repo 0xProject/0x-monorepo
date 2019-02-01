@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import * as React from 'react';
 import { AlertTypes } from 'ts/types';
 
@@ -7,7 +7,7 @@ interface AlertProps {
     message: string | React.ReactNode;
 }
 
-export function Alert(props: AlertProps) {
+export const Alert = (props: AlertProps) => {
     const isAlert = props.type === AlertTypes.ERROR;
     const errMsgStyles = {
         background: isAlert ? colors.red200 : colors.lightestGreen,
@@ -22,4 +22,4 @@ export function Alert(props: AlertProps) {
             {props.message}
         </div>
     );
-}
+};

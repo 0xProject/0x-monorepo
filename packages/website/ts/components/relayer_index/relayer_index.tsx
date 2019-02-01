@@ -1,14 +1,22 @@
-import { colors, Styles } from '@0xproject/react-shared';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
-import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
-import { WebsiteBackendRelayerInfo } from 'ts/types';
+import { RelayerGridTile, RelayerGridTileStyle } from 'ts/components/relayer_index/relayer_grid_tile';
+import { Retry } from 'ts/components/ui/retry';
+import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
+
+export enum RelayerIndexCellStyle {
+    Expanded = 0,
+    Minimized,
+}
 
 export interface RelayerIndexProps {
     networkId: number;
+    screenWidth: ScreenWidths;
+    cellStyle: RelayerIndexCellStyle;
 }
 
 interface RelayerIndexState {
@@ -16,25 +24,12 @@ interface RelayerIndexState {
     error?: Error;
 }
 
-const styles: Styles = {
-    root: {
-        width: '100%',
-    },
-    item: {
-        backgroundColor: colors.white,
-        borderBottomRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
-        boxShadow: `0px 4px 6px ${colors.walletBoxShadow}`,
-        overflow: 'hidden',
-        padding: 4,
-    },
-};
-
-const CELL_HEIGHT = 260;
-const NUMBER_OF_COLUMNS = 4;
-const GRID_PADDING = 16;
+const CELL_HEIGHT_EXPANDED = 290;
+const CELL_HEIGHT_MINIMIZED = 225;
+const NUMBER_OF_COLUMNS_LARGE = 3;
+const NUMBER_OF_COLUMNS_MEDIUM = 2;
+const NUMBER_OF_COLUMNS_SMALL = 2;
+const GRID_PADDING = 20;
 
 export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerIndexState> {
     private _isUnmounted: boolean;
@@ -46,41 +41,63 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
             error: undefined,
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchRelayerInfosAsync();
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
-        const readyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
-        if (readyToRender) {
+    public render(): React.ReactNode {
+        const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
+        if (!isReadyToRender) {
             return (
-                <div style={styles.root}>
-                    <GridList
-                        cellHeight={CELL_HEIGHT}
-                        cols={NUMBER_OF_COLUMNS}
-                        padding={GRID_PADDING}
-                        style={styles.gridList}
-                    >
-                        {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo) => (
-                            <RelayerGridTile
-                                key={relayerInfo.id}
-                                relayerInfo={relayerInfo}
-                                networkId={this.props.networkId}
-                            />
-                        ))}
-                    </GridList>
+                // TODO: consolidate this loading component with the one in portal and OpenPositions
+                // TODO: possibly refactor into a generic loading container with spinner and retry UI
+                <div className="center">
+                    {_.isUndefined(this.state.error) ? (
+                        <CircularProgress size={40} thickness={5} />
+                    ) : (
+                        <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />
+                    )}
                 </div>
             );
         } else {
-            // TODO: loading and error states with a scrolling container
-            return null;
+            const numberOfRelayers = this.state.relayerInfos.length;
+            const numberOfColumns = Math.min(
+                numberOfRelayers,
+                this._numberOfColumnsForScreenWidth(this.props.screenWidth),
+            );
+            const isExpanded = this.props.cellStyle === RelayerIndexCellStyle.Expanded;
+            const cellHeight = isExpanded ? CELL_HEIGHT_EXPANDED : CELL_HEIGHT_MINIMIZED;
+            const gridTileStyle = isExpanded ? RelayerGridTileStyle.Expanded : RelayerGridTileStyle.Minimized;
+            return (
+                <GridList
+                    cellHeight={cellHeight}
+                    cols={numberOfColumns}
+                    padding={GRID_PADDING}
+                    style={{ marginTop: -10, marginBottom: 0 }}
+                >
+                    {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo, index) => (
+                        <RelayerGridTile
+                            key={index}
+                            relayerInfo={relayerInfo}
+                            networkId={this.props.networkId}
+                            style={gridTileStyle}
+                        />
+                    ))}
+                </GridList>
+            );
         }
     }
     private async _fetchRelayerInfosAsync(): Promise<void> {
         try {
+            if (!this._isUnmounted) {
+                this.setState({
+                    relayerInfos: undefined,
+                    error: undefined,
+                });
+            }
             const relayerInfos = await backendClient.getRelayerInfosAsync();
             if (!this._isUnmounted) {
                 this.setState({
@@ -93,6 +110,17 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                     error,
                 });
             }
+        }
+    }
+    private _numberOfColumnsForScreenWidth(screenWidth: ScreenWidths): number {
+        switch (screenWidth) {
+            case ScreenWidths.Md:
+                return NUMBER_OF_COLUMNS_MEDIUM;
+            case ScreenWidths.Sm:
+                return NUMBER_OF_COLUMNS_SMALL;
+            case ScreenWidths.Lg:
+            default:
+                return NUMBER_OF_COLUMNS_LARGE;
         }
     }
 }

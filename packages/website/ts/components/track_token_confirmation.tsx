@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Party } from 'ts/components/ui/party';
@@ -15,7 +15,7 @@ interface TrackTokenConfirmationProps {
 interface TrackTokenConfirmationState {}
 
 export class TrackTokenConfirmation extends React.Component<TrackTokenConfirmationProps, TrackTokenConfirmationState> {
-    public render() {
+    public render(): React.ReactNode {
         const isMultipleTokens = this.props.tokens.length > 1;
         const allTokens = _.values(this.props.tokenByAddress);
         return (

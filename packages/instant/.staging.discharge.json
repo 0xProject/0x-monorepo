@@ -1,0 +1,13 @@
+{
+    "domain": "0x-instant-staging",
+    "build_command": "yarn build:umd:prod",
+    "upload_directory": "public",
+    "index_key": "index.html",
+    "error_key": "index.html",
+    "trailing_slashes": true,
+    "cache": 3600,
+    "aws_profile": "default",
+    "aws_region": "us-east-1",
+    "cdn": false,
+    "dns_configured": true
+}

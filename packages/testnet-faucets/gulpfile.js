@@ -9,15 +9,12 @@ const config = {
     target: 'node',
     entry: [path.join(__dirname, '/src/ts/server.ts')],
     output: {
-        path: path.join(__dirname, '/bin'),
+        path: path.join(__dirname, '/server'),
         filename: 'server.js',
     },
     devtool: 'source-map',
     resolve: {
-        modules: [
-            path.join(__dirname, '/src/ts'),
-            'node_modules',
-        ],
+        modules: [path.join(__dirname, '/src/ts'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
         alias: {
             ts: path.join(__dirname, '/src/ts'),
@@ -44,10 +41,10 @@ const config = {
         }),
     ],
     externals: nodeExternals({
-        modulesDir: path.join(__dirname, '../../node_modules')
+        modulesDir: path.join(__dirname, '../../node_modules'),
     }),
     watchOptions: {
-        ignored: /bin|node_modules|transpiled/
+        ignored: /server|node_modules|transpiled/,
     },
 };
 
@@ -67,7 +64,7 @@ gulp.task('run', ['watch'], function() {
         execMap: {
             js: 'node',
         },
-        script: path.join(__dirname, 'bin/server'),
+        script: path.join(__dirname, 'server/server'),
         ignore: ['*'],
         watch: ['foo/'],
         ext: 'noop',
@@ -77,16 +74,18 @@ gulp.task('run', ['watch'], function() {
 });
 
 function onBuild(done) {
-  return function(err, stats) {
-    if(err) {
-      console.log('Error', err);
-    }
-    else {
-      console.log(stats.toString());
-    }
-
-    if(done) {
-      done();
-    }
-  }
+    return function(err, stats) {
+        if (err) {
+            console.log('Error', err);
+            process.exit(1);
+        } else {
+            console.log(stats.toString());
+        }
+        if (done) {
+            if (stats.compilation.errors && stats.compilation.errors.length > 0) {
+                process.exit(1);
+            }
+            done();
+        }
+    };
 }

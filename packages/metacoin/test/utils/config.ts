@@ -1,9 +1,12 @@
-import * as path from 'path';
+import { devConstants } from '@0x/dev-utils';
 
 export const config = {
     networkId: 50,
-    artifactsDir: path.resolve(__dirname, '../../artifacts'),
-    contractsDir: path.resolve(__dirname, '../../contracts'),
+    artifactsDir: 'artifacts',
+    contractsDir: 'contracts',
     ganacheLogFile: 'ganache.log',
+    txDefaults: {
+        from: devConstants.TESTRPC_FIRST_ADDRESS,
+    },
     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
 };

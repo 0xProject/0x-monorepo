@@ -1,5 +1,5 @@
-import { assert } from '@0xproject/assert';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { addressUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -7,14 +7,12 @@ import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
 import {
-    Callback,
     DerivedHDKeyInfo,
     LedgerEthereumClient,
     LedgerEthereumClientFactoryAsync,
     LedgerSubproviderConfigs,
     LedgerSubproviderErrors,
     PartialTxParams,
-    ResponseWithTxParams,
     WalletSubproviderErrors,
 } from '../types';
 import { walletUtils } from '../utils/wallet_utils';
@@ -33,14 +31,15 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
  * re-routes them to a Ledger device plugged into the users computer.
  */
 export class LedgerSubprovider extends BaseWalletSubprovider {
-    private _nonceLock = new Lock();
-    private _connectionLock = new Lock();
-    private _networkId: number;
+    // tslint:disable-next-line:no-unused-variable
+    private readonly _nonceLock = new Lock();
+    private readonly _connectionLock = new Lock();
+    private readonly _networkId: number;
     private _baseDerivationPath: string;
-    private _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
+    private readonly _ledgerEthereumClientFactoryAsync: LedgerEthereumClientFactoryAsync;
     private _ledgerClientIfExists?: LedgerEthereumClient;
-    private _shouldAlwaysAskForConfirmation: boolean;
-    private _addressSearchLimit: number;
+    private readonly _shouldAlwaysAskForConfirmation: boolean;
+    private readonly _addressSearchLimit: number;
     /**
      * Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
      * TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
@@ -74,7 +73,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * Set a desired derivation path when computing the available user addresses
      * @param basDerivationPath The desired derivation path (e.g `44'/60'/0'`)
      */
-    public setPath(basDerivationPath: string) {
+    public setPath(basDerivationPath: string): void {
         this._baseDerivationPath = basDerivationPath;
     }
     /**
@@ -113,9 +112,12 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         const tx = new EthereumTx(txParams);
 
         // Set the EIP155 bits
-        tx.raw[6] = Buffer.from([this._networkId]); // v
-        tx.raw[7] = Buffer.from([]); // r
-        tx.raw[8] = Buffer.from([]); // s
+        const vIndex = 6;
+        tx.raw[vIndex] = Buffer.from([this._networkId]); // v
+        const rIndex = 7;
+        tx.raw[rIndex] = Buffer.from([]); // r
+        const sIndex = 8;
+        tx.raw[sIndex] = Buffer.from([]); // s
 
         const txHex = tx.serialize().toString('hex');
         try {
@@ -127,7 +129,8 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             tx.v = Buffer.from(result.v, 'hex');
 
             // EIP155: v should be chain_id * 2 + {35, 36}
-            const signedChainId = Math.floor((tx.v[0] - 35) / 2);
+            const eip55Constant = 35;
+            const signedChainId = Math.floor((tx.v[0] - eip55Constant) / 2);
             if (signedChainId !== this._networkId) {
                 await this._destroyLedgerClientAsync();
                 const err = new Error(LedgerSubproviderErrors.TooOldLedgerFirmware);
@@ -169,8 +172,10 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
                 fullDerivationPath,
                 ethUtil.stripHexPrefix(data),
             );
-            const v = result.v - 27;
-            let vHex = v.toString(16);
+            const lowestValidV = 27;
+            const v = result.v - lowestValidV;
+            const hexBase = 16;
+            let vHex = v.toString(hexBase);
             if (vHex.length < 2) {
                 vHex = `0${v}`;
             }
@@ -182,6 +187,16 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             throw err;
         }
     }
+    /**
+     * eth_signTypedData is currently not supported on Ledger devices.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    // tslint:disable-next-line:prefer-function-over-method
+    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+        throw new Error(WalletSubproviderErrors.MethodNotSupported);
+    }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.acquire();
         if (!_.isUndefined(this._ledgerClientIfExists)) {
@@ -192,7 +207,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._connectionLock.release();
         return ledgerEthereumClient;
     }
-    private async _destroyLedgerClientAsync() {
+    private async _destroyLedgerClientAsync(): Promise<void> {
         await this._connectionLock.acquire();
         if (_.isUndefined(this._ledgerClientIfExists)) {
             this._connectionLock.release();

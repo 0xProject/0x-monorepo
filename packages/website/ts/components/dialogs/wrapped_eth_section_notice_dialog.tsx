@@ -8,13 +8,13 @@ interface WrappedEthSectionNoticeDialogProps {
     onToggleDialog: () => void;
 }
 
-export function WrappedEthSectionNoticeDialog(props: WrappedEthSectionNoticeDialogProps) {
+export const WrappedEthSectionNoticeDialog = (props: WrappedEthSectionNoticeDialogProps) => {
     return (
         <Dialog
             title="Dedicated Wrapped Ether Section"
             titleStyle={{ fontWeight: 100 }}
             actions={[
-                <FlatButton key="acknowledgeWrapEthSection" label="Sounds good" onTouchTap={props.onToggleDialog} />,
+                <FlatButton key="acknowledgeWrapEthSection" label="Sounds good" onClick={props.onToggleDialog} />,
             ]}
             open={props.isOpen}
             onRequestClose={props.onToggleDialog}
@@ -30,4 +30,4 @@ export function WrappedEthSectionNoticeDialog(props: WrappedEthSectionNoticeDial
             </div>
         </Dialog>
     );
-}
+};

@@ -1,14 +1,13 @@
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
-import * as _ from 'lodash';
 
-import { DerivedHDKeyInfo, WalletSubproviderErrors } from '../types';
+import { DerivedHDKeyInfo } from '../types';
 
 const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
 
 class DerivedHDKeyInfoIterator implements IterableIterator<DerivedHDKeyInfo> {
-    private _parentDerivedKeyInfo: DerivedHDKeyInfo;
-    private _searchLimit: number;
+    private readonly _parentDerivedKeyInfo: DerivedHDKeyInfo;
+    private readonly _searchLimit: number;
     private _index: number;
 
     constructor(initialDerivedKey: DerivedHDKeyInfo, searchLimit: number = DEFAULT_ADDRESS_SEARCH_LIMIT) {
@@ -30,10 +29,10 @@ class DerivedHDKeyInfoIterator implements IterableIterator<DerivedHDKeyInfo> {
             baseDerivationPath,
             derivationPath: fullDerivationPath,
         };
-        const done = this._index === this._searchLimit;
+        const isDone = this._index === this._searchLimit;
         this._index++;
         return {
-            done,
+            done: isDone,
             value: derivedKey,
         };
     }

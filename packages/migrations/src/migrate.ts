@@ -1,24 +1,22 @@
 #!/usr/bin/env node
-import { Deployer } from '@0xproject/deployer';
-import { devConstants } from '@0xproject/dev-utils';
-import { logUtils } from '@0xproject/utils';
-import * as path from 'path';
+import { devConstants, web3Factory } from '@0x/dev-utils';
+import { logUtils } from '@0x/utils';
+import { Provider } from 'ethereum-types';
 
 import { runMigrationsAsync } from './migration';
 
 (async () => {
-    const deployerOpts = {
-        jsonrpcUrl: 'http://localhost:8545',
-        artifactsDir: path.resolve('src', 'artifacts'),
-        networkId: 50,
-        defaults: {
-            gas: devConstants.GAS_ESTIMATE,
-        },
+    let providerConfigs;
+    let provider: Provider;
+    let txDefaults;
+
+    providerConfigs = { shouldUseInProcessGanache: false };
+    provider = web3Factory.getRpcProvider(providerConfigs);
+    txDefaults = {
+        from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
-
-    const deployer = new Deployer(deployerOpts);
-
-    await runMigrationsAsync(deployer);
+    await runMigrationsAsync(provider, txDefaults);
+    process.exit(0);
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);

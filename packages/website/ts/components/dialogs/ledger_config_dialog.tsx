@@ -1,6 +1,6 @@
-import { ZeroEx } from '0x.js';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { colors, constants as sharedConstants } from '@0x/react-shared';
+import { BigNumber, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -29,7 +29,7 @@ interface LedgerConfigDialogProps {
     toggleDialogFn: (isOpen: boolean) => void;
     dispatcher: Dispatcher;
     blockchain: Blockchain;
-    networkId: number;
+    networkId?: number;
     providerType: ProviderType;
 }
 
@@ -44,6 +44,9 @@ interface LedgerConfigDialogState {
 }
 
 export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps, LedgerConfigDialogState> {
+    public static defaultProps = {
+        networkId: 1,
+    };
     constructor(props: LedgerConfigDialogProps) {
         super(props);
         const derivationPathIfExists = props.blockchain.getLedgerDerivationPathIfExists();
@@ -59,9 +62,9 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             preferredNetworkId: props.networkId,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const dialogActions = [
-            <FlatButton key="ledgerConnectCancel" label="Cancel" onTouchTap={this._onClose.bind(this)} />,
+            <FlatButton key="ledgerConnectCancel" label="Cancel" onClick={this._onClose.bind(this)} />,
         ];
         const dialogTitle =
             this.state.stepIndex === LedgerSteps.CONNECT ? 'Connect to your Ledger' : 'Select desired address';
@@ -82,7 +85,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             </Dialog>
         );
     }
-    private _renderConnectStep() {
+    private _renderConnectStep(): React.ReactNode {
         const networkIds = _.values(sharedConstants.NETWORK_ID_BY_NAME);
         return (
             <div>
@@ -122,7 +125,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             </div>
         );
     }
-    private _renderSelectAddressStep() {
+    private _renderSelectAddressStep(): React.ReactNode {
         return (
             <div>
                 <div>
@@ -159,7 +162,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             </div>
         );
     }
-    private _renderAddressTableRows() {
+    private _renderAddressTableRows(): React.ReactNode {
         const rows = _.map(this.state.userAddresses, (userAddress: string, i: number) => {
             const balanceInWei = this.state.addressBalances[i];
             const addressTooltipId = `address-${userAddress}`;
@@ -168,7 +171,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';
-            const balanceInEth = ZeroEx.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
+            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
             const balanceString = `${balanceInEth.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ETH`;
             return (
                 <TableRow key={userAddress} style={{ height: 40 }}>
@@ -189,7 +192,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         });
         return rows;
     }
-    private _onClose() {
+    private _onClose(): void {
         this.setState({
             connectionErrMsg: '',
             stepIndex: LedgerSteps.CONNECT,
@@ -197,7 +200,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
     }
-    private _onAddressSelected(selectedRowIndexes: number[]) {
+    private _onAddressSelected(selectedRowIndexes: number[]): void {
         const selectedRowIndex = selectedRowIndexes[0];
         const selectedAddress = this.state.userAddresses[selectedRowIndex];
         const selectAddressBalance = this.state.addressBalances[selectedRowIndex];
@@ -228,7 +231,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         }
         return didSucceed;
     }
-    private async _fetchAddressesAndBalancesAsync() {
+    private async _fetchAddressesAndBalancesAsync(): Promise<boolean> {
         let userAddresses: string[];
         const addressBalances: BigNumber[] = [];
         try {
@@ -250,7 +253,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         });
         return true;
     }
-    private _onDerivationPathChanged(e: any, derivationPath: string) {
+    private _onDerivationPathChanged(_event: any, derivationPath: string): void {
         let derivationErrMsg = '';
         if (!_.startsWith(derivationPath, VALID_ETHEREUM_DERIVATION_PATH_PREFIX)) {
             derivationErrMsg = 'Must be valid Ethereum path.';
@@ -261,7 +264,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             derivationErrMsg,
         });
     }
-    private async _onConnectLedgerClickAsync() {
+    private async _onConnectLedgerClickAsync(): Promise<boolean> {
         const isU2FSupported = await utils.isU2FSupportedAsync();
         if (!isU2FSupported) {
             logUtils.log(`U2F not supported in this browser`);
@@ -282,6 +285,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         if (didSucceed) {
             this.setState({
                 stepIndex: LedgerSteps.SELECT_ADDRESS,
+                connectionErrMsg: '',
             });
         }
         return didSucceed;
@@ -295,7 +299,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         }
         return userAddresses;
     }
-    private _onSelectedNetworkUpdated(e: any, index: number, networkId: number) {
+    private _onSelectedNetworkUpdated(_event: any, _index: number, networkId: number): void {
         this.setState({
             preferredNetworkId: networkId,
         });

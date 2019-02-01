@@ -1,4 +1,4 @@
-## @0xproject/json-schemas
+## @0x/json-schemas
 
 Contains 0x-related json schemas
 
@@ -7,26 +7,26 @@ Contains 0x-related json schemas
 ## Installation
 
 ```bash
-yarn add @0xproject/json-schemas
+yarn add @0x/json-schemas
 ```
 
 **Import**
 
 ```typescript
-import { SchemaValidator, ValidatorResult, schemas } from '@0xproject/json-schemas';
+import { SchemaValidator, ValidatorResult, schemas } from '@0x/json-schemas';
 ```
 
 or
 
 ```javascript
-var schemas = require('@0xproject/json-schemas').schemas;
+var schemas = require('@0x/json-schemas').schemas;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -52,28 +52,16 @@ yarn install
 
 ### Build
 
-If this is your **first** time building this package, you must first build **all** packages within the monorepo. This is because packages that depend on other packages located inside this monorepo are symlinked when run from **within** the monorepo. This allows you to make changes across multiple packages without first publishing dependent packages to NPM. To build all packages, run the following from the monorepo root directory:
+To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-yarn lerna:rebuild
+PKG=@0x/json-schemas yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-yarn dev
-```
-
-You can also build this specific package by running the following from within its directory:
-
-```bash
-yarn build
-```
-
-or continuously rebuild on change:
-
-```bash
-yarn build:watch
+PKG=@0x/json-schemas yarn watch
 ```
 
 ### Clean

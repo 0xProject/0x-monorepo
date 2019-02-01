@@ -1,9 +1,9 @@
-import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
+import { AnchorTitle, colors, HeaderSizes } from '@0x/react-shared';
+import { Event, EventArg } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { Event, EventArg } from '../types';
 
 import { Type } from './type';
 
@@ -24,7 +24,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             shouldShowAnchor: false,
         };
     }
-    public render() {
+    public render(): React.ReactNode {
         const event = this.props.event;
         const id = `${this.props.sectionName}-${event.name}`;
         return (
@@ -49,11 +49,16 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             </div>
         );
     }
-    private _renderEventCode() {
+    private _renderEventCode(): React.ReactNode {
         const indexed = <span style={{ color: colors.green }}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
             const type = (
-                <Type type={eventArg.type} sectionName={this.props.sectionName} docsInfo={this.props.docsInfo} />
+                <Type
+                    type={eventArg.type}
+                    sectionName={this.props.sectionName}
+                    docsInfo={this.props.docsInfo}
+                    isInPopover={false}
+                />
             );
             return (
                 <span key={`eventArg-${eventArg.name}`}>
@@ -76,7 +81,7 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
             </span>
         );
     }
-    private _setAnchorVisibility(shouldShowAnchor: boolean) {
+    private _setAnchorVisibility(shouldShowAnchor: boolean): void {
         this.setState({
             shouldShowAnchor,
         });

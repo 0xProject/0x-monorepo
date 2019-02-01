@@ -6,7 +6,7 @@ import { ContractSource } from '../types';
 import { Resolver } from './resolver';
 
 export class NPMResolver extends Resolver {
-    private _packagePath: string;
+    private readonly _packagePath: string;
     constructor(packagePath: string) {
         super();
         this._packagePath = packagePath;
@@ -19,7 +19,7 @@ export class NPMResolver extends Resolver {
             const ROOT_PATH = '/';
             while (currentPath !== ROOT_PATH) {
                 const lookupPath = path.join(currentPath, 'node_modules', packageName, pathWithinPackage);
-                if (fs.existsSync(lookupPath)) {
+                if (fs.existsSync(lookupPath) && fs.lstatSync(lookupPath).isFile()) {
                     const fileContent = fs.readFileSync(lookupPath).toString();
                     return {
                         source: fileContent,

@@ -1,5 +1,316 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Add support for `eth_signTypedData`.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
+                "pr": 1105
+            },
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
+            },
+            {
+                "note": "Export new `AssetData` type from types",
+                "pr": 1131
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
+            }
+        ],
+        "timestamp": 1537369748
+    },
+    {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Add ZRX & WETH mainnet contract addresses into the included artifacts"
+            }
+        ],
+        "timestamp": 1537265493
+    },
+    {
+        "timestamp": 1536142250,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Fix missing `BlockParamLiteral` type import issue"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note":
+                    "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "note":
+                    "Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher`",
+                "pr": 963
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "version": "1.0.1-rc.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            },
+            {
+                "pr": 914,
+                "note": "Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
+        "version": "1.0.1-rc.2",
+        "changes": [
+            {
+                "note": "Fixed bug caused by importing non-existent dep"
+            }
+        ],
+        "timestamp": 1532619515
+    },
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1532605697
+    },
+    {
+        "timestamp": 1532357734,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043100,
+        "version": "1.0.0-rc.2",
+        "changes": [
+            {
+                "note": "Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`"
+            }
+        ]
+    },
+    {
+        "timestamp": 1532043000,
+        "version": "1.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Remove tokenRegistry wrapper",
+                "pr": 863
+            },
+            {
+                "note": "Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token`",
+                "pr": 863
+            },
+            {
+                "note": "Rename `zeroEx.proxy` to `zeroEx.erc20Proxy` and add `zeroEx.erc721Proxy`",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too.",
+                "pr": 863
+            },
+            {
+                "note":
+                    "Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2",
+                "pr": 863
+            },
+            {
+                "note": "0x.js exports renamed contract events and event arg types",
+                "pr": 863
+            },
+            {
+                "note": "Export `ZeroEx.assetData` with methods to decode/encode assetData fields found in 0x orders",
+                "pr": 884
+            }
+        ]
+    },
+    {
+        "timestamp": 1531919263,
+        "version": "0.38.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1531149657,
+        "version": "0.38.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1529397769,
+        "version": "0.38.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527617805,
+        "version": "0.38.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527617227,
+        "version": "0.38.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1527616612,
+        "version": "0.38.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.38.0",
+        "changes": [
+            {
+                "note": "Renamed createOrderStateWatcher to createOrderWatcherAsync since it is now async",
+                "pr": 579
+            },
+            {
+                "note":
+                    "Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage",
+                "pr": 579
+            }
+        ],
+        "timestamp": 1527008270
+    },
+    {
+        "timestamp": 1525477860,
+        "version": "0.37.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1525453812,
+        "version": "0.37.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "0.37.0",
         "changes": [
             {
@@ -9,8 +320,17 @@
             {
                 "note": "Update Web3 Provider Engine to 14.0.4",
                 "pr": 555
+            },
+            {
+                "note": "Add `zeroEx.getProvider()`",
+                "pr": 559
+            },
+            {
+                "note": "Move `ZeroExError.InvalidSignature` to `@0xproject/order-utils` `OrderError.InvalidSignature`",
+                "pr": 559
             }
-        ]
+        ],
+        "timestamp": 1525428773
     },
     {
         "version": "0.36.3",

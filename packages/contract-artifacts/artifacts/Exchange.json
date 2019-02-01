@@ -1,0 +1,1976 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "Exchange",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "filled",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAssetFillAmounts",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "batchFillOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "cancelled",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "signerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "preSign",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "leftOrder",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "rightOrder",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "leftSignature",
+                        "type": "bytes"
+                    },
+                    {
+                        "name": "rightSignature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "matchOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "components": [
+                                    {
+                                        "name": "makerAssetFilledAmount",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "name": "takerAssetFilledAmount",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "name": "makerFeePaid",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "name": "takerFeePaid",
+                                        "type": "uint256"
+                                    }
+                                ],
+                                "name": "left",
+                                "type": "tuple"
+                            },
+                            {
+                                "components": [
+                                    {
+                                        "name": "makerAssetFilledAmount",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "name": "takerAssetFilledAmount",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "name": "makerFeePaid",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "name": "takerFeePaid",
+                                        "type": "uint256"
+                                    }
+                                ],
+                                "name": "right",
+                                "type": "tuple"
+                            },
+                            {
+                                "name": "leftMakerAssetSpreadAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "matchedFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "takerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "fillOrderNoThrow",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "fillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes4"
+                    }
+                ],
+                "name": "assetProxies",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    }
+                ],
+                "name": "batchCancelOrders",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAssetFillAmounts",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "batchFillOrKillOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "targetOrderEpoch",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "cancelOrdersUpTo",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAssetFillAmounts",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "batchFillOrdersNoThrow",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "assetProxyId",
+                        "type": "bytes4"
+                    }
+                ],
+                "name": "getAssetProxy",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "transactions",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "takerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "fillOrKillOrder",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "fillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "validatorAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "approval",
+                        "type": "bool"
+                    }
+                ],
+                "name": "setSignatureValidatorApproval",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowedValidators",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "marketSellOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    }
+                ],
+                "name": "getOrdersInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "orderStatus",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "orderHash",
+                                "type": "bytes32"
+                            },
+                            {
+                                "name": "orderTakerAssetFilledAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "preSigned",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "signerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "isValidSignature",
+                "outputs": [
+                    {
+                        "name": "isValid",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "makerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "marketBuyOrdersNoThrow",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "takerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "fillOrder",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "fillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "salt",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "data",
+                        "type": "bytes"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "executeTransaction",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "assetProxy",
+                        "type": "address"
+                    }
+                ],
+                "name": "registerAssetProxy",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "getOrderInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "orderStatus",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "orderHash",
+                                "type": "bytes32"
+                            },
+                            {
+                                "name": "orderTakerAssetFilledAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "orderInfo",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "cancelOrder",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "orderEpoch",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "ZRX_ASSET_DATA",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "marketSellOrdersNoThrow",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "EIP712_DOMAIN_HASH",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "makerAssetFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "signatures",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "marketBuyOrders",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetFilledAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFeePaid",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFeePaid",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "totalFillResults",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "currentContextAddress",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "VERSION",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "signerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "validatorAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "approved",
+                        "type": "bool"
+                    }
+                ],
+                "name": "SignatureValidatorApproval",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "makerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "feeRecipientAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "takerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "senderAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "makerAssetFilledAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "takerAssetFilledAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "makerFeePaid",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "takerFeePaid",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "orderHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "makerAssetData",
+                        "type": "bytes"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "takerAssetData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "Fill",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "makerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "feeRecipientAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "senderAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "orderHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "makerAssetData",
+                        "type": "bytes"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "takerAssetData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "Cancel",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "makerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "senderAddress",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "orderEpoch",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "CancelUpTo",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "name": "id",
+                        "type": "bytes4"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "assetProxy",
+                        "type": "address"
+                    }
+                ],
+                "name": "AssetProxyRegistered",
+                "type": "event"
+            }
+        ],
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object":
+                    "0x60806040526000805460ff191690553480156200001b57600080fd5b50604080517f454950373132446f6d61696e28000000000000000000000000000000000000006020808301919091527f737472696e67206e616d652c0000000000000000000000000000000000000000602d8301527f737472696e672076657273696f6e2c000000000000000000000000000000000060398301527f6164647265737320766572696679696e67436f6e74726163740000000000000060488301527f2900000000000000000000000000000000000000000000000000000000000000606183015282516042818403018152606290920192839052815191929182918401908083835b60208310620001245780518252601f19909201916020918201910162000103565b51815160209384036101000a6000190180199092169116179052604080519290940182900382208285018552600b8084527f30782050726f746f636f6c000000000000000000000000000000000000000000928401928352945190965091945090928392508083835b60208310620001ae5780518252601f1990920191602091820191016200018d565b51815160209384036101000a600019018019909216911617905260408051929094018290038220828501855260018084527f3200000000000000000000000000000000000000000000000000000000000000928401928352945190965091945090928392508083835b60208310620002385780518252601f19909201916020918201910162000217565b51815160209384036101000a6000190180199092169116179052604080519290940182900382208282019890985281840196909652606081019690965250306080808701919091528151808703909101815260a09095019081905284519093849350850191508083835b60208310620002c35780518252601f199092019160209182019101620002a2565b5181516000196020949094036101000a939093019283169219169190911790526040519201829003909120600155505060028054600160a060020a03191633179055506158b380620003166000396000f3006080604052600436106101b65763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663288cdc9181146101bb578063297bb70b146101f15780632ac126221461021e5780633683ef8e1461024b5780633c28d8611461026d5780633e228bae1461029a5780633fd3c997146102ba5780634ac14782146102e75780634d0ae546146103075780634f9559b11461032757806350dde190146103475780636070410814610367578063642f2eaf1461039457806364a3bc15146103b457806377fcce68146103d45780637b8e3514146103f45780637e1d9808146104145780637e9d74dc1461043457806382c174d0146104615780638da5cb5b146104815780639363470214610496578063a3e20380146104b6578063b4be83d5146104d6578063bfc8bfce146104f6578063c585bb9314610516578063c75e0a8114610536578063d46b02c314610563578063d9bfa73e14610583578063db123b1a146105a3578063dd1c7d18146105c5578063e306f779146105e5578063e5fa431b146105fa578063eea086ba1461061a578063f2fde38b1461062f578063ffa1ad741461064f575b600080fd5b3480156101c757600080fd5b506101db6101d6366004614800565b610664565b6040516101e89190615425565b60405180910390f35b3480156101fd57600080fd5b5061021161020c366004614723565b610676565b6040516101e891906156ff565b34801561022a57600080fd5b5061023e610239366004614800565b6107a1565b6040516101e89190615417565b34801561025757600080fd5b5061026b61026636600461483d565b6107b6565b005b34801561027957600080fd5b5061028d610288366004614971565b6108a3565b6040516101e8919061570d565b3480156102a657600080fd5b506102116102b5366004614a31565b610a3a565b3480156102c657600080fd5b506102da6102d5366004614900565b610a90565b6040516101e891906154e1565b3480156102f357600080fd5b5061026b6103023660046146ee565b610ab8565b34801561031357600080fd5b50610211610322366004614723565b610b85565b34801561033357600080fd5b5061026b610342366004614800565b610c75565b34801561035357600080fd5b50610211610362366004614723565b610e2a565b34801561037357600080fd5b50610387610382366004614900565b610ebe565b6040516101e89190615337565b3480156103a057600080fd5b5061023e6103af366004614800565b610f0c565b3480156103c057600080fd5b506102116103cf366004614a31565b610f21565b3480156103e057600080fd5b5061026b6103ef3660046146be565b610fcc565b34801561040057600080fd5b5061023e61040f366004614684565b611106565b34801561042057600080fd5b5061021161042f3660046147b7565b611126565b34801561044057600080fd5b5061045461044f3660046146ee565b61128a565b6040516101e89190615406565b34801561046d57600080fd5b5061023e61047c36600461481e565b61131f565b34801561048d57600080fd5b5061038761133f565b3480156104a257600080fd5b5061023e6104b13660046148a5565b61135b565b3480156104c257600080fd5b506102116104d13660046147b7565b6118de565b3480156104e257600080fd5b506102116104f1366004614a31565b6119f1565b34801561050257600080fd5b5061026b610511366004614a7a565b611a6c565b34801561052257600080fd5b5061026b610531366004614666565b611d05565b34801561054257600080fd5b5061055661055136600461493c565b611f30565b6040516101e8919061571c565b34801561056f57600080fd5b5061026b61057e36600461493c565b61202a565b34801561058f57600080fd5b506101db61059e366004614684565b6120c6565b3480156105af57600080fd5b506105b86120e3565b6040516101e891906154d0565b3480156105d157600080fd5b506102116105e03660046147b7565b612143565b3480156105f157600080fd5b506101db612218565b34801561060657600080fd5b506102116106153660046147b7565b61221e565b34801561062657600080fd5b50610387612390565b34801561063b57600080fd5b5061026b61064a366004614666565b6123ac565b34801561065b57600080fd5b506105b861245d565b60036020526000908152604090205481565b61067e614298565b600080610689614298565b60005460ff16156106cf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b60405180910390fd5b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001660011781558751935091505b81831461076f57610758878381518110151561071957fe5b90602001906020020151878481518110151561073157fe5b90602001906020020151878581518110151561074957fe5b90602001906020020151612494565b90506107648482612532565b600190910190610701565b5050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169055509392505050565b60046020526000908152604090205460ff1681565b73ffffffffffffffffffffffffffffffffffffffff831633146108465761080e848484848080601f0160208091040260200160405190810160405280939291908181526020018383808284375061135b945050505050565b1515610846576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155af565b5050600091825260066020908152604080842073ffffffffffffffffffffffffffffffffffffffff9093168452919052902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00166001179055565b6108ab6142c1565b6108b36142f0565b6108bb6142f0565b6000805460ff16156108f9576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016600117905561016080890151610140808a01919091528901519088015261094588611f30565b925061095087611f30565b915061095a612594565b9050610968888483896125c6565b610974878383886125c6565b61097e888861275e565b6109928888856040015185604001516127be565b8051602081015190519195506109ad918a9186918190612945565b6020808501519081015190516109c99189918591908190612945565b6109e28882856020015186604001518860000151612a5e565b6109fb8782846020015185604001518860200151612a5e565b610a0788888387612b0a565b5050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016905550949350505050565b610a42614298565b6060610a4f858585612c92565b9050608081825160208401305af48015610a8657815183526020820151602084015260408201516040840152606082015160608401525b505b509392505050565b600a6020526000908152604090205473ffffffffffffffffffffffffffffffffffffffff1681565b60008054819060ff1615610af8576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b5050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001660011781558151905b808214610b5857610b508382815181101515610b4157fe5b90602001906020020151612e64565b600101610b29565b5050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016905550565b610b8d614298565b600080610b98614298565b60005460ff1615610bd5576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001660011781558751935091505b81831461076f57610c5e8783815181101515610c1f57fe5b906020019060200201518784815181101515610c3757fe5b906020019060200201518785815181101515610c4f57fe5b90602001906020020151612e8f565b9050610c6a8482612532565b600190910190610c07565b6000805481908190819060ff1615610cb9576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00166001179055610cec612594565b935073ffffffffffffffffffffffffffffffffffffffff84163314610d115733610d14565b60005b73ffffffffffffffffffffffffffffffffffffffff8086166000908152600560209081526040808320938516835292905220549093506001860192509050808211610d8b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061563f565b73ffffffffffffffffffffffffffffffffffffffff80851660008181526005602090815260408083209488168084529490915290819020859055517f82af639571738f4ebd4268fb0363d8957ebe1bbb9e78dba5ebd69eed39b154f090610df3908690615425565b60405180910390a35050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169055505050565b610e32614298565b600080610e3d614298565b86519250600091505b818314610eb457610e9d8783815181101515610e5e57fe5b906020019060200201518784815181101515610e7657fe5b906020019060200201518785815181101515610e8e57fe5b90602001906020020151610a3a565b9050610ea98482612532565b600190910190610e46565b5050509392505050565b7fffffffff0000000000000000000000000000000000000000000000000000000081166000908152600a602052604090205473ffffffffffffffffffffffffffffffffffffffff165b919050565b60086020526000908152604090205460ff1681565b610f29614298565b60005460ff1615610f66576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00166001179055610f9c848484612e8f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169055949350505050565b6000805460ff161561100a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016600117905561103d612594565b73ffffffffffffffffffffffffffffffffffffffff8181166000818152600760209081526040808320948916808452949091529081902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00168715151790555192935090917fa8656e308026eeabce8f0bc18048433252318ab80ac79da0b3d3d8697dfba891906110d1908690615417565b60405180910390a35050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016905550565b600760209081526000928352604080842090915290825290205460ff1681565b61112e614298565b6060600080600061113d614298565b60005460ff161561117a576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016600117815589518a919081106111b257fe5b906020019060200201516101600151945088519350600092505b828414611255578489848151811015156111e257fe5b906020019060200201516101600181905250611202888760200151612ee2565b915061122e898481518110151561121557fe5b9060200190602002015183898681518110151561074957fe5b905061123a8682612532565b6020860151881161124a57611255565b6001909201916111cc565b5050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169055509195945050505050565b606060006060600084519250826040519080825280602002602001820160405280156112d057816020015b6112bd6142f0565b8152602001906001900390816112b55790505b509150600090505b808314610a88576112ff85828151811015156112f057fe5b90602001906020020151611f30565b828281518110151561130d57fe5b602090810290910101526001016112d8565b600660209081526000928352604080842090915290825290205460ff1681565b60025473ffffffffffffffffffffffffffffffffffffffff1681565b600080600080600080600080600089511115156113a4576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061562f565b6113ad89612f29565b7f010000000000000000000000000000000000000000000000000000000000000090049650600760ff88161061140f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061554f565b8660ff16600781111561141e57fe5b9550600086600781111561142e57fe5b1415611466576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061561f565b600186600781111561147457fe5b14156114bc578851156114b3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156ef565b600097506118d0565b60028660078111156114ca57fe5b141561160557885160411461150b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906154ef565b88600081518110151561151a57fe5b01602001517f010000000000000000000000000000000000000000000000000000000000000090819004810204945061155a89600163ffffffff612fed16565b935061156d89602163ffffffff612fed16565b925060018b868686604051600081526020016040526040516115929493929190615480565b60206040516020810390808403906000865af11580156115b6573d6000803e3d6000fd5b50506040517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0015173ffffffffffffffffffffffffffffffffffffffff8c811690821614995092506118d09050565b600386600781111561161357fe5b14156117b9578851604114611654576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906154ef565b88600081518110151561166357fe5b01602001517f01000000000000000000000000000000000000000000000000000000000000009081900481020494506116a389600163ffffffff612fed16565b93506116b689602163ffffffff612fed16565b925060018b60405160200180807f19457468657265756d205369676e6564204d6573736167653a0a333200000000815250601c0182600019166000191681526020019150506040516020818303038152906040526040518082805190602001908083835b6020831061175757805182527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0909201916020918201910161171a565b51815160209384036101000a7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff018019909216911617905260408051929094018290038220600083529101928390526115929450925089918991508890615480565b60048660078111156117c757fe5b14156117df576117d88b8b8b613038565b97506118d0565b60058660078111156117ed57fe5b1415611850576117fc8961318d565b73ffffffffffffffffffffffffffffffffffffffff808c1660009081526007602090815260408083209385168352929052205490915060ff16151561184457600097506118d0565b6117d8818c8c8c613206565b600686600781111561185e57fe5b141561189e5760008b815260066020908152604080832073ffffffffffffffffffffffffffffffffffffffff8e16845290915290205460ff1697506118d0565b6040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061554f565b505050505050509392505050565b6118e6614298565b60606000806000806118f6614298565b89600081518110151561190557fe5b906020019060200201516101400151955089519450600093505b8385146119e457858a8581518110151561193557fe5b6020908102909101015161014001528651611951908a90612ee2565b92506119948a8581518110151561196457fe5b9060200190602002015160a001518b8681518110151561198057fe5b906020019060200201516080015185613362565b91506119c08a858151811015156119a757fe5b90602001906020020151838a87815181101515610e8e57fe5b90506119cc8782612532565b865189116119d9576119e4565b60019093019261191f565b5050505050509392505050565b6119f9614298565b60005460ff1615611a36576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00166001179055610f9c848484612494565b60095460009073ffffffffffffffffffffffffffffffffffffffff1615611abf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b611b02611afd888888888080601f016020809104026020016040519081016040528093929190818152602001838380828437506133b8945050505050565b6135f9565b60008181526008602052604090205490915060ff1615611b4e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061559f565b73ffffffffffffffffffffffffffffffffffffffff86163314611c1f57611ba6818785858080601f0160208091040260200160405190810160405280939291908181526020018383808284375061135b945050505050565b1515611bde576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156df565b600980547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff88161790555b6000818152600860205260409081902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001660011790555130908690869080838380828437820191505092505050600060405180830381855af49150501515611cb6576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155cf565b73ffffffffffffffffffffffffffffffffffffffff86163314611cfc57600980547fffffffffffffffffffffffff00000000000000000000000000000000000000001690555b50505050505050565b6002546000908190819073ffffffffffffffffffffffffffffffffffffffff163314611d5d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061568f565b8392508273ffffffffffffffffffffffffffffffffffffffff1663ae25532e6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401602060405180830381600087803b158015611dc457600080fd5b505af1158015611dd8573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250611dfc919081019061491e565b7fffffffff0000000000000000000000000000000000000000000000000000000081166000908152600a602052604090205490925073ffffffffffffffffffffffffffffffffffffffff1690508015611e81576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061552f565b7fffffffff0000000000000000000000000000000000000000000000000000000082166000908152600a60205260409081902080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff8616179055517fd2c6b762299c609bdb96520b58a49bfb80186934d4f71a86a367571a15c0319490611f2290849087906154b5565b60405180910390a150505050565b611f386142f0565b611f4182613639565b6020808301829052600091825260039052604090819020549082015260808201511515611f755760015b60ff168152610f07565b60a08201511515611f87576002611f6b565b60a0820151604082015110611f9d576005611f6b565b6101008201514210611fb0576004611f6b565b60208082015160009081526004909152604090205460ff1615611fd4576006611f6b565b610120820151825173ffffffffffffffffffffffffffffffffffffffff90811660009081526005602090815260408083206060880151909416835292905220541115612021576006611f6b565b60038152919050565b60005460ff1615612067576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016600117905561209b81612e64565b50600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00169055565b600560209081526000928352604080842090915290825290205481565b606060405190810160405280602481526020017ff47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f81526020017f4699f4980000000000000000000000000000000000000000000000000000000081525081565b61214b614298565b6060600080600061215a614298565b88600081518110151561216957fe5b906020019060200201516101600151945088519350600092505b82841461220c5784898481518110151561219957fe5b9060200190602002015161016001819052506121b9888760200151612ee2565b91506121e589848151811015156121cc57fe5b90602001906020020151838986815181101515610e8e57fe5b90506121f18682612532565b602086015188116122015761220c565b600190920191612183565b50505050509392505050565b60015481565b612226614298565b6060600080600080612236614298565b60005460ff1615612273576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061567f565b600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001660011781558a518b919081106122ab57fe5b906020019060200201516101400151955089519450600093505b83851461235a57858a858151811015156122db57fe5b60209081029091010151610140015286516122f7908a90612ee2565b925061230a8a8581518110151561196457fe5b91506123368a8581518110151561231d57fe5b90602001906020020151838a8781518110151561074957fe5b90506123428782612532565b8651891161234f5761235a565b6001909301926122c5565b5050600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016905550929695505050505050565b60095473ffffffffffffffffffffffffffffffffffffffff1681565b60025473ffffffffffffffffffffffffffffffffffffffff1633146123fd576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061568f565b73ffffffffffffffffffffffffffffffffffffffff81161561245a57600280547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff83161790555b50565b60408051808201909152600581527f322e302e30000000000000000000000000000000000000000000000000000000602082015281565b61249c614298565b6124a46142f0565b60008060006124b288611f30565b93506124bc612594565b92506124ca888585896125c6565b6124dc8860a001518560400151612ee2565b91506124e88783613647565b90506124fb888589848960000151612945565b612505888261365d565b945061251c88848660200151876040015189612a5e565b6125278884876136be565b505050509392505050565b815181516125409190613776565b8252602080830151908201516125569190613776565b60208301526040808301519082015161256f9190613776565b6040830152606080830151908201516125889190613776565b60609092019190915250565b60095460009073ffffffffffffffffffffffffffffffffffffffff168181156125bd57816125bf565b335b9392505050565b825160ff16600314612604576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156af565b606084015173ffffffffffffffffffffffffffffffffffffffff161561267757606084015173ffffffffffffffffffffffffffffffffffffffff163314612677576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156bf565b602084015173ffffffffffffffffffffffffffffffffffffffff1615612702578173ffffffffffffffffffffffffffffffffffffffff16846020015173ffffffffffffffffffffffffffffffffffffffff16141515612702576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906154ff565b6040830151151561275857612720836020015185600001518361135b565b1515612758576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061556f565b50505050565b6127708260a001518260a001516137c0565b612782836080015183608001516137c0565b10156127ba576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156cf565b5050565b6127c66142c1565b6000806000806127da8960a0015188612ee2565b93506127ef89608001518a60a001518661381b565b92506127ff8860a0015187612ee2565b915061281488608001518960a001518461381b565b90508084106128575760208086018051839052805182018490525151865182015260808a015160a08b015187519092015161284f929061381b565b855152612894565b845183905284516020908101859052855181015190860180519190915260a089015160808a015191515161288b9290613898565b60208087015101525b84515160208087015101516128a99190612ee2565b604086015284515160808a015160c08b01516128c692919061381b565b85516040015284516020015160a08a015160e08b01516128e792919061381b565b855160600152602085015151608089015160c08a015161290892919061381b565b856020015160400181815250506129308560200151602001518960a001518a60e0015161381b565b60208601516060015250505050949350505050565b82151561297e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155ef565b828211156129b8576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155df565b8460a001516129cb856040015184613776565b1115612a03576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061550f565b612a118560800151836137c0565b612a1f828760a001516137c0565b1115612a57576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061566f565b5050505050565b612a6c828260200151613776565b600084815260036020908152604091829020929092558681015187518451938501518584015160608701516101408c01516101608d015196518b9873ffffffffffffffffffffffffffffffffffffffff9788169897909616967f0bcc4c97732e47d9946f229edb95f5b6323f601300e4690de719993f3c37112996612afb968f96339692959194909390615345565b60405180910390a45050505050565b60608060405190810160405280602481526020017ff47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f81526020017f4699f498000000000000000000000000000000000000000000000000000000008152509050612b8b85610140015186600001518660000151856020015160200151613935565b61014084015184518651845160200151612ba793929190613935565b612bc08561014001518660000151858560400151613935565b612bdc8186600001518760400151856000015160400151613935565b612bf88185600001518660400151856020015160400151613935565b836040015173ffffffffffffffffffffffffffffffffffffffff16856040015173ffffffffffffffffffffffffffffffffffffffff161415612c6257612c5d81848760400151612c58866000015160600151876020015160600151613776565b613935565b612a57565b612c7a81848760400151856000015160600151613935565b612a5781848660400151856020015160600151613935565b604080517fb4be83d5000000000000000000000000000000000000000000000000000000006020808301919091526060602483018181528751608485019081528884015160a48601529488015160c48501529087015160e4840152608087015161010484015260a087015161012484015260c087015161014484015260e08701516101648401526101008701516101848401526101208701516101a4840152610140870180516101c485019081526101608901516101e4860152610180905251805161020485018190529394919384936044870192849261022489019291820191601f82010460005b81811015612d99578351855260209485019490930192600101612d7b565b50505050818103610160808401919091528a0151805180835260209283019291820191601f82010460005b81811015612de2578351855260209485019490930192600101612dc4565b50505089845250848103602093840190815288518083529093918201918981019190601f82010460005b81811015612e2a578351855260209485019490930192600101612e0c565b5050507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe08883030188525060405250505050509392505050565b612e6c6142f0565b612e7582611f30565b9050612e818282613aff565b6127ba828260200151613c16565b612e97614298565b612ea2848484612494565b602081015190915083146125bf576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061565f565b600082821115612f1e576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061551f565b508082035b92915050565b6000808251111515612f67576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061560f565b815182907fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8101908110612f9757fe5b016020015182517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff01909252507f0100000000000000000000000000000000000000000000000000000000000000908190040290565b60008160200183511015151561302f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061553f565b50016020015190565b6040516000906060907f1626ba7e00000000000000000000000000000000000000000000000000000000906130739087908690602401615460565b604080517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0818403018152919052602080820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff167fffffffff00000000000000000000000000000000000000000000000000000000909416939093178352815191935090829081885afa808015613110576001811461318157612527565b7f08c379a0000000000000000000000000000000000000000000000000000000006000527c20000000000000000000000000000000000000000000000000000000006020527c0c57414c4c45545f4552524f5200000000000000000000000000000000604052600060605260646000fd5b50505195945050505050565b600060148251101515156131cd576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061569f565b6131db826014845103613cbd565b82517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec019092525090565b6040516000906060907f93634702000000000000000000000000000000000000000000000000000000009061324390879087908790602401615433565b604080517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0818403018152919052602080820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff167fffffffff000000000000000000000000000000000000000000000000000000009094169390931783528151919350908290818a5afa8080156132e0576001811461335157613356565b7f08c379a0000000000000000000000000000000000000000000000000000000006000527c20000000000000000000000000000000000000000000000000000000006020527c0f56414c494441544f525f4552524f5200000000000000000000000000604052600060605260646000fd5b825194505b50505050949350505050565b600080831161339d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061555f565b6133b06133aa85846137c0565b84613d1e565b949350505050565b604080517f5a65726f45785472616e73616374696f6e2800000000000000000000000000006020808301919091527f75696e743235362073616c742c0000000000000000000000000000000000000060328301527f61646472657373207369676e6572416464726573732c00000000000000000000603f8301527f627974657320646174610000000000000000000000000000000000000000000060558301527f2900000000000000000000000000000000000000000000000000000000000000605f830152825180830384018152606090920192839052815160009384938493909282918401908083835b602083106134e157805182527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe090920191602091820191016134a4565b51815160209384036101000a7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff018019909216911617905260405191909301819003812089519097508995509093508392850191508083835b6020831061357757805182527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0909201916020918201910161353a565b51815160209384036101000a7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff01801990921691161790526040805192909401829003822097825281019a909a525073ffffffffffffffffffffffffffffffffffffffff97909716968801969096525050606085015250506080909120919050565b6001546040517f19010000000000000000000000000000000000000000000000000000000000008152600281019190915260228101919091526042902090565b6000612f23611afd83613d35565b600081831061365657816125bf565b5090919050565b613665614298565b6020810182905260a0830151608084015161368191849161381b565b808252608084015160c085015161369992919061381b565b604082015260a083015160e08401516136b391849161381b565b606082015292915050565b60408051606081018252602481527ff47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f60208201527f4699f4980000000000000000000000000000000000000000000000000000000091810191909152610140840151845183516137319291908690613935565b61374a8461016001518486600001518560200151613935565b61376281856000015186604001518560400151613935565b612758818486604001518560600151613935565b6000828201838110156137b5576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061558f565b8091505b5092915050565b6000808315156137d357600091506137b9565b508282028284828115156137e357fe5b04146137b5576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061558f565b6000808311613856576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061555f565b61386184848461418e565b1561339d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155bf565b60008083116138d3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061555f565b6138de848484614213565b15613915576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155bf565b6133b06133aa61392586856137c0565b613930866001612ee2565b613776565b60008060008311801561397457508373ffffffffffffffffffffffffffffffffffffffff168573ffffffffffffffffffffffffffffffffffffffff1614155b15613af75785516003106139b4576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061564f565b50506020848101517fffffffff00000000000000000000000000000000000000000000000000000000166000818152600a90925260409091205473ffffffffffffffffffffffffffffffffffffffff16801515613a3d576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906155ff565b604051660fffffffffffe0603f885101168060840182017fa85e59e40000000000000000000000000000000000000000000000000000000083526080600484015273ffffffffffffffffffffffffffffffffffffffff8816602484015273ffffffffffffffffffffffffffffffffffffffff87166044840152856064840152608483015b81811015613ad957895181526020998a019901613ac1565b61020084858403866000895af1801515613af1573d85fd5b50505050505b505050505050565b805160009060ff16600314613b40576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156af565b606083015173ffffffffffffffffffffffffffffffffffffffff1615613bb357606083015173ffffffffffffffffffffffffffffffffffffffff163314613bb3576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c6906156bf565b613bbb612594565b835190915073ffffffffffffffffffffffffffffffffffffffff808316911614613c11576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061557f565b505050565b6000818152600460205260409081902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff001660011790558281015183516101408501516101608601519351859473ffffffffffffffffffffffffffffffffffffffff9485169493909316927fdc47b3613d9fe400085f6dbdc99453462279057e6207385042827ed6b1a62cf792613cb1923392906153c9565b60405180910390a45050565b600081601401835110151515613cff576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061569f565b50016014015173ffffffffffffffffffffffffffffffffffffffff1690565b6000808284811515613d2c57fe5b04949350505050565b604080517f4f726465722800000000000000000000000000000000000000000000000000006020808301919091527f61646472657373206d616b6572416464726573732c000000000000000000000060268301527f616464726573732074616b6572416464726573732c0000000000000000000000603b8301527f6164647265737320666565526563697069656e74416464726573732c0000000060508301527f616464726573732073656e646572416464726573732c00000000000000000000606c8301527f75696e74323536206d616b65724173736574416d6f756e742c0000000000000060828301527f75696e743235362074616b65724173736574416d6f756e742c00000000000000609b8301527f75696e74323536206d616b65724665652c00000000000000000000000000000060b48301527f75696e743235362074616b65724665652c00000000000000000000000000000060c58301527f75696e743235362065787069726174696f6e54696d655365636f6e64732c000060d68301527f75696e743235362073616c742c0000000000000000000000000000000000000060f48301527f6279746573206d616b65724173736574446174612c00000000000000000000006101018301527f62797465732074616b65724173736574446174610000000000000000000000006101168301527f290000000000000000000000000000000000000000000000000000000000000061012a830152825161010b81840301815261012b90920192839052815160009384938493849391929182918401908083835b60208310613fbd57805182527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe09092019160209182019101613f80565b51815160209384036101000a7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff01801990921691161790526040519190930181900381206101408b0151805191995095509093508392850191508083835b6020831061405857805182527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0909201916020918201910161401b565b51815160209384036101000a7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff01801990921691161790526040519190930181900381206101608b0151805191985095509093508392850191508083835b602083106140f357805182527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe090920191602091820191016140b6565b5181516020939093036101000a7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff018019909116921691909117905260405192018290039091207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0890180516101408b018051610160909c0180519a84529881529288526101a0822091529890525050509190525090919050565b6000808084116141ca576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061555f565b8215806141d5575084155b156141e35760009150610a88565b838015156141ed57fe5b85840990506141fc85846137c0565b6142086103e8836137c0565b101595945050505050565b60008080841161424f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016106c69061555f565b82158061425a575084155b156142685760009150610a88565b8380151561427257fe5b8584099050836142828583612ee2565b81151561428b57fe5b0690506141fc85846137c0565b608060405190810160405280600081526020016000815260200160008152602001600081525090565b610120604051908101604052806142d6614298565b81526020016142e3614298565b8152602001600081525090565b604080516060810182526000808252602082018190529181019190915290565b60006125bf82356157c2565b6000601f8201831361432d57600080fd5b813561434061433b82615751565b61572a565b81815260209384019390925082018360005b8381101561437e578135860161436888826144ce565b8452506020928301929190910190600101614352565b5050505092915050565b6000601f8201831361439957600080fd5b81356143a761433b82615751565b81815260209384019390925082018360005b8381101561437e57813586016143cf888261451d565b84525060209283019291909101906001016143b9565b6000601f820183136143f657600080fd5b813561440461433b82615751565b9150818183526020840193506020810190508385602084028201111561442957600080fd5b60005b8381101561437e578161443f8882614461565b845250602092830192919091019060010161442c565b60006125bf82356157db565b60006125bf82356157e0565b60006125bf82356157e3565b60006125bf82516157e3565b600080601f8301841361449757600080fd5b50813567ffffffffffffffff8111156144af57600080fd5b6020830191508360018202830111156144c757600080fd5b9250929050565b6000601f820183136144df57600080fd5b81356144ed61433b82615772565b9150808252602083016020830185838301111561450957600080fd5b614514838284615819565b50505092915050565b6000610180828403121561453057600080fd5b61453b61018061572a565b905060006145498484614310565b825250602061455a84848301614310565b602083015250604061456e84828501614310565b604083015250606061458284828501614310565b606083015250608061459684828501614461565b60808301525060a06145aa84828501614461565b60a08301525060c06145be84828501614461565b60c08301525060e06145d284828501614461565b60e0830152506101006145e784828501614461565b610100830152506101206145fd84828501614461565b6101208301525061014082013567ffffffffffffffff81111561461f57600080fd5b61462b848285016144ce565b6101408301525061016082013567ffffffffffffffff81111561464d57600080fd5b614659848285016144ce565b6101608301525092915050565b60006020828403121561467857600080fd5b60006133b08484614310565b6000806040838503121561469757600080fd5b60006146a38585614310565b92505060206146b485828601614310565b9150509250929050565b600080604083850312156146d157600080fd5b60006146dd8585614310565b92505060206146b485828601614455565b60006020828403121561470057600080fd5b813567ffffffffffffffff81111561471757600080fd5b6133b084828501614388565b60008060006060848603121561473857600080fd5b833567ffffffffffffffff81111561474f57600080fd5b61475b86828701614388565b935050602084013567ffffffffffffffff81111561477857600080fd5b614784868287016143e5565b925050604084013567ffffffffffffffff8111156147a157600080fd5b6147ad8682870161431c565b9150509250925092565b6000806000606084860312156147cc57600080fd5b833567ffffffffffffffff8111156147e357600080fd5b6147ef86828701614388565b935050602061478486828701614461565b60006020828403121561481257600080fd5b60006133b08484614461565b6000806040838503121561483157600080fd5b60006146a38585614461565b6000806000806060858703121561485357600080fd5b600061485f8787614461565b945050602061487087828801614310565b935050604085013567ffffffffffffffff81111561488d57600080fd5b61489987828801614485565b95989497509550505050565b6000806000606084860312156148ba57600080fd5b60006148c68686614461565b93505060206148d786828701614310565b925050604084013567ffffffffffffffff8111156148f457600080fd5b6147ad868287016144ce565b60006020828403121561491257600080fd5b60006133b0848461446d565b60006020828403121561493057600080fd5b60006133b08484614479565b60006020828403121561494e57600080fd5b813567ffffffffffffffff81111561496557600080fd5b6133b08482850161451d565b6000806000806080858703121561498757600080fd5b843567ffffffffffffffff81111561499e57600080fd5b6149aa8782880161451d565b945050602085013567ffffffffffffffff8111156149c757600080fd5b6149d38782880161451d565b935050604085013567ffffffffffffffff8111156149f057600080fd5b6149fc878288016144ce565b925050606085013567ffffffffffffffff811115614a1957600080fd5b614a25878288016144ce565b91505092959194509250565b600080600060608486031215614a4657600080fd5b833567ffffffffffffffff811115614a5d57600080fd5b614a698682870161451d565b93505060206148d786828701614461565b60008060008060008060808789031215614a9357600080fd5b6000614a9f8989614461565b9650506020614ab089828a01614310565b955050604087013567ffffffffffffffff811115614acd57600080fd5b614ad989828a01614485565b9450945050606087013567ffffffffffffffff811115614af857600080fd5b614b0489828a01614485565b92509250509295509295509295565b614b1c816157c2565b82525050565b6000614b2d826157be565b808452602084019350614b3f836157b8565b60005b82811015614b6f57614b558683516152f7565b614b5e826157b8565b606096909601959150600101614b42565b5093949350505050565b614b1c816157db565b614b1c816157e0565b614b1c816157e3565b6000614b9f826157be565b808452614bb3816020860160208601615825565b614bbc81615851565b9093016020019392505050565b614b1c8161580e565b601281527f4c454e4754485f36355f52455155495245440000000000000000000000000000602082015260400190565b600d81527f494e56414c49445f54414b455200000000000000000000000000000000000000602082015260400190565b600e81527f4f524445525f4f56455246494c4c000000000000000000000000000000000000602082015260400190565b601181527f55494e543235365f554e444552464c4f57000000000000000000000000000000602082015260400190565b601a81527f41535345545f50524f58595f414c52454144595f455849535453000000000000602082015260400190565b602681527f475245415445525f4f525f455155414c5f544f5f33325f4c454e4754485f524560208201527f5155495245440000000000000000000000000000000000000000000000000000604082015260600190565b601581527f5349474e41545552455f554e535550504f525445440000000000000000000000602082015260400190565b601081527f4449564953494f4e5f42595f5a45524f00000000000000000000000000000000602082015260400190565b601781527f494e56414c49445f4f524445525f5349474e4154555245000000000000000000602082015260400190565b600d81527f494e56414c49445f4d414b455200000000000000000000000000000000000000602082015260400190565b601081527f55494e543235365f4f564552464c4f5700000000000000000000000000000000602082015260400190565b600f81527f494e56414c49445f54585f484153480000000000000000000000000000000000602082015260400190565b601181527f494e56414c49445f5349474e4154555245000000000000000000000000000000602082015260400190565b600e81527f524f554e44494e475f4552524f52000000000000000000000000000000000000602082015260400190565b601081527f4641494c45445f455845435554494f4e00000000000000000000000000000000602082015260400190565b600d81527f54414b45525f4f56455250415900000000000000000000000000000000000000602082015260400190565b601481527f494e56414c49445f54414b45525f414d4f554e54000000000000000000000000602082015260400190565b601a81527f41535345545f50524f58595f444f45535f4e4f545f4558495354000000000000602082015260400190565b602181527f475245415445525f5448414e5f5a45524f5f4c454e4754485f5245515549524560208201527f4400000000000000000000000000000000000000000000000000000000000000604082015260600190565b601181527f5349474e41545552455f494c4c4547414c000000000000000000000000000000602082015260400190565b601e81527f4c454e4754485f475245415445525f5448414e5f305f52455155495245440000602082015260400190565b601781527f494e56414c49445f4e45575f4f524445525f45504f4348000000000000000000602082015260400190565b601e81527f4c454e4754485f475245415445525f5448414e5f335f52455155495245440000602082015260400190565b601481527f434f4d504c4554455f46494c4c5f4641494c4544000000000000000000000000602082015260400190565b601281527f494e56414c49445f46494c4c5f50524943450000000000000000000000000000602082015260400190565b601281527f5245454e5452414e43595f494c4c4547414c0000000000000000000000000000602082015260400190565b601381527f4f4e4c595f434f4e54524143545f4f574e455200000000000000000000000000602082015260400190565b602681527f475245415445525f4f525f455155414c5f544f5f32305f4c454e4754485f524560208201527f5155495245440000000000000000000000000000000000000000000000000000604082015260600190565b601081527f4f524445525f554e46494c4c41424c4500000000000000000000000000000000602082015260400190565b600e81527f494e56414c49445f53454e444552000000000000000000000000000000000000602082015260400190565b601881527f4e454741544956455f5350524541445f52455155495245440000000000000000602082015260400190565b601481527f494e56414c49445f54585f5349474e4154555245000000000000000000000000602082015260400190565b601181527f4c454e4754485f305f5245515549524544000000000000000000000000000000602082015260400190565b805160808301906152858482614b82565b5060208201516152986020850182614b82565b5060408201516152ab6040850182614b82565b5060608201516127586060850182614b82565b80516101208301906152d08482615274565b5060208201516152e36080850182615274565b506040820151612758610100850182614b82565b80516060830190615308848261532e565b50602082015161531b6020850182614b82565b5060408201516127586040850182614b82565b614b1c81615808565b60208101612f238284614b13565b6101008101615354828b614b13565b615361602083018a614b13565b61536e6040830189614b82565b61537b6060830188614b82565b6153886080830187614b82565b61539560a0830186614b82565b81810360c08301526153a78185614b94565b905081810360e08301526153bb8184614b94565b9a9950505050505050505050565b606081016153d78286614b13565b81810360208301526153e98185614b94565b905081810360408301526153fd8184614b94565b95945050505050565b602080825281016125bf8184614b22565b60208101612f238284614b79565b60208101612f238284614b82565b606081016154418286614b82565b61544e6020830185614b13565b81810360408301526153fd8184614b94565b6040810161546e8285614b82565b81810360208301526133b08184614b94565b6080810161548e8287614b82565b61549b602083018661532e565b6154a86040830185614b82565b6153fd6060830184614b82565b604081016154c38285614b8b565b6125bf6020830184614b13565b602080825281016125bf8184614b94565b60208101612f238284614bc9565b60208082528101612f2381614bd2565b60208082528101612f2381614c02565b60208082528101612f2381614c32565b60208082528101612f2381614c62565b60208082528101612f2381614c92565b60208082528101612f2381614cc2565b60208082528101612f2381614d18565b60208082528101612f2381614d48565b60208082528101612f2381614d78565b60208082528101612f2381614da8565b60208082528101612f2381614dd8565b60208082528101612f2381614e08565b60208082528101612f2381614e38565b60208082528101612f2381614e68565b60208082528101612f2381614e98565b60208082528101612f2381614ec8565b60208082528101612f2381614ef8565b60208082528101612f2381614f28565b60208082528101612f2381614f58565b60208082528101612f2381614fae565b60208082528101612f2381614fde565b60208082528101612f238161500e565b60208082528101612f238161503e565b60208082528101612f238161506e565b60208082528101612f238161509e565b60208082528101612f23816150ce565b60208082528101612f23816150fe565b60208082528101612f238161512e565b60208082528101612f2381615184565b60208082528101612f23816151b4565b60208082528101612f23816151e4565b60208082528101612f2381615214565b60208082528101612f2381615244565b60808101612f238284615274565b6101208101612f2382846152be565b60608101612f2382846152f7565b60405181810167ffffffffffffffff8111828210171561574957600080fd5b604052919050565b600067ffffffffffffffff82111561576857600080fd5b5060209081020190565b600067ffffffffffffffff82111561578957600080fd5b506020601f919091017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0160190565b60200190565b5190565b73ffffffffffffffffffffffffffffffffffffffff1690565b151590565b90565b7fffffffff000000000000000000000000000000000000000000000000000000001690565b60ff1690565b6000612f23826157c2565b82818337506000910152565b60005b83811015615840578181015183820152602001615828565b838111156127585750506000910152565b601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016905600a265627a7a72305820b19c92201032603398c007dccf80930c626ef89fa6c848c8b7ef5267d07cd4ed6c6578706572696d656e74616cf50037"
+            }
+        }
+    },
+    "networks": {}
+}

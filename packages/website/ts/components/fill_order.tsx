@@ -1,13 +1,13 @@
-import { Order as ZeroExOrder, ZeroEx } from '0x.js';
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { colors, Link } from '@0x/react-shared';
+import { BigNumber, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as accounting from 'accounting';
 import * as _ from 'lodash';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { TrackTokenConfirmationDialog } from 'ts/components/dialogs/track_token_confirmation_dialog';
 import { FillOrderJSON } from 'ts/components/fill_order_json';
@@ -20,10 +20,10 @@ import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
+import { AlertTypes, BlockchainErrs, PortalOrder, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
-import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { orderParser } from 'ts/utils/order_parser';
 import { utils } from 'ts/utils/utils';
 
 interface FillOrderProps {
@@ -34,9 +34,11 @@ interface FillOrderProps {
     networkId: number;
     userAddress: string;
     tokenByAddress: TokenByAddress;
-    initialOrder: Order;
+    initialOrder: PortalOrder;
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
+    isFullWidth?: boolean;
+    shouldHideHeader?: boolean;
 }
 
 interface FillOrderState {
@@ -45,7 +47,7 @@ interface FillOrderState {
     globalErrMsg: string;
     orderJSON: string;
     orderJSONErrMsg: string;
-    parsedOrder: Order;
+    parsedOrder: PortalOrder;
     didFillOrderSucceed: boolean;
     didCancelOrderSucceed: boolean;
     unavailableTakerAmount: BigNumber;
@@ -59,6 +61,10 @@ interface FillOrderState {
 }
 
 export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
+    public static defaultProps: Partial<FillOrderProps> = {
+        isFullWidth: false,
+        shouldHideHeader: false,
+    };
     private _isUnmounted: boolean;
     constructor(props: FillOrderProps) {
         super(props);
@@ -82,23 +88,28 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             tokensToTrack: [],
         };
     }
-    public componentWillMount() {
+    public componentWillMount(): void {
         if (!_.isEmpty(this.state.orderJSON)) {
             // tslint:disable-next-line:no-floating-promises
             this._validateFillOrderFireAndForgetAsync(this.state.orderJSON);
         }
     }
-    public componentDidMount() {
+    public componentDidMount(): void {
         window.scrollTo(0, 0);
     }
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         this._isUnmounted = true;
     }
-    public render() {
+    public render(): React.ReactNode {
+        const rootClassName = this.props.isFullWidth ? 'clearfix' : 'lg-px4 md-px4 sm-px2';
         return (
-            <div className="clearfix lg-px4 md-px4 sm-px2" style={{ minHeight: 600 }}>
-                <h3>Fill an order</h3>
-                <Divider />
+            <div className={rootClassName} style={{ minHeight: 600 }}>
+                {!this.props.shouldHideHeader && (
+                    <div>
+                        <h3>Fill an order</h3>
+                        <Divider />
+                    </div>
+                )}
                 <div>
                     {!this.props.isOrderInUrl && (
                         <div>
@@ -159,7 +170,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderOrderJsonNotices() {
+    private _renderOrderJsonNotices(): React.ReactNode {
         return (
             <div>
                 {!_.isUndefined(this.props.initialOrder) &&
@@ -177,27 +188,32 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderVisualOrder() {
-        const takerTokenAddress = this.state.parsedOrder.signedOrder.takerTokenAddress;
+    private _renderVisualOrder(): React.ReactNode {
+        const takerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.takerAssetData)
+            .tokenAddress;
         const takerToken = this.props.tokenByAddress[takerTokenAddress];
-        const orderTakerAmount = new BigNumber(this.state.parsedOrder.signedOrder.takerTokenAmount);
-        const orderMakerAmount = new BigNumber(this.state.parsedOrder.signedOrder.makerTokenAmount);
+        const orderTakerAmount = this.state.parsedOrder.signedOrder.takerAssetAmount;
+        const orderMakerAmount = this.state.parsedOrder.signedOrder.makerAssetAmount;
         const takerAssetToken = {
             amount: orderTakerAmount.minus(this.state.unavailableTakerAmount),
             symbol: takerToken.symbol,
         };
         const fillToken = this.props.tokenByAddress[takerTokenAddress];
-        const makerTokenAddress = this.state.parsedOrder.signedOrder.makerTokenAddress;
+        const makerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.makerAssetData)
+            .tokenAddress;
         const makerToken = this.props.tokenByAddress[makerTokenAddress];
         const makerAssetToken = {
-            amount: orderMakerAmount.times(takerAssetToken.amount).div(orderTakerAmount),
+            amount: orderMakerAmount
+                .times(takerAssetToken.amount)
+                .div(orderTakerAmount)
+                .floor(),
             symbol: makerToken.symbol,
         };
         const fillAssetToken = {
             amount: this.props.orderFillAmount,
             symbol: takerToken.symbol,
         };
-        const parsedOrderExpiration = new BigNumber(this.state.parsedOrder.signedOrder.expirationUnixTimestampSec);
+        const parsedOrderExpiration = this.state.parsedOrder.signedOrder.expirationTimeSeconds;
 
         let orderReceiveAmount = 0;
         if (!_.isUndefined(this.props.orderFillAmount)) {
@@ -209,7 +225,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         }
         const isUserMaker =
             !_.isUndefined(this.state.parsedOrder) &&
-            this.state.parsedOrder.signedOrder.maker === this.props.userAddress;
+            this.state.parsedOrder.signedOrder.makerAddress === this.props.userAddress;
         const expiryDate = utils.convertToReadableDateTimeFromUnixTimestamp(parsedOrderExpiration);
         return (
             <div className="pt3 pb1">
@@ -220,11 +236,11 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             Maker:
                         </div>
                         <div className="col col-2 pr1">
-                            <Identicon address={this.state.parsedOrder.signedOrder.maker} diameter={23} />
+                            <Identicon address={this.state.parsedOrder.signedOrder.makerAddress} diameter={23} />
                         </div>
                         <div className="col col-6">
                             <EthereumAddress
-                                address={this.state.parsedOrder.signedOrder.maker}
+                                address={this.state.parsedOrder.signedOrder.makerAddress}
                                 networkId={this.props.networkId}
                             />
                         </div>
@@ -306,20 +322,20 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             </div>
         );
     }
-    private _renderFillSuccessMsg() {
+    private _renderFillSuccessMsg(): React.ReactNode {
         return (
             <div>
                 Order successfully filled. See the trade details in your{' '}
-                <Link to={`${WebsitePaths.Portal}/trades`} style={{ color: colors.white }}>
+                <Link to={`${WebsitePaths.Portal}/trades`} fontColor={colors.white}>
                     trade history
                 </Link>
             </div>
         );
     }
-    private _renderCancelSuccessMsg() {
+    private _renderCancelSuccessMsg(): React.ReactNode {
         return <div>Order successfully cancelled.</div>;
     }
-    private _onFillOrderClick() {
+    private _onFillOrderClick(): void {
         if (!this.state.isMakerTokenAddressInRegistry || !this.state.isTakerTokenAddressInRegistry) {
             this.setState({
                 isFillWarningDialogOpen: true,
@@ -329,7 +345,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private _onFillWarningClosed(didUserCancel: boolean) {
+    private _onFillWarningClosed(didUserCancel: boolean): void {
         this.setState({
             isFillWarningDialogOpen: false,
         });
@@ -338,10 +354,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this._onFillOrderClickFireAndForgetAsync();
         }
     }
-    private _onFillAmountChange(isValid: boolean, amount?: BigNumber) {
+    private _onFillAmountChange(_isValid: boolean, amount?: BigNumber): void {
         this.props.dispatcher.updateOrderFillAmount(amount);
     }
-    private _onFillOrderJSONChanged(event: any) {
+    private _onFillOrderJSONChanged(event: any): void {
         const orderJSON = event.target.value;
         this.setState({
             didOrderValidationRun: _.isEmpty(orderJSON) && _.isEmpty(this.state.orderJSONErrMsg),
@@ -350,36 +366,38 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         // tslint:disable-next-line:no-floating-promises
         this._validateFillOrderFireAndForgetAsync(orderJSON);
     }
-    private async _checkForUntrackedTokensAndAskToAdd() {
+    private async _checkForUntrackedTokensAndAskToAddAsync(): Promise<void> {
         if (!_.isEmpty(this.state.orderJSONErrMsg)) {
             return;
         }
-
-        const makerTokenIfExists = this.props.tokenByAddress[this.state.parsedOrder.signedOrder.makerTokenAddress];
-        const takerTokenIfExists = this.props.tokenByAddress[this.state.parsedOrder.signedOrder.takerTokenAddress];
-
+        const makerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.makerAssetData)
+            .tokenAddress;
+        const takerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.takerAssetData)
+            .tokenAddress;
+        const makerTokenIfExists = this.props.tokenByAddress[makerTokenAddress];
+        const takerTokenIfExists = this.props.tokenByAddress[takerTokenAddress];
         const tokensToTrack: Token[] = [];
         const isUnseenMakerToken = _.isUndefined(makerTokenIfExists);
-        const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && makerTokenIfExists.isTracked;
+        const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && utils.isTokenTracked(makerTokenIfExists);
         if (isUnseenMakerToken) {
             tokensToTrack.push({
                 ...this.state.parsedOrder.metadata.makerToken,
-                address: this.state.parsedOrder.signedOrder.makerTokenAddress,
+                address: makerTokenAddress,
                 iconUrl: undefined,
-                isTracked: false,
+                trackedTimestamp: undefined,
                 isRegistered: false,
             });
         } else if (!isMakerTokenTracked) {
             tokensToTrack.push(makerTokenIfExists);
         }
         const isUnseenTakerToken = _.isUndefined(takerTokenIfExists);
-        const isTakerTokenTracked = !_.isUndefined(takerTokenIfExists) && takerTokenIfExists.isTracked;
+        const isTakerTokenTracked = !_.isUndefined(takerTokenIfExists) && utils.isTokenTracked(takerTokenIfExists);
         if (isUnseenTakerToken) {
             tokensToTrack.push({
                 ...this.state.parsedOrder.metadata.takerToken,
-                address: this.state.parsedOrder.signedOrder.takerTokenAddress,
+                address: takerTokenAddress,
                 iconUrl: undefined,
-                isTracked: false,
+                trackedTimestamp: undefined,
                 isRegistered: false,
             });
         } else if (!isTakerTokenTracked) {
@@ -396,12 +414,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
         }
     }
-    private async _validateFillOrderFireAndForgetAsync(orderJSON: string) {
+    private async _validateFillOrderFireAndForgetAsync(orderJSON: string): Promise<void> {
         let orderJSONErrMsg = '';
-        let parsedOrder: Order;
+        let parsedOrder: PortalOrder;
         let orderHash: string;
         try {
-            const order = JSON.parse(orderJSON);
+            const order = orderParser.parseJsonString(orderJSON);
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 orderJSONErrMsg = 'Submitted order JSON is not a valid order';
@@ -409,39 +427,19 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 return;
             }
             parsedOrder = order;
-
-            const makerAmount = new BigNumber(parsedOrder.signedOrder.makerTokenAmount);
-            const takerAmount = new BigNumber(parsedOrder.signedOrder.takerTokenAmount);
-            const expiration = new BigNumber(parsedOrder.signedOrder.expirationUnixTimestampSec);
-            const salt = new BigNumber(parsedOrder.signedOrder.salt);
-            const parsedMakerFee = new BigNumber(parsedOrder.signedOrder.makerFee);
-            const parsedTakerFee = new BigNumber(parsedOrder.signedOrder.takerFee);
-
-            const zeroExOrder: ZeroExOrder = {
-                exchangeContractAddress: parsedOrder.signedOrder.exchangeContractAddress,
-                expirationUnixTimestampSec: expiration,
-                feeRecipient: parsedOrder.signedOrder.feeRecipient,
-                maker: parsedOrder.signedOrder.maker,
-                makerFee: parsedMakerFee,
-                makerTokenAddress: parsedOrder.signedOrder.makerTokenAddress,
-                makerTokenAmount: makerAmount,
-                salt,
-                taker: _.isEmpty(parsedOrder.signedOrder.taker)
-                    ? constants.NULL_ADDRESS
-                    : parsedOrder.signedOrder.taker,
-                takerFee: parsedTakerFee,
-                takerTokenAddress: parsedOrder.signedOrder.takerTokenAddress,
-                takerTokenAmount: takerAmount,
-            };
-            orderHash = ZeroEx.getOrderHashHex(zeroExOrder);
-
+            const signedOrder = parsedOrder.signedOrder;
+            orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
-            const signature = parsedOrder.signedOrder.ecSignature;
-            const isValidSignature = ZeroEx.isValidSignature(orderHash, signature, parsedOrder.signedOrder.maker);
-            if (exchangeContractAddr !== parsedOrder.signedOrder.exchangeContractAddress) {
+            const signature = signedOrder.signature;
+            const isSignatureValid = await this.props.blockchain.isValidSignatureAsync(
+                orderHash,
+                signature,
+                signedOrder.makerAddress,
+            );
+            if (exchangeContractAddr !== signedOrder.exchangeAddress) {
                 orderJSONErrMsg = 'This order was made on another network or using a deprecated Exchange contract';
                 parsedOrder = undefined;
-            } else if (!isValidSignature) {
+            } else if (!isSignatureValid) {
                 orderJSONErrMsg = 'Order signature is invalid';
                 parsedOrder = undefined;
             } else {
@@ -471,11 +469,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.props.dispatcher.updateUserSuppliedOrderCache(undefined);
         } else {
             unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
+            const makerTokenAddress = assetDataUtils.decodeERC20AssetData(parsedOrder.signedOrder.makerAssetData)
+                .tokenAddress;
+            const takerTokenAddress = assetDataUtils.decodeERC20AssetData(parsedOrder.signedOrder.takerAssetData)
+                .tokenAddress;
             const isMakerTokenAddressInRegistry = await this.props.blockchain.isAddressInTokenRegistryAsync(
-                parsedOrder.signedOrder.makerTokenAddress,
+                makerTokenAddress,
             );
             const isTakerTokenAddressInRegistry = await this.props.blockchain.isAddressInTokenRegistryAsync(
-                parsedOrder.signedOrder.takerTokenAddress,
+                takerTokenAddress,
             );
             this.setState({
                 isMakerTokenAddressInRegistry,
@@ -491,7 +493,11 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             unavailableTakerAmount,
         });
 
-        await this._checkForUntrackedTokensAndAskToAdd();
+        await this._checkForUntrackedTokensAndAskToAddAsync();
+    }
+    private _trackOrderEvent(eventName: string): void {
+        const parsedOrder = this.state.parsedOrder;
+        analytics.trackOrderEvent(eventName, parsedOrder);
     }
     private async _onFillOrderClickFireAndForgetAsync(): Promise<void> {
         if (this.props.blockchainErr !== BlockchainErrs.NoError || _.isEmpty(this.props.userAddress)) {
@@ -520,7 +526,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             globalErrMsg = 'You must specify a fill amount';
         }
 
-        const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
+        const signedOrder = parsedOrder.signedOrder;
         if (_.isEmpty(globalErrMsg)) {
             try {
                 await this.props.blockchain.validateFillOrderThrowIfInvalidAsync(
@@ -529,7 +535,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     this.props.userAddress,
                 );
             } catch (err) {
-                globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.taker);
+                globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.takerAddress);
             }
         }
         if (!_.isEmpty(globalErrMsg)) {
@@ -539,14 +545,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${parsedOrder.metadata.takerToken.symbol}-${networkName}`;
         try {
             const orderFilledAmount: BigNumber = await this.props.blockchain.fillOrderAsync(
                 signedOrder,
                 this.props.orderFillAmount,
             );
-            analytics.logEvent('Portal', 'Fill Order Success', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
+            this._trackOrderEvent('Fill Order Success');
             // After fill completes, let's force fetch the token balances
             this.props.dispatcher.forceTokenStateRefetch();
             this.setState({
@@ -560,7 +564,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 isFilling: false,
             });
-            analytics.logEvent('Portal', 'Fill Order Failure', eventLabel, parsedOrder.signedOrder.takerTokenAmount);
+            this._trackOrderEvent('Fill Order Failure');
             const errMsg = `${err}`;
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
@@ -570,7 +574,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.setState({
                 globalErrMsg,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
     }
@@ -596,18 +600,8 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             return;
         }
         let globalErrMsg = '';
-
-        const takerTokenAmount = new BigNumber(parsedOrder.signedOrder.takerTokenAmount);
-
-        const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
-        const orderHash = ZeroEx.getOrderHashHex(signedOrder);
-        const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
-        const availableTakerTokenAmount = takerTokenAmount.minus(unavailableTakerAmount);
-        try {
-            await this.props.blockchain.validateCancelOrderThrowIfInvalidAsync(signedOrder, availableTakerTokenAmount);
-        } catch (err) {
-            globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.taker);
-        }
+        const signedOrder = parsedOrder.signedOrder;
+        const takerTokenAmount = signedOrder.takerAssetAmount;
         if (!_.isEmpty(globalErrMsg)) {
             this.setState({
                 isCancelling: false,
@@ -615,17 +609,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
             return;
         }
-        const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
-        const eventLabel = `${parsedOrder.metadata.makerToken.symbol}-${networkName}`;
         try {
-            await this.props.blockchain.cancelOrderAsync(signedOrder, availableTakerTokenAmount);
+            await this.props.blockchain.cancelOrderAsync(signedOrder);
             this.setState({
                 isCancelling: false,
                 didCancelOrderSucceed: true,
                 globalErrMsg: '',
                 unavailableTakerAmount: takerTokenAmount,
             });
-            analytics.logEvent('Portal', 'Cancel Order Success', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
+            this._trackOrderEvent('Cancel Order Success');
             return;
         } catch (err) {
             this.setState({
@@ -635,22 +627,22 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             if (utils.didUserDenyWeb3Request(errMsg)) {
                 return;
             }
-            analytics.logEvent('Portal', 'Cancel Order Failure', eventLabel, parsedOrder.signedOrder.makerTokenAmount);
+            this._trackOrderEvent('Cancel Order Failure');
             globalErrMsg = 'Failed to cancel order, please refresh and try again';
             logUtils.log(`${err}`);
             this.setState({
                 globalErrMsg,
             });
-            await errorReporter.reportAsync(err);
+            errorReporter.report(err);
             return;
         }
     }
     private _formatCurrencyAmount(amount: BigNumber, decimals: number): number {
-        const unitAmount = ZeroEx.toUnitAmount(amount, decimals);
+        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
         const roundedUnitAmount = Math.round(unitAmount.toNumber() * 100000) / 100000;
         return roundedUnitAmount;
     }
-    private _onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean) {
+    private _onToggleTrackConfirmDialog(didConfirmTokenTracking: boolean): void {
         if (!didConfirmTokenTracking) {
             this.setState({
                 orderJSON: '',

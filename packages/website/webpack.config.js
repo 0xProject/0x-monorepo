@@ -1,7 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
+const childProcess = require('child_process');
 
-module.exports = {
+const GIT_SHA = childProcess
+    .execSync('git rev-parse HEAD')
+    .toString()
+    .trim();
+
+const config = {
     entry: ['./ts/index.tsx'],
     output: {
         path: path.join(__dirname, '/public'),
@@ -24,6 +32,11 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'source-map-loader',
+                exclude: [
+                    // instead of /\/node_modules\//
+                    path.join(process.cwd(), 'node_modules'),
+                    path.join(process.cwd(), '../..', 'node_modules'),
+                ],
             },
             {
                 test: /\.tsx?$/,
@@ -42,10 +55,18 @@ module.exports = {
                 test: /\.css$/,
                 loaders: ['style-loader', 'css-loader'],
             },
-            {
-                test: /\.json$/,
-                loader: 'json-loader',
-            },
+        ],
+    },
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                sourceMap: true,
+                terserOptions: {
+                    mangle: {
+                        reserved: ['BigNumber'],
+                    },
+                },
+            }),
         ],
     },
     devServer: {
@@ -65,22 +86,39 @@ module.exports = {
         },
         disableHostCheck: true,
     },
-    plugins:
-        process.env.NODE_ENV === 'production'
-            ? [
-                  // Since we do not use moment's locale feature, we exclude them from the bundle.
-                  // This reduces the bundle size by 0.4MB.
-                  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-                  new webpack.DefinePlugin({
-                      'process.env': {
-                          NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                      },
-                  }),
-                  new webpack.optimize.UglifyJsPlugin({
-                      mangle: {
-                          except: ['BigNumber'],
-                      },
-                  }),
-              ]
-            : [],
+};
+
+module.exports = (_env, argv) => {
+    let plugins = [];
+    if (argv.mode === 'development') {
+        config.mode = 'development';
+    } else {
+        config.mode = 'production';
+        plugins = plugins.concat([
+            // Since we do not use moment's locale feature, we exclude them from the bundle.
+            // This reduces the bundle size by 0.4MB.
+            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                    GIT_SHA: JSON.stringify(GIT_SHA),
+                },
+            }),
+        ]);
+        if (process.env.DEPLOY_ROLLBAR_SOURCEMAPS === 'true') {
+            plugins = plugins.concat([
+                new RollbarSourceMapPlugin({
+                    accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
+                    version: GIT_SHA,
+                    publicPath: 'https://0xproject.com/',
+                }),
+            ]);
+        }
+    }
+    console.log('i ｢atl｣: Mode: ', config.mode);
+
+    config.plugins = plugins;
+    console.log('i ｢atl｣: Plugin Count: ', config.plugins.length);
+
+    return config;
 };

@@ -8,13 +8,17 @@ const baseColors = {
     greyishPink: '#E6E5E5',
     grey300: '#E0E0E0',
     beigeWhite: '#E4E4E4',
-    grey350: '#cacaca',
+    lightBgGrey: '#EDEDED',
+    grey325: '#dfdfdf',
+    grey350: '#CACACA',
     grey400: '#BDBDBD',
     lightGrey: '#BBBBBB',
     grey500: '#9E9E9E',
     grey: '#A5A5A5',
     darkGrey: '#818181',
     landingLinkGrey: '#919191',
+    linkSectionGrey: '#999999',
+    greyTheme: '#666666',
     grey700: '#616161',
     grey750: '#515151',
     grey800: '#424242',
@@ -22,12 +26,14 @@ const baseColors = {
     heroGrey: '#404040',
     projectsGrey: '#343333',
     darkestGrey: '#272727',
-    dharmaDarkGrey: '#252525',
+    lightestBlue: '#E7F1FD',
     lightBlue: '#60A4F4',
     lightBlueA700: '#0091EA',
-    linkBlue: '#1D5CDE',
+    lightLinkBlue: '#3289F1',
     mediumBlue: '#488AEA',
+    linkBlue: '#1D5CDE',
     darkBlue: '#4D5481',
+    lightTurquois: '#aefcdc',
     turquois: '#058789',
     lightPurple: '#A81CA6',
     purple: '#690596',
@@ -47,20 +53,7 @@ const baseColors = {
     darkYellow: '#caca03',
 };
 
-const appColors = {
-    // wallet specific colors
-    walletBoxShadow: 'rgba(56, 59, 137, 0.2)',
-    walletBorder: '#ededee',
-    walletDefaultItemBackground: '#fbfbfc',
-    walletFocusedItemBackground: '#f0f1f4',
-    allowanceToggleShadow: 'rgba(0, 0, 0, 0)',
-    allowanceToggleOffTrack: '#adadad',
-    allowanceToggleOnTrack: baseColors.mediumBlue,
-    wrapEtherConfirmationButton: baseColors.mediumBlue,
-};
-
 export const colors = {
     ...materialUiColors,
     ...baseColors,
-    ...appColors,
 };

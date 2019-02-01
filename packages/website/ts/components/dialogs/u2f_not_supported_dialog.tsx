@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
@@ -9,14 +9,14 @@ interface U2fNotSupportedDialogProps {
     onToggleDialog: () => void;
 }
 
-export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
+export const U2fNotSupportedDialog = (props: U2fNotSupportedDialogProps) => {
     return (
         <Dialog
             title="U2F Not Supported"
             titleStyle={{ fontWeight: 100 }}
-            actions={[<FlatButton key="u2fNo" label="Ok" onTouchTap={props.onToggleDialog.bind(this)} />]}
+            actions={[<FlatButton key="u2fNo" label="Ok" onClick={props.onToggleDialog} />]}
             open={props.isOpen}
-            onRequestClose={props.onToggleDialog.bind(this)}
+            onRequestClose={props.onToggleDialog}
             autoScrollBodyContent={true}
         >
             <div className="pt2" style={{ color: colors.grey700 }}>
@@ -43,4 +43,4 @@ export function U2fNotSupportedDialog(props: U2fNotSupportedDialogProps) {
             </div>
         </Dialog>
     );
-}
+};

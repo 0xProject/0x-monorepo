@@ -1,9 +1,8 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { CustomType } from '../types';
-import { utils } from '../utils/utils';
+import { CustomType } from '@0x/types';
 
 const STRING_ENUM_CODE_PREFIX = ' strEnum(';
 
@@ -14,7 +13,7 @@ export interface CustomEnumProps {
 // This component renders custom string enums that was a work-around for versions of
 // TypeScript <2.4.0 that did not support them natively. We keep it around to support
 // older versions of 0x.js <0.9.0
-export function CustomEnum(props: CustomEnumProps) {
+export const CustomEnum = (props: CustomEnumProps) => {
     const type = props.type;
     if (!_.startsWith(type.defaultValue, STRING_ENUM_CODE_PREFIX)) {
         logUtils.log('We do not yet support `Variable` types that are not strEnums');
@@ -31,4 +30,4 @@ export function CustomEnum(props: CustomEnumProps) {
             {`}`}
         </span>
     );
-}
+};

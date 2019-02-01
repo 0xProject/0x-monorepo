@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -15,7 +14,7 @@ interface ConnectedDispatch {
     dispatcher: Dispatcher;
 }
 
-const mapStateToProps = (state: State, ownProps: AboutProps): ConnectedState => ({
+const mapStateToProps = (state: State, _ownProps: AboutProps): ConnectedState => ({
     translate: state.translate,
 });
 

@@ -1,6 +1,8 @@
-import { ECSignature } from '0x.js';
-import { BigNumber } from '@0xproject/utils';
-import * as _ from 'lodash';
+import { ALink } from '@0x/react-shared';
+import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Provider } from 'ethereum-types';
+import * as React from 'react';
 
 export enum Side {
     Receive = 'RECEIVE',
@@ -13,12 +15,17 @@ export interface Token {
     address: string;
     symbol: string;
     decimals: number;
-    isTracked: boolean;
     isRegistered: boolean;
+    trackedTimestamp?: number;
 }
 
 export interface TokenByAddress {
     [address: string]: Token;
+}
+
+export interface Styleable {
+    style: React.CSSProperties;
+    children: React.ReactNode;
 }
 
 export interface AssetToken {
@@ -50,28 +57,12 @@ export interface OrderToken {
     decimals: number;
 }
 
-export interface SignedOrder {
-    maker: string;
-    taker: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    makerFee: string;
-    takerFee: string;
-    makerTokenAmount: string;
-    takerTokenAmount: string;
-    expirationUnixTimestampSec: string;
-    feeRecipient: string;
-    salt: string;
-    ecSignature: ECSignature;
-    exchangeContractAddress: string;
-}
-
 export interface OrderMetadata {
     makerToken: OrderToken;
     takerToken: OrderToken;
 }
 
-export interface Order {
+export interface PortalOrder {
     signedOrder: SignedOrder;
     metadata: OrderMetadata;
 }
@@ -114,7 +105,7 @@ export enum ActionTypes {
     UpdateChosenAssetTokenAddress = 'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
     UpdateOrderTakerAddress = 'UPDATE_ORDER_TAKER_ADDRESS',
     UpdateOrderSalt = 'UPDATE_ORDER_SALT',
-    UpdateOrderECSignature = 'UPDATE_ORDER_EC_SIGNATURE',
+    UpdateOrderSignature = 'UPDATE_ORDER_SIGNATURE',
     UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
     RemoveTokenFromTokenByAddress = 'REMOVE_TOKEN_FROM_TOKEN_BY_ADDRESS',
     ForceTokenStateRefetch = 'FORCE_TOKEN_STATE_REFETCH',
@@ -125,6 +116,8 @@ export enum ActionTypes {
     UpdateUserSuppliedOrderCache = 'UPDATE_USER_SUPPLIED_ORDER_CACHE',
     UpdateOrderFillAmount = 'UPDATE_ORDER_FILL_AMOUNT',
     UpdateShouldBlockchainErrDialogBeOpen = 'UPDATE_SHOULD_BLOCKCHAIN_ERR_DIALOG_BE_OPEN',
+    UpdatePortalOnboardingStep = 'UPDATE_ONBOARDING_STEP',
+    UpdatePortalOnboardingShowing = 'UPDATE_PORTAL_ONBOARDING_SHOWING',
 
     // Docs
     UpdateLibraryVersion = 'UPDATE_LIBRARY_VERSION',
@@ -207,12 +200,12 @@ export interface ContractEvent {
     args: any;
 }
 
-export type InputErrMsg = React.ReactNode | string | undefined;
 export type ValidatedBigNumberCallback = (isValid: boolean, amount?: BigNumber) => void;
+// Associated values are in `em` units
 export enum ScreenWidths {
-    Sm = 'SM',
-    Md = 'MD',
-    Lg = 'LG',
+    Sm = 40,
+    Md = 52,
+    Lg = 64,
 }
 
 export enum AlertTypes {
@@ -235,8 +228,11 @@ export enum BlockchainCallErrs {
 }
 
 export enum Environments {
-    DEVELOPMENT,
-    PRODUCTION,
+    DEVELOPMENT = 'DEVELOPMENT',
+    DOGFOOD = 'DOGFOOD',
+    STAGING = 'STAGING',
+    PRODUCTION = 'PRODUCTION',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export type ContractInstance = any; // TODO: add type definition for Contract
@@ -344,11 +340,14 @@ export enum Docs {
 export enum WebsiteLegacyPaths {
     ZeroExJs = '/docs/0xjs',
     Web3Wrapper = '/docs/web3_wrapper',
+    Deployer = '/docs/deployer',
+    Jobs = '/jobs',
 }
 
 export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
+    Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq',
@@ -357,11 +356,16 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3-wrapper',
-    Deployer = '/docs/deployer',
+    ContractWrappers = '/docs/contract-wrappers',
+    OrderWatcher = '/docs/order-watcher',
+    SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
     Subproviders = '/docs/subproviders',
-    Jobs = '/jobs',
+    OrderUtils = '/docs/order-utils',
+    EthereumTypes = '/docs/ethereum-types',
+    AssetBuyer = '/docs/asset-buyer',
+    Careers = '/careers',
 }
 
 export enum DocPackages {
@@ -369,10 +373,15 @@ export enum DocPackages {
     ZeroExJs = 'ZERO_EX_JS',
     SmartContracts = 'SMART_CONTRACTS',
     Web3Wrapper = 'WEB3_WRAPPER',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JSONSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
     Subproviders = 'SUBPROVIDERS',
+    OrderUtils = 'ORDER_UTILS',
+    EthereumTypes = 'ETHEREUM_TYPES',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
+    OrderWatcher = 'ORDER_WATCHER',
+    AssetBuyer = 'ASSET_BUYER',
 }
 
 export enum Key {
@@ -389,10 +398,11 @@ export enum Key {
     TraditionalAssets = 'TRADITIONAL_ASSETS',
     DigitalGoods = 'DIGITAL_GOODS',
     OffChainOrderRelay = 'OFFCHAIN_ORDER_RELAY',
-    OonChainSettlement = 'OONCHAIN_SETTLEMENT',
+    OnChainSettlement = 'ONCHAIN_SETTLEMENT',
     OffChainOnChainDescription = 'OFFCHAIN_ONCHAIN_DESCRIPTION',
     RelayersHeader = 'RELAYERS_HEADER',
     BenefitsHeader = 'BENEFITS_HEADER',
+    UseCasesHeader = 'USE_CASES_HEADER',
     BenefitOneTitle = 'BENEFIT_ONE_TITLE',
     BenefitOneDescription = 'BENEFIT_ONE_DESCRIPTION',
     BenefitTwoTitle = 'BENEFIT_TWO_TITLE',
@@ -414,6 +424,10 @@ export enum Key {
     DecentralizedLoansDescription = 'DECENTRALIZED_LOANS_DESCRIPTION',
     FundManagement = 'FUND_MANAGEMENT',
     FundManagementDescription = 'FUND_MANAGEMENT_DESCRIPTION',
+    GamingAndCollectables = 'GAMING_AND_COLLECTABLES',
+    GamingAndCollectablesDescription = 'GAMING_AND_COLLECTABLES_DESCRIPTION',
+    OrderBooks = 'ORDER_BOOKS',
+    OrderBooksDescription = 'ORDER_BOOKS_DESCRIPTION',
     FinalCallToAction = 'FINAL_CALL_TO_ACTION',
     Documentation = 'DOCUMENTATION',
     Community = 'COMMUNITY',
@@ -421,16 +435,22 @@ export enum Key {
     About = 'ABOUT',
     Careers = 'CAREERS',
     Contact = 'CONTACT',
-    Deployer = 'DEPLOYER',
+    SolCompiler = 'SOL_COMPILER',
     JsonSchemas = 'JSON_SCHEMAS',
     SolCov = 'SOL_COV',
+    EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
+    ZeroExJs = '0X_JS',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
+    OrderWatcher = 'ORDER_WATCHER',
+    AssetBuyer = 'ASSET_BUYER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
     Whitepaper = 'WHITEPAPER',
     Wiki = 'WIKI',
     Web3Wrapper = 'WEB3_WRAPPER',
+    OrderUtils = 'ORDER_UTILS',
     And = 'AND',
     Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
@@ -440,6 +460,25 @@ export enum Key {
     Developers = 'DEVELOPERS',
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
+    TradeCallToAction = 'TRADE_CALL_TO_ACTION',
+    OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
+    BuildARelayer = 'BUILD_A_RELAYER',
+    BuildARelayerDescription = 'BUILD_A_RELAYER_DESCRIPTION',
+    DevelopOnEthereum = 'DEVELOP_ON_ETHEREUM',
+    DevelopOnEthereumDescription = 'DEVELOP_ON_ETHEREUM_DESCRIPTION',
+    OrderBasics = 'ORDER_BASICS',
+    OrderBasicsDescription = 'ORDER_BASICS_DESCRIPTION',
+    UseNetworkedLiquidity = 'USE_NETWORKED_LIQUIDITY',
+    UseNetworkedLiquidityDescription = 'USE_NETWORKED_LIQUIDITY_DESCRIPTION',
+    ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
+    Sandbox = 'SANDBOX',
+    Github = 'GITHUB',
+    LiveChat = 'LIVE_CHAT',
+    LibrariesAndTools = 'LIBRARIES_AND_TOOLS',
+    LibrariesAndToolsDescription = 'LIBRARIES_AND_TOOLS_DESCRIPTION',
+    More = 'MORE',
+    StartBuildOn0x = 'START_BUILDING_ON_0X',
+    StartBuildOn0xDescription = 'START_BUILDING_ON_0X_DESCRIPTION',
 }
 
 export enum SmartContractDocSections {
@@ -473,6 +512,18 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
+    CoinbaseWallet = 'COINBASE_WALLET',
+    Cipher = 'CIPHER',
+}
+
+export interface InjectedProviderUpdate {
+    selectedAddress: string;
+    networkVersion: string;
+}
+
+export interface InjectedProviderObservable {
+    subscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
+    unsubscribe(updateHandler: (update: InjectedProviderUpdate) => void): void;
 }
 
 export interface TimestampMsRange {
@@ -487,9 +538,7 @@ export interface OutdatedWrappedEtherByNetworkId {
     };
 }
 
-export interface ItemByAddress<T> {
-    [address: string]: T;
-}
+export type ItemByAddress<T> = ObjectMap<T>;
 
 export type TokenStateByAddress = ItemByAddress<TokenState>;
 
@@ -500,20 +549,87 @@ export interface TokenState {
     price?: BigNumber;
 }
 
-// TODO: Add topTokens and headerUrl properties once available from backend
 export interface WebsiteBackendRelayerInfo {
-    id: string;
     name: string;
-    dailyTxnVolume: string;
+    weeklyTxnVolume?: string;
     url: string;
+    appUrl?: string;
+    headerImgUrl?: string;
+    logoImgUrl?: string;
+    primaryColor?: string;
+    topTokens: WebsiteBackendTokenInfo[];
 }
 
 export interface WebsiteBackendPriceInfo {
-    price: string;
+    [symbol: string]: string;
+}
+
+export interface WebsiteBackendTokenInfo {
     address: string;
+    decimals: number;
+    name: string;
+    symbol: string;
 }
 
 export interface WebsiteBackendGasInfo {
+    safeSlow: number;
     average: number;
+    fast: number;
+    fastest: number;
+}
+
+export interface WebsiteBackendJobInfo {
+    id: number;
+    title: string;
+    department: string;
+    office: string;
+    url: string;
+}
+
+export enum BrowserType {
+    Chrome = 'Chrome',
+    Firefox = 'Firefox',
+    Opera = 'Opera',
+    Safari = 'Safari',
+    Edge = 'Edge',
+    Other = 'Other',
+}
+
+export enum OperatingSystemType {
+    Android = 'Android',
+    iOS = 'iOS',
+    Mac = 'Mac',
+    Windows = 'Windows',
+    WindowsPhone = 'WindowsPhone',
+    Linux = 'Linux',
+    Other = 'Other',
+}
+
+export enum AccountState {
+    Disconnected = 'Disconnected',
+    Ready = 'Ready',
+    Loading = 'Loading',
+    Locked = 'Locked',
+}
+
+export interface InjectedProvider extends Provider {
+    publicConfigStore?: InjectedProviderObservable;
+}
+
+export interface TutorialInfo {
+    iconUrl: string;
+    description: string;
+    link: ALink;
+}
+
+export enum Categories {
+    ZeroExProtocol = '0x Protocol',
+    Ethereum = 'Ethereum',
+    CommunityMaintained = 'Community Maintained',
+}
+
+export interface Package {
+    description: string;
+    link: ALink;
 }
 // tslint:disable:max-file-line-count
