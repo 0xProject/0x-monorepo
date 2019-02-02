@@ -9,6 +9,8 @@ export class DexTrade {
     public sourceUrl!: string;
     @PrimaryColumn({ name: 'tx_hash' })
     public txHash!: string;
+    @PrimaryColumn({ name: 'trade_index' })
+    public tradeIndex!: string;
 
     @Column({ name: 'tx_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public txTimestamp!: number;
