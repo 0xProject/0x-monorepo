@@ -63,4 +63,9 @@ export const assetDataNetworkMapping: AssetDataByNetwork[] = [
         [Network.Kovan]: '0xf47261b00000000000000000000000008cb3971b8eb709c14616bd556ff6683019e90d9c',
         [Network.Mainnet]: '0xf47261b00000000000000000000000001985365e9f78359a9b6ad760e32412f4a445e862',
     },
+    // USDC
+    {
+        [Network.Kovan]: '',
+        [Network.Mainnet]: '0xf47261b0000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    },
 ];
