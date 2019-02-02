@@ -28,11 +28,12 @@ export class TransactionEncoder {
     public getTransactionHex(data: string, salt: BigNumber, signerAddress: string): string {
         const exchangeAddress = this._getExchangeContract().address;
         const executeTransactionData = {
+            verifyingContractAddress: exchangeAddress,
             salt,
             signerAddress,
             data,
         };
-        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, exchangeAddress);
+        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData);
         const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         const messageHex = `0x${eip712MessageBuffer.toString('hex')}`;
         return messageHex;
