@@ -11,16 +11,16 @@ export const eip712Utils = {
      * @param   primaryType The primary type found in message
      * @param   types The additional types for the data in message
      * @param   message The contents of the message
-     * @param   exchangeAddress The address of the exchange contract
+     * @param   verifyingContractAddress The address of the verifying contract
      * @return  A typed data object
      */
     createTypedData: (
         primaryType: string,
         types: EIP712Types,
         message: EIP712Object,
-        exchangeAddress: string,
+        verifyingContractAddress: string,
     ): EIP712TypedData => {
-        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.isETHAddressHex('verifyingContractAddress', verifyingContractAddress);
         assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
@@ -30,7 +30,7 @@ export const eip712Utils = {
             domain: {
                 name: constants.EIP712_DOMAIN_NAME,
                 version: constants.EIP712_DOMAIN_VERSION,
-                verifyingContract: exchangeAddress,
+                verifyingContract: verifyingContractAddress,
             },
             message,
             primaryType,
@@ -60,7 +60,6 @@ export const eip712Utils = {
      * Creates an ExecuteTransaction EIP712TypedData object for use with signTypedData and
      * 0x Exchange executeTransaction.
      * @param   ZeroExTransaction the 0x transaction
-     * @param   exchangeAddress The address of the exchange contract
      * @return  A typed data object
      */
     createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
