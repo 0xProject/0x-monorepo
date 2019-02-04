@@ -19,6 +19,7 @@ export const compilerOptionsSchema = {
                 },
             ],
         },
+        useDockerisedSolc: { type: 'boolean' },
     },
     type: 'object',
     required: [],

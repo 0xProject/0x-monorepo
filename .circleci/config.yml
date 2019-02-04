@@ -17,6 +17,7 @@ jobs:
             - run:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install
+            - setup_remote_docker
             - run: yarn build:ci:no_website
             - run: yarn build:ts
             - save_cache:
