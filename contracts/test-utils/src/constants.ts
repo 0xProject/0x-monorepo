@@ -65,4 +65,14 @@ export const constants = {
         'CANCEL_ORDERS_UP_TO',
         'SET_SIGNATURE_VALIDATOR_APPROVAL',
     ],
+    TEC_DOMAIN_NAME: '0x Protocol Trade Execution Coordinator',
+    TEC_DOMAIN_VERSION: '1.0.0',
+    TEC_APPROVAL_SCHEMA: {
+        name: 'TECApproval',
+        parameters: [
+            { name: 'transactionHash', type: 'bytes32' },
+            { name: 'transactionSignature', type: 'bytes' },
+            { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
+        ],
+    },
 };
