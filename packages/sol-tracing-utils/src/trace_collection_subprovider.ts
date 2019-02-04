@@ -3,6 +3,7 @@ import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subprovi
 import { logUtils } from '@0x/utils';
 import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
+import { utils } from 'ethers';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
@@ -92,6 +93,18 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const txData = payload.params[0];
+                        next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
+                    }
+                    return;
+
+                case 'eth_sendRawTransaction':
+                    if (!this._config.shouldCollectTransactionTraces) {
+                        next();
+                    } else {
+                        const txData = utils.parseTransaction(payload.params[0]);
+                        if (txData.to === null) {
+                            txData.to = constants.NEW_CONTRACT;
+                        }
                         next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
                     }
                     return;
