@@ -1,4 +1,5 @@
 import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-gen-wrappers';
+import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
@@ -92,7 +93,14 @@ export const signatureUtils = {
         assert.isWeb3Provider('provider', provider);
         assert.isHexString('data', data);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
+        const web3Wrapper = new Web3Wrapper(provider);
+        const networkId = await web3Wrapper.getNetworkIdAsync();
+        const addresses = getContractAddressesForNetworkOrThrow(networkId);
+        const exchangeContract = new ExchangeContract(
+            artifacts.Exchange.compilerOutput.abi,
+            addresses.exchange,
+            provider,
+        );
         const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
         return isValid;
     },
