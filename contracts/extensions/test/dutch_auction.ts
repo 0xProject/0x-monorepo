@@ -1,8 +1,6 @@
 import { DutchAuctionWrapper } from '@0x/contract-wrappers';
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
-import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -23,7 +21,15 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, DutchAuctionContract, DutchAuctionTestWrapper } from '../src';
+import {
+    artifacts,
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    DutchAuctionContract,
+    DutchAuctionTestWrapper,
+    ExchangeContract,
+    WETH9Contract,
+} from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -82,12 +88,12 @@ describe(ContractName.DutchAuction, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, provider, txDefaults);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
         erc20Wrapper.addDummyTokenContract(wethContract as any);
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            exchangeArtifacts.Exchange,
+            artifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,

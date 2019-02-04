@@ -31,6 +31,7 @@
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
         "clean": "wsrun clean $PKG --fast-exit -r --parallel --exclude-missing",
+        "contracts:gen": "wsrun contracts:gen $PKG --fast-exit -r --parallel --exclude-missing",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",

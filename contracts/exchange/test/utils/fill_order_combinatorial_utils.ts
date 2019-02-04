@@ -1,5 +1,4 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { artifacts as libsArtifacts, TestLibsContract } from '@0x/contracts-exchange-libs';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -33,7 +32,7 @@ import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
+import { artifacts, ExchangeContract, ExchangeFillEventArgs, TestLibsContract } from '../../src';
 
 import { AssetWrapper } from './asset_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
@@ -129,11 +128,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         exchangeContract.address,
     );
 
-    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-        libsArtifacts.TestLibs,
-        provider,
-        txDefaults,
-    );
+    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
         orderFactory,

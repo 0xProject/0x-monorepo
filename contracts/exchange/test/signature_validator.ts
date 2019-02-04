@@ -1,4 +1,3 @@
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import {
     addressUtils,
     chaiSetup,
@@ -78,7 +77,7 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...erc20Artifacts });
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,

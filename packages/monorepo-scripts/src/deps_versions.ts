@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
+import { PackageJSON } from '@0x/types';
 import chalk from 'chalk';
-import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as _ from 'lodash';
 
@@ -21,11 +21,10 @@ const PACKAGE_JSON_GLOB = '../*/package.json';
 
 // tslint:disable:no-unused-variable
 function getDependencies(path: string): Dependencies {
-    const file = fs.readFileSync(path).toString();
-    const parsed = JSON.parse(file);
+    const packageJSON = utils.readJSONFile<PackageJSON>(path);
     const dependencies = {
-        ...parsed.dependencies,
-        ...parsed.devDependencies,
+        ...packageJSON.dependencies,
+        ...packageJSON.devDependencies,
     };
     return dependencies;
 }

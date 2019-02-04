@@ -1,6 +1,4 @@
-import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract, ReentrantERC20TokenContract } from '@0x/contracts-erc20';
-import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
     constants,
@@ -22,7 +20,16 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract, ExchangeWrapper } from '../src';
+import {
+    artifacts,
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    ExchangeContract,
+    ExchangeWrapper,
+    ReentrantERC20TokenContract,
+} from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -107,7 +114,7 @@ describe('Exchange wrappers', () => {
         );
 
         reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            erc20Artifacts.ReentrantERC20Token,
+            artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
             exchange.address,

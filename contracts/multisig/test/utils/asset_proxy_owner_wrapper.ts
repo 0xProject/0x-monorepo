@@ -1,5 +1,3 @@
-import { artifacts as proxyArtifacts } from '@0x/contracts-asset-proxy';
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { LogDecoder } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -16,7 +14,7 @@ export class AssetProxyOwnerWrapper {
     constructor(assetproxyOwnerContract: AssetProxyOwnerContract, provider: Provider) {
         this._assetProxyOwner = assetproxyOwnerContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...erc20Artifacts, ...proxyArtifacts });
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     public async submitTransactionAsync(
         destination: string,

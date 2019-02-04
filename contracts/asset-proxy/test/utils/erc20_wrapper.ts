@@ -1,4 +1,3 @@
-import { artifacts as tokensArtifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants, ERC20BalancesByOwner, txDefaults } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
@@ -6,8 +5,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
-import { artifacts } from '../../src/artifacts';
+import { artifacts, DummyERC20TokenContract, ERC20ProxyContract } from '../../src';
 
 export class ERC20Wrapper {
     private readonly _tokenOwnerAddresses: string[];
@@ -38,7 +36,7 @@ export class ERC20Wrapper {
         for (let i = 0; i < numberToDeploy; i++) {
             this._dummyTokenContracts.push(
                 await DummyERC20TokenContract.deployFrom0xArtifactAsync(
-                    tokensArtifacts.DummyERC20Token,
+                    artifacts.DummyERC20Token,
                     this._provider,
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,

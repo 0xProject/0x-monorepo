@@ -1,17 +1,5 @@
-import {
-    artifacts as proxyArtifacts,
-    ERC20ProxyContract,
-    ERC20Wrapper,
-    ERC721ProxyContract,
-} from '@0x/contracts-asset-proxy';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
-import {
-    artifacts as exchangeArtifacts,
-    ExchangeContract,
-    ExchangeFillEventArgs,
-    ExchangeWrapper,
-} from '@0x/contracts-exchange';
+import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -34,7 +22,16 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, OrderMatcherContract } from '../src';
+import {
+    artifacts,
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    ExchangeContract,
+    ExchangeFillEventArgs,
+    OrderMatcherContract,
+} from '../src';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -104,14 +101,10 @@ describe('OrderMatcher', () => {
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC721 proxy
-        erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(
-            proxyArtifacts.ERC721Proxy,
-            provider,
-            txDefaults,
-        );
+        erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(artifacts.ERC721Proxy, provider, txDefaults);
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            exchangeArtifacts.Exchange,
+            artifacts.Exchange,
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
@@ -200,7 +193,7 @@ describe('OrderMatcher', () => {
     describe('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                exchangeArtifacts.Exchange,
+                artifacts.Exchange,
                 provider,
                 txDefaults,
                 constants.NULL_BYTES,
@@ -454,7 +447,7 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...erc20Artifacts, ...exchangeArtifacts });
+            const logDecoder = new LogDecoder(web3Wrapper, artifacts);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -492,7 +485,7 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...erc20Artifacts, ...exchangeArtifacts });
+            const logDecoder = new LogDecoder(web3Wrapper, artifacts);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -729,7 +722,7 @@ describe('OrderMatcher', () => {
         });
         it('should allow owner to withdraw ERC721 tokens', async () => {
             const erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                erc721Artifacts.DummyERC721Token,
+                artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,
@@ -774,7 +767,7 @@ describe('OrderMatcher', () => {
         });
         it('should be able to approve an ERC721 token by passing in allowance = 1', async () => {
             const erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                erc721Artifacts.DummyERC721Token,
+                artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,
@@ -791,7 +784,7 @@ describe('OrderMatcher', () => {
         });
         it('should be able to approve an ERC721 token by passing in allowance > 1', async () => {
             const erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                erc721Artifacts.DummyERC721Token,
+                artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,

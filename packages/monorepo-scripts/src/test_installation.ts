@@ -8,7 +8,7 @@ import { exec as execAsync } from 'promisify-child-process';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 
-import { Package } from './types';
+import { Changelog, Package } from './types';
 import { utils } from './utils/utils';
 
 // Packages might not be runnable if they are command-line tools or only run in browsers.
@@ -100,7 +100,7 @@ async function testInstallPackageAsync(
     installablePackage: Package,
 ): Promise<void> {
     const changelogPath = path.join(installablePackage.location, 'CHANGELOG.json');
-    const lastChangelogVersion = JSON.parse(fs.readFileSync(changelogPath).toString())[0].version;
+    const lastChangelogVersion = utils.readJSONFile<Changelog>(changelogPath)[0].version;
     const packageName = installablePackage.packageJson.name;
     utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
     const packageDirName = path.join(...`${packageName}-test`.split('/'));

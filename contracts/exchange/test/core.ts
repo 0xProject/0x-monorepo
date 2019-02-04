@@ -1,19 +1,4 @@
-import {
-    artifacts as proxyArtifacts,
-    ERC20ProxyContract,
-    ERC20Wrapper,
-    ERC721ProxyContract,
-    ERC721Wrapper,
-    MultiAssetProxyContract,
-} from '@0x/contracts-asset-proxy';
-import {
-    artifacts as erc20Artifacts,
-    DummyERC20TokenContract,
-    DummyERC20TokenTransferEventArgs,
-    DummyNoReturnERC20TokenContract,
-    ReentrantERC20TokenContract,
-} from '@0x/contracts-erc20';
-import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
     constants,
@@ -39,9 +24,17 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    DummyERC20TokenContract,
+    DummyERC20TokenTransferEventArgs,
+    DummyERC721TokenContract,
+    DummyNoReturnERC20TokenContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
     ExchangeCancelEventArgs,
     ExchangeContract,
     ExchangeWrapper,
+    MultiAssetProxyContract,
+    ReentrantERC20TokenContract,
     TestStaticCallReceiverContract,
 } from '../src';
 
@@ -98,7 +91,7 @@ describe('Exchange core', () => {
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
         multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
-            proxyArtifacts.MultiAssetProxy,
+            artifacts.MultiAssetProxy,
             provider,
             txDefaults,
         );
@@ -120,7 +113,7 @@ describe('Exchange core', () => {
             txDefaults,
         );
         reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            erc20Artifacts.ReentrantERC20Token,
+            artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
             exchange.address,
@@ -345,7 +338,7 @@ describe('Exchange core', () => {
     describe('Testing exchange of ERC20 tokens with no return values', () => {
         before(async () => {
             noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
-                erc20Artifacts.DummyNoReturnERC20Token,
+                artifacts.DummyNoReturnERC20Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,
