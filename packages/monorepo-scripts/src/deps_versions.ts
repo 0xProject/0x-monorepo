@@ -23,18 +23,19 @@ interface ParsedDependencies {
 }
 
 const PACKAGE_JSON_GLOB = '../../*/package.json';
+
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../package.json')).toString()).config;
-const ignore: string[] = config.ignoreDependencyVersions.split(' ');
-const ignorePackages: string[] = config.ignoreDependencyVersionsForPackage.split(' ');
+const dependenciesWithIgnoredVersions: string[] = config.ignoreDependencyVersions.split(' ');
+const packagesWithIgnoredVersions: string[] = config.ignoreDependencyVersionsForPackage.split(' ');
 
 if (require.main === module) {
     const dependencies = parseDependencies();
     const ignoredMultiples = getDependenciesWithMultipleVersions(dependencies.ignored);
     const multiples = getDependenciesWithMultipleVersions(dependencies.included);
     printVersionsByDependency(multiples);
-    utils.log(`├── ${chalk.bold('IGNORED PACKAGES')}`);
+    utils.log(`├── ${chalk.bold('IGNORED')}`);
     printVersionsByDependency(ignoredMultiples);
-    if (!(Object.keys(multiples).length === 0)) {
+    if (Object.keys(multiples).length !== 0) {
         utils.log(`Add space-separated exceptions to root package.json config.ignoreDependencyVersions`);
         process.exit(1);
     }
@@ -59,9 +60,10 @@ function parseDependencies(): ParsedDependencies {
     files.map(_path => {
         const pathParts = _path.split('/');
         const packageName = pathParts[pathParts.length - 2];
-        const category = ignorePackages.includes(packageName) ? 'ignored' : 'included';
+        const packageCategory = packagesWithIgnoredVersions.includes(packageName) ? 'ignored' : 'included';
         const dependencies = getDependencies(_path);
         Object.keys(dependencies).forEach((depName: string) => {
+            const category = dependenciesWithIgnoredVersions.includes(depName) ? 'ignored' : packageCategory;
             if (parsedDependencies[category][depName] === undefined) {
                 parsedDependencies[category][depName] = {};
             }
@@ -74,7 +76,7 @@ function parseDependencies(): ParsedDependencies {
 
 function getDependenciesWithMultipleVersions(versionsByDependency: VersionsByDependency): VersionsByDependency {
     return Object.keys(versionsByDependency)
-        .filter((depName: string) => !ignore.includes(depName) && hasMultipleVersions(versionsByDependency[depName]))
+        .filter((depName: string) => hasMultipleVersions(versionsByDependency[depName]))
         .reduce<VersionsByDependency>((obj, depName: string) => {
             obj[depName] = versionsByDependency[depName];
             return obj;
