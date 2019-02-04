@@ -6,6 +6,6 @@
         "signerAddress": { "$ref": "/addressSchema" },
         "salt": { "$ref": "/wholeNumberSchema" }
     },
-    "required": ["data", "salt", "signerAddress"],
+    "required": ["verifyingContractAddress", "data", "salt", "signerAddress"],
     "type": "object"
 }
