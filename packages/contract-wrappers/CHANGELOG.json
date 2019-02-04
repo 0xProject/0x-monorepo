@@ -51,6 +51,10 @@
             {
                 "note": "Rename `getTransactionHex` to `getTransactionHashHex`",
                 "pr": 1576
+            },
+            {
+                "note": "Rename `getTransactionHex` to `getTransactionHashHex`",
+                "pr": 1576
             }
         ],
         "timestamp": 1549452781
