@@ -20,7 +20,7 @@ You should run this tool after each time you move your contracts around to regen
 
 This tool does the following:
 
--   Reads your `compiler.json`. Specifically list of smart contracts.
+-   Reads your `compiler.json`. Specifically the list of smart contracts.
 -   Creates `wrapper.ts` file which exports all contract wrappers.
 -   Creates `artifacts.ts` file which exports all contract artifacts.
 -   Generates list of JSON artifact files in `tsconfig.json`
