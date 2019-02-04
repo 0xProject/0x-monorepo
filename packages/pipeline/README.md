@@ -34,8 +34,10 @@ yarn lint
 
 ### Migrations
 
-Create a new migration: `yarn migrate:create --name MigrationNameInCamelCase`
+Create a new migration: `yarn migrate:create --name MigrationNameInCamelCase`.
+
 Run migrations: `yarn migrate:run`
+
 Revert the most recent migration (CAUTION: may result in data loss!): `yarn migrate:revert`
 
 ## Testing

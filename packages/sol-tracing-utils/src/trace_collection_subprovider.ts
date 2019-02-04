@@ -180,7 +180,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         cb();
     }
     private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallDataRPC>): Promise<void> {
-        // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
+        // We don't want other transactions to be executed during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
