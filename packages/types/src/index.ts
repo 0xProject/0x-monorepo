@@ -690,3 +690,9 @@ export interface DutchAuctionDetails {
     currentAmount: BigNumber;
     currentTimeSeconds: BigNumber;
 }
+
+export interface EIP712DomainWithDefaultSchema {
+    name?: string;
+    version?: string;
+    verifyingContractAddress: string;
+}
