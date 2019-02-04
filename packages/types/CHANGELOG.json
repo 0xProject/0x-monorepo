@@ -5,6 +5,14 @@
             {
                 "note": "Upgrade the bignumber.js to v8.0.2",
                 "pr": 1517
+            },
+            {
+                "note": "Update `ZeroExTransaction` type and add `SignedZeroExTransaction` type",
+                "pr": 1576
+            },
+            {
+                "note": "Add `EIP712DomainWithDefaultSchema` type",
+                "pr": 1576
             }
         ],
         "timestamp": 1549373905

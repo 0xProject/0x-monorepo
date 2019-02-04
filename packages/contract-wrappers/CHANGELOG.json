@@ -5,6 +5,10 @@
             {
                 "note": "Fix OrderValidatorWrapper constructor to use the correct address",
                 "pr": 1568
+            },
+            {
+                "note": "Use new `ZeroExTransaction` interface",
+                "pr": 1576
             }
         ],
         "timestamp": 1549373905
