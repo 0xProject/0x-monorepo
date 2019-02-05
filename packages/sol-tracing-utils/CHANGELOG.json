@@ -25,6 +25,14 @@
             {
                 "note": "Improve error messages when unable to find matching bytecode",
                 "pr": 1558
+            },
+            {
+                "note": "Fix default gas limit for fake txs in `TraceCollectionSubprovider`",
+                "pr": 1583
+            },
+            {
+                "note": "Fix a big when we were not intercepting `eth_sendRawTransaction`",
+                "pr": 1584
             }
         ]
     },
