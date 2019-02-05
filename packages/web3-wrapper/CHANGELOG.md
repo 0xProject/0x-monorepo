@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Update ganache-core to v2.3.3 (#1518)
+
 ## v3.2.4 - _January 15, 2019_
 
     * Dependencies updated

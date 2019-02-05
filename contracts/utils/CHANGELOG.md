@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Fix imports in `TestConstants` and `TestLibBytes` to be relative. This way they show up correctly in coverage reports (#1535)
+    * Add LibAddressArray contract (#1539)
+    * Do not nest contracts in redundant directories (#1539)
+    * Rename utils directory to src (#1539)
+
 ## v1.0.6 - _January 17, 2019_
 
     * Dependencies updated

@@ -10,7 +10,8 @@
                 "note": "Fix preSigned isSignatureValidAsync check",
                 "pr": 1580
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "timestamp": 1547561734,
