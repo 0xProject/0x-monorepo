@@ -3,7 +3,7 @@
         "version": "4.0.1",
         "changes": [
             {
-                "note": "ABI Decode NULL as False"
+                "note": "ABI Decode NULL as False",
                 "pr": 1582
             }
         ]
