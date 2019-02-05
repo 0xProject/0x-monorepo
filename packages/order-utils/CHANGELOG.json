@@ -7,7 +7,7 @@
                 "pr": 1517
             },
             {
-                "note": "Fix preSigned isSignatureValidAsync check",
+                "note": "Fix preSigned `isSignatureValidAsync` check",
                 "pr": 1580
             }
         ],
