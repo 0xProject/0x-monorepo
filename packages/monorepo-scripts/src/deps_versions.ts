@@ -36,7 +36,9 @@ if (require.main === module) {
     utils.log(`├── ${chalk.bold('IGNORED')}`);
     printVersionsByDependency(ignoredMultiples);
     if (Object.keys(multiples).length !== 0) {
-        utils.log(`Add space-separated exceptions to root package.json config.ignoreDependencyVersions`);
+        utils.log(
+            `Some dependencies have multiple versions. Please fix by trying to find compatible versions. As a last resort, you can add space-separated exceptions to root package.json config.ignoreDependencyVersions`,
+        );
         process.exit(1);
     }
 }
