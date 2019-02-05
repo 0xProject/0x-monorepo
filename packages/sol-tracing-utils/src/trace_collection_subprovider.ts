@@ -199,7 +199,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
         await blockchainLifecycle.startAsync();
         const fakeTxData = {
-            gas: BLOCK_GAS_LIMIT.toString(16), // tslint:disable-line:custom-no-magic-numbers
+            gas: `0x${BLOCK_GAS_LIMIT.toString(16)}`, // tslint:disable-line:custom-no-magic-numbers
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
             from: callData.from || this._defaultFromAddress,
