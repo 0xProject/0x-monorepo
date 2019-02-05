@@ -65,7 +65,7 @@
     },
     "dependencies": {
         "@0x/base-contract": "^3.0.13",
-        "@0x/contracts-utils": "3.0.0",
+        "@0x/contracts-utils": "^1.0.6",
         "@0x/order-utils": "^3.1.2",
         "@0x/types": "^1.5.2",
         "@0x/typescript-typings": "^3.0.8",
