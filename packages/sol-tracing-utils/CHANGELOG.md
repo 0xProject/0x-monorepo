@@ -5,6 +5,21 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.0 - _February 5, 2019_
+
+    * `SolCompilerArtifactAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly (#1535)
+    * Cache the `utils.getContractDataIfExists` leading to faster execution (#1535)
+    * `SolCompilerArtifactAdapter` now doesn't return the `ContractData` for interfaces (#1535)
+    * Print resasonable error message on bytecode collision (#1535)
+    * Fix the bug in `ASTVisitor` causing the 'cannot read property `range` of `null`' error (#1557)
+    * Improve error messages when unable to find matching bytecode (#1558)
+    * Fix default gas limit for fake txs in `TraceCollectionSubprovider` (#1583)
+    * Fix a big when we were not intercepting `eth_sendRawTransaction` (#1584)
+
+## v5.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
 ## v4.0.1 - _January 17, 2019_
 
     * Fix a bug where a custom `Geth` tracer didn't return stack entries for `DELEGATECALL` (#1521)

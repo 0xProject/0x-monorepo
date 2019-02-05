@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _February 5, 2019_
+
+    * Fix a bug when some parts of the profiling report were missing because of the coverage ignore lines (#1535)
+
+## v2.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
 ## v1.0.3 - _January 17, 2019_
 
     * Dependencies updated

@@ -18,7 +18,8 @@
                 "note": "Convert `from` to lower case when passed in via cli",
                 "pr": 1533
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "version": "2.4.0",

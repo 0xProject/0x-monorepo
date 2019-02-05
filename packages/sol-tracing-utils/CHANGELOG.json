@@ -34,7 +34,8 @@
                 "note": "Fix a big when we were not intercepting `eth_sendRawTransaction`",
                 "pr": 1584
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "version": "5.0.0",

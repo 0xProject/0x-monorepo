@@ -6,7 +6,8 @@
                 "note": "Fix OrderValidatorWrapper constructor to use the correct address",
                 "pr": 1568
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "version": "6.0.0",

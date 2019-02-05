@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.1 - _February 5, 2019_
+
+    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
+
+## v6.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
 ## v5.0.1 - _January 17, 2019_
 
     * Dependencies updated

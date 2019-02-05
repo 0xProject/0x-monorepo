@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Add AssetProxyOwner contract (#1539)
+    * Rename multisig directory to src (#1539)
+
 ## v1.0.6 - _January 17, 2019_
 
     * Dependencies updated
