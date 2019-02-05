@@ -36,7 +36,8 @@ export class BoolDataType extends AbstractBlobDataType {
     public decodeValue(calldata: RawCalldata): boolean {
         const valueBuf = calldata.popWord();
         const valueHex = ethUtil.bufferToHex(valueBuf);
-        const valueNumber = new BigNumber(valueHex, constants.HEX_BASE);
+        // Hack @hysz: there are some cases where `false` is encoded as 0x instead of 0x0.
+        const valueNumber = valueHex === '0x' ? new BigNumber(0) : new BigNumber(valueHex, constants.HEX_BASE);
         if (!(valueNumber.isEqualTo(0) || valueNumber.isEqualTo(1))) {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }

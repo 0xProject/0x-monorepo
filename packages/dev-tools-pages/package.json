@@ -46,7 +46,7 @@
         "@types/node": "*",
         "@types/react": "^16.4.2",
         "@types/react-dom": "^16.0.7",
-        "@types/react-loadable": "^5.4.1",
+        "@types/react-loadable": "^5.4.2",
         "@types/react-lottie": "^1.2.0",
         "@types/react-router-dom": "^4.0.4",
         "@types/react-tabs": "^2.3.0",

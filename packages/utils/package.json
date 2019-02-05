@@ -49,14 +49,14 @@
         "@types/node": "*",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~8.0.2",
-        "chalk": "^2.4.1",
+        "chalk": "^2.3.0",
         "detect-node": "2.0.3",
         "ethereum-types": "^1.1.6",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
-        "isomorphic-fetch": "^2.2.1",
+        "isomorphic-fetch": "2.2.1",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.11"
     },
     "publishConfig": {
         "access": "public"

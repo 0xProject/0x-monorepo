@@ -38,7 +38,7 @@
         "@0x/web3-wrapper": "^3.2.4",
         "ethereum-types": "^1.1.6",
         "ethers": "~4.0.4",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.11"
     },
     "publishConfig": {
         "access": "public"

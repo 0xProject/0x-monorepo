@@ -40,7 +40,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "tslint": "5.11.0",
         "tslint-eslint-rules": "5.4.0",
         "tslint-react": "^3.2.0",
