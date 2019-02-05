@@ -45,9 +45,14 @@ export interface SignedOrder extends Order {
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */
 export interface ZeroExTransaction {
+    verifyingContractAddress: string;
     salt: BigNumber;
     signerAddress: string;
     data: string;
+}
+
+export interface SignedZeroExTransaction extends ZeroExTransaction {
+    signature: string;
 }
 
 /**
@@ -684,4 +689,10 @@ export interface DutchAuctionDetails {
     endAmount: BigNumber;
     currentAmount: BigNumber;
     currentTimeSeconds: BigNumber;
+}
+
+export interface EIP712DomainWithDefaultSchema {
+    name?: string;
+    version?: string;
+    verifyingContractAddress: string;
 }

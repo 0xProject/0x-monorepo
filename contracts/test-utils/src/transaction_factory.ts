@@ -1,10 +1,8 @@
-import { eip712Utils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { SignatureType } from '@0x/types';
-import { signTypedDataUtils } from '@0x/utils';
+import { generatePseudoRandomSalt, transactionHashUtils } from '@0x/order-utils';
+import { SignatureType, SignedZeroExTransaction } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 
 import { signingUtils } from './signing_utils';
-import { SignedTransaction } from './types';
 
 export class TransactionFactory {
     private readonly _signerBuff: Buffer;
@@ -15,23 +13,25 @@ export class TransactionFactory {
         this._exchangeAddress = exchangeAddress;
         this._signerBuff = ethUtil.privateToAddress(this._privateKey);
     }
-    public newSignedTransaction(data: string, signatureType: SignatureType = SignatureType.EthSign): SignedTransaction {
+    public newSignedTransaction(
+        data: string,
+        signatureType: SignatureType = SignatureType.EthSign,
+    ): SignedZeroExTransaction {
         const salt = generatePseudoRandomSalt();
         const signerAddress = `0x${this._signerBuff.toString('hex')}`;
-        const executeTransactionData = {
+        const transaction = {
             salt,
             signerAddress,
             data,
+            verifyingContractAddress: this._exchangeAddress,
         };
 
-        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, this._exchangeAddress);
-        const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
-        const signature = signingUtils.signMessage(eip712MessageBuffer, this._privateKey, signatureType);
-        const signedTx = {
-            exchangeAddress: this._exchangeAddress,
+        const transactionHashBuffer = transactionHashUtils.getTransactionHashBuffer(transaction);
+        const signature = signingUtils.signMessage(transactionHashBuffer, this._privateKey, signatureType);
+        const signedTransaction = {
+            ...transaction,
             signature: `0x${signature.toString('hex')}`,
-            ...executeTransactionData,
         };
-        return signedTx;
+        return signedTransaction;
     }
 }

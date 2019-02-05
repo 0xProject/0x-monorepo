@@ -68,9 +68,9 @@ export const constants = {
     SELECTOR_CHAR_LENGTH_WITH_PREFIX: 10,
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
     ZERO_AMOUNT: new BigNumber(0),
-    EIP712_DOMAIN_NAME: '0x Protocol',
-    EIP712_DOMAIN_VERSION: '2',
-    EIP712_DOMAIN_SCHEMA: {
+    EXCHANGE_DOMAIN_NAME: '0x Protocol',
+    EXCHANGE_DOMAIN_VERSION: '2',
+    DEFAULT_DOMAIN_SCHEMA: {
         name: 'EIP712Domain',
         parameters: [
             { name: 'name', type: 'string' },
@@ -78,7 +78,7 @@ export const constants = {
             { name: 'verifyingContract', type: 'address' },
         ],
     },
-    EIP712_ORDER_SCHEMA: {
+    EXCHANGE_ORDER_SCHEMA: {
         name: 'Order',
         parameters: [
             { name: 'makerAddress', type: 'address' },
@@ -95,7 +95,7 @@ export const constants = {
             { name: 'takerAssetData', type: 'bytes' },
         ],
     },
-    EIP712_ZEROEX_TRANSACTION_SCHEMA: {
+    EXCHANGE_ZEROEX_TRANSACTION_SCHEMA: {
         name: 'ZeroExTransaction',
         parameters: [
             { name: 'salt', type: 'uint256' },

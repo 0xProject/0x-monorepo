@@ -1,14 +1,7 @@
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
-import {
-    FillResults,
-    formatters,
-    LogDecoder,
-    OrderInfo,
-    orderUtils,
-    SignedTransaction,
-} from '@0x/contracts-test-utils';
-import { SignedOrder } from '@0x/types';
+import { FillResults, formatters, LogDecoder, OrderInfo, orderUtils } from '@0x/contracts-test-utils';
+import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -206,7 +199,7 @@ export class ExchangeWrapper {
         return tx;
     }
     public async executeTransactionAsync(
-        signedTx: SignedTransaction,
+        signedTx: SignedZeroExTransaction,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._exchange.executeTransaction.sendTransactionAsync(

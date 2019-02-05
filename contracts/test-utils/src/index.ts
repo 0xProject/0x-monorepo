@@ -31,7 +31,6 @@ export {
     MarketBuyOrders,
     MarketSellOrders,
     ERC721TokenIdsByOwner,
-    SignedTransaction,
     OrderStatus,
     AllowanceAmountScenario,
     AssetDataScenario,

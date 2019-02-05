@@ -3,6 +3,7 @@ export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
 export { marketUtils } from './market_utils';
+export { transactionHashUtils } from './transaction_hash';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderParsingUtils } from './parsing_utils';
@@ -18,7 +19,14 @@ export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 
-export { eip712Utils } from './eip712_utils';
+export {
+    eip712Utils,
+    DEFAULT_DOMAIN_SCHEMA,
+    EXCHANGE_DOMAIN_NAME,
+    EXCHANGE_DOMAIN_VERSION,
+    EXCHANGE_ORDER_SCHEMA,
+    EXCHANGE_ZEROEX_TRANSACTION_SCHEMA,
+} from './eip712_utils';
 
 export {
     Provider,
@@ -50,7 +58,9 @@ export {
     EIP712Types,
     EIP712Object,
     EIP712ObjectValue,
+    EIP712DomainWithDefaultSchema,
     ZeroExTransaction,
+    SignedZeroExTransaction,
 } from '@0x/types';
 export {
     OrderError,
