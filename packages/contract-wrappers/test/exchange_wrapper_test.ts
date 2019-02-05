@@ -353,7 +353,7 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#preSignAsync/isPreSignedAsync', () => {
-        it.only('should preSign the hash', async () => {
+        it('should preSign the hash', async () => {
             const senderAddress = takerAddress;
             const hash = orderHashUtils.getOrderHashHex(signedOrder);
             const signerAddress = signedOrder.makerAddress;
