@@ -489,6 +489,24 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
             expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
+        it('Null should decode as False', async () => {
+            // Hack @hysz: there are some cases where `false` is encoded as 0x instead of 0x0.
+            // Create DataType object
+            const testDataItem = { name: 'Boolean', type: 'bool' };
+            const dataType = new AbiEncoder.Bool(testDataItem);
+            // Construct args to be encoded
+            const args = false;
+            // Encode Args and validate result
+            const encodedArgs = '0x';
+            const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
+        });
     });
 
     describe('Integer', () => {
