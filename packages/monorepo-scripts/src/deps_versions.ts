@@ -3,7 +3,7 @@
 import chalk from 'chalk';
 import * as fs from 'fs';
 import { sync as globSync } from 'glob';
-import * as _ from 'lodash';
+import * as path from 'path';
 
 import { utils } from './utils/utils';
 
@@ -17,11 +17,32 @@ interface VersionsByDependency {
     [depName: string]: Versions;
 }
 
-const PACKAGE_JSON_GLOB = '../*/package.json';
+interface ParsedDependencies {
+    ignored: VersionsByDependency;
+    included: VersionsByDependency;
+}
 
-// tslint:disable:no-unused-variable
-function getDependencies(path: string): Dependencies {
-    const file = fs.readFileSync(path).toString();
+const PACKAGE_JSON_GLOB = '../../*/package.json';
+
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../package.json')).toString()).config;
+const dependenciesWithIgnoredVersions: string[] = config.ignoreDependencyVersions.split(' ');
+const packagesWithIgnoredVersions: string[] = config.ignoreDependencyVersionsForPackage.split(' ');
+
+if (require.main === module) {
+    const dependencies = parseDependencies();
+    const ignoredMultiples = getDependenciesWithMultipleVersions(dependencies.ignored);
+    const multiples = getDependenciesWithMultipleVersions(dependencies.included);
+    printVersionsByDependency(multiples);
+    utils.log(`├── ${chalk.bold('IGNORED')}`);
+    printVersionsByDependency(ignoredMultiples);
+    if (Object.keys(multiples).length !== 0) {
+        utils.log(`Add space-separated exceptions to root package.json config.ignoreDependencyVersions`);
+        process.exit(1);
+    }
+}
+
+function getDependencies(_path: string): Dependencies {
+    const file = fs.readFileSync(_path).toString();
     const parsed = JSON.parse(file);
     const dependencies = {
         ...parsed.dependencies,
@@ -30,27 +51,49 @@ function getDependencies(path: string): Dependencies {
     return dependencies;
 }
 
-const files = globSync(PACKAGE_JSON_GLOB);
-const versionsByDependency: VersionsByDependency = {};
-files.map(path => {
-    const [_1, packageName, _2] = path.split('/');
-    const dependencies = getDependencies(path);
-    _.map(dependencies, (version: string, depName: string) => {
-        if (_.isUndefined(versionsByDependency[depName])) {
-            versionsByDependency[depName] = {};
-        }
-        versionsByDependency[depName][packageName] = version;
-    });
-});
-
-_.map(versionsByDependency, (versions: Versions, depName: string) => {
-    if (_.uniq(_.values(versions)).length === 1) {
-        delete versionsByDependency[depName];
-    } else {
-        utils.log(chalk.bold(depName));
-        _.map(versions, (version: string, packageName: string) => {
-            utils.log(`├── ${packageName} -> ${version}`);
+function parseDependencies(): ParsedDependencies {
+    const files = globSync(path.join(__dirname, PACKAGE_JSON_GLOB));
+    const parsedDependencies: ParsedDependencies = {
+        ignored: {},
+        included: {},
+    };
+    files.map(_path => {
+        const pathParts = _path.split('/');
+        const packageName = pathParts[pathParts.length - 2];
+        const packageCategory = packagesWithIgnoredVersions.includes(packageName) ? 'ignored' : 'included';
+        const dependencies = getDependencies(_path);
+        Object.keys(dependencies).forEach((depName: string) => {
+            const category = dependenciesWithIgnoredVersions.includes(depName) ? 'ignored' : packageCategory;
+            if (parsedDependencies[category][depName] === undefined) {
+                parsedDependencies[category][depName] = {};
+            }
+            const version = dependencies[depName];
+            parsedDependencies[category][depName][packageName] = version;
         });
-    }
-});
-// tslint:disable:no-unused-variable
+    });
+    return parsedDependencies;
+}
+
+function getDependenciesWithMultipleVersions(versionsByDependency: VersionsByDependency): VersionsByDependency {
+    return Object.keys(versionsByDependency)
+        .filter((depName: string) => hasMultipleVersions(versionsByDependency[depName]))
+        .reduce<VersionsByDependency>((obj, depName: string) => {
+            obj[depName] = versionsByDependency[depName];
+            return obj;
+        }, {});
+}
+
+function printVersionsByDependency(versionsByDependency: VersionsByDependency): void {
+    Object.keys(versionsByDependency).forEach((depName: string) => {
+        const versions: Versions = versionsByDependency[depName];
+        utils.log(chalk.bold(depName));
+        Object.keys(versions).forEach((packageName: string) => {
+            utils.log(`├── ${packageName} -> ${versions[packageName]}`);
+        });
+    });
+}
+
+function hasMultipleVersions(versions: Versions): boolean {
+    const uniques = new Set(Object.values(versions));
+    return uniques.size > 1;
+}

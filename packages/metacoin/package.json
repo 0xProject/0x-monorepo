@@ -41,11 +41,11 @@
         "@0x/typescript-typings": "^3.0.8",
         "@0x/utils": "^3.0.1",
         "@0x/web3-wrapper": "^3.2.4",
-        "@types/mocha": "^5.2.2",
+        "@types/mocha": "^2.2.42",
         "copyfiles": "^2.0.0",
         "ethereum-types": "^1.1.6",
         "ethers": "~4.0.4",
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "run-s": "^0.0.0"
     },
     "devDependencies": {
