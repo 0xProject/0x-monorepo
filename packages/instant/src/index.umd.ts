@@ -18,8 +18,8 @@ import { Network, OrderSource } from './types';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
 import { providerFactory } from './util/provider_factory';
+import { signedOrderCoercionUtil } from './util/signed_order_coercion';
 import { util } from './util/util';
-import { coerceSignedOrderBigNumberOfString } from './util/signed_order_coercion'
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
 
@@ -94,12 +94,11 @@ export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
 }
 
 export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
-    validateInstantRenderConfig(config, selector);
-
-    // TODO(David Sun) test functionality of order bignumber version coercion
     if (!_.isString(config.orderSource)) {
-        config.orderSource = config.orderSource.map(coerceSignedOrderBigNumberOfString);
+        config.orderSource = config.orderSource.map(signedOrderCoercionUtil.bigNumberCoercion);
     }
+
+    validateInstantRenderConfig(config, selector);
 
     if (config.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {
