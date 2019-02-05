@@ -57,6 +57,7 @@
         "@0x/assert": "^2.0.0",
         "@0x/base-contract": "^4.0.0",
         "@0x/contract-artifacts": "^1.3.0",
+        "@0x/contract-addresses": "^2.2.1",
         "@0x/json-schemas": "^3.0.0",
         "@0x/types": "^2.0.0",
         "@0x/typescript-typings": "^4.0.0",

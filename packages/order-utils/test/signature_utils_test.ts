@@ -99,6 +99,17 @@ describe('Signature utils', () => {
             );
             expect(isValidSignatureLocal).to.be.true();
         });
+
+        it('should return false if entry not found in `preSigned` mapping', async () => {
+            const preSignedSignature = '0x06';
+            const isValidPreSignature = await signatureUtils.isValidSignatureAsync(
+                provider,
+                dataHex,
+                preSignedSignature,
+                address,
+            );
+            expect(isValidPreSignature).to.be.false();
+        });
     });
     describe('#isValidECSignature', () => {
         const signature = {
