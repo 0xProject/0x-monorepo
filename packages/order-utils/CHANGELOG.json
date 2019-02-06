@@ -14,7 +14,8 @@
                 "note": "Export constant EIP712 params",
                 "pr": 1576
             }
-        ]
+        ],
+        "timestamp": 1549452781
     },
     {
         "version": "4.0.0",
