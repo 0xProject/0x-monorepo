@@ -119,7 +119,12 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
         try {
             // First try an insert.
             await repository.insert(event);
-        } catch {
+        } catch (err) {
+            if (err.message.includes('duplicate key value violates unique constraint')) {
+                logUtils.log("Ignore the preceeding INSERT failure; it's not unexpected");
+            } else {
+                throw err;
+            }
             // If it fails, assume it was a primary key constraint error and try
             // doing an update instead.
             // Note(albrow): Unfortunately the `as any` hack here seems
