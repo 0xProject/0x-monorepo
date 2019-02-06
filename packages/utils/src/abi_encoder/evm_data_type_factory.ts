@@ -2,7 +2,7 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { generateDataItemsFromSignature } from './utils/signature_parser';
+import { generateDataItemFromSignature } from './utils/signature_parser';
 
 import { DataType } from './abstract_data_types/data_type';
 import { DataTypeFactory } from './abstract_data_types/interfaces';
@@ -135,7 +135,7 @@ export class EvmDataTypeFactory implements DataTypeFactory {
 /**
  * Convenience function for creating a DataType from different inputs.
  * @param input A single or set of DataItem or a DataType signature.
- * @return DataType corresponding to input. A single DataType is returned when input is a single data item.
+ * @return DataType corresponding to input.
  */
 export function create(input: DataItem | DataItem[] | string): DataType {
     const dataItem = consolidateDataItemsIntoSingle(input);
@@ -147,7 +147,7 @@ export function create(input: DataItem | DataItem[] | string): DataType {
  * Convenience function to produces an single of DataItem, given a single input or a set of inputs.
  * An array of data items is grouped into a single tuple.
  * @param input A single data item; a set of data items; a signature.
- * @return Array of data items corresponding to input.
+ * @return A single data item corresponding to input.
  */
 function consolidateDataItemsIntoSingle(input: DataItem | DataItem[] | string): DataItem {
     let dataItem: DataItem;
@@ -159,7 +159,7 @@ function consolidateDataItemsIntoSingle(input: DataItem | DataItem[] | string): 
             components: dataItems,
         };
     } else {
-        dataItem = typeof input === 'string' ? generateDataItemsFromSignature(input) : (input as DataItem);
+        dataItem = typeof input === 'string' ? generateDataItemFromSignature(input) : (input as DataItem);
     }
     return dataItem;
 }
@@ -204,13 +204,13 @@ function consolidateDataItemsIntoArray(input: DataItem | DataItem[] | string | s
     } else if (_.isArray(input) && typeof input[0] === 'string') {
         dataItems = [];
         _.each(input as string[], (signature: string) => {
-            const dataItem = generateDataItemsFromSignature(signature);
+            const dataItem = generateDataItemFromSignature(signature);
             dataItems.push(dataItem);
         });
     } else if (_.isArray(input)) {
         dataItems = input as DataItem[];
     } else if (typeof input === 'string') {
-        const dataItem = generateDataItemsFromSignature(input);
+        const dataItem = generateDataItemFromSignature(input);
         dataItems = [dataItem];
     } else {
         dataItems = [input as DataItem];

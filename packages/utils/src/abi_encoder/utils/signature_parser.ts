@@ -24,14 +24,14 @@ function parseNode(node: Node): DataItem {
 }
 
 /**
- * Returns an array of DataItem's corresponding to the input signature.
- * A signature can be in two forms: '<DataItem.type>' or '(<DataItem1.type>, <DataItem2.type>, ...)
+ * Returns a DataItem corresponding to the input signature.
+ * A signature can be in two forms: `type` or `(type_1, type_2, ..., type_n)`
  * An example of the first form would be 'address' or 'uint256[]' or 'bytes[5][]'
  * An example of the second form would be '(address, uint256)' or '(address, uint256)[]'
- * @param signature of input DataItem
- * @return DataItem derived from input signature
+ * @param signature of input DataItem.
+ * @return DataItem derived from input signature.
  */
-export function generateDataItemsFromSignature(signature: string): DataItem {
+export function generateDataItemFromSignature(signature: string): DataItem {
     // No data item corresponds to an empty signature
     if (_.isEmpty(signature)) {
         throw new Error(`Cannot parse data item from empty signature, ''`);
