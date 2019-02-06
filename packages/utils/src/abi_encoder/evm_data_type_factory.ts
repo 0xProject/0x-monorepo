@@ -135,31 +135,82 @@ export class EvmDataTypeFactory implements DataTypeFactory {
 /**
  * Convenience function for creating a DataType from different inputs.
  * @param input A single or set of DataItem or a DataType signature.
- *              A signature in the form of '<type>' is interpreted as a `DataItem`
- *              For example, 'string' is interpreted as {type: 'string'}
- *              A signature in the form '(<type1>, <type2>, ..., <typen>)' is interpreted as `DataItem[]`
- *              For eaxmple, '(string, uint256)' is interpreted as [{type: 'string'}, {type: 'uint256'}]
- * @return DataType corresponding to input.
+ * @return DataType corresponding to input. A single DataType is returned when input is a single data item. 
  */
 export function create(input: DataItem | DataItem[] | string): DataType {
-    // Handle different types of input
-    const isSignature = typeof input === 'string';
-    const isTupleSignature = isSignature && (input as string).startsWith('(');
-    const shouldParseAsTuple = isTupleSignature || _.isArray(input);
-    // Create input `dataItem`
+    const dataItem = consolidateDataItemsIntoSingle(input);
+    const dataType = EvmDataTypeFactory.getInstance().create(dataItem);
+    return dataType;
+}
+
+/**
+ * Convenience function to produces an single of DataItem, given a single input or a set of inputs.
+ * An array of data items is grouped into a single tuple.
+ * @param input A single data item; a set of data items; a signature.
+ * @return Array of data items corresponding to input.
+ */
+function consolidateDataItemsIntoSingle(input: DataItem | DataItem[] | string): DataItem {
     let dataItem: DataItem;
-    if (shouldParseAsTuple) {
-        const dataItems = isSignature ? generateDataItemsFromSignature(input as string) : (input as DataItem[]);
+    if (_.isArray(input)) {
+        const dataItems = (input as DataItem[]);
         dataItem = {
             name: '',
             type: 'tuple',
             components: dataItems,
         };
     } else {
-        dataItem = isSignature ? generateDataItemsFromSignature(input as string)[0] : (input as DataItem);
+        dataItem = typeof input === 'string' ? generateDataItemsFromSignature(input as string) : (input as DataItem);
     }
-    // Create data type
-    const dataType = EvmDataTypeFactory.getInstance().create(dataItem);
+    return dataItem;
+}
+
+/**
+ * Convenience function for creating a Method encoder from different inputs.
+ * @param methodName name of method.
+ * @param input A single data item; a set of data items; a signature; or an array of signatures (optional).
+ * @param output A single data item; a set of data items; a signature; or an array of signatures (optional).
+ * @return Method corresponding to input.
+ */
+export function createMethod(methodName: string, input?: DataItem | DataItem[] | string | string[], output?: DataItem | DataItem[] | string | string[]): Method {
+    const methodInput = _.isUndefined(input) ? [] : consolidateDataItemsIntoArray(input);
+    const methodOutput = _.isUndefined(output) ? [] : consolidateDataItemsIntoArray(output);
+    const methodAbi: MethodAbi = {
+        name: methodName,
+        inputs: methodInput,
+        outputs: methodOutput,
+        type: 'function',
+        // default fields not used by ABI
+        constant: false,
+        payable: false,
+        stateMutability: 'nonpayable',
+    }
+    const dataType = new Method(methodAbi);
     return dataType;
+}
+
+/**
+ * Convenience function to produces an array of DataItem's, given a single input or a set of inputs.
+ * @param input A single data item; a set of data items; a signature; or an array of signatures.
+ * @return Array of data items corresponding to input.
+ */
+function consolidateDataItemsIntoArray(input: DataItem | DataItem[] | string | string[]): DataItem[] {
+    let dataItems: DataItem[];
+    if (_.isArray(input) && _.isEmpty(input)) {
+        dataItems = [];
+    } else if (_.isArray(input) && typeof input[0] === 'string') {
+        dataItems = [];
+        _.each(input as string[], (signature: string) => {
+            const dataItem = generateDataItemsFromSignature(signature);
+            dataItems.push(dataItem);
+        });
+    } else if (_.isArray(input)) {
+        dataItems = input as DataItem[];
+    } else if(typeof input === 'string') {
+        const dataItem = generateDataItemsFromSignature(input as string);
+        dataItems = [dataItem];
+    } else {
+        dataItems = [input as DataItem];
+    }
+    return dataItems;
 }
 /* tslint:enable no-construct */
