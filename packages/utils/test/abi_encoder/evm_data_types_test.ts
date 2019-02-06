@@ -28,7 +28,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodedArgs = dataType.decode(encodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
-            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(false));
             const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
             expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });

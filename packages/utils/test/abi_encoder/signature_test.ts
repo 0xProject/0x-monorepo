@@ -7,7 +7,7 @@ import { chaiSetup } from '../utils/chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe.only('ABI Encoder: Signatures', () => {
+describe('ABI Encoder: Signatures', () => {
     describe('Single type', () => {
         it('Elementary', async () => {
             const signature = 'uint256';
