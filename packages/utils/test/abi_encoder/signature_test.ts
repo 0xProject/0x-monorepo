@@ -1,6 +1,5 @@
 import * as chai from 'chai';
 import 'mocha';
-import { DataItem } from 'ethereum-types';
 
 import { AbiEncoder } from '../../src';
 import { chaiSetup } from '../utils/chai_setup';
@@ -22,8 +21,8 @@ describe.only('ABI Encoder: Signatures', () => {
             const dataType = AbiEncoder.create(signature);
             const dataItem = dataType.getDataItem();
             const expectedDataItem = {
-                        name: '',
-                        type: 'string[]',
+                name: '',
+                type: 'string[]',
             };
             expect(dataItem).to.be.deep.equal(expectedDataItem);
             expect(dataType.getSignature()).to.be.equal(signature);
@@ -47,9 +46,9 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'uint256',
-                    }
-                ]
-            }
+                    },
+                ],
+            };
             expect(dataItem).to.be.deep.equal(expectedDataItem);
             expect(dataType.getSignature()).to.be.equal(signature);
         });
@@ -72,9 +71,9 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'bytes4',
-                    }
-                ]
-            }
+                    },
+                ],
+            };
             expect(dataItem).to.be.deep.equal(expectedDataItem);
             expect(dataType.getSignature()).to.be.equal(signature);
         });
@@ -97,8 +96,8 @@ describe.only('ABI Encoder: Signatures', () => {
                             {
                                 name: '',
                                 type: 'bytes',
-                            }
-                        ]
+                            },
+                        ],
                     },
                     {
                         name: '',
@@ -107,9 +106,9 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'bytes4',
-                    }
-                ]
-            }
+                    },
+                ],
+            };
             expect(dataItem).to.be.deep.equal(expectedDataItem);
             expect(dataType.getSignature()).to.be.equal(signature);
         });
@@ -132,8 +131,8 @@ describe.only('ABI Encoder: Signatures', () => {
                             {
                                 name: '',
                                 type: 'bytes',
-                            }
-                        ]
+                            },
+                        ],
                     },
                     {
                         name: '',
@@ -142,9 +141,9 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'bytes4',
-                    }
-                ]
-            }
+                    },
+                ],
+            };
             expect(dataItem).to.be.deep.equal(expectedDataItem);
             expect(dataType.getSignature()).to.be.equal(signature);
         });
@@ -166,7 +165,7 @@ describe.only('ABI Encoder: Signatures', () => {
                 name: 'foo',
                 type: 'tuple',
                 components: [],
-            }
+            };
             // check expected values
             expect(dataType.getSignature()).to.be.equal(expectedSignature);
             expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
@@ -187,7 +186,7 @@ describe.only('ABI Encoder: Signatures', () => {
                 name: 'foo',
                 type: 'tuple',
                 components: [],
-            }
+            };
             // check expected values
             expect(dataType.getSignature()).to.be.equal(expectedSignature);
             expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
@@ -216,7 +215,7 @@ describe.only('ABI Encoder: Signatures', () => {
                 name: 'foo',
                 type: 'tuple',
                 components: [outputDataItem],
-            }
+            };
             // check expected values
             expect(dataType.getSignature()).to.be.equal(expectedSignature);
             expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
@@ -237,8 +236,8 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'uint256',
-                    }
-                ]
+                    },
+                ],
             };
             const expectedOutputDataItem = {
                 name: 'foo',
@@ -247,9 +246,9 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'string',
-                    }
-                ]
-            }
+                    },
+                ],
+            };
             // check expected values
             expect(dataType.getSignature()).to.be.equal(expectedSignature);
             expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
@@ -278,10 +277,10 @@ describe.only('ABI Encoder: Signatures', () => {
                             {
                                 name: '',
                                 type: 'bytes[][4]',
-                            }
-                        ]
-                    }
-                ]
+                            },
+                        ],
+                    },
+                ],
             };
             const expectedOutputDataItem = {
                 name: 'foo',
@@ -298,20 +297,69 @@ describe.only('ABI Encoder: Signatures', () => {
                             {
                                 name: '',
                                 type: 'uint32',
-                            }
-                        ]
-                    }
-                ]
-            }
+                            },
+                        ],
+                    },
+                ],
+            };
             // check expected values
             expect(dataType.getSignature()).to.be.equal(expectedSignature);
             expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
             expect(dataType.getReturnValueDataItem()).to.be.deep.equal(expectedOutputDataItem);
         });
         it('Mutiple DataItem input and multiple DataItem output', async () => {
-                // create encoder
-                const functionName = 'foo';
-                const inputDataItems = [
+            // create encoder
+            const functionName = 'foo';
+            const inputDataItems = [
+                {
+                    name: '',
+                    type: 'uint256',
+                },
+                {
+                    name: '',
+                    type: 'bytes[][4]',
+                },
+            ];
+            const outputDataItems = [
+                {
+                    name: '',
+                    type: 'string',
+                },
+                {
+                    name: '',
+                    type: 'uint32',
+                },
+            ];
+            const dataType = AbiEncoder.createMethod(functionName, inputDataItems, outputDataItems);
+            // create expected values
+            const expectedSignature = 'foo(uint256,bytes[][4])';
+            const expectedInputDataItem = {
+                name: 'foo',
+                type: 'method',
+                components: inputDataItems,
+            };
+            const expectedOutputDataItem = {
+                name: 'foo',
+                type: 'tuple',
+                components: outputDataItems,
+            };
+            // check expected values
+            expect(dataType.getSignature()).to.be.equal(expectedSignature);
+            expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
+            expect(dataType.getReturnValueDataItem()).to.be.deep.equal(expectedOutputDataItem);
+        });
+        it('Multiple signature input and multiple signature output', async () => {
+            // create encoder
+            const functionName = 'foo';
+            const inputSignatures = ['uint256', 'bytes[][4]'];
+            const outputSignatures = ['string', 'uint32'];
+            const dataType = AbiEncoder.createMethod(functionName, inputSignatures, outputSignatures);
+            // create expected values
+            const expectedSignature = 'foo(uint256,bytes[][4])';
+            const expectedInputDataItem = {
+                name: 'foo',
+                type: 'method',
+                components: [
                     {
                         name: '',
                         type: 'uint256',
@@ -319,9 +367,13 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'bytes[][4]',
-                    }
-                ];
-                const outputDataItems = [
+                    },
+                ],
+            };
+            const expectedOutputDataItem = {
+                name: 'foo',
+                type: 'tuple',
+                components: [
                     {
                         name: '',
                         type: 'string',
@@ -329,67 +381,13 @@ describe.only('ABI Encoder: Signatures', () => {
                     {
                         name: '',
                         type: 'uint32',
-                    }
-                ];
-                const outputSignature = 'string';
-                const dataType = AbiEncoder.createMethod(functionName, inputDataItems, outputDataItems);
-                // create expected values
-                const expectedSignature = 'foo(uint256,bytes[][4])';
-                const expectedInputDataItem = {
-                    name: 'foo',
-                    type: 'method',
-                    components: inputDataItems,
-                };
-                const expectedOutputDataItem = {
-                    name: 'foo',
-                    type: 'tuple',
-                    components: outputDataItems,
-                }
-                // check expected values
-                expect(dataType.getSignature()).to.be.equal(expectedSignature);
-                expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
-                expect(dataType.getReturnValueDataItem()).to.be.deep.equal(expectedOutputDataItem);
-        });
-        it('Multiple signature input and multiple signature output', async () => {
-                // create encoder
-                const functionName = 'foo';
-                const inputSignatures = ['uint256','bytes[][4]'];
-                const outputSignatures = ['string','uint32'];
-                const dataType = AbiEncoder.createMethod(functionName, inputSignatures, outputSignatures);
-                // create expected values
-                const expectedSignature = 'foo(uint256,bytes[][4])';
-                const expectedInputDataItem = {
-                    name: 'foo',
-                    type: 'method',
-                    components: [
-                                {
-                                    name: '',
-                                    type: 'uint256',
-                                },
-                                {
-                                    name: '',
-                                    type: 'bytes[][4]',
-                                }
-                            ],
-                };
-                const expectedOutputDataItem = {
-                    name: 'foo',
-                    type: 'tuple',
-                    components: [
-                                {
-                                    name: '',
-                                    type: 'string',
-                                },
-                                {
-                                    name: '',
-                                    type: 'uint32',
-                                }
-                            ],
-                };
-                // check expected values
-                expect(dataType.getSignature()).to.be.equal(expectedSignature);
-                expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
-                expect(dataType.getReturnValueDataItem()).to.be.deep.equal(expectedOutputDataItem);
+                    },
+                ],
+            };
+            // check expected values
+            expect(dataType.getSignature()).to.be.equal(expectedSignature);
+            expect(dataType.getDataItem()).to.be.deep.equal(expectedInputDataItem);
+            expect(dataType.getReturnValueDataItem()).to.be.deep.equal(expectedOutputDataItem);
         });
     });
 });
