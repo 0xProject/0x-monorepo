@@ -15,7 +15,7 @@ export class ExchangeCancelUpToEvent {
     @Column({ name: 'raw_data' })
     public rawData!: string;
 
-    @Column({ name: 'transaction_hash' })
+    @PrimaryColumn({ name: 'transaction_hash' })
     public transactionHash!: string;
     @Column({ name: 'maker_address' })
     public makerAddress!: string;

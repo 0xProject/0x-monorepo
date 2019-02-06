@@ -132,6 +132,7 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
                     contractAddress: event.contractAddress,
                     blockNumber: event.blockNumber,
                     logIndex: event.logIndex,
+                    transactionHash: event.transactionHash,
                 } as any,
                 event as any,
             );
