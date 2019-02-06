@@ -51,7 +51,7 @@ export class IntDataType extends AbstractBlobDataType {
     public decodeValue(calldata: RawCalldata): BigNumber | number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, this._minValue, this._maxValue);
-        if (this._width === constants.NUMBER_OF_BYTES_IN_UINT8) {
+        if (this._width === constants.NUMBER_OF_BYTES_IN_INT8) {
             return value.toNumber();
         }
         return value;
@@ -59,7 +59,7 @@ export class IntDataType extends AbstractBlobDataType {
 
     public getDefaultValue(): BigNumber | number {
         const defaultValue = IntDataType._DEFAULT_VALUE;
-        if (this._width === constants.NUMBER_OF_BYTES_IN_UINT8) {
+        if (this._width === constants.NUMBER_OF_BYTES_IN_INT8) {
             return defaultValue.toNumber();
         }
         return defaultValue;

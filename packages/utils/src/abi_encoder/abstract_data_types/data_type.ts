@@ -47,7 +47,8 @@ export abstract class DataType {
         const hasSelector = !_.isUndefined(selector);
         const rawCalldata = new RawCalldata(calldata, hasSelector);
         const rules_ = _.isUndefined(rules) ? constants.DEFAULT_DECODING_RULES : rules;
-        const value = rawCalldata.getSizeInBytes() > 0 ? this.generateValue(rawCalldata, rules_) : this.getDefaultValue(rules_);
+        const value =
+            rawCalldata.getSizeInBytes() > 0 ? this.generateValue(rawCalldata, rules_) : this.getDefaultValue(rules_);
         return value;
     }
 
