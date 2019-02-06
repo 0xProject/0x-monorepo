@@ -11,6 +11,7 @@ const expect = chai.expect;
 
 describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
     const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
+    const nullEncodedArgs = '0x';
     describe('Array', () => {
         it('Fixed size; Static elements', async () => {
             // Create DataType object
@@ -206,6 +207,51 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(() => {
                 dataType.encode(args, encodingRules);
             }).to.throw('Tried to assign NaN value');
+        });
+        it('Should decode NULL to default values (Fixed size; Static elements)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'int[2]' };
+            const dataType = new AbiEncoder.Array(testDataItem);
+            const args = [new BigNumber(0), new BigNumber(0)];
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default values (Dynamic size; Static elements)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'int[]' };
+            const dataType = new AbiEncoder.Array(testDataItem);
+            const args: BigNumber[] = [];
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default values (Fixed size; Dynamic elements)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'string[2]' };
+            const dataType = new AbiEncoder.Array(testDataItem);
+            const args = ['', ''];
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default values (Dynamic size; Dynamic elements)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'string[]' };
+            const dataType = new AbiEncoder.Array(testDataItem);
+            const args: string[] = [];
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default values (Dynamic Size; Multidimensional; Dynamic Elements)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'bytes[][]' };
+            const dataType = new AbiEncoder.Array(testDataItem);
+            const args: string[][] = [];
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
     });
 
@@ -407,6 +453,46 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 dataType.encode(args, encodingRules);
             }).to.throw('Could not assign tuple to object: missing key \'field_2\' in object {"field_1":"-5"}');
         });
+        it('Should decode NULL to default values (static elements only)', async () => {
+            // Create DataType object
+            const testDataItem = {
+                name: 'Tuple',
+                type: 'tuple',
+                components: [{ name: 'field_1', type: 'int32' }, { name: 'field_2', type: 'bool' }],
+            };
+            const dataType = new AbiEncoder.Tuple(testDataItem);
+            // Construct args to be encoded
+            const args = { field_1: new BigNumber(0), field_2: false };
+            // Decode Encoded Args and validate result
+            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodedArgs = dataType.decode(nullEncodedArgs, decodingRules);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default values (static and dynamic elements)', async () => {
+            // Create DataType object
+            const testDataItem = {
+                name: 'Tuple',
+                type: 'tuple',
+                components: [
+                    { name: 'field_1', type: 'int32' },
+                    { name: 'field_2', type: 'string' },
+                    { name: 'field_3', type: 'bool' },
+                    { name: 'field_4', type: 'bytes' },
+                ],
+            };
+            const dataType = new AbiEncoder.Tuple(testDataItem);
+            // Construct args to be encoded
+            const args = {
+                field_1: new BigNumber(0),
+                field_2: '',
+                field_3: false,
+                field_4: '0x',
+            };
+            // Decode Encoded Args and validate result
+            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodedArgs = dataType.decode(nullEncodedArgs, decodingRules);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
     });
 
     describe('Address', () => {
@@ -450,6 +536,15 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 dataType.encode(args, encodingRules);
             }).to.throw(`Invalid address: '${args}'`);
         });
+        it('Should decode NULL to default value of address zero', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Address', type: 'address' };
+            const dataType = new AbiEncoder.Address(testDataItem);
+            const args = '0x0000000000000000000000000000000000000000';
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
     });
 
     describe('Bool', () => {
@@ -489,23 +584,14 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
             expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
-        it('Null should decode as False', async () => {
-            // Hack @hysz: there are some cases where `false` is encoded as 0x instead of 0x0.
+        it('Should decode NULL to default value of False', async () => {
             // Create DataType object
             const testDataItem = { name: 'Boolean', type: 'bool' };
             const dataType = new AbiEncoder.Bool(testDataItem);
-            // Construct args to be encoded
             const args = false;
-            // Encode Args and validate result
-            const encodedArgs = '0x';
-            const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000000';
             // Decode Encoded Args and validate result
-            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgs = dataType.decode(nullEncodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
-            // Validate signature
-            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
-            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
-            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
         });
     });
 
@@ -705,6 +791,15 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 dataType.encode(args, encodingRules);
             }).to.throw();
         });
+        it('Should decode NULL to default value of 0', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            const args = new BigNumber(0);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
     });
 
     describe('Unsigned Integer', () => {
@@ -866,6 +961,15 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(() => {
                 dataType.encode(args, encodingRules);
             }).to.throw();
+        });
+        it('Should decode NULL to default value of 0', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Unsigned Integer (256)', type: 'uint' };
+            const dataType = new AbiEncoder.UInt(testDataItem);
+            const args = new BigNumber(0);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
     });
 
@@ -1030,6 +1134,33 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 dataType.encode(args, encodingRules);
             }).to.throw('Tried to assign 0x010, which is contains a half-byte. Use full bytes only.');
         });
+        it('Should decode NULL to default value - Single Byte (byte)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Byte', type: 'byte' };
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
+            const args = '0x00';
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default value - 4 Bytes (bytes4)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
+            const args = '0x00000000';
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
+        it('Should decode NULL to default value - 32 Bytes (bytes32)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
+            const args = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
     });
 
     describe('Dynamic Bytes', () => {
@@ -1117,6 +1248,15 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 dataType.encode(args, encodingRules);
             }).to.throw('Tried to assign 0x010, which is contains a half-byte. Use full bytes only.');
         });
+        it('Should decode NULL to empty byte array', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
+            const dataType = new AbiEncoder.DynamicBytes(testDataItem);
+            const args = '0x';
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+        });
     });
 
     describe('String', () => {
@@ -1181,6 +1321,15 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
             const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
             expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
+        });
+        it('Should decode NULL to empty string', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'String', type: 'string' };
+            const dataType = new AbiEncoder.String(testDataItem);
+            // Decode Encoded Args and validate result
+            const args = '';
+            const decodedArgs = dataType.decode(nullEncodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
     });
 });
