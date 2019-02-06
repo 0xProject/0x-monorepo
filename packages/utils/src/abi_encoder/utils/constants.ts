@@ -14,4 +14,8 @@ export const constants = {
     DEFAULT_DECODING_RULES: { shouldConvertStructsToObjects: true } as DecodingRules,
     DEFAULT_ENCODING_RULES: { shouldOptimize: true, shouldAnnotate: false } as EncodingRules,
     /* tslint:enable no-object-literal-type-assertion */
-};
+    EMPTY_EVM_WORD_STRING: '0x0000000000000000000000000000000000000000000000000000000000000000',
+    EMPTY_EVM_WORD_BUFFER: new Buffer('0x0000000000000000000000000000000000000000000000000000000000000000'),
+    NUMBER_OF_BYTES_IN_UINT8: 8,
+    NUMBER_OF_BYTES_IN_INT8: 8,
+}
