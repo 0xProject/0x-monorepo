@@ -97,6 +97,27 @@ export abstract class AbstractSetDataType extends DataType {
         return isStatic;
     }
 
+    public getDefaultValue(rules?: DecodingRules): any[] | object {
+        let defaultValue: any[] | object;
+        if (this._isArray && _.isUndefined(this._arrayLength)) {
+            defaultValue = [];
+        } else if (!_.isUndefined(rules) && rules.shouldConvertStructsToObjects && !this._isArray) {
+            defaultValue = {};
+            _.each(this._memberIndexByName, (idx: number, key: string) => {
+                const member = this._members[idx];
+                const memberValue = member.getDefaultValue();
+                (defaultValue as { [key: string]: any })[key] = memberValue;
+            });
+        } else {
+            defaultValue = [];
+            _.each(this._members, (member: DataType, idx: number) => {
+                const memberValue = member.getDefaultValue();
+                (defaultValue as any[]).push(memberValue);
+            });
+        }
+        return defaultValue;
+    }
+
     protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): SetCalldataBlock {
         // Sanity check: if the set has a defined length then `value` must have the same length.
         if (!_.isUndefined(this._arrayLength) && value.length !== this._arrayLength) {

@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "ABI Decode NULL for all data types",
+                "pr": 1587
+            }
+        ]
+    },
+    {
         "version": "4.0.1",
         "changes": [
             {

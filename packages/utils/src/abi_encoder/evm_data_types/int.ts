@@ -15,6 +15,7 @@ export class IntDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _MAX_WIDTH: number = 256;
     private static readonly _DEFAULT_WIDTH: number = IntDataType._MAX_WIDTH;
+    private static readonly _DEFAULT_VALUE = new BigNumber(0);
     private readonly _width: number;
     private readonly _minValue: BigNumber;
     private readonly _maxValue: BigNumber;
@@ -50,11 +51,18 @@ export class IntDataType extends AbstractBlobDataType {
     public decodeValue(calldata: RawCalldata): BigNumber | number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, this._minValue, this._maxValue);
-        const numberOfBytesInUint8 = 8;
-        if (this._width === numberOfBytesInUint8) {
+        if (this._width === constants.NUMBER_OF_BYTES_IN_INT8) {
             return value.toNumber();
         }
         return value;
+    }
+
+    public getDefaultValue(): BigNumber | number {
+        const defaultValue = IntDataType._DEFAULT_VALUE;
+        if (this._width === constants.NUMBER_OF_BYTES_IN_INT8) {
+            return defaultValue.toNumber();
+        }
+        return defaultValue;
     }
 
     public getSignatureType(): string {

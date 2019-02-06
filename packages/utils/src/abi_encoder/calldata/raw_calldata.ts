@@ -79,4 +79,9 @@ export class RawCalldata {
     public getSelector(): string {
         return this._selector;
     }
+
+    public getSizeInBytes(): number {
+        const sizeInBytes = this._value.byteLength;
+        return sizeInBytes;
+    }
 }

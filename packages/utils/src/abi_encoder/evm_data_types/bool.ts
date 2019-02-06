@@ -10,6 +10,7 @@ import { constants } from '../utils/constants';
 
 export class BoolDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    private static readonly _DEFAULT_VALUE: boolean = false;
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Bool;
@@ -45,6 +46,10 @@ export class BoolDataType extends AbstractBlobDataType {
         const value: boolean = !valueNumber.isEqualTo(0);
         /* tslint:enable boolean-naming */
         return value;
+    }
+
+    public getDefaultValue(): boolean {
+        return BoolDataType._DEFAULT_VALUE;
     }
 
     public getSignatureType(): string {
