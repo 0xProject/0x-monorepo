@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Cleaner signature parsing",
+                "pr": 1592
+            }
+        ]
+    },
+    {
         "version": "4.0.3",
         "changes": [
             {
