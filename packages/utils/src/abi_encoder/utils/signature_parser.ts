@@ -2,6 +2,7 @@ import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
 interface Node {
+    name: string;
     value: string;
     children: Node[];
     parent?: Node;
@@ -14,7 +15,7 @@ function parseNode(node: Node): DataItem {
         components.push(component);
     });
     const dataItem: DataItem = {
-        name: '',
+        name: node.name,
         type: node.value,
     };
     if (!_.isEmpty(components)) {
@@ -25,9 +26,9 @@ function parseNode(node: Node): DataItem {
 
 /**
  * Returns a DataItem corresponding to the input signature.
- * A signature can be in two forms: `type` or `(type_1, type_2, ..., type_n)`
+ * A signature can be in two forms: `type` or `(type_1,type_2,...,type_n)`
  * An example of the first form would be 'address' or 'uint256[]' or 'bytes[5][]'
- * An example of the second form would be '(address, uint256)' or '(address, uint256)[]'
+ * An example of the second form would be '(address,uint256)' or '(address,uint256)[]'
  * @param signature of input DataItem.
  * @return DataItem derived from input signature.
  */
@@ -38,6 +39,7 @@ export function generateDataItemFromSignature(signature: string): DataItem {
     }
     // Create a parse tree for data item
     let node: Node = {
+        name: '',
         value: '',
         children: [],
     };
@@ -45,6 +47,7 @@ export function generateDataItemFromSignature(signature: string): DataItem {
         switch (char) {
             case '(':
                 const child = {
+                    name: '',
                     value: '',
                     children: [],
                     parent: node,
@@ -60,6 +63,7 @@ export function generateDataItemFromSignature(signature: string): DataItem {
 
             case ',':
                 const sibling = {
+                    name: '',
                     value: '',
                     children: [],
                     parent: node.parent,
@@ -69,7 +73,8 @@ export function generateDataItemFromSignature(signature: string): DataItem {
                 break;
 
             case ' ':
-                // ignore spaces
+                node.name = node.value;
+                node.value = '';
                 break;
 
             default:
