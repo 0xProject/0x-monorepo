@@ -16,7 +16,7 @@ function parseNode(node: Node): DataItem {
     const dataItem: DataItem = {
         name: '',
         type: node.value,
-    }
+    };
     if (!_.isEmpty(components)) {
         dataItem.components = components;
     }
@@ -40,7 +40,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem {
     let node: Node = {
         value: '',
         children: [],
-    }
+    };
     for (const char of signature) {
         switch (char) {
             case '(':
@@ -67,7 +67,7 @@ export function generateDataItemsFromSignature(signature: string): DataItem {
                 (node.parent as Node).children.push(sibling);
                 node = sibling;
                 break;
-            
+
             case ' ':
                 // ignore spaces
                 break;
