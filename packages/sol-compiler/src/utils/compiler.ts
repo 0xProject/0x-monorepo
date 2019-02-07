@@ -251,7 +251,7 @@ export function getSourcesWithDependencies(
     contractPath: string,
     fullSources: { [sourceName: string]: { id: number } },
 ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
-    const sources = { [contractPath]: { id: fullSources[contractPath].id } };
+    const sources = { [contractPath]: fullSources[contractPath] };
     const sourceCodes = { [contractPath]: resolver.resolve(contractPath).source };
     recursivelyGatherDependencySources(
         resolver,

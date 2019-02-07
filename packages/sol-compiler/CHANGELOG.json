@@ -13,6 +13,10 @@
             {
                 "note": "Remove `bin_paths` and fetch the list of soliidty compilers from github",
                 "pr": "TODO"
+            },
+            {
+                "note": "Fix a bug when ast and legacyAST were not present in the artifacts even if requested",
+                "pr": "TODO"
             }
         ]
     },
