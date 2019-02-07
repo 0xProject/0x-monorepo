@@ -31,6 +31,6 @@ export function _parseNonFungibleDotComTrade(rawTrade: NonfungibleDotComTrade): 
     nftTrade.sellerAddress = rawTrade.seller;
     nftTrade.totalPrice = new BigNumber(rawTrade.totalPrice);
     nftTrade.transactionHash = rawTrade.transactionHash;
-    nftTrade.usdPrice = new BigNumber(rawTrade.usdPrice);
+    nftTrade.usdPrice = rawTrade.usdPrice;
     return nftTrade;
 }

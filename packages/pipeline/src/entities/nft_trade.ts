@@ -24,8 +24,8 @@ export class NftTrade {
     public marketAddress!: string;
     @Column({ name: 'total_price', type: 'numeric', transformer: bigNumberTransformer })
     public totalPrice!: BigNumber;
-    @Column({ name: 'usd_price', type: 'numeric', transformer: bigNumberTransformer })
-    public usdPrice!: BigNumber;
+    @Column({ name: 'usd_price' })
+    public usdPrice!: number;
     @Column({ name: 'buyer_address' })
     public buyerAddress!: string;
     @Column({ name: 'seller_address' })

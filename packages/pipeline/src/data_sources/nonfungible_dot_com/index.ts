@@ -3,7 +3,7 @@ import axios from 'axios';
 // URL to use for getting nft trades from nonfungible.com.
 export const NONFUNGIBLE_DOT_COM_URL = 'https://nonfungible.com/api/v1';
 // Number of trades to get at once. This is a hard limit enforced by the API.
-const MAX_TRADES_PER_QUERY = 198;
+const MAX_TRADES_PER_QUERY = 100;
 
 // Note(albrow): For now this will have to be manually updated by checking
 // https://nonfungible.com/
@@ -18,11 +18,11 @@ export const knownPublishers = [
     'etheremon',
     'ethtown',
     'knownorigin',
+    'mythereum',
+    'superrare',
 ];
 
 export interface NonfungibleDotComHistoryResponse {
-    recordsTotal: number;
-    recordsFiltered: number;
     data: NonfungibleDotComTrade[];
 }
 
@@ -34,13 +34,21 @@ export interface NonfungibleDotComTrade {
     blockTimestamp: string;
     assetId: string;
     assetDescriptor: string;
+    nftAddress: string;
     marketAddress: string;
+    tokenTicker: string;
     totalDecimalPrice: number;
     totalPrice: string;
     usdPrice: number;
+    currencyTransfer: object;
     buyer: string;
     seller: string;
     meta: object;
+    image: string;
+    composedOf: string;
+    asset_link: string;
+    seller_address_link: string;
+    buyer_address_link: string;
 }
 
 /**

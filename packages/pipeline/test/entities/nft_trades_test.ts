@@ -35,7 +35,7 @@ const baseTrade: NftTrade = {
     sellerAddress: '0xba52c75764d6f594735dc735be7f1830cdf58ddf',
     totalPrice: new BigNumber('9751388888888889'),
     transactionHash: '0x468168419be7e442d5ff32d264fab24087b744bc2e37fdbac7024e1e74f4c6c8',
-    usdPrice: new BigNumber('3.71957'),
+    usdPrice: 3.71957,
 };
 
 // tslint:disable:custom-no-magic-numbers

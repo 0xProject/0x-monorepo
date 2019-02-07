@@ -19,7 +19,9 @@ const input: NonfungibleDotComTrade = {
     blockTimestamp: '2017-11-23T18:50:19.000Z',
     buyer: '0x316c55d1895a085c4b39a98ecb563f509301aaf7',
     logIndex: 28,
+    nftAddress: '0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C',
     marketAddress: '0xb1690C08E213a35Ed9bAb7B318DE14420FB57d8C',
+    tokenTicker: 'eth',
     meta: {
         cattribute_body: 'munchkin',
         cattribute_coloreyes: 'mintgreen',
@@ -38,6 +40,12 @@ const input: NonfungibleDotComTrade = {
     totalPrice: '9751388888888889',
     transactionHash: '0x468168419be7e442d5ff32d264fab24087b744bc2e37fdbac7024e1e74f4c6c8',
     usdPrice: 3.71957,
+    currencyTransfer: {},
+    image: '',
+    composedOf: '',
+    asset_link: '',
+    seller_address_link: '',
+    buyer_address_link: '',
 };
 
 const expected: NftTrade = {
@@ -65,7 +73,7 @@ const expected: NftTrade = {
     sellerAddress: '0xba52c75764d6f594735dc735be7f1830cdf58ddf',
     totalPrice: new BigNumber('9751388888888889'),
     transactionHash: '0x468168419be7e442d5ff32d264fab24087b744bc2e37fdbac7024e1e74f4c6c8',
-    usdPrice: new BigNumber('3.71957'),
+    usdPrice: 3.71957,
 };
 
 describe('bloxy', () => {
