@@ -15,7 +15,7 @@ export class ERC20ApprovalEvent {
     @Column({ name: 'raw_data' })
     public rawData!: string;
 
-    @Column({ name: 'transaction_hash' })
+    @PrimaryColumn({ name: 'transaction_hash' })
     public transactionHash!: string;
     @Column({ name: 'owner_address' })
     public ownerAddress!: string;
