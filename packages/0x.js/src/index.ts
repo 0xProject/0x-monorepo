@@ -68,7 +68,7 @@ export {
     MetamaskSubprovider,
 } from '@0x/subproviders';
 
-export { AbiDecoder } from '@0x/utils';
+export { AbiDecoder, TransactionData } from '@0x/utils';
 
 export { BigNumber } from '@0x/utils';
 
