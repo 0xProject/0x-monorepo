@@ -8,15 +8,15 @@
             },
             {
                 "note": "Fix a bug when opts could not be undefined",
-                "pr": "TODO"
+                "pr": 1596
             },
             {
                 "note": "Remove `bin_paths` and fetch the list of soliidty compilers from github",
-                "pr": "TODO"
+                "pr": 1596
             },
             {
                 "note": "Fix a bug when ast and legacyAST were not present in the artifacts even if requested",
-                "pr": "TODO"
+                "pr": 1596
             }
         ]
     },
