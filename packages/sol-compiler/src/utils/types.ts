@@ -13,6 +13,10 @@ export interface ContractSourceData {
     [contractName: string]: ContractSpecificSourceData;
 }
 
+export interface BinaryPaths {
+    [key: string]: string;
+}
+
 export interface ContractSpecificSourceData {
     solcVersionRange: string;
     sourceHash: Buffer;

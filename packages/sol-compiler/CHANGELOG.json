@@ -5,6 +5,18 @@
             {
                 "note": "Fix a bug when smart recompilation wasn't working because of remappings",
                 "pr": 1575
+            },
+            {
+                "note": "Fix a bug that made `opts` required instead of optional",
+                "pr": 1596
+            },
+            {
+                "note": "Remove `bin_paths` and fetch the list of Solidity compilers from Github",
+                "pr": 1596
+            },
+            {
+                "note": "Fix a bug causing `ast` and `legacyAST` to not be added to the artifacts even when requested",
+                "pr": 1596
             }
         ]
     },
