@@ -17,18 +17,3 @@ export interface TransactionData {
     functionSignature: string;
     functionArguments: any;
 }
-
-export interface TransactionProperties {
-    contractName?: string;
-    contractAddress?: string;
-    networkId?: number;
-}
-
-export interface DeployedContractInfo {
-    contractAddress: string;
-    networkId: number;
-}
-
-export interface DeployedContractInfoByName {
-    [index: string]: DeployedContractInfo[];
-}

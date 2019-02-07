@@ -2,22 +2,22 @@ import * as chai from 'chai';
 import { MethodAbi } from 'ethereum-types';
 import 'mocha';
 
-import { AbiEncoder, TransactionDecoder } from '../src';
+import { AbiEncoder, AbiDecoder } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe('TransactionDecoder', () => {
-    it('should successfully add a new ABI and decode tx data for it', async () => {
+describe('AbiDecoder', () => {
+    it('should successfully add a new ABI and decode calldata for it', async () => {
         // Add new ABI
         const abi: MethodAbi = {
             name: 'foobar',
             type: 'function',
             inputs: [
                 {
-                    name: 'addr',
+                    name: 'testAddress',
                     type: 'address',
                 },
             ],
@@ -32,31 +32,19 @@ describe('TransactionDecoder', () => {
             stateMutability: 'pure',
         };
         const contractName = 'newContract';
-        const contractAddress = '0x0001020304050607080900010203040506070809';
-        const networkId = 1;
-        const contractInfo = [
-            {
-                contractAddress,
-                networkId,
-            },
-        ];
-        const transactionDecoder = new TransactionDecoder();
-        transactionDecoder.addABI([abi], contractName, contractInfo);
+        const testAddress = '0x0001020304050607080900010203040506070809';
+        const abiDecoder = new AbiDecoder([]);
+        abiDecoder.addABI([abi], contractName);
         // Create some tx data
         const foobarEncoder = new AbiEncoder.Method(abi);
         const foobarSignature = foobarEncoder.getSignature();
-        const foobarTxData = foobarEncoder.encode([contractAddress]);
+        const foobarTxData = foobarEncoder.encode([testAddress]);
         // Decode tx data using contract name
-        const decodedTxData = transactionDecoder.decode(foobarTxData, { contractName });
+        const decodedTxData = abiDecoder.tryDecodeCalldata(foobarTxData, contractName);
         const expectedFunctionName = abi.name;
-        const expectedFunctionArguments = {
-            addr: contractAddress,
-        };
+        const expectedFunctionArguments = {testAddress};
         expect(decodedTxData.functionName).to.be.equal(expectedFunctionName);
         expect(decodedTxData.functionSignature).to.be.equal(foobarSignature);
         expect(decodedTxData.functionArguments).to.be.deep.equal(expectedFunctionArguments);
-        // Decode tx data using contract address
-        const decodedTxDataDecodedWithAddress = transactionDecoder.decode(foobarTxData, { contractAddress });
-        expect(decodedTxDataDecodedWithAddress).to.be.deep.equal(decodedTxData);
     });
 });

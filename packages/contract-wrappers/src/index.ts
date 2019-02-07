@@ -37,7 +37,6 @@ export { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapp
 export { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
-export { ZeroExTransactionDecoder } from './utils/zeroex_transaction_decoder';
 
 export {
     ContractWrappersError,
@@ -71,12 +70,6 @@ export {
     SignedOrder,
     AssetProxyId,
 } from '@0x/types';
-
-export {
-    DeployedContractInfo,
-    TransactionData,
-    TransactionProperties
-} from '@0x/utils'; 
 
 export {
     BlockParamLiteral,

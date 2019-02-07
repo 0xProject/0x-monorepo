@@ -12,4 +12,3 @@ export { fetchAsync } from './fetch_async';
 export { signTypedDataUtils } from './sign_typed_data_utils';
 export import AbiEncoder = require('./abi_encoder');
 export * from './types';
-export { TransactionDecoder } from './transaction_decoder';
