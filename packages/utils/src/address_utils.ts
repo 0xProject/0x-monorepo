@@ -1,4 +1,4 @@
-import { addHexPrefix, stripHexPrefix, sha3 } from 'ethereumjs-util';
+import { addHexPrefix, sha3, stripHexPrefix } from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
 
@@ -63,7 +63,8 @@ export const addressUtils = {
     generatePseudoRandomAddress(): string {
         const randomBigNum = addressUtils.generatePseudoRandomSalt();
         const randomBuff = sha3(randomBigNum.toString());
-        const randomAddress = `0x${randomBuff.slice(0, 20).toString('hex')}`;
+        const addressLengthInBytes = 20;
+        const randomAddress = `0x${randomBuff.slice(0, addressLengthInBytes).toString('hex')}`;
         return randomAddress;
     },
 };

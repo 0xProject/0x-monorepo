@@ -2,8 +2,9 @@ import * as chai from 'chai';
 import { MethodAbi } from 'ethereum-types';
 import 'mocha';
 
-import { chaiSetup } from './utils/chai_setup';
 import { AbiEncoder, TransactionDecoder } from '../src';
+
+import { chaiSetup } from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;

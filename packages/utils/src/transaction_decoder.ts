@@ -36,9 +36,11 @@ export class TransactionDecoder {
         deploymentInfos?: DeployedContractInfo[],
     ): void {
         // Disregard definitions that are not functions
+        // tslint:disable no-unnecessary-type-assertion
         const functionAbis = _.filter(abiDefinitions, abiEntry => {
             return abiEntry.type === 'function';
         }) as MethodAbi[];
+        // tslint:enable no-unnecessary-type-assertion
         // Record function ABI's
         _.each(functionAbis, functionAbi => {
             const abiEncoder = new AbiEncoder.Method(functionAbi);
