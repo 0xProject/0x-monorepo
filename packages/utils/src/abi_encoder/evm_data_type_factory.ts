@@ -159,7 +159,7 @@ function consolidateDataItemsIntoSingle(input: DataItem | DataItem[] | string): 
             components: dataItems,
         };
     } else {
-        dataItem = typeof input === 'string' ? generateDataItemFromSignature(input) : (input as DataItem);
+        dataItem = _.isString(input) ? generateDataItemFromSignature(input) : (input as DataItem);
     }
     return dataItem;
 }
@@ -201,7 +201,7 @@ function consolidateDataItemsIntoArray(input: DataItem | DataItem[] | string | s
     let dataItems: DataItem[];
     if (_.isArray(input) && _.isEmpty(input)) {
         dataItems = [];
-    } else if (_.isArray(input) && typeof input[0] === 'string') {
+    } else if (_.isArray(input) && _.isString(input[0])) {
         dataItems = [];
         _.each(input as string[], (signature: string) => {
             const dataItem = generateDataItemFromSignature(signature);
