@@ -5,6 +5,10 @@
             {
                 "note": "Fix a bug when smart recompilation wasn't working because of remappings",
                 "pr": 1575
+            },
+            {
+                "note": "Fix a bug when opts could not be undefined",
+                "pr": "TODO"
             }
         ]
     },
