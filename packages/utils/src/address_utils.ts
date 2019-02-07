@@ -65,5 +65,5 @@ export const addressUtils = {
         const randomBuff = sha3(randomBigNum.toString());
         const randomAddress = `0x${randomBuff.slice(0, 20).toString('hex')}`;
         return randomAddress;
-    }
+    },
 };

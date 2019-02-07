@@ -30,7 +30,11 @@ export class TransactionDecoder {
      * @param contractName Name of contract that encapsulates the ABI definitions (optional).
      * @param deploymentInfos A collection of network/address pairs where this contract is deployed (optional).
      */
-    public addABI(abiDefinitions: AbiDefinition[], contractName?: string, deploymentInfos?: DeployedContractInfo[]): void {
+    public addABI(
+        abiDefinitions: AbiDefinition[],
+        contractName?: string,
+        deploymentInfos?: DeployedContractInfo[],
+    ): void {
         // Disregard definitions that are not functions
         const functionAbis = _.filter(abiDefinitions, abiEntry => {
             return abiEntry.type === 'function';
@@ -70,7 +74,7 @@ export class TransactionDecoder {
      * @return Decoded transaction data. Includes: function name and signature, along with the decoded arguments.
      */
     public decode(txData: string, txProperties_?: TransactionProperties): TransactionData {
-        // Lookup 
+        // Lookup
         const functionSelector = TransactionDecoder._getFunctionSelector(txData);
         const txProperties = _.isUndefined(txProperties_) ? {} : txProperties_;
         const candidateFunctionInfos = this._functionInfoBySelector[functionSelector];

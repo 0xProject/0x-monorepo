@@ -1,12 +1,9 @@
 import * as chai from 'chai';
 import 'mocha';
 
-
 import { chaiSetup } from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe.only('TransactionDecoder', () => {
-
-});
+describe.only('TransactionDecoder', () => {});

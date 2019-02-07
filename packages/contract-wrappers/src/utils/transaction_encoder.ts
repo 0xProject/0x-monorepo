@@ -243,8 +243,8 @@ export class TransactionEncoder {
     }
     /**
      * Encodes a matchOrders transaction.
-     * @param   leftOrder         
-     * @param   rightOrder 
+     * @param   leftOrder First order to match.
+     * @param   rightOrder Second order to match.
      * @return Hex encoded abi of the function call.
      */
     public matchOrdersTx(leftOrder: SignedOrder, rightOrder: SignedOrder): string {
