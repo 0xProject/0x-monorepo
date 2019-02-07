@@ -73,6 +73,12 @@ export {
 } from '@0x/types';
 
 export {
+    DeployedContractInfo,
+    TransactionData,
+    TransactionProperties
+} from '@0x/utils'; 
+
+export {
     BlockParamLiteral,
     BlockParam,
     ContractEventArg,
