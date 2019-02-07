@@ -5,22 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.6 - _January 17, 2019_
+## v1.0.3 - _February 7, 2019_
+
+    * Fake publish to enable pinning
+
+## v1.0.2 - _February 6, 2019_
 
     * Dependencies updated
 
-## v1.0.5 - _January 15, 2019_
+## v1.0.1 - _February 5, 2019_
 
     * Dependencies updated
 
-## v1.0.4 - _January 11, 2019_
+## v1.0.0 - _Invalid date_
 
-    * Dependencies updated
-
-## v1.0.3 - _January 9, 2019_
-
-    * Dependencies updated
-
-## v1.0.2 - _December 13, 2018_
-
-    * Dependencies updated
+    * Rename contracts-libs to contracts-exchange-libs (#1539)
+    * Move LibAddressArray contract to contracts-utils (#1539)

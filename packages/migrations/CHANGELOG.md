@@ -5,6 +5,21 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Removed `owner` in Migrations (#1533)
+    * `txDefaults` parameter now requires the `from` field (#1533)
+    * Convert `from` to lower case when passed in via cli (#1533)
+
 ## v2.4.0 - _January 15, 2019_
 
     * Added migrations for `MultiAssetProxy` contract (#1503)

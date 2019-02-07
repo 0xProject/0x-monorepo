@@ -1,5 +1,25 @@
 [
     {
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "ABI Decode NULL for all data types",
+                "pr": 1587
+            }
+        ],
+        "timestamp": 1549452781
+    },
+    {
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "ABI Decode NULL as False",
+                "pr": 1582
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {

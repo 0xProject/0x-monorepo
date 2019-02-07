@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.2 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v2.0.1 - _February 5, 2019_
+
+    * Improve error messages when unable to find matching bytecode (#1558)
+
+## v2.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
 ## v1.0.3 - _January 17, 2019_
 
     * Dependencies updated

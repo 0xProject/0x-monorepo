@@ -1,5 +1,23 @@
 [
     {
+        "timestamp": 1549504360,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
@@ -18,7 +36,8 @@
                 "note": "Convert `from` to lower case when passed in via cli",
                 "pr": 1533
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "version": "2.4.0",

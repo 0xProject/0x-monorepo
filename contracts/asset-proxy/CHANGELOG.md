@@ -5,24 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.2.3 - _January 17, 2019_
+## v1.0.3 - _February 7, 2019_
+
+    * Fake publish to enable pinning
+
+## v1.0.2 - _February 6, 2019_
 
     * Dependencies updated
 
-## v2.2.2 - _January 15, 2019_
+## v1.0.1 - _February 5, 2019_
 
     * Dependencies updated
 
-## v2.2.1 - _January 11, 2019_
+## v1.0.0 - _Invalid date_
 
-    * Dependencies updated
-
-## v2.2.0 - _January 9, 2019_
-
-    * Added LibAddressArray (#1383)
-    * Add validation and comments to MultiAssetProxy (#1455)
-    * Move OrderValidator to extensions (#1464)
-
-## v2.1.59 - _December 13, 2018_
-
-    * Dependencies updated
+    * Move all AssetProxy contracts out of contracts-protocol to new package (#1539)

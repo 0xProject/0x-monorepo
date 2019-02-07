@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
@@ -10,7 +19,8 @@
                 "note": "Update ganache-core to v2.3.3",
                 "pr": 1518
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "timestamp": 1547561734,

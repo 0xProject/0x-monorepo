@@ -1,12 +1,30 @@
 [
     {
-        "version": "6.0.1",
+        "timestamp": 1549504360,
+        "version": "7.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "7.0.0",
         "changes": [
             {
                 "note": "Fix OrderValidatorWrapper constructor to use the correct address",
                 "pr": 1568
+            },
+            {
+                "note": "Use new `ZeroExTransaction` interface",
+                "pr": 1576
+            },
+            {
+                "note": "Rename `getTransactionHex` to `getTransactionHashHex`",
+                "pr": 1576
             }
-        ]
+        ],
+        "timestamp": 1549452781
     },
     {
         "version": "6.0.0",

@@ -3,6 +3,7 @@ import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subprovi
 import { logUtils } from '@0x/utils';
 import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
+import { utils } from 'ethers';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
@@ -96,6 +97,18 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                     }
                     return;
 
+                case 'eth_sendRawTransaction':
+                    if (!this._config.shouldCollectTransactionTraces) {
+                        next();
+                    } else {
+                        const txData = utils.parseTransaction(payload.params[0]);
+                        if (txData.to === null) {
+                            txData.to = constants.NEW_CONTRACT;
+                        }
+                        next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
+                    }
+                    return;
+
                 case 'eth_call':
                     if (!this._config.shouldCollectCallTraces) {
                         next();
@@ -180,13 +193,13 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         cb();
     }
     private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallDataRPC>): Promise<void> {
-        // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
+        // We don't want other transactions to be executed during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
         await blockchainLifecycle.startAsync();
         const fakeTxData = {
-            gas: BLOCK_GAS_LIMIT.toString(16), // tslint:disable-line:custom-no-magic-numbers
+            gas: `0x${BLOCK_GAS_LIMIT.toString(16)}`, // tslint:disable-line:custom-no-magic-numbers
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
             from: callData.from || this._defaultFromAddress,

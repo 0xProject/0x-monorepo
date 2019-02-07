@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _February 5, 2019_
+
+    * Dependencies updated
+
 ## v2.2.0 - _January 15, 2019_
 
     * Added migration for `MultiAssetProxy` contract (#1503)

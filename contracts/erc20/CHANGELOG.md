@@ -5,22 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.6 - _January 17, 2019_
+## v1.0.3 - _February 7, 2019_
+
+    * Fake publish to enable pinning
+
+## v1.0.2 - _February 6, 2019_
 
     * Dependencies updated
 
-## v1.0.5 - _January 15, 2019_
+## v1.0.1 - _February 5, 2019_
 
     * Dependencies updated
 
-## v1.0.4 - _January 11, 2019_
+## v1.0.0 - _Invalid date_
 
-    * Dependencies updated
-
-## v1.0.3 - _January 9, 2019_
-
-    * Dependencies updated
-
-## v1.0.2 - _December 13, 2018_
-
-    * Dependencies updated
+    * Move all ERC20 contracts out of contracts-tokens to new package (#1539)

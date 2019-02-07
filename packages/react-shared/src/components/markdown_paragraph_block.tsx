@@ -6,5 +6,9 @@ import { colors } from '../utils/colors';
 export interface MarkdownParagraphBlockProps {}
 
 export const MarkdownParagraphBlock: React.StatelessComponent<MarkdownParagraphBlockProps> = ({ children }) => {
-    return <span style={{ color: colors.greyTheme, lineHeight: '26px' }}>{children}</span>;
+    return (
+        <span style={{ color: colors.greyTheme, lineHeight: '26px', display: 'block', paddingBottom: 15 }}>
+            {children}
+        </span>
+    );
 };

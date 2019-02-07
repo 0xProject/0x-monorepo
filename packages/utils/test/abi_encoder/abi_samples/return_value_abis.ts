@@ -97,3 +97,28 @@ export const mixedStaticAndDynamicReturnValues: MethodAbi = {
     stateMutability: 'nonpayable',
     type: 'function',
 };
+
+export const structuredReturnValue: MethodAbi = {
+    constant: false,
+    inputs: [],
+    name: 'fillOrder',
+    outputs: [
+        {
+            components: [
+                {
+                    name: 'makerAssetFilledAmount',
+                    type: 'uint256',
+                },
+                {
+                    name: 'takerAssetFilledAmount',
+                    type: 'uint256',
+                },
+            ],
+            name: 'fillResults',
+            type: 'tuple',
+        },
+    ],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};

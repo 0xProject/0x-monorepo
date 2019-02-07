@@ -1,12 +1,42 @@
 [
     {
+        "version": "6.0.0",
+        "changes": {
+            "note": "Stop exporting the EIP712 schemas"
+        },
+        "timestamp": 1549504360
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Add `transactionHashUtils`",
+                "pr": 1576
+            },
+            {
+                "note": "Refactor `eip712Utils` to allow custom domain params",
+                "pr": 1576
+            },
+            {
+                "note": "Export constant EIP712 params",
+                "pr": 1576
+            }
+        ],
+        "timestamp": 1549452781
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
                 "note": "Upgrade the bignumber.js to v8.0.2",
                 "pr": 1517
+            },
+            {
+                "note": "Fix preSigned `isSignatureValidAsync` check",
+                "pr": 1580
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "timestamp": 1547561734,

@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1549452781,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.0.1",
         "changes": [
             {
                 "note": "Fix a bug when some parts of the profiling report were missing because of the coverage ignore lines",
                 "pr": 1535
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "version": "2.0.0",

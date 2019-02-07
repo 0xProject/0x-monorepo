@@ -26,7 +26,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts-gen/README.md",
     "dependencies": {
-        "@0x/types": "^1.5.2",
+        "@0x/types": "^2.0.1",
         "@0x/utils": "^3.0.1",
         "@0x/typescript-typings": "^3.0.8",
         "ethereum-types": "^1.1.6",
