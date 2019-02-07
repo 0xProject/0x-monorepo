@@ -15,7 +15,7 @@
                 "pr": 1596
             },
             {
-                "note": "Fix a bug when `ast` and `legacyAST` were not present in the artifacts even if requested",
+                "note": "Fix a bug causing `ast` and `legacyAST` to not be added to the artifacts even when requested",
                 "pr": 1596
             }
         ]
