@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-multisig",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -45,7 +45,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/multisig/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^2.0.1",
-        "@0x/contracts-test-utils": "^3.0.1",
+        "@0x/contracts-test-utils": "^3.0.2",
         "@0x/dev-utils": "^2.0.1",
         "@0x/sol-compiler": "^3.0.1",
         "@0x/tslint-config": "^3.0.0",
@@ -65,8 +65,8 @@
     },
     "dependencies": {
         "@0x/base-contract": "^4.0.1",
-        "@0x/contracts-asset-proxy": "^1.0.2",
-        "@0x/contracts-erc20": "^1.0.2",
+        "@0x/contracts-asset-proxy": "^1.0.3",
+        "@0x/contracts-erc20": "^1.0.3",
         "@0x/types": "^2.0.1",
         "@0x/typescript-typings": "^4.0.0",
         "@0x/utils": "^4.0.2",

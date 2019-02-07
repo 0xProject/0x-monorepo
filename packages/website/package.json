@@ -1,6 +1,6 @@
 {
     "name": "@0x/website",
-    "version": "0.0.69",
+    "version": "0.0.70",
     "engines": {
         "node": ">=6.12"
     },
@@ -20,13 +20,13 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/asset-buyer": "^5.0.1",
+        "@0x/asset-buyer": "^5.0.2",
         "@0x/contract-addresses": "^2.2.1",
-        "@0x/contract-wrappers": "^7.0.0",
+        "@0x/contract-wrappers": "^7.0.1",
         "@0x/json-schemas": "^3.0.1",
-        "@0x/order-utils": "^5.0.0",
-        "@0x/react-docs": "^2.0.1",
-        "@0x/react-shared": "^2.0.1",
+        "@0x/order-utils": "^6.0.0",
+        "@0x/react-docs": "^2.0.2",
+        "@0x/react-shared": "^2.0.2",
         "@0x/subproviders": "^3.0.1",
         "@0x/types": "^2.0.1",
         "@0x/typescript-typings": "^4.0.0",
