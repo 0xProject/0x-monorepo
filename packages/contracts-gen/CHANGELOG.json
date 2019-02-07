@@ -1,11 +1,11 @@
 [
     {
-        "timestamp": 1549546009,
         "version": "1.0.1",
         "changes": [
             {
                 "note": "Dependencies updated"
             }
-        ]
+        ],
+        "timestamp": 1549547375
     }
 ]
