@@ -7,7 +7,7 @@
                 "pr": 1575
             },
             {
-                "note": "Fix a bug when `opts` could not be `undefined`",
+                "note": "Fix a bug that made `opts` required instead of optional",
                 "pr": 1596
             },
             {
