@@ -9,6 +9,10 @@
             {
                 "note": "Fix a bug when opts could not be undefined",
                 "pr": "TODO"
+            },
+            {
+                "note": "Remove `bin_paths` and fetch the list of soliidty compilers from github",
+                "pr": "TODO"
             }
         ]
     },

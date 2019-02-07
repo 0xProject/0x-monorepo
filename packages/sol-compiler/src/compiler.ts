@@ -21,7 +21,6 @@ import * as semver from 'semver';
 import solc = require('solc');
 
 import { compilerOptionsSchema } from './schemas/compiler_options_schema';
-import { binPaths } from './solc/bin_paths';
 import {
     addHexPrefixToContractBytecode,
     compileDockerAsync,
@@ -29,6 +28,7 @@ import {
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getDependencyNameToPackagePath,
+    getSolcJSReleasesAsync,
     getSourcesWithDependencies,
     getSourceTreeHash,
     makeContractPathsRelative,
@@ -211,6 +211,7 @@ export class Compiler {
         // map contract paths to data about them for later verification and persistence
         const contractPathToData: ContractPathToData = {};
 
+        const solcJSReleases = await getSolcJSReleasesAsync();
         const resolvedContractSources = [];
         for (const contractName of contractNames) {
             const spyResolver = new SpyResolver(this._resolver);
@@ -226,7 +227,7 @@ export class Compiler {
             }
             contractPathToData[contractSource.path] = contractData;
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
-                ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
+                ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
             const isFirstContractWithThisVersion = _.isUndefined(versionToInputs[solcVersion]);
             if (isFirstContractWithThisVersion) {
@@ -272,7 +273,7 @@ export class Compiler {
                 fullSolcVersion = versionCommandOutputParts[versionCommandOutputParts.length - 1].trim();
                 compilerOutput = await compileDockerAsync(solcVersion, input.standardInput);
             } else {
-                fullSolcVersion = binPaths[solcVersion];
+                fullSolcVersion = solcJSReleases[solcVersion];
                 compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput);
             }
             if (!_.isUndefined(compilerOutput.errors)) {

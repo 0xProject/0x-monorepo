@@ -9,11 +9,9 @@ import * as path from 'path';
 import * as requireFromString from 'require-from-string';
 import * as solc from 'solc';
 
-import { binPaths } from '../solc/bin_paths';
-
 import { constants } from './constants';
 import { fsWrapper } from './fs_wrapper';
-import { CompilationError } from './types';
+import { BinaryPaths, CompilationError } from './types';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.
@@ -117,6 +115,20 @@ export function parseDependencies(contractSource: ContractSource): string[] {
         }
     });
     return dependencies;
+}
+
+let solcJSReleasesCache: BinaryPaths | undefined;
+
+/**
+ * Fetches the list of available solidity compilers
+ */
+export async function getSolcJSReleasesAsync(): Promise<BinaryPaths> {
+    if (_.isUndefined(solcJSReleasesCache)) {
+        const versionList = await fetch('https://ethereum.github.io/solc-bin/bin/list.json');
+        const versionListJSON = await versionList.json();
+        solcJSReleasesCache = versionListJSON.releases;
+    }
+    return solcJSReleasesCache as BinaryPaths;
 }
 
 /**
@@ -319,7 +331,8 @@ function recursivelyGatherDependencySources(
  * @param solcVersion The compiler version. e.g. 0.5.0
  */
 export async function getSolcJSAsync(solcVersion: string): Promise<solc.SolcInstance> {
-    const fullSolcVersion = binPaths[solcVersion];
+    const solcJSReleases = await getSolcJSReleasesAsync();
+    const fullSolcVersion = solcJSReleases[solcVersion];
     if (_.isUndefined(fullSolcVersion)) {
         throw new Error(`${solcVersion} is not a known compiler version`);
     }
