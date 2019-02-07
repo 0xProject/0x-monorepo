@@ -46,7 +46,7 @@ export class AbiDecoder {
      * @return AbiDecoder instance
      */
     constructor(abiArrays: AbiDefinition[][]) {
-        _.each(abiArrays, (abi) => {
+        _.each(abiArrays, abi => {
             this.addABI(abi);
         });
     }
@@ -122,12 +122,12 @@ export class AbiDecoder {
             throw new Error(`No functions registered for selector '${functionSelector}'`);
         }
         const functionInfo = _.find(candidateFunctionInfos, txDecoder => {
-            return (
-                (_.isUndefined(contractName) ||
-                    _.toLower(txDecoder.contractName) === _.toLower(contractName)));
+            return _.isUndefined(contractName) || _.toLower(txDecoder.contractName) === _.toLower(contractName);
         });
         if (_.isUndefined(functionInfo)) {
-            throw new Error(`No function registered with selector ${functionSelector} and contract name ${contractName}.`);
+            throw new Error(
+                `No function registered with selector ${functionSelector} and contract name ${contractName}.`,
+            );
         } else if (_.isUndefined(functionInfo.abiEncoder)) {
             throw new Error(
                 `Function ABI Encoder is not defined, for function registered with selector ${functionSelector} and contract name ${contractName}.`,
@@ -151,10 +151,7 @@ export class AbiDecoder {
      * @param abiDefinitions ABI definitions for a given contract.
      * @param contractName Name of contract that encapsulates the ABI definitions (optional).
      */
-    public addABI(
-        abiArray: AbiDefinition[],
-        contractName?: string
-    ): void {
+    public addABI(abiArray: AbiDefinition[], contractName?: string): void {
         if (_.isUndefined(abiArray)) {
             return;
         }
@@ -162,16 +159,20 @@ export class AbiDecoder {
         _.map(abiArray, (abi: AbiDefinition) => {
             switch (abi.type) {
                 case AbiType.Event:
+                    // tslint:disable no-unnecessary-type-assertion
                     this._addEventABI(abi as EventAbi, ethersInterface);
+                    // tslint:enable no-unnecessary-type-assertion
                     break;
 
                 case AbiType.Function:
+                    // tslint:disable no-unnecessary-type-assertion
                     this._addMethodABI(abi as MethodAbi, contractName);
+                    // tslint:enable no-unnecessary-type-assertion
                     break;
 
                 default:
                     // ignore other types
-                    break; 
+                    break;
             }
         });
     }

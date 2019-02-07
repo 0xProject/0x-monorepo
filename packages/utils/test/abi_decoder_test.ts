@@ -2,7 +2,7 @@ import * as chai from 'chai';
 import { MethodAbi } from 'ethereum-types';
 import 'mocha';
 
-import { AbiEncoder, AbiDecoder } from '../src';
+import { AbiDecoder, AbiEncoder } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -42,7 +42,7 @@ describe('AbiDecoder', () => {
         // Decode tx data using contract name
         const decodedTxData = abiDecoder.tryDecodeCalldata(foobarTxData, contractName);
         const expectedFunctionName = abi.name;
-        const expectedFunctionArguments = {testAddress};
+        const expectedFunctionArguments = { testAddress };
         expect(decodedTxData.functionName).to.be.equal(expectedFunctionName);
         expect(decodedTxData.functionSignature).to.be.equal(foobarSignature);
         expect(decodedTxData.functionArguments).to.be.deep.equal(expectedFunctionArguments);

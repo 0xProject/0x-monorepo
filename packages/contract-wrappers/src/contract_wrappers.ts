@@ -171,7 +171,7 @@ export class ContractWrappers {
     public getProvider(): Provider {
         return this._web3Wrapper.getProvider();
     }
-     /**
+    /**
      * Get the provider instance currently used by contract-wrappers
      * @return  Web3 provider instance
      */
