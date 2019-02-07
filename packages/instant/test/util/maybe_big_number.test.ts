@@ -2,12 +2,9 @@ import { BigNumber } from '@0x/utils';
 
 import { maybeBigNumberUtil } from '../../src/util/maybe_big_number';
 
-// import PrevBigNumber from './dependencies/prevbignumber';
-
 const BIG_NUMBER_1 = new BigNumber('10.1');
 const BIG_NUMBER_2 = new BigNumber('10.1');
 const BIG_NUMBER_3 = new BigNumber('11.1');
-// const PREVBIG_NUMBER_1 = new PrevBigNumber('11.1');
 
 describe('maybeBigNumberUtil', () => {
     describe('stringToMaybeBigNumber', () => {
@@ -40,32 +37,29 @@ describe('maybeBigNumberUtil', () => {
         });
     });
 
-    // describe('bigNumberOrStringToMaybeBigNumber', () => {
-    //     it('should return BigNumber (>=v8.0.0) constructed with value if type is string', () => {
-    //         const bn = maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber('10.1');
-    //         if (!!bn) {
-    //             expect(bn.toString()).toEqual('10.1');
-    //         }
-    //     });
-    //     it('should return undefined if value is NaN', () => {
-    //         expect(maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber('NaN')).toEqual(undefined);
-    //     });
-    //     it('should return undefined if value as string is not valid (i.e not numeric)', () => {
-    //         expect(maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber('test')).toEqual(undefined);
-    //     });
-    //     it('should return undefined if value as string is not valid (i.e not numeric)', () => {
-    //         expect(maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber('test')).toEqual(undefined);
-    //     });
-    //     it('should return BigNumber (>=v8.0.0) when passed a value as BigNumber (<v8.0.0)', () => {
-    //         const bn = maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber(PREVBIG_NUMBER_1);
-    //         expect(BigNumber.isBigNumber(bn)).toEqual(true);
-    //     });
-    //     it('should return BigNumber (>=v8.0.0) when passed a value as BigNumber (>=v8.0.0)', () => {
-    //         const bn = maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber(BIG_NUMBER_1);
-    //         expect(BigNumber.isBigNumber(bn)).toEqual(true);
-    //     });
-    //     it('should return undefined if value is not BigNumber or string', () => {
-    //         expect(maybeBigNumberUtil.bigNumberOrStringToMaybeBigNumber(true)).toEqual(undefined);
-    //     });
-    // });
+    // this doesn't test coercing a pre v8.0.0 version of big number to desired version
+    describe('toMaybeBigNumber', () => {
+        it('should return BigNumber (>=v8.0.0) constructed with value if type is string', () => {
+            const bn = maybeBigNumberUtil.toMaybeBigNumber('10.1');
+            if (!!bn) {
+                expect(bn.toString()).toEqual('10.1');
+            }
+        });
+        it('should return undefined if value is NaN', () => {
+            expect(maybeBigNumberUtil.toMaybeBigNumber('NaN')).toEqual(undefined);
+        });
+        it('should return undefined if value as string is not valid (i.e not numeric)', () => {
+            expect(maybeBigNumberUtil.toMaybeBigNumber('test')).toEqual(undefined);
+        });
+        it('should return undefined if value as string is not valid (i.e not numeric)', () => {
+            expect(maybeBigNumberUtil.toMaybeBigNumber('test')).toEqual(undefined);
+        });
+        it('should return BigNumber (>=v8.0.0) when passed a value as BigNumber (>=v8.0.0)', () => {
+            const bn = maybeBigNumberUtil.toMaybeBigNumber(BIG_NUMBER_1);
+            expect(BigNumber.isBigNumber(bn)).toEqual(true);
+        });
+        it('should return undefined if value is not BigNumber or string', () => {
+            expect(maybeBigNumberUtil.toMaybeBigNumber(true)).toEqual(undefined);
+        });
+    });
 });
