@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
+import { PackageJSON, PackageJSONConfig } from '@0x/types';
 import chalk from 'chalk';
-import * as fs from 'fs';
 import { sync as globSync } from 'glob';
 import * as path from 'path';
 
@@ -24,9 +24,10 @@ interface ParsedDependencies {
 
 const PACKAGE_JSON_GLOB = '../../*/package.json';
 
-const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../package.json')).toString()).config;
-const dependenciesWithIgnoredVersions: string[] = config.ignoreDependencyVersions.split(' ');
-const packagesWithIgnoredVersions: string[] = config.ignoreDependencyVersionsForPackage.split(' ');
+const config = utils.readJSONFile<PackageJSON>(path.join(__dirname, '../../../package.json'))
+    .config as PackageJSONConfig; // tslint:disable-line no-unnecessary-type-assertion
+const dependenciesWithIgnoredVersions: string[] = (config.ignoreDependencyVersions as string).split(' ');
+const packagesWithIgnoredVersions: string[] = (config.ignoreDependencyVersionsForPackage as string).split(' ');
 
 if (require.main === module) {
     const dependencies = parseDependencies();
@@ -44,11 +45,10 @@ if (require.main === module) {
 }
 
 function getDependencies(_path: string): Dependencies {
-    const file = fs.readFileSync(_path).toString();
-    const parsed = JSON.parse(file);
+    const packageJSON = utils.readJSONFile<PackageJSON>(_path);
     const dependencies = {
-        ...parsed.dependencies,
-        ...parsed.devDependencies,
+        ...packageJSON.dependencies,
+        ...packageJSON.devDependencies,
     };
     return dependencies;
 }

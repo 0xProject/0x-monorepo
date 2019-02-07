@@ -3,10 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
-        "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-        },
+        "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
                 "*": [
@@ -20,10 +17,11 @@
         }
     },
     "contracts": [
-        "AssetProxyOwner",
-        "MultiSigWallet",
-        "MultiSigWalletWithTimeLock",
-        "TestAssetProxyOwner",
-        "TestRejectEther"
+        "@0x/contracts-asset-proxy/contracts/src/MixinAuthorizable.sol",
+        "src/AssetProxyOwner.sol",
+        "src/MultiSigWallet.sol",
+        "src/MultiSigWalletWithTimeLock.sol",
+        "test/TestAssetProxyOwner.sol",
+        "test/TestRejectEther.sol"
     ]
 }

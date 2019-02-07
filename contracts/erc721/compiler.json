@@ -3,10 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
-        "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-        },
+        "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
                 "*": [
@@ -20,12 +17,12 @@
         }
     },
     "contracts": [
-        "DummyERC721Receiver",
-        "InvalidERC721Receiver",
-        "DummyERC721Token",
-        "ERC721Token",
-        "IERC721Receiver",
-        "IERC721Token",
-        "MintableERC721Token"
+        "src/ERC721Token.sol",
+        "src/MintableERC721Token.sol",
+        "src/interfaces/IERC721Receiver.sol",
+        "src/interfaces/IERC721Token.sol",
+        "test/DummyERC721Receiver.sol",
+        "test/DummyERC721Token.sol",
+        "test/InvalidERC721Receiver.sol"
     ]
 }

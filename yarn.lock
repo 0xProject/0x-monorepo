@@ -472,6 +472,65 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@0x/sol-resolver@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@0x/sol-resolver/-/sol-resolver-1.2.3.tgz#d45d18a6bdeb212abf791b1cbbeac1bb780a94d0"
+  integrity sha512-suWsEPba/XP7DBHWdQ1t14uQ9GCuvUq2lnoxXyPmrdV5pWDVr/j2qVdd16ZNdaI+BkOCwpfR1C40Yu7WtwQk5g==
+  dependencies:
+    "@0x/types" "^1.5.2"
+    "@0x/typescript-typings" "^3.0.8"
+    lodash "^4.17.5"
+
+"@0x/tslint-config@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@0x/tslint-config/-/tslint-config-2.0.2.tgz#a202f2cb943c6e5feab7446f3a004de874fb8b94"
+  integrity sha512-acYC+VYv5CQwoD5PKB7TjkesBZpX4ia6xpIT6mntzE3ro3NAO+KWVs0tnVM0T/k9+BiLLGyNGiqL6oEmF63LuQ==
+  dependencies:
+    lodash "^4.17.5"
+    tslint "5.11.0"
+    tslint-eslint-rules "5.4.0"
+    tslint-react "^3.2.0"
+    tsutils "3.0.0"
+
+"@0x/types@^1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@0x/types/-/types-1.5.2.tgz#19c99ff796664fc256facb10e704aa6541912551"
+  integrity sha512-73Q5k55SHgSrt3SUwbiySBgrNEJG5WWriTjgjUzcCSYGMLawC1X/wV1cfMsP8kCqH8jWcIiPdUoGXutXjC8jQg==
+  dependencies:
+    "@types/node" "*"
+    bignumber.js "~4.1.0"
+    ethereum-types "^1.1.6"
+
+"@0x/typescript-typings@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-3.0.8.tgz#85689e477c1cb5e5bd3eeee0dd1e73e9c2f1db83"
+  integrity sha512-WVH/Cy5/XE+fXuiriraw77pkNJc+GCUsoWLD+EMJDeBzJih/XNogZcTn1f1JApmJUX1ag05rNQ5ISQikp17YUw==
+  dependencies:
+    "@types/bn.js" "^4.11.0"
+    "@types/react" "*"
+    bignumber.js "~4.1.0"
+    ethereum-types "^1.1.6"
+    popper.js "1.14.3"
+
+"@0x/utils@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-3.0.1.tgz#20ada4a98f001c0a6656d45ae56e111b73ef8803"
+  integrity sha512-WlOmu1aZG7/a+5z1ehmoMNCgDc2s5bdVz/hD1mywSCHeJ0CqEaElTL4zXYoMxqV/wFMmwKTlQfGKwW1xKMjI4Q==
+  dependencies:
+    "@0x/types" "^1.5.2"
+    "@0x/typescript-typings" "^3.0.8"
+    "@types/node" "*"
+    abortcontroller-polyfill "^1.1.9"
+    bignumber.js "~4.1.0"
+    chalk "^2.4.1"
+    detect-node "2.0.3"
+    ethereum-types "^1.1.6"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    isomorphic-fetch "^2.2.1"
+    js-sha3 "^0.7.0"
+    lodash "^4.17.5"
+
 "@0xproject/npm-cli-login@^0.0.11":
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/@0xproject/npm-cli-login/-/npm-cli-login-0.0.11.tgz#3f1ec06112ce62aad300ff0575358f68aeecde2e"
@@ -1485,6 +1544,11 @@
 "@types/pluralize@^0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/pluralize/-/pluralize-0.0.29.tgz#6ffa33ed1fc8813c469b859681d09707eb40d03c"
+
+"@types/prettier@^1.15.2":
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-1.15.2.tgz#91594ea7cb6f3b1f7ea69f32621246654c7cc231"
+  integrity sha512-XIB0ZCaFZmWUHAa9dBqP5UKXXHwuukmVlP+XcyU94dui2k+l2lG+CHAbt2ffenHPUqoIs5Beh8Pdf2YEq/CZ7A==
 
 "@types/prop-types@*":
   version "15.5.5"
@@ -6285,6 +6349,14 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
+ethereum-types@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-1.1.6.tgz#14437dbf401de361e70dac6358e5f2915ad3c35d"
+  integrity sha512-/1ixUyyg0f3Gor+U+3Kc3o9AvS8V5hNVHS9qeNXlooqVee+FIpv5kq+SOgMpKSNSVKp4wBJSjrzp0ShjbKo3bA==
+  dependencies:
+    "@types/node" "*"
+    bignumber.js "~4.1.0"
+
 ethereumjs-abi@0.6.5:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.5.tgz#5a637ef16ab43473fa72a29ad90871405b3f5241"
@@ -7793,7 +7865,8 @@ got@^6.7.1:
 
 graceful-fs@4.1.15, graceful-fs@^3.0.0, graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@~1.2.0:
   version "4.1.15"
-  resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
+  integrity sha512-6uHUhOPEBgQ24HM+r6b/QwWfZq+yiFcipKFrOFiBEnWdy5sdzYoi+pJeQaPI5qOLRFqWmAXUPQNsielzdLoecA==
 
 "graceful-readlink@>= 1.0.0":
   version "1.0.1"
@@ -9069,7 +9142,7 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
-isomorphic-fetch@2.2.1, isomorphic-fetch@^2.1.1:
+isomorphic-fetch@2.2.1, isomorphic-fetch@^2.1.1, isomorphic-fetch@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
   dependencies:
@@ -12793,6 +12866,11 @@ prettier@^1.14.3, prettier@^1.15.3:
   version "1.15.3"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.15.3.tgz#1feaac5bdd181237b54dbe65d874e02a1472786a"
 
+prettier@^1.16.3:
+  version "1.16.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.16.3.tgz#8c62168453badef702f34b45b6ee899574a6a65d"
+  integrity sha512-kn/GU6SMRYPxUakNXhpP0EedT/KmaPzr0H5lIsDogrykbaxOpOfAFfk5XA7DZrJyMAv1wlMV3CPcZruGXVVUZw==
+
 pretty-bytes@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-1.0.4.tgz#0a22e8210609ad35542f8c8d5d2159aff0751c84"
@@ -13395,6 +13473,8 @@ react-highlight@0xproject/react-highlight#react-peer-deps:
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
+    react "^16.5.2"
+    react-dom "^16.5.2"
 
 react-hot-loader@^4.3.3:
   version "4.3.4"
@@ -14910,6 +14990,7 @@ smart-buffer@^4.0.1:
 snake-case@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/snake-case/-/snake-case-2.1.0.tgz#41bdb1b73f30ec66a04d4e2cad1b76387d4d6d9f"
+  integrity sha1-Qb2xtz8w7GagTU4srRt2OH1NbZ8=
   dependencies:
     no-case "^2.2.0"
 
@@ -16047,6 +16128,7 @@ to-regex@^3.0.1, to-regex@^3.0.2:
 to-snake-case@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/to-snake-case/-/to-snake-case-1.0.0.tgz#ce746913897946019a87e62edfaeaea4c608ab8c"
+  integrity sha1-znRpE4l5RgGah+Yu366upMYIq4w=
   dependencies:
     to-space-case "^1.0.0"
 

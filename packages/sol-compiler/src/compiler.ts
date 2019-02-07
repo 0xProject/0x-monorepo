@@ -195,9 +195,7 @@ export class Compiler {
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
-            contractNamesToCompile = this._specifiedContracts.map(specifiedContract =>
-                path.basename(specifiedContract, constants.SOLIDITY_FILE_EXTENSION),
-            );
+            return this._specifiedContracts;
         }
         return contractNamesToCompile;
     }
@@ -217,12 +215,9 @@ export class Compiler {
         for (const contractName of contractNames) {
             const spyResolver = new SpyResolver(this._resolver);
             const contractSource = spyResolver.resolve(contractName);
-            const sourceTreeHashHex = getSourceTreeHash(
-                spyResolver,
-                path.join(this._contractsDir, contractSource.path),
-            ).toString('hex');
+            const sourceTreeHashHex = getSourceTreeHash(spyResolver, contractSource.path).toString('hex');
             const contractData = {
-                contractName,
+                contractName: path.basename(contractName, constants.SOLIDITY_FILE_EXTENSION),
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
                 sourceTreeHashHex: `0x${sourceTreeHashHex}`,
             };
@@ -329,7 +324,10 @@ export class Compiler {
         } else {
             const currentArtifact = contractData.currentArtifactIfExists as ContractArtifact;
             const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+            const didCompilerSettingsChange = !_.isEqual(
+                _.omit(currentArtifact.compiler.settings, 'remappings'),
+                this._compilerSettings,
+            );
             const didSourceChange = currentArtifact.sourceTreeHashHex !== contractData.sourceTreeHashHex;
             return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }

@@ -1,6 +1,3 @@
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
-import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import {
     FillResults,
     formatters,
@@ -15,8 +12,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
-import { artifacts } from '../../src/artifacts';
+import { artifacts, BalanceThresholdFilterContract, ExchangeContract } from '../../src';
 
 export class BalanceThresholdWrapper {
     private readonly _balanceThresholdFilter: BalanceThresholdFilterContract;
@@ -34,12 +30,7 @@ export class BalanceThresholdWrapper {
         this._exchange = exchangeContract;
         this._signerTransactionFactory = signerTransactionFactory;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, {
-            ...artifacts,
-            ...erc20Artifacts,
-            ...erc721Artifacts,
-            ...exchangeArtifacts,
-        });
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,
@@ -227,7 +218,7 @@ export class BalanceThresholdWrapper {
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
-        const data = await this._exchange.matchOrders.getABIEncodedTransactionData(
+        const data = this._exchange.matchOrders.getABIEncodedTransactionData(
             params.left,
             params.right,
             params.leftSignature,

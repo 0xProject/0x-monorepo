@@ -1,3 +1,4 @@
+import { PackageJSON } from '@0x/types';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -6,7 +7,7 @@ import * as ts from 'typescript';
 
 import { constants } from '../constants';
 import { docGenConfigs } from '../doc_gen_configs';
-import { ExportInfo, ExportNameToTypedocNames, ExportPathToExportedItems, PackageJSON } from '../types';
+import { ExportInfo, ExportNameToTypedocNames, ExportPathToExportedItems } from '../types';
 
 import { utils } from './utils';
 

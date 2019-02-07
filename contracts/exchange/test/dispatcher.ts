@@ -1,11 +1,4 @@
-import {
-    artifacts as proxyArtifacts,
-    ERC20ProxyContract,
-    ERC20Wrapper,
-    ERC721ProxyContract,
-    ERC721Wrapper,
-} from '@0x/contracts-asset-proxy';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
     constants,
@@ -25,6 +18,9 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    DummyERC20TokenContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
     TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
 } from '../src';
@@ -131,7 +127,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Deploy a new version of the ERC20 Transfer Proxy contract
             const newErc20TransferProxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
-                proxyArtifacts.ERC20Proxy,
+                artifacts.ERC20Proxy,
                 provider,
                 txDefaults,
             );

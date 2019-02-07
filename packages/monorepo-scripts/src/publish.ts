@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+import { PackageJSON } from '@0x/types';
 import { logUtils } from '@0x/utils';
 import * as promisify from 'es6-promisify';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
@@ -47,7 +47,7 @@ async function confirmAsync(message: string): Promise<void> {
         await confirmAsync(
             'THIS IS NOT A TEST PUBLISH! You are about to publish one or more packages to npm. Are you sure you want to continue? (y/n)',
         );
-        // await confirmDocPagesRenderAsync(packagesWithDocs);
+        await confirmDocPagesRenderAsync(packagesWithDocs);
     }
 
     // Update CHANGELOGs
@@ -141,8 +141,8 @@ async function publishImagesToDockerHubAsync(allUpdatedPackages: Package[]): Pro
 
 function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     const rootPackageJsonPath = `${constants.monorepoRootPath}/package.json`;
-    const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath).toString());
-    const packagesWithDocPagesStringIfExist = _.get(rootPackageJson, 'config.packagesWithDocPages', undefined);
+    const rootPackageJSON = utils.readJSONFile<PackageJSON>(rootPackageJsonPath);
+    const packagesWithDocPagesStringIfExist = _.get(rootPackageJSON, 'config.packagesWithDocPages', undefined);
     if (_.isUndefined(packagesWithDocPagesStringIfExist)) {
         return []; // None to generate & publish
     }
