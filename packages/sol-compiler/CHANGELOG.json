@@ -18,7 +18,8 @@
                 "note": "Fix a bug causing `ast` and `legacyAST` to not be added to the artifacts even when requested",
                 "pr": 1596
             }
-        ]
+        ],
+        "timestamp": 1549546009
     },
     {
         "timestamp": 1549452781,

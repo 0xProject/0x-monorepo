@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _February 7, 2019_
+
+    * Fix a bug when smart recompilation wasn't working because of remappings (#1575)
+    * Fix a bug that made `opts` required instead of optional (#1596)
+    * Remove `bin_paths` and fetch the list of Solidity compilers from Github (#1596)
+    * Fix a bug causing `ast` and `legacyAST` to not be added to the artifacts even when requested (#1596)
+
 ## v3.0.1 - _February 6, 2019_
 
     * Dependencies updated
