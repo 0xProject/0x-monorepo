@@ -12,12 +12,6 @@ import * as _ from 'lodash';
 
 import { constants } from './constants';
 
-export const DEFAULT_DOMAIN_SCHEMA = constants.DEFAULT_DOMAIN_SCHEMA;
-export const EXCHANGE_DOMAIN_NAME = constants.EXCHANGE_DOMAIN_NAME;
-export const EXCHANGE_DOMAIN_VERSION = constants.EXCHANGE_DOMAIN_VERSION;
-export const EXCHANGE_ORDER_SCHEMA = constants.EXCHANGE_ORDER_SCHEMA;
-export const EXCHANGE_ZEROEX_TRANSACTION_SCHEMA = constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA;
-
 export const eip712Utils = {
     /**
      * Creates a EIP712TypedData object specific to the 0x protocol for use with signTypedData.
@@ -37,12 +31,12 @@ export const eip712Utils = {
         assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
-                EIP712Domain: DEFAULT_DOMAIN_SCHEMA.parameters,
+                EIP712Domain: constants.DEFAULT_DOMAIN_SCHEMA.parameters,
                 ...types,
             },
             domain: {
-                name: _.isUndefined(domain.name) ? EXCHANGE_DOMAIN_NAME : domain.name,
-                version: _.isUndefined(domain.version) ? EXCHANGE_DOMAIN_VERSION : domain.version,
+                name: _.isUndefined(domain.name) ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
+                version: _.isUndefined(domain.version) ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
                 verifyingContract: domain.verifyingContractAddress,
             },
             message,
@@ -65,8 +59,8 @@ export const eip712Utils = {
             verifyingContractAddress: order.exchangeAddress,
         };
         const typedData = eip712Utils.createTypedData(
-            EXCHANGE_ORDER_SCHEMA.name,
-            { Order: EXCHANGE_ORDER_SCHEMA.parameters },
+            constants.EXCHANGE_ORDER_SCHEMA.name,
+            { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
             normalizedOrder,
             domain,
         );
@@ -88,8 +82,8 @@ export const eip712Utils = {
             verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
         };
         const typedData = eip712Utils.createTypedData(
-            EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
-            { ZeroExTransaction: EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
+            constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
+            { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
             domain,
         );

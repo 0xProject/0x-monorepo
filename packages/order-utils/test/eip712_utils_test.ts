@@ -3,12 +3,7 @@ import * as chai from 'chai';
 import 'mocha';
 
 import { constants } from '../src/constants';
-import {
-    eip712Utils,
-    EXCHANGE_DOMAIN_NAME,
-    EXCHANGE_DOMAIN_VERSION,
-    EXCHANGE_ZEROEX_TRANSACTION_SCHEMA,
-} from '../src/eip712_utils';
+import { eip712Utils } from '../src/eip712_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -28,8 +23,8 @@ describe('EIP712 Utils', () => {
             expect(typedData.domain).to.not.be.undefined();
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
             const domainObject = typedData.domain;
-            expect(domainObject.name).to.eq(EXCHANGE_DOMAIN_NAME);
-            expect(domainObject.version).to.eq(EXCHANGE_DOMAIN_VERSION);
+            expect(domainObject.name).to.eq(constants.EXCHANGE_DOMAIN_NAME);
+            expect(domainObject.version).to.eq(constants.EXCHANGE_DOMAIN_VERSION);
             expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
             expect(typedData.primaryType).to.eq(primaryType);
         });
@@ -60,11 +55,11 @@ describe('EIP712 Utils', () => {
                 signerAddress: constants.NULL_ADDRESS,
                 verifyingContractAddress: constants.NULL_ADDRESS,
             });
-            expect(typedData.primaryType).to.eq(EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name);
+            expect(typedData.primaryType).to.eq(constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name);
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
             const domainObject = typedData.domain;
-            expect(domainObject.name).to.eq(EXCHANGE_DOMAIN_NAME);
-            expect(domainObject.version).to.eq(EXCHANGE_DOMAIN_VERSION);
+            expect(domainObject.name).to.eq(constants.EXCHANGE_DOMAIN_NAME);
+            expect(domainObject.version).to.eq(constants.EXCHANGE_DOMAIN_VERSION);
             expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
         });
     });

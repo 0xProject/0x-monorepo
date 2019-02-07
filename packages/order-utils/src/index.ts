@@ -19,14 +19,7 @@ export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 
-export {
-    eip712Utils,
-    DEFAULT_DOMAIN_SCHEMA,
-    EXCHANGE_DOMAIN_NAME,
-    EXCHANGE_DOMAIN_VERSION,
-    EXCHANGE_ORDER_SCHEMA,
-    EXCHANGE_ZEROEX_TRANSACTION_SCHEMA,
-} from './eip712_utils';
+export { eip712Utils } from './eip712_utils';
 
 export {
     Provider,
