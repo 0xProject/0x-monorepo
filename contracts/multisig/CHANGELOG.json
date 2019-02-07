@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Fake publish to enable pinning"
+            }
+        ]
+    },
+    {
         "timestamp": 1549452781,
         "version": "2.0.1",
         "changes": [
