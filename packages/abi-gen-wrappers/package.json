@@ -1,6 +1,6 @@
 {
     "name": "@0x/abi-gen-wrappers",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,19 +30,19 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^2.0.1",
+        "@0x/abi-gen": "^2.0.2",
         "@0x/abi-gen-templates": "^2.0.0",
         "@0x/tslint-config": "^3.0.0",
-        "@0x/types": "^2.0.1",
-        "@0x/utils": "^4.0.2",
-        "@0x/web3-wrapper": "^4.0.1",
+        "@0x/types": "^2.0.2",
+        "@0x/utils": "^4.0.3",
+        "@0x/web3-wrapper": "^4.0.2",
         "ethereum-types": "^2.0.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11",
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0x/base-contract": "^4.0.1"
+        "@0x/base-contract": "^4.0.2"
     },
     "publishConfig": {
         "access": "public"
