@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
 
 contract LibEIP712 {
@@ -50,7 +50,7 @@ contract LibEIP712 {
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
             keccak256(bytes(EIP712_DOMAIN_NAME)),
             keccak256(bytes(EIP712_DOMAIN_VERSION)),
-            bytes32(address(this))
+            uint256(address(this))
         ));
     }
 

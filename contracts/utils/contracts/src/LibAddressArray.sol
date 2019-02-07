@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
 import "./LibBytes.sol";
 
@@ -31,7 +31,7 @@ library LibAddressArray {
     /// @return Array of addresses: [... addressArray, addressToAppend]
     function append(address[] memory addressArray, address addressToAppend) 
         internal pure
-        returns (address[])
+        returns (address[] memory)
     {
         // Get stats on address array and free memory
         uint256 freeMemPtr = 0;

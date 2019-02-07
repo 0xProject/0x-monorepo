@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
 import "../src/LibBytes.sol";
 
@@ -244,14 +244,14 @@ contract TestLibBytes {
     /// @param length Length of bytes to copy from <source> to <dest>
     /// @return mem Memory contents after calling memCopy.
     function testMemcpy(
-        bytes mem,
+        bytes memory mem,
         uint256 dest,
         uint256 source,
         uint256 length
     )
         public // not external, we need input in memory
         pure
-        returns (bytes)
+        returns (bytes memory)
     {
         // Sanity check. Overflows are not checked.
         require(source + length <= mem.length);

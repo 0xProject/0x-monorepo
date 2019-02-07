@@ -17,7 +17,7 @@
 */
 
 // solhint-disable
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
 
 /// @dev This contract documents the revert reasons used in the Exchange contract.
