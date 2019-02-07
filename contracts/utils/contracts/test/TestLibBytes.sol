@@ -266,4 +266,41 @@ contract TestLibBytes {
         // Return modified memory contents
         return mem;
     }
+
+    /// @dev Returns a slices from a byte array.
+    /// @param b The byte array to take a slice from.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    function publicSlice(
+        bytes memory b,
+        uint256 from,
+        uint256 to
+    )
+        public
+        pure
+        returns (bytes memory result)
+    {
+        result = LibBytes.slice(b, from, to);
+        return result;
+    }
+
+    /// @dev Returns a slice from a byte array without preserving the input.
+    /// @param b The byte array to take a slice from. Will be destroyed in the process.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    /// @dev When `from == 0`, the original array will match the slice. In other cases its state will be corrupted.
+    function publicSliceDestructive(
+        bytes memory b,
+        uint256 from,
+        uint256 to
+    )
+        public
+        pure
+        returns (bytes memory result)
+    {
+        result = LibBytes.sliceDestructive(b, from, to);
+        return result;
+    }
 }
