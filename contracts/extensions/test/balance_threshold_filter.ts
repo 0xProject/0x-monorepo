@@ -1,3 +1,4 @@
+import { ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
@@ -9,7 +10,6 @@ import * as _ from 'lodash';
 
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -24,7 +24,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 
-import { artifacts, BalanceThresholdFilterContract, BalanceThresholdWrapper } from '../src';
+import { artifacts, BalanceThresholdFilterContract, BalanceThresholdWrapper, ExchangeContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -127,7 +127,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy Exchange contract
         exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            exchangeArtifacts.Exchange,
+            artifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,

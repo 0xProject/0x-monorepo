@@ -1,16 +1,19 @@
 {
     "extends": "../../tsconfig",
-    "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": ".",
-        "resolveJsonModule": true
-    },
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "./generated-artifacts/BalanceThresholdFilter.json",
-        "./generated-artifacts/DutchAuction.json",
-        "./generated-artifacts/OrderMatcher.json",
-        "./generated-artifacts/OrderValidator.json"
+        "generated-artifacts/BalanceThresholdFilter.json",
+        "generated-artifacts/DummyERC20Token.json",
+        "generated-artifacts/DummyERC721Token.json",
+        "generated-artifacts/DutchAuction.json",
+        "generated-artifacts/ERC20Proxy.json",
+        "generated-artifacts/ERC721Proxy.json",
+        "generated-artifacts/Exchange.json",
+        "generated-artifacts/ExchangeWrapper.json",
+        "generated-artifacts/OrderMatcher.json",
+        "generated-artifacts/OrderValidator.json",
+        "generated-artifacts/WETH9.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

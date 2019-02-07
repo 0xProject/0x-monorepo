@@ -1,5 +1,3 @@
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import { FillResults, formatters, LogDecoder, OrderInfo, orderUtils } from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
@@ -18,7 +16,7 @@ export class ExchangeWrapper {
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...erc20Artifacts, ...erc721Artifacts });
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,

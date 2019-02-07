@@ -691,6 +691,30 @@ export interface DutchAuctionDetails {
     currentTimeSeconds: BigNumber;
 }
 
+export interface PackageJSONConfig {
+    postpublish?: {
+        assets?: string[];
+        docOmitExports?: string[];
+        dockerHubRepo?: string;
+    };
+    'abis:comment'?: string;
+    abis?: string;
+    ignoreDependencyVersions?: string;
+    ignoreDependencyVersionsForPackage?: string;
+}
+
+export interface PackageJSON {
+    private?: boolean;
+    version: string;
+    name: string;
+    main?: string;
+    scripts?: { [command: string]: string };
+    config?: PackageJSONConfig;
+    dependencies?: { [dependencyName: string]: string };
+    devDependencies?: { [dependencyName: string]: string };
+    workspaces?: string[];
+}
+
 export interface EIP712DomainWithDefaultSchema {
     name?: string;
     version?: string;

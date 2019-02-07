@@ -1,19 +1,15 @@
 {
     "extends": "../../tsconfig",
-    "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": ".",
-        "resolveJsonModule": true
-    },
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "./generated-artifacts/DummyERC721Receiver.json",
-        "./generated-artifacts/InvalidERC721Receiver.json",
-        "./generated-artifacts/DummyERC721Token.json",
-        "./generated-artifacts/ERC721Token.json",
-        "./generated-artifacts/IERC721Receiver.json",
-        "./generated-artifacts/IERC721Token.json",
-        "./generated-artifacts/MintableERC721Token.json"
+        "generated-artifacts/DummyERC721Receiver.json",
+        "generated-artifacts/DummyERC721Token.json",
+        "generated-artifacts/ERC721Token.json",
+        "generated-artifacts/IERC721Receiver.json",
+        "generated-artifacts/IERC721Token.json",
+        "generated-artifacts/InvalidERC721Receiver.json",
+        "generated-artifacts/MintableERC721Token.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

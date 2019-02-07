@@ -3,10 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
-        "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-        },
+        "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
                 "*": [
@@ -20,16 +17,16 @@
         }
     },
     "contracts": [
-        "DummyERC20Token",
-        "DummyMultipleReturnERC20Token",
-        "DummyNoReturnERC20Token",
-        "ReentrantERC20Token",
-        "ERC20Token",
-        "IERC20Token",
-        "MintableERC20Token",
-        "UnlimitedAllowanceERC20Token",
-        "IEtherToken",
-        "WETH9",
-        "ZRXToken"
+        "src/ERC20Token.sol",
+        "src/MintableERC20Token.sol",
+        "src/UnlimitedAllowanceERC20Token.sol",
+        "src/WETH9.sol",
+        "src/ZRXToken.sol",
+        "src/interfaces/IERC20Token.sol",
+        "src/interfaces/IEtherToken.sol",
+        "test/DummyERC20Token.sol",
+        "test/DummyMultipleReturnERC20Token.sol",
+        "test/DummyNoReturnERC20Token.sol",
+        "test/ReentrantERC20Token.sol"
     ]
 }

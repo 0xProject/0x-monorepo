@@ -1,6 +1,3 @@
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
-import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { LogDecoder } from '@0x/contracts-test-utils';
 import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -18,12 +15,7 @@ export class DutchAuctionTestWrapper {
     constructor(contractInstance: DutchAuctionContract, provider: Provider) {
         this._dutchAuctionContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, {
-            ...artifacts,
-            ...erc20Artifacts,
-            ...erc721Artifacts,
-            ...exchangeArtifacts,
-        });
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction

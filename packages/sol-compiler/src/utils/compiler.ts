@@ -26,7 +26,10 @@ export async function getContractArtifactIfExistsAsync(
     contractName: string,
 ): Promise<ContractArtifact | void> {
     let contractArtifact;
-    const currentArtifactPath = `${artifactsDir}/${contractName}.json`;
+    const currentArtifactPath = `${artifactsDir}/${path.basename(
+        contractName,
+        constants.SOLIDITY_FILE_EXTENSION,
+    )}.json`;
     try {
         const opts = {
             encoding: 'utf8',
