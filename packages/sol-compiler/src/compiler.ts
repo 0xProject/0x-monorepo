@@ -324,7 +324,10 @@ export class Compiler {
         } else {
             const currentArtifact = contractData.currentArtifactIfExists as ContractArtifact;
             const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+            const didCompilerSettingsChange = !_.isEqual(
+                _.omit(currentArtifact.compiler.settings, 'remappings'),
+                this._compilerSettings,
+            );
             const didSourceChange = currentArtifact.sourceTreeHashHex !== contractData.sourceTreeHashHex;
             return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }

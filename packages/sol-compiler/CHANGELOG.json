@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Fix a bug when smart recompilation wasn't working because of remappings",
+                "pr": 1575
+            }
+        ]
+    },
+    {
         "timestamp": 1549452781,
         "version": "3.0.1",
         "changes": [
