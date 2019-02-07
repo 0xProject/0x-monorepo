@@ -326,7 +326,7 @@ export class Compiler {
             const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
             const didCompilerSettingsChange = !_.isEqual(
                 _.omit(currentArtifact.compiler.settings, 'remappings'),
-                this._compilerSettings,
+                _.omit(this._compilerSettings, 'remappings'),
             );
             const didSourceChange = currentArtifact.sourceTreeHashHex !== contractData.sourceTreeHashHex;
             return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
