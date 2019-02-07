@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.0 - _February 7, 2019_
+
+    * undefined
+
 ## v5.0.0 - _February 6, 2019_
 
     * Add `transactionHashUtils` (#1576)

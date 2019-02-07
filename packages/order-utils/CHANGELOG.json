@@ -3,7 +3,8 @@
         "version": "6.0.0",
         "changes": {
             "note": "Stop exporting the EIP712 schemas"
-        }
+        },
+        "timestamp": 1549504360
     },
     {
         "version": "5.0.0",

@@ -47,7 +47,7 @@ async function confirmAsync(message: string): Promise<void> {
         await confirmAsync(
             'THIS IS NOT A TEST PUBLISH! You are about to publish one or more packages to npm. Are you sure you want to continue? (y/n)',
         );
-        await confirmDocPagesRenderAsync(packagesWithDocs);
+        // await confirmDocPagesRenderAsync(packagesWithDocs);
     }
 
     // Update CHANGELOGs

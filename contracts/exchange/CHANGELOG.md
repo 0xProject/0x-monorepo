@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.3 - _February 7, 2019_
+
+    * Fake publish to enable pinning
+
 ## v1.0.2 - _February 6, 2019_
 
     * Dependencies updated
