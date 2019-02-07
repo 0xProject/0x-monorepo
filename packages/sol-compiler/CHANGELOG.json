@@ -7,15 +7,15 @@
                 "pr": 1575
             },
             {
-                "note": "Fix a bug when opts could not be undefined",
+                "note": "Fix a bug when `opts` could not be `undefined`",
                 "pr": 1596
             },
             {
-                "note": "Remove `bin_paths` and fetch the list of soliidty compilers from github",
+                "note": "Remove `bin_paths` and fetch the list of Solidity compilers from Github",
                 "pr": 1596
             },
             {
-                "note": "Fix a bug when ast and legacyAST were not present in the artifacts even if requested",
+                "note": "Fix a bug when `ast` and `legacyAST` were not present in the artifacts even if requested",
                 "pr": 1596
             }
         ]
