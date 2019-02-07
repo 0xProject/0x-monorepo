@@ -82,7 +82,10 @@ const config = {
 module.exports = (_env, argv) => {
     let plugins = [
         new CleanWebpackPlugin('public'),
-        ...pages.map(p => new HtmlWebpackPlugin(p)),
+        ...pages.map(p => {
+            p.environment = argv.mode;
+            return new HtmlWebpackPlugin(p);
+        }),
         new CopyWebpackPlugin([
             { from: 'assets/crawl.html', to: 'index.html' },
             { from: 'assets/fonts', to: 'fonts' },
