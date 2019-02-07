@@ -58,6 +58,13 @@ export class StaticBytesDataType extends AbstractBlobDataType {
         return value;
     }
 
+    public getDefaultValue(): string {
+        const valueBufPadded = constants.EMPTY_EVM_WORD_BUFFER;
+        const valueBuf = valueBufPadded.slice(0, this._width);
+        const value = ethUtil.bufferToHex(valueBuf);
+        return value;
+    }
+
     private _sanityCheckValue(value: string | Buffer): void {
         if (typeof value === 'string') {
             if (!_.startsWith(value, '0x')) {

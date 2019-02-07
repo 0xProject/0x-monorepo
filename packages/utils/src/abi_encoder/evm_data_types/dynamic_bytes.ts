@@ -9,6 +9,7 @@ import { constants } from '../utils/constants';
 
 export class DynamicBytesDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
+    private static readonly _DEFAULT_VALUE = '0x';
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Bytes;
@@ -63,6 +64,10 @@ export class DynamicBytesDataType extends AbstractBlobDataType {
         const value = ethUtil.bufferToHex(valueBuf);
         DynamicBytesDataType._sanityCheckValue(value);
         return value;
+    }
+
+    public getDefaultValue(): string {
+        return DynamicBytesDataType._DEFAULT_VALUE;
     }
 
     public getSignatureType(): string {

@@ -9,6 +9,7 @@ import { constants } from '../utils/constants';
 
 export class StringDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
+    private static readonly _DEFAULT_VALUE = '';
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.String;
@@ -50,6 +51,10 @@ export class StringDataType extends AbstractBlobDataType {
         const valueBuf = valueBufPadded.slice(0, length);
         const value = valueBuf.toString('ascii');
         return value;
+    }
+
+    public getDefaultValue(): string {
+        return StringDataType._DEFAULT_VALUE;
     }
 
     public getSignatureType(): string {

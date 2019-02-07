@@ -1,5 +1,39 @@
 [
     {
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "version": "6.0.0",
+        "changes": {
+            "note": "Stop exporting the EIP712 schemas"
+        },
+        "timestamp": 1549504360
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Add `transactionHashUtils`",
+                "pr": 1576
+            },
+            {
+                "note": "Refactor `eip712Utils` to allow custom domain params",
+                "pr": 1576
+            },
+            {
+                "note": "Export constant EIP712 params",
+                "pr": 1576
+            }
+        ],
+        "timestamp": 1549452781
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {

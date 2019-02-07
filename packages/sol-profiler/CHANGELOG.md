@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v2.0.2 - _February 6, 2019_
+
+    * Dependencies updated
+
 ## v2.0.1 - _February 5, 2019_
 
     * Fix a bug when some parts of the profiling report were missing because of the coverage ignore lines (#1535)

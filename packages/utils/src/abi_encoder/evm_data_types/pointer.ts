@@ -18,4 +18,9 @@ export class PointerDataType extends AbstractPointerDataType {
     public getSignature(isDetailed?: boolean): string {
         return this._destination.getSignature(isDetailed);
     }
+
+    public getDefaultValue(): any {
+        const defaultValue = this._destination.getDefaultValue();
+        return defaultValue;
+    }
 }

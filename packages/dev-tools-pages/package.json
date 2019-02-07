@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-tools-pages",
-    "version": "0.0.15",
+    "version": "0.0.18",
     "engines": {
         "node": ">=6.12"
     },
@@ -26,7 +26,7 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/react-shared": "^2.0.0",
+        "@0x/react-shared": "^2.0.3",
         "basscss": "^8.0.3",
         "bowser": "^1.9.3",
         "highlight.js": "^9.13.1",

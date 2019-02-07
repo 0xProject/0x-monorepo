@@ -21,7 +21,6 @@ import * as semver from 'semver';
 import solc = require('solc');
 
 import { compilerOptionsSchema } from './schemas/compiler_options_schema';
-import { binPaths } from './solc/bin_paths';
 import {
     addHexPrefixToContractBytecode,
     compileDockerAsync,
@@ -29,6 +28,7 @@ import {
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getDependencyNameToPackagePath,
+    getSolcJSReleasesAsync,
     getSourcesWithDependencies,
     getSourceTreeHash,
     makeContractPathsRelative,
@@ -96,12 +96,12 @@ export class Compiler {
      * @return An instance of the Compiler class.
      */
     constructor(opts?: CompilerOptions) {
-        assert.doesConformToSchema('opts', opts, compilerOptionsSchema);
+        const passedOpts = opts || {};
+        assert.doesConformToSchema('opts', passedOpts, compilerOptionsSchema);
         // TODO: Look for config file in parent directories if not found in current directory
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
             ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
             : {};
-        const passedOpts = opts || {};
         assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
         this._contractsDir = path.resolve(passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR);
         this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
@@ -195,9 +195,7 @@ export class Compiler {
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
-            contractNamesToCompile = this._specifiedContracts.map(specifiedContract =>
-                path.basename(specifiedContract, constants.SOLIDITY_FILE_EXTENSION),
-            );
+            return this._specifiedContracts;
         }
         return contractNamesToCompile;
     }
@@ -213,16 +211,14 @@ export class Compiler {
         // map contract paths to data about them for later verification and persistence
         const contractPathToData: ContractPathToData = {};
 
+        const solcJSReleases = await getSolcJSReleasesAsync();
         const resolvedContractSources = [];
         for (const contractName of contractNames) {
             const spyResolver = new SpyResolver(this._resolver);
             const contractSource = spyResolver.resolve(contractName);
-            const sourceTreeHashHex = getSourceTreeHash(
-                spyResolver,
-                path.join(this._contractsDir, contractSource.path),
-            ).toString('hex');
+            const sourceTreeHashHex = getSourceTreeHash(spyResolver, contractSource.path).toString('hex');
             const contractData = {
-                contractName,
+                contractName: path.basename(contractName, constants.SOLIDITY_FILE_EXTENSION),
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
                 sourceTreeHashHex: `0x${sourceTreeHashHex}`,
             };
@@ -231,7 +227,7 @@ export class Compiler {
             }
             contractPathToData[contractSource.path] = contractData;
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
-                ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
+                ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
             const isFirstContractWithThisVersion = _.isUndefined(versionToInputs[solcVersion]);
             if (isFirstContractWithThisVersion) {
@@ -277,7 +273,7 @@ export class Compiler {
                 fullSolcVersion = versionCommandOutputParts[versionCommandOutputParts.length - 1].trim();
                 compilerOutput = await compileDockerAsync(solcVersion, input.standardInput);
             } else {
-                fullSolcVersion = binPaths[solcVersion];
+                fullSolcVersion = solcJSReleases[solcVersion];
                 compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput);
             }
             if (!_.isUndefined(compilerOutput.errors)) {
@@ -329,7 +325,10 @@ export class Compiler {
         } else {
             const currentArtifact = contractData.currentArtifactIfExists as ContractArtifact;
             const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+            const didCompilerSettingsChange = !_.isEqual(
+                _.omit(currentArtifact.compiler.settings, 'remappings'),
+                _.omit(this._compilerSettings, 'remappings'),
+            );
             const didSourceChange = currentArtifact.sourceTreeHashHex !== contractData.sourceTreeHashHex;
             return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }

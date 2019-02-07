@@ -1,5 +1,32 @@
 [
     {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Fake publish to enable pinning"
+            }
+        ],
+        "timestamp": 1549504360
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {

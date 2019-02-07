@@ -16,7 +16,7 @@ jobs:
                   command: sudo npm install --global yarn@1.9.4
             - run:
                   name: yarn
-                  command: yarn --frozen-lockfile --ignore-engines install
+                  command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - setup_remote_docker
             - run: yarn build:ci:no_website
             - run: yarn build:ts

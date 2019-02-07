@@ -1,23 +1,19 @@
 {
     "extends": "../../tsconfig",
-    "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": ".",
-        "resolveJsonModule": true
-    },
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "./generated-artifacts/DummyERC20Token.json",
-        "./generated-artifacts/DummyMultipleReturnERC20Token.json",
-        "./generated-artifacts/DummyNoReturnERC20Token.json",
-        "./generated-artifacts/ReentrantERC20Token.json",
-        "./generated-artifacts/ERC20Token.json",
-        "./generated-artifacts/IERC20Token.json",
-        "./generated-artifacts/MintableERC20Token.json",
-        "./generated-artifacts/UnlimitedAllowanceERC20Token.json",
-        "./generated-artifacts/IEtherToken.json",
-        "./generated-artifacts/WETH9.json",
-        "./generated-artifacts/ZRXToken.json"
+        "generated-artifacts/DummyERC20Token.json",
+        "generated-artifacts/DummyMultipleReturnERC20Token.json",
+        "generated-artifacts/DummyNoReturnERC20Token.json",
+        "generated-artifacts/ERC20Token.json",
+        "generated-artifacts/IERC20Token.json",
+        "generated-artifacts/IEtherToken.json",
+        "generated-artifacts/MintableERC20Token.json",
+        "generated-artifacts/ReentrantERC20Token.json",
+        "generated-artifacts/UnlimitedAllowanceERC20Token.json",
+        "generated-artifacts/WETH9.json",
+        "generated-artifacts/ZRXToken.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

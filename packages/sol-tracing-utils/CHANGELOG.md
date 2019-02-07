@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v6.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
 ## v6.0.0 - _February 5, 2019_
 
     * `SolCompilerArtifactAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly (#1535)

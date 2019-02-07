@@ -47,7 +47,8 @@ export abstract class DataType {
         const hasSelector = !_.isUndefined(selector);
         const rawCalldata = new RawCalldata(calldata, hasSelector);
         const rules_ = _.isUndefined(rules) ? constants.DEFAULT_DECODING_RULES : rules;
-        const value = this.generateValue(rawCalldata, rules_);
+        const value =
+            rawCalldata.getSizeInBytes() > 0 ? this.generateValue(rawCalldata, rules_) : this.getDefaultValue(rules_);
         return value;
     }
 
@@ -71,6 +72,7 @@ export abstract class DataType {
 
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
     public abstract generateValue(calldata: RawCalldata, rules: DecodingRules): any;
+    public abstract getDefaultValue(rules?: DecodingRules): any;
     public abstract getSignatureType(): string;
     public abstract isStatic(): boolean;
 }

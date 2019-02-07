@@ -5,9 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
 ## v3.0.0 - _February 5, 2019_
 
     * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Add `verifyingContractAddress` to `zeroExTransactionSchema` (#1576)
 
 ## v2.1.7 - _January 15, 2019_
 

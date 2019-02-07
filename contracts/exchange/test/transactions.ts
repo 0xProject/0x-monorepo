@@ -8,14 +8,13 @@ import {
     OrderFactory,
     orderUtils,
     provider,
-    SignedTransaction,
     TransactionFactory,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0x/types';
+import { OrderWithoutExchangeAddress, RevertReason, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -41,7 +40,7 @@ describe('Exchange transactions', () => {
 
     let erc20Balances: ERC20BalancesByOwner;
     let signedOrder: SignedOrder;
-    let signedTx: SignedTransaction;
+    let signedTx: SignedZeroExTransaction;
     let orderWithoutExchangeAddress: OrderWithoutExchangeAddress;
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;

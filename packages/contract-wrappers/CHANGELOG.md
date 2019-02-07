@@ -5,9 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v6.0.1 - _February 5, 2019_
+## v7.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v7.0.1 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v7.0.0 - _February 6, 2019_
 
     * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
+    * Use new `ZeroExTransaction` interface (#1576)
+    * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
 
 ## v6.0.0 - _Invalid date_
 

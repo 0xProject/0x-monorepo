@@ -1,10 +1,41 @@
 [
     {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Fake publish to enable pinning"
+            }
+        ],
+        "timestamp": 1549504360
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
                 "note": "Upgrade the bignumber.js to v8.0.2",
                 "pr": 1517
+            },
+            {
+                "note": "Import `ZeroExTransaction` type instead of using type defined in this package",
+                "pr": 1576
             }
         ],
         "timestamp": 1549373905

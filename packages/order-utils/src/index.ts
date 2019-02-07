@@ -3,6 +3,7 @@ export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
 export { marketUtils } from './market_utils';
+export { transactionHashUtils } from './transaction_hash';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderParsingUtils } from './parsing_utils';
@@ -50,7 +51,9 @@ export {
     EIP712Types,
     EIP712Object,
     EIP712ObjectValue,
+    EIP712DomainWithDefaultSchema,
     ZeroExTransaction,
+    SignedZeroExTransaction,
 } from '@0x/types';
 export {
     OrderError,
