@@ -80,7 +80,7 @@
         "@0x/web3-wrapper": "^4.0.1",
         "ethereum-types": "^2.0.0",
         "ethereumjs-util": "^5.1.1",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.11"
     },
     "publishConfig": {
         "access": "public"

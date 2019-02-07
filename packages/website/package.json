@@ -47,7 +47,7 @@
         "find-versions": "^2.0.0",
         "jsonschema": "^1.2.0",
         "less": "^2.7.2",
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "material-ui": "^0.20.0",
         "moment": "2.21.0",
         "numeral": "^2.0.6",
