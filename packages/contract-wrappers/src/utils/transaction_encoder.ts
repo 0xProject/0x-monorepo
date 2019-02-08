@@ -248,8 +248,8 @@ export class TransactionEncoder {
      * @return Hex encoded abi of the function call.
      */
     public matchOrdersTx(leftOrder: SignedOrder, rightOrder: SignedOrder): string {
-        assert.doesConformToSchema('order', leftOrder, schemas.orderSchema);
-        assert.doesConformToSchema('order', rightOrder, schemas.orderSchema);
+        assert.doesConformToSchema('leftOrder', leftOrder, schemas.orderSchema);
+        assert.doesConformToSchema('rightOrder', rightOrder, schemas.orderSchema);
         const abiEncodedData = this._getExchangeContract().matchOrders.getABIEncodedTransactionData(
             leftOrder,
             rightOrder,

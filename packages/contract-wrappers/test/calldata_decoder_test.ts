@@ -33,12 +33,12 @@ describe('ABI Decoding Calldata', () => {
     before(async () => {
         // Create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const [makerAddressLeft, makerAddressRight] = accounts.slice(0, 2);
+        const [makerAddressLeft, makerAddressRight] = accounts;
+        const [privateKeyLeft, privateKeyRight] = constants.TESTRPC_PRIVATE_KEYS;
         const exchangeAddress = addressUtils.generatePseudoRandomAddress();
         const feeRecipientAddress = addressUtils.generatePseudoRandomAddress();
-        const privateKeyLeft = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressLeft)];
-        const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
-        // Create orders to match
+        // Create orders to match.
+        // Values are arbitrary, with the exception of maker addresses (generated above).
         orderLeft = {
             makerAddress: makerAddressLeft,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
@@ -87,7 +87,9 @@ describe('ABI Decoding Calldata', () => {
     describe('decode', () => {
         it('should successfully decode DutchAuction.matchOrders calldata', async () => {
             const contractName = 'DutchAuction';
-            const decodedTxData = contractWrappers.getAbiDecoder().tryDecodeCalldata(matchOrdersTxData, contractName);
+            const decodedTxData = contractWrappers
+                .getAbiDecoder()
+                .decodeCalldataOrThrow(matchOrdersTxData, contractName);
             const expectedFunctionName = 'matchOrders';
             const expectedFunctionArguments = {
                 buyOrder: orderLeft,
@@ -101,7 +103,9 @@ describe('ABI Decoding Calldata', () => {
         });
         it('should successfully decode Exchange.matchOrders calldata (and distinguish from DutchAuction.matchOrders)', async () => {
             const contractName = 'Exchange';
-            const decodedTxData = contractWrappers.getAbiDecoder().tryDecodeCalldata(matchOrdersTxData, contractName);
+            const decodedTxData = contractWrappers
+                .getAbiDecoder()
+                .decodeCalldataOrThrow(matchOrdersTxData, contractName);
             const expectedFunctionName = 'matchOrders';
             const expectedFunctionArguments = {
                 leftOrder: orderLeft,
@@ -116,7 +120,7 @@ describe('ABI Decoding Calldata', () => {
         it('should throw if cannot decode calldata', async () => {
             const badTxData = '0x01020304';
             expect(() => {
-                contractWrappers.getAbiDecoder().tryDecodeCalldata(badTxData);
+                contractWrappers.getAbiDecoder().decodeCalldataOrThrow(badTxData);
             }).to.throw("No functions registered for selector '0x01020304'");
         });
     });

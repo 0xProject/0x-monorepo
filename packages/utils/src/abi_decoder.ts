@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 import { AbiEncoder } from '.';
 import { addressUtils } from './address_utils';
 import { BigNumber } from './configured_bignumber';
-import { FunctionInfoBySelector, TransactionData } from './types';
+import { DecodedCalldata, SelectorToFunctionInfo } from './types';
 
 /**
  * AbiDecoder allows you to decode event logs given a set of supplied contract ABI's. It takes the contract's event
@@ -24,17 +24,17 @@ import { FunctionInfoBySelector, TransactionData } from './types';
  */
 export class AbiDecoder {
     private readonly _eventIds: { [signatureHash: string]: { [numIndexedArgs: number]: EventAbi } } = {};
-    private readonly _functionInfoBySelector: FunctionInfoBySelector = {};
+    private readonly _selectorToFunctionInfo: SelectorToFunctionInfo = {};
     /**
-     * Retrieves the function selector from tranasction data.
-     * @param calldata hex-encoded transaction data.
+     * Retrieves the function selector from calldata.
+     * @param calldata hex-encoded calldata.
      * @return hex-encoded function selector.
      */
     private static _getFunctionSelector(calldata: string): string {
         const functionSelectorLength = 10;
         if (!calldata.startsWith('0x') || calldata.length < functionSelectorLength) {
             throw new Error(
-                `Malformed transaction data. Must include a hex prefix '0x' and 4-byte function selector. Got '${calldata}'`,
+                `Malformed calldata. Must include a hex prefix '0x' and 4-byte function selector. Got '${calldata}'`,
             );
         }
         const functionSelector = calldata.substr(0, functionSelectorLength);
@@ -56,12 +56,12 @@ export class AbiDecoder {
      * @return The decoded log if the requisite ABI was available. Otherwise the log unaltered.
      */
     public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
-        const methodId = log.topics[0];
+        const eventId = log.topics[0];
         const numIndexedArgs = log.topics.length - 1;
-        if (_.isUndefined(this._eventIds[methodId]) || _.isUndefined(this._eventIds[methodId][numIndexedArgs])) {
+        if (_.isUndefined(this._eventIds[eventId]) || _.isUndefined(this._eventIds[eventId][numIndexedArgs])) {
             return log;
         }
-        const event = this._eventIds[methodId][numIndexedArgs];
+        const event = this._eventIds[eventId][numIndexedArgs];
         const ethersInterface = new ethers.utils.Interface([event]);
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
@@ -110,19 +110,21 @@ export class AbiDecoder {
         }
     }
     /**
-     * Decodes transaction data for a known ABI.
-     * @param calldata hex-encoded transaction data.
+     * Decodes calldata for a known ABI.
+     * @param calldata hex-encoded calldata.
      * @param contractName used to disambiguate similar ABI's (optional).
-     * @return Decoded transaction data. Includes: function name and signature, along with the decoded arguments.
+     * @return Decoded calldata. Includes: function name and signature, along with the decoded arguments.
      */
-    public tryDecodeCalldata(calldata: string, contractName?: string): TransactionData {
+    public decodeCalldataOrThrow(calldata: string, contractName?: string): DecodedCalldata {
         const functionSelector = AbiDecoder._getFunctionSelector(calldata);
-        const candidateFunctionInfos = this._functionInfoBySelector[functionSelector];
+        const candidateFunctionInfos = this._selectorToFunctionInfo[functionSelector];
         if (_.isUndefined(candidateFunctionInfos)) {
             throw new Error(`No functions registered for selector '${functionSelector}'`);
         }
-        const functionInfo = _.find(candidateFunctionInfos, txDecoder => {
-            return _.isUndefined(contractName) || _.toLower(txDecoder.contractName) === _.toLower(contractName);
+        const functionInfo = _.find(candidateFunctionInfos, candidateFunctionInfo => {
+            return (
+                _.isUndefined(contractName) || _.toLower(contractName) === _.toLower(candidateFunctionInfo.contractName)
+            );
         });
         if (_.isUndefined(functionInfo)) {
             throw new Error(
@@ -144,12 +146,14 @@ export class AbiDecoder {
         return decodedCalldata;
     }
     /**
-     * Adds a set of ABI definitions, after which transaction data targeting these ABI's can be decoded.
+     * Adds a set of ABI definitions, after which calldata and logs targeting these ABI's can be decoded.
      * Additional properties can be included to disambiguate similar ABI's. For example, if two functions
      * have the same signature but different parameter names, then their ABI definitions can be disambiguated
      * by specifying a contract name.
      * @param abiDefinitions ABI definitions for a given contract.
      * @param contractName Name of contract that encapsulates the ABI definitions (optional).
+     *                     This can be used when decoding calldata to disambiguate methods with
+     *                     the same signature but different parameter names.
      */
     public addABI(abiArray: AbiDefinition[], contractName?: string): void {
         if (_.isUndefined(abiArray)) {
@@ -159,15 +163,13 @@ export class AbiDecoder {
         _.map(abiArray, (abi: AbiDefinition) => {
             switch (abi.type) {
                 case AbiType.Event:
-                    // tslint:disable no-unnecessary-type-assertion
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
                     this._addEventABI(abi as EventAbi, ethersInterface);
-                    // tslint:enable no-unnecessary-type-assertion
                     break;
 
                 case AbiType.Function:
-                    // tslint:disable no-unnecessary-type-assertion
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
                     this._addMethodABI(abi as MethodAbi, contractName);
-                    // tslint:enable no-unnecessary-type-assertion
                     break;
 
                 default:
@@ -176,9 +178,7 @@ export class AbiDecoder {
             }
         });
     }
-    private _addEventABI(abi: EventAbi, ethersInterface: ethers.utils.Interface): void {
-        // tslint:disable-next-line:no-unnecessary-type-assertion
-        const eventAbi = abi as EventAbi;
+    private _addEventABI(eventAbi: EventAbi, ethersInterface: ethers.utils.Interface): void {
         const topic = ethersInterface.events[eventAbi.name].topic;
         const numIndexedArgs = _.reduce(eventAbi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
         this._eventIds[topic] = {
@@ -189,12 +189,12 @@ export class AbiDecoder {
     private _addMethodABI(methodAbi: MethodAbi, contractName?: string): void {
         const abiEncoder = new AbiEncoder.Method(methodAbi);
         const functionSelector = abiEncoder.getSelector();
-        if (!(functionSelector in this._functionInfoBySelector)) {
-            this._functionInfoBySelector[functionSelector] = [];
+        if (!(functionSelector in this._selectorToFunctionInfo)) {
+            this._selectorToFunctionInfo[functionSelector] = [];
         }
         // Recored a copy of this ABI for each deployment
         const functionSignature = abiEncoder.getSignature();
-        this._functionInfoBySelector[functionSelector].push({
+        this._selectorToFunctionInfo[functionSelector].push({
             functionSignature,
             abiEncoder,
             contractName,

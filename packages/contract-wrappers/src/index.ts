@@ -38,7 +38,7 @@ export { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
 
-export { AbiDecoder, TransactionData } from '@0x/utils';
+export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 
 export {
     ContractWrappersError,

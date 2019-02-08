@@ -8,11 +8,11 @@ export interface FunctionInfo {
     abiEncoder?: AbiEncoder.Method;
 }
 
-export interface FunctionInfoBySelector {
+export interface SelectorToFunctionInfo {
     [index: string]: FunctionInfo[];
 }
 
-export interface TransactionData {
+export interface DecodedCalldata {
     functionName: string;
     functionSignature: string;
     functionArguments: any;

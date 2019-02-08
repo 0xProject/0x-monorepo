@@ -40,7 +40,7 @@ describe('AbiDecoder', () => {
         const foobarSignature = foobarEncoder.getSignature();
         const foobarTxData = foobarEncoder.encode([testAddress]);
         // Decode tx data using contract name
-        const decodedTxData = abiDecoder.tryDecodeCalldata(foobarTxData, contractName);
+        const decodedTxData = abiDecoder.decodeCalldataOrThrow(foobarTxData, contractName);
         const expectedFunctionName = abi.name;
         const expectedFunctionArguments = { testAddress };
         expect(decodedTxData.functionName).to.be.equal(expectedFunctionName);

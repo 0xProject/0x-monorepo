@@ -1,13 +1,10 @@
-import { addHexPrefix, sha3, stripHexPrefix } from 'ethereumjs-util';
+import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
-
-import { BigNumber } from './configured_bignumber';
 
 const BASIC_ADDRESS_REGEX = /^(0x)?[0-9a-f]{40}$/i;
 const SAME_CASE_ADDRESS_REGEX = /^(0x)?([0-9a-f]{40}|[0-9A-F]{40})$/;
 const ADDRESS_LENGTH = 40;
-const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 
 export const addressUtils = {
     isChecksumAddress(address: string): boolean {
@@ -45,26 +42,5 @@ export const addressUtils = {
     },
     padZeros(address: string): string {
         return addHexPrefix(_.padStart(stripHexPrefix(address), ADDRESS_LENGTH, '0'));
-    },
-    /**
-     * Generates a pseudo-random 256-bit salt.
-     * The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
-     * and will not collide with other outstanding orders that are identical in all other parameters.
-     * @return  A pseudo-random 256-bit number that can be used as a salt.
-     */
-    generatePseudoRandomSalt(): BigNumber {
-        // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
-        // Source: https://mikemcl.github.io/bignumber.js/#random
-        const randomNumber = BigNumber.random(MAX_DIGITS_IN_UNSIGNED_256_INT);
-        const factor = new BigNumber(10).pow(MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
-        const salt = randomNumber.times(factor);
-        return salt;
-    },
-    generatePseudoRandomAddress(): string {
-        const randomBigNum = addressUtils.generatePseudoRandomSalt();
-        const randomBuff = sha3(randomBigNum.toString());
-        const addressLengthInBytes = 20;
-        const randomAddress = `0x${randomBuff.slice(0, addressLengthInBytes).toString('hex')}`;
-        return randomAddress;
     },
 };

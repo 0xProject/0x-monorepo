@@ -172,8 +172,8 @@ export class ContractWrappers {
         return this._web3Wrapper.getProvider();
     }
     /**
-     * Get the provider instance currently used by contract-wrappers
-     * @return  Web3 provider instance
+     * Get the abi decoder instance currently used by contract-wrappers
+     * @return  AbiDecoder instance
      */
     public getAbiDecoder(): AbiDecoder {
         return this._web3Wrapper.abiDecoder;
