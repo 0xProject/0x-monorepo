@@ -3,12 +3,12 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
-@Entity({ name: 'nft_trades', schema: 'raw' })
+@Entity({ name: 'nonfungible_dot_com', schema: 'raw' })
 export class NftTrade {
-    @PrimaryColumn({ name: 'source_url' })
-    public sourceUrl!: string;
     @PrimaryColumn({ name: 'transaction_hash' })
     public transactionHash!: string;
+    @PrimaryColumn({ name: 'publisher' })
+    public publisher!: string;
 
     @Column({ name: 'block_number', type: 'bigint', transformer: numberToBigIntTransformer })
     public blockNumber!: number;

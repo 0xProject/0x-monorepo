@@ -9,17 +9,16 @@ import { NftTrade } from '../../entities';
  * NftTrade entities.
  * @param rawTrades A raw order response from an SRA endpoint.
  */
-export function parseNonFungibleDotComTrades(rawTrades: NonfungibleDotComTrade[]): NftTrade[] {
-    return R.map(_parseNonFungibleDotComTrade, rawTrades);
+export function parseNonFungibleDotComTrades(rawTrades: NonfungibleDotComTrade[], publisher: string): NftTrade[] {
+    return R.map(_parseNonFungibleDotComTrade.bind(null, publisher), rawTrades);
 }
 
 /**
  * Converts a single trade from nonfungible.com into an NftTrade entity.
  * @param rawTrade A single trade from the response from the nonfungible.com API.
  */
-export function _parseNonFungibleDotComTrade(rawTrade: NonfungibleDotComTrade): NftTrade {
+export function _parseNonFungibleDotComTrade(publisher: string, rawTrade: NonfungibleDotComTrade): NftTrade {
     const nftTrade = new NftTrade();
-    nftTrade.sourceUrl = NONFUNGIBLE_DOT_COM_URL;
     nftTrade.assetDescriptor = rawTrade.assetDescriptor;
     nftTrade.assetId = rawTrade.assetId;
     nftTrade.blockNumber = rawTrade.blockNumber;
@@ -32,5 +31,6 @@ export function _parseNonFungibleDotComTrade(rawTrade: NonfungibleDotComTrade): 
     nftTrade.totalPrice = new BigNumber(rawTrade.totalPrice);
     nftTrade.transactionHash = rawTrade.transactionHash;
     nftTrade.usdPrice = rawTrade.usdPrice;
+    nftTrade.publisher = publisher;
     return nftTrade;
 }
