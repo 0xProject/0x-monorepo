@@ -94,21 +94,24 @@ export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
 }
 
 export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
-    if (_.isArray(config.orderSource)) {
-        config.orderSource = orderCoercionUtil.coerceOrderArrayFieldsToBigNumber(config.orderSource);
-    }
+    // Coerces BigNumber provided in config to version utilized by 0x packages
+    const coercedConfig = _.assign({}, config, {
+        orderSource: _.isArray(config.orderSource)
+            ? orderCoercionUtil.coerceOrderArrayFieldsToBigNumber(config.orderSource)
+            : config.orderSource,
+    });
 
-    validateInstantRenderConfig(config, selector);
+    validateInstantRenderConfig(coercedConfig, selector);
 
-    if (config.shouldDisablePushToHistory) {
+    if (coercedConfig.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {
-            renderInstant(config, selector);
+            renderInstant(coercedConfig, selector);
         }
         return;
     }
     // Before we render, push to history saying that instant is showing for this part of the history.
     window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
-    let removeInstant = renderInstant(config, selector);
+    let removeInstant = renderInstant(coercedConfig, selector);
     // If the integrator defined a popstate handler, save it to __zeroExInstantIntegratorsPopStateHandler
     // unless we have already done so on a previous render.
     const anyWindow = window as any;
@@ -122,7 +125,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         if (newState && newState.zeroExInstantShowing) {
             // We have returned to a history state that expects instant to be rendered.
             if (!isInstantRendered()) {
-                removeInstant = renderInstant(config, selector);
+                removeInstant = renderInstant(coercedConfig, selector);
             }
         } else {
             // History has changed to a different state.
