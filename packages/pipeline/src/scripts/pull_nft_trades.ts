@@ -26,7 +26,7 @@ async function getAndSaveTrades(): Promise<void> {
     // TODO(albrow): Pull NFT trades for all publishers, not just cryptokitties.
     const rawTrades = await getTradesAsync('cryptokitties', numExistingTrades);
     console.log(`Parsing ${rawTrades.length} trades...`);
-    const trades = parseNonFungibleDotComTrades(rawTrades);
+    const trades = parseNonFungibleDotComTrades(rawTrades, 'cryptokitties');
     console.log(`Saving ${rawTrades.length} trades...`);
     await tradesRepository.save(trades, { chunk: Math.ceil(trades.length / BATCH_SAVE_SIZE) });
     const newTotalTrades = await tradesRepository.count();

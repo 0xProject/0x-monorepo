@@ -11,7 +11,6 @@ import { testSaveAndFindEntityAsync } from './util';
 chaiSetup.configure();
 
 const baseTrade: NftTrade = {
-    sourceUrl: 'https://nonfungible.com/api/v1',
     assetDescriptor: 'Kitty #1002',
     assetId: '1002',
     blockNumber: 4608542,
@@ -36,6 +35,7 @@ const baseTrade: NftTrade = {
     totalPrice: new BigNumber('9751388888888889'),
     transactionHash: '0x468168419be7e442d5ff32d264fab24087b744bc2e37fdbac7024e1e74f4c6c8',
     usdPrice: new BigNumber('3.71957'),
+    publisher: 'cryptokitties',
 };
 
 // tslint:disable:custom-no-magic-numbers

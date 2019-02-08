@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { NONFUNGIBLE_DOT_COM_URL, NonfungibleDotComTrade } from '../../../src/data_sources/nonfungible_dot_com';
+import { NonfungibleDotComTrade } from '../../../src/data_sources/nonfungible_dot_com';
 import { NftTrade } from '../../../src/entities';
 import { _parseNonFungibleDotComTrade } from '../../../src/parsers/non_fungible_dot_com';
 import { chaiSetup } from '../../utils/chai_setup';
@@ -49,7 +49,6 @@ const input: NonfungibleDotComTrade = {
 };
 
 const expected: NftTrade = {
-    sourceUrl: NONFUNGIBLE_DOT_COM_URL,
     assetDescriptor: 'Kitty #1002',
     assetId: '1002',
     blockNumber: 4608542,
@@ -74,12 +73,13 @@ const expected: NftTrade = {
     totalPrice: new BigNumber('9751388888888889'),
     transactionHash: '0x468168419be7e442d5ff32d264fab24087b744bc2e37fdbac7024e1e74f4c6c8',
     usdPrice: new BigNumber('3.71957'),
+    publisher: 'cryptokitties',
 };
 
 describe('bloxy', () => {
     describe('_parseNonFungibleDotComTrade', () => {
         it(`converts BloxyTrade to DexTrade entity`, () => {
-            const actual = _parseNonFungibleDotComTrade(input);
+            const actual = _parseNonFungibleDotComTrade(expected.publisher, input);
             expect(actual).deep.equal(expected);
         });
     });
