@@ -9,15 +9,15 @@ export class NftTrade {
     public transactionHash!: string;
     @PrimaryColumn({ name: 'publisher' })
     public publisher!: string;
-
-    @Column({ name: 'block_number', type: 'bigint', transformer: numberToBigIntTransformer })
+    @PrimaryColumn({ name: 'block_number', type: 'bigint', transformer: numberToBigIntTransformer })
     public blockNumber!: number;
-    @Column({ name: 'log_index' })
+    @PrimaryColumn({ name: 'log_index' })
     public logIndex!: number;
+    @PrimaryColumn({ name: 'asset_id' })
+    public assetId!: string;
+
     @Column({ name: 'block_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public blockTimestamp!: number;
-    @Column({ name: 'asset_id' })
-    public assetId!: string;
     @Column({ name: 'asset_descriptor' })
     public assetDescriptor!: string;
     @Column({ name: 'market_address' })
