@@ -1,5 +1,18 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Upgrade contracts to Solidity 0.5.3",
+                "pr": 1604
+            },
+            {
+                "note": "Make constants internal",
+                "pr": 1604
+            }
+        ]
+    },
+    {
         "version": "1.0.4",
         "changes": [
             {
