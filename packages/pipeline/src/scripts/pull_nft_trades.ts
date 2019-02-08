@@ -15,11 +15,11 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getAndSaveTrades();
+    await getAndSaveTradesAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getAndSaveTrades(): Promise<void> {
+async function getAndSaveTradesAsync(): Promise<void> {
     const tradesRepository = connection.getRepository(NftTrade);
 
     for (const publisher of knownPublishers) {
