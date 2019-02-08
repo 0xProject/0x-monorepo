@@ -21,10 +21,17 @@ let connection: Connection;
 
 async function getAndSaveTrades(): Promise<void> {
     const tradesRepository = connection.getRepository(NftTrade);
-    const numExistingTrades = await tradesRepository.count();
     console.log('Getting latest NFT trades...');
     // TODO(albrow): Pull NFT trades for all publishers, not just cryptokitties.
-    const rawTrades = await getTradesAsync('cryptokitties', numExistingTrades);
+    const tradeWithHighestBlockNumber = await tradesRepository
+        .createQueryBuilder('nonfungible_dot_com')
+        .where('nonfungible_dot_com.publisher = :publisher', { publisher: 'cryptokitties' })
+        .orderBy({ 'nonfungible_dot_com.block_number': 'DESC' })
+        .getOne();
+    const highestExistingBlockNumber =
+        tradeWithHighestBlockNumber === undefined ? 0 : tradeWithHighestBlockNumber.blockNumber;
+    console.log(`Highest block number in existing trades: ${highestExistingBlockNumber}`);
+    const rawTrades = await getTradesAsync('cryptokitties', highestExistingBlockNumber);
     console.log(`Parsing ${rawTrades.length} trades...`);
     const trades = parseNonFungibleDotComTrades(rawTrades, 'cryptokitties');
     console.log(`Saving ${rawTrades.length} trades...`);
