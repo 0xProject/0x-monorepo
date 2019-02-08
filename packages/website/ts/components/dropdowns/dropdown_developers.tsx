@@ -41,6 +41,10 @@ const introData: LinkConfig[] = [
         label: 'Market making',
         url: `${WebsitePaths.MarketMaker}`,
     },
+    {
+        label: 'Free Credits',
+        url: `${WebsitePaths.Credits}`,
+    },
 ];
 
 const docsData: LinkConfig[] = [

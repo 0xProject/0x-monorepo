@@ -20,6 +20,7 @@ import { NextAboutJobs } from 'ts/pages/about/jobs';
 import { NextAboutMission } from 'ts/pages/about/mission';
 import { NextAboutPress } from 'ts/pages/about/press';
 import { NextAboutTeam } from 'ts/pages/about/team';
+import { NextCredits } from 'ts/pages/credits';
 import { NextEcosystem } from 'ts/pages/ecosystem';
 import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
@@ -109,6 +110,11 @@ render(
                                     exact={true}
                                     path={WebsitePaths.MarketMaker}
                                     component={NextMarketMaker as any}
+                                />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.Credits}
+                                    component={NextCredits as any}
                                 />
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />

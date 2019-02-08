@@ -51,6 +51,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                             color={colors.white}
                             isTransparent={false}
                             href={mainCta.href}
+                            onClick={mainCta.onClick}
                             target={mainCta.shouldOpenInNewTab ? '_blank' : ''}
                         >
                             {mainCta.text}

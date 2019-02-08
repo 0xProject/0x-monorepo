@@ -379,6 +379,7 @@ export enum WebsitePaths {
     AssetBuyer = '/docs/asset-buyer',
     Migrations = '/docs/migrations',
     Careers = '/careers',
+    Credits = '/credits',
 }
 
 export enum DocPackages {
