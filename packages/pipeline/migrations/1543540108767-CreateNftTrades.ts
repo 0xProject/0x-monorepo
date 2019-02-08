@@ -5,11 +5,11 @@ const nftTrades = new Table({
     columns: [
         { name: 'publisher', type: 'varchar', isPrimary: true },
         { name: 'transaction_hash', type: 'varchar', isPrimary: true },
+        { name: 'asset_id', type: 'varchar', isPrimary: true },
+        { name: 'block_number', type: 'bigint', isPrimary: true },
+        { name: 'log_index', type: 'integer', isPrimary: true },
 
-        { name: 'block_number', type: 'bigint' },
-        { name: 'log_index', type: 'integer' },
         { name: 'block_timestamp', type: 'bigint' },
-        { name: 'asset_id', type: 'varchar' },
         { name: 'asset_descriptor', type: 'varchar' },
         { name: 'market_address', type: 'varchar(42)' },
         { name: 'total_price', type: 'numeric' },
