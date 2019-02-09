@@ -1,6 +1,12 @@
 export { ContractAddresses } from '@0x/contract-addresses';
 
-export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
+export {
+    assetDataUtils,
+    signatureUtils,
+    generatePseudoRandomSalt,
+    orderHashUtils,
+    transactionHashUtils,
+} from '@0x/order-utils';
 
 export {
     ContractWrappers,
@@ -68,7 +74,7 @@ export {
     MetamaskSubprovider,
 } from '@0x/subproviders';
 
-export { AbiDecoder } from '@0x/utils';
+export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 
 export { BigNumber } from '@0x/utils';
 
@@ -92,6 +98,8 @@ export {
     OrderRelevantState,
     Stats,
     DutchAuctionDetails,
+    ZeroExTransaction,
+    SignedZeroExTransaction,
 } from '@0x/types';
 
 export {

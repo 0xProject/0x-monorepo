@@ -1,5 +1,14 @@
 [
     {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Added calldata decoding to ContractWrappers",
+                "pr": 1569
+            }
+        ]
+    },
+    {
         "version": "7.0.2",
         "changes": [
             {

@@ -242,6 +242,23 @@ export class TransactionEncoder {
         return abiEncodedData;
     }
     /**
+     * Encodes a matchOrders transaction.
+     * @param   leftOrder First order to match.
+     * @param   rightOrder Second order to match.
+     * @return Hex encoded abi of the function call.
+     */
+    public matchOrdersTx(leftOrder: SignedOrder, rightOrder: SignedOrder): string {
+        assert.doesConformToSchema('leftOrder', leftOrder, schemas.orderSchema);
+        assert.doesConformToSchema('rightOrder', rightOrder, schemas.orderSchema);
+        const abiEncodedData = this._getExchangeContract().matchOrders.getABIEncodedTransactionData(
+            leftOrder,
+            rightOrder,
+            leftOrder.signature,
+            rightOrder.signature,
+        );
+        return abiEncodedData;
+    }
+    /**
      * Encodes a preSign transaction.
      * @param hash          Hash to pre-sign
      * @param signerAddress Address that should have signed the given hash.
