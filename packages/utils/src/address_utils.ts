@@ -1,6 +1,8 @@
-import { addHexPrefix, stripHexPrefix } from 'ethereumjs-util';
+import { addHexPrefix, sha3, stripHexPrefix } from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
+
+import { generatePseudoRandom256BitNumber } from './random';
 
 const BASIC_ADDRESS_REGEX = /^(0x)?[0-9a-f]{40}$/i;
 const SAME_CASE_ADDRESS_REGEX = /^(0x)?([0-9a-f]{40}|[0-9A-F]{40})$/;
@@ -42,5 +44,12 @@ export const addressUtils = {
     },
     padZeros(address: string): string {
         return addHexPrefix(_.padStart(stripHexPrefix(address), ADDRESS_LENGTH, '0'));
+    },
+    generatePseudoRandomAddress(): string {
+        const randomBigNum = generatePseudoRandom256BitNumber();
+        const randomBuff = sha3(randomBigNum.toString());
+        const addressLengthInBytes = 20;
+        const randomAddress = `0x${randomBuff.slice(0, addressLengthInBytes).toString('hex')}`;
+        return randomAddress;
     },
 };
