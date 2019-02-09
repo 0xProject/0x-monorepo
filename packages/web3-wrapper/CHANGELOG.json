@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Export `DecodedCalldata` from @0x/utils",
+                "pr": 1569
+            }
+        ]
+    },
+    {
         "version": "4.0.2",
         "changes": [
             {
