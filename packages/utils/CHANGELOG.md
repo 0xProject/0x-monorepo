@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _February 9, 2019_
+
+    * Added method decoding to AbiDecoder (#1569)
+
+## v4.0.4 - _Invalid date_
+
+    * Cleaner signature parsing (#1592)
+
 ## v4.0.3 - _February 7, 2019_
 
     * Dependencies updated

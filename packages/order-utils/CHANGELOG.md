@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.0 - _February 9, 2019_
+
+    * Updated implementation of `generatePseudoRandomSalt` to use generator from @0x/utils (#1569)
+
 ## v6.0.1 - _February 7, 2019_
 
     * Dependencies updated

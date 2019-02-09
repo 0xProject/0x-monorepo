@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _February 9, 2019_
+
+    * Export `DecodedCalldata` from @0x/utils (#1569)
+
 ## v4.0.2 - _February 7, 2019_
 
     * Dependencies updated

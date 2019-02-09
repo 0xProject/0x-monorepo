@@ -6,7 +6,8 @@
                 "note": "Added calldata decoding to ContractWrappers",
                 "pr": 1569
             }
-        ]
+        ],
+        "timestamp": 1549733923
     },
     {
         "version": "7.0.2",

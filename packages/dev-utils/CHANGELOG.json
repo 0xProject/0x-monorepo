@@ -6,7 +6,8 @@
                 "note": "Allow using the Web3Factory in-process Ganache provider with existing DB snapshot",
                 "pr": 1602
             }
-        ]
+        ],
+        "timestamp": 1549733923
     },
     {
         "version": "2.0.2",

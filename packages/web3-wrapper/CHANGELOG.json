@@ -6,7 +6,8 @@
                 "note": "Export `DecodedCalldata` from @0x/utils",
                 "pr": 1569
             }
-        ]
+        ],
+        "timestamp": 1549733923
     },
     {
         "version": "4.0.2",
