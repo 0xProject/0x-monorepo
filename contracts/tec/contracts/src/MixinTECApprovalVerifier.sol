@@ -134,7 +134,6 @@ contract MixinTECApprovalVerifier is
         }
     }
 
-
     /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
     /// @param order Order struct containing order specifications.
     /// @param transactionHash EIP712 hash of the 0x transaction.
@@ -151,8 +150,10 @@ contract MixinTECApprovalVerifier is
         internal
         view
     {
-        // Do not check approval if sender is the feeRecipient of the order
-        if (order.feeRecipientAddress == msg.sender) {
+        // Do not check approval if the order's senderAddress is null
+        // Do not check approval if the feeRecipient is the sender
+        address approverAddress = order.feeRecipientAddress;
+        if (order.senderAddress == address(0) || approverAddress == msg.sender) {
             return;
         }
 
@@ -176,7 +177,7 @@ contract MixinTECApprovalVerifier is
 
         // Revert if signer of approval is not the feeRecipient of order
         require(
-            order.feeRecipientAddress == approvalSignerAddress,
+            approverAddress == approvalSignerAddress,
             "INVALID_APPROVAL_SIGNATURE"
         );
     }
@@ -201,18 +202,19 @@ contract MixinTECApprovalVerifier is
         address[] memory approvalSignerAddresses = new address[](0);
 
         uint256 signaturesLength = approvalSignatures.length;
+        uint256 currentApprovalExpirationTimeseconds = approvalExpirationTimeSeconds[i];
         for (uint256 i = 0; i < signaturesLength; i++) {
             // Create approval message
             TECApproval memory approval = TECApproval({
                 transactionHash: transactionHash,
                 transactionSignature: transactionSignature,
-                approvalExpirationTimeSeconds: approvalExpirationTimeSeconds[i]
+                approvalExpirationTimeSeconds: currentApprovalExpirationTimeseconds
             });
 
             // Ensure approval has not expired
             require(
                 // solhint-disable-next-line not-rely-on-time
-                approval.approvalExpirationTimeSeconds > block.timestamp,
+                currentApprovalExpirationTimeseconds > block.timestamp,
                 "APPROVAL_EXPIRED"
             );
 
@@ -226,10 +228,12 @@ contract MixinTECApprovalVerifier is
         
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i < ordersLength; i++) {
-            // Only check approval if sender is not feeRecipient of order
-            if (orders[i].feeRecipientAddress != msg.sender) {
+            // Do not check approval if the order's senderAddress is null
+            // Do not check approval if the feeRecipient is the sender
+            address approverAddress = orders[i].feeRecipientAddress;
+            if (orders[i].senderAddress != address(0) && approverAddress != msg.sender) {
                 // Get index of feeRecipient in list of approval signers
-                (bool doesExist,) = approvalSignerAddresses.indexOf(orders[i].feeRecipientAddress);
+                (bool doesExist,) = approvalSignerAddresses.indexOf(approverAddress);
 
                 // Ensure approval signer exists
                 require(
