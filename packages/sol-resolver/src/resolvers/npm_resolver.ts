@@ -63,7 +63,7 @@ export class NPMResolver extends Resolver {
         if (_.isUndefined(dependencyLookupResult)) {
             return undefined;
         }
-        if (!(dependencyName in this._dependencies)) {
+        if (_.isUndefined(this._dependencies[dependencyName])) {
             throw new Error(
                 `Lookup for ${dependencyName} started from ${this._packagePath} failed. Not specified in package.json`,
             );
