@@ -58,7 +58,7 @@ export class NPMResolver extends Resolver {
             return undefined;
         }
         const { dependencyName, internalPath } = NPMResolver._parseDependencyImport(importPath);
-        const dependencyLookupTarget = path.join('node_modules', dependencyName);
+        const dependencyLookupTarget = path.join('node_modules', dependencyName, internalPath);
         const dependencyLookupResult = NPMResolver._lookupPath(this._packagePath, dependencyLookupTarget);
         if (_.isUndefined(dependencyLookupResult)) {
             return undefined;
@@ -69,7 +69,7 @@ export class NPMResolver extends Resolver {
             );
         }
 
-        const dependencyPackagePath = path.join(dependencyLookupResult, dependencyLookupTarget);
+        const dependencyPackagePath = path.join(dependencyLookupResult, 'node_modules', dependencyName);
         const dependencyVersion = NPMResolver._getPackageVersion(dependencyPackagePath);
         const versionRange = this._dependencies[dependencyName];
         if (!semver.satisfies(dependencyVersion, versionRange)) {
