@@ -43,6 +43,8 @@
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
+        "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlinks properly for some modules. We temporarily set them manually. Remove this after V3 refactor is complete.",
+        "postinstall": "rm -rf `pwd`/contracts/exchange-libs/node_modules/@0x; mkdir `pwd`/contracts/exchange-libs/node_modules/@0x; ln -s `pwd`/contracts/utils `pwd`/contracts/exchange-libs/node_modules/@0x/contracts-utils",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
     "config": {

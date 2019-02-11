@@ -54,7 +54,6 @@ export class NPMResolver extends Resolver {
         this._dependencies = { ...packageJSON.dependencies, ...packageJSON.devDependencies };
     }
     public resolveIfExists(importPath: string): ContractSource | undefined {
-        console.log(importPath);
         if (importPath.startsWith('/')) {
             return undefined;
         }
