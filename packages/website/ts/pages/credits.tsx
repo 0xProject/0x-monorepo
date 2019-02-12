@@ -1,23 +1,25 @@
 import * as _ from 'lodash';
 import { opacify } from 'polished';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
-import { Action, Definition } from 'ts/components/definition';
+import { CenteredDefinition } from 'ts/components/centeredDefinition';
 import { Hero } from 'ts/components/hero';
 import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
-import { Section } from 'ts/components/newLayout';
+import { FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
+import { Heading } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 
-interface OfferData {
-    icon: string;
-    title: string;
-    description: string;
-    links?: Action[];
+interface OffersWrapProps {
 }
+const OffersWrap = styled.div<OffersWrapProps>`
+    display: flex;
+`;
+
 export interface NextCreditsProps {}
 
 export class NextCredits extends React.Component<NextCreditsProps> {
@@ -25,42 +27,8 @@ export class NextCredits extends React.Component<NextCreditsProps> {
         isContactModalOpen: false,
     };
 
-    private readonly _offersData: OfferData[];
-
     constructor(props: NextCreditsProps) {
         super(props);
-        this._offersData = [
-            {
-                icon: 'supportForAllEthereumStandards',
-                title: 'Comprehensive Tutorials',
-                description:
-                    'Stay on the bleeding edge of crypto by learning how to market make on decentralized exchanges. The network of 0x relayers provides market makers a first-mover advantage to capture larger spreads, find arbitrage opportunities, and trade on new types of exchanges like prediction markets and non-fungible token marketplaces.',
-                links: [
-                    {
-                        label: 'Explore the Docs',
-                        url: `${WebsitePaths.Wiki}#Market-Making-on-0x`,
-                    },
-                ],
-            },
-            {
-                icon: 'generateRevenueForYourBusiness-large',
-                title: 'Market Making Compensation',
-                description: 'Accepted applicants can receive up to $15,000 for completing onboarding',
-            },
-            {
-                icon: 'getInTouch',
-                title: 'Dedicated Support',
-                description:
-                    'The 0x team will provide 1:1 onboarding assistance and promptly answer all your questions. They will walk you through the tutorials so that you know how to read 0x order types, spin up an Ethereum node, and execute trades on the blockchain.',
-                links: [
-                    {
-                        label: 'Contact Us',
-                        onClick: this._onOpenContactModal,
-                        shouldUseAnchorTag: true,
-                    },
-                ],
-            },
-        ];
     }
 
     public render(): React.ReactNode {
@@ -77,7 +45,49 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                     actions={this._renderHeroActions()}
                 />
 
-                <Section bgColor="light" isFlex={true} maxWidth="1170px">
+                <Section bgColor="light" maxWidth="715px">
+                    <Heading asElement="h2" fontWeight={'400'} size={34} isCentered={true} isMuted={1} padding={['default', 0 , 'default', 'default']}>
+                        Get your project off the ground with these great services
+                    </Heading>
+
+                    <FlexWrap padding={'0 0 60px 0'}>
+                        <CenteredDefinition
+                            title="Amazon Web Services"
+                            titleSize="small"
+                            description="$10,000 in cloud credits and $5,000 in support"
+                            icon="aws"
+                            iconSize="medium"
+                            isInline={true}
+                        />
+
+                        <CenteredDefinition
+                            title="Alchemy"
+                            titleSize="small"
+                            description="6 months of Ethereum node service, subsidized by 0x"
+                            icon="alchemy"
+                            iconSize="medium"
+                            isInline={true}
+                        />
+                    </FlexWrap>
+
+                    <FlexWrap padding={'60px 0 0 0'}>
+                        <CenteredDefinition
+                            title="Digital Ocean"
+                            titleSize="small"
+                            description="$25,000 in cloud credits to get your relayer off the ground"
+                            icon="digital_ocean"
+                            iconSize="medium"
+                            isInline={true}
+                        />
+                        <CenteredDefinition
+                            title="Facebook ads"
+                            titleSize="small"
+                            description="Up to $2,000 in ad credits to bootstrap marketing"
+                            icon="facebook_ads"
+                            iconSize="medium"
+                            isInline={true}
+                        />
+                    </FlexWrap>
                 </Section>
 
                 <Banner
@@ -89,7 +99,7 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                 <ModalContact
                     isOpen={this.state.isContactModalOpen}
                     onDismiss={this._onDismissContactModal}
-                    modalContactType={ModalContactType.MarketMaker}
+                    modalContactType={ModalContactType.Credits}
                 />
             </SiteWrap>
         );

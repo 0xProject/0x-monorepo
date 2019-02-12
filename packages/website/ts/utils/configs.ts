@@ -1,4 +1,4 @@
-import { OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { GoogleSheetLeadUrls, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId, } from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
@@ -7,6 +7,9 @@ export const configs = {
     AMOUNT_DISPLAY_PRECSION: 5,
     BACKEND_BASE_PROD_URL: 'https://website-api.0x.org',
     BACKEND_BASE_STAGING_URL: 'https://staging-website-api.0x.org',
+    GOOGLE_SHEETS_LEAD_FORMS: {
+        CREDITS: 'https://script.google.com/macros/s/AKfycbyN1lJaSGWg2OIzqT8bou4GiqwCmOVjV2v_fiPO/exec',
+    } as GoogleSheetLeadUrls,
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,

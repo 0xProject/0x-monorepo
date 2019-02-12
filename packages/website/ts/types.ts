@@ -191,6 +191,10 @@ export enum ExchangeContractErrs {
     InsufficientRemainingFillAmount = 'INSUFFICIENT_REMAINING_FILL_AMOUNT',
 }
 
+export interface GoogleSheetLeadUrls {
+    [key: string]: string;
+}
+
 export interface ContractResponse {
     logs: ContractEvent[];
 }

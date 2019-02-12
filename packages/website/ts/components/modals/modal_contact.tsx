@@ -9,7 +9,7 @@ import '@reach/dialog/styles.css';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
-import { Input, InputWidth } from 'ts/components/modals/input';
+import { CheckBox, Input, InputWidth, OptionSelector } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
 import { utils } from 'ts/utils/utils';
@@ -17,6 +17,7 @@ import { utils } from 'ts/utils/utils';
 export enum ModalContactType {
     General = 'GENERAL',
     MarketMaker = 'MARKET_MAKER',
+    Credits = 'CREDITS',
 }
 
 interface Props {
@@ -64,6 +65,11 @@ export class ModalContact extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
+    // credit lead fields
+    public awsOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public alchemyOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public facebookAdsOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public digitalOceanOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
     public constructor(props: Props) {
         super(props);
     }
@@ -116,6 +122,8 @@ export class ModalContact extends React.Component<Props> {
         switch (this.props.modalContactType) {
             case ModalContactType.MarketMaker:
                 return this._renderMarketMakerFormContent(errors);
+            case ModalContactType.Credits:
+                return this._remderCreditsFormContent(errors);
             case ModalContactType.General:
             default:
                 return this._renderGeneralFormContent(errors);
@@ -191,6 +199,65 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
+
+    private _remderCreditsFormContent(errors: ErrorProps): React.ReactNode {
+        return (
+            <>
+                <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                    If you are building on top of 0x full time, please fill out this form and our Relayer Success Manager will be in touch. 
+                </Paragraph>
+                <InputRow>
+                    <Input
+                        name="name"
+                        label="Your name"
+                        type="text"
+                        width={InputWidth.Half}
+                        ref={this.nameRef}
+                        required={true}
+                        errors={errors}
+                    />
+                    <Input
+                        name="email"
+                        label="Your email"
+                        type="email"
+                        ref={this.emailRef}
+                        required={true}
+                        errors={errors}
+                        width={InputWidth.Half}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="companyOrProject"
+                        label="Name of your project / company"
+                        type="text"
+                        ref={this.companyProjectRef}
+                        required={false}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="comments"
+                        label="Brief Project Description."
+                        type="textarea"
+                        ref={this.commentsRef}
+                        required={false}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <OptionSelector isFlex={true} name="services" label="Which credits are you interested in?" errors={errors}>
+                        <CheckBox ref={this.awsOptionRef} name="aws" label="AWS"/>
+                        <CheckBox ref={this.alchemyOptionRef} name="alchemy" label="Alchemy"/>
+                        <CheckBox ref={this.facebookAdsOptionRef} name="facebook_ads" label="Facebook Ads"/>
+                        <CheckBox ref={this.digitalOceanOptionRef} name="digital_ocean" label="Digital Ocean"/>
+                    </OptionSelector>
+                </InputRow>
+            </>
+        );
+    }
+
     private _renderGeneralFormContent(errors: ErrorProps): React.ReactNode {
         return (
             <>
@@ -262,6 +329,19 @@ export class ModalContact extends React.Component<Props> {
                 projectOrCompany: this.companyProjectRef.current.value,
                 comments: this.commentsRef.current.value,
             };
+        } else if (this.props.modalContactType === ModalContactType.Credits) {
+            jsonBody = {
+                name: this.nameRef.current.value,
+                email: this.emailRef.current.value,
+                projectOrCompany: this.companyProjectRef.current.value,
+                comments: this.commentsRef.current.value,
+                services: _.filter([
+                    this.awsOptionRef.current.checked ? 'aws' : null,
+                    this.alchemyOptionRef.current.checked ? 'alchemy' : null,
+                    this.facebookAdsOptionRef.current.checked ? 'facebook_ads' : null,
+                    this.digitalOceanOptionRef.current.checked ? 'digital_ocean' : null,
+                ], (value: any) => !!value),
+            };
         } else {
             jsonBody = {
                 name: this.nameRef.current.value,
@@ -274,8 +354,12 @@ export class ModalContact extends React.Component<Props> {
 
         this.setState({ ...this.state, errors: [], isSubmitting: true });
 
-        const endpoint =
-            this.props.modalContactType === ModalContactType.MarketMaker ? '/market_maker_leads' : '/leads';
+        let endpoint;
+        switch (this.props.modalContactType) {
+            case ModalContactType.Credits: endpoint = '/credit_leads'; break;
+            case ModalContactType.MarketMaker: endpoint = '/market_maker_leads'; break;
+            default: endpoint = '/leads';
+        }
 
         try {
             // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
