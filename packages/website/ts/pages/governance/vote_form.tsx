@@ -289,10 +289,12 @@ export class VoteForm extends React.Component<Props> {
             // const provider = web3Wrapper.getProvider();
             const signature = isLedger ? await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, makerAddress) : await this._eip712SignatureAsync(makerAddress, typedData);
             const signedVote = { ...message, signature, from: makerAddress };
+            const isProduction = window.location.host.includes('0x.org');
+            const voteEndpoint = isProduction ? 'https://vote.0x.org/v1/vote' : 'http://localhost:3000/v1/vote';
 
             // Store the signed Order
             this.setState(prevState => ({ ...prevState, signedVote, voteHash: voteHashHex, isSuccessful: true }));
-            await fetch('http://localhost:3000/v1/vote', {
+            await fetch(voteEndpoint, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
