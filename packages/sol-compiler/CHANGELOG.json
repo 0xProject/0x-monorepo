@@ -1,10 +1,19 @@
 [
     {
-        "version": "3.0.3",
+        "version": "3.0.4",
         "changes": [
             {
                 "note": "Fix a bug when we were passing `contractsDir` instead of `packageDir` to `NPMResolver`",
                 "pr": 1608
+            }
+        ]
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

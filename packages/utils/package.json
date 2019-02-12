@@ -1,6 +1,6 @@
 {
     "name": "@0x/utils",
-    "version": "4.0.3",
+    "version": "4.1.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -14,7 +14,7 @@
         "lint": "tslint --format stylish --project .",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test:coverage",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*_test.js' 'lib/test/*_test.js'  --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info"
     },
