@@ -261,8 +261,9 @@ export class Governance extends React.Component {
         try {
             // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
             // tslint:disable:no-unbound-method
-            // const response = await fetch(`${utils.getBackendBaseUrl()}${endpoint}`, {
-            const response = await fetch(`http://localhost:3000/v1/tally/${proposalData.zeipId}`, {
+            const isProduction = window.location.host.includes('0x.org');
+            const voteEndpoint = isProduction ? 'https://vote.0x.org/v1/tally/' : 'http://localhost:3000/v1/tally/';
+            const response = await fetch(`${voteEndpoint}${proposalData.zeipId}`, {
                 method: 'get',
                 mode: 'cors',
                 credentials: 'same-origin',
