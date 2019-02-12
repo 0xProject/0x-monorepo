@@ -47,8 +47,11 @@ export const web3Factory = {
                 _.isUndefined(config.shouldThrowErrorsOnGanacheRPCResponse) ||
                 config.shouldThrowErrorsOnGanacheRPCResponse;
             if (!_.isUndefined(config.ganacheDatabasePath)) {
-                // Saving the snapshot to a local db. Ganache requires this directory to exist
-                fs.mkdirSync(config.ganacheDatabasePath);
+                const doesDatabaseAlreadyExist = fs.existsSync(config.ganacheDatabasePath);
+                if (!doesDatabaseAlreadyExist) {
+                    // Working with local DB snapshot. Ganache requires this directory to exist
+                    fs.mkdirSync(config.ganacheDatabasePath);
+                }
             }
             provider.addProvider(
                 new GanacheSubprovider({

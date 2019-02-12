@@ -1,5 +1,15 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Export `transactionHashUtils`, `DecodedCalldata`, `ZeroExTransaction`, and `SignedZeroExTransaction`",
+                "pr": 1569
+            }
+        ],
+        "timestamp": 1549733923
+    },
+    {
         "version": "4.0.3",
         "changes": [
             {

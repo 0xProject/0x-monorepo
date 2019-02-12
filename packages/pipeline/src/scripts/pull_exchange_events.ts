@@ -112,15 +112,20 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
     events: T[],
 ): Promise<void> {
     // Note(albrow): This is a temporary hack because `save` is not working as
-    // documented and is causing a foreign key constraint violation. Hopefully
+    // documented and is causing a primary key constraint violation. Hopefully
     // can remove later because this "poor man's upsert" implementation operates
     // on one event at a time and is therefore much slower.
     for (const event of events) {
         try {
             // First try an insert.
             await repository.insert(event);
-        } catch {
-            // If it fails, assume it was a foreign key constraint error and try
+        } catch (err) {
+            if (err.message.includes('duplicate key value violates unique constraint')) {
+                logUtils.log("Ignore the preceeding INSERT failure; it's not unexpected");
+            } else {
+                throw err;
+            }
+            // If it fails, assume it was a primary key constraint error and try
             // doing an update instead.
             // Note(albrow): Unfortunately the `as any` hack here seems
             // required. I can't figure out how to convince the type-checker
@@ -132,6 +137,7 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
                     contractAddress: event.contractAddress,
                     blockNumber: event.blockNumber,
                     logIndex: event.logIndex,
+                    transactionHash: event.transactionHash,
                 } as any,
                 event as any,
             );

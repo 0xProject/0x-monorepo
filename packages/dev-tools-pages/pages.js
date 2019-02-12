@@ -15,6 +15,8 @@ const pages = [
             'twitter:site': '@0xproject',
             'twitter:image': '/images/og-compiler.png',
         },
+        googleAnalyticsId: 'UA-98720122-4',
+        heapAnalyticsId: '3772819976',
     },
     {
         title: 'sol-coverage',
@@ -32,6 +34,8 @@ const pages = [
             'twitter:site': '@0xproject',
             'twitter:image': '/images/og-cov.png',
         },
+        googleAnalyticsId: 'UA-98720122-3',
+        heapAnalyticsId: '3386971671',
     },
     {
         title: 'sol-profiler',
@@ -49,6 +53,8 @@ const pages = [
             'twitter:site': '@0xproject',
             'twitter:image': '/images/og-profiler.png',
         },
+        googleAnalyticsId: 'UA-98720122-5',
+        heapAnalyticsId: '3776009943',
     },
     {
         title: 'sol-trace',
@@ -66,6 +72,8 @@ const pages = [
             'twitter:site': '@0xproject',
             'twitter:image': '/images/og-trace.png',
         },
+        googleAnalyticsId: 'UA-98720122-6',
+        heapAnalyticsId: '4172106583',
     },
 ];
 
