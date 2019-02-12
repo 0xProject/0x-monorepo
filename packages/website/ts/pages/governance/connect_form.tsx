@@ -11,9 +11,7 @@ import '@reach/dialog/styles.css';
 // import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import {
-    BigNumber,
- } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { Button } from 'ts/components/button';
@@ -33,10 +31,7 @@ import {
     Web3ProviderEngine,
 } from '@0x/subproviders';
 import { Provider } from 'ethereum-types';
-import {
-    InjectedProvider,
-    Providers,
-} from 'ts/types';
+import { InjectedProvider, Providers } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import FilterSubprovider from 'web3-provider-engine/subproviders/filters';
@@ -89,6 +84,11 @@ interface State {
 
 interface ErrorProps {
     [key: string]: string;
+}
+
+enum ConnectSteps {
+    Connect,
+    SelectAddress,
 }
 
 export class ConnectForm extends React.Component<Props, State> {
@@ -189,7 +189,7 @@ export class ConnectForm extends React.Component<Props, State> {
                 <AddressTable
                     userAddresses={userAddresses}
                     addressBalances={addressBalances}
-                    networkId={preferredNetworkId}
+                    networkId={this.networkId}
                     onSelectAddress={this._onSelectAddressIndex.bind(this)}
                 />
                 {!_.isUndefined(errors.connectionError) && (
@@ -198,10 +198,10 @@ export class ConnectForm extends React.Component<Props, State> {
                     </Paragraph>
                 )}
                 <ButtonRow>
-                    <Button
-                        type="button"
-                        onClick={this._onSelectedLedgerAddress.bind(this)}
-                    >
+                    <Button type="button" onClick={this._onGoBack.bind(this, ConnectSteps.Connect)}>
+                        Back
+                    </Button>
+                    <Button type="button" onClick={this._onSelectedLedgerAddress.bind(this)}>
                         Next
                     </Button>
                 </ButtonRow>
@@ -232,9 +232,8 @@ export class ConnectForm extends React.Component<Props, State> {
         const injectedProvider = await this._getInjectedProviderIfExistsAsync();
 
         if (!_.isUndefined(injectedProvider)) {
-            const contractAddresses = getContractAddressesForNetworkOrThrow(this.state.preferredNetworkId);
+            const contractAddresses = getContractAddressesForNetworkOrThrow(this.networkId);
             const tokenAddress: string = contractAddresses.zrxToken;
-            debugger;
             try {
                 const amount = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, owner);
                 // const formattedAmount = utils.getFormattedAmount(amount, constants.DECIMAL_PLACES_ETH);
@@ -297,7 +296,7 @@ export class ConnectForm extends React.Component<Props, State> {
         }
         return didSucceed;
     }
-    private _onSelectAddressIndex(index: number): void {
+    private _onSelectAddressIndex(index: number): void {
         this.setState({
             selectedUserAddressIndex: index,
         });
@@ -536,6 +535,21 @@ export class ConnectForm extends React.Component<Props, State> {
         this.setState({
             preferredNetworkId: networkId,
         });
+    }
+    private _onGoBack(step: number): void {
+        switch (step) {
+            case ConnectSteps.SelectAddress:
+                // @todo support going back to select address
+                this.setState({
+                    isLedgerConnected: false,
+                });
+                break;
+            default:
+            case ConnectSteps.Connect:
+                this.setState({
+                    isLedgerConnected: false,
+                });
+        }
     }
 }
 

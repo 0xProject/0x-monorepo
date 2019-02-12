@@ -23,7 +23,13 @@ interface RatingBulletProps {
 }
 
 export const RatingBar: React.StatelessComponent<RatingBarProps> = ({ rating, color, labels }) => {
-    const id =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const id =
+        Math.random()
+            .toString(36)
+            .substring(2, 15) +
+        Math.random()
+            .toString(36)
+            .substring(2, 15);
     const ratingLabel = labels[rating];
     const ratingPlaceholders = Array.from(new Array(3), (value, index) => index + 1);
     const fillCheck = (currentIndex: number) => currentIndex <= rating;
@@ -31,7 +37,9 @@ export const RatingBar: React.StatelessComponent<RatingBarProps> = ({ rating, co
     return (
         <div>
             <div style={{ display: 'flex', marginBottom: '12px' }}>
-                {ratingPlaceholders.map((currentIndex: number) => <RatingBullet color={color} key={`${id}-${currentIndex}`} isFilled={fillCheck(currentIndex)} />)}
+                {ratingPlaceholders.map((currentIndex: number) => (
+                    <RatingBullet color={color} key={`${id}-${currentIndex}`} isFilled={fillCheck(currentIndex)} />
+                ))}
             </div>
             <Paragraph>{ratingLabel}</Paragraph>
         </div>
@@ -39,7 +47,7 @@ export const RatingBar: React.StatelessComponent<RatingBarProps> = ({ rating, co
 };
 
 const RatingBullet = styled.div<RatingBulletProps>`
-    background-color: ${props => props.isFilled ? colors.brandLight : colors.brandDark };
+    background-color: ${props => (props.isFilled ? colors.brandLight : colors.brandDark)};
     border-radius: 50%;
     width: 20px;
     height: 20px;

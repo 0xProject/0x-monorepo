@@ -11,10 +11,7 @@ import '@reach/dialog/styles.css';
 // import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import {
-    BigNumber,
-    signTypedDataUtils,
- } from '@0x/utils';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { Button } from 'ts/components/button';
@@ -28,14 +25,10 @@ import { FormEvent } from 'react';
 import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_form';
 import { VoteForm } from 'ts/pages/governance/vote_form';
 
-import {
-    signatureUtils,
-} from '0x.js';
+import { signatureUtils } from '0x.js';
 import * as ethUtil from 'ethereumjs-util';
 
-import {
-    ECSignature,
-} from '@0x/types';
+import { ECSignature } from '@0x/types';
 
 import {
     ledgerEthereumBrowserClientFactoryAsync,
@@ -188,13 +181,20 @@ export class ModalVote extends React.Component<Props> {
                                 Vote Recieved!
                             </Heading>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>
-                                Your vote will help to decide the future of the protocol. You will be receiving a custom “I voted” NFT as a token of our appreciation.
+                                Your vote will help to decide the future of the protocol. You will be receiving a custom
+                                “I voted” NFT as a token of our appreciation.
                             </Paragraph>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                                 You voted from {selectedAddress} with 21,400 ZRX
                             </Paragraph>
-                            <Button type="button" onClick={this.props.onDismiss}>Done</Button>
+                            <Button type="button" onClick={this.props.onDismiss}>
+                                Done
+                            </Button>
                         </Confirmation>
+                        <ButtonClose type="button" onClick={this.props.onDismiss}>
+                            <span>Close</span>
+                            <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.414 0L0 1.414l12.02 12.021L0 25.455l1.414 1.415 12.021-12.02 12.02 12.02 1.415-1.414-12.02-12.021 12.02-12.02L25.456 0 13.435 12.02 1.415 0z" fill="#fff"/></svg>
+                        </ButtonClose>
                     </StyledDialogContent>
                 </DialogOverlay>
             </>
@@ -213,24 +213,73 @@ export class ModalVote extends React.Component<Props> {
         const { currentBalance, web3Wrapper } = this.state;
         return (
             <>
-                <ConnectForm web3Wrapper={web3Wrapper} onDismiss={this.props.onDismiss} onWalletConnected={this._onWalletConnected.bind(this)} />
+                <ConnectForm
+                    web3Wrapper={web3Wrapper}
+                    onDismiss={this.props.onDismiss}
+                    onWalletConnected={this._onWalletConnected.bind(this)}
+                />
             </>
         );
     }
     private _renderVoteFormContent(errors: ErrorProps): React.ReactNode {
-        const { currentBalance, selectedAddress, web3Wrapper, isLedger, web3, ledgerSubproviderIfExists, providerEngine } = this.state;
+        const {
+            currentBalance,
+            selectedAddress,
+            web3Wrapper,
+            isLedger,
+            web3,
+            ledgerSubproviderIfExists,
+            providerEngine,
+        } = this.state;
         return (
             <>
-                <VoteForm currentBalance={currentBalance} selectedAddress={selectedAddress} web3Wrapper={web3Wrapper} injectedProvider={web3} onDismiss={this.props.onDismiss} isLedger={isLedger} ledgerSubproviderIfExists={ledgerSubproviderIfExists} providerEngine={providerEngine} />
+                <VoteForm
+                    currentBalance={currentBalance}
+                    selectedAddress={selectedAddress}
+                    web3Wrapper={web3Wrapper}
+                    injectedProvider={web3}
+                    onDismiss={this.props.onDismiss}
+                    isLedger={isLedger}
+                    ledgerSubproviderIfExists={ledgerSubproviderIfExists}
+                    providerEngine={providerEngine}
+                    onVoted={this._onVoted.bind(this)}
+                />
             </>
         );
     }
     private _onWalletConnected(props: WalletConnectedProps): void {
-        const { contractWrappers, selectedAddress, currentBalance, providerName, injectedProviderIfExists, web3Wrapper, isLedger, ledgerSubproviderIfExists, providerEngine } = props;
+        const {
+            contractWrappers,
+            selectedAddress,
+            currentBalance,
+            providerName,
+            injectedProviderIfExists,
+            web3Wrapper,
+            isLedger,
+            ledgerSubproviderIfExists,
+            providerEngine,
+        } = props;
 
-        this.setState({ ...this.state, web3Wrapper, contractWrappers, web3: injectedProviderIfExists, isWalletConnected: true, providerName, currentBalance, selectedAddress, isLedger, ledgerSubproviderIfExists, providerEngine });
+        this.setState({
+            ...this.state,
+            web3Wrapper,
+            contractWrappers,
+            web3: injectedProviderIfExists,
+            isWalletConnected: true,
+            providerName,
+            currentBalance,
+            selectedAddress,
+            isLedger,
+            ledgerSubproviderIfExists,
+            providerEngine,
+        });
 
         this.props.onWalletConnected(providerName);
+    }
+    private _onVoted(): void {
+        this.setState({
+            isSuccessful: true,
+        });
     }
 }
 
@@ -271,17 +320,37 @@ const ButtonHalf = styled(Button)`
     width: calc(50% - 15px);
 `;
 
+const ButtonClose = styled.button.attrs({})`
+cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    overflow: hidden;
+    width: 27px;
+    height: 27px;
+    border: 0;
+    background-color: transparent;
+    padding: 0;
+    transform: translateY(-47px);
+
+    span {
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+    }
+`;
+
 const ButtonDisabled = styled(Button)<{ isDisabled?: boolean; disabled?: boolean }>`
     background-color: ${props => props.disabled && '#898990'};
     opacity: ${props => props.disabled && '0.4'};
 `;
 
 const ButtonActive = styled(Button)<{ isActive: boolean; activeColor: string; onClickValue?: string }>`
-    background-color: ${props => props.isActive ? props.activeColor : '#898990'};
+    background-color: ${props => (props.isActive ? props.activeColor : '#898990')};
     width: calc(50% - 15px);
 
     &:hover {
-        background-color: ${props => props.activeColor ? props.activeColor : '#898990'};
+        background-color: ${props => (props.activeColor ? props.activeColor : '#898990')};
     }
 `;
 

@@ -31,7 +31,13 @@ const Radio: React.StatelessComponent<RadioProps> = ({ address, onSelectAddress,
     );
 };
 
-export const AddressTableRow: React.StatelessComponent<PreferenceSelecterProps> = ({ address, balance, onSelectAddress, isActive, value }) => {
+export const AddressTableRow: React.StatelessComponent<PreferenceSelecterProps> = ({
+    address,
+    balance,
+    onSelectAddress,
+    isActive,
+    value,
+}) => {
     return (
         <Wrapper isActive={isActive}>
             <Cell>
@@ -69,7 +75,7 @@ const Label = styled.label`
 `;
 
 const LabelText = styled.span<MarkerProps>`
-    color: ${props => props.isActive ? '#003831' : '#666666'};
+    color: ${props => (props.isActive ? '#003831' : '#666666')};
     font-size: 14px;
     line-height: 1;
     margin-left: 10px;
@@ -77,7 +83,7 @@ const LabelText = styled.span<MarkerProps>`
 `;
 
 const Marker = styled.span<MarkerProps>`
-    border: 1px solid #CCCCCC;
+    border: 1px solid #cccccc;
     border-color: ${props => props.isActive && colors.brandLight};
     display: flex;
     width: 16px;
@@ -86,7 +92,9 @@ const Marker = styled.span<MarkerProps>`
     position: relative;
     flex-shrink: 0;
 
-    ${props => props.isActive && `
+    ${props =>
+        props.isActive &&
+        `
         background-color: ${colors.brandLight};
     `}
 `;

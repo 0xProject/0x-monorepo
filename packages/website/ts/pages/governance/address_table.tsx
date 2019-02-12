@@ -60,7 +60,14 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
             const balanceInEth = Web3Wrapper.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
             const balanceString = `${balanceInEth.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ZRX`;
             return (
-                <AddressTableRow key={addressRowId} address={userAddress} balance={balanceString} isActive={selectedAddressIndex === i} value={i} onSelectAddress={this._onSelectAddress.bind(this)} />
+                <AddressTableRow
+                    key={addressRowId}
+                    address={userAddress}
+                    balance={balanceString}
+                    isActive={selectedAddressIndex === i}
+                    value={i}
+                    onSelectAddress={this._onSelectAddress.bind(this)}
+                />
             );
         });
         return rows;
