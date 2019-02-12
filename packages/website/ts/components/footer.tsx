@@ -62,6 +62,7 @@ const linkRows: LinkRows[] = [
             { url: constants.URL_ZEROEX_CHAT, text: 'Discord Chat', shouldOpenInNewTab: true },
             { url: constants.URL_FACEBOOK, text: 'Facebook', shouldOpenInNewTab: true },
             { url: constants.URL_REDDIT, text: 'Reddit', shouldOpenInNewTab: true },
+            { url: constants.URL_FORUM, text: 'Forum', shouldOpenInNewTab: true },
         ],
     },
 ];
