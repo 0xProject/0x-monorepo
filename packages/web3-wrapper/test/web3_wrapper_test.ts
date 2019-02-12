@@ -1,10 +1,10 @@
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { BlockParamLiteral, JSONRPCErrorCallback, JSONRPCRequestPayload, TransactionReceipt } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { utils } from '../src/utils';
 import { Web3Wrapper } from '../src/web3_wrapper';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -35,7 +35,7 @@ describe('Web3Wrapper tests', () => {
     describe('#getNodeVersionAsync', () => {
         it('gets the node version', async () => {
             const nodeVersion = await web3Wrapper.getNodeVersionAsync();
-            const NODE_VERSION = 'EthereumJS TestRPC/v2.1.2/ethereum-js';
+            const NODE_VERSION = 'EthereumJS TestRPC/v2.3.3/ethereum-js';
             expect(nodeVersion).to.be.equal(NODE_VERSION);
         });
     });
@@ -118,7 +118,7 @@ describe('Web3Wrapper tests', () => {
                 throw new Error('Expected block to exist');
             }
             expect(blockIfExists.number).to.be.equal(0);
-            expect(utils.isBigNumber(blockIfExists.difficulty)).to.equal(true);
+            expect(BigNumber.isBigNumber(blockIfExists.difficulty)).to.equal(true);
             expect(_.isNumber(blockIfExists.gasLimit)).to.equal(true);
         });
         it('gets block when supplied a block number', async () => {
@@ -151,7 +151,7 @@ describe('Web3Wrapper tests', () => {
             const blockParamLiteral = BlockParamLiteral.Earliest;
             const block = await web3Wrapper.getBlockWithTransactionDataAsync(blockParamLiteral);
             expect(block.number).to.be.equal(0);
-            expect(utils.isBigNumber(block.difficulty)).to.equal(true);
+            expect(BigNumber.isBigNumber(block.difficulty)).to.equal(true);
             expect(_.isNumber(block.gasLimit)).to.equal(true);
         });
         it('should throw if supplied invalid blockParam value', async () => {

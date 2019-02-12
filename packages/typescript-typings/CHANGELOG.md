@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v3.0.8 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v3.0.7 - _January 11, 2019_
 
     * Dependencies updated

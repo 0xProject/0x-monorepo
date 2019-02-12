@@ -1,11 +1,9 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
+    "useDockerisedSolc": true,
     "compilerSettings": {
-        "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-        },
+        "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
                 "*": [
@@ -18,5 +16,13 @@
             }
         }
     },
-    "contracts": ["TestConstants", "TestLibBytes", "LibBytes", "Ownable", "IOwnable", "ReentrancyGuard", "SafeMath"]
+    "contracts": [
+        "src/LibBytes.sol",
+        "src/Ownable.sol",
+        "src/ReentrancyGuard.sol",
+        "src/SafeMath.sol",
+        "src/interfaces/IOwnable.sol",
+        "test/TestConstants.sol",
+        "test/TestLibBytes.sol"
+    ]
 }

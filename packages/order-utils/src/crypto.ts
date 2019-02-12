@@ -1,3 +1,4 @@
+import { BigNumber } from '@0x/utils';
 import BN = require('bn.js');
 import ABI = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
@@ -24,7 +25,7 @@ export const crypto = {
             const isNumber = _.isFinite(arg);
             if (isNumber) {
                 argTypes.push('uint8');
-            } else if (arg.isBigNumber) {
+            } else if (BigNumber.isBigNumber(arg)) {
                 argTypes.push('uint256');
                 const base = 10;
                 args[i] = new BN(arg.toString(base), base);

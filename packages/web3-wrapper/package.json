@@ -1,6 +1,6 @@
 {
     "name": "@0x/web3-wrapper",
-    "version": "3.2.3",
+    "version": "5.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,14 +36,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^2.0.1",
-        "@types/ganache-core": "^2.1.0",
+        "@0x/tslint-config": "^3.0.0",
+        "@types/ganache-core": "^2.1.2",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-bignumber": "^2.0.1",
+        "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
-        "ganache-core": "0xProject/ganache-core#monorepo-dep",
+        "ganache-core": "^2.3.3",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
@@ -54,14 +54,14 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/assert": "^1.0.22",
-        "@0x/json-schemas": "^2.1.6",
-        "@0x/typescript-typings": "^3.0.7",
-        "@0x/utils": "^3.0.0",
-        "ethereum-types": "^1.1.5",
+        "@0x/assert": "^2.0.3",
+        "@0x/json-schemas": "^3.0.3",
+        "@0x/typescript-typings": "^4.0.0",
+        "@0x/utils": "^4.1.0",
+        "ethereum-types": "^2.0.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.11"
     },
     "publishConfig": {
         "access": "public"

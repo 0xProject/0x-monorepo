@@ -2,8 +2,7 @@ import { chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import * as chai from 'chai';
 
-import { TestConstantsContract } from '../generated-wrappers/test_constants';
-import { artifacts } from '../src';
+import { artifacts, TestConstantsContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

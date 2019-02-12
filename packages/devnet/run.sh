@@ -15,6 +15,7 @@ mkdir -p /var/log
     --rpc \
     --rpcaddr '0.0.0.0' \
     --rpcport 8501 \
+    --rpcvhosts '*' \
     --rpcapi 'personal,db,eth,net,web3,txpool,miner,debug' \
     --networkid 50 \
     --gasprice '2000000000' \

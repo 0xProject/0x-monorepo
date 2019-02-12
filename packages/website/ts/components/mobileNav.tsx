@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { WrapGrid, WrapProps } from 'ts/components/newLayout';
 import { WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 interface Props {
     isToggled: boolean;
@@ -41,7 +42,7 @@ export class MobileNav extends React.PureComponent<Props> {
                                 <Link to={WebsitePaths.AboutMission}>About</Link>
                             </li>
                             <li>
-                                <a href="https://blog.0xproject.com/latest" target="_blank">
+                                <a href={constants.URL_BLOG} target="_blank">
                                     Blog
                                 </a>
                             </li>

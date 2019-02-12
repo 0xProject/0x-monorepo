@@ -38,6 +38,8 @@ export { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
 
+export { AbiDecoder, DecodedCalldata } from '@0x/utils';
+
 export {
     ContractWrappersError,
     ForwarderWrapperError,
@@ -83,6 +85,11 @@ export {
     JSONRPCResponseError,
     AbiDefinition,
     LogWithDecodedArgs,
+    LogEntry,
+    DecodedLogEntry,
+    DecodedLogEntryEvent,
+    LogEntryEvent,
+    RawLog,
     FunctionAbi,
     EventAbi,
     EventParameter,

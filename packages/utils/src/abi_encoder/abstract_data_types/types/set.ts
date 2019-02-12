@@ -1,3 +1,4 @@
+import { ObjectMap } from '@0x/types';
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -96,6 +97,27 @@ export abstract class AbstractSetDataType extends DataType {
         return isStatic;
     }
 
+    public getDefaultValue(rules?: DecodingRules): any[] | object {
+        let defaultValue: any[] | object;
+        if (this._isArray && _.isUndefined(this._arrayLength)) {
+            defaultValue = [];
+        } else if (!_.isUndefined(rules) && rules.shouldConvertStructsToObjects && !this._isArray) {
+            defaultValue = {};
+            _.each(this._memberIndexByName, (idx: number, key: string) => {
+                const member = this._members[idx];
+                const memberValue = member.getDefaultValue();
+                (defaultValue as { [key: string]: any })[key] = memberValue;
+            });
+        } else {
+            defaultValue = [];
+            _.each(this._members, (member: DataType, idx: number) => {
+                const memberValue = member.getDefaultValue();
+                (defaultValue as any[]).push(memberValue);
+            });
+        }
+        return defaultValue;
+    }
+
     protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): SetCalldataBlock {
         // Sanity check: if the set has a defined length then `value` must have the same length.
         if (!_.isUndefined(this._arrayLength) && value.length !== this._arrayLength) {
@@ -134,31 +156,26 @@ export abstract class AbstractSetDataType extends DataType {
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // Create blocks for members of set.
         const memberCalldataBlocks: CalldataBlock[] = [];
-        const childMap = _.cloneDeep(this._memberIndexByName);
-        _.forOwn(obj, (value: any, key: string) => {
-            if (!(key in childMap)) {
+        _.forEach(this._memberIndexByName, (memberIndex: number, memberName: string) => {
+            if (!(memberName in obj)) {
                 throw new Error(
-                    `Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`,
+                    `Could not assign tuple to object: missing key '${memberName}' in object ${JSON.stringify(obj)}`,
                 );
             }
-            const memberBlock = this._members[this._memberIndexByName[key]].generateCalldataBlock(value, block);
+            const memberValue: any = (obj as ObjectMap<any>)[memberName];
+            const memberBlock = this._members[memberIndex].generateCalldataBlock(memberValue, block);
             memberCalldataBlocks.push(memberBlock);
-            delete childMap[key];
         });
-        // Sanity check that all members have been included.
-        if (Object.keys(childMap).length !== 0) {
-            throw new Error(`Could not assign tuple to object: missing keys ${Object.keys(childMap)}`);
-        }
         // Associate member blocks with Set block.
         block.setMembers(memberCalldataBlocks);
         return block;
     }
 
-    protected _computeSignatureOfMembers(): string {
+    protected _computeSignatureOfMembers(isDetailed?: boolean): string {
         // Compute signature of members
         let signature = `(`;
         _.each(this._members, (member: DataType, i: number) => {
-            signature += member.getSignature();
+            signature += member.getSignature(isDetailed);
             if (i < this._members.length - 1) {
                 signature += ',';
             }
@@ -179,17 +196,27 @@ export abstract class AbstractSetDataType extends DataType {
         // Create one member for each component of `dataItem`
         const members: DataType[] = [];
         const memberIndexByName: MemberIndexByName = {};
+        const memberNames: string[] = [];
         _.each(dataItem.components, (memberItem: DataItem) => {
+            // If a component with `name` already exists then
+            // rename to `name_nameIdx` to avoid naming conflicts.
+            let memberName = memberItem.name;
+            let nameIdx = 0;
+            while (_.includes(memberNames, memberName) || _.isEmpty(memberName)) {
+                nameIdx++;
+                memberName = `${memberItem.name}_${nameIdx}`;
+            }
+            memberNames.push(memberName);
             const childDataItem: DataItem = {
                 type: memberItem.type,
-                name: `${dataItem.name}.${memberItem.name}`,
+                name: `${dataItem.name}.${memberName}`,
             };
             const components = memberItem.components;
             if (!_.isUndefined(components)) {
                 childDataItem.components = components;
             }
             const child = this.getFactory().create(childDataItem, this);
-            memberIndexByName[memberItem.name] = members.length;
+            memberIndexByName[memberName] = members.length;
             members.push(child);
         });
         return [members, memberIndexByName];

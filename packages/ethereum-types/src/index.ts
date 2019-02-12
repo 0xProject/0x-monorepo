@@ -306,6 +306,8 @@ export interface TraceParams {
     disableMemory?: boolean;
     disableStack?: boolean;
     disableStorage?: boolean;
+    tracer?: string;
+    timeout?: string;
 }
 
 export type OutputField =
@@ -507,6 +509,7 @@ export interface Source {
  * (http://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#compiler-input-and-output-json-description)
  * contracts: List of contract names you wish to compile, or alternatively ['*'] to compile all contracts in the
  * specified directory.
+ * useDockerisedSolc: If set to true - sol-compiler will try calling a dockerized installations of solc to achieve faster compilation times. Otherwise and by default - solcjs will be used. Defaults to false.
  * solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
  * contracts to compile with the the version specified here.
  */
@@ -515,5 +518,6 @@ export interface CompilerOptions {
     artifactsDir?: string;
     compilerSettings?: CompilerSettings;
     contracts?: string[] | '*';
+    useDockerisedSolc?: boolean;
     solcVersion?: string;
 } // tslint:disable-line:max-file-line-count

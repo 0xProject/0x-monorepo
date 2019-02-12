@@ -5,6 +5,34 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _February 9, 2019_
+
+    * Export `transactionHashUtils`, `DecodedCalldata`, `ZeroExTransaction`, and `SignedZeroExTransaction` (#1569)
+
+## v4.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v3.0.3 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v3.0.2 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v3.0.1 - _January 11, 2019_
 
     * Dependencies updated

@@ -10,11 +10,12 @@ import * as EncoderMath from '../utils/math';
 
 export class IntDataType extends AbstractBlobDataType {
     private static readonly _MATCHER = RegExp(
-        '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
+        '^int(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _MAX_WIDTH: number = 256;
     private static readonly _DEFAULT_WIDTH: number = IntDataType._MAX_WIDTH;
+    private static readonly _DEFAULT_VALUE = new BigNumber(0);
     private readonly _width: number;
     private readonly _minValue: BigNumber;
     private readonly _maxValue: BigNumber;
@@ -38,8 +39,8 @@ export class IntDataType extends AbstractBlobDataType {
             throw new Error(`Tried to instantiate Int with bad input: ${dataItem}`);
         }
         this._width = IntDataType._decodeWidthFromType(dataItem.type);
-        this._minValue = new BigNumber(2).toPower(this._width - 1).times(-1);
-        this._maxValue = new BigNumber(2).toPower(this._width - 1).sub(1);
+        this._minValue = new BigNumber(2).exponentiatedBy(this._width - 1).times(-1);
+        this._maxValue = new BigNumber(2).exponentiatedBy(this._width - 1).minus(1);
     }
 
     public encodeValue(value: BigNumber | string | number): Buffer {
@@ -47,13 +48,24 @@ export class IntDataType extends AbstractBlobDataType {
         return encodedValue;
     }
 
-    public decodeValue(calldata: RawCalldata): BigNumber {
+    public decodeValue(calldata: RawCalldata): BigNumber | number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, this._minValue, this._maxValue);
+        if (this._width === constants.NUMBER_OF_BYTES_IN_INT8) {
+            return value.toNumber();
+        }
         return value;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): BigNumber | number {
+        const defaultValue = IntDataType._DEFAULT_VALUE;
+        if (this._width === constants.NUMBER_OF_BYTES_IN_INT8) {
+            return defaultValue.toNumber();
+        }
+        return defaultValue;
+    }
+
+    public getSignatureType(): string {
         return `${SolidityTypes.Int}${this._width}`;
     }
 }

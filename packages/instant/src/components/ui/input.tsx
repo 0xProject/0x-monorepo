@@ -25,6 +25,9 @@ export const Input = styled.input<InputProps>`
         background: transparent;
         outline: none;
         border: none;
+        &[type='number'] {
+            -moz-appearance: textfield;
+        }
         &::placeholder {
             color: ${props => props.theme[props.fontColor || 'white']} !important;
             opacity: 0.5 !important;

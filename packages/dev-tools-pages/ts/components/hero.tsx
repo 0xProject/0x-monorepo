@@ -9,16 +9,16 @@ import { Beta } from './typography';
 
 const Hero: React.StatelessComponent<ContextInterface> = ({ children }) => (
     <ThemeContext.Consumer>
-        {({ subtitle, tagline }: ContextInterface) => (
+        {({ subtitle, tagline, docLink }: ContextInterface) => (
             <StyledHero>
                 <HeroContainer>
                     <Subtitle>{subtitle}</Subtitle>
                     <Tagline as="p">{tagline}</Tagline>
-                    <Button as="a" href="#" large={true}>
+                    <Button as="a" href={docLink} target="_blank" large={true}>
                         Read the Docs
                     </Button>
                 </HeroContainer>
-                {navigator.userAgent !== 'ReactSnap' ? children : null}
+                {children}
             </StyledHero>
         )}
     </ThemeContext.Consumer>

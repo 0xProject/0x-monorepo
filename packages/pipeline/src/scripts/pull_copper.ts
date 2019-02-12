@@ -1,6 +1,7 @@
-// tslint:disable:no-console
 import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+
+import { logUtils } from '@0x/utils';
 
 import { CopperEndpoint, CopperSearchParams, CopperSource } from '../data_sources/copper';
 import { CopperActivity, CopperActivityType, CopperCustomField, CopperLead, CopperOpportunity } from '../entities';
@@ -43,14 +44,14 @@ let connection: Connection;
 async function fetchAndSaveLeadsAsync(source: CopperSource): Promise<void> {
     const repository = connection.getRepository(CopperLead);
     const startTime = await getMaxAsync(connection, 'date_modified', 'raw.copper_leads');
-    console.log(`Fetching Copper leads starting from ${startTime}...`);
+    logUtils.log(`Fetching Copper leads starting from ${startTime}...`);
     await fetchAndSaveAsync(CopperEndpoint.Leads, source, startTime, {}, parseLeads, repository);
 }
 
 async function fetchAndSaveOpportunitiesAsync(source: CopperSource): Promise<void> {
     const repository = connection.getRepository(CopperOpportunity);
     const startTime = await getMaxAsync(connection, 'date_modified', 'raw.copper_opportunities');
-    console.log(`Fetching Copper opportunities starting from ${startTime}...`);
+    logUtils.log(`Fetching Copper opportunities starting from ${startTime}...`);
     await fetchAndSaveAsync(
         CopperEndpoint.Opportunities,
         source,
@@ -67,7 +68,7 @@ async function fetchAndSaveActivitiesAsync(source: CopperSource): Promise<void> 
     const searchParams = {
         minimum_activity_date: Math.floor(startTime / ONE_SECOND),
     };
-    console.log(`Fetching Copper activities starting from ${startTime}...`);
+    logUtils.log(`Fetching Copper activities starting from ${startTime}...`);
     await fetchAndSaveAsync(CopperEndpoint.Activities, source, startTime, searchParams, parseActivities, repository);
 }
 
@@ -97,7 +98,7 @@ async function fetchAndSaveAsync<T extends CopperSearchResponse, E>(
     const numPages = await source.fetchNumberOfPagesAsync(endpoint);
     try {
         for (let i = numPages; i > 0; i--) {
-            console.log(`Fetching page ${i}/${numPages} of ${endpoint}...`);
+            logUtils.log(`Fetching page ${i}/${numPages} of ${endpoint}...`);
             const raw = await source.fetchSearchResultsAsync<T>(endpoint, {
                 ...searchParams,
                 page_number: i,
@@ -108,21 +109,21 @@ async function fetchAndSaveAsync<T extends CopperSearchResponse, E>(
             saved += newRecords.length;
         }
     } catch (err) {
-        console.log(`Error fetching ${endpoint}, stopping: ${err.stack}`);
+        logUtils.log(`Error fetching ${endpoint}, stopping: ${err.stack}`);
     } finally {
-        console.log(`Saved ${saved} items from ${endpoint}, done.`);
+        logUtils.log(`Saved ${saved} items from ${endpoint}, done.`);
     }
 }
 
 async function fetchAndSaveActivityTypesAsync(source: CopperSource): Promise<void> {
-    console.log(`Fetching Copper activity types...`);
+    logUtils.log(`Fetching Copper activity types...`);
     const activityTypes = await source.fetchActivityTypesAsync();
     const repository = connection.getRepository(CopperActivityType);
     await repository.save(parseActivityTypes(activityTypes));
 }
 
 async function fetchAndSaveCustomFieldsAsync(source: CopperSource): Promise<void> {
-    console.log(`Fetching Copper custom fields...`);
+    logUtils.log(`Fetching Copper custom fields...`);
     const customFields = await source.fetchCustomFieldsAsync();
     const repository = connection.getRepository(CopperCustomField);
     await repository.save(parseCustomFields(customFields));

@@ -656,8 +656,9 @@ export interface TutorialInfo {
 }
 
 export enum Categories {
-    ZeroExProtocol = '0x Protocol',
-    Ethereum = 'Ethereum',
+    ZeroExProtocolTypescript = '0x Protocol (Typescript/Javascript)',
+    ZeroExProtocolPython = '0x Protocol (Python)',
+    Ethereum = 'Ethereum (Typescript/Javascript)',
     CommunityMaintained = 'Community Maintained',
 }
 

@@ -16,6 +16,7 @@ export class UIntDataType extends AbstractBlobDataType {
     private static readonly _MAX_WIDTH: number = 256;
     private static readonly _DEFAULT_WIDTH: number = UIntDataType._MAX_WIDTH;
     private static readonly _MIN_VALUE = new BigNumber(0);
+    private static readonly _DEFAULT_VALUE = new BigNumber(0);
     private readonly _width: number;
     private readonly _maxValue: BigNumber;
 
@@ -38,7 +39,7 @@ export class UIntDataType extends AbstractBlobDataType {
             throw new Error(`Tried to instantiate UInt with bad input: ${dataItem}`);
         }
         this._width = UIntDataType._decodeWidthFromType(dataItem.type);
-        this._maxValue = new BigNumber(2).toPower(this._width).sub(1);
+        this._maxValue = new BigNumber(2).exponentiatedBy(this._width).minus(1);
     }
 
     public encodeValue(value: BigNumber | string | number): Buffer {
@@ -46,13 +47,24 @@ export class UIntDataType extends AbstractBlobDataType {
         return encodedValue;
     }
 
-    public decodeValue(calldata: RawCalldata): BigNumber {
+    public decodeValue(calldata: RawCalldata): BigNumber | number {
         const valueBuf = calldata.popWord();
         const value = EncoderMath.safeDecodeNumericValue(valueBuf, UIntDataType._MIN_VALUE, this._maxValue);
+        if (this._width === constants.NUMBER_OF_BYTES_IN_UINT8) {
+            return value.toNumber();
+        }
         return value;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): BigNumber | number {
+        const defaultValue = UIntDataType._DEFAULT_VALUE;
+        if (this._width === constants.NUMBER_OF_BYTES_IN_UINT8) {
+            return defaultValue.toNumber();
+        }
+        return defaultValue;
+    }
+
+    public getSignatureType(): string {
         return `${SolidityTypes.Uint}${this._width}`;
     }
 }

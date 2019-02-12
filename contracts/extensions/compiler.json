@@ -1,11 +1,9 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
+    "useDockerisedSolc": true,
     "compilerSettings": {
-        "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-        },
+        "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
                 "*": [
@@ -18,5 +16,17 @@
             }
         }
     },
-    "contracts": ["BalanceThresholdFilter", "DutchAuction", "Forwarder", "OrderMatcher", "OrderValidator"]
+    "contracts": [
+        "@0x/contracts-asset-proxy/contracts/src/ERC20Proxy.sol",
+        "@0x/contracts-asset-proxy/contracts/src/ERC721Proxy.sol",
+        "@0x/contracts-erc20/contracts/src/WETH9.sol",
+        "@0x/contracts-erc20/contracts/test/DummyERC20Token.sol",
+        "@0x/contracts-erc721/contracts/test/DummyERC721Token.sol",
+        "@0x/contracts-exchange/contracts/examples/ExchangeWrapper.sol",
+        "@0x/contracts-exchange/contracts/src/Exchange.sol",
+        "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",
+        "src/DutchAuction/DutchAuction.sol",
+        "src/OrderMatcher/OrderMatcher.sol",
+        "src/OrderValidator/OrderValidator.sol"
+    ]
 }

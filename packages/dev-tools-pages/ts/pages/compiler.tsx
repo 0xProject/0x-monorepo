@@ -6,6 +6,7 @@ import { context } from 'ts/context/compiler';
 
 import { Base } from 'ts/components/base';
 import { Breakout } from 'ts/components/breakout';
+import { CallToAction } from 'ts/components/call_to_action';
 import { Code } from 'ts/components/code';
 import { Compiler as CompilerComponent } from 'ts/components/compiler';
 import { Content } from 'ts/components/content';
@@ -24,6 +25,9 @@ const Animation = Loadable({
     },
 });
 
+const SOLIDITY_INPUT_FORMAT_DOCS =
+    'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#compiler-input-and-output-json-description';
+
 const Compiler: React.StatelessComponent<{}> = () => (
     <Base context={context}>
         <Hero>
@@ -40,7 +44,7 @@ const Compiler: React.StatelessComponent<{}> = () => (
 
             <ContentBlock title="Run">
                 <Breakout>
-                    <Code>cd /your_project_dir && sol-compiler</Code>
+                    <Code canCopy={true}>cd /your_project_dir && sol-compiler</Code>
                 </Breakout>
             </ContentBlock>
 
@@ -49,11 +53,11 @@ const Compiler: React.StatelessComponent<{}> = () => (
                     Configure via a <InlineCode>compiler.json</InlineCode> file.
                 </p>
                 <Breakout>
-                    <Code>mkdir compiler.json</Code>
+                    <Code canCopy={true}>mkdir compiler.json</Code>
                 </Breakout>
                 <p>Example of settings:</p>
                 <Breakout>
-                    <Code language="json">
+                    <Code language="json" canCopy={true}>
                         {`{
     "contractsDir": "contracts",
     "artifactsDir": "artifacts",
@@ -74,15 +78,19 @@ const Compiler: React.StatelessComponent<{}> = () => (
         <Content dark={true}>
             <ContentBlock main={true} title="Artifacts">
                 <Lead>
-                    Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can define
-                    which parts of the artifact you need.
+                    Sol compiler uses{' '}
+                    <a href={SOLIDITY_INPUT_FORMAT_DOCS} target="_blank">
+                        Solidity standard JSON input format
+                    </a>{' '}
+                    to specify what to include in the generated artifacts. This way, you have complete flexibility on
+                    what is included.
                 </Lead>
             </ContentBlock>
 
             <ContentBlock title="Production">
                 <p>
-                    Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can define
-                    which parts of the artifact you need.
+                    In production, you want to optimize for a small bundle size, so your compiler.json config would
+                    instruct sol-compiler to only output the contract ABI.
                 </p>
                 <Breakout>
                     <Code isLight={true} language="json" isEtc={true}>
@@ -109,8 +117,9 @@ const Compiler: React.StatelessComponent<{}> = () => (
             </ContentBlock>
             <ContentBlock title="Development">
                 <p>
-                    Sometimes you need to use some debuggers or other dev tools and you’ll need more info in the
-                    artifact.
+                    In development, you need to use profiler and other dev tools that require more information from the
+                    artifact. To do this, you can specify that the artifact also contain the bytecode, deployed bytecode
+                    and source maps.
                 </p>
                 <Breakout>
                     <Code isLight={true} language="json" isEtc={true}>
@@ -158,6 +167,9 @@ const Compiler: React.StatelessComponent<{}> = () => (
                 </Breakout>
             </ContentBlock>
         </Content>
+        <div style={{ paddingTop: '5rem' }}>
+            <CallToAction />
+        </div>
     </Base>
 );
 

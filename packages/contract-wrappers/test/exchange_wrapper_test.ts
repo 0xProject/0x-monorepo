@@ -1,6 +1,6 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
 import { DoneCallback, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -368,6 +368,23 @@ describe('ExchangeWrapper', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isPreSigned = await contractWrappers.exchange.isPreSignedAsync(hash, signerAddress);
             expect(isPreSigned).to.be.true();
+
+            const preSignedSignature = '0x06';
+            const isValidSignature = await contractWrappers.exchange.isValidSignatureAsync(
+                hash,
+                signerAddress,
+                preSignedSignature,
+            );
+            expect(isValidSignature).to.be.true();
+
+            // Test our TS implementation of signature validation
+            const isValidSignatureInTs = await signatureUtils.isValidSignatureAsync(
+                provider,
+                hash,
+                preSignedSignature,
+                signerAddress,
+            );
+            expect(isValidSignatureInTs).to.be.true();
         });
     });
     describe('#getVersionAsync', () => {

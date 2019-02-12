@@ -95,7 +95,7 @@ export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountI
         if (_.isUndefined(numberOfAssetsAvailable)) {
             text = 'Loading...';
         } else if (numberOfAssetsAvailable === 0) {
-            text = 'Assets Unavailable';
+            text = 'Tokens Unavailable';
         }
         return (
             <Flex>

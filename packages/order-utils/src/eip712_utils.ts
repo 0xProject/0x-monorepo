@@ -1,6 +1,13 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { EIP712Object, EIP712TypedData, EIP712Types, Order, ZeroExTransaction } from '@0x/types';
+import {
+    EIP712DomainWithDefaultSchema,
+    EIP712Object,
+    EIP712TypedData,
+    EIP712Types,
+    Order,
+    ZeroExTransaction,
+} from '@0x/types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -11,26 +18,26 @@ export const eip712Utils = {
      * @param   primaryType The primary type found in message
      * @param   types The additional types for the data in message
      * @param   message The contents of the message
-     * @param   exchangeAddress The address of the exchange contract
+     * @param   domain Domain containing a name (optional), version (optional), and verifying contract address
      * @return  A typed data object
      */
     createTypedData: (
         primaryType: string,
         types: EIP712Types,
         message: EIP712Object,
-        exchangeAddress: string,
+        domain: EIP712DomainWithDefaultSchema,
     ): EIP712TypedData => {
-        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.isETHAddressHex('verifyingContractAddress', domain.verifyingContractAddress);
         assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
-                EIP712Domain: constants.EIP712_DOMAIN_SCHEMA.parameters,
+                EIP712Domain: constants.DEFAULT_DOMAIN_SCHEMA.parameters,
                 ...types,
             },
             domain: {
-                name: constants.EIP712_DOMAIN_NAME,
-                version: constants.EIP712_DOMAIN_VERSION,
-                verifyingContract: exchangeAddress,
+                name: _.isUndefined(domain.name) ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
+                version: _.isUndefined(domain.version) ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
+                verifyingContract: domain.verifyingContractAddress,
             },
             message,
             primaryType,
@@ -48,11 +55,14 @@ export const eip712Utils = {
         const normalizedOrder = _.mapValues(order, value => {
             return !_.isString(value) ? value.toString() : value;
         });
+        const domain = {
+            verifyingContractAddress: order.exchangeAddress,
+        };
         const typedData = eip712Utils.createTypedData(
-            constants.EIP712_ORDER_SCHEMA.name,
-            { Order: constants.EIP712_ORDER_SCHEMA.parameters },
+            constants.EXCHANGE_ORDER_SCHEMA.name,
+            { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
             normalizedOrder,
-            order.exchangeAddress,
+            domain,
         );
         return typedData;
     },
@@ -60,23 +70,22 @@ export const eip712Utils = {
      * Creates an ExecuteTransaction EIP712TypedData object for use with signTypedData and
      * 0x Exchange executeTransaction.
      * @param   ZeroExTransaction the 0x transaction
-     * @param   exchangeAddress The address of the exchange contract
      * @return  A typed data object
      */
-    createZeroExTransactionTypedData: (
-        zeroExTransaction: ZeroExTransaction,
-        exchangeAddress: string,
-    ): EIP712TypedData => {
-        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+    createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
+        assert.isETHAddressHex('verifyingContractAddress', zeroExTransaction.verifyingContractAddress);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
         });
+        const domain = {
+            verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
+        };
         const typedData = eip712Utils.createTypedData(
-            constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.name,
-            { ZeroExTransaction: constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.parameters },
+            constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
+            { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
-            exchangeAddress,
+            domain,
         );
         return typedData;
     },

@@ -3,7 +3,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { context as compiler } from 'ts/context/compiler';
-import { context as cov } from 'ts/context/cov';
+import { context as coverage } from 'ts/context/coverage';
 import { context as profiler } from 'ts/context/profiler';
 import { context as trace } from 'ts/context/trace';
 import MainIcon from 'ts/icons/logos/0x.svg';
@@ -12,7 +12,7 @@ import { media } from 'ts/variables';
 import { Container } from './container';
 import { Alpha, Beta } from './typography';
 
-const tools = [trace, cov, compiler, profiler];
+const tools = [trace, coverage, compiler, profiler];
 
 const Footer: React.StatelessComponent<{}> = () => (
     <StyledFooter>
@@ -20,9 +20,9 @@ const Footer: React.StatelessComponent<{}> = () => (
             <Top>
                 <Alpha>Other tools by 0x</Alpha>
                 <List>
-                    {_.map(tools, ({ title, subtitle, icon }) => (
+                    {_.map(tools, ({ title, subtitle, icon, name }) => (
                         <ListItem key={title}>
-                            <ListLink href="#">
+                            <ListLink href={`https://sol-${name}.com`}>
                                 <Icon as={icon as 'svg'} />
                                 <div>
                                     <Beta>{title}</Beta>
@@ -37,6 +37,10 @@ const Footer: React.StatelessComponent<{}> = () => (
                 <Icon as={MainIcon} />
                 <Small>
                     0x is an open, permissionless protocol allowing for tokens to be traded on the Ethereum blockchain.
+                    Interested in joining our team?{' '}
+                    <a href="https://0x.org/careers" target="_blank">
+                        We're hiring
+                    </a>
                 </Small>
             </Media>
         </Container>

@@ -11,6 +11,7 @@ import {
     TraceCollectionSubprovider,
     utils,
 } from '@0x/sol-tracing-utils';
+import chalk from 'chalk';
 import { stripHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 import { getLogger, levels, Logger } from 'loglevel';
@@ -71,9 +72,21 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             const bytecode = await this._web3Wrapper.getContractCodeAsync(evmCallStackEntry.address);
             const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
             if (_.isUndefined(contractData)) {
+                const shortenHex = (hex: string) => {
+                    /**
+                     * Length choosen so that both error messages are of the same length
+                     * and it's enough data to figure out which artifact has a problem.
+                     */
+                    const length = 18;
+                    return `${hex.substr(0, length + 2)}...${hex.substr(hex.length - length, length)}`;
+                };
                 const errMsg = isContractCreation
-                    ? `Unknown contract creation transaction`
-                    : `Transaction to an unknown address: ${evmCallStackEntry.address}`;
+                    ? `Unable to find matching bytecode for contract creation ${chalk.bold(
+                          shortenHex(bytecode),
+                      )}, please check your artifacts. Ignoring...`
+                    : `Unable to find matching bytecode for contract address ${chalk.bold(
+                          evmCallStackEntry.address,
+                      )}, please check your artifacts. Ignoring...`;
                 this._logger.warn(errMsg);
                 continue;
             }
@@ -106,11 +119,10 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                 continue;
             }
 
-            const fileIndex = contractData.sources.indexOf(sourceRange.fileName);
+            const fileNameToFileIndex = _.invert(contractData.sources);
+            const fileIndex = _.parseInt(fileNameToFileIndex[sourceRange.fileName]);
             const sourceSnippet = getSourceRangeSnippet(sourceRange, contractData.sourceCodes[fileIndex]);
-            if (sourceSnippet !== null) {
-                sourceSnippets.push(sourceSnippet);
-            }
+            sourceSnippets.push(sourceSnippet);
         }
         const filteredSnippets = filterSnippets(sourceSnippets);
         if (filteredSnippets.length > 0) {
@@ -134,9 +146,7 @@ function filterSnippets(sourceSnippets: SourceSnippet[]): SourceSnippet[] {
     const results: SourceSnippet[] = [sourceSnippets[0]];
     let prev = sourceSnippets[0];
     for (const sourceSnippet of sourceSnippets) {
-        if (sourceSnippet.type === 'IfStatement') {
-            continue;
-        } else if (sourceSnippet.source === prev.source) {
+        if (sourceSnippet.source === prev.source) {
             prev = sourceSnippet;
             continue;
         }
@@ -156,12 +166,5 @@ function getStackTraceString(sourceSnippet: SourceSnippet): string {
 }
 
 function getSourceSnippetString(sourceSnippet: SourceSnippet): string {
-    switch (sourceSnippet.type) {
-        case 'ContractDefinition':
-            return `contract ${sourceSnippet.name}`;
-        case 'FunctionDefinition':
-            return `function ${sourceSnippet.name}`;
-        default:
-            return `${sourceSnippet.source}`;
-    }
+    return `${sourceSnippet.source}`;
 }

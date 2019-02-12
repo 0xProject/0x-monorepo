@@ -29,7 +29,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).orderValidator : address;
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address

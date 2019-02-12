@@ -99,6 +99,17 @@ describe('Signature utils', () => {
             );
             expect(isValidSignatureLocal).to.be.true();
         });
+
+        it('should return false if entry not found in `preSigned` mapping', async () => {
+            const preSignedSignature = '0x06';
+            const isValidPreSignature = await signatureUtils.isValidSignatureAsync(
+                provider,
+                dataHex,
+                preSignedSignature,
+                address,
+            );
+            expect(isValidPreSignature).to.be.false();
+        });
     });
     describe('#isValidECSignature', () => {
         const signature = {
@@ -132,10 +143,10 @@ describe('Signature utils', () => {
         });
         it('generates salt in range [0..2^256)', () => {
             const salt = generatePseudoRandomSalt();
-            expect(salt.greaterThanOrEqualTo(0)).to.be.true();
+            expect(salt.isGreaterThanOrEqualTo(0)).to.be.true();
             // tslint:disable-next-line:custom-no-magic-numbers
             const twoPow256 = new BigNumber(2).pow(256);
-            expect(salt.lessThan(twoPow256)).to.be.true();
+            expect(salt.isLessThan(twoPow256)).to.be.true();
         });
     });
     describe('#ecSignOrderAsync', () => {

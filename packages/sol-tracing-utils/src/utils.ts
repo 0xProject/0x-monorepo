@@ -1,13 +1,13 @@
-import { addressUtils, BigNumber } from '@0x/utils';
+import { addressUtils, BigNumber, logUtils } from '@0x/utils';
 import { OpCode, StructLog } from 'ethereum-types';
 import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 
-// This is the minimum length of valid contract bytecode. The Solidity compiler
-// metadata is 86 bytes. If you add the '0x' prefix, we get 88.
-const MIN_CONTRACT_BYTECODE_LENGTH = 88;
+const STATICCALL_GAS_COST = 40;
+
+const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
 
 export const utils = {
     compareLineColumn(lhs: LineColumn, rhs: LineColumn): number {
@@ -21,6 +21,12 @@ export const utils = {
         return (
             utils.compareLineColumn(parentRange.start, childRange.start) <= 0 &&
             utils.compareLineColumn(childRange.end, parentRange.end) <= 0
+        );
+    },
+    isRangeEqual(childRange: SingleFileSourceRange, parentRange: SingleFileSourceRange): boolean {
+        return (
+            utils.compareLineColumn(parentRange.start, childRange.start) === 0 &&
+            utils.compareLineColumn(childRange.end, parentRange.end) === 0
         );
     },
     bytecodeToBytecodeRegex(bytecode: string): string {
@@ -40,22 +46,29 @@ export const utils = {
         if (!bytecode.startsWith('0x')) {
             throw new Error(`0x hex prefix missing: ${bytecode}`);
         }
-        const contractData = _.find(contractsData, contractDataCandidate => {
+        // HACK(leo): We want to cache the values that are possibly undefined.
+        // That's why we can't check for undefined as we usually do, but need to use `hasOwnProperty`.
+        if (bytecodeToContractDataIfExists.hasOwnProperty(bytecode)) {
+            return bytecodeToContractDataIfExists[bytecode];
+        }
+        const contractDataCandidates = _.filter(contractsData, contractDataCandidate => {
             const bytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.bytecode);
-            // If the bytecode is less than the minimum length, we are probably
-            // dealing with an interface. This isn't what we're looking for.
-            if (bytecodeRegex.length < MIN_CONTRACT_BYTECODE_LENGTH) {
-                return false;
-            }
             const runtimeBytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.runtimeBytecode);
-            if (runtimeBytecodeRegex.length < MIN_CONTRACT_BYTECODE_LENGTH) {
-                return false;
-            }
             // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
             // collisions are practically impossible and it allows us to reuse that code
             return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
         });
-        return contractData;
+        if (contractDataCandidates.length > 1) {
+            const candidates = contractDataCandidates.map(
+                contractDataCandidate => _.values(contractDataCandidate.sources)[0],
+            );
+            const errMsg =
+                "We've found more than one artifact that contains the exact same bytecode and therefore are unable to detect which contract was executed. " +
+                "We'll be assigning all traces to the first one.";
+            logUtils.warn(errMsg);
+            logUtils.warn(candidates);
+        }
+        return (bytecodeToContractDataIfExists[bytecode] = contractDataCandidates[0]);
     },
     isCallLike(op: OpCode): boolean {
         return _.includes([OpCode.CallCode, OpCode.StaticCall, OpCode.Call, OpCode.DelegateCall], op);
@@ -70,10 +83,17 @@ export const utils = {
     normalizeStructLogs(structLogs: StructLog[]): StructLog[] {
         if (structLogs[0].depth === 1) {
             // Geth uses 1-indexed depth counter whilst ganache starts from 0
-            const newStructLogs = _.map(structLogs, structLog => ({
-                ...structLog,
-                depth: structLog.depth - 1,
-            }));
+            const newStructLogs = _.map(structLogs, structLog => {
+                const newStructLog = {
+                    ...structLog,
+                    depth: structLog.depth - 1,
+                };
+                if (newStructLog.op === 'STATICCALL') {
+                    // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+                    newStructLog.gasCost = STATICCALL_GAS_COST;
+                }
+                return newStructLog;
+            });
             return newStructLogs;
         }
         return structLogs;

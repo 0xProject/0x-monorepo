@@ -1,5 +1,51 @@
 [
     {
+        "timestamp": 1549733923,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "1.0.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1547225310,
         "version": "1.0.13",
         "changes": [

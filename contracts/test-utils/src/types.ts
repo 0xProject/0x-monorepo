@@ -107,14 +107,6 @@ export enum ContractName {
     BalanceThresholdFilter = 'BalanceThresholdFilter',
 }
 
-export interface SignedTransaction {
-    exchangeAddress: string;
-    salt: BigNumber;
-    signerAddress: string;
-    data: string;
-    signature: string;
-}
-
 export interface TransferAmountsByMatchOrders {
     // Left Maker
     amountBoughtByLeftMaker: BigNumber;

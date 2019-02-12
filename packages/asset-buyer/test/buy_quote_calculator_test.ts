@@ -168,7 +168,7 @@ describe('buyQuoteCalculator', () => {
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(1));
             });
-            it('should throw without amount available to fill if amount rounds to 0', () => {
+            it('should throw with 0 available to fill if amount rounds to 0', () => {
                 const smallOrder = orderFactory.createSignedOrderFromPartial({
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
@@ -184,7 +184,7 @@ describe('buyQuoteCalculator', () => {
                         false,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, undefined);
+                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(0));
             });
         });
         it('should not throw if order is fillable', () => {
@@ -234,7 +234,7 @@ describe('buyQuoteCalculator', () => {
             const expectedEthAmountForAsset = new BigNumber(50);
             const expectedEthAmountForZrxFees = new BigNumber(100);
             const expectedFillEthAmount = expectedEthAmountForAsset;
-            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.multipliedBy(feePercentage);
             const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
             const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
@@ -272,7 +272,7 @@ describe('buyQuoteCalculator', () => {
             const expectedEthAmountForAsset = new BigNumber(50);
             const expectedEthAmountForZrxFees = new BigNumber(100);
             const expectedFillEthAmount = expectedEthAmountForAsset;
-            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.multipliedBy(feePercentage);
             const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
             const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
@@ -282,7 +282,7 @@ describe('buyQuoteCalculator', () => {
             const expectedWorstEthAmountForAsset = new BigNumber(100);
             const expectedWorstEthAmountForZrxFees = new BigNumber(208);
             const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset;
-            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.mul(feePercentage);
+            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.multipliedBy(feePercentage);
             const expectedWorstFeeEthAmount = expectedWorstAffiliateFeeEthAmount.plus(expectedWorstEthAmountForZrxFees);
             const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.plus(expectedWorstFeeEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedWorstFillEthAmount);

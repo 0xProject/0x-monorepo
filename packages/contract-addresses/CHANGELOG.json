@@ -1,5 +1,24 @@
 [
     {
+        "timestamp": 1549373905,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added migration for `MultiAssetProxy` contract",
+                "pr": 1503
+            }
+        ],
+        "timestamp": 1547561734
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

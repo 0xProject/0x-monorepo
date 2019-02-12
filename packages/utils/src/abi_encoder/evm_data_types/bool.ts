@@ -10,6 +10,7 @@ import { constants } from '../utils/constants';
 
 export class BoolDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    private static readonly _DEFAULT_VALUE: boolean = false;
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Bool;
@@ -36,17 +37,22 @@ export class BoolDataType extends AbstractBlobDataType {
     public decodeValue(calldata: RawCalldata): boolean {
         const valueBuf = calldata.popWord();
         const valueHex = ethUtil.bufferToHex(valueBuf);
-        const valueNumber = new BigNumber(valueHex, constants.HEX_BASE);
-        if (!(valueNumber.equals(0) || valueNumber.equals(1))) {
+        // Hack @hysz: there are some cases where `false` is encoded as 0x instead of 0x0.
+        const valueNumber = valueHex === '0x' ? new BigNumber(0) : new BigNumber(valueHex, constants.HEX_BASE);
+        if (!(valueNumber.isEqualTo(0) || valueNumber.isEqualTo(1))) {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }
         /* tslint:disable boolean-naming */
-        const value: boolean = !valueNumber.equals(0);
+        const value: boolean = !valueNumber.isEqualTo(0);
         /* tslint:enable boolean-naming */
         return value;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): boolean {
+        return BoolDataType._DEFAULT_VALUE;
+    }
+
+    public getSignatureType(): string {
         return SolidityTypes.Bool;
     }
     /* tslint:enable prefer-function-over-method */

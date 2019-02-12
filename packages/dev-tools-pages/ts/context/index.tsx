@@ -3,6 +3,7 @@ import { createContext } from 'react';
 interface ContextInterface {
     title?: string;
     name?: string;
+    docLink?: string;
     subtitle?: string;
     tagline?: string;
     icon?: React.ReactNode;

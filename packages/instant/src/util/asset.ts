@@ -114,15 +114,18 @@ export const assetUtils = {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
             if (
                 error instanceof InsufficientAssetLiquidityError &&
-                error.amountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)
+                error.amountAvailableToFill.isGreaterThan(BIG_NUMBER_ZERO)
             ) {
                 const unitAmountAvailableToFill = Web3Wrapper.toUnitAmount(
                     error.amountAvailableToFill,
                     asset.metaData.decimals,
                 );
-                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.round(2, BigNumber.ROUND_DOWN);
+                const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.decimalPlaces(
+                    2,
+                    BigNumber.ROUND_DOWN,
+                );
 
-                if (roundedUnitAmountAvailableToFill.greaterThan(BIG_NUMBER_ZERO)) {
+                if (roundedUnitAmountAvailableToFill.isGreaterThan(BIG_NUMBER_ZERO)) {
                     return `There are only ${roundedUnitAmountAvailableToFill} ${assetName} available to buy`;
                 }
             }

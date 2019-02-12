@@ -1,6 +1,6 @@
 {
     "name": "@0x/order-utils",
-    "version": "3.1.1",
+    "version": "6.1.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -35,13 +35,13 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0x/dev-utils": "^1.0.23",
-        "@0x/tslint-config": "^2.0.1",
+        "@0x/dev-utils": "^2.1.0",
+        "@0x/tslint-config": "^3.0.0",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "chai-bignumber": "^2.0.1",
+        "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
@@ -53,22 +53,23 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^2.1.1",
-        "@0x/assert": "^1.0.22",
-        "@0x/base-contract": "^3.0.12",
-        "@0x/contract-artifacts": "^1.2.0",
-        "@0x/json-schemas": "^2.1.6",
-        "@0x/types": "^1.5.1",
-        "@0x/typescript-typings": "^3.0.7",
-        "@0x/utils": "^3.0.0",
-        "@0x/web3-wrapper": "^3.2.3",
+        "@0x/abi-gen-wrappers": "^3.0.3",
+        "@0x/assert": "^2.0.3",
+        "@0x/base-contract": "^4.0.3",
+        "@0x/contract-addresses": "^2.2.1",
+        "@0x/contract-artifacts": "^1.3.0",
+        "@0x/json-schemas": "^3.0.3",
+        "@0x/types": "^2.0.2",
+        "@0x/typescript-typings": "^4.0.0",
+        "@0x/utils": "^4.1.0",
+        "@0x/web3-wrapper": "^5.0.0",
         "@types/node": "*",
         "bn.js": "^4.11.8",
-        "ethereum-types": "^1.1.5",
+        "ethereum-types": "^2.0.0",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.11"
     },
     "publishConfig": {
         "access": "public"

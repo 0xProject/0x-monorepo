@@ -39,15 +39,15 @@ export class RemainingFillableCalculator {
     private _hasSufficientFundsForFeeAndTransferAmount(): boolean {
         if (this._isTraderAssetZRX) {
             const totalZRXTransferAmountRequired = this._remainingOrderAssetAmount.plus(this._remainingOrderFeeAmount);
-            const hasSufficientFunds = this._transferrableAssetAmount.greaterThanOrEqualTo(
+            const hasSufficientFunds = this._transferrableAssetAmount.isGreaterThanOrEqualTo(
                 totalZRXTransferAmountRequired,
             );
             return hasSufficientFunds;
         } else {
-            const hasSufficientFundsForTransferAmount = this._transferrableAssetAmount.greaterThanOrEqualTo(
+            const hasSufficientFundsForTransferAmount = this._transferrableAssetAmount.isGreaterThanOrEqualTo(
                 this._remainingOrderAssetAmount,
             );
-            const hasSufficientFundsForFeeAmount = this._transferrableFeeAmount.greaterThanOrEqualTo(
+            const hasSufficientFundsForFeeAmount = this._transferrableFeeAmount.isGreaterThanOrEqualTo(
                 this._remainingOrderFeeAmount,
             );
             const hasSufficientFunds = hasSufficientFundsForTransferAmount && hasSufficientFundsForFeeAmount;

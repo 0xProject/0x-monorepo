@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
+import { PackageJSON } from '@0x/types';
+import { logUtils } from '@0x/utils';
 import * as promisify from 'es6-promisify';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
-import { exec as execAsync } from 'promisify-child-process';
+import { exec as execAsync, spawn as spawnAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
 import semverSort = require('semver-sort');
@@ -79,12 +80,16 @@ async function confirmAsync(message: string): Promise<void> {
     });
     utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToNextVersion);
-    if (!configs.IS_LOCAL_PUBLISH) {
+
+    const isDryRun = configs.IS_LOCAL_PUBLISH;
+    if (!isDryRun) {
+        // Publish docker images to DockerHub
+        await publishImagesToDockerHubAsync(allPackagesToPublish);
+
         const isStaging = false;
         const shouldUploadDocs = true;
         await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
     }
-    const isDryRun = configs.IS_LOCAL_PUBLISH;
     const releaseNotes = await publishReleaseNotesAsync(updatedPublicPackages, isDryRun);
     utils.log('Published release notes');
 
@@ -95,15 +100,49 @@ async function confirmAsync(message: string): Promise<void> {
             utils.log("Publish successful, but couldn't auto-alert discord (", e.message, '), Please alert manually.');
         }
     }
+    process.exit(0);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
 });
 
+async function publishImagesToDockerHubAsync(allUpdatedPackages: Package[]): Promise<void> {
+    for (const pkg of allUpdatedPackages) {
+        const packageJSON = pkg.packageJson;
+        const shouldPublishDockerImage =
+            !_.isUndefined(packageJSON.config) &&
+            !_.isUndefined(packageJSON.config.postpublish) &&
+            !_.isUndefined(packageJSON.config.postpublish.dockerHubRepo);
+        if (!shouldPublishDockerImage) {
+            continue;
+        }
+        const dockerHubRepo = _.get(packageJSON, 'config.postpublish.dockerHubRepo');
+        const pkgName = pkg.packageJson.name;
+        const packageDirName = _.startsWith(pkgName, '@0x/') ? pkgName.split('/')[1] : pkgName;
+
+        // Build the Docker image
+        logUtils.log(`Building '${dockerHubRepo}' docker image...`);
+        await spawnAsync('docker', ['build', '-t', dockerHubRepo, '.'], {
+            cwd: `${constants.monorepoRootPath}/packages/${packageDirName}`,
+        });
+
+        // Tag the docker image with the latest version
+        const version = pkg.packageJson.version;
+        logUtils.log(`Tagging '${dockerHubRepo}' docker image with version ${version}...`);
+        await execAsync(`docker tag ${dockerHubRepo} ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:${version}`);
+        await execAsync(`docker tag ${dockerHubRepo} ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:latest`);
+
+        // Publish to DockerHub
+        logUtils.log(`Pushing '${dockerHubRepo}' docker image to DockerHub...`);
+        await execAsync(`docker push ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:${version}`);
+        await execAsync(`docker push ${configs.DOCKER_HUB_ORG}/${dockerHubRepo}:latest`);
+    }
+}
+
 function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     const rootPackageJsonPath = `${constants.monorepoRootPath}/package.json`;
-    const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath).toString());
-    const packagesWithDocPagesStringIfExist = _.get(rootPackageJson, 'config.packagesWithDocPages', undefined);
+    const rootPackageJSON = utils.readJSONFile<PackageJSON>(rootPackageJsonPath);
+    const packagesWithDocPagesStringIfExist = _.get(rootPackageJSON, 'config.packagesWithDocPages', undefined);
     if (_.isUndefined(packagesWithDocPagesStringIfExist)) {
         return []; // None to generate & publish
     }

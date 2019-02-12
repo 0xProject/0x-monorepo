@@ -7,12 +7,12 @@ const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
 export const assert = {
     isBigNumber(variableName: string, value: BigNumber): void {
-        const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
+        const isBigNumber = BigNumber.isBigNumber(value);
         assert.assert(isBigNumber, assert.typeAssertionMessage(variableName, 'BigNumber', value));
     },
     isValidBaseUnitAmount(variableName: string, value: BigNumber): void {
         assert.isBigNumber(variableName, value);
-        const isNegative = value.lessThan(0);
+        const isNegative = value.isLessThan(0);
         assert.assert(!isNegative, `${variableName} cannot be a negative number, found value: ${value.toNumber()}`);
         const hasDecimals = value.decimalPlaces() !== 0;
         assert.assert(

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.3.0 - _January 15, 2019_
+
+    * Added artifact for `MultiAssetProxy` contract (#1503)
+
 ## v1.2.0 - _January 9, 2019_
 
     * Added artifact for Dutch Auction contract (#1465)

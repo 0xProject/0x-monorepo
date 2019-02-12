@@ -16,7 +16,8 @@ jobs:
                   command: sudo npm install --global yarn@1.9.4
             - run:
                   name: yarn
-                  command: yarn --frozen-lockfile --ignore-engines install
+                  command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
+            - setup_remote_docker
             - run: yarn build:ci:no_website
             - run: yarn build:ts
             - save_cache:
@@ -43,10 +44,13 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-multisig
             - run: yarn wsrun test:circleci @0x/contracts-utils
-            - run: yarn wsrun test:circleci @0x/contracts-libs
-            - run: yarn wsrun test:circleci @0x/contracts-tokens
+            - run: yarn wsrun test:circleci @0x/contracts-exchange-libs
+            - run: yarn wsrun test:circleci @0x/contracts-erc20
+            - run: yarn wsrun test:circleci @0x/contracts-erc721
             - run: yarn wsrun test:circleci @0x/contracts-extensions
-            - run: yarn wsrun test:circleci @0x/contracts-protocol
+            - run: yarn wsrun test:circleci @0x/contracts-asset-proxy
+            - run: yarn wsrun test:circleci @0x/contracts-exchange
+            - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
@@ -59,11 +63,14 @@ jobs:
             # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
             # initialized
             - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test @0x/contracts-multisig
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-utils
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-tokens
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-extensions
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-protocol
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-utils
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange-libs
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-erc20
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-erc721
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-extensions
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-asset-proxy
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange-forwarder
     test-publish:
         resource_class: medium+
         docker:
@@ -195,7 +202,7 @@ jobs:
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
@@ -243,7 +250,7 @@ jobs:
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
@@ -271,7 +278,7 @@ jobs:
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
@@ -290,6 +297,7 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn lerna run lint
             - run: yarn prettier:ci
+            - run: yarn deps_versions:ci
             - run: cd packages/0x.js && yarn build:umd:prod
             - run: yarn bundlewatch
     submit-coverage:

@@ -6,6 +6,7 @@ export const context: ContextInterface = {
     title: 'sol-trace',
     name: 'trace',
     subtitle: 'Human-readable stack traces',
+    docLink: 'https://0x.org/docs/sol-trace',
     tagline: 'Immediately locate Solidity errors and rapidly debug failed transactions',
     icon: Icon,
     colors: {

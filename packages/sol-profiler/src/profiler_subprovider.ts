@@ -63,7 +63,7 @@ export const profilerHandler: SingleFileSubtraceHandler = (
 ): Coverage => {
     const absoluteFileName = contractData.sources[fileIndex];
     const profilerEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
-    const gasConsumedByStatement: { [statementId: string]: number } = {};
+    const statementToGasConsumed: { [statementId: string]: number } = {};
     const statementIds = _.keys(profilerEntriesDescription.statementMap);
     for (const statementId of statementIds) {
         const statementDescription = profilerEntriesDescription.statementMap[statementId];
@@ -83,14 +83,14 @@ export const profilerHandler: SingleFileSubtraceHandler = (
                 }
             }),
         );
-        gasConsumedByStatement[statementId] = totalGasCost;
+        statementToGasConsumed[statementId] = totalGasCost;
     }
     const partialProfilerOutput = {
         [absoluteFileName]: {
             ...profilerEntriesDescription,
             path: absoluteFileName,
             f: {}, // I's meaningless in profiling context
-            s: gasConsumedByStatement,
+            s: statementToGasConsumed,
             b: {}, // I's meaningless in profiling context
         },
     };

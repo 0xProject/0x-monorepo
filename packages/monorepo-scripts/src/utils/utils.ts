@@ -1,3 +1,4 @@
+import { PackageJSON } from '@0x/types';
 import batchPackages = require('@lerna/batch-packages');
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -5,13 +6,18 @@ import { exec as execAsync } from 'promisify-child-process';
 import semver = require('semver');
 
 import { constants } from '../constants';
-import { GitTagsByPackageName, Package, PackageJSON, UpdatedPackage } from '../types';
+import { GitTagsByPackageName, Package, UpdatedPackage } from '../types';
 
 import { changelogUtils } from './changelog_utils';
 
 export const utils = {
     log(...args: any[]): void {
         console.log(...args); // tslint:disable-line:no-console
+    },
+    readJSONFile<T>(path: string): T {
+        const JSONString = fs.readFileSync(path, 'utf8');
+        const parsed: T = JSON.parse(JSONString);
+        return parsed;
     },
     getTopologicallySortedPackages(rootDir: string): Package[] {
         const packages = utils.getPackages(rootDir);
@@ -23,8 +29,7 @@ export const utils = {
         return topsortedPackages;
     },
     getPackages(rootDir: string): Package[] {
-        const rootPackageJsonString = fs.readFileSync(`${rootDir}/package.json`, 'utf8');
-        const rootPackageJson = JSON.parse(rootPackageJsonString);
+        const rootPackageJson = utils.readJSONFile<PackageJSON>(`${rootDir}/package.json`);
         if (_.isUndefined(rootPackageJson.workspaces)) {
             throw new Error(`Did not find 'workspaces' key in root package.json`);
         }
@@ -40,8 +45,7 @@ export const utils = {
                 }
                 const pathToPackageJson = `${rootDir}/${workspacePath}${subpackageName}`;
                 try {
-                    const packageJsonString = fs.readFileSync(`${pathToPackageJson}/package.json`, 'utf8');
-                    const packageJson = JSON.parse(packageJsonString);
+                    const packageJson = utils.readJSONFile<PackageJSON>(`${pathToPackageJson}/package.json`);
                     const pkg = {
                         location: pathToPackageJson,
                         packageJson,
@@ -106,8 +110,10 @@ export const utils = {
         return nextVersionIfValid;
     },
     async getRemoteGitTagsAsync(): Promise<string[]> {
+        const TEN_MEGA_BYTES = 1024 * 1024 * 10; // tslint:disable-line custom-no-magic-numbers
         const result = await execAsync(`git ls-remote --tags`, {
             cwd: constants.monorepoRootPath,
+            maxBuffer: TEN_MEGA_BYTES,
         });
         const tagsString = result.stdout;
         const tagOutputs: string[] = tagsString.split('\n');

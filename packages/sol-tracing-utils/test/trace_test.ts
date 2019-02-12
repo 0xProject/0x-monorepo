@@ -3,7 +3,7 @@ import { OpCode, StructLog } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { getTracesByContractAddress } from '../src/trace';
+import { getContractAddressToTraces } from '../src/trace';
 
 const expect = chai.expect;
 
@@ -44,7 +44,7 @@ describe('Trace', () => {
             ];
             const fullTrace = _.map(trace, compactStructLog => addDefaultStructLogFields(compactStructLog));
             const startAddress = '0x0000000000000000000000000000000000000001';
-            const traceByContractAddress = getTracesByContractAddress(fullTrace, startAddress);
+            const traceByContractAddress = getContractAddressToTraces(fullTrace, startAddress);
             const expectedTraceByContractAddress = {
                 [startAddress]: [fullTrace[0], fullTrace[2]],
                 [delegateCallAddress]: [fullTrace[1]],

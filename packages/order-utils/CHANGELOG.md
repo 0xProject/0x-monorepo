@@ -5,6 +5,33 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.0 - _February 9, 2019_
+
+    * Updated implementation of `generatePseudoRandomSalt` to use generator from @0x/utils (#1569)
+
+## v6.0.1 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v6.0.0 - _February 7, 2019_
+
+    * undefined
+
+## v5.0.0 - _February 6, 2019_
+
+    * Add `transactionHashUtils` (#1576)
+    * Refactor `eip712Utils` to allow custom domain params (#1576)
+    * Export constant EIP712 params (#1576)
+
+## v4.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Fix preSigned `isSignatureValidAsync` check (#1580)
+
+## v3.1.2 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v3.1.1 - _January 11, 2019_
 
     * Dependencies updated

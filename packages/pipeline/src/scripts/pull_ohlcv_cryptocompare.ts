@@ -1,5 +1,6 @@
-// tslint:disable:no-console
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+
+import { logUtils } from '@0x/utils';
 
 import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { OHLCVExternal } from '../entities';
@@ -24,14 +25,14 @@ let connection: Connection;
 
     const jobTime = new Date().getTime();
     const tradingPairs = await fetchOHLCVTradingPairsAsync(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);
-    console.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
+    logUtils.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
 
     const fetchAndSavePromises = tradingPairs.map(async pair => {
         const pairs = source.generateBackfillIntervals(pair);
         return fetchAndSaveAsync(source, repository, jobTime, pairs);
     });
     await Promise.all(fetchAndSavePromises);
-    console.log(`Finished scraping OHLCV records from Crypto Compare, exiting...`);
+    logUtils.log(`Finished scraping OHLCV records from Crypto Compare, exiting...`);
     process.exit(0);
 })().catch(handleError);
 
@@ -60,7 +61,7 @@ async function fetchAndSaveAsync(
         }
         try {
             const records = await source.getHourlyOHLCVAsync(pair);
-            console.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
+            logUtils.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
             if (records.length > 0) {
                 const metadata: OHLCVMetadata = {
                     exchange: source.defaultExchange,
@@ -75,7 +76,7 @@ async function fetchAndSaveAsync(
             }
             i++;
         } catch (err) {
-            console.log(`Error scraping OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
+            logUtils.log(`Error scraping OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
             break;
         }
     }
@@ -90,6 +91,6 @@ async function saveRecordsAsync(repository: Repository<OHLCVExternal>, records: 
         new Date(records[records.length - 1].endTime),
     ];
 
-    console.log(`Saving ${records.length} records to ${repository.metadata.name}... ${JSON.stringify(metadata)}`);
+    logUtils.log(`Saving ${records.length} records to ${repository.metadata.name}... ${JSON.stringify(metadata)}`);
     await repository.save(records);
 }

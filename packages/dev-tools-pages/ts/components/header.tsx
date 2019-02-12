@@ -17,7 +17,7 @@ const Header: React.StatelessComponent<{}> = () => (
                         <Title>{title}</Title>
                     </LogoMark>
 
-                    <Link as="a" href="https://0xproject.com/">
+                    <Link as="a" href="https://0x.org/" target="_blank">
                         Built by 0x
                     </Link>
                 </Container>

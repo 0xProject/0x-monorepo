@@ -4,21 +4,21 @@ import * as _ from 'lodash';
 
 import { utils } from './utils';
 
-export interface TraceByContractAddress {
+export interface ContractAddressToTraces {
     [contractAddress: string]: StructLog[];
 }
 
 /**
- * Converts linear stack trace to `TraceByContractAddress`.
+ * Converts linear stack trace to `ContractAddressToTraces`.
  * @param structLogs stack trace
  * @param startAddress initial context address
  */
-export function getTracesByContractAddress(structLogs: StructLog[], startAddress: string): TraceByContractAddress {
-    const traceByContractAddress: TraceByContractAddress = {};
+export function getContractAddressToTraces(structLogs: StructLog[], startAddress: string): ContractAddressToTraces {
+    const contractAddressToTraces: ContractAddressToTraces = {};
     let currentTraceSegment = [];
     const addressStack = [startAddress];
     if (_.isEmpty(structLogs)) {
-        return traceByContractAddress;
+        return contractAddressToTraces;
     }
     const normalizedStructLogs = utils.normalizeStructLogs(structLogs);
     // tslint:disable-next-line:prefer-for-of
@@ -45,14 +45,14 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             const nextStructLog = normalizedStructLogs[i + 1];
             if (nextStructLog.depth !== structLog.depth) {
                 addressStack.push(newAddress);
-                traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+                contractAddressToTraces[currentAddress] = (contractAddressToTraces[currentAddress] || []).concat(
                     currentTraceSegment,
                 );
                 currentTraceSegment = [];
             }
         } else if (utils.isEndOpcode(structLog.op)) {
             const currentAddress = addressStack.pop() as string;
-            traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+            contractAddressToTraces[currentAddress] = (contractAddressToTraces[currentAddress] || []).concat(
                 currentTraceSegment,
             );
             currentTraceSegment = [];
@@ -71,7 +71,7 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
             logUtils.warn(
                 "Detected a contract created from within another contract. We currently do not support that scenario. We'll just skip that trace",
             );
-            return traceByContractAddress;
+            return contractAddressToTraces;
         } else {
             if (structLog !== _.last(normalizedStructLogs)) {
                 const nextStructLog = normalizedStructLogs[i + 1];
@@ -79,7 +79,7 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
                     continue;
                 } else if (nextStructLog.depth === structLog.depth - 1) {
                     const currentAddress = addressStack.pop() as string;
-                    traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+                    contractAddressToTraces[currentAddress] = (contractAddressToTraces[currentAddress] || []).concat(
                         currentTraceSegment,
                     );
                     currentTraceSegment = [];
@@ -94,11 +94,11 @@ export function getTracesByContractAddress(structLogs: StructLog[], startAddress
     }
     if (currentTraceSegment.length !== 0) {
         const currentAddress = addressStack.pop() as string;
-        traceByContractAddress[currentAddress] = (traceByContractAddress[currentAddress] || []).concat(
+        contractAddressToTraces[currentAddress] = (contractAddressToTraces[currentAddress] || []).concat(
             currentTraceSegment,
         );
         currentTraceSegment = [];
         logUtils.warn('Malformed trace. Current trace segment non empty at the end');
     }
-    return traceByContractAddress;
+    return contractAddressToTraces;
 }

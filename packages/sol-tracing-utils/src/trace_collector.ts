@@ -1,4 +1,5 @@
 import { promisify } from '@0x/utils';
+import chalk from 'chalk';
 import { stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
@@ -56,7 +57,7 @@ export class TraceCollector {
         this._singleFileSubtraceHandler = singleFileSubtraceHandler;
     }
     public async writeOutputAsync(): Promise<void> {
-        const finalCoverage = this._collector.getFinalCoverage();
+        const finalCoverage: Coverage = this._collector.getFinalCoverage();
         const stringifiedCoverage = JSON.stringify(finalCoverage, null, '\t');
         await mkdirpAsync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
@@ -71,23 +72,35 @@ export class TraceCollector {
             : (traceInfo as TraceInfoExistingContract).runtimeBytecode;
         const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
         if (_.isUndefined(contractData)) {
+            const shortenHex = (hex: string) => {
+                /**
+                 * Length chooses so that both error messages are of the same length
+                 * and it's enough data to figure out which artifact has a problem.
+                 */
+                const length = 18;
+                return `${hex.substr(0, length + 2)}...${hex.substr(hex.length - length, length)}`;
+            };
             const errMsg = isContractCreation
-                ? `Unknown contract creation transaction`
-                : `Transaction to an unknown address: ${traceInfo.address}`;
+                ? `Unable to find matching bytecode for contract creation ${chalk.bold(
+                      shortenHex(bytecode),
+                  )}, please check your artifacts. Ignoring...`
+                : `Unable to find matching bytecode for contract address ${chalk.bold(
+                      traceInfo.address,
+                  )}, please check your artifacts. Ignoring...`;
             this._logger.warn(errMsg);
             return;
         }
         const bytecodeHex = stripHexPrefix(bytecode);
         const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
         const pcToSourceRange = parseSourceMap(contractData.sourceCodes, sourceMap, bytecodeHex, contractData.sources);
-        for (let fileIndex = 0; fileIndex < contractData.sources.length; fileIndex++) {
+        _.map(contractData.sources, (_sourcePath: string, fileIndex: string) => {
             const singleFileCoverageForTrace = this._singleFileSubtraceHandler(
                 contractData,
                 traceInfo.subtrace,
                 pcToSourceRange,
-                fileIndex,
+                _.parseInt(fileIndex),
             );
             this._collector.add(singleFileCoverageForTrace);
-        }
+        });
     }
 }

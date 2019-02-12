@@ -1,5 +1,6 @@
-// tslint:disable:no-console
 import { web3Factory } from '@0x/dev-utils';
+import { logUtils } from '@0x/utils';
+
 import * as Parallel from 'async-parallel';
 import R = require('ramda');
 import 'reflect-metadata';
@@ -47,7 +48,7 @@ interface MissingBlocksResponse {
 async function getAllMissingBlocksAsync(web3Source: Web3Source, tableName: string): Promise<void> {
     const blocksRepository = connection.getRepository(Block);
     while (true) {
-        console.log(`Checking for missing blocks in ${tableName}...`);
+        logUtils.log(`Checking for missing blocks in ${tableName}...`);
         const blockNumbers = await getMissingBlockNumbersAsync(tableName);
         if (blockNumbers.length === 0) {
             // There are no more missing blocks. We're done.
@@ -56,7 +57,7 @@ async function getAllMissingBlocksAsync(web3Source: Web3Source, tableName: strin
         await getAndSaveBlocksAsync(web3Source, blocksRepository, blockNumbers);
     }
     const totalBlocks = await blocksRepository.count();
-    console.log(`Done saving blocks for ${tableName}. There are now ${totalBlocks} total blocks.`);
+    logUtils.log(`Done saving blocks for ${tableName}. There are now ${totalBlocks} total blocks.`);
 }
 
 async function getMissingBlockNumbersAsync(tableName: string): Promise<number[]> {
@@ -68,7 +69,7 @@ async function getMissingBlockNumbersAsync(tableName: string): Promise<number[]>
     )) as MissingBlocksResponse[];
     const blockNumberStrings = R.pluck('block_number', response);
     const blockNumbers = R.map(parseInt, blockNumberStrings);
-    console.log(`Found ${blockNumbers.length} missing blocks.`);
+    logUtils.log(`Found ${blockNumbers.length} missing blocks.`);
     return blockNumbers;
 }
 
@@ -77,14 +78,14 @@ async function getAndSaveBlocksAsync(
     blocksRepository: Repository<Block>,
     blockNumbers: number[],
 ): Promise<void> {
-    console.log(`Getting block data for ${blockNumbers.length} blocks...`);
+    logUtils.log(`Getting block data for ${blockNumbers.length} blocks...`);
     Parallel.setConcurrency(MAX_CONCURRENCY);
     const rawBlocks = await Parallel.map(blockNumbers, async (blockNumber: number) =>
         web3Source.getBlockInfoAsync(blockNumber),
     );
-    console.log(`Parsing ${rawBlocks.length} blocks...`);
+    logUtils.log(`Parsing ${rawBlocks.length} blocks...`);
     const blocks = R.map(parseBlock, rawBlocks);
-    console.log(`Saving ${blocks.length} blocks...`);
+    logUtils.log(`Saving ${blocks.length} blocks...`);
     await blocksRepository.save(blocks, { chunk: Math.ceil(blocks.length / BATCH_SAVE_SIZE) });
-    console.log('Done saving this batch of blocks');
+    logUtils.log('Done saving this batch of blocks');
 }

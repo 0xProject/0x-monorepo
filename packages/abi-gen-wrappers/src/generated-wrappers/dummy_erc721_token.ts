@@ -51,12 +51,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'name()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.name;
-            const encodedData = ethersFunction.encode([]);
+            const encodedData = self._strictEncodeArguments('name()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -67,11 +62,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('name()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public getApproved = {
@@ -82,15 +78,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'getApproved(uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getApproved;
-            const encodedData = ethersFunction.encode([_tokenId
+            const encodedData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -102,11 +90,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'getApproved'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public approve = {
@@ -116,16 +105,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('approve(address,uint256)').inputs;
-            [_approved,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_approved,
-    _tokenId
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_approved,
-    _tokenId
-    ]);
-            const encodedData = self._lookupEthersInterface('approve(address,uint256)').functions.approve.encode([_approved,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -150,13 +130,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('approve(address,uint256)').inputs;
-            [_approved,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_approved,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('approve(address,uint256)').functions.approve.encode([_approved,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -175,13 +149,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('approve(address,uint256)').inputs;
-            [_approved,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_approved,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('approve(address,uint256)').functions.approve.encode([_approved,
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
             return abiEncodedTransactionData;
@@ -194,18 +162,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'approve(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_approved,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_approved,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_approved,
-        _tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.approve;
-            const encodedData = ethersFunction.encode([_approved,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
         _tokenId
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -218,11 +175,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transferFrom = {
@@ -233,19 +191,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('transferFrom(address,address,uint256)').inputs;
-            [_from,
-    _to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_from,
-    _to,
-    _tokenId
-    ]);
-            const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').functions.transferFrom.encode([_from,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -273,15 +219,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('transferFrom(address,address,uint256)').inputs;
-            [_from,
-    _to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').functions.transferFrom.encode([_from,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -302,15 +240,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('transferFrom(address,address,uint256)').inputs;
-            [_from,
-    _to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('transferFrom(address,address,uint256)').functions.transferFrom.encode([_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -325,21 +255,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'transferFrom(address,address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_from,
-        _to,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-        _to,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_from,
-        _to,
-        _tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.transferFrom;
-            const encodedData = ethersFunction.encode([_from,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
         _to,
         _tokenId
         ]);
@@ -353,11 +269,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public mint = {
@@ -367,16 +284,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('mint(address,uint256)').inputs;
-            [_to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_to,
-    _tokenId
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_to,
-    _tokenId
-    ]);
-            const encodedData = self._lookupEthersInterface('mint(address,uint256)').functions.mint.encode([_to,
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -401,13 +309,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('mint(address,uint256)').inputs;
-            [_to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_to,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('mint(address,uint256)').functions.mint.encode([_to,
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -426,13 +328,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('mint(address,uint256)').inputs;
-            [_to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_to,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('mint(address,uint256)').functions.mint.encode([_to,
+            const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
             return abiEncodedTransactionData;
@@ -445,18 +341,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'mint(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_to,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_to,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_to,
-        _tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.mint;
-            const encodedData = ethersFunction.encode([_to,
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
         _tokenId
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -469,11 +354,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'mint'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public safeTransferFrom1 = {
@@ -484,19 +370,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('safeTransferFrom(address,address,uint256)').inputs;
-            [_from,
-    _to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_from,
-    _to,
-    _tokenId
-    ]);
-            const encodedData = self._lookupEthersInterface('safeTransferFrom(address,address,uint256)').functions.safeTransferFrom.encode([_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -524,15 +398,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('safeTransferFrom(address,address,uint256)').inputs;
-            [_from,
-    _to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('safeTransferFrom(address,address,uint256)').functions.safeTransferFrom.encode([_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -553,15 +419,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('safeTransferFrom(address,address,uint256)').inputs;
-            [_from,
-    _to,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('safeTransferFrom(address,address,uint256)').functions.safeTransferFrom.encode([_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -576,21 +434,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'safeTransferFrom(address,address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_from,
-        _to,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-        _to,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_from,
-        _to,
-        _tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.safeTransferFrom;
-            const encodedData = ethersFunction.encode([_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
         _to,
         _tokenId
         ]);
@@ -604,11 +448,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'safeTransferFrom'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public ownerOf = {
@@ -619,15 +464,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'ownerOf(uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.ownerOf;
-            const encodedData = ethersFunction.encode([_tokenId
+            const encodedData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -639,11 +476,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'ownerOf'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public balanceOf = {
@@ -654,15 +492,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'balanceOf(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_owner
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_owner
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_owner
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.balanceOf;
-            const encodedData = ethersFunction.encode([_owner
+            const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -674,11 +504,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public owner = {
@@ -688,12 +519,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'owner()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.owner;
-            const encodedData = ethersFunction.encode([]);
+            const encodedData = self._strictEncodeArguments('owner()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -704,11 +530,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'owner'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public symbol = {
@@ -718,12 +545,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'symbol()';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.symbol;
-            const encodedData = ethersFunction.encode([]);
+            const encodedData = self._strictEncodeArguments('symbol()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -734,11 +556,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public burn = {
@@ -748,16 +571,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('burn(address,uint256)').inputs;
-            [_owner,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_owner,
-    _tokenId
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_owner,
-    _tokenId
-    ]);
-            const encodedData = self._lookupEthersInterface('burn(address,uint256)').functions.burn.encode([_owner,
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -782,13 +596,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('burn(address,uint256)').inputs;
-            [_owner,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_owner,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('burn(address,uint256)').functions.burn.encode([_owner,
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -807,13 +615,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('burn(address,uint256)').inputs;
-            [_owner,
-    _tokenId
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_owner,
-    _tokenId
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('burn(address,uint256)').functions.burn.encode([_owner,
+            const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
             return abiEncodedTransactionData;
@@ -826,18 +628,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'burn(address,uint256)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_owner,
-        _tokenId
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_owner,
-        _tokenId
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_owner,
-        _tokenId
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.burn;
-            const encodedData = ethersFunction.encode([_owner,
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
         _tokenId
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -850,11 +641,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'burn'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public setApprovalForAll = {
@@ -864,16 +656,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('setApprovalForAll(address,bool)').inputs;
-            [_operator,
-    _approved
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_operator,
-    _approved
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_operator,
-    _approved
-    ]);
-            const encodedData = self._lookupEthersInterface('setApprovalForAll(address,bool)').functions.setApprovalForAll.encode([_operator,
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -898,13 +681,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('setApprovalForAll(address,bool)').inputs;
-            [_operator,
-    _approved
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_operator,
-    _approved
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('setApprovalForAll(address,bool)').functions.setApprovalForAll.encode([_operator,
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -923,13 +700,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _approved: boolean,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('setApprovalForAll(address,bool)').inputs;
-            [_operator,
-    _approved
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_operator,
-    _approved
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('setApprovalForAll(address,bool)').functions.setApprovalForAll.encode([_operator,
+            const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
             return abiEncodedTransactionData;
@@ -942,18 +713,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'setApprovalForAll(address,bool)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_operator,
-        _approved
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_operator,
-        _approved
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_operator,
-        _approved
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.setApprovalForAll;
-            const encodedData = ethersFunction.encode([_operator,
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
         _approved
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -966,11 +726,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'setApprovalForAll'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public safeTransferFrom2 = {
@@ -982,22 +743,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('safeTransferFrom(address,address,uint256,bytes)').inputs;
-            [_from,
-    _to,
-    _tokenId,
-    _data
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId,
-    _data
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_from,
-    _to,
-    _tokenId,
-    _data
-    ]);
-            const encodedData = self._lookupEthersInterface('safeTransferFrom(address,address,uint256,bytes)').functions.safeTransferFrom.encode([_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
@@ -1028,17 +774,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('safeTransferFrom(address,address,uint256,bytes)').inputs;
-            [_from,
-    _to,
-    _tokenId,
-    _data
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId,
-    _data
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('safeTransferFrom(address,address,uint256,bytes)').functions.safeTransferFrom.encode([_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
@@ -1061,17 +797,7 @@ export class DummyERC721TokenContract extends BaseContract {
             _data: string,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('safeTransferFrom(address,address,uint256,bytes)').inputs;
-            [_from,
-    _to,
-    _tokenId,
-    _data
-    ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-    _to,
-    _tokenId,
-    _data
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('safeTransferFrom(address,address,uint256,bytes)').functions.safeTransferFrom.encode([_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
@@ -1088,24 +814,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'safeTransferFrom(address,address,uint256,bytes)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_from,
-        _to,
-        _tokenId,
-        _data
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_from,
-        _to,
-        _tokenId,
-        _data
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_from,
-        _to,
-        _tokenId,
-        _data
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.safeTransferFrom;
-            const encodedData = ethersFunction.encode([_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
         _to,
         _tokenId,
         _data
@@ -1120,11 +829,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'safeTransferFrom'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public isApprovedForAll = {
@@ -1136,18 +846,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'isApprovedForAll(address,address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [_owner,
-        _operator
-        ] = BaseContract._formatABIDataItemList(inputAbi, [_owner,
-        _operator
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [_owner,
-        _operator
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.isApprovedForAll;
-            const encodedData = ethersFunction.encode([_owner,
+            const encodedData = self._strictEncodeArguments('isApprovedForAll(address,address)', [_owner,
         _operator
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1160,11 +859,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'isApprovedForAll'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray[0];
+            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public transferOwnership = {
@@ -1173,13 +873,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('transferOwnership(address)').inputs;
-            [newOwner
-    ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-    ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
-    ]);
-            const encodedData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1201,11 +895,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('transferOwnership(address)').inputs;
-            [newOwner
-    ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-    ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1222,11 +912,7 @@ export class DummyERC721TokenContract extends BaseContract {
             newOwner: string,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const inputAbi = self._lookupAbi('transferOwnership(address)').inputs;
-            [newOwner
-    ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-    ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             return abiEncodedTransactionData;
         },
@@ -1237,15 +923,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const functionSignature = 'transferOwnership(address)';
-            const inputAbi = self._lookupAbi(functionSignature).inputs;
-            [newOwner
-        ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
-        ], BaseContract._bigNumberToString.bind(self));
-            BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
-        ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.transferOwnership;
-            const encodedData = ethersFunction.encode([newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1257,11 +935,12 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
-            const outputAbi = (_.find(self.abi, {name: 'transferOwnership'}) as MethodAbi).outputs;
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
-            resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
-            return resultArray;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
         },
     };
     public static async deployFrom0xArtifactAsync(
@@ -1321,7 +1000,7 @@ _symbol
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('DummyERC721Token', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method

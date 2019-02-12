@@ -1,7 +1,9 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subproviders';
+import { logUtils } from '@0x/utils';
 import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
+import { utils } from 'ethers';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
 
@@ -18,6 +20,23 @@ export interface TraceCollectionSubproviderConfig {
     shouldCollectTransactionTraces: boolean;
     shouldCollectCallTraces: boolean;
     shouldCollectGasEstimateTraces: boolean;
+}
+
+type AsyncFunc = (...args: any[]) => Promise<void>;
+
+// HACK: This wrapper outputs errors to console even if the promise gets ignored
+// we need this because web3-provider-engine does not handle promises in
+// the after function of next(after).
+function logAsyncErrors(fn: AsyncFunc): AsyncFunc {
+    async function wrappedAsync(...args: any[]): Promise<void> {
+        try {
+            await fn(...args);
+        } catch (err) {
+            logUtils.log(err);
+            throw err;
+        }
+    }
+    return wrappedAsync;
 }
 
 // Because there is no notion of a call trace in the Ethereum rpc - we collect them in a rather non-obvious/hacky way.
@@ -74,7 +93,19 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const txData = payload.params[0];
-                        next(this._onTransactionSentAsync.bind(this, txData));
+                        next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
+                    }
+                    return;
+
+                case 'eth_sendRawTransaction':
+                    if (!this._config.shouldCollectTransactionTraces) {
+                        next();
+                    } else {
+                        const txData = utils.parseTransaction(payload.params[0]);
+                        if (txData.to === null) {
+                            txData.to = constants.NEW_CONTRACT;
+                        }
+                        next(logAsyncErrors(this._onTransactionSentAsync.bind(this, txData)));
                     }
                     return;
 
@@ -83,7 +114,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const callData = payload.params[0];
-                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, callData));
+                        next(logAsyncErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, callData)));
                     }
                     return;
 
@@ -92,7 +123,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                         next();
                     } else {
                         const estimateGasData = payload.params[0];
-                        next(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData));
+                        next(logAsyncErrors(this._onCallOrGasEstimateExecutedAsync.bind(this, estimateGasData)));
                     }
                     return;
 
@@ -126,7 +157,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         txHash: string | undefined,
         cb: Callback,
     ): Promise<void> {
-        if (!txData.isFakeTransaction) {
+        if (!(txData.isFakeTransaction || txData.from === txData.to)) {
             // This transaction is a usual transaction. Not a call executed as one.
             // And we don't want it to be executed within a snapshotting period
             await this._lock.acquire();
@@ -162,13 +193,13 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         cb();
     }
     private async _recordCallOrGasEstimateTraceAsync(callData: Partial<CallDataRPC>): Promise<void> {
-        // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
+        // We don't want other transactions to be executed during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
         const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
         await blockchainLifecycle.startAsync();
         const fakeTxData = {
-            gas: BLOCK_GAS_LIMIT.toString(16), // tslint:disable-line:custom-no-magic-numbers
+            gas: `0x${BLOCK_GAS_LIMIT.toString(16)}`, // tslint:disable-line:custom-no-magic-numbers
             isFakeTransaction: true, // This transaction (and only it) is allowed to come through when the lock is locked
             ...callData,
             from: callData.from || this._defaultFromAddress,

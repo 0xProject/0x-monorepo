@@ -36,7 +36,7 @@ export class StaticBytesDataType extends AbstractBlobDataType {
         this._width = StaticBytesDataType._decodeWidthFromType(dataItem.type);
     }
 
-    public getSignature(): string {
+    public getSignatureType(): string {
         // Note that `byte` reduces to `bytes1`
         return `${SolidityTypes.Bytes}${this._width}`;
     }
@@ -55,6 +55,13 @@ export class StaticBytesDataType extends AbstractBlobDataType {
         const valueBuf = valueBufPadded.slice(0, this._width);
         const value = ethUtil.bufferToHex(valueBuf);
         this._sanityCheckValue(value);
+        return value;
+    }
+
+    public getDefaultValue(): string {
+        const valueBufPadded = constants.EMPTY_EVM_WORD_BUFFER;
+        const valueBuf = valueBufPadded.slice(0, this._width);
+        const value = ethUtil.bufferToHex(valueBuf);
         return value;
     }
 

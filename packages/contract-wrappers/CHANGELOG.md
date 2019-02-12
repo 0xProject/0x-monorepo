@@ -5,6 +5,37 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.1.0 - _February 9, 2019_
+
+    * Added calldata decoding to ContractWrappers (#1569)
+
+## v7.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v7.0.1 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v7.0.0 - _February 6, 2019_
+
+    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
+    * Use new `ZeroExTransaction` interface (#1576)
+    * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
+
+## v6.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v5.0.1 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v5.0.0 - _January 15, 2019_
+
+    * Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule (#1474)
+    * Remove Exchange `matchOrdersAsync` optimization (#1514)
+
 ## v4.2.1 - _January 11, 2019_
 
     * Dependencies updated

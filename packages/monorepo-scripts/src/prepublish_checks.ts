@@ -6,6 +6,8 @@ import semverSort = require('semver-sort');
 import { constants } from './constants';
 import { Package } from './types';
 import { changelogUtils } from './utils/changelog_utils';
+import { configs } from './utils/configs';
+import { dockerHubUtils } from './utils/docker_hub_utils';
 import { npmUtils } from './utils/npm_utils';
 import { utils } from './utils/utils';
 
@@ -17,6 +19,12 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkChangelogFormatAsync(updatedPublicPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
     await checkPublishRequiredSetupAsync();
+    await checkDockerHubSetupAsync();
+}
+
+async function checkDockerHubSetupAsync(): Promise<void> {
+    await dockerHubUtils.checkUserAddedToOrganizationOrThrowAsync(configs.DOCKER_HUB_ORG);
+    await dockerHubUtils.loginUserToDockerCommandlineOrThrowAsync();
 }
 
 async function checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages: Package[]): Promise<void> {

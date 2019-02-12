@@ -73,7 +73,7 @@ export class ExpirationWatcher {
                 break;
             }
             const nextOrderHashToExpire = this._orderHashByExpirationRBTree.min();
-            const hasNoExpiredOrders = this._expiration[nextOrderHashToExpire].greaterThan(
+            const hasNoExpiredOrders = this._expiration[nextOrderHashToExpire].isGreaterThan(
                 currentUnixTimestampMs.plus(this._expirationMarginMs),
             );
             const isSubscriptionActive = _.isUndefined(this._orderExpirationCheckingIntervalIdIfExists);

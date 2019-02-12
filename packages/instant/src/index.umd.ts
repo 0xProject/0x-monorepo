@@ -1,3 +1,6 @@
+import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
+import { assetDataUtils } from '@0x/order-utils';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -9,9 +12,13 @@ import {
     INJECTED_DIV_ID,
     NPM_PACKAGE_VERSION,
 } from './constants';
+import { assetMetaDataMap } from './data/asset_meta_data_map';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
+import { Network, OrderSource } from './types';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
+import { orderCoercionUtil } from './util/order_coercion';
+import { providerFactory } from './util/provider_factory';
 import { util } from './util/util';
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
@@ -87,16 +94,24 @@ export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
 }
 
 export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
-    validateInstantRenderConfig(config, selector);
-    if (config.shouldDisablePushToHistory) {
+    // Coerces BigNumber provided in config to version utilized by 0x packages
+    const coercedConfig = _.assign({}, config, {
+        orderSource: _.isArray(config.orderSource)
+            ? orderCoercionUtil.coerceOrderArrayFieldsToBigNumber(config.orderSource)
+            : config.orderSource,
+    });
+
+    validateInstantRenderConfig(coercedConfig, selector);
+
+    if (coercedConfig.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {
-            renderInstant(config, selector);
+            renderInstant(coercedConfig, selector);
         }
         return;
     }
     // Before we render, push to history saying that instant is showing for this part of the history.
     window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
-    let removeInstant = renderInstant(config, selector);
+    let removeInstant = renderInstant(coercedConfig, selector);
     // If the integrator defined a popstate handler, save it to __zeroExInstantIntegratorsPopStateHandler
     // unless we have already done so on a previous render.
     const anyWindow = window as any;
@@ -110,7 +125,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         if (newState && newState.zeroExInstantShowing) {
             // We have returned to a history state that expects instant to be rendered.
             if (!isInstantRendered()) {
-                removeInstant = renderInstant(config, selector);
+                removeInstant = renderInstant(coercedConfig, selector);
             }
         } else {
             // History has changed to a different state.
@@ -120,6 +135,42 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         }
     };
     window.onpopstate = onPopStateHandler;
+};
+
+export const assetDataForERC20TokenAddress = (tokenAddress: string): string => {
+    assert.isETHAddressHex('tokenAddress', tokenAddress);
+    return assetDataUtils.encodeERC20AssetData(tokenAddress);
+};
+
+export const hasMetaDataForAssetData = (assetData: string): boolean => {
+    assert.isHexString('assetData', assetData);
+    return assetMetaDataMap[assetData] !== undefined;
+};
+
+export const hasLiquidityForAssetDataAsync = async (
+    assetData: string,
+    orderSource: OrderSource,
+    networkId: Network = Network.Mainnet,
+    provider?: Provider,
+): Promise<boolean> => {
+    assert.isHexString('assetData', assetData);
+    assert.isValidOrderSource('orderSource', orderSource);
+    assert.isNumber('networkId', networkId);
+
+    if (provider !== undefined) {
+        assert.isWeb3Provider('provider', provider);
+    }
+
+    const bestProvider: Provider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
+
+    const assetBuyerOptions = { networkId };
+
+    const assetBuyer = _.isString(orderSource)
+        ? AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(bestProvider, orderSource, assetBuyerOptions)
+        : AssetBuyer.getAssetBuyerForProvidedOrders(bestProvider, orderSource, assetBuyerOptions);
+
+    const liquidity = await assetBuyer.getLiquidityForAssetDataAsync(assetData);
+    return liquidity.ethValueAvailableInWei.gt(new BigNumber(0));
 };
 
 // Write version info to the exported object for debugging

@@ -45,7 +45,7 @@ const Dd = styled.dd`
 
 const cards = [
     {
-        title: 'A Project-centric',
+        title: 'Project-centric',
         body: (
             <React.Fragment>
                 Compiles an entire project instead of only individual <InlineCode isAlt={true}>.sol</InlineCode> files.
@@ -54,7 +54,7 @@ const cards = [
     },
     {
         title: 'Incremental builds',
-        body: 'Recompiles your smart contracts after they have changed',
+        body: 'Only recompiles smart contracts that have been modified.',
     },
     {
         title: 'Customizable artifacts',
@@ -63,12 +63,16 @@ const cards = [
     },
     {
         title: 'Seamless',
-        body: 'Fetches and caches the required compiler binaries.',
+        body: 'Fetches and caches the required compiler binaries for the Solidity versions you use.',
     },
     {
         title: 'Versioning',
         body:
-            'Compiles each contract with the version specified at the top of its file (sol-compiler even supports version ranges!).',
+            'Compiles each contract with the Solidity version specified at the top of its file (it even supports version ranges!).',
+    },
+    {
+        title: 'Watch mode',
+        body: 'Have your contracts instantly recompile on file save.',
     },
 ];
 

@@ -5,6 +5,34 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _February 9, 2019_
+
+    * Added method decoding to AbiDecoder (#1569)
+
+## v4.0.4 - _Invalid date_
+
+    * Cleaner signature parsing (#1592)
+
+## v4.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 6, 2019_
+
+    * ABI Decode NULL for all data types (#1587)
+
+## v4.0.1 - _February 5, 2019_
+
+    * ABI Decode NULL as False (#1582)
+
+## v4.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v3.0.1 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v3.0.0 - _January 11, 2019_
 
     * Make `promisify` resolve when the callback error is undefined. (#1501)

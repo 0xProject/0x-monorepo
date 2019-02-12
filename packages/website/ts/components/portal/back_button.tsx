@@ -31,7 +31,7 @@ export const BackButton = (props: BackButtonProps) => {
                         <i style={styles.backButtonIcon} className={`zmdi zmdi-arrow-left`} />
                     </div>
                     <div style={{ marginLeft: 12, marginRight: 12 }}>
-                        <div style={{ fontSize: 16, color: colors.lightGrey }}>{props.labelText}</div>
+                        <div style={{ fontSize: 16, color: colors.mediumBlue }}>{props.labelText}</div>
                     </div>
                 </Island>
             </Link>

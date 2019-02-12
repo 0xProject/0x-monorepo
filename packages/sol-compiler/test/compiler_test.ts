@@ -23,6 +23,9 @@ describe('#Compiler', function(): void {
         contractsDir,
         contracts: constants.contracts,
     };
+    it('should create a Compiler with empty opts', async () => {
+        const _compiler = new Compiler(); // tslint:disable-line no-unused-variable
+    });
     it('should create an Exchange artifact with the correct unlinked binary', async () => {
         compilerOpts.contracts = ['Exchange'];
 

@@ -1,6 +1,7 @@
-// tslint:disable:no-console
 import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+
+import { logUtils } from '@0x/utils';
 
 import { BloxySource } from '../data_sources/bloxy';
 import { DexTrade } from '../entities';
@@ -27,14 +28,14 @@ async function getAndSaveTradesAsync(): Promise<void> {
     const bloxySource = new BloxySource(apiKey);
     const tradesRepository = connection.getRepository(DexTrade);
     const lastSeenTimestamp = await getLastSeenTimestampAsync(tradesRepository);
-    console.log(`Last seen timestamp: ${lastSeenTimestamp === 0 ? 'none' : lastSeenTimestamp}`);
-    console.log('Getting latest dex trades...');
+    logUtils.log(`Last seen timestamp: ${lastSeenTimestamp === 0 ? 'none' : lastSeenTimestamp}`);
+    logUtils.log('Getting latest dex trades...');
     const rawTrades = await bloxySource.getDexTradesAsync(lastSeenTimestamp);
-    console.log(`Parsing ${rawTrades.length} trades...`);
+    logUtils.log(`Parsing ${rawTrades.length} trades...`);
     const trades = parseBloxyTrades(rawTrades);
-    console.log(`Saving ${trades.length} trades...`);
+    logUtils.log(`Saving ${trades.length} trades...`);
     await tradesRepository.save(trades, { chunk: Math.ceil(trades.length / BATCH_SAVE_SIZE) });
-    console.log('Done saving trades.');
+    logUtils.log('Done saving trades.');
 }
 
 async function getLastSeenTimestampAsync(tradesRepository: Repository<DexTrade>): Promise<number> {

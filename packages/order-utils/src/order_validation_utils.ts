@@ -31,13 +31,13 @@ export class OrderValidationUtils {
         if (denominator.eq(0)) {
             throw new Error('denominator cannot be 0');
         }
-        const remainder = target.mul(numerator).mod(denominator);
+        const remainder = target.multipliedBy(numerator).mod(denominator);
         if (remainder.eq(0)) {
             return false; // no rounding error
         }
 
         // tslint:disable-next-line:custom-no-magic-numbers
-        const errPercentageTimes1000000 = remainder.mul(1000000).div(numerator.mul(target));
+        const errPercentageTimes1000000 = remainder.multipliedBy(1000000).div(numerator.multipliedBy(target));
         // tslint:disable-next-line:custom-no-magic-numbers
         const isError = errPercentageTimes1000000.gt(1000);
         return isError;
@@ -108,7 +108,7 @@ export class OrderValidationUtils {
     }
     private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
+        if (expirationTimeSeconds.isLessThan(currentUnixTimestampSec)) {
             throw new Error(RevertReason.OrderUnfillable);
         }
     }
@@ -216,7 +216,7 @@ export class OrderValidationUtils {
         }
         OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
-        const desiredFillTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerAssetAmount)
+        const desiredFillTakerTokenAmount = remainingTakerTokenAmount.isLessThan(fillTakerAssetAmount)
             ? remainingTakerTokenAmount
             : fillTakerAssetAmount;
         try {

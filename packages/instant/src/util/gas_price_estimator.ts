@@ -35,7 +35,7 @@ const fetchFastAmountInWeiAsync = async (): Promise<GasInfo> => {
     const gasPriceInGwei = new BigNumber(gasInfo.fast / 10);
     // Time is in minutes
     const estimatedTimeMs = gasInfo.fastWait * 60 * 1000; // Minutes to MS
-    return { gasPriceInWei: gasPriceInGwei.mul(GWEI_IN_WEI), estimatedTimeMs };
+    return { gasPriceInWei: gasPriceInGwei.multipliedBy(GWEI_IN_WEI), estimatedTimeMs };
 };
 
 export class GasPriceEstimator {

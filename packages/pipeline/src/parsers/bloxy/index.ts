@@ -21,6 +21,7 @@ export function _parseBloxyTrade(rawTrade: BloxyTrade): DexTrade {
     const dexTrade = new DexTrade();
     dexTrade.sourceUrl = BLOXY_DEX_TRADES_URL;
     dexTrade.txHash = rawTrade.tx_hash;
+    dexTrade.tradeIndex = rawTrade.tradeIndex;
     dexTrade.txTimestamp = new Date(rawTrade.tx_time).getTime();
     dexTrade.txDate = rawTrade.tx_date;
     dexTrade.txSender = rawTrade.tx_sender;

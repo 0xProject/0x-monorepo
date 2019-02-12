@@ -2,6 +2,8 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { generateDataItemFromSignature } from './utils/signature_parser';
+
 import { DataType } from './abstract_data_types/data_type';
 import { DataTypeFactory } from './abstract_data_types/interfaces';
 import { AddressDataType } from './evm_data_types/address';
@@ -128,5 +130,91 @@ export class EvmDataTypeFactory implements DataTypeFactory {
     /* tslint:enable prefer-function-over-method */
 
     private constructor() {}
+}
+
+/**
+ * Convenience function for creating a DataType from different inputs.
+ * @param input A single or set of DataItem or a signature for an EVM data type.
+ * @return DataType corresponding to input.
+ */
+export function create(input: DataItem | DataItem[] | string): DataType {
+    const dataItem = consolidateDataItemsIntoSingle(input);
+    const dataType = EvmDataTypeFactory.getInstance().create(dataItem);
+    return dataType;
+}
+
+/**
+ * Convenience function to aggregate a single input or a set of inputs into a single DataItem.
+ * An array of data items is grouped into a single tuple.
+ * @param input A single data item; a set of data items; a signature.
+ * @return A single data item corresponding to input.
+ */
+function consolidateDataItemsIntoSingle(input: DataItem | DataItem[] | string): DataItem {
+    let dataItem: DataItem;
+    if (_.isArray(input)) {
+        const dataItems = input as DataItem[];
+        dataItem = {
+            name: '',
+            type: 'tuple',
+            components: dataItems,
+        };
+    } else {
+        dataItem = _.isString(input) ? generateDataItemFromSignature(input) : (input as DataItem);
+    }
+    return dataItem;
+}
+
+/**
+ * Convenience function for creating a Method encoder from different inputs.
+ * @param methodName name of method.
+ * @param input A single data item; a set of data items; a signature; or an array of signatures (optional).
+ * @param output A single data item; a set of data items; a signature; or an array of signatures (optional).
+ * @return Method corresponding to input.
+ */
+export function createMethod(
+    methodName: string,
+    input?: DataItem | DataItem[] | string | string[],
+    output?: DataItem | DataItem[] | string | string[],
+): Method {
+    const methodInput = _.isUndefined(input) ? [] : consolidateDataItemsIntoArray(input);
+    const methodOutput = _.isUndefined(output) ? [] : consolidateDataItemsIntoArray(output);
+    const methodAbi: MethodAbi = {
+        name: methodName,
+        inputs: methodInput,
+        outputs: methodOutput,
+        type: 'function',
+        // default fields not used by ABI
+        constant: false,
+        payable: false,
+        stateMutability: 'nonpayable',
+    };
+    const dataType = new Method(methodAbi);
+    return dataType;
+}
+
+/**
+ * Convenience function that aggregates a single input or a set of inputs into an array of DataItems.
+ * @param input A single data item; a set of data items; a signature; or an array of signatures.
+ * @return Array of data items corresponding to input.
+ */
+function consolidateDataItemsIntoArray(input: DataItem | DataItem[] | string | string[]): DataItem[] {
+    let dataItems: DataItem[];
+    if (_.isArray(input) && _.isEmpty(input)) {
+        dataItems = [];
+    } else if (_.isArray(input) && _.isString(input[0])) {
+        dataItems = [];
+        _.each(input as string[], (signature: string) => {
+            const dataItem = generateDataItemFromSignature(signature);
+            dataItems.push(dataItem);
+        });
+    } else if (_.isArray(input)) {
+        dataItems = input as DataItem[];
+    } else if (typeof input === 'string') {
+        const dataItem = generateDataItemFromSignature(input);
+        dataItems = [dataItem];
+    } else {
+        dataItems = [input as DataItem];
+    }
+    return dataItems;
 }
 /* tslint:enable no-construct */

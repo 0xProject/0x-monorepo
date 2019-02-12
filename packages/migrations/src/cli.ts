@@ -27,8 +27,9 @@ const args = yargs
     const provider = new Web3ProviderEngine();
     provider.addProvider(rpcSubprovider);
     provider.start();
+    const normalizedFromAddress = (args.from as string).toLowerCase();
     const txDefaults = {
-        from: args.from,
+        from: normalizedFromAddress,
     };
     await runMigrationsAsync(provider, txDefaults);
     process.exit(0);

@@ -3,6 +3,8 @@ export {
     TruffleArtifactAdapter,
     SolCompilerArtifactAdapter,
     ContractData,
+    SourceCodes,
+    Sources,
 } from '@0x/sol-tracing-utils';
 
 export { RevertTraceSubprovider } from './revert_trace_subprovider';

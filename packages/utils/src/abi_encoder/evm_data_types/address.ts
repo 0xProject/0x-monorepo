@@ -12,6 +12,7 @@ export class AddressDataType extends AbstractBlobDataType {
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
     private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES =
         constants.EVM_WORD_WIDTH_IN_BYTES - AddressDataType._ADDRESS_SIZE_IN_BYTES;
+    private static readonly _DEFAULT_VALUE = '0x0000000000000000000000000000000000000000';
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Address;
@@ -39,10 +40,15 @@ export class AddressDataType extends AbstractBlobDataType {
         const valueBufPadded = calldata.popWord();
         const valueBuf = valueBufPadded.slice(AddressDataType._DECODED_ADDRESS_OFFSET_IN_BYTES);
         const value = ethUtil.bufferToHex(valueBuf);
-        return value;
+        const valueLowercase = _.toLower(value);
+        return valueLowercase;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): string {
+        return AddressDataType._DEFAULT_VALUE;
+    }
+
+    public getSignatureType(): string {
         return SolidityTypes.Address;
     }
     /* tslint:enable prefer-function-over-method */

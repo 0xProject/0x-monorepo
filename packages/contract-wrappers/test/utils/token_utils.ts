@@ -9,14 +9,14 @@ import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 // Before we were fetching them from the TokenRegistry but now we can't as it's deprecated and removed.
 // TODO(albrow): Import these from the migrations package instead of hard-coding them.
 const DUMMY_ERC_20_ADRESSES = [
-    '0x6dfff22588be9b3ef8cf0ad6dc9b84796f9fb45f',
-    '0xcfc18cec799fbd1793b5c43e773c98d4d61cc2db',
-    '0xf22469f31527adc53284441bae1665a7b9214dba',
-    '0x10add991de718a69dec2117cb6aa28098836511b',
-    '0x8d61158a366019ac78db4149d75fff9dda51160d',
+    '0x34d402f14d58e001d8efbe6585051bf9706aa064',
+    '0x25b8fe1de9daf8ba351890744ff28cf7dfa8f5e3',
+    '0xcdb594a32b1cc3479d8746279712c39d18a07fc0',
+    '0x1e2f9e10d02a6b8f8f69fcbf515e75039d2ea30d',
+    '0xbe0037eaf2d64fe5529bca93c18c9702d3930376',
 ];
 
-const DUMMY_ERC_721_ADRESSES = ['0x131855dda0aaff096f6854854c55a4debf61077a'];
+const DUMMY_ERC_721_ADRESSES = ['0x07f96aa816c1f244cbc6ef114bb2b023ba54a2eb'];
 
 export const tokenUtils = {
     getDummyERC20TokenAddresses(): string[] {

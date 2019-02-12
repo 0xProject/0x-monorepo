@@ -99,7 +99,7 @@ export const asyncData = {
         if (
             !_.isUndefined(selectedAssetUnitAmount) &&
             !_.isUndefined(selectedAsset) &&
-            selectedAssetUnitAmount.greaterThan(BIG_NUMBER_ZERO) &&
+            selectedAssetUnitAmount.isGreaterThan(BIG_NUMBER_ZERO) &&
             buyOrderState.processState === OrderProcessState.None &&
             selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
         ) {

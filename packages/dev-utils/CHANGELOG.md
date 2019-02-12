@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _February 9, 2019_
+
+    * Allow using the Web3Factory in-process Ganache provider with existing DB snapshot (#1602)
+
+## v2.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v2.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v2.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v1.0.24 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v1.0.23 - _January 11, 2019_
 
     * Dependencies updated

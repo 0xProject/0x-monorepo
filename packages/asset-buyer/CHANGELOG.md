@@ -5,6 +5,38 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.4 - _February 9, 2019_
+
+    * Dependencies updated
+
+## v5.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v5.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v5.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v5.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v4.1.0 - _Invalid date_
+
+    * Adds new public method getLiquidityForAssetDataAsync, and exposes getOrdersAndFillableAmountsAsync as public method (#1512)
+
+## v4.0.2 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v4.0.0 - _January 11, 2019_
 
     * Raise custom InsufficientAssetLiquidityError error with amountAvailableToFill attribute (#1437)

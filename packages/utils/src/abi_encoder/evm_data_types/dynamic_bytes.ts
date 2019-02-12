@@ -9,6 +9,7 @@ import { constants } from '../utils/constants';
 
 export class DynamicBytesDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
+    private static readonly _DEFAULT_VALUE = '0x';
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Bytes;
@@ -65,7 +66,11 @@ export class DynamicBytesDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): string {
+        return DynamicBytesDataType._DEFAULT_VALUE;
+    }
+
+    public getSignatureType(): string {
         return SolidityTypes.Bytes;
     }
     /* tslint:enable prefer-function-over-method */

@@ -25,16 +25,16 @@ export const format = {
         if (_.isUndefined(ethUnitAmount)) {
             return defaultText;
         }
-        let roundedAmount = ethUnitAmount.round(decimalPlaces).toDigits(decimalPlaces);
+        let roundedAmount = ethUnitAmount.decimalPlaces(decimalPlaces).precision(decimalPlaces);
 
-        if (roundedAmount.eq(BIG_NUMBER_ZERO) && ethUnitAmount.greaterThan(BIG_NUMBER_ZERO)) {
+        if (roundedAmount.eq(BIG_NUMBER_ZERO) && ethUnitAmount.isGreaterThan(BIG_NUMBER_ZERO)) {
             // Sometimes for small ETH amounts (i.e. 0.000045) the amount rounded to 4 decimalPlaces is 0
             // If that is the case, show to 1 significant digit
             roundedAmount = new BigNumber(ethUnitAmount.toPrecision(1));
         }
 
         const displayAmount =
-            roundedAmount.greaterThan(BIG_NUMBER_ZERO) && roundedAmount.lessThan(minUnitAmountToDisplay)
+            roundedAmount.isGreaterThan(BIG_NUMBER_ZERO) && roundedAmount.isLessThan(minUnitAmountToDisplay)
                 ? `< ${minUnitAmountToDisplay.toString()}`
                 : roundedAmount.toString();
 
@@ -62,7 +62,7 @@ export const format = {
         if (_.isUndefined(ethUnitAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }
-        const rawUsdPrice = ethUnitAmount.mul(ethUsdPrice);
+        const rawUsdPrice = ethUnitAmount.multipliedBy(ethUsdPrice);
         const roundedUsdPrice = rawUsdPrice.toFixed(decimalPlaces);
         if (roundedUsdPrice === '0.00' && rawUsdPrice.gt(BIG_NUMBER_ZERO)) {
             return '<$0.01';

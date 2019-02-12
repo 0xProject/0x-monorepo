@@ -84,7 +84,7 @@ const mapDispatchToProps = (
         // reset our buy state
         dispatch(actions.setBuyOrderStateNone());
 
-        if (!_.isUndefined(value) && value.greaterThan(0) && !_.isUndefined(asset)) {
+        if (!_.isUndefined(value) && value.isGreaterThan(0) && !_.isUndefined(asset)) {
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises

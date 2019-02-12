@@ -5,6 +5,47 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.3 - _February 9, 2019_
+
+    * Dependencies updated
+
+## v6.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v6.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v6.0.0 - _February 5, 2019_
+
+    * `SolCompilerArtifactAdapter` now uses `SolResolver` under the hood which allows to resolve `NPM` dependencies properly (#1535)
+    * Cache the `utils.getContractDataIfExists` leading to faster execution (#1535)
+    * `SolCompilerArtifactAdapter` now doesn't return the `ContractData` for interfaces (#1535)
+    * Print resasonable error message on bytecode collision (#1535)
+    * Fix the bug in `ASTVisitor` causing the 'cannot read property `range` of `null`' error (#1557)
+    * Improve error messages when unable to find matching bytecode (#1558)
+    * Fix default gas limit for fake txs in `TraceCollectionSubprovider` (#1583)
+    * Fix a big when we were not intercepting `eth_sendRawTransaction` (#1584)
+
+## v5.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v4.0.1 - _January 17, 2019_
+
+    * Fix a bug where a custom `Geth` tracer didn't return stack entries for `DELEGATECALL` (#1521)
+    * Fix a bug where `TraceCollectionSubprovider` was hanging on the fake `Geth` snapshot transaction (#1521)
+    * Fix/simplify handling of revert trace snippets (#1521)
+
+## v4.0.0 - _January 15, 2019_
+
+    * Fix a bug with incorrect parsing of `sourceMaps` due to sources being in an array instead of a map (#1498)
+    * Change the types of `ContractData.sources` and `ContractData.sourceCodes` to be objects instead of arrays (#1498)
+    * Use custom JS tracer to speed up tracing on clients that support it (e.g., Geth) (#1498)
+    * Log errors encountered in `TraceCollectionSubprovider` (#1498)
+    * Add support for assembly statements (#1498)
+
 ## v3.0.0 - _January 11, 2019_
 
     * Move out specific tools and leave just the shared parts of the codebase (#1492)

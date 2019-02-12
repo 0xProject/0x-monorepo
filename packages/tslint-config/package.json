@@ -1,6 +1,6 @@
 {
     "name": "@0x/tslint-config",
-    "version": "2.0.1",
+    "version": "3.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -40,7 +40,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "tslint": "5.11.0",
         "tslint-eslint-rules": "5.4.0",
         "tslint-react": "^3.2.0",

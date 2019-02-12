@@ -5,6 +5,27 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _February 9, 2019_
+
+    * Export `DecodedCalldata` from @0x/utils (#1569)
+
+## v4.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Update ganache-core to v2.3.3 (#1518)
+
+## v3.2.4 - _January 15, 2019_
+
+    * Dependencies updated
+
 ## v3.2.3 - _January 11, 2019_
 
     * Dependencies updated

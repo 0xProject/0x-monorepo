@@ -321,7 +321,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         };
         return (
             <Section
-                header={<BackButton to={WebsitePaths.Portal} labelText="back to Relayers" />}
+                header={<BackButton to={WebsitePaths.Portal} labelText="Back to Relayers" />}
                 body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
             />
         );

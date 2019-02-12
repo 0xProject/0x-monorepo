@@ -52,7 +52,7 @@ export const marketUtils = {
         const result = _.reduce(
             orders,
             ({ resultOrders, remainingFillAmount, ordersRemainingFillableMakerAssetAmounts }, order, index) => {
-                if (remainingFillAmount.lessThanOrEqualTo(constants.ZERO_AMOUNT)) {
+                if (remainingFillAmount.isLessThanOrEqualTo(constants.ZERO_AMOUNT)) {
                     return {
                         resultOrders,
                         remainingFillAmount: constants.ZERO_AMOUNT,
@@ -137,7 +137,7 @@ export const marketUtils = {
             (accFees, order, index) => {
                 const makerAssetAmountAvailable = remainingFillableMakerAssetAmounts[index];
                 const feeToFillMakerAssetAmountAvailable = makerAssetAmountAvailable
-                    .mul(order.takerFee)
+                    .multipliedBy(order.takerFee)
                     .dividedToIntegerBy(order.makerAssetAmount);
                 return accFees.plus(feeToFillMakerAssetAmountAvailable);
             },

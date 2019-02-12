@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-utils",
-    "version": "1.0.23",
+    "version": "2.1.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -29,7 +29,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^2.0.1",
+        "@0x/tslint-config": "^3.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "make-promises-safe": "^1.1.0",
@@ -41,15 +41,15 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/subproviders": "^2.1.10",
-        "@0x/types": "^1.5.1",
-        "@0x/typescript-typings": "^3.0.7",
-        "@0x/utils": "^3.0.0",
-        "@0x/web3-wrapper": "^3.2.3",
+        "@0x/subproviders": "^3.0.3",
+        "@0x/types": "^2.0.2",
+        "@0x/typescript-typings": "^4.0.0",
+        "@0x/utils": "^4.1.0",
+        "@0x/web3-wrapper": "^5.0.0",
         "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
-        "ethereum-types": "^1.1.5",
-        "lodash": "^4.17.5"
+        "ethereum-types": "^2.0.0",
+        "lodash": "^4.17.11"
     },
     "publishConfig": {
         "access": "public"

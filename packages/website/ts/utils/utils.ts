@@ -394,7 +394,7 @@ export const utils = {
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
         const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-        const value = unitAmount.mul(price);
+        const value = unitAmount.multipliedBy(price);
         return utils.format(value, constants.NUMERAL_USD_FORMAT);
     },
     openUrl(url: string): void {

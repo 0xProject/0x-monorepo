@@ -1,6 +1,6 @@
-// tslint:disable:no-console
 import { web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
+import { logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import R = require('ramda');
 import 'reflect-metadata';
@@ -32,38 +32,38 @@ let connection: Connection;
 })().catch(handleError);
 
 async function getFillEventsAsync(eventsSource: ExchangeEventsSource, endBlock: number): Promise<void> {
-    console.log('Checking existing fill events...');
+    logUtils.log('Checking existing fill events...');
     const repository = connection.getRepository(ExchangeFillEvent);
     const startBlock = await getStartBlockAsync(repository);
-    console.log(`Getting fill events starting at ${startBlock}...`);
+    logUtils.log(`Getting fill events starting at ${startBlock}...`);
     const eventLogs = await eventsSource.getFillEventsAsync(startBlock, endBlock);
-    console.log('Parsing fill events...');
+    logUtils.log('Parsing fill events...');
     const events = parseExchangeFillEvents(eventLogs);
-    console.log(`Retrieved and parsed ${events.length} total fill events.`);
+    logUtils.log(`Retrieved and parsed ${events.length} total fill events.`);
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
 async function getCancelEventsAsync(eventsSource: ExchangeEventsSource, endBlock: number): Promise<void> {
-    console.log('Checking existing cancel events...');
+    logUtils.log('Checking existing cancel events...');
     const repository = connection.getRepository(ExchangeCancelEvent);
     const startBlock = await getStartBlockAsync(repository);
-    console.log(`Getting cancel events starting at ${startBlock}...`);
+    logUtils.log(`Getting cancel events starting at ${startBlock}...`);
     const eventLogs = await eventsSource.getCancelEventsAsync(startBlock, endBlock);
-    console.log('Parsing cancel events...');
+    logUtils.log('Parsing cancel events...');
     const events = parseExchangeCancelEvents(eventLogs);
-    console.log(`Retrieved and parsed ${events.length} total cancel events.`);
+    logUtils.log(`Retrieved and parsed ${events.length} total cancel events.`);
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
 async function getCancelUpToEventsAsync(eventsSource: ExchangeEventsSource, endBlock: number): Promise<void> {
-    console.log('Checking existing CancelUpTo events...');
+    logUtils.log('Checking existing CancelUpTo events...');
     const repository = connection.getRepository(ExchangeCancelUpToEvent);
     const startBlock = await getStartBlockAsync(repository);
-    console.log(`Getting CancelUpTo events starting at ${startBlock}...`);
+    logUtils.log(`Getting CancelUpTo events starting at ${startBlock}...`);
     const eventLogs = await eventsSource.getCancelUpToEventsAsync(startBlock, endBlock);
-    console.log('Parsing CancelUpTo events...');
+    logUtils.log('Parsing CancelUpTo events...');
     const events = parseExchangeCancelUpToEvents(eventLogs);
-    console.log(`Retrieved and parsed ${events.length} total CancelUpTo events.`);
+    logUtils.log(`Retrieved and parsed ${events.length} total CancelUpTo events.`);
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
@@ -72,7 +72,7 @@ const tableNameRegex = /^[a-zA-Z_]*$/;
 async function getStartBlockAsync<T extends ExchangeEvent>(repository: Repository<T>): Promise<number> {
     const fillEventCount = await repository.count();
     if (fillEventCount === 0) {
-        console.log(`No existing ${repository.metadata.name}s found.`);
+        logUtils.log(`No existing ${repository.metadata.name}s found.`);
         return EXCHANGE_START_BLOCK;
     }
     const tableName = repository.metadata.tableName;
@@ -91,7 +91,7 @@ async function saveEventsAsync<T extends ExchangeEvent>(
     repository: Repository<T>,
     events: T[],
 ): Promise<void> {
-    console.log(`Saving ${repository.metadata.name}s...`);
+    logUtils.log(`Saving ${repository.metadata.name}s...`);
     if (isInitialPull) {
         // Split data into numChunks pieces of maximum size BATCH_SAVE_SIZE
         // each.
@@ -104,7 +104,7 @@ async function saveEventsAsync<T extends ExchangeEvent>(
         await saveIndividuallyWithFallbackAsync(repository, events);
     }
     const totalEvents = await repository.count();
-    console.log(`Done saving events. There are now ${totalEvents} total ${repository.metadata.name}s.`);
+    logUtils.log(`Done saving events. There are now ${totalEvents} total ${repository.metadata.name}s.`);
 }
 
 async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
@@ -112,15 +112,20 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
     events: T[],
 ): Promise<void> {
     // Note(albrow): This is a temporary hack because `save` is not working as
-    // documented and is causing a foreign key constraint violation. Hopefully
+    // documented and is causing a primary key constraint violation. Hopefully
     // can remove later because this "poor man's upsert" implementation operates
     // on one event at a time and is therefore much slower.
     for (const event of events) {
         try {
             // First try an insert.
             await repository.insert(event);
-        } catch {
-            // If it fails, assume it was a foreign key constraint error and try
+        } catch (err) {
+            if (err.message.includes('duplicate key value violates unique constraint')) {
+                logUtils.log("Ignore the preceeding INSERT failure; it's not unexpected");
+            } else {
+                throw err;
+            }
+            // If it fails, assume it was a primary key constraint error and try
             // doing an update instead.
             // Note(albrow): Unfortunately the `as any` hack here seems
             // required. I can't figure out how to convince the type-checker
@@ -132,6 +137,7 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
                     contractAddress: event.contractAddress,
                     blockNumber: event.blockNumber,
                     logIndex: event.logIndex,
+                    transactionHash: event.transactionHash,
                 } as any,
                 event as any,
             );

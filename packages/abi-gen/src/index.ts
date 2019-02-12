@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { abiUtils, logUtils } from '@0x/utils';
+import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
@@ -133,7 +133,7 @@ for (const abiFileName of abiFileNames) {
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
             tsName: sanitizedMethodAbis[methodAbiIndex].name,
-            functionSignature: abiUtils.getFunctionSignature(methodAbi),
+            functionSignature: new AbiEncoder.Method(methodAbi).getSignature(),
         };
         return methodData;
     });

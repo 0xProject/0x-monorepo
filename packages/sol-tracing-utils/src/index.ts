@@ -22,11 +22,13 @@ export {
     BranchMap,
     EvmCallStackEntry,
     FnMap,
-    LocationByOffset,
+    OffsetToLocation,
     StatementMap,
     TraceInfoBase,
     TraceInfoExistingContract,
     TraceInfoNewContract,
+    Sources,
+    SourceCodes,
 } from './types';
 export { collectCoverageEntries } from './collect_coverage_entries';
 export { TraceCollector, SingleFileSubtraceHandler } from './trace_collector';
