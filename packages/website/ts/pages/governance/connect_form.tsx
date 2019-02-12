@@ -165,17 +165,6 @@ export class ConnectForm extends React.Component<Props, State> {
                         {errors.connectionError}
                     </Paragraph>
                 )}
-                <ButtonRow>
-                    <Button
-                        color="#5C5C5C"
-                        isNoBorder={true}
-                        isTransparent={true}
-                        type="button"
-                        onClick={this.props.onDismiss}
-                    >
-                        Back
-                    </Button>
-                </ButtonRow>
             </div>
         );
     }
