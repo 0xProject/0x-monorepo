@@ -83,7 +83,9 @@ function _toGeneric(radarMarket: RadarMarket, radarOrder: RadarSignedOrder): Gen
     return {
         price: radarOrder.price.toString(),
         amount: Web3Wrapper.toUnitAmount(new BigNumber(rawAmount.toString()), radarMarket.baseTokenDecimals).toString(),
+        // TODO: Add remainingFillableAmount since its available
     };
 }
 
+// tslint:disable-next-line:no-unbound-method
 const _removeUndefined = R.reject(R.isNil);
