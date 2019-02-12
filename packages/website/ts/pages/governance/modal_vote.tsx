@@ -166,6 +166,9 @@ export class ModalVote extends React.Component<Props> {
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
         const { isSuccessful, errors, votePreference, selectedAddress, currentBalance } = this.state;
+        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH)
+            .toNumber()
+            .toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
             <>
                 <DialogOverlay
@@ -185,7 +188,7 @@ export class ModalVote extends React.Component<Props> {
                                 “I voted” NFT as a token of our appreciation.
                             </Paragraph>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>
-                                You voted from {selectedAddress} with 21,400 ZRX
+                                You voted from {selectedAddress} with {formattedBalance} ZRX
                             </Paragraph>
                             <Button type="button" onClick={this.props.onDismiss}>
                                 Done
