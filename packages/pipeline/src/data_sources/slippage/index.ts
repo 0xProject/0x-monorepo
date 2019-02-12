@@ -30,7 +30,6 @@ export class EdpsSource {
      * Call Ethereum DEX Price Service API.
      */
     public async getEdpsAsync(direction: string, symbol: string, amount: number): Promise<Map<string, EdpsExchange>> {
-        logUtils.log('Getting EDPS response');
         const edpsUrl = `${EDPS_BASE_URL}/${direction}?symbol=${symbol}&amount=${amount}`;
         const resp = await fetchAsync(edpsUrl);
         const respJson: EdpsResponse = await resp.json();
@@ -40,7 +39,6 @@ export class EdpsSource {
                 allExchanges.set(key, entry[key]);
             }
         }
-        logUtils.log(`Got ${allExchanges.size} exchanges.`);
         return allExchanges;
     }
 }
@@ -50,7 +48,6 @@ export class PriceSource {
      * Call CryptoCompare Price API to get USD price of token.
      */
     public async getUsdPriceAsync(symbol: string): Promise<number> {
-        logUtils.log(`Fetching USD price for ${symbol}`);
         const priceUrl = `${PRICE_BASE_URL}&fsym=${symbol}`
         const resp = await fetchAsync(priceUrl);
         const respJson: PriceResponse = await resp.json();
