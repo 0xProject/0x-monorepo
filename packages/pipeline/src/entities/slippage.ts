@@ -1,5 +1,7 @@
-import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+
+import { BigNumber } from '@0x/utils';
+
 import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'slippage', schema: 'raw' })

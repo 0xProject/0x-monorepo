@@ -1,6 +1,5 @@
 import { BigNumber } from '@0x/utils';
 import 'mocha';
-import * as R from 'ramda';
 import 'reflect-metadata';
 
 import { Slippage } from '../../src/entities';
@@ -19,7 +18,7 @@ const slippage = {
     tokenAmount: new BigNumber(25),
     avgPriceInEthBuy: new BigNumber(0.0022),
     avgPriceInEthSell: new BigNumber(0.002),
-    slippage: new BigNumber(0.01)
+    slippage: new BigNumber(0.01),
 };
 
 // tslint:disable:custom-no-magic-numbers
@@ -28,8 +27,8 @@ describe('Slippage entity', () => {
         const connection = await createDbConnectionOnceAsync();
         const slippages = [slippage];
         const slippageRepository = connection.getRepository(Slippage);
-        for (const slippage of slippages) {
-            await testSaveAndFindEntityAsync(slippageRepository, slippage);
+        for (const slippageRecord of slippages) {
+            await testSaveAndFindEntityAsync(slippageRepository, slippageRecord);
         }
     });
 });

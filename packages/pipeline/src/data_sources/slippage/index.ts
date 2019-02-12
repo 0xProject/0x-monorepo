@@ -1,22 +1,22 @@
-import { fetchAsync, logUtils } from '@0x/utils';
+import { fetchAsync } from '@0x/utils';
 
 const EDPS_BASE_URL = 'https://ethereum-dex-prices-service.production.airswap.io';
-const PRICE_BASE_URL = 'https://min-api.cryptocompare.com/data/price?tsyms=USD'
+const PRICE_BASE_URL = 'https://min-api.cryptocompare.com/data/price?tsyms=USD';
 
-export type EdpsResponse = EdpsWrapper[]
+export type EdpsResponse = EdpsWrapper[];
 
 export interface EdpsWrapper {
-    [key: string]: EdpsExchange
+    [key: string]: EdpsExchange;
 }
 
 export interface EdpsExchange {
-    exchangeName: string,
-    totalPrice: number,
-    tokenAmount: number,
-    tokenSymbol: string,
-    avgPrice: number,
-    timestamp: number,
-    error: string
+    exchangeName: string;
+    totalPrice: number;
+    tokenAmount: number;
+    tokenSymbol: string;
+    avgPrice: number;
+    timestamp: number;
+    error: string;
 }
 
 export interface PriceResponse {
@@ -34,21 +34,20 @@ export class EdpsSource {
         const resp = await fetchAsync(edpsUrl);
         const respJson: EdpsResponse = await resp.json();
         const allExchanges = new Map<string, EdpsExchange>();
-        for (let entry of respJson) {
-            for (let key in entry) {
+        for (const entry of respJson) {
+            for (const key of Object.keys(entry)) {
                 allExchanges.set(key, entry[key]);
             }
         }
         return allExchanges;
     }
-}
 
-export class PriceSource {
     /**
-     * Call CryptoCompare Price API to get USD price of token.
+     *
+     * Call price API to fetch USD price for symbol.
      */
     public async getUsdPriceAsync(symbol: string): Promise<number> {
-        const priceUrl = `${PRICE_BASE_URL}&fsym=${symbol}`
+        const priceUrl = `${PRICE_BASE_URL}&fsym=${symbol}`;
         const resp = await fetchAsync(priceUrl);
         const respJson: PriceResponse = await resp.json();
         return respJson.USD;
