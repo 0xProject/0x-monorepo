@@ -101,6 +101,10 @@ const GlobalStyles = withTheme(
     img + p {
         padding-top: 30px;
     }
+
+    strong {
+        font-weight: 500;
+    }
 `,
 );
 
