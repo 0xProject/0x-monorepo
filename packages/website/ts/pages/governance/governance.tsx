@@ -8,109 +8,95 @@ import { Button } from 'ts/components/button';
 import { Column, FlexWrap, Section, WrapSticky } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
+import { ConnectedWalletMark } from 'ts/pages/governance/connected_wallet_mark';
 import { Countdown, VoteDeadline } from 'ts/pages/governance/countdown';
+import { RatingBar } from 'ts/pages/governance/rating_bar';
+import { VoteStats } from 'ts/pages/governance/vote_stats';
 
 import { ModalContact } from 'ts/components/modals/modal_contact';
 import { ModalVote } from 'ts/pages/governance/modal_vote';
 import { colors } from 'ts/style/colors';
 
+import {
+    BigNumber,
+} from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+
 interface LabelInterface {
     [key: number]: string;
 }
 
-interface RatingBarProps {
-    rating: number;
-    color?: string;
-    labels: LabelInterface;
+export interface TallyInterface {
+    zeip?: string;
+    yes?: string;
+    yesPercentage?: number;
+    no?: string;
+    noPercentage?: number;
+    blockNumber?: string;
+    totalVotes?: string;
+    totalBalance?: BigNumber;
 }
 
-interface RatingBulletProps {
-    color: string;
-    isFilled: boolean;
-}
-
-interface VoteBarProps {
-    label: string;
-    color: string;
-    totalVotes: number;
-    votes: number;
-}
-
-interface VoteColumnProps {
-    color: string;
-    width: number;
-}
-
-interface ConnectedWalletMarkProps {
-    isConnected: boolean;
+interface State {
+    isContactModalOpen: boolean;
+    isVoteModalOpen: boolean;
+    isWalletConnected: boolean;
+    isVoteReceived: boolean;
     providerName?: string;
+    tally?: TallyInterface;
 }
 
 const benefitLabels: LabelInterface = {
-    1: 'little benefit',
-    2: 'little benefit',
-    3: 'little benefit',
-    4: 'high benefit',
-    5: 'extreme benefit',
+    1: 'Little Benefit',
+    2: 'Medium Benefit',
+    3: 'High Benefit',
 };
 
 const riskLabels: LabelInterface = {
-    1: 'little risk',
-    2: 'little risk',
-    3: 'little risk',
-    4: 'high risk',
-    5: 'extreme risk',
+    1: 'Low Risk',
+    2: 'Medium Risk',
+    3: 'High Risk',
 };
 
 const complexityLabels: LabelInterface = {
-    1: 'simple',
-    2: 'simple',
-    3: 'simple',
-    4: 'very complex',
-    5: 'extremely complex',
+    1: 'Simple',
+    2: 'Medium',
+    3: 'Complex',
 };
 
 const proposalData = {
+    zeipId: 1,
     title: 'MultiAssetProxy Approval',
-    summary: `The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.`,
+    summary: `MultiAssetProxy brings support for trading arbitrary bundles of assets in 0x protocol. Historically only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets and even mix ERC721 and ERC20 to trade in a single order.`,
     url: '#',
-    votingDeadline: 1609459200,
-    results: {
-        total: 2887000,
-        votes: [
-            {
-                label: 'Yes',
-                total: 2165250,
-            },
-            {
-                label: 'No',
-                total: 721750,
-            },
-        ],
-    },
+    votingDeadline: 1551584000,
     benefit: {
         title: 'Ecosystem Benefit',
-        summary: `The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.`,
-        rating: 4,
+        summary: `Supporting bundled trades is one of the most commonly requested features since the launch of 0x v2. Demand originated from our discussions with gaming and NFT related projects, but this upgrade provides utility to Prediction Markets as well as any relayer that wants to offer baskets of tokens. The MultiAssetProxy will enable new possibilities of trading.  *High benefit 4/5*`,
+        rating: 3,
         links: [
             {
                 text: 'Learn More',
-                url: '#',
+                url: 'https://0xproject.quip.com/k1ERAXnUj2ay/ZEIP23-Support-for-MultiAssetProxy',
+            },
+            {
+                text: 'Technical detail',
+                url: 'https://github.com/0xProject/ZEIPs/issues/23',
             },
         ],
     },
     stakes: {
-        title: 'Stakes',
-        summary: `The MultiAssetProxy allows for smart contracts to take control of a user’s funds. If there is a bug in the contract, it will allow potential attackers to gain control of large amounts of assets. We rate this as high risk, and despite our extensive internal and external audits, we encourage as many people as possible to check our code. `,
-        rating: 4,
+        title: 'Risk',
+        summary: `Deploying the MultiAssetProxy is a hot upgrade to 0x protocol where the state of active contracts is modified. The contracts being modified contain allowances to users tokens. As such the MultiAssetProxy has successfully undergone a third party audit. We encourage the community to verify the MultiAssetProxy code along with the state changes.`,
+        rating: 2,
         links: [
             {
-                text: 'View Audit',
-                url: '#',
+                text: 'View Code',
+                url: 'https://github.com/0xProject/0x-monorepo/blob/development/contracts/asset-proxy/contracts/src/MultiAssetProxy.sol#L25',
             },
             {
-                text: 'View Code',
-                url: '#',
+                text: 'View Audit',
+                url: 'https://github.com/ConsenSys/0x-audit-report-2018-12',
             },
         ],
     },
@@ -127,98 +113,24 @@ const proposalData = {
     },
 };
 
-const RatingBar: React.StatelessComponent<RatingBarProps> = ({ rating, color, labels }) => {
-    const id =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const ratingLabel = labels[rating];
-    const ratingPlaceholders = Array.from(new Array(5), (value, index) => index + 1);
-    const fillCheck = (currentIndex: number) => currentIndex <= rating;
-
-    return (
-        <div>
-            <div style={{ display: 'flex', marginBottom: '12px' }}>
-                {ratingPlaceholders.map((currentIndex: number) => <RatingBullet color={color} key={`${id}-${currentIndex}`} isFilled={fillCheck(currentIndex)} />)}
-            </div>
-            <Paragraph>{ratingLabel}</Paragraph>
-        </div>
-    );
-};
-
-const VoteColumn = styled.div<VoteColumnProps>`
-    background-color: ${props => props.color};
-    width: calc(${props => props.width}% - 45px);
-    height: 13px;
-    margin-right: 10px;
-`;
-
-const VoteColumnPrefix = styled.span`
-    font-size: 1rem;
-    line-height: 1;
-    width: 40px;
-    margin-right: 5px;
-    font-weight: 300;
-`;
-
-const VoteColumnLabel = styled.span`
-    font-size: 1rem;
-    line-height: 1;
-    font-weight: 300;
-`;
-
-const VoteBar: React.StatelessComponent<VoteBarProps> = ({ totalVotes, votes, color, label }) => {
-    const percentage = (100 / totalVotes) * votes;
-    const percentageLabel = `${percentage}%`;
-
-    return (
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', marginLeft: '-50px' }}>
-            <VoteColumnPrefix>{label}</VoteColumnPrefix>
-            <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
-                <VoteColumn color={color} width={percentage} />
-                <VoteColumnLabel>{percentageLabel}</VoteColumnLabel>
-            </div>
-        </div>
-    );
-};
-
-const ConnectedWalletMark: React.StatelessComponent<ConnectedWalletMarkProps> = ({ isConnected, providerName }) => {
-    const typeLabel = isConnected ? providerName || 'Wallet connected' : 'Connect your wallet';
-
-    const Wrapper = styled.div`
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        justify-content: flex-end;
-    `;
-    const Status = styled.span<ConnectedWalletMarkProps>`
-        background: ${props => props.isConnected ? colors.brandLight : '#FF2828'};
-        border-radius: 50%;
-        width: 8px;
-        height: 8px;
-        display: inline-block;
-        margin-right: 5px;
-    `;
-
-    const Label = styled.span`
-        font-size: 12px;
-    `;
-
-    return (
-        <Wrapper>
-            <Status isConnected={isConnected} />
-            <Label>{typeLabel}</Label>
-        </Wrapper>
-    );
-};
-
 export class Governance extends React.Component {
-    public state = {
+    public state: State = {
         isContactModalOpen: false,
         isVoteModalOpen: false,
         isWalletConnected: false,
         isVoteReceived: false,
         providerName: 'Metamask',
+        tally: {
+            totalBalance: new BigNumber(0),
+            yesPercentage: 0,
+            noPercentage: 0,
+        },
     };
+    public componentDidMount(): void {
+        this._fetchVoteStatusAsync();
+    }
     public render(): React.ReactNode {
-        const { isVoteReceived, isWalletConnected, providerName } = this.state;
+        const { isVoteReceived, isWalletConnected, providerName, tally } = this.state;
         const buildAction = (
             <Button href="/docs" isWithArrow={true} isAccentColor={true} isTransparent={true} borderColor={colors.brandLight}>
                 Build on 0x
@@ -246,14 +158,10 @@ export class Governance extends React.Component {
                         </Button>
                     </Column>
                     <Column width="30%" maxWidth="300px">
-                        <VoteDeadline deadline={proposalData.votingDeadline} />
-                        <ConnectedWalletMark isConnected={isWalletConnected} providerName={providerName} />
-                        <VoteButton onClick={this._onOpenVoteModal.bind(this)} isWithArrow={false} isAccentColor={true} isTransparent={true} borderColor={colors.brandLight}>
+                        <VoteStats tally={tally} />
+                        <VoteButton onClick={this._onOpenVoteModal.bind(this)} isWithArrow={false}>
                             {isVoteReceived ? 'Vote Received' : 'Vote'}
                         </VoteButton>
-                        <Paragraph marginBottom="10px">Results (2,887,000 ZRX total vote)</Paragraph>
-                        <VoteBar label="Yes" color={colors.brandLight} totalVotes={2887000} votes={2165250} />
-                        <VoteBar label="No" color="#AE5400" totalVotes={2887000} votes={721750} />
                     </Column>
                 </Section>
 
@@ -265,14 +173,17 @@ export class Governance extends React.Component {
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
                                 <Paragraph>{proposalData.benefit.summary}</Paragraph>
-                                <Button
-                                    href={proposalData.url}
-                                    target={!_.isUndefined(proposalData.url) ? '_blank' : undefined}
-                                    isWithArrow={true}
-                                    isAccentColor={true}
-                                >
-                                    Audit Code
-                                </Button>
+                                {_.map(proposalData.benefit.links, (link, index) => (
+                                    <Button
+                                        href={link.url}
+                                        target={!_.isUndefined(link.url) ? '_blank' : undefined}
+                                        isWithArrow={true}
+                                        isAccentColor={true}
+                                        key={`benefitlink-${index}`}
+                                    >
+                                        {link.text}
+                                    </Button>
+                                ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
                                 <RatingBar color={colors.brandLight} labels={benefitLabels} rating={proposalData.benefit.rating} />
@@ -286,22 +197,20 @@ export class Governance extends React.Component {
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
                                 <Paragraph>{proposalData.stakes.summary}</Paragraph>
+                                {_.map(proposalData.stakes.links, (link, index) => (
+                                    <Button
+                                        href={link.url}
+                                        target={!_.isUndefined(link.url) ? '_blank' : undefined}
+                                        isWithArrow={true}
+                                        isAccentColor={true}
+                                        key={`risklink-${index}`}
+                                    >
+                                        {link.text}
+                                    </Button>
+                                ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
                                 <RatingBar color="#AE5400" labels={riskLabels} rating={proposalData.stakes.rating} />
-                            </Column>
-                        </FlexWrap>
-                    </SectionWrap>
-                    <SectionWrap>
-                        <Heading>
-                            {proposalData.complexity.title}
-                        </Heading>
-                        <FlexWrap>
-                            <Column width="55%" maxWidth="560px">
-                                <Paragraph>{proposalData.complexity.summary}</Paragraph>
-                            </Column>
-                            <Column width="30%" maxWidth="360px">
-                                <RatingBar labels={complexityLabels} rating={proposalData.complexity.rating} />
                             </Column>
                         </FlexWrap>
                     </SectionWrap>
@@ -318,30 +227,65 @@ export class Governance extends React.Component {
             </SiteWrap>
         );
     }
-
-    public _onOpenContactModal = (): void => {
+    // private _renderSummarySection()
+    private _onOpenContactModal = (): void => {
         this.setState({ ...this.state, isContactModalOpen: true });
     };
 
-    public _onDismissContactModal = (): void => {
+    private _onDismissContactModal = (): void => {
         this.setState({ ...this.state, isContactModalOpen: false });
     };
 
-    public _onOpenVoteModal = (): void => {
+    private _onOpenVoteModal = (): void => {
         this.setState({ ...this.state, isVoteModalOpen: true });
     };
 
-    public _onDismissVoteModal = (): void => {
+    private _onDismissVoteModal = (): void => {
         this.setState({ ...this.state, isVoteModalOpen: false });
     };
 
-    public _onWalletConnected = (providerName: string): void => {
+    private _onWalletConnected = (providerName: string): void => {
         this.setState({ ...this.state, isWalletConnected: true, providerName });
     };
 
-    public _onVoteReceived = (): void => {
+    private _onVoteReceived = (): void => {
         this.setState({ ...this.state, isVoteReceived: true });
     };
+    private async _fetchVoteStatusAsync(): Promise<void> {
+        try {
+            // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
+            // tslint:disable:no-unbound-method
+            // const response = await fetch(`${utils.getBackendBaseUrl()}${endpoint}`, {
+            const response = await fetch(`http://localhost:3000/v1/tally/${proposalData.zeipId}`, {
+                method: 'get',
+                mode: 'cors',
+                credentials: 'same-origin',
+                headers: {
+                    'content-type': 'application/json; charset=utf-8',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Request failed');
+            }
+
+            const responseData = await response.json();
+            const { no, yes } = responseData;
+            const HUNDRED = new BigNumber(100);
+            const yesTally = new BigNumber(yes);
+            const noTally = new BigNumber(no);
+            const totalBalance = yesTally.plus(no);
+            const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance)).ceil().toNumber();
+            const noPercentage = HUNDRED.times(noTally.dividedBy(totalBalance)).ceil().toNumber();
+            const tally = {
+                ...responseData, yesPercentage, noPercentage, totalBalance,
+            };
+
+            this.setState({ ...this.state, tally });
+        } catch (e) {
+            // Empty block
+        }
+    }
 }
 
 interface SectionProps {
@@ -358,20 +302,5 @@ const VoteButton = styled(Button)`
     display: block;
     margin-bottom: 40px;
     width: 100%;
+    max-width: 205px;
 `;
-
-const RatingBullet = styled.div<RatingBulletProps>`
-    background-color: ${props => props.isFilled && props.color};
-    border: 1px solid ${props => props.color};
-    border-radius: 50%;
-    width: 12px;
-    height: 12px;
-
-    & + & {
-        margin-left: 8px;
-    }
-`;
-
-RatingBullet.defaultProps = {
-    color: colors.white,
-};
