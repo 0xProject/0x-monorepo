@@ -10,7 +10,10 @@ interface ConnectedWalletMarkProps {
     providerName?: string;
 }
 
-export const ConnectedWalletMark: React.StatelessComponent<ConnectedWalletMarkProps> = ({ isConnected, providerName }) => {
+export const ConnectedWalletMark: React.StatelessComponent<ConnectedWalletMarkProps> = ({
+    isConnected,
+    providerName,
+}) => {
     const typeLabel = isConnected ? providerName || 'Wallet connected' : 'Connect your wallet';
 
     const Label = styled.span`
@@ -32,7 +35,7 @@ const Wrapper = styled.div`
     justify-content: flex-end;
 `;
 const Status = styled.span<ConnectedWalletMarkProps>`
-    background: ${props => props.isConnected ? colors.brandLight : '#FF2828'};
+    background: ${props => (props.isConnected ? colors.brandLight : '#FF2828')};
     border-radius: 50%;
     width: 8px;
     height: 8px;

@@ -17,9 +17,7 @@ import { ModalContact } from 'ts/components/modals/modal_contact';
 import { ModalVote } from 'ts/pages/governance/modal_vote';
 import { colors } from 'ts/style/colors';
 
-import {
-    BigNumber,
-} from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 interface LabelInterface {
@@ -92,7 +90,8 @@ const proposalData = {
         links: [
             {
                 text: 'View Code',
-                url: 'https://github.com/0xProject/0x-monorepo/blob/development/contracts/asset-proxy/contracts/src/MultiAssetProxy.sol#L25',
+                url:
+                    'https://github.com/0xProject/0x-monorepo/blob/development/contracts/asset-proxy/contracts/src/MultiAssetProxy.sol#L25',
             },
             {
                 text: 'View Audit',
@@ -132,7 +131,13 @@ export class Governance extends React.Component {
     public render(): React.ReactNode {
         const { isVoteReceived, isWalletConnected, providerName, tally } = this.state;
         const buildAction = (
-            <Button href="/docs" isWithArrow={true} isAccentColor={true} isTransparent={true} borderColor={colors.brandLight}>
+            <Button
+                href="/docs"
+                isWithArrow={true}
+                isAccentColor={true}
+                isTransparent={true}
+                borderColor={colors.brandLight}
+            >
                 Build on 0x
             </Button>
         );
@@ -142,12 +147,8 @@ export class Governance extends React.Component {
                 <Section maxWidth="1170px" isFlex={true}>
                     <Column width="55%" maxWidth="560px">
                         <Countdown deadline={proposalData.votingDeadline} />
-                        <Heading size="medium">
-                            {proposalData.title}
-                        </Heading>
-                        <Paragraph>
-                            {proposalData.summary}
-                        </Paragraph>
+                        <Heading size="medium">{proposalData.title}</Heading>
+                        <Paragraph>{proposalData.summary}</Paragraph>
                         <Button
                             href={proposalData.url}
                             target={!_.isUndefined(proposalData.url) ? '_blank' : undefined}
@@ -167,9 +168,7 @@ export class Governance extends React.Component {
 
                 <Section bgColor="dark" maxWidth="1170px">
                     <SectionWrap>
-                        <Heading>
-                            {proposalData.benefit.title}
-                        </Heading>
+                        <Heading>{proposalData.benefit.title}</Heading>
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
                                 <Paragraph>{proposalData.benefit.summary}</Paragraph>
@@ -186,14 +185,16 @@ export class Governance extends React.Component {
                                 ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
-                                <RatingBar color={colors.brandLight} labels={benefitLabels} rating={proposalData.benefit.rating} />
+                                <RatingBar
+                                    color={colors.brandLight}
+                                    labels={benefitLabels}
+                                    rating={proposalData.benefit.rating}
+                                />
                             </Column>
                         </FlexWrap>
                     </SectionWrap>
                     <SectionWrap>
-                        <Heading>
-                            {proposalData.stakes.title}
-                        </Heading>
+                        <Heading>{proposalData.stakes.title}</Heading>
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
                                 <Paragraph>{proposalData.stakes.summary}</Paragraph>
@@ -223,7 +224,12 @@ export class Governance extends React.Component {
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
-                <ModalVote isOpen={this.state.isVoteModalOpen} onDismiss={this._onDismissVoteModal} onWalletConnected={this._onWalletConnected.bind(this)} onVoted={this._onVoteReceived.bind(this)} />
+                <ModalVote
+                    isOpen={this.state.isVoteModalOpen}
+                    onDismiss={this._onDismissVoteModal}
+                    onWalletConnected={this._onWalletConnected.bind(this)}
+                    onVoted={this._onVoteReceived.bind(this)}
+                />
             </SiteWrap>
         );
     }
@@ -275,10 +281,17 @@ export class Governance extends React.Component {
             const yesTally = new BigNumber(yes);
             const noTally = new BigNumber(no);
             const totalBalance = yesTally.plus(no);
-            const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance)).ceil().toNumber();
-            const noPercentage = HUNDRED.times(noTally.dividedBy(totalBalance)).ceil().toNumber();
+            const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance))
+                .ceil()
+                .toNumber();
+            const noPercentage = HUNDRED.times(noTally.dividedBy(totalBalance))
+                .ceil()
+                .toNumber();
             const tally = {
-                ...responseData, yesPercentage, noPercentage, totalBalance,
+                ...responseData,
+                yesPercentage,
+                noPercentage,
+                totalBalance,
             };
 
             this.setState({ ...this.state, tally });

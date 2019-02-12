@@ -13,10 +13,7 @@ import '@reach/dialog/styles.css';
 // import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import {
-    BigNumber,
-    signTypedDataUtils,
- } from '@0x/utils';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { Button } from 'ts/components/button';
@@ -29,14 +26,10 @@ import { FormEvent } from 'react';
 
 import { PreferenceSelecter } from 'ts/pages/governance/preference_selecter';
 
-import {
-    signatureUtils,
-} from '0x.js';
+import { signatureUtils } from '0x.js';
 import * as ethUtil from 'ethereumjs-util';
 
-import {
-    ECSignature,
-} from '@0x/types';
+import { ECSignature } from '@0x/types';
 
 import {
     ledgerEthereumBrowserClientFactoryAsync,
@@ -186,8 +179,7 @@ export class VoteForm extends React.Component<Props> {
     public render(): React.ReactNode {
         const { votePreference, errors, isSuccessful } = this.state;
         const { currentBalance, selectedAddress } = this.props;
-        const formattedBalance = Web3Wrapper
-            .toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH)
+        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH)
             .toNumber()
             .toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
@@ -196,7 +188,8 @@ export class VoteForm extends React.Component<Props> {
                     MultiAssetProxy Vote
                 </Heading>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
-                    Make sure you are informed to the best of your ability before casting your vote. It will have lasting implications for the 0x ecosystem.
+                    Make sure you are informed to the best of your ability before casting your vote. It will have
+                    lasting implications for the 0x ecosystem.
                 </Paragraph>
                 <PreferenceWrapper>
                     <PreferenceSelecter
@@ -213,7 +206,8 @@ export class VoteForm extends React.Component<Props> {
                     />
                 </PreferenceWrapper>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
-                    <strong>Voting address:</strong> {selectedAddress}<br/>
+                    <strong>Voting address:</strong> {selectedAddress}
+                    <br />
                     <strong>Voting balance:</strong> {formattedBalance} ZRX
                 </Paragraph>
                 <InputRow>
@@ -287,7 +281,9 @@ export class VoteForm extends React.Component<Props> {
         const voteHashHex = `0x${voteHashBuffer.toString('hex')}`;
         try {
             // const provider = web3Wrapper.getProvider();
-            const signature = isLedger ? await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, makerAddress) : await this._eip712SignatureAsync(makerAddress, typedData);
+            const signature = isLedger
+                ? await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, makerAddress)
+                : await this._eip712SignatureAsync(makerAddress, typedData);
             const signedVote = { ...message, signature, from: makerAddress };
             const isProduction = window.location.host.includes('0x.org');
             const voteEndpoint = isProduction ? 'https://vote.0x.org/v1/vote' : 'http://localhost:3000/v1/vote';
@@ -309,16 +305,12 @@ export class VoteForm extends React.Component<Props> {
 
             return signedVote;
         } catch (err) {
-            //console.log(err);
-            debugger;
+            // console.log(err);
             this.setState({ errors: { signError: err.message }, isSuccessful: false });
             return null as any;
         }
-    }
-    private _eip712SignatureAsync = async (
-        address: string,
-        typedData: any,
-    ): Promise<string> => {
+    };
+    private _eip712SignatureAsync = async (address: string, typedData: any): Promise<string> => {
         const signature = await this.props.web3Wrapper.signTypedDataAsync(address, typedData);
         const ecSignatureRSV = this._parseSignatureHexAsRSV(signature);
         const signatureBuffer = Buffer.concat([
@@ -329,7 +321,7 @@ export class VoteForm extends React.Component<Props> {
         ]);
         const signatureHex = `0x${signatureBuffer.toString('hex')}`;
         return signatureHex;
-    }
+    };
     private _parseSignatureHexAsRSV(signatureHex: string): ECSignature {
         const { v, r, s } = ethUtil.fromRpcSig(signatureHex);
         const ecSignature: ECSignature = {

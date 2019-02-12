@@ -41,12 +41,7 @@ export class DerivationPathInput extends React.Component<InputProps> {
         // const { userAddresses, addressBalances } = this.props;
         return (
             <Wrapper>
-                <Input
-                    name="derivationPath"
-                    label="Derivation Path"
-                    type="text"
-                    ref={this.pathRef}
-                />
+                <Input name="derivationPath" label="Derivation Path" type="text" ref={this.pathRef} />
             </Wrapper>
         );
     }

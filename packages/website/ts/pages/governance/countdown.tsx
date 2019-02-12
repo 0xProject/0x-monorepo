@@ -37,7 +37,9 @@ export const VoteDeadline: React.StatelessComponent<Props> = ({ deadline }) => {
     return (
         <div>
             <div style={{ display: 'flex', marginBottom: '10px' }}>
-                <Paragraph style={{ marginRight: '10px' }}>Vote {isPassed ? 'ended' : 'ends'}: {time.format('YYYY/MM/DD h:mm:ss Z')}</Paragraph>
+                <Paragraph style={{ marginRight: '10px' }}>
+                    Vote {isPassed ? 'ended' : 'ends'}: {time.format('YYYY/MM/DD h:mm:ss Z')}
+                </Paragraph>
             </div>
         </div>
     );
@@ -53,8 +55,6 @@ function getRelativeTime(deadline: moment.Moment): string {
 
     // @todo: how to apply correct timezone?
     // ${time.format('YYYY/MM/DD h:mm:ss Z')}
-
-    // debugger;
 
     if (days > 0) {
         parts.push(`${days} days`);

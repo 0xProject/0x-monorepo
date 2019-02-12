@@ -10,9 +10,7 @@ import { VoteBar } from 'ts/pages/governance/vote_bar';
 
 import { colors } from 'ts/style/colors';
 
-import {
-    BigNumber,
-} from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 interface VoteStatsProps {
@@ -34,7 +32,9 @@ export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) =
 
     return (
         <>
-            <Heading asElement="h3" size="small" marginBottom="10px">Results</Heading>
+            <Heading asElement="h3" size="small" marginBottom="10px">
+                Results
+            </Heading>
             <VoteBar label="Yes" color={colors.brandLight} percentage={tally.yesPercentage} />
             <VoteBar label="No" color={colors.brandDark} percentage={tally.noPercentage} marginBottom="24px" />
             <Paragraph marginBottom="24px">({totalBalance} ZRX total vote)</Paragraph>

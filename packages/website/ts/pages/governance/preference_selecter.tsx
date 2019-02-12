@@ -29,7 +29,12 @@ const Radio: React.StatelessComponent<RadioProps> = ({ value, onChange, isActive
     );
 };
 
-export const PreferenceSelecter: React.StatelessComponent<PreferenceSelecterProps> = ({ label, value, onChange, isActive }) => {
+export const PreferenceSelecter: React.StatelessComponent<PreferenceSelecterProps> = ({
+    label,
+    value,
+    onChange,
+    isActive,
+}) => {
     return (
         <Wrapper isActive={isActive}>
             <Label>
@@ -45,7 +50,7 @@ PreferenceSelecter.defaultProps = {
 };
 
 const Wrapper = styled.div<MarkerProps>`
-    border: 2px solid #7A7A7A;
+    border: 2px solid #7a7a7a;
     border-color: ${props => props.isActive && colors.brandLight};
     width: 100%;
     margin-bottom: 30px;
@@ -59,7 +64,7 @@ const Label = styled.label`
 `;
 
 const LabelText = styled.span<MarkerProps>`
-    color: ${props => props.isActive ? colors.brandLight : '#7A7A7A'};
+    color: ${props => (props.isActive ? colors.brandLight : '#7A7A7A')};
     font-size: 20px;
     line-height: 1;
     margin-left: 30px;
@@ -67,7 +72,7 @@ const LabelText = styled.span<MarkerProps>`
 `;
 
 const Marker = styled.span<MarkerProps>`
-    border: 2px solid #7A7A7A;
+    border: 2px solid #7a7a7a;
     border-color: ${props => props.isActive && colors.brandLight};
     display: flex;
     width: 30px;
@@ -75,7 +80,9 @@ const Marker = styled.span<MarkerProps>`
     border-radius: 50%;
     position: relative;
 
-    ${props => props.isActive && `
+    ${props =>
+        props.isActive &&
+        `
         &:after {
             background-color: ${colors.brandLight};
             border-radius: 50%;
