@@ -1,5 +1,6 @@
+import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { numberToBigIntTransformer } from '../utils';
+import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'slippage', schema: 'raw' })
 export class Slippage {
@@ -9,14 +10,14 @@ export class Slippage {
     public symbol!: string;
     @PrimaryColumn({ name: 'exchange' })
     public exchange!: string;
-    @PrimaryColumn({ name: 'usd_amount', type: 'numeric' })
-    public usdAmount!: number;
-    @PrimaryColumn({ name: 'token_amount', type: 'numeric' })
-    public tokenAmount!: number;
-    @PrimaryColumn({ name: 'avg_price_in_eth_sell', type: 'numeric' })
-    public avgPriceInEthSell?: number;
-    @PrimaryColumn({ name: 'avg_price_in_eth_buy', type: 'numeric' })
-    public avgPriceInEthBuy?: number;
-    @Column({ name: 'slippage', type: 'numeric' })
-    public slippage?: number;
+    @PrimaryColumn({ name: 'usd_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public usdAmount!: BigNumber;
+    @PrimaryColumn({ name: 'token_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public tokenAmount!: BigNumber;
+    @PrimaryColumn({ name: 'avg_price_in_eth_sell', type: 'numeric', transformer: bigNumberTransformer })
+    public avgPriceInEthSell?: BigNumber;
+    @PrimaryColumn({ name: 'avg_price_in_eth_buy', type: 'numeric', transformer: bigNumberTransformer })
+    public avgPriceInEthBuy?: BigNumber;
+    @Column({ name: 'slippage', type: 'numeric', transformer: bigNumberTransformer })
+    public slippage?: BigNumber;
 }

@@ -23,11 +23,11 @@ import { symbol } from 'prop-types';
             slippage.observedTimestamp = b.timestamp;
             slippage.symbol = b.tokenSymbol;
             slippage.exchange = exchange;
-            slippage.usdAmount = usdAmount;
-            slippage.tokenAmount = Number(b.tokenAmount); // API returns a string
-            slippage.avgPriceInEthBuy = b.avgPrice;
-            slippage.avgPriceInEthSell = s.avgPrice;
-            slippage.slippage = (b.avgPrice - s.avgPrice) / b.avgPrice;
+            slippage.usdAmount = new BigNumber(usdAmount);
+            slippage.tokenAmount = new BigNumber(Number(b.tokenAmount)); // API returns a string
+            slippage.avgPriceInEthBuy = new BigNumber(b.avgPrice);
+            slippage.avgPriceInEthSell = new BigNumber(s.avgPrice);
+            slippage.slippage = new BigNumber((b.avgPrice - s.avgPrice) / b.avgPrice);
             
         }
         return slippage;

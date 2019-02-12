@@ -15,11 +15,11 @@ const slippage = {
     observedTimestamp: 1549587475793,
     symbol: 'ZRX',
     exchange: 'Radar Relay',
-    usdAmount: 10,
-    tokenAmount: 25,
-    avgPriceInEthBuy: 0.0022,
-    avgPriceInEthSell: 0.002,
-    slippage: 0.01
+    usdAmount: new BigNumber(10),
+    tokenAmount: new BigNumber(25),
+    avgPriceInEthBuy: new BigNumber(0.0022),
+    avgPriceInEthSell: new BigNumber(0.002),
+    slippage: new BigNumber(0.01)
 };
 
 // tslint:disable:custom-no-magic-numbers
