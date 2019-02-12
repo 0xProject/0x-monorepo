@@ -27,7 +27,7 @@ export class RadarSource {
      */
     public async getMarketOrderbookAsync(marketId: string): Promise<RadarBook> {
         logUtils.log(`${marketId}: Retrieving orderbook.`);
-        const marketOrderbookUrl = `${ACTIVE_MARKETS_URL}/${marketId}/book`;
+        const marketOrderbookUrl = `${ACTIVE_MARKETS_URL}/${marketId}/book?perPage=${MAX_PER_PAGE}`;
         const resp = await fetchAsync(marketOrderbookUrl);
         return resp.json();
     }

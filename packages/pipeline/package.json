@@ -49,6 +49,7 @@
         "@0x/types": "^2.0.2",
         "@0x/utils": "^4.0.3",
         "@0x/web3-wrapper": "^4.0.2",
+        "@radarrelay/types": "^1.2.1",
         "@types/dockerode": "^2.5.9",
         "@types/p-limit": "^2.0.0",
         "async-parallel": "^1.2.3",
