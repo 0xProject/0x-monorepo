@@ -35,6 +35,7 @@
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.0",
+        "zeppelin-solidity": "1.8.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",

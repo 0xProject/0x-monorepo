@@ -26,7 +26,6 @@
         "src/interfaces/IEtherToken.sol",
         "test/DummyERC20Token.sol",
         "test/DummyMultipleReturnERC20Token.sol",
-        "test/DummyNoReturnERC20Token.sol",
-        "test/ReentrantERC20Token.sol"
+        "test/DummyNoReturnERC20Token.sol"
     ]
 }

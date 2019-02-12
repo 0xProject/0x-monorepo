@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Improved checks in `NPMResolver`. Now throws if dependency is not in package.json. Also throws if version found is not within the version range",
+                "pr": 1608
+            }
+        ]
+    },
+    {
         "version": "2.0.2",
         "changes": [
             {
