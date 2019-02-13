@@ -1,6 +1,6 @@
 {
-    "artifactsDir": "./generated-artifacts",
-    "contractsDir": "./contracts",
+    "artifactsDir": "generated-artifacts",
+    "contractsDir": "contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
         "optimizer": { "enabled": true, "runs": 1000000 },
@@ -17,12 +17,21 @@
         }
     },
     "contracts": [
-        "src/ERC1155Token.sol",
-        "src/MintableERC1155Token.sol",
-        "src/interfaces/IERC1155Receiver.sol",
-        "src/interfaces/IERC1155Token.sol",
+        "src/ERC1155MockReceiver.sol",
+        "src/IERC1155Metadata.sol",
+        "src/ERC1155.sol",
+        "src/ERC1155Mintable.sol",
+        "src/IERC1155.sol",
+        "src/ERC1155MixedFungibleMintable.sol",
+        "src/SafeMath.sol",
+        "src/Address.sol",
+        "src/Migrations.sol",
+        "src/IERC1155TokenReceiver.sol",
+        "src/ERC1155AllowanceWrapper.sol",
+        "src/ERC165.sol",
+        "src/ERC1155MixedFungible.sol",
         "test/DummyERC1155Receiver.sol",
-        "test/DummyERC1155Token.sol",
-        "test/InvalidERC1155Receiver.sol"
+        "test/InvalidERC1155Receiver.sol",
+        "test/DummyERC1155Token.sol"
     ]
 }

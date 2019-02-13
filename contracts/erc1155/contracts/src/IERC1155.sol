@@ -1,46 +1,30 @@
-/*
+pragma solidity ^0.5.3;
 
-  Copyright 2018 ZeroEx Intl.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-
-*/
-
-pragma solidity ^0.5.2;
+import "./ERC165.sol";
 
 /**
     @title ERC-1155 Multi Token Standard
     @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md
     Note: The ERC-165 identifier for this interface is 0xd9b67a26.
  */
-interface IERC1155Token /* is ERC165 */ {
+interface IERC1155 /* is ERC165 */ {
     /**
         @dev Either TransferSingle or TransferBatch MUST emit when tokens are transferred, including zero value transfers as well as minting or burning.
         Operator will always be msg.sender.
         Either event from address `0x0` signifies a minting operation.
         An event to address `0x0` signifies a burning or melting operation.
         The total value transferred from address 0x0 minus the total value transferred to 0x0 may be used by clients and exchanges to be added to the "circulating supply" for a given token ID.
-        To broadcast the existence of a token ID with no initial balance, the contract SHOULD emit the TransferSingle event from `0x0` to `0x0`, with the token creator as `_operator`, and a `_value` of 0.
+        To define a token ID with no initial balance, the contract SHOULD emit the TransferSingle event from `0x0` to `0x0`, with the token creator as `_operator`.
     */
     event TransferSingle(address indexed _operator, address indexed _from, address indexed _to, uint256 _id, uint256 _value);
-    
+
     /**
         @dev Either TransferSingle or TransferBatch MUST emit when tokens are transferred, including zero value transfers as well as minting or burning.
         Operator will always be msg.sender.
         Either event from address `0x0` signifies a minting operation.
         An event to address `0x0` signifies a burning or melting operation.
         The total value transferred from address 0x0 minus the total value transferred to 0x0 may be used by clients and exchanges to be added to the "circulating supply" for a given token ID.
-        To broadcast the existence of multiple token IDs with no initial balance, this SHOULD emit the TransferBatch event from `0x0` to `0x0`, with the token creator as `_operator`, and a `_value` of 0.
+        To define multiple token IDs with no initial balance, this SHOULD emit the TransferBatch event from `0x0` to `0x0`, with the token creator as `_operator`.
     */
     event TransferBatch(address indexed _operator, address indexed _from, address indexed _to, uint256[] _ids, uint256[] _values);
 
@@ -81,7 +65,6 @@ interface IERC1155Token /* is ERC165 */ {
         MUST throw if any of the balance of sender for token `_ids` is lower than the respective `_values` sent.
         MUST throw on any other error.
         When transfer is complete, this function MUST check if `_to` is a smart contract (code size > 0). If so, it MUST call `onERC1155BatchReceived` on `_to` and revert if the return value is not `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))`.
-        Transfers and events MUST occur in the array order they were submitted (_ids[0] before _ids[1], etc).
         @param _from    Source addresses
         @param _to      Target addresses
         @param _ids     IDs of each token type
@@ -97,7 +80,7 @@ interface IERC1155Token /* is ERC165 */ {
         @return        The _owner's balance of the Token type requested
      */
     function balanceOf(address _owner, uint256 _id) external view returns (uint256);
-    
+
     /**
         @notice Get the balance of multiple account/token pairs
         @param _owners The addresses of the token holders
@@ -114,7 +97,7 @@ interface IERC1155Token /* is ERC165 */ {
     */
     function setApprovalForAll(address _operator, bool _approved) external;
 
-    /** 
+    /**
         @notice Queries the approval status of an operator for a given owner.
         @param _owner     The owner of the Tokens
         @param _operator  Address of authorized operator

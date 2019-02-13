@@ -18,11 +18,9 @@
 
 pragma solidity 0.5.3;
 
-import "../src/interfaces/IERC1155Receiver.sol";
 
-
-contract InvalidERC1155Receiver is
-    IERC1155Receiver
+contract InvalidERC1155Receiver //is
+    //IERC1155Receiver
 {
     /*
     // Actual function signature is `onERC1155Received(address,address,uint256,bytes)`
@@ -65,4 +63,6 @@ contract InvalidERC1155Receiver is
         return INVALID_ERC1155_RECEIVED;
     }
     */
+    
 }
+

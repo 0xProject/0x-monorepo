@@ -1,0 +1,1 @@
+Reference ERC1155 implementation from https://github.com/enjin/erc-1155

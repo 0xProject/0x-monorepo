@@ -7,7 +7,7 @@ import "./ERC1155.sol";
     The main benefit is sharing of common type information, just like you do when
     creating a fungible id.
 */
-contract ERC1155Token is ERC1155 {
+contract ERC1155MixedFungible is ERC1155 {
 
     // Use a split bit implementation.
     // Store the type in the upper 128 bits..
@@ -67,7 +67,7 @@ contract ERC1155Token is ERC1155 {
         emit TransferSingle(msg.sender, _from, _to, _id, _value);
 
         if (_to.isContract()) {
-            require(IERC1155Receiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data) == ERC1155_RECEIVED);
+            require(IERC1155TokenReceiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data) == ERC1155_RECEIVED);
         }
     }
 
@@ -97,7 +97,7 @@ contract ERC1155Token is ERC1155 {
         emit TransferBatch(msg.sender, _from, _to, _ids, _values);
 
         if (_to.isContract()) {
-            require(IERC1155Receiver(_to).onERC1155BatchReceived(msg.sender, _from, _ids, _values, _data) == ERC1155_BATCH_RECEIVED);
+            require(IERC1155TokenReceiver(_to).onERC1155BatchReceived(msg.sender, _from, _ids, _values, _data) == ERC1155_BATCH_RECEIVED);
         }
     }
 

@@ -1,29 +1,12 @@
-/*
-
-  Copyright 2018 ZeroEx Intl.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-
-*/
-
 pragma solidity ^0.5.3;
 
-import "./ERC1155Token.sol";
+import "./ERC1155MixedFungible.sol";
 
-
-contract MintableERC1155Token is
-    ERC1155Token
-{
+/**
+    @dev Mintable form of ERC1155
+    Shows how easy it is to mint new items
+*/
+contract ERC1155MixedFungibleMintable is ERC1155MixedFungible {
 
     uint256 nonce;
     mapping (uint256 => address) public creators;
@@ -78,7 +61,7 @@ contract MintableERC1155Token is
             emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
 
             if (dst.isContract()) {
-                require(IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, '') == ERC1155_RECEIVED);
+                require(IERC1155TokenReceiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, '') == ERC1155_RECEIVED);
             }
         }
 
@@ -103,9 +86,8 @@ contract MintableERC1155Token is
             emit TransferSingle(msg.sender, address(0x0), to, _id, quantity);
 
             if (to.isContract()) {
-                require(IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, '') == ERC1155_RECEIVED);
+                require(IERC1155TokenReceiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, '') == ERC1155_RECEIVED);
             }
         }
     }
-
 }
