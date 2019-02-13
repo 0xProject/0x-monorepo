@@ -84,13 +84,10 @@ function _toGeneric(radarMarket: RadarMarket, radarOrder: RadarSignedOrder): Gen
     if (radarMarket.baseTokenDecimals === undefined) {
         return undefined;
     }
-    const rawAmount =
-        radarOrder.type === RadarOrderType.ASK
-            ? radarOrder.signedOrder.makerAssetAmount
-            : radarOrder.signedOrder.takerAssetAmount;
     return {
         price: radarOrder.price.toString(),
-        amount: Web3Wrapper.toUnitAmount(new BigNumber(rawAmount.toString()), radarMarket.baseTokenDecimals).toString(),
+        // Use the remaining fillable amount
+        amount: radarOrder.remainingQuoteTokenAmount.toString(),
     };
 }
 
