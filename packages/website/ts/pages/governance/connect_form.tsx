@@ -244,7 +244,7 @@ export class ConnectForm extends React.Component<Props, State> {
 
                 return amount;
             } catch (error) {
-                console.log(error);
+                // console.log(error);
                 return new BigNumber(0);
             }
         }
@@ -337,7 +337,7 @@ export class ConnectForm extends React.Component<Props, State> {
                 addressBalances.push(balanceInZrx);
             }
         } catch (err) {
-            console.log(err);
+            // console.log(err);
             // logUtils.log(`Ledger error: ${JSON.stringify(err)}`);
             this.setState({
                 errors: {
@@ -467,7 +467,7 @@ export class ConnectForm extends React.Component<Props, State> {
                 try {
                     await injectedProviderIfExists.enable();
                 } catch (err) {
-                    console.log(err);
+                    // console.log(err);
                     // errorReporter.report(err);
                 }
             }

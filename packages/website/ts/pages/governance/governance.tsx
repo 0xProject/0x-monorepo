@@ -5,11 +5,10 @@ import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
-import { Column, FlexWrap, Section, WrapSticky } from 'ts/components/newLayout';
+import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
-import { ConnectedWalletMark } from 'ts/pages/governance/connected_wallet_mark';
-import { Countdown, VoteDeadline } from 'ts/pages/governance/countdown';
+import { Countdown } from 'ts/pages/governance/countdown';
 import { RatingBar } from 'ts/pages/governance/rating_bar';
 import { VoteStats } from 'ts/pages/governance/vote_stats';
 
@@ -18,7 +17,6 @@ import { ModalVote } from 'ts/pages/governance/modal_vote';
 import { colors } from 'ts/style/colors';
 
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 
 interface LabelInterface {
     [key: number]: string;
@@ -143,7 +141,7 @@ export class Governance extends React.Component {
         );
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle title="Features & Benefits - 0x" />
+                <DocumentTitle title="Governance Vote - 0x" />
                 <Section maxWidth="1170px" isFlex={true}>
                     <Column width="55%" maxWidth="560px">
                         <Countdown deadline={proposalData.votingDeadline} />
@@ -298,10 +296,6 @@ export class Governance extends React.Component {
             // Empty block
         }
     }
-}
-
-interface SectionProps {
-    isNotRelative?: boolean;
 }
 
 const SectionWrap = styled.div`
