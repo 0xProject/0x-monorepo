@@ -19,11 +19,25 @@
 pragma solidity ^0.5.3;
 pragma experimental "ABIEncoderV2";
 
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "../libs/LibZeroExTransaction.sol";
+import "../src/MixinSignatureValidator.sol";
+import "../src/MixinTECApprovalVerifier.sol";
 
 
-contract MTECApprovalVerifier {
+contract TestInternals is
+    MixinSignatureValidator,
+    MixinTECApprovalVerifier
+{
+    /// @dev Recovers the address of a signer given a hash and signature.
+    /// @param hash Any 32 byte hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    function publicGetSignerAddress(bytes32 hash, bytes memory signature)
+        public
+        pure
+        returns (address signerAddress)
+    {
+        signerAddress = getSignerAddress(hash, signature);
+        return signerAddress;
+    }
 
     /// @dev Validates that the 0x transaction has been approved by all of the feeRecipients
     ///      that correspond to each order in the transaction's Exchange calldata.
@@ -31,14 +45,25 @@ contract MTECApprovalVerifier {
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
-    function assertValidTECApproval(
+    function publicAssertValidTECApproval(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
-        internal
-        view;
+        public
+        view
+        returns (bool)
+    {
+        assertValidTECApproval(
+            transaction,
+            transactionSignature,
+            approvalExpirationTimeSeconds,
+            approvalSignatures
+        );
+        return true;
+    }
+
 
     /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
     /// @param order Order struct containing order specifications.
@@ -46,15 +71,26 @@ contract MTECApprovalVerifier {
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Expiration times in seconds for which the approval signature expires.
     /// @param approvalSignature Signatures that corresponds to the feeRecipient of the order.
-    function assertValidSingleOrderApproval(
+    function publicAssertValidSingleOrderApproval(
         LibOrder.Order memory order,
         bytes32 transactionHash,
         bytes memory transactionSignature,
         uint256 approvalExpirationTimeSeconds,
         bytes memory approvalSignature
     )
-        internal
-        view;
+        public
+        view
+        returns (bool)
+    {
+        assertValidSingleOrderApproval(
+            order,
+            transactionHash,
+            transactionSignature,
+            approvalExpirationTimeSeconds,
+            approvalSignature
+        );
+        return true;
+    }
 
     /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
     /// @param orders Array of order structs containing order specifications.
@@ -62,13 +98,24 @@ contract MTECApprovalVerifier {
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
-    function assertValidBatchOrderApproval(
+    function publicAssertValidBatchOrderApproval(
         LibOrder.Order[] memory orders,
         bytes32 transactionHash,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
-        internal
-        view;
+        public
+        view
+        returns (bool)
+    {
+        assertValidBatchOrderApproval(
+            orders,
+            transactionHash,
+            transactionSignature,
+            approvalExpirationTimeSeconds,
+            approvalSignatures
+        );
+        return true;
+    }
 }

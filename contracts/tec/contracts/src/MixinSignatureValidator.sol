@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.3;
 
 import "@0x/contract-utils/contracts/src/LibBytes.sol";
 

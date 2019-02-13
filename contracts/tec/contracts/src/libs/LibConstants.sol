@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.3;
 
 import "../interfaces/IExchange.sol";
 
