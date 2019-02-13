@@ -283,10 +283,8 @@ export class Governance extends React.Component {
             const noTally = new BigNumber(no);
             const totalBalance = yesTally.plus(no);
             const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance))
-                .ceil()
                 .toNumber();
             const noPercentage = HUNDRED.times(noTally.dividedBy(totalBalance))
-                .ceil()
                 .toNumber();
             const tally = {
                 ...responseData,
