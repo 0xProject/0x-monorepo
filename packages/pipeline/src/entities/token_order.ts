@@ -15,6 +15,8 @@ export class TokenOrderbookSnapshot {
     public price!: BigNumber;
     @PrimaryColumn({ name: 'base_asset_symbol' })
     public baseAssetSymbol!: string;
+    @PrimaryColumn({ type: String, name: 'maker_address', default: 'unknown' })
+    public makerAddress!: string | null;
     @Column({ nullable: true, type: String, name: 'base_asset_address' })
     public baseAssetAddress!: string | null;
     @Column({ name: 'base_volume', type: 'numeric', transformer: bigNumberTransformer })
