@@ -19,5 +19,5 @@
             }
         }
     },
-    "contracts": ["TEC", "TestLibs"]
+    "contracts": ["TEC", "TestLibs", "TestInternals"]
 }

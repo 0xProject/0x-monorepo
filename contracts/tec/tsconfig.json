@@ -6,6 +6,10 @@
         "resolveJsonModule": true
     },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": ["./generated-artifacts/TEC.json", "./generated-artifacts/TestLibs.json"],
+    "files": [
+        "./generated-artifacts/TEC.json",
+        "./generated-artifacts/TestLibs.json",
+        "./generated-artifacts/TestInternals.json"
+    ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

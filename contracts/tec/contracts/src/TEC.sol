@@ -20,6 +20,7 @@ pragma solidity 0.5.3;
 pragma experimental "ABIEncoderV2";
 
 import "./libs/LibConstants.sol";
+import "./MixinSignatureValidator.sol";
 import "./MixinTECApprovalVerifier.sol";
 import "./MixinTECCore.sol";
 
@@ -27,6 +28,7 @@ import "./MixinTECCore.sol";
 // solhint-disable no-empty-blocks
 contract TEC is
     LibConstants,
+    MixinSignatureValidator,
     MixinTECApprovalVerifier,
     MixinTECCore
 {

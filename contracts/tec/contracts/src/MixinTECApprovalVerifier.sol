@@ -173,7 +173,7 @@ contract MixinTECApprovalVerifier is
 
         // Hash approval message and recover signer address
         bytes32 approvalHash = getTECApprovalHash(approval);
-        address approvalSignerAddress = getAddressFromSignature(approvalHash, approvalSignature);
+        address approvalSignerAddress = getSignerAddress(approvalHash, approvalSignature);
 
         // Revert if signer of approval is not the feeRecipient of order
         require(
@@ -220,7 +220,7 @@ contract MixinTECApprovalVerifier is
 
             // Hash approval message and recover signer address
             bytes32 approvalHash = getTECApprovalHash(approval);
-            address approvalSignerAddress = getAddressFromSignature(approvalHash, approvalSignatures[i]);
+            address approvalSignerAddress = getSignerAddress(approvalHash, approvalSignatures[i]);
     
             // Add approval signer to list of signers
             approvalSignerAddresses.append(approvalSignerAddress);

@@ -18,11 +18,13 @@
 
 pragma solidity ^0.5.3;
 
-import "@0x/contract-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "./mixins/MSignatureValidator.sol";
 
 
-contract MixinSignatureValidator {
-
+contract MixinSignatureValidator is
+    MSignatureValidator
+{
     using LibBytes for bytes;
 
     /// @dev Recovers the address of a signer given a hash and signature.
