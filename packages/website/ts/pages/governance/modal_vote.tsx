@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import * as React from 'react';
 import styled from 'styled-components';
 
@@ -9,64 +8,27 @@ import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
 // import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
-import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
-import { Input, InputWidth } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
-import { utils } from 'ts/utils/utils';
-import { FormEvent } from 'react';
 
 import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_form';
 import { VoteForm } from 'ts/pages/governance/vote_form';
 
-import { signatureUtils } from '0x.js';
-import * as ethUtil from 'ethereumjs-util';
-
-import { ECSignature } from '@0x/types';
-
 import {
-    ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
-    MetamaskSubprovider,
-    RedundantSubprovider,
-    RPCSubprovider,
-    SignerSubprovider,
-    Web3ProviderEngine,
 } from '@0x/subproviders';
-import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { Provider } from 'ethereum-types';
 import {
-    BlockchainCallErrs,
-    BlockchainErrs,
-    ContractInstance,
-    Fill,
     InjectedProvider,
-    InjectedProviderObservable,
-    InjectedProviderUpdate,
-    JSONRPCPayload,
-    Providers,
-    ProviderType,
-    Side,
-    SideToAssetToken,
-    Token,
-    TokenByAddress,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import FilterSubprovider from 'web3-provider-engine/subproviders/filters';
-
-const providerToName: { [provider: string]: string } = {
-    [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
-    [Providers.Parity]: constants.PROVIDER_NAME_PARITY_SIGNER,
-    [Providers.Mist]: constants.PROVIDER_NAME_MIST,
-    [Providers.CoinbaseWallet]: constants.PROVIDER_NAME_COINBASE_WALLET,
-    [Providers.Cipher]: constants.PROVIDER_NAME_CIPHER,
-};
 
 interface Props {
     theme?: GlobalStyle;
@@ -165,7 +127,7 @@ export class ModalVote extends React.Component<Props> {
     }
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
-        const { isSuccessful, errors, votePreference, selectedAddress, currentBalance } = this.state;
+        const { isSuccessful, errors, selectedAddress, currentBalance } = this.state;
         const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
             <>
@@ -295,37 +257,8 @@ export class ModalVote extends React.Component<Props> {
     }
 }
 
-// Handle errors: {"errors":[{"location":"body","param":"name","msg":"Invalid value"},{"location":"body","param":"email","msg":"Invalid value"}]}
-
-const InputRow = styled.div`
-    width: 100%;
-    flex: 0 0 auto;
-
-    @media (min-width: 768px) {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-    }
-`;
-
-const ButtonRow = styled(InputRow)`
-    @media (max-width: 768px) {
-        display: flex;
-        flex-direction: column;
-
-        button:nth-child(1) {
-            order: 2;
-        }
-
-        button:nth-child(2) {
-            order: 1;
-            margin-bottom: 10px;
-        }
-    }
-`;
-
 const ButtonClose = styled.button.attrs({})`
-cursor: pointer;
+    cursor: pointer;
     position: absolute;
     right: 0;
     top: 0;

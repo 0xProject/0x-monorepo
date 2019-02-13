@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ChangeEvent } from 'react';
+import { ChangeEvent, FormEvent } from 'react';
 
 import { colors } from 'ts/style/colors';
 
@@ -17,13 +17,8 @@ import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { Button } from 'ts/components/button';
-import { Icon } from 'ts/components/icon';
-import { Input, InputWidth } from 'ts/components/modals/input';
+import { Input } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
-import { GlobalStyle } from 'ts/constants/globalStyle';
-import { utils } from 'ts/utils/utils';
-import { FormEvent } from 'react';
-
 import { PreferenceSelecter } from 'ts/pages/governance/preference_selecter';
 
 import { signatureUtils } from '0x.js';
@@ -32,34 +27,15 @@ import * as ethUtil from 'ethereumjs-util';
 import { ECSignature } from '@0x/types';
 
 import {
-    ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
-    MetamaskSubprovider,
-    RedundantSubprovider,
-    RPCSubprovider,
-    SignerSubprovider,
-    Web3ProviderEngine,
 } from '@0x/subproviders';
-import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { Provider } from 'ethereum-types';
 import {
-    BlockchainCallErrs,
-    BlockchainErrs,
-    ContractInstance,
-    Fill,
     InjectedProvider,
-    InjectedProviderObservable,
-    InjectedProviderUpdate,
-    JSONRPCPayload,
     Providers,
-    ProviderType,
-    Side,
-    SideToAssetToken,
-    Token,
-    TokenByAddress,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 
 const providerToName: { [provider: string]: string } = {
     [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
@@ -68,11 +44,6 @@ const providerToName: { [provider: string]: string } = {
     [Providers.CoinbaseWallet]: constants.PROVIDER_NAME_COINBASE_WALLET,
     [Providers.Cipher]: constants.PROVIDER_NAME_CIPHER,
 };
-
-export enum ModalContactType {
-    General = 'GENERAL',
-    MarketMaker = 'MARKET_MAKER',
-}
 
 export enum VoteValue {
     Yes = 'Yes',
@@ -365,14 +336,6 @@ const ButtonRow = styled(InputRow)`
     }
 `;
 
-const ButtonFull = styled(Button)`
-    width: 100%;
-`;
-
-const ButtonHalf = styled(Button)`
-    width: calc(50% - 15px);
-`;
-
 const ButtonDisabled = styled(Button)<{ isDisabled?: boolean; disabled?: boolean }>`
     background-color: ${props => props.disabled && '#898990'};
     opacity: ${props => props.disabled && '0.4'};
@@ -386,24 +349,4 @@ const Form = styled.form<FormProps>`
 `;
 const PreferenceWrapper = styled.div`
     margin-bottom: 30px;
-`;
-
-const Confirmation = styled.div<FormProps>`
-    position: absolute;
-    top: 50%;
-    text-align: center;
-    width: 100%;
-    left: 0;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-    transition-delay: 0.4s;
-    padding: 60px 60px;
-    transform: translateY(-50%);
-    opacity: ${props => (props.isSuccessful ? `1` : `0`)};
-    visibility: ${props => (props.isSuccessful ? 'visible' : `hidden`)};
-
-    p {
-        max-width: 492px;
-        margin-left: auto;
-        margin-right: auto;
-    }
 `;

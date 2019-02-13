@@ -8,8 +8,6 @@ import { Button } from 'ts/components/button';
 import { Input } from 'ts/components/modals/input';
 import { Paragraph } from 'ts/components/text';
 
-import { ChangeEvent } from 'react';
-
 interface InputProps {
     path: string;
     onChangePath?: (selectedPath: string) => void;

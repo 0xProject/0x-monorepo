@@ -1,17 +1,14 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { constants as sharedConstants } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { colors } from 'ts/style/colors';
 import { constants } from 'ts/utils/constants';
 
-import { AddressTableRow } from 'ts/pages/governance/address_table_row';
-
 import { ChangeEvent } from 'react';
+import { AddressTableRow } from 'ts/pages/governance/address_table_row';
 
 interface AddressTableProps {
     networkId: number;
