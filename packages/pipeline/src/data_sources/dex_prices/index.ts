@@ -1,7 +1,6 @@
 import { fetchAsync } from '@0x/utils';
 
 const EDPS_BASE_URL = 'https://ethereum-dex-prices-service.production.airswap.io';
-const PRICE_BASE_URL = 'https://min-api.cryptocompare.com/data/price?tsyms=USD';
 
 export type EdpsResponse = EdpsWrapper[];
 
@@ -17,10 +16,6 @@ export interface EdpsExchange {
     avgPrice: number;
     timestamp: number;
     error: string;
-}
-
-export interface PriceResponse {
-    USD: number;
 }
 
 // tslint:disable:prefer-function-over-method
@@ -40,16 +35,5 @@ export class EdpsSource {
             }
         }
         return allExchanges;
-    }
-
-    /**
-     *
-     * Call price API to fetch USD price for symbol.
-     */
-    public async getUsdPriceAsync(symbol: string): Promise<number> {
-        const priceUrl = `${PRICE_BASE_URL}&fsym=${symbol}`;
-        const resp = await fetchAsync(priceUrl);
-        const respJson: PriceResponse = await resp.json();
-        return respJson.USD;
     }
 }

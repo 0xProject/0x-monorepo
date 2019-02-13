@@ -33,6 +33,10 @@ export interface CryptoCompareOHLCVParams {
     toTs?: number;
 }
 
+export interface CryptoCompareUsdPrice {
+    USD: number;
+}
+
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
@@ -95,6 +99,13 @@ export class CryptoCompareOHLCVSource {
             }
         };
         return R.unfold(f, pair);
+    }
+
+    public async getUsdPriceAsync(symbol: string): Promise<number> {
+        const priceUrl = `https://min-api.cryptocompare.com/data/price?tsyms=USD&fsym=${symbol}`;
+        const resp = await fetchAsync(priceUrl);
+        const respJson: CryptoCompareUsdPrice = await resp.json();
+        return respJson.USD;
     }
 }
 

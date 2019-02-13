@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 const slippage = new Table({
     name: 'raw.slippage',
@@ -16,7 +16,6 @@ const slippage = new Table({
 });
 
 export class CreateSlippageTable1549856835629 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(slippage);
     }
@@ -24,5 +23,4 @@ export class CreateSlippageTable1549856835629 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.dropTable(slippage);
     }
-
 }

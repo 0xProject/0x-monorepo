@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { EdpsExchange } from '../../data_sources/slippage';
+import { EdpsExchange } from '../../data_sources/dex_prices';
 import { Slippage } from '../../entities';
 
 /**
@@ -13,10 +13,12 @@ import { Slippage } from '../../entities';
  *
  */
 
-export function calculateSlippage(usdAmount: number,
-                                  exchange: string,
-                                  buyEdps: Map<string, EdpsExchange>,
-                                  sellEdps: Map<string, EdpsExchange>): Slippage {
+export function calculateSlippage(
+    usdAmount: number,
+    exchange: string,
+    buyEdps: Map<string, EdpsExchange>,
+    sellEdps: Map<string, EdpsExchange>,
+): Slippage {
     const b = buyEdps.get(exchange);
     const s = sellEdps.get(exchange);
     const slippage = new Slippage();

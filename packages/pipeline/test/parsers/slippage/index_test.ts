@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { EdpsExchange } from '../../../src/data_sources/slippage';
+import { EdpsExchange } from '../../../src/data_sources/dex_prices';
 import { Slippage } from '../../../src/entities';
 import { calculateSlippage } from '../../../src/parsers/slippage';
 import { chaiSetup } from '../../utils/chai_setup';
@@ -14,7 +14,6 @@ const expect = chai.expect;
 describe('slippage', () => {
     describe('calculateSlippage', () => {
         it('calculates slippage correctly', () => {
-
             const exchange = 'Radar Relay';
             const ts = 1549961441473;
             const symbol = 'DAI';
