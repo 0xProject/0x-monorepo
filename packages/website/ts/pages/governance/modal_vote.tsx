@@ -317,14 +317,6 @@ const ButtonRow = styled(InputRow)`
     }
 `;
 
-const ButtonFull = styled(Button)`
-    width: 100%;
-`;
-
-const ButtonHalf = styled(Button)`
-    width: calc(50% - 15px);
-`;
-
 const ButtonClose = styled.button.attrs({})`
 cursor: pointer;
     position: absolute;
@@ -344,21 +336,6 @@ cursor: pointer;
         position: absolute;
     }
 `;
-
-const ButtonDisabled = styled(Button)<{ isDisabled?: boolean; disabled?: boolean }>`
-    background-color: ${props => props.disabled && '#898990'};
-    opacity: ${props => props.disabled && '0.4'};
-`;
-
-const ButtonActive = styled(Button)<{ isActive: boolean; activeColor: string; onClickValue?: string }>`
-    background-color: ${props => (props.isActive ? props.activeColor : '#898990')};
-    width: calc(50% - 15px);
-
-    &:hover {
-        background-color: ${props => (props.activeColor ? props.activeColor : '#898990')};
-    }
-`;
-
 const StyledDialogContent = styled(DialogContent)`
     position: relative;
     max-width: 800px;
@@ -370,14 +347,6 @@ const StyledDialogContent = styled(DialogContent)`
         margin: 40px auto !important;
         padding: 30px 30px !important;
     }
-`;
-
-const Form = styled.form<FormProps>`
-    position: relative;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-
-    opacity: ${props => props.isSuccessful && `0`};
-    visibility: ${props => props.isSuccessful && `hidden`};
 `;
 
 const Confirmation = styled.div<FormProps>`
