@@ -188,7 +188,7 @@ export class ModalVote extends React.Component<Props> {
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                                 You voted from {selectedAddress} with {formattedBalance} ZRX
                             </Paragraph>
-                            <Button type="button" onClick={this.props.onDismiss}>
+                            <Button type="button" onClick={this._onDone.bind(this)}>
                                 Done
                             </Button>
                         </Confirmation>
@@ -285,6 +285,13 @@ export class ModalVote extends React.Component<Props> {
         if (this.props.onVoted) {
             this.props.onVoted();
         }
+    }
+    private _onDone(): void {
+        this.setState({
+            isSuccessful: false,
+        });
+
+        this.props.onDismiss();
     }
 }
 
