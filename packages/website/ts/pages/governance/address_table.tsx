@@ -51,13 +51,13 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
         const { userAddresses, addressBalances } = this.props;
         const { selectedAddressIndex } = this.state;
         const rows = _.map(userAddresses, (userAddress: string, i: number) => {
-            const balanceInWei = addressBalances[i];
+            const balanceInZrx = addressBalances[i];
             const addressRowId = `address-${userAddress}`;
             const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';
-            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
+            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInZrx, constants.DECIMAL_PLACES_ETH);
             const balanceString = `${balanceInEth.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ZRX`;
             return (
                 <AddressTableRow
