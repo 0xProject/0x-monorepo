@@ -3,7 +3,7 @@ import { RadarBook, RadarMarket } from '@radarrelay/types';
 
 const RADAR_BASE_URL = 'https://api.radarrelay.com/v2/';
 const ACTIVE_MARKETS_URL = `${RADAR_BASE_URL}/markets`;
-const MAX_PER_PAGE = 1000;
+const MAX_PER_PAGE = 10000;
 
 export const RADAR_SOURCE = 'radar';
 
