@@ -9,7 +9,7 @@ import '@reach/dialog/styles.css';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
-import { CheckBox, Input, InputWidth, OptionSelector } from 'ts/components/modals/input';
+import { CheckBoxInput, Input, InputWidth, OptionSelector } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
 import { utils } from 'ts/utils/utils';
@@ -19,6 +19,29 @@ export enum ModalContactType {
     MarketMaker = 'MARKET_MAKER',
     Credits = 'CREDITS',
 }
+
+interface ServiceOptionMetadata {
+    label: string;
+    name: string;
+}
+const CREDIT_SERVICES_OPTIONS: ServiceOptionMetadata[] = [
+    {
+        label: 'AWS',
+        name: 'aws',
+    },
+    {
+        label: 'Facebook Ads',
+        name: 'facebook_ads',
+    },
+    {
+        label: 'Alchemy',
+        name: 'alchemy',
+    },
+    {
+        label: 'Digital Ocean',
+        name: 'digital_ocean',
+    },
+];
 
 interface Props {
     theme?: GlobalStyle;
@@ -51,6 +74,7 @@ export class ModalContact extends React.Component<Props> {
         modalContactType: ModalContactType.General,
     };
     public state = {
+        creditLeadsServices: [] as string[],
         isSubmitting: false,
         isSuccessful: false,
         errors: {},
@@ -65,11 +89,7 @@ export class ModalContact extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
-    // credit lead fields
-    public awsOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
-    public alchemyOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
-    public facebookAdsOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
-    public digitalOceanOptionRef: React.RefObject<HTMLInputElement> = React.createRef();
+
     public constructor(props: Props) {
         super(props);
     }
@@ -204,7 +224,8 @@ export class ModalContact extends React.Component<Props> {
         return (
             <>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
-                    If you are building on top of 0x full time, please fill out this form and our Relayer Success Manager will be in touch. 
+                    If you are building on top of 0x full time, please fill out this form and our Relayer Success
+                    Manager will be in touch.
                 </Paragraph>
                 <InputRow>
                     <Input
@@ -247,15 +268,33 @@ export class ModalContact extends React.Component<Props> {
                     />
                 </InputRow>
                 <InputRow>
-                    <OptionSelector isFlex={true} name="services" label="Which credits are you interested in?" errors={errors}>
-                        <CheckBox ref={this.awsOptionRef} name="aws" label="AWS"/>
-                        <CheckBox ref={this.alchemyOptionRef} name="alchemy" label="Alchemy"/>
-                        <CheckBox ref={this.facebookAdsOptionRef} name="facebook_ads" label="Facebook Ads"/>
-                        <CheckBox ref={this.digitalOceanOptionRef} name="digital_ocean" label="Digital Ocean"/>
+                    <OptionSelector
+                        isFlex={true}
+                        name="services"
+                        label="Which credits are you interested in?"
+                        errors={errors}
+                    >
+                        {CREDIT_SERVICES_OPTIONS.map((metadata: ServiceOptionMetadata) => {
+                            return (
+                                <CheckBoxInput
+                                    onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
+                                    key={`checkbox-${metadata.name}`}
+                                    isSelected={_.includes(this.state.creditLeadsServices, metadata.name)}
+                                    label={metadata.label}
+                                />
+                            );
+                        })}
                     </OptionSelector>
                 </InputRow>
             </>
         );
+    }
+
+    private _handleCheckBoxInput(checkBoxName: string): void {
+        const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
+            ? _.pull(this.state.creditLeadsServices, checkBoxName)
+            : _.concat(this.state.creditLeadsServices, checkBoxName);
+        this.setState({ creditLeadsServices: newCreditLeadsServices });
     }
 
     private _renderGeneralFormContent(errors: ErrorProps): React.ReactNode {
@@ -335,12 +374,7 @@ export class ModalContact extends React.Component<Props> {
                 email: this.emailRef.current.value,
                 projectOrCompany: this.companyProjectRef.current.value,
                 comments: this.commentsRef.current.value,
-                services: _.filter([
-                    this.awsOptionRef.current.checked ? 'aws' : null,
-                    this.alchemyOptionRef.current.checked ? 'alchemy' : null,
-                    this.facebookAdsOptionRef.current.checked ? 'facebook_ads' : null,
-                    this.digitalOceanOptionRef.current.checked ? 'digital_ocean' : null,
-                ], (value: any) => !!value),
+                services: this.state.creditLeadsServices,
             };
         } else {
             jsonBody = {
@@ -356,9 +390,14 @@ export class ModalContact extends React.Component<Props> {
 
         let endpoint;
         switch (this.props.modalContactType) {
-            case ModalContactType.Credits: endpoint = '/credit_leads'; break;
-            case ModalContactType.MarketMaker: endpoint = '/market_maker_leads'; break;
-            default: endpoint = '/leads';
+            case ModalContactType.Credits:
+                endpoint = '/credit_leads';
+                break;
+            case ModalContactType.MarketMaker:
+                endpoint = '/market_maker_leads';
+                break;
+            default:
+                endpoint = '/leads';
         }
 
         try {

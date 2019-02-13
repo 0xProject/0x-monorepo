@@ -1,4 +1,4 @@
-import { GoogleSheetLeadUrls, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId, } from 'ts/types';
+import { GoogleSheetLeadUrls, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';

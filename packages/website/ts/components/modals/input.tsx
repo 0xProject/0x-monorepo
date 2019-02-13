@@ -1,6 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { colors } from '../../style/colors';
+import { CheckMark } from '../ui/check_mark';
+import { Container } from '../ui/container';
+
 export enum InputWidth {
     Half,
     Full,
@@ -27,13 +31,10 @@ interface OptionSelectorProps {
     isFlex?: boolean;
 }
 
-interface OptionsWrapperProps {
-    isFlex?: boolean;
-}
-
 interface CheckBoxProps {
-    name: string;
     label: string;
+    onClick: (e: React.MouseEvent<HTMLElement>) => void;
+    isSelected: boolean;
 }
 
 interface ErrorProps {
@@ -45,23 +46,22 @@ export const OptionSelector = (props: OptionSelectorProps) => {
     return (
         <InputWrapper {...props}>
             <Label htmlFor={id}>{props.label}</Label>
-            <OptionsWrapper isFlex={props.isFlex} id={id}>
-                {props.children}
-            </OptionsWrapper>
+            <Container id={id}>{props.children}</Container>
         </InputWrapper>
     );
 };
 
-export const CheckBox = React.forwardRef((props: CheckBoxProps, ref?: React.Ref<HTMLInputElement>) => {
-    const { name, label } = props;
-    const id = `input-${name}`;
+export const CheckBoxInput = (props: CheckBoxProps) => {
+    const { isSelected, label, onClick } = props;
     return (
-        <CheckBoxWrapper>
-            <StyledCheckBox id={id} type={'checkbox'} ref={ref} />
-            <CheckBoxLabel htmlFor={id}>{label}</CheckBoxLabel>
-        </CheckBoxWrapper>
+        <Container onClick={onClick} className="flex items-center">
+            <Container marginRight="10px">
+                <CheckMark isChecked={isSelected} color={colors.brandLight} />
+            </Container>
+            <Label>{label}</Label>
+        </Container>
     );
-});
+};
 
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
     const { name, label, type, errors } = props;
@@ -83,41 +83,6 @@ Input.defaultProps = {
     width: InputWidth.Full,
     errors: {},
 };
-
-const StyledCheckBox = styled.input`
-    visibility: hidden;
-    &:checked + label:after {
-        background-color: #000;
-        border: 2px solid #000;
-    }
-`;
-
-const CheckBoxLabel = styled.label`
-    position: relative;
-    color: #000;
-    opacity: 0.75;
-    font-size: 1rem;
-    font-weight: 300;
-    line-height: 1.2em;
-    margin-bottom: 10px;
-    display: inline-block;
-    padding-left: 1.5rem;
-    &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        margin: auto;
-        height: 1rem;
-        width: 1rem;
-        border-radius: 50%;
-        border: 2px solid #d5d5d5;
-    }
-`;
-
-const CheckBoxWrapper = styled.div`
-`;
 
 const StyledInput = styled.input`
     appearance: none;
@@ -147,26 +112,6 @@ const InputWrapper = styled.div<InputProps>`
         width: 100%;
         margin-bottom: 30px;
     }
-`;
-
-const OptionsWrapper = styled.div<OptionsWrapperProps>`
-    display: ${props => props.isFlex && 'flex'};
-    ${props => {
-        if (props.isFlex) {
-            return `
-                & > * {
-                    padding: 0 0.5rem;
-                }
-                & >:first-child {
-                    padding-left: 0;
-                }
-                & >:last-child {
-                    padding-right: 0;
-                }
-            `;
-        }
-        return '';
-    }}
 `;
 
 const Label = styled.label`

@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
-import { opacify } from 'polished';
 import * as React from 'react';
-import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
@@ -11,14 +9,6 @@ import { ModalContact, ModalContactType } from 'ts/components/modals/modal_conta
 import { FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
-import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
-
-interface OffersWrapProps {
-}
-const OffersWrap = styled.div<OffersWrapProps>`
-    display: flex;
-`;
 
 export interface NextCreditsProps {}
 
@@ -46,7 +36,14 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                 />
 
                 <Section bgColor="light" maxWidth="715px">
-                    <Heading asElement="h2" fontWeight={'400'} size={34} isCentered={true} isMuted={1} padding={['default', 0 , 'default', 'default']}>
+                    <Heading
+                        asElement="h2"
+                        fontWeight={'400'}
+                        size={34}
+                        isCentered={true}
+                        isMuted={1}
+                        padding={['default', 0, 'default', 'default']}
+                    >
                         Get your project off the ground with these great services
                     </Heading>
 
@@ -79,6 +76,7 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                             iconSize="medium"
                             isInline={true}
                         />
+
                         <CenteredDefinition
                             title="Facebook ads"
                             titleSize="small"
@@ -115,11 +113,7 @@ export class NextCredits extends React.Component<NextCreditsProps> {
 
     private readonly _renderHeroActions = () => (
         <>
-            <Button
-                onClick={this._onOpenContactModal}
-                bgColor="dark"
-                isInline={true}
-            >
+            <Button onClick={this._onOpenContactModal} bgColor="dark" isInline={true}>
                 Apply Now
             </Button>
         </>

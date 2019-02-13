@@ -111,11 +111,7 @@ render(
                                     path={WebsitePaths.MarketMaker}
                                     component={NextMarketMaker as any}
                                 />
-                                <Route
-                                    exact={true}
-                                    path={WebsitePaths.Credits}
-                                    component={NextCredits as any}
-                                />
+                                <Route exact={true} path={WebsitePaths.Credits} component={NextCredits as any} />
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
