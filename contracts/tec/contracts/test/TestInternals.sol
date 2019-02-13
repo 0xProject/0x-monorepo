@@ -64,7 +64,6 @@ contract TestInternals is
         return true;
     }
 
-
     /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
     /// @param order Order struct containing order specifications.
     /// @param transactionHash EIP712 hash of the 0x transaction.
