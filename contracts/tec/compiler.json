@@ -3,10 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
-        "optimizer": {
-            "enabled": true,
-            "runs": 1000000
-        },
+        "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
                 "*": [
@@ -19,5 +16,5 @@
             }
         }
     },
-    "contracts": ["TEC", "TestLibs", "TestInternals"]
+    "contracts": ["TEC", "TestLibs", "MixinSignatureValidator"]
 }

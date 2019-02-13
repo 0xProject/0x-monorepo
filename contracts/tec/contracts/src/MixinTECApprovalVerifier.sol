@@ -51,7 +51,7 @@ contract MixinTECApprovalVerifier is
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
-        internal
+        public
         view
     {
         // Hash 0x transaction
@@ -147,7 +147,7 @@ contract MixinTECApprovalVerifier is
         uint256 approvalExpirationTimeSeconds,
         bytes memory approvalSignature
     )
-        internal
+        public
         view
     {
         // Do not check approval if the order's senderAddress is null
@@ -195,16 +195,16 @@ contract MixinTECApprovalVerifier is
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
-        internal
+        public
         view
     {
         // Create empty list of approval signers
         address[] memory approvalSignerAddresses = new address[](0);
 
         uint256 signaturesLength = approvalSignatures.length;
-        uint256 currentApprovalExpirationTimeseconds = approvalExpirationTimeSeconds[i];
         for (uint256 i = 0; i < signaturesLength; i++) {
             // Create approval message
+            uint256 currentApprovalExpirationTimeseconds = approvalExpirationTimeSeconds[i];
             TECApproval memory approval = TECApproval({
                 transactionHash: transactionHash,
                 transactionSignature: transactionSignature,

@@ -31,7 +31,7 @@ contract MixinSignatureValidator is
     /// @param hash Any 32 byte hash.
     /// @param signature Proof that the hash has been signed by signer.
     function getSignerAddress(bytes32 hash, bytes memory signature)
-        internal
+        public
         pure
         returns (address signerAddress)
     {

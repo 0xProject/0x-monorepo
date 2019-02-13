@@ -18,9 +18,12 @@
 
 pragma solidity ^0.5.3;
 
+import "../interfaces/ISignatureValidator.sol";
 
-contract MSignatureValidator {
 
+contract MSignatureValidator is
+    ISignatureValidator
+{
     // Allowed signature types.
     enum SignatureType {
         Illegal,         // 0x00, default value
@@ -28,12 +31,4 @@ contract MSignatureValidator {
         EthSign,         // 0x02
         NSignatureTypes  // 0x03, number of signature types. Always leave at end.
     }
-
-    /// @dev Recovers the address of a signer given a hash and signature.
-    /// @param hash Any 32 byte hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    function getSignerAddress(bytes32 hash, bytes memory signature)
-        internal
-        pure
-        returns (address signerAddress);
 }

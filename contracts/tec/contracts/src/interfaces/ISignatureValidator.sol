@@ -17,11 +17,15 @@
 */
 
 pragma solidity ^0.5.3;
-pragma experimental "ABIEncoderV2";
-
-import "../interfaces/ITECApprovalVerifier.sol";
 
 
-contract MTECApprovalVerifier is
-    ITECApprovalVerifier
-{}
+contract ISignatureValidator {
+
+    /// @dev Recovers the address of a signer given a hash and signature.
+    /// @param hash Any 32 byte hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    function getSignerAddress(bytes32 hash, bytes memory signature)
+        public
+        pure
+        returns (address signerAddress);
+}

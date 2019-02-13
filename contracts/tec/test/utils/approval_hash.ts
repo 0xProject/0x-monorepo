@@ -1,4 +1,5 @@
-import { eip712Utils, EXCHANGE_ZEROEX_TRANSACTION_SCHEMA } from '@0x/order-utils';
+import { eip712Utils } from '@0x/order-utils';
+import { constants as orderUtilsConstants } from '@0x/order-utils/lib/src/constants';
 import { SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
@@ -45,8 +46,8 @@ export const approvalHashUtils = {
             return !_.isString(value) ? value.toString() : value;
         });
         const typedData = eip712Utils.createTypedData(
-            EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
-            { ZeroExTransaction: EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
+            orderUtilsConstants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
+            { ZeroExTransaction: orderUtilsConstants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
             domain,
         );
