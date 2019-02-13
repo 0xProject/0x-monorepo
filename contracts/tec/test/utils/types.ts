@@ -5,3 +5,10 @@ export interface TECApproval {
     transactionSignature: string;
     approvalExpirationTimeSeconds: BigNumber;
 }
+
+export enum TECSignatureType {
+    Illegal,
+    EIP712,
+    EthSign,
+    NSignatureTypes,
+}

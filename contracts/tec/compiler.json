@@ -16,5 +16,5 @@
             }
         }
     },
-    "contracts": ["TEC", "TestLibs", "MixinSignatureValidator"]
+    "contracts": ["src/MixinSignatureValidator.sol", "src/TEC.sol", "test/TestLibs.sol"]
 }
