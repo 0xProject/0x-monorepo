@@ -166,7 +166,7 @@ export class ModalVote extends React.Component<Props> {
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
         const { isSuccessful, errors, votePreference, selectedAddress, currentBalance } = this.state;
-        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH);
+        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
             <>
                 <DialogOverlay
@@ -177,7 +177,7 @@ export class ModalVote extends React.Component<Props> {
                     <StyledDialogContent>
                         {this._renderFormContent(errors)}
                         <Confirmation isSuccessful={isSuccessful}>
-                            <Icon name="rocketship" size="large" margin={[0, 0, 'default', 0]} />
+                            <Icon name="voting" size="large" margin={[0, 0, 'default', 0]} />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
                                 Vote Recieved!
                             </Heading>
@@ -194,7 +194,7 @@ export class ModalVote extends React.Component<Props> {
                         </Confirmation>
                         <ButtonClose type="button" onClick={this.props.onDismiss}>
                             <span>Close</span>
-                            <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.414 0L0 1.414l12.02 12.021L0 25.455l1.414 1.415 12.021-12.02 12.02 12.02 1.415-1.414-12.02-12.021 12.02-12.02L25.456 0 13.435 12.02 1.415 0z" fill="#fff"/></svg>
+                            <Icon name="close-modal" size={27} margin={[0, 0, 0, 0]} />
                         </ButtonClose>
                     </StyledDialogContent>
                 </DialogOverlay>
