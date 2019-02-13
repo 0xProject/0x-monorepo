@@ -18,15 +18,13 @@
 
 pragma solidity 0.5.3;
 
+import "../src/ERC1155MockReceiver.sol";
 
-
-
-contract DummyERC1155Receiver //is
-    //IERC1155Receiver
+contract DummyERC1155Receiver is
+    ERC1155MockReceiver
 {
-
-/*
     
+    /*
     // Function selector for ERC1155Receiver.onERC1155Received
     // 0x150b7a02
     bytes4 constant internal ERC1155_RECEIVED = bytes4(keccak256("onERC1155Received(address,address,uint256,bytes)"));
@@ -67,8 +65,7 @@ contract DummyERC1155Receiver //is
         );
         return ERC1155_RECEIVED;
     }
-*/
-    
+    */ 
 }
 
 

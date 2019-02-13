@@ -18,15 +18,13 @@
 
 pragma solidity ^0.5.3;
 
-
+import "../src/ERC1155MixedFungibleMintable.sol";
 
 // solhint-disable no-empty-blocks
-contract DummyERC1155Token// is
-    //MintableERC1155Token,
-    //Ownable
+contract DummyERC1155Token is
+    ERC1155MixedFungibleMintable
 {
-    /*
-    
+
     string public name;
     string public symbol;
 
@@ -39,28 +37,4 @@ contract DummyERC1155Token// is
         name = _name;
         symbol = _symbol;
     }
-
-    /// @dev Function to mint a new token
-    ///      Reverts if the given token ID already exists
-    /// @param _to Address of the beneficiary that will own the minted token
-    /// @param _tokenId ID of the token to be minted by the msg.sender    
-    function mint(address _to, uint256 _tokenId)
-        external
-    {
-        _mint(_to, _tokenId);
-    }
-
-    /// @dev Function to burn a token
-    ///      Reverts if the given token ID doesn't exist or not called by contract owner
-    /// @param _owner Owner of token with given token ID
-    /// @param _tokenId ID of the token to be burned by the msg.sender
-    function burn(address _owner, uint256 _tokenId)
-        external
-        onlyOwner
-    {
-        _burn(_owner, _tokenId);
-    }
-
-   */ 
 }
-

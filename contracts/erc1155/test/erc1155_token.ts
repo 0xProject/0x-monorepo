@@ -14,6 +14,7 @@ import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import {
     artifacts,
@@ -22,6 +23,7 @@ import {
     DummyERC1155TokenContract,
     //DummyERC1155TokenTransferEventArgs,
     InvalidERC1155ReceiverContract,
+    ERC1155MixedFungibleMintableTransferSingleEventArgs
 } from '../src';
 
 chaiSetup.configure();
@@ -30,13 +32,23 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('ERC1155Token', () => {
 
+    const DUMMY_FUNGIBLE_TOKEN_URI = 'FUN';
+    const DUMMY_FUNGIBLE_TOKEN_IS_FUNGIBLE = false;
+    const DUMMY_NONFUNGIBLE_TOKEN_URI = 'NOFUN';
 
     let owner: string;
     let spender: string;
+    const spenderInitialBalance = new BigNumber(500);
+    const receiverInitialBalance = new BigNumber(0);
     let token: DummyERC1155TokenContract;
     let erc1155Receiver: DummyERC1155ReceiverContract;
     let logDecoder: LogDecoder;
     const tokenId = new BigNumber(1);
+
+
+    let dummyFungibleTokenId: BigNumber;
+    let dummyNonFungibleTokenId: BigNumber;
+
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -60,16 +72,67 @@ describe('ERC1155Token', () => {
             txDefaults,
         );
         logDecoder = new LogDecoder(web3Wrapper, artifacts);
+        // Create fungible token
+        const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
+            await token.create.sendTransactionAsync(DUMMY_FUNGIBLE_TOKEN_URI, DUMMY_FUNGIBLE_TOKEN_IS_FUNGIBLE),
+        );
+        const createFungibleTokenLog = txReceipt.logs[0] as LogWithDecodedArgs<ERC1155MixedFungibleMintableTransferSingleEventArgs>;
+        dummyFungibleTokenId = createFungibleTokenLog.args._id;
+        console.log(`DUMMY FUNGIBLE TOKEN ID  = ${dummyFungibleTokenId}`);
+        // Mint some fungible token
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await token.mint.sendTransactionAsync(owner, tokenId, { from: owner }),
+            await token.mintFungible.sendTransactionAsync(
+                dummyFungibleTokenId,
+                [spender],
+                [spenderInitialBalance],
+                { from: owner }
+            ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
+        console.log(`ALL DONE SETUP`);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+    describe('batchSafeTransferFrom', () => {
+        it('should transfer fungible tokens if called by owner', async () => {
+            // setup test parameters
+            const from = spender;
+            const to = erc1155Receiver.address;
+            const fromIdx = 0;
+            const toIdx = 1;
+            const participatingOwners = [from, to];
+            const participatingTokens = [dummyFungibleTokenId, dummyFungibleTokenId];
+            const idsToTransfer = [dummyFungibleTokenId];
+            const valueToTransfer = new BigNumber(200);
+            const valuesToTransfer = [valueToTransfer];
+            const calldata = constants.NULL_BYTES;
+            // check balances before transfer
+            const balancesBeforeTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
+            expect(balancesBeforeTransfer[fromIdx]).to.be.bignumber.equal(spenderInitialBalance);
+            expect(balancesBeforeTransfer[toIdx]).to.be.bignumber.equal(receiverInitialBalance);
+            // execute transfer
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await token.safeBatchTransferFrom.sendTransactionAsync(from, to, idsToTransfer, valuesToTransfer, calldata, {from}),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            // check balances after transfer
+            const balancesAfterTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
+            expect(balancesAfterTransfer[fromIdx]).to.be.bignumber.equal(balancesBeforeTransfer[fromIdx].minus(valueToTransfer));
+            expect(balancesAfterTransfer[toIdx]).to.be.bignumber.equal(balancesBeforeTransfer[toIdx].plus(valueToTransfer));
+        });
+        it('should transfer non-fungible tokens if called by owner', async () => {
+
+        });
+        it('should transfer mix of fungible / non-fungible tokens if called by owner', async () => {
+
+        });
+        it('should trigger callback if transferring to a contract', async () => {
+
+        });
     });
     /*
     describe('transferFrom', () => {
