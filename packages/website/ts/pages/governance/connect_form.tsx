@@ -1,14 +1,11 @@
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import * as React from 'react';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
-// import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
