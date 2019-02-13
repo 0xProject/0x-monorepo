@@ -119,7 +119,7 @@ export class ModalContact extends React.Component<Props> {
                                 >
                                     Back
                                 </Button>
-                                <Button>Submit</Button>
+                                <Button color={colors.white}>Submit</Button>
                             </ButtonRow>
                         </Form>
                         <Confirmation isSuccessful={isSuccessful}>
@@ -131,7 +131,7 @@ export class ModalContact extends React.Component<Props> {
                                 We'll get back to you soon. If you need quick support in the meantime, reach out to the
                                 0x team on Discord.
                             </Paragraph>
-                            <Button onClick={this.props.onDismiss}>Done</Button>
+                            <Button color={colors.white} onClick={this.props.onDismiss}>Done</Button>
                         </Confirmation>
                     </StyledDialogContent>
                 </DialogOverlay>
@@ -511,3 +511,4 @@ const Confirmation = styled.div<FormProps>`
         margin-right: auto;
     }
 `;
+// tslint:disable:max-file-line-count
