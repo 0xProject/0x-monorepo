@@ -4,11 +4,9 @@ import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
-import { Icon } from 'ts/components/icon';
-import { Column, Section, WrapGrid } from 'ts/components/newLayout';
+import { Column, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
-import { colors } from 'ts/style/colors';
 import { constants } from 'ts/utils/constants';
 
 export const VotePlaceholder = () => (
