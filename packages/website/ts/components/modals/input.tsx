@@ -1,20 +1,24 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { ChangeEvent } from 'react';
+
 export enum InputWidth {
-    Half,
-    Full,
+    Half = 'half',
+    Full = 'full',
 }
 
 interface InputProps {
-    name: string;
-    width?: InputWidth;
-    label: string;
+    className?: string;
+    name?: string;
+    width?: InputWidth | string;
+    label?: string;
     type?: string;
     defaultValue?: string;
     errors?: ErrorProps;
     isErrors?: boolean;
     required?: boolean;
+    onChange?: (e: ChangeEvent) => void;
 }
 
 interface ErrorProps {
@@ -22,16 +26,21 @@ interface ErrorProps {
 }
 
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
-    const { name, label, type, errors, defaultValue } = props;
+    const { name, label, type, errors, defaultValue, onChange, width, className } = props;
     const id = `input-${name}`;
     const componentType = type === 'textarea' ? 'textarea' : 'input';
     const isErrors = errors.hasOwnProperty(name) && errors[name] !== null;
     const errorMessage = isErrors ? errors[name] : null;
+    const wrapperProps = { width };
+    const inputProps = { name, type };
 
     return (
-        <InputWrapper {...props}>
+        <InputWrapper
+            className={className}
+            width={width}
+        >
             <Label htmlFor={id}>{label}</Label>
-            <StyledInput as={componentType} ref={ref} id={id} isErrors={isErrors} defaultValue={defaultValue} {...props} />
+            <StyledInput as={componentType} ref={ref} id={id} isErrors={isErrors} defaultValue={defaultValue} onChange={onChange} {...inputProps} />
             {isErrors && <Error>{errorMessage}</Error>}
         </InputWrapper>
     );
