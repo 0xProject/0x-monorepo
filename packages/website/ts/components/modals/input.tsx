@@ -11,6 +11,7 @@ interface InputProps {
     width?: InputWidth;
     label: string;
     type?: string;
+    defaultValue?: string;
     errors?: ErrorProps;
     isErrors?: boolean;
     required?: boolean;
@@ -21,7 +22,7 @@ interface ErrorProps {
 }
 
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
-    const { name, label, type, errors } = props;
+    const { name, label, type, errors, defaultValue } = props;
     const id = `input-${name}`;
     const componentType = type === 'textarea' ? 'textarea' : 'input';
     const isErrors = errors.hasOwnProperty(name) && errors[name] !== null;
@@ -30,7 +31,7 @@ export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLIn
     return (
         <InputWrapper {...props}>
             <Label htmlFor={id}>{label}</Label>
-            <StyledInput as={componentType} ref={ref} id={id} isErrors={isErrors} {...props} />
+            <StyledInput as={componentType} ref={ref} id={id} isErrors={isErrors} defaultValue={defaultValue} {...props} />
             {isErrors && <Error>{errorMessage}</Error>}
         </InputWrapper>
     );
