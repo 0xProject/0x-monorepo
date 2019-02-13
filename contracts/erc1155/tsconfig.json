@@ -3,13 +3,13 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/DummyERC721Receiver.json",
-        "generated-artifacts/DummyERC721Token.json",
-        "generated-artifacts/ERC721Token.json",
-        "generated-artifacts/IERC721Receiver.json",
-        "generated-artifacts/IERC721Token.json",
-        "generated-artifacts/InvalidERC721Receiver.json",
-        "generated-artifacts/MintableERC721Token.json"
+        "generated-artifacts/DummyERC1155Receiver.json",
+        "generated-artifacts/DummyERC1155Token.json",
+        "generated-artifacts/ERC1155Token.json",
+        "generated-artifacts/IERC1155Receiver.json",
+        "generated-artifacts/IERC1155Token.json",
+        "generated-artifacts/InvalidERC1155Receiver.json",
+        "generated-artifacts/MintableERC1155Token.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

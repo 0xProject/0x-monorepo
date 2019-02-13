@@ -16,14 +16,16 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
-import "./ERC721Token.sol";
+import "./ERC1155Token.sol";
 
 
-contract MintableERC721Token is
-    ERC721Token
+contract MintableERC1155Token is
+    ERC1155Token
 {
+
+    /*
     /// @dev Function to mint a new token
     ///      Reverts if the given token ID already exists
     /// @param _to Address of the beneficiary that will own the minted token
@@ -33,13 +35,13 @@ contract MintableERC721Token is
     {
         require(
             _to != address(0),
-            "ERC721_ZERO_TO_ADDRESS"
+            "ERC1155_ZERO_TO_ADDRESS"
         );
 
         address owner = owners[_tokenId];
         require(
             owner == address(0),
-            "ERC721_OWNER_ALREADY_EXISTS"
+            "ERC1155_OWNER_ALREADY_EXISTS"
         );
 
         owners[_tokenId] = _to;
@@ -61,13 +63,13 @@ contract MintableERC721Token is
     {
         require(
             _owner != address(0),
-            "ERC721_ZERO_OWNER_ADDRESS"
+            "ERC1155_ZERO_OWNER_ADDRESS"
         );
 
         address owner = owners[_tokenId];
         require(
             owner == _owner,
-            "ERC721_OWNER_MISMATCH"
+            "ERC1155_OWNER_MISMATCH"
         );
 
         owners[_tokenId] = address(0);
@@ -79,4 +81,6 @@ contract MintableERC721Token is
             _tokenId
         );
     }
+
+    */
 }

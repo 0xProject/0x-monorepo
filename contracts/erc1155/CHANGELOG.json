@@ -1,55 +1,10 @@
 [
     {
-        "timestamp": 1549733923,
-        "version": "1.0.5",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
-        "version": "1.0.4",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ],
-        "timestamp": 1549547375
-    },
-    {
-        "version": "1.0.3",
-        "changes": [
-            {
-                "note": "Fake publish to enable pinning"
-            }
-        ],
-        "timestamp": 1549504360
-    },
-    {
-        "timestamp": 1549452781,
-        "version": "1.0.2",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
-        "timestamp": 1549373905,
-        "version": "1.0.1",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
         "version": "1.0.0",
         "changes": [
             {
-                "note": "Move all ERC721 contracts out of contracts-tokens to new package",
-                "pr": 1539
+                "note": "Created ERC1155 contracts package",
+                "pr": 0
             }
         ]
     }

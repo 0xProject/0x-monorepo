@@ -16,17 +16,16 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.3;
 
-import "../src/MintableERC721Token.sol";
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "../src/MintableERC1155Token.sol";
 
 
 // solhint-disable no-empty-blocks
-contract DummyERC721Token is
-    Ownable,
-    MintableERC721Token
+contract DummyERC1155Token is
+    MintableERC1155Token
 {
+    /*
     string public name;
     string public symbol;
 
@@ -60,4 +59,5 @@ contract DummyERC721Token is
     {
         _burn(_owner, _tokenId);
     }
+    */
 }

@@ -5,19 +5,19 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as DummyERC721Receiver from '../generated-artifacts/DummyERC721Receiver.json';
-import * as DummyERC721Token from '../generated-artifacts/DummyERC721Token.json';
-import * as ERC721Token from '../generated-artifacts/ERC721Token.json';
-import * as IERC721Receiver from '../generated-artifacts/IERC721Receiver.json';
-import * as IERC721Token from '../generated-artifacts/IERC721Token.json';
-import * as InvalidERC721Receiver from '../generated-artifacts/InvalidERC721Receiver.json';
-import * as MintableERC721Token from '../generated-artifacts/MintableERC721Token.json';
+import * as DummyERC1155Receiver from '../generated-artifacts/DummyERC1155Receiver.json';
+import * as DummyERC1155Token from '../generated-artifacts/DummyERC1155Token.json';
+import * as ERC1155Token from '../generated-artifacts/ERC1155Token.json';
+import * as IERC1155Receiver from '../generated-artifacts/IERC1155Receiver.json';
+import * as IERC1155Token from '../generated-artifacts/IERC1155Token.json';
+import * as InvalidERC1155Receiver from '../generated-artifacts/InvalidERC1155Receiver.json';
+import * as MintableERC1155Token from '../generated-artifacts/MintableERC1155Token.json';
 export const artifacts = {
-    ERC721Token: ERC721Token as ContractArtifact,
-    MintableERC721Token: MintableERC721Token as ContractArtifact,
-    IERC721Receiver: IERC721Receiver as ContractArtifact,
-    IERC721Token: IERC721Token as ContractArtifact,
-    DummyERC721Receiver: DummyERC721Receiver as ContractArtifact,
-    DummyERC721Token: DummyERC721Token as ContractArtifact,
-    InvalidERC721Receiver: InvalidERC721Receiver as ContractArtifact,
+    ERC1155Token: ERC1155Token as ContractArtifact,
+    MintableERC1155Token: MintableERC1155Token as ContractArtifact,
+    IERC1155Receiver: IERC1155Receiver as ContractArtifact,
+    IERC1155Token: IERC1155Token as ContractArtifact,
+    DummyERC1155Receiver: DummyERC1155Receiver as ContractArtifact,
+    DummyERC1155Token: DummyERC1155Token as ContractArtifact,
+    InvalidERC1155Receiver: InvalidERC1155Receiver as ContractArtifact,
 };

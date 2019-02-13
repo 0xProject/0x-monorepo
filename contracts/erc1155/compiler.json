@@ -17,12 +17,12 @@
         }
     },
     "contracts": [
-        "src/ERC721Token.sol",
-        "src/MintableERC721Token.sol",
-        "src/interfaces/IERC721Receiver.sol",
-        "src/interfaces/IERC721Token.sol",
-        "test/DummyERC721Receiver.sol",
-        "test/DummyERC721Token.sol",
-        "test/InvalidERC721Receiver.sol"
+        "src/ERC1155Token.sol",
+        "src/MintableERC1155Token.sol",
+        "src/interfaces/IERC1155Receiver.sol",
+        "src/interfaces/IERC1155Token.sol",
+        "test/DummyERC1155Receiver.sol",
+        "test/DummyERC1155Token.sol",
+        "test/InvalidERC1155Receiver.sol"
     ]
 }
