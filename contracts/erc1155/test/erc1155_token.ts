@@ -1,3 +1,4 @@
+
 import {
     chaiSetup,
     constants,
@@ -17,9 +18,9 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import {
     artifacts,
     DummyERC1155ReceiverContract,
-    DummyERC1155ReceiverTokenReceivedEventArgs,
+   // DummyERC1155ReceiverTokenReceivedEventArgs,
     DummyERC1155TokenContract,
-    DummyERC1155TokenTransferEventArgs,
+    //DummyERC1155TokenTransferEventArgs,
     InvalidERC1155ReceiverContract,
 } from '../src';
 
@@ -28,6 +29,8 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('ERC1155Token', () => {
+
+
     let owner: string;
     let spender: string;
     let token: DummyERC1155TokenContract;
@@ -68,7 +71,7 @@ describe('ERC1155Token', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-
+    /*
     describe('transferFrom', () => {
         it('should revert if the tokenId is not owner', async () => {
             const from = owner;
@@ -278,5 +281,6 @@ describe('ERC1155Token', () => {
             expect(receiverLog.args.data).to.be.equal(data);
         });
     });
+    */
 });
 // tslint:enable:no-unnecessary-type-assertion
