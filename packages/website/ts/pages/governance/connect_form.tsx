@@ -17,6 +17,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { utils } from 'ts/utils/utils';
 
 import { AddressTable } from 'ts/pages/governance/address_table';
+import { DerivationPathInput } from 'ts/pages/governance/derivation_path_input';
 
 import {
     ledgerEthereumBrowserClientFactoryAsync,
@@ -166,7 +167,7 @@ export class ConnectForm extends React.Component<Props, State> {
         );
     }
     public _renderChooseAddressContent(errors: ErrorProps): React.ReactNode {
-        const { userAddresses, addressBalances, preferredNetworkId } = this.state;
+        const { userAddresses, addressBalances, preferredNetworkId, derivationPath } = this.state;
         return (
             <>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
@@ -179,10 +180,14 @@ export class ConnectForm extends React.Component<Props, State> {
                     onSelectAddress={this._onSelectAddressIndex.bind(this)}
                 />
                 {!_.isUndefined(errors.connectionError) && (
-                    <Paragraph isMuted={true} color={colors.red}>
+                    <ErrorParagraph>
                         {errors.connectionError}
-                    </Paragraph>
+                    </ErrorParagraph>
                 )}
+                <DerivationPathInput
+                    path={derivationPath}
+                    onChangePath={this._onChangeDerivationPathAsync.bind(this)}
+                />
                 <ButtonRow>
                     <Button type="button" onClick={this._onGoBack.bind(this, ConnectSteps.Connect)}>
                         Back
@@ -193,6 +198,13 @@ export class ConnectForm extends React.Component<Props, State> {
                 </ButtonRow>
             </>
         );
+    }
+    public async _onChangeDerivationPathAsync(path: string): Promise<void> {
+        await this.setState({
+            derivationPath: path,
+        });
+
+        await this._onFetchAddressesForDerivationPathAsync();
     }
     public async getUserAccountsAsync(): Promise<string[]> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
@@ -207,6 +219,12 @@ export class ConnectForm extends React.Component<Props, State> {
         }
         const path = this._ledgerSubprovider.getPath();
         return path;
+    }
+    public updateLedgerDerivationPathIfExists(path: string): void {
+        if (_.isUndefined(this._ledgerSubprovider)) {
+            return; // noop
+        }
+        this._ledgerSubprovider.setPath(path);
     }
     public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
         const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(owner);
@@ -289,6 +307,25 @@ export class ConnectForm extends React.Component<Props, State> {
     }
     private _onSelectedLedgerAddress(): void {
         this._updateSelectedAddressAsync(this.state.selectedUserAddressIndex);
+    }
+    private async _onFetchAddressesForDerivationPathAsync(): Promise<boolean> {
+        const currentlySetPath = this.getLedgerDerivationPathIfExists();
+        let didSucceed;
+
+        if (currentlySetPath === this.state.derivationPath) {
+            didSucceed = true;
+            return didSucceed;
+        }
+        this.updateLedgerDerivationPathIfExists(this.state.derivationPath);
+        didSucceed = await this._fetchAddressesAndBalancesAsync();
+        if (!didSucceed) {
+            this.setState({
+                errors: {
+                    connectionError: 'Failed to connect to Ledger.',
+                },
+            });
+        }
+        return didSucceed;
     }
     private async _fetchAddressesAndBalancesAsync(): Promise<boolean> {
         let userAddresses: string[];
@@ -566,12 +603,15 @@ const ButtonRow = styled(InputRow)`
     }
 `;
 
-const ButtonFull = styled(Button)`
-    width: 100%;
-`;
-
 const ButtonHalf = styled(Button)`
     width: calc(50% - 15px);
     padding: 18px 18px;
 `;
 // tslint:disable:max-file-line-count
+
+const ErrorParagraph = styled(Paragraph).attrs({
+    color: colors.red,
+    isMuted: true,
+})`
+    margin: 10px 0 0 30px;
+`;
