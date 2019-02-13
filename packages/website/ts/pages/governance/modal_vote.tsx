@@ -281,6 +281,10 @@ export class ModalVote extends React.Component<Props> {
         this.setState({
             isSuccessful: true,
         });
+
+        if (this.props.onVoted) {
+            this.props.onVoted();
+        }
     }
 }
 
