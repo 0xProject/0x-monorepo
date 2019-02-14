@@ -44,7 +44,7 @@ const Wrap = styled.div<Props>`
 
     @media (max-width: 768px) {
         margin: 0 auto;
-
+        max-width: 100%;
         & + & {
             margin-top: ${props => props.isInline && '60px'};
         }

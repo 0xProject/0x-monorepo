@@ -26,7 +26,7 @@ export class NextCredits extends React.Component<NextCreditsProps> {
             <SiteWrap theme="light">
                 <Hero
                     maxWidth="865px"
-                    maxWidthHeading="715px"
+                    maxWidthHeading="765px"
                     isLargeTitle={false}
                     isFullWidth={false}
                     isCenteredMobile={false}
@@ -42,7 +42,8 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                         size={34}
                         isCentered={true}
                         isMuted={1}
-                        padding={['default', 0, 'default', 'default']}
+                        padding={[0, 0, 'default', 0]}
+                        maxWidth={'685px'}
                     >
                         Get your project off the ground with these great services
                     </Heading>
@@ -78,7 +79,7 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                         />
 
                         <CenteredDefinition
-                            title="Facebook ads"
+                            title="Facebook Ads"
                             titleSize="small"
                             description="Up to $2,000 in ad credits to bootstrap marketing"
                             icon="facebook_ads"
@@ -89,8 +90,8 @@ export class NextCredits extends React.Component<NextCreditsProps> {
                 </Section>
 
                 <Banner
-                    heading="Apply for the program now"
-                    subline="Have Questions? Please join our Discord channel"
+                    heading="Start building today."
+                    subline="Have questions? Join our Discord"
                     mainCta={{ text: 'Apply Now', onClick: this._onOpenContactModal }}
                     secondaryCta={{ text: 'Join Discord', href: 'https://discordapp.com/invite/d3FTX3M' }}
                 />

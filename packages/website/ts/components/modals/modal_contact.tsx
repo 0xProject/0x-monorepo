@@ -131,7 +131,9 @@ export class ModalContact extends React.Component<Props> {
                                 We'll get back to you soon. If you need quick support in the meantime, reach out to the
                                 0x team on Discord.
                             </Paragraph>
-                            <Button color={colors.white} onClick={this.props.onDismiss}>Done</Button>
+                            <Button color={colors.white} onClick={this.props.onDismiss}>
+                                Done
+                            </Button>
                         </Confirmation>
                     </StyledDialogContent>
                 </DialogOverlay>
@@ -260,7 +262,7 @@ export class ModalContact extends React.Component<Props> {
                 <InputRow>
                     <Input
                         name="comments"
-                        label="Brief Project Description."
+                        label="Brief project description"
                         type="textarea"
                         ref={this.commentsRef}
                         required={false}

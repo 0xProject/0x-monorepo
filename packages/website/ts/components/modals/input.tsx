@@ -58,7 +58,7 @@ export const CheckBoxInput = (props: CheckBoxProps) => {
             <Container marginRight="10px">
                 <CheckMark isChecked={isSelected} color={colors.brandLight} />
             </Container>
-            <Label>{label}</Label>
+            <Label style={{ marginBottom: '0' }}>{label}</Label>
         </Container>
     );
 };
