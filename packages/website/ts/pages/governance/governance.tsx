@@ -155,7 +155,7 @@ export class Governance extends React.Component {
                             <Column width="55%" maxWidth="560px">
                                 <Paragraph>{proposalData.benefit.summary}</Paragraph>
                                 {_.map(proposalData.benefit.links, (link, index) => (
-                                    <Button
+                                    <MoreLink
                                         href={link.url}
                                         target={!_.isUndefined(link.url) ? '_blank' : undefined}
                                         isWithArrow={true}
@@ -163,7 +163,7 @@ export class Governance extends React.Component {
                                         key={`benefitlink-${index}`}
                                     >
                                         {link.text}
-                                    </Button>
+                                    </MoreLink>
                                 ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
@@ -181,7 +181,7 @@ export class Governance extends React.Component {
                             <Column width="55%" maxWidth="560px">
                                 <Paragraph>{proposalData.stakes.summary}</Paragraph>
                                 {_.map(proposalData.stakes.links, (link, index) => (
-                                    <Button
+                                    <MoreLink
                                         href={link.url}
                                         target={!_.isUndefined(link.url) ? '_blank' : undefined}
                                         isWithArrow={true}
@@ -189,7 +189,7 @@ export class Governance extends React.Component {
                                         key={`risklink-${index}`}
                                     >
                                         {link.text}
-                                    </Button>
+                                    </MoreLink>
                                 ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
@@ -293,4 +293,10 @@ const VoteButton = styled(Button)`
     margin-bottom: 40px;
     width: 100%;
     max-width: 205px;
+`;
+
+const MoreLink = styled(Button)`
+    & + & {
+        margin-left: 30px;
+    }
 `;
