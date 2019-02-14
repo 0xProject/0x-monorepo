@@ -6,6 +6,10 @@ export interface TECApproval {
     approvalExpirationTimeSeconds: BigNumber;
 }
 
+export interface SignedTECApproval extends TECApproval {
+    approvalSignature: string;
+}
+
 export enum TECSignatureType {
     Illegal,
     EIP712,

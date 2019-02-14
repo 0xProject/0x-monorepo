@@ -5,11 +5,11 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as MixinSignatureValidator from '../generated-artifacts/MixinSignatureValidator.json';
 import * as TEC from '../generated-artifacts/TEC.json';
 import * as TestLibs from '../generated-artifacts/TestLibs.json';
+import * as TestMixins from '../generated-artifacts/TestMixins.json';
 export const artifacts = {
+    TestMixins: TestMixins as ContractArtifact,
     TEC: TEC as ContractArtifact,
     TestLibs: TestLibs as ContractArtifact,
-    MixinSignatureValidator: MixinSignatureValidator as ContractArtifact,
 };

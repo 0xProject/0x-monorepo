@@ -4,16 +4,16 @@ import { SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { constants } from './constants';
+import { constants } from './index';
 
-export const approvalHashUtils = {
+export const hashUtils = {
     getApprovalHashBuffer(transaction: SignedZeroExTransaction, approvalExpirationTimeSeconds: BigNumber): Buffer {
         const domain = {
             name: constants.TEC_DOMAIN_NAME,
             version: constants.TEC_DOMAIN_VERSION,
             verifyingContractAddress: transaction.verifyingContractAddress,
         };
-        const transactionHash = approvalHashUtils._getTransactionHashHex(transaction);
+        const transactionHash = hashUtils.getTransactionHashHex(transaction);
         const approval = {
             transactionHash,
             transactionSignature: transaction.signature,
@@ -31,12 +31,12 @@ export const approvalHashUtils = {
         return hashBuffer;
     },
     getApprovalHashHex(transaction: SignedZeroExTransaction, approvalExpirationTimeSeconds: BigNumber): string {
-        const hashHex = `0x${approvalHashUtils
+        const hashHex = `0x${hashUtils
             .getApprovalHashBuffer(transaction, approvalExpirationTimeSeconds)
             .toString('hex')}`;
         return hashHex;
     },
-    _getTransactionHashBuffer(transaction: ZeroExTransaction | SignedZeroExTransaction): Buffer {
+    getTransactionHashBuffer(transaction: ZeroExTransaction | SignedZeroExTransaction): Buffer {
         const domain = {
             name: constants.TEC_DOMAIN_NAME,
             version: constants.TEC_DOMAIN_VERSION,
@@ -54,8 +54,8 @@ export const approvalHashUtils = {
         const hashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         return hashBuffer;
     },
-    _getTransactionHashHex(transaction: ZeroExTransaction | SignedZeroExTransaction): string {
-        const hashHex = `0x${approvalHashUtils._getTransactionHashBuffer(transaction).toString('hex')}`;
+    getTransactionHashHex(transaction: ZeroExTransaction | SignedZeroExTransaction): string {
+        const hashHex = `0x${hashUtils.getTransactionHashBuffer(transaction).toString('hex')}`;
         return hashHex;
     },
 };

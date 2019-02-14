@@ -3,7 +3,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { approvalHashUtils, artifacts, TestLibsContract } from '../src';
+import { artifacts, hashUtils, TestLibsContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -36,7 +36,7 @@ describe('Libs tests', () => {
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
             };
-            const expectedTxHash = approvalHashUtils._getTransactionHashHex(tx);
+            const expectedTxHash = hashUtils.getTransactionHashHex(tx);
             const txHash = await testLibs.publicGetTransactionHash.callAsync(tx);
             expect(expectedTxHash).to.eq(txHash);
         });
@@ -53,11 +53,11 @@ describe('Libs tests', () => {
             };
             const approvalExpirationTimeSeconds = new BigNumber(0);
             const approval = {
-                transactionHash: approvalHashUtils._getTransactionHashHex(signedTx),
+                transactionHash: hashUtils.getTransactionHashHex(signedTx),
                 transactionSignature: signedTx.signature,
                 approvalExpirationTimeSeconds,
             };
-            const expectedApprovalHash = approvalHashUtils.getApprovalHashHex(signedTx, approvalExpirationTimeSeconds);
+            const expectedApprovalHash = hashUtils.getApprovalHashHex(signedTx, approvalExpirationTimeSeconds);
             const approvalHash = await testLibs.publicGetTECApprovalHash.callAsync(approval);
             expect(expectedApprovalHash).to.eq(approvalHash);
         });

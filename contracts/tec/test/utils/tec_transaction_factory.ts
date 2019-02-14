@@ -1,31 +1,34 @@
-import { TransactionFactory } from '@0x/contracts-test-utils';
-import { SignatureType, SignedZeroExTransaction } from '@0x/types';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { SignedZeroExTransaction } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 
-import { TECSignatureType } from './types';
+import { hashUtils, signingUtils, TECSignatureType } from './index';
 
-export class TECTransactionFactory extends TransactionFactory {
-    constructor(privateKey: Buffer, exchangeAddress: string) {
-        super(privateKey, exchangeAddress);
+export class TECTransactionFactory {
+    private readonly _signerBuff: Buffer;
+    private readonly _verifyingContractAddress: string;
+    private readonly _privateKey: Buffer;
+    constructor(privateKey: Buffer, verifyingContractAddress: string) {
+        this._privateKey = privateKey;
+        this._verifyingContractAddress = verifyingContractAddress;
+        this._signerBuff = ethUtil.privateToAddress(this._privateKey);
     }
     public newSignedTECTransaction(
         data: string,
         signatureType: TECSignatureType = TECSignatureType.EthSign,
     ): SignedZeroExTransaction {
-        let exchangeSignatureType;
-        if (signatureType === TECSignatureType.EthSign) {
-            exchangeSignatureType = SignatureType.EthSign;
-        } else if (signatureType === TECSignatureType.EIP712) {
-            exchangeSignatureType = SignatureType.EIP712;
-        } else {
-            throw new Error(`Error: ${signatureType} not a valid signature type`);
-        }
-        const signedTransaction = super.newSignedTransaction(data, exchangeSignatureType);
-        const tecSignatureTypeByte = ethUtil.toBuffer(signatureType).toString('hex');
-        signedTransaction.signature = `${signedTransaction.signature.slice(
-            0,
-            signedTransaction.signature.length - 2,
-        )}${tecSignatureTypeByte}`;
+        const transaction = {
+            verifyingContractAddress: this._verifyingContractAddress,
+            signerAddress: ethUtil.addHexPrefix(this._signerBuff.toString('hex')),
+            salt: generatePseudoRandomSalt(),
+            data,
+        };
+        const transactionHashBuff = hashUtils.getTransactionHashBuffer(transaction);
+        const signatureBuff = signingUtils.signMessage(transactionHashBuff, this._privateKey, signatureType);
+        const signedTransaction = {
+            ...transaction,
+            signature: ethUtil.addHexPrefix(signatureBuff.toString('hex')),
+        };
         return signedTransaction;
     }
 }
