@@ -103,7 +103,6 @@ export const assetDataUtils = {
     encodeERC1155AssetData(tokenAddress: string, tokenIds: BigNumber[], tokenValues: BigNumber[], callbackData: string): string {
         const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ['address','uint256[]','uint256[]','bytes']);
         const args = [tokenAddress, tokenIds, tokenValues, callbackData];
-        console.log(JSON.stringify(args));
         const assetData = abiEncoder.encode(args, encodingRules);
         return assetData;
     },

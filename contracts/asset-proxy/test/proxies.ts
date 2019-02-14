@@ -1333,16 +1333,14 @@ describe('Asset Transfer Proxies', () => {
         });
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
+                // Construct ERC1155 asset data
                 const valueToTransfer = new BigNumber(1);
                 const callbackData = "0x";
-                // Construct ERC721 asset data
-                console.log(JSON.stringify(erc1155FungibleTokenId));
-                const encodedAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Token.address, [new BigNumber(erc1155FungibleTokenId)], [valueToTransfer], callbackData);
-                console.log(encodedAssetData);
-                /*
+                const encodedAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Token.address, [erc1155FungibleTokenId], [valueToTransfer], callbackData);
                 // Verify pre-condition
-                const ownerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
-                expect(ownerFromAsset).to.be.equal(fromAddress);
+                const initialHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
+                console.log(`INITIAL FROM: ${initialHoldingsByOwner[fromAddress][erc1155Token.address][erc1155FungibleTokenId.toString()]}`);
+                console.log(`INITIAL TO: ${initialHoldingsByOwner[toAddress][erc1155Token.address][erc1155FungibleTokenId.toString()]}`);
                 // Perform a transfer from fromAddress to toAddress
                 const amount = new BigNumber(1);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
@@ -1353,15 +1351,16 @@ describe('Asset Transfer Proxies', () => {
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await web3Wrapper.sendTransactionAsync({
-                        to: erc721Proxy.address,
+                        to: erc1155Proxy.address,
                         data,
                         from: authorized,
                     }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 // Verify transfer was successful
-                const newOwnerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
-                expect(newOwnerFromAsset).to.be.bignumber.equal(toAddress);*/
+                const newHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
+                console.log(`FINAL FROM: ${newHoldingsByOwner[fromAddress][erc1155Token.address][erc1155FungibleTokenId.toString()]}`);
+                console.log(`FINAL TO: ${newHoldingsByOwner[toAddress][erc1155Token.address][erc1155FungibleTokenId.toString()]}`);
             });
                 /*
             it('should successfully transfer tokens and ignore extra assetData', async () => {

@@ -12,6 +12,7 @@ import { artifacts, DummyERC1155TokenContract, ERC1155ProxyContract, DummyERC115
 
 export class ERC1155Wrapper {
     private readonly _tokenOwnerAddresses: string[];
+    private readonly _tokenIds: string[];
     private readonly _contractOwnerAddress: string;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: Provider;
@@ -27,6 +28,7 @@ export class ERC1155Wrapper {
         this._dummyTokenContracts = [];
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
+        this._tokenIds = [];
     }
     public async deployDummyTokensAsync(): Promise<DummyERC1155TokenContract[]> {
         // tslint:disable-next-line:no-unused-variable
@@ -66,6 +68,7 @@ export class ERC1155Wrapper {
                 const tokenUri = generatePseudoRandomSalt().toString();
                 const tokenId = await this.createTokenAsync(dummyTokenContract.address, tokenUri);
                 const tokenIdAsString = tokenId.toString();
+                this._tokenIds.push(tokenIdAsString);
                 // Mint tokens for each owner for this token
                 for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                     // tslint:disable-next-line:no-unused-variable
@@ -194,14 +197,31 @@ export class ERC1155Wrapper {
         const isProxyAnApprovedOperator = approvedAddress === proxyAddress;
         return isProxyAnApprovedOperator;
     }
-    public async getBalancesAsync(): Promise<ERC721TokenIdsByOwner> {
+    */
+    public async getBalancesAsync(): Promise<ERC1155HoldingsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateBalancesAndAllowancesSetOrThrow();
-        const tokenIdsByOwner: ERC721TokenIdsByOwner = {};
+        const tokenHoldingsByOwner: ERC1155HoldingsByOwner = {};
         const tokenOwnerAddresses: string[] = [];
         const tokenInfo: Array<{ tokenId: BigNumber; tokenAddress: string }> = [];
         for (const dummyTokenContract of this._dummyTokenContracts) {
+            const tokenAddress = dummyTokenContract.address;
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                for (const tokenId of this._tokenIds) {
+                    const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+                    if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress])) {
+                        tokenHoldingsByOwner[tokenOwnerAddress] = {};
+                    }
+                    if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress])) {
+                        tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress] = {};
+                    }
+                    tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress][tokenId] = await tokenContract.balanceOf.callAsync(tokenOwnerAddress, new BigNumber(tokenId));
+                }
+            }
+        }
+        /*
+                
+                
                 const initialTokenOwnerIds = this._initialTokenIdsByOwner[tokenOwnerAddress][
                     dummyTokenContract.address
                 ];
@@ -227,8 +247,10 @@ export class ERC1155Wrapper {
             }
             tokenIdsByOwner[tokenOwnerAddress][tokenAddress].push(tokenId);
         });
-        return tokenIdsByOwner;
+        */
+        return tokenHoldingsByOwner;
     }
+    /*
     public getTokenOwnerAddresses(): string[] {
         return this._tokenOwnerAddresses;
     }
