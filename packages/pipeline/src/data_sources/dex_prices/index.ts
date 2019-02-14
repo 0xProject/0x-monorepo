@@ -24,14 +24,16 @@ export class EdpsSource {
     /**
      * Call Ethereum DEX Price Service API.
      */
-    public async getEdpsAsync(direction: string, symbol: string, amount: number): Promise<Map<string, EdpsExchange>> {
-        const edpsUrl = `${EDPS_BASE_URL}/${direction}?symbol=${symbol}&amount=${amount}`;
+    public async getEdpsAsync(direction: string, symbol: string, amount: number): Promise<EdpsWrapper> {
+        const edpsUrl = `${EDPS_BASE_URL}/${direction}?amount=${amount}&symbol=${symbol}&decimals=`;
         const resp = await fetchAsync(edpsUrl);
         const respJson: EdpsResponse = await resp.json();
-        const allExchanges = new Map<string, EdpsExchange>();
+        const allExchanges: EdpsWrapper = {};
+        // The below unwraps the response so we get 1 single EdpsWrapper object
+        // instead of a list of singletons
         for (const entry of respJson) {
             for (const key of Object.keys(entry)) {
-                allExchanges.set(key, entry[key]);
+                allExchanges[key] = entry[key];
             }
         }
         return allExchanges;

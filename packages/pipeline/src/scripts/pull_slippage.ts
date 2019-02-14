@@ -22,6 +22,7 @@ const USD_AMOUNTS = [10, 100, 1000, 10000];
 
 // TODO: fetch from database
 const TOKENS = ['BAT', 'DAI', 'FUN', 'MANA', 'OMG', 'REP', 'TUSD', 'ZRX', 'MKR', 'BNB', 'USDC', 'LOOM', 'DNT', 'CVC'];
+//const TOKENS = ['BAT', 'DNT', 'CVC', 'MANA'];
 
 let connection: Connection;
 
@@ -37,12 +38,18 @@ let connection: Connection;
             return Promise.all(
                 USD_AMOUNTS.map(async usdAmount => {
                     const amount = usdAmount / usdPrice;
-                    const buyEdps = await edpsSource.getEdpsAsync('buy', symbol, amount);
-                    const sellEdps = await edpsSource.getEdpsAsync('sell', symbol, amount);
-                    return Array.from(buyEdps.keys()).map(exchange => {
-                        const slippage: Slippage = calculateSlippage(usdAmount, exchange, buyEdps, sellEdps);
-                        return slippage;
-                    });
+                    try {
+                        const buyEdps = await edpsSource.getEdpsAsync('buy', symbol, amount);
+                        const sellEdps = await edpsSource.getEdpsAsync('sell', symbol, amount);
+                        return Object.keys(buyEdps).map(exchange => {
+                            const slippage: Slippage = calculateSlippage(usdAmount, exchange, buyEdps, sellEdps);
+                            return slippage;
+                        });
+                    } catch (e) {
+                        logUtils.log(`Error getting data for symbol=${symbol}, amount=${amount}`);
+                        logUtils.log(e);
+                        return [new Slippage()];
+                    }
                 }),
             );
         }),

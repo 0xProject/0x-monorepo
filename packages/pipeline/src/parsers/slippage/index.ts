@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { EdpsExchange } from '../../data_sources/dex_prices';
+import { EdpsWrapper } from '../../data_sources/dex_prices';
 import { Slippage } from '../../entities';
 
 /**
@@ -16,11 +16,11 @@ import { Slippage } from '../../entities';
 export function calculateSlippage(
     usdAmount: number,
     exchange: string,
-    buyEdps: Map<string, EdpsExchange>,
-    sellEdps: Map<string, EdpsExchange>,
+    buyEdps: EdpsWrapper,
+    sellEdps: EdpsWrapper,
 ): Slippage {
-    const b = buyEdps.get(exchange);
-    const s = sellEdps.get(exchange);
+    const b = buyEdps[exchange];
+    const s = sellEdps[exchange];
     const slippage = new Slippage();
     if (b && s && b.avgPrice && s.avgPrice) {
         slippage.observedTimestamp = b.timestamp;

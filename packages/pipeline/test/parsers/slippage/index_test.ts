@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { EdpsExchange } from '../../../src/data_sources/dex_prices';
+import { EdpsExchange, EdpsWrapper } from '../../../src/data_sources/dex_prices';
 import { Slippage } from '../../../src/entities';
 import { calculateSlippage } from '../../../src/parsers/slippage';
 import { chaiSetup } from '../../utils/chai_setup';
@@ -22,8 +22,8 @@ describe('slippage', () => {
             const sellPrice = 9;
             const expectedSlippage = 0.1;
 
-            const buyEdps = new Map<string, EdpsExchange>();
-            const buyOrder: EdpsExchange = {
+            const buyEdps: EdpsWrapper = {};
+            buyEdps[exchange] = {
                 exchangeName: exchange,
                 totalPrice: buyPrice,
                 tokenAmount: amount,
@@ -32,10 +32,9 @@ describe('slippage', () => {
                 timestamp: ts,
                 error: '',
             };
-            buyEdps.set(exchange, buyOrder);
 
-            const sellEdps = new Map<string, EdpsExchange>();
-            const sellOrder: EdpsExchange = {
+            const sellEdps: EdpsWrapper = {};
+            sellEdps[exchange] = {
                 exchangeName: exchange,
                 totalPrice: sellPrice,
                 tokenAmount: amount,
@@ -44,7 +43,6 @@ describe('slippage', () => {
                 timestamp: ts,
                 error: '',
             };
-            sellEdps.set(exchange, sellOrder);
             const expected = new Slippage();
             expected.observedTimestamp = ts;
             expected.symbol = symbol;
