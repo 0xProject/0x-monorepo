@@ -77,11 +77,10 @@ export class ERC1155Wrapper {
                         this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] = {};
                     }
                     this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString] = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
-                    // @TODO -- await this.approveProxyAsync(dummyTokenContract.address, tokenId);
+                    await this.approveProxyAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
                 }
             }
         }
-        console.log(JSON.stringify(this._initialTokenIdsByOwner, null, 5));
     }
     /*
     public async doesTokenExistAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
@@ -90,10 +89,12 @@ export class ERC1155Wrapper {
         const doesExist = owner !== constants.NULL_ADDRESS;
         return doesExist;
     }
-    public async approveProxyAsync(tokenAddress: string, tokenId: BigNumber): Promise<void> {
-        const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
-        await this.approveAsync(proxyAddress, tokenAddress, tokenId);
+    */
+    public async approveProxyAsync(tokenAddress: string, tokenId: BigNumber, tokenOwner: string): Promise<void> {
+        const proxyAddress = (this._proxyContract as ERC1155ProxyContract).address;
+        await this.approveAsync(proxyAddress, tokenAddress, tokenId, tokenOwner);
     }
+    /*
     public async approveProxyForAllAsync(tokenAddress: string, tokenId: BigNumber, isApproved: boolean): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
@@ -104,17 +105,18 @@ export class ERC1155Wrapper {
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-    }
-    public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber): Promise<void> {
+    }*/
+    
+    public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber, tokenOwner: string): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
         await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.approve.sendTransactionAsync(to, tokenId, {
+            await tokenContract.setApprovalForAll.sendTransactionAsync(to, true, {
                 from: tokenOwner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
+    /*
     public async transferFromAsync(
         tokenAddress: string,
         tokenId: BigNumber,
@@ -161,11 +163,15 @@ export class ERC1155Wrapper {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
+    */
+   /*
+    // THIS IS NFT ONLY
     public async ownerOfAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const owner = await tokenContract.ownerOf.callAsync(tokenId);
         return owner;
-    }
+    }*/
+    /*
     public async isOwnerAsync(userAddress: string, tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await tokenContract.ownerOf.callAsync(tokenId);
