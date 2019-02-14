@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
+// tslint:disable-next-line: no-duplicate-imports
 import { ChangeEvent } from 'react';
 
 import { colors } from 'ts/style/colors';

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+// tslint:disable-next-line: no-duplicate-imports
 import { ChangeEvent } from 'react';
 
 export enum InputWidth {
@@ -31,7 +32,6 @@ export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLIn
     const componentType = type === 'textarea' ? 'textarea' : 'input';
     const isErrors = errors.hasOwnProperty(name) && errors[name] !== null;
     const errorMessage = isErrors ? errors[name] : null;
-    const wrapperProps = { width };
     const inputProps = { name, type };
 
     return (

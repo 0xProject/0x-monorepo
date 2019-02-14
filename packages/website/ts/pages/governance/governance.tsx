@@ -54,12 +54,6 @@ const riskLabels: LabelInterface = {
     3: 'High Risk',
 };
 
-const complexityLabels: LabelInterface = {
-    1: 'Simple',
-    2: 'Medium',
-    3: 'Complex',
-};
-
 const proposalData = {
     zeipId: 1,
     title: 'MultiAssetProxy Approval',
@@ -124,21 +118,11 @@ export class Governance extends React.Component {
         },
     };
     public componentDidMount(): void {
+        // tslint:disable:no-floating-promises
         this._fetchVoteStatusAsync();
     }
     public render(): React.ReactNode {
-        const { isVoteReceived, isWalletConnected, providerName, tally } = this.state;
-        const buildAction = (
-            <Button
-                href="/docs"
-                isWithArrow={true}
-                isAccentColor={true}
-                isTransparent={true}
-                borderColor={colors.brandLight}
-            >
-                Build on 0x
-            </Button>
-        );
+        const { isVoteReceived, tally } = this.state;
         return (
             <SiteWrap theme="dark">
                 <DocumentTitle title="Governance Vote - 0x" />
@@ -232,27 +216,27 @@ export class Governance extends React.Component {
         );
     }
     // private _renderSummarySection()
-    private _onOpenContactModal = (): void => {
+    private readonly _onOpenContactModal = (): void => {
         this.setState({ ...this.state, isContactModalOpen: true });
     };
 
-    private _onDismissContactModal = (): void => {
+    private readonly _onDismissContactModal = (): void => {
         this.setState({ ...this.state, isContactModalOpen: false });
     };
 
-    private _onOpenVoteModal = (): void => {
+    private readonly _onOpenVoteModal = (): void => {
         this.setState({ ...this.state, isVoteModalOpen: true });
     };
 
-    private _onDismissVoteModal = (): void => {
+    private readonly _onDismissVoteModal = (): void => {
         this.setState({ ...this.state, isVoteModalOpen: false });
     };
 
-    private _onWalletConnected = (providerName: string): void => {
+    private readonly _onWalletConnected = (providerName: string): void => {
         this.setState({ ...this.state, isWalletConnected: true, providerName });
     };
 
-    private _onVoteReceived = (): void => {
+    private readonly _onVoteReceived = (): void => {
         this.setState({ ...this.state, isVoteReceived: true });
     };
     private async _fetchVoteStatusAsync(): Promise<void> {

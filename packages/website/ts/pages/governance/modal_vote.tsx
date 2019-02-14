@@ -24,9 +24,6 @@ import {
     LedgerSubprovider,
 } from '@0x/subproviders';
 import { Provider } from 'ethereum-types';
-import {
-    InjectedProvider,
-} from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
@@ -64,16 +61,6 @@ interface State {
 interface FormProps {
     isSuccessful?: boolean;
     isSubmitting?: boolean;
-}
-
-interface ErrorResponseProps {
-    param: string;
-    location: string;
-    msg: string;
-}
-
-interface ErrorResponse {
-    errors: ErrorResponseProps[];
 }
 
 interface ErrorProps {
@@ -119,15 +106,12 @@ export class ModalVote extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
-    // blockchain related
-    private _injectedProviderIfExists?: InjectedProvider;
-    private _web3Wrapper?: Web3Wrapper;
     public constructor(props: Props) {
         super(props);
     }
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
-        const { isSuccessful, errors, selectedAddress, currentBalance } = this.state;
+        const { isSuccessful, selectedAddress, currentBalance } = this.state;
         const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
             <>
@@ -137,7 +121,7 @@ export class ModalVote extends React.Component<Props> {
                     onDismiss={onDismiss}
                 >
                     <StyledDialogContent>
-                        {this._renderFormContent(errors)}
+                        {this._renderFormContent()}
                         <Confirmation isSuccessful={isSuccessful}>
                             <Icon name="voting" size="large" margin={[0, 0, 'default', 0]} />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
@@ -163,17 +147,17 @@ export class ModalVote extends React.Component<Props> {
             </>
         );
     }
-    public _renderFormContent(errors: ErrorProps): React.ReactNode {
+    public _renderFormContent(): React.ReactNode {
         switch (this.state.isWalletConnected) {
             case true:
-                return this._renderVoteFormContent(errors);
+                return this._renderVoteFormContent();
             case false:
             default:
-                return this._renderConnectWalletFormContent(errors);
+                return this._renderConnectWalletFormContent();
         }
     }
-    private _renderConnectWalletFormContent(errors: ErrorProps): React.ReactNode {
-        const { currentBalance, web3Wrapper } = this.state;
+    private _renderConnectWalletFormContent(): React.ReactNode {
+        const { web3Wrapper } = this.state;
         return (
             <>
                 <ConnectForm
@@ -184,7 +168,7 @@ export class ModalVote extends React.Component<Props> {
             </>
         );
     }
-    private _renderVoteFormContent(errors: ErrorProps): React.ReactNode {
+    private _renderVoteFormContent(): React.ReactNode {
         const {
             currentBalance,
             selectedAddress,

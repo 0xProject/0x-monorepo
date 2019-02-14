@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
-import styled from 'styled-components';
 
 import { TallyInterface } from 'ts/pages/governance/governance';
 
