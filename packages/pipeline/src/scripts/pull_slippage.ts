@@ -1,10 +1,9 @@
-import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { logUtils } from '@0x/utils';
 
-import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { EdpsSource } from '../data_sources/dex_prices';
+import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { Slippage } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { calculateSlippage } from '../parsers/slippage';
@@ -22,7 +21,6 @@ const USD_AMOUNTS = [10, 100, 1000, 10000];
 
 // TODO: fetch from database
 const TOKENS = ['BAT', 'DAI', 'FUN', 'MANA', 'OMG', 'REP', 'TUSD', 'ZRX', 'MKR', 'BNB', 'USDC', 'LOOM', 'DNT', 'CVC'];
-//const TOKENS = ['BAT', 'DNT', 'CVC', 'MANA'];
 
 let connection: Connection;
 

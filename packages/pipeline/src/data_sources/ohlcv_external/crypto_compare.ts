@@ -49,6 +49,7 @@ export class CryptoCompareOHLCVSource {
     public readonly defaultExchange = 'CCCAGG';
     public readonly interval = this.intervalBetweenRecords * MAX_PAGE_SIZE; // the hourly API returns data for one interval at a time
     private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
+    private readonly _priceUrl: string = 'https://min-api.cryptocompare.com/data/price?';
 
     // rate-limit for all API calls through this class instance
     private readonly _limiter: Bottleneck;
@@ -102,8 +103,8 @@ export class CryptoCompareOHLCVSource {
     }
 
     public async getUsdPriceAsync(symbol: string): Promise<number> {
-        const priceUrl = `https://min-api.cryptocompare.com/data/price?tsyms=USD&fsym=${symbol}`;
-        const resp = await fetchAsync(priceUrl);
+        const usdUrl = `${this._priceUrl}tsyms=USD&fsym=${symbol}`;
+        const resp = await fetchAsync(usdUrl);
         const respJson: CryptoCompareUsdPrice = await resp.json();
         return respJson.USD;
     }

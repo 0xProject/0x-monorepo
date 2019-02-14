@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { EdpsExchange, EdpsWrapper } from '../../../src/data_sources/dex_prices';
+import { EdpsWrapper } from '../../../src/data_sources/dex_prices';
 import { Slippage } from '../../../src/entities';
 import { calculateSlippage } from '../../../src/parsers/slippage';
 import { chaiSetup } from '../../utils/chai_setup';
