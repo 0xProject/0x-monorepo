@@ -10,14 +10,14 @@ import { FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 
-export interface NextCreditsProps {}
+export interface CreditsProps {}
 
-export class NextCredits extends React.Component<NextCreditsProps> {
+export class Credits extends React.Component<CreditsProps> {
     public state = {
         isContactModalOpen: false,
     };
 
-    constructor(props: NextCreditsProps) {
+    constructor(props: CreditsProps) {
         super(props);
     }
 

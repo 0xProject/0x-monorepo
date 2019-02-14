@@ -145,7 +145,7 @@ export class ModalContact extends React.Component<Props> {
             case ModalContactType.MarketMaker:
                 return this._renderMarketMakerFormContent(errors);
             case ModalContactType.Credits:
-                return this._remderCreditsFormContent(errors);
+                return this._renderCreditsFormContent(errors);
             case ModalContactType.General:
             default:
                 return this._renderGeneralFormContent(errors);
@@ -222,7 +222,7 @@ export class ModalContact extends React.Component<Props> {
         );
     }
 
-    private _remderCreditsFormContent(errors: ErrorProps): React.ReactNode {
+    private _renderCreditsFormContent(errors: ErrorProps): React.ReactNode {
         return (
             <>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
-interface Props {
+export interface CenteredDefinitionProps {
     isInline: boolean;
     icon: string;
     iconSize?: 'medium' | 'large' | number;
@@ -14,7 +14,7 @@ interface Props {
     description: React.ReactNode | string;
 }
 
-export const CenteredDefinition = (props: Props) => (
+export const CenteredDefinition = (props: CenteredDefinitionProps) => (
     <Wrap {...props}>
         <Icon name={props.icon} size={props.iconSize || 'medium'} margin={[0, 0, 'default', 0]} />
         <TextWrap {...props}>
@@ -38,7 +38,7 @@ export const CenteredDefinition = (props: Props) => (
     </Wrap>
 );
 
-const Wrap = styled.div<Props>`
+const Wrap = styled.div<CenteredDefinitionProps>`
     max-width: ${props => props.isInline && 'calc(50% - 30px)'};
     text-align: center;
 
@@ -51,7 +51,7 @@ const Wrap = styled.div<Props>`
     }
 `;
 
-const TextWrap = styled.div<Props>`
+const TextWrap = styled.div<CenteredDefinitionProps>`
     width: 100%;
     max-width: 560px;
     text-align: center;
