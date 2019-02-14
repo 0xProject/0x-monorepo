@@ -15,8 +15,8 @@ export class SpyResolver extends Resolver {
         super();
         this._resolver = resolver;
     }
-    public resolveIfExists(importPath: string): ContractSource | undefined {
-        const contractSourceIfExists = this._resolver.resolveIfExists(importPath);
+    public resolveIfExists(importPath: string, importerPath?: string): ContractSource | undefined {
+        const contractSourceIfExists = this._resolver.resolveIfExists(importPath, importerPath);
         if (!_.isUndefined(contractSourceIfExists)) {
             this.resolvedContractSources.push(contractSourceIfExists);
         }

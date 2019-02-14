@@ -53,7 +53,8 @@ export class NPMResolver extends Resolver {
         const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString());
         this._dependencies = { ...packageJSON.dependencies, ...packageJSON.devDependencies };
     }
-    public resolveIfExists(importPath: string): ContractSource | undefined {
+    public resolveIfExists(importPath: string, importerPath?: string): ContractSource | undefined {
+        console.log('NPMResolver', importPath, importerPath);
         if (importPath.startsWith('/')) {
             return undefined;
         }

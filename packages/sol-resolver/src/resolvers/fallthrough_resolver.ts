@@ -9,9 +9,9 @@ export class FallthroughResolver extends Resolver {
     public appendResolver(resolver: Resolver): void {
         this._resolvers.push(resolver);
     }
-    public resolveIfExists(importPath: string): ContractSource | undefined {
+    public resolveIfExists(importPath: string, importerPath?: string): ContractSource | undefined {
         for (const resolver of this._resolvers) {
-            const contractSourceIfExists = resolver.resolveIfExists(importPath);
+            const contractSourceIfExists = resolver.resolveIfExists(importPath, importerPath);
             if (!_.isUndefined(contractSourceIfExists)) {
                 return contractSourceIfExists;
             }

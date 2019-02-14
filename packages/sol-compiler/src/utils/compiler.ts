@@ -222,15 +222,15 @@ export function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]):
  * Gets the source tree hash for a file and its dependencies.
  * @param fileName Name of contract file.
  */
-export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffer {
-    const contractSource = resolver.resolve(importPath);
+export function getSourceTreeHash(resolver: Resolver, importPath: string, importerPath?: string): Buffer {
+    const contractSource = resolver.resolve(importPath, importerPath);
     const dependencies = parseDependencies(contractSource);
     const sourceHash = ethUtil.sha3(contractSource.source);
     if (dependencies.length === 0) {
         return sourceHash;
     } else {
         const dependencySourceTreeHashes = _.map(dependencies, (dependency: string) =>
-            getSourceTreeHash(resolver, dependency),
+            getSourceTreeHash(resolver, dependency, importPath),
         );
         const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
         const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
@@ -252,7 +252,7 @@ export function getSourcesWithDependencies(
     fullSources: { [sourceName: string]: { id: number } },
 ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
     const sources = { [contractPath]: fullSources[contractPath] };
-    const sourceCodes = { [contractPath]: resolver.resolve(contractPath).source };
+    const sourceCodes = { [contractPath]: resolver.resolve(contractPath, '255').source };
     recursivelyGatherDependencySources(
         resolver,
         contractPath,
@@ -311,12 +311,12 @@ function recursivelyGatherDependencySources(
 
         if (_.isUndefined(sourcesToAppendTo[importPath])) {
             sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
-            sourceCodesToAppendTo[importPath] = resolver.resolve(importPath).source;
+            sourceCodesToAppendTo[importPath] = resolver.resolve(importPath, contractPath).source;
 
             recursivelyGatherDependencySources(
                 resolver,
                 importPath,
-                resolver.resolve(importPath).source,
+                resolver.resolve(importPath, contractPath).source,
                 fullSources,
                 sourcesToAppendTo,
                 sourceCodesToAppendTo,

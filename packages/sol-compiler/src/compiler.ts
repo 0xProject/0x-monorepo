@@ -10,6 +10,7 @@ import {
     URLResolver,
 } from '@0x/sol-resolver';
 import { logUtils } from '@0x/utils';
+import chalk from 'chalk';
 import { execSync } from 'child_process';
 import * as chokidar from 'chokidar';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
@@ -177,12 +178,12 @@ export class Compiler {
         const contractNames = this._getContractNamesToCompile();
         const spyResolver = new SpyResolver(this._resolver);
         for (const contractName of contractNames) {
-            const contractSource = spyResolver.resolve(contractName);
+            const contractSource = spyResolver.resolve(contractName, 'compiler.json watch');
             // NOTE: We ignore the return value here. We don't want to compute the source tree hash.
             // We just want to call a SpyResolver on each contracts and it's dependencies and
             // this is a convenient way to reuse the existing code that does that.
             // We can then get all the relevant paths from the `spyResolver` below.
-            getSourceTreeHash(spyResolver, contractSource.path);
+            getSourceTreeHash(spyResolver, contractSource.path, '185');
         }
         const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
         return pathsToWatch;
@@ -215,8 +216,8 @@ export class Compiler {
         const resolvedContractSources = [];
         for (const contractName of contractNames) {
             const spyResolver = new SpyResolver(this._resolver);
-            const contractSource = spyResolver.resolve(contractName);
-            const sourceTreeHashHex = getSourceTreeHash(spyResolver, contractSource.path).toString('hex');
+            const contractSource = spyResolver.resolve(contractName, 'compiler.json build');
+            const sourceTreeHashHex = getSourceTreeHash(spyResolver, contractSource.path, '219').toString('hex');
             const contractData = {
                 contractName: path.basename(contractName, constants.SOLIDITY_FILE_EXTENSION),
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
@@ -347,6 +348,7 @@ export class Compiler {
         // contains listings for every contract compiled during the compiler invocation that compiled the contract
         // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
         // the relevant sources:
+        console.log(chalk.red(contractPath));
         const { sourceCodes, sources } = getSourcesWithDependencies(
             this._resolver,
             contractPath,
