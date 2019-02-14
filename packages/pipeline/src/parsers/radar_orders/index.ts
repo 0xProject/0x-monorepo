@@ -1,7 +1,6 @@
 import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import { RadarBook, RadarMarket, RadarOrderType, RadarSignedOrder } from '@radarrelay/types';
+import { RadarBook, RadarMarket, RadarSignedOrder } from '@radarrelay/types';
 import * as R from 'ramda';
 
 import { aggregateOrders, GenericRawOrder } from '../utils';

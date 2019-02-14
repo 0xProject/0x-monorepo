@@ -1,5 +1,6 @@
+import { orderParsingUtils } from '@0x/order-utils';
 import { fetchAsync, logUtils } from '@0x/utils';
-import { RadarBook, RadarMarket } from '@radarrelay/types';
+import { RadarBook, RadarMarket, RadarSignedOrder } from '@radarrelay/types';
 
 const RADAR_BASE_URL = 'https://api.radarrelay.com/v2/';
 const ACTIVE_MARKETS_URL = `${RADAR_BASE_URL}/markets`;
@@ -10,6 +11,17 @@ export const RADAR_SOURCE = 'radar';
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class RadarSource {
+    private static _parseRadarOrderResponse(radarOrderResponse: any): RadarSignedOrder {
+        return {
+            ...radarOrderResponse,
+            ...orderParsingUtils.convertStringsFieldsToBigNumbers(radarOrderResponse, [
+                'remainingBaseTokenAmount',
+                'remainingQuoteTokenAmount',
+                'price',
+            ]),
+            signedOrder: orderParsingUtils.convertOrderStringFieldsToBigNumber(radarOrderResponse.signedOrder),
+        };
+    }
     /**
      * Call Radar API to find out which markets they are maintaining orderbooks for.
      */
@@ -29,6 +41,13 @@ export class RadarSource {
         logUtils.log(`${marketId}: Retrieving orderbook.`);
         const marketOrderbookUrl = `${ACTIVE_MARKETS_URL}/${marketId}/book?perPage=${MAX_PER_PAGE}`;
         const resp = await fetchAsync(marketOrderbookUrl);
-        return resp.json();
+        const jsonResp = await resp.json();
+        return {
+            ...jsonResp,
+            // tslint:disable-next-line:no-unbound-method
+            bids: jsonResp.bids.map(RadarSource._parseRadarOrderResponse),
+            // tslint:disable-next-line:no-unbound-method
+            asks: jsonResp.asks.map(RadarSource._parseRadarOrderResponse),
+        };
     }
 }
