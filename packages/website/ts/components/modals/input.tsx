@@ -72,7 +72,6 @@ export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLIn
     const componentType = type === 'textarea' ? 'textarea' : 'input';
     const isErrors = errors.hasOwnProperty(name) && errors[name] !== null;
     const errorMessage = isErrors ? errors[name] : null;
-    const wrapperProps = { width };
     const inputProps = { name, type };
 
     return (

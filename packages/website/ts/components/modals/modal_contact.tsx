@@ -6,6 +6,8 @@ import { colors } from 'ts/style/colors';
 
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
+
+// tslint:disable-next-line: no-duplicate-imports
 import { FormEvent } from 'react';
 
 import { Button } from 'ts/components/button';

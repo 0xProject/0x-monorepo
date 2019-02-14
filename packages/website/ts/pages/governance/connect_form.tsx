@@ -127,7 +127,6 @@ export class ConnectForm extends React.Component<Props, State> {
     }
     public render(): React.ReactNode {
         const { errors } = this.state;
-        const { currentBalance } = this.props;
         return (
             <div style={{ textAlign: 'center' }}>
                 <Icon name="wallet" size={120} margin={[0, 0, 'default', 0]} />
@@ -167,7 +166,7 @@ export class ConnectForm extends React.Component<Props, State> {
         );
     }
     public _renderChooseAddressContent(errors: ErrorProps): React.ReactNode {
-        const { userAddresses, addressBalances, preferredNetworkId, derivationPath } = this.state;
+        const { userAddresses, addressBalances, derivationPath } = this.state;
         return (
             <>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
@@ -192,7 +191,7 @@ export class ConnectForm extends React.Component<Props, State> {
                     <Button type="button" onClick={this._onGoBack.bind(this, ConnectSteps.Connect)}>
                         Back
                     </Button>
-                    <Button type="button" onClick={this._onSelectedLedgerAddress.bind(this)}>
+                    <Button type="button" onClick={this._onSelectedLedgerAddressAsync.bind(this)}>
                         Next
                     </Button>
                 </ButtonRow>
@@ -200,11 +199,11 @@ export class ConnectForm extends React.Component<Props, State> {
         );
     }
     public async _onChangeDerivationPathAsync(path: string): Promise<void> {
-        await this.setState({
+        this.setState({
             derivationPath: path,
+        }, async () => {
+            await this._onFetchAddressesForDerivationPathAsync();
         });
-
-        await this._onFetchAddressesForDerivationPathAsync();
     }
     public async getUserAccountsAsync(): Promise<string[]> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
@@ -252,21 +251,21 @@ export class ConnectForm extends React.Component<Props, State> {
         return new BigNumber(0);
     }
     private async _onConnectWalletClickAsync(): Promise<boolean> {
-        const shouldPollUserAddress = true;
         const shouldUseLedgerProvider = false;
         const networkIdIfExists = await this._getInjectedProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
 
-        await this._resetOrInitializeAsync(this.networkId, shouldPollUserAddress, shouldUseLedgerProvider);
+        await this._resetOrInitializeAsync(this.networkId, shouldUseLedgerProvider);
 
         const didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (didSucceed) {
-            await this.setState({
+            this.setState({
                 errors: {},
                 preferredNetworkId: this.networkId,
+            }, async () => {
+                // Always assume selected index is 0 for Metamask
+                await this._updateSelectedAddressAsync(0);
             });
-            // Always assume selected index is 0 for Metamask
-            this._updateSelectedAddressAsync(0);
         }
 
         return didSucceed;
@@ -282,10 +281,6 @@ export class ConnectForm extends React.Component<Props, State> {
             });
             return false;
         }
-
-        // const networkId = this.state.preferredNetworkId;
-        const shouldPollUserAddress = true;
-        const shouldUserLedgerProvider = false;
 
         // We don't want to be out of sync with the network the injected provider declares.
         const networkId = constants.NETWORK_ID_MAINNET;
@@ -305,8 +300,8 @@ export class ConnectForm extends React.Component<Props, State> {
             selectedUserAddressIndex: index,
         });
     }
-    private _onSelectedLedgerAddress(): void {
-        this._updateSelectedAddressAsync(this.state.selectedUserAddressIndex);
+    private async _onSelectedLedgerAddressAsync(): Promise<void> {
+        await this._updateSelectedAddressAsync(this.state.selectedUserAddressIndex);
     }
     private async _onFetchAddressesForDerivationPathAsync(): Promise<boolean> {
         const currentlySetPath = this.getLedgerDerivationPathIfExists();
@@ -372,17 +367,8 @@ export class ConnectForm extends React.Component<Props, State> {
         }
     }
     private async _updateProviderToLedgerAsync(networkId: number): Promise<void> {
-        const shouldPollUserAddress = false;
         const shouldUserLedgerProvider = true;
-        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, shouldUserLedgerProvider);
-    }
-    private async _updateProviderToInjectedAsync(): Promise<void> {
-        const shouldPollUserAddress = true;
-        const shouldUserLedgerProvider = false;
-        // this._dispatcher.updateBlockchainIsLoaded(false);
-        // We don't want to be out of sync with the network the injected provider declares.
-        const networkId = await this._getInjectedProviderNetworkIdIfExistsAsync();
-        await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, shouldUserLedgerProvider);
+        await this._resetOrInitializeAsync(networkId, shouldUserLedgerProvider);
     }
     private _getNameGivenProvider(provider: Provider): string {
         const providerType = utils.getProviderType(provider);
@@ -499,7 +485,6 @@ export class ConnectForm extends React.Component<Props, State> {
     }
     private async _resetOrInitializeAsync(
         networkId: number,
-        shouldPollUserAddress: boolean = false,
         shouldUserLedgerProvider: boolean = false,
     ): Promise<void> {
         if (!shouldUserLedgerProvider) {
@@ -538,13 +523,6 @@ export class ConnectForm extends React.Component<Props, State> {
             // await this.fetchTokenInformationAsync();
         }
     }
-    private _updateProviderName(injectedProviderIfExists?: InjectedProvider): void {
-        const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);
-        const providerName = doesInjectedProviderExist
-            ? this._getNameGivenProvider(injectedProviderIfExists)
-            : constants.PROVIDER_NAME_PUBLIC;
-        // this._dispatcher.updateInjectedProviderName(providerName);
-    }
     private async _getUserAddressesAsync(): Promise<string[]> {
         let userAddresses: string[];
         userAddresses = await this.getUserAccountsAsync();
@@ -553,11 +531,6 @@ export class ConnectForm extends React.Component<Props, State> {
             throw new Error('No addresses retrieved.');
         }
         return userAddresses;
-    }
-    private _onSelectedNetworkUpdated(_event: any, _index: number, networkId: number): void {
-        this.setState({
-            preferredNetworkId: networkId,
-        });
     }
     private _onGoBack(step: number): void {
         switch (step) {

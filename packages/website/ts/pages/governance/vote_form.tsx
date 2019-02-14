@@ -1,17 +1,14 @@
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import * as React from 'react';
 import styled from 'styled-components';
 
+// tslint:disable-next-line: no-duplicate-imports
 import { ChangeEvent, FormEvent } from 'react';
 
 import { colors } from 'ts/style/colors';
 
-import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
-// import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
-import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -32,18 +29,9 @@ import {
 import { Provider } from 'ethereum-types';
 import {
     InjectedProvider,
-    Providers,
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-
-const providerToName: { [provider: string]: string } = {
-    [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
-    [Providers.Parity]: constants.PROVIDER_NAME_PARITY_SIGNER,
-    [Providers.Mist]: constants.PROVIDER_NAME_MIST,
-    [Providers.CoinbaseWallet]: constants.PROVIDER_NAME_COINBASE_WALLET,
-    [Providers.Cipher]: constants.PROVIDER_NAME_CIPHER,
-};
 
 export enum VoteValue {
     Yes = 'Yes',
@@ -83,16 +71,6 @@ interface State {
 interface FormProps {
     isSuccessful?: boolean;
     isSubmitting?: boolean;
-}
-
-interface ErrorResponseProps {
-    param: string;
-    location: string;
-    msg: string;
-}
-
-interface ErrorResponse {
-    errors: ErrorResponseProps[];
 }
 
 interface ErrorProps {
@@ -141,9 +119,6 @@ export class VoteForm extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
-    // blockchain related
-    private _injectedProviderIfExists?: InjectedProvider;
-    private _web3Wrapper?: Web3Wrapper;
     public constructor(props: Props) {
         super(props);
     }
@@ -210,11 +185,11 @@ export class VoteForm extends React.Component<Props> {
             </Form>
         );
     }
-    private _createVoteAsync = async (e: FormEvent): Promise<any> => {
+    private readonly _createVoteAsync = async (e: FormEvent): Promise<any> => {
         e.preventDefault();
 
         const { zeip, votePreference } = this.state;
-        const { selectedAddress, web3Wrapper, isLedger, injectedProvider, providerEngine } = this.props;
+        const { selectedAddress, isLedger, providerEngine } = this.props;
         // Query the available addresses
         // const addresses = await web3Wrapper.getAvailableAddressesAsync();
         // Use the first account as the maker
@@ -281,7 +256,7 @@ export class VoteForm extends React.Component<Props> {
             return null as any;
         }
     };
-    private _eip712SignatureAsync = async (address: string, typedData: any): Promise<string> => {
+    private readonly _eip712SignatureAsync = async (address: string, typedData: any): Promise<string> => {
         const signature = await this.props.web3Wrapper.signTypedDataAsync(address, typedData);
         const ecSignatureRSV = this._parseSignatureHexAsRSV(signature);
         const signatureBuffer = Buffer.concat([

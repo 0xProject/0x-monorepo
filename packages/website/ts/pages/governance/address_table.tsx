@@ -7,6 +7,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { constants } from 'ts/utils/constants';
 
+// tslint:disable-next-line: no-duplicate-imports
 import { ChangeEvent } from 'react';
 import { AddressTableRow } from 'ts/pages/governance/address_table_row';
 
@@ -19,11 +20,6 @@ interface AddressTableProps {
 
 interface AddressTableState {
     selectedAddressIndex?: number;
-}
-
-interface RowProps {
-    color: string;
-    width: number;
 }
 
 export class AddressTable extends React.Component<AddressTableProps, AddressTableState> {

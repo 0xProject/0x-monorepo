@@ -1,9 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
-
-import { colors } from 'ts/style/colors';
 
 interface VoteBarProps {
     label: string;
