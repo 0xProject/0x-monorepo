@@ -1,6 +1,6 @@
 import { fetchAsync } from '@0x/utils';
 
-const EDPS_BASE_URL = 'https://ethereum-dex-prices-service.production.airswap.io';
+const EDPS_BASE_URL = 'http://35.185.219.196:1337';
 
 export type EdpsResponse = EdpsWrapper[];
 
