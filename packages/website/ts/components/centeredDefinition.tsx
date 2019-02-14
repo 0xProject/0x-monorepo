@@ -39,15 +39,13 @@ export const CenteredDefinition = (props: CenteredDefinitionProps) => (
 );
 
 const Wrap = styled.div<CenteredDefinitionProps>`
+    padding: 30px 0;
     max-width: ${props => props.isInline && 'calc(50% - 30px)'};
     text-align: center;
 
     @media (max-width: 768px) {
         margin: 0 auto;
         max-width: 100%;
-        & + & {
-            margin-top: ${props => props.isInline && '60px'};
-        }
     }
 `;
 

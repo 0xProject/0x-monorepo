@@ -48,7 +48,7 @@ export class Credits extends React.Component<CreditsProps> {
                         Get your project off the ground with these great services
                     </Heading>
 
-                    <FlexWrap padding={'0 0 60px 0'}>
+                    <FlexWrap>
                         <CenteredDefinition
                             title="Amazon Web Services"
                             titleSize="small"
@@ -68,7 +68,7 @@ export class Credits extends React.Component<CreditsProps> {
                         />
                     </FlexWrap>
 
-                    <FlexWrap padding={'60px 0 0 0'}>
+                    <FlexWrap>
                         <CenteredDefinition
                             title="Digital Ocean"
                             titleSize="small"
@@ -113,10 +113,8 @@ export class Credits extends React.Component<CreditsProps> {
     };
 
     private readonly _renderHeroActions = () => (
-        <>
-            <Button onClick={this._onOpenContactModal} bgColor="dark" isInline={true}>
-                Apply Now
-            </Button>
-        </>
+        <Button onClick={this._onOpenContactModal} bgColor="dark" isInline={true}>
+            Apply Now
+        </Button>
     );
 }
