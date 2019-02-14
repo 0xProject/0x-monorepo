@@ -5,6 +5,7 @@ import styled from 'styled-components';
 // tslint:disable-next-line: no-duplicate-imports
 import { ChangeEvent } from 'react';
 
+import { CheckMark } from 'ts/components/ui/check_mark';
 import { colors } from 'ts/style/colors';
 
 interface RadioProps {
@@ -26,7 +27,8 @@ interface MarkerProps {
 const Radio: React.StatelessComponent<RadioProps> = ({ address, onSelectAddress, isActive, value }) => {
     return (
         <>
-            <Marker isActive={isActive} />
+            {/* <Marker isActive={isActive} /> */}
+            <CheckMark isChecked={isActive} color={colors.brandLight} />
             <RadioInput value={value} onChange={onSelectAddress} checked={isActive} />
         </>
     );
@@ -47,7 +49,7 @@ export const AddressTableRow: React.StatelessComponent<PreferenceSelecterProps> 
                     <LabelText isActive={isActive}>{address}</LabelText>
                 </Label>
             </Cell>
-            <Cell>
+            <Cell isRightAligned={true}>
                 <LabelText isActive={isActive}>{balance}</LabelText>
             </Cell>
         </Wrapper>
@@ -64,9 +66,12 @@ const Wrapper = styled.tr<MarkerProps>`
     margin-bottom: 10px;
 `;
 
-const Cell = styled.td`
+const Cell = styled.td<{ isRightAligned?: boolean }>`
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     padding: 10px 0;
+    font-size: 14px;
+    vertical-align: middle;
+    text-align: ${props => props.isRightAligned && 'right'};
 `;
 
 const Label = styled.label`
@@ -81,23 +86,6 @@ const LabelText = styled.span<MarkerProps>`
     line-height: 1;
     margin-left: 10px;
     font-weight: 400;
-`;
-
-const Marker = styled.span<MarkerProps>`
-    border: 1px solid #cccccc;
-    border-color: ${props => props.isActive && colors.brandLight};
-    display: flex;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    position: relative;
-    flex-shrink: 0;
-
-    ${props =>
-        props.isActive &&
-        `
-        background-color: ${colors.brandLight};
-    `}
 `;
 
 const RadioInput = styled.input.attrs({
