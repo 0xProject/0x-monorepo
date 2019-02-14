@@ -167,7 +167,7 @@ contract ERC1155Proxy is
 
                 // Record the address of the destination erc1155 asset for later.
                 let assetAddress := and(
-                    mload(4),
+                    mload(36),
                     0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
                 )
 
