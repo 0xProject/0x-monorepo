@@ -45,7 +45,7 @@ export class ERC1155Wrapper {
     }
     public async deployProxyAsync(): Promise<ERC1155ProxyContract> {
         this._proxyContract = await ERC1155ProxyContract.deployFrom0xArtifactAsync(
-            artifacts.ERC721Proxy,
+            artifacts.ERC1155Proxy,
             this._provider,
             txDefaults,
         );
@@ -56,7 +56,7 @@ export class ERC1155Wrapper {
         this._validateProxyContractExistsOrThrow();
         return this._proxyIdIfExists as string;
     }
-    public async setBalancesAndAllowancesAsync(): Promise<void> {
+    public async setBalancesAndAllowancesAsync(): Promise<ERC1155HoldingsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateProxyContractExistsOrThrow();
         this._initialTokenIdsByOwner = {};
@@ -81,6 +81,7 @@ export class ERC1155Wrapper {
                 }
             }
         }
+        return this._initialTokenIdsByOwner;
     }
     /*
     public async doesTokenExistAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
