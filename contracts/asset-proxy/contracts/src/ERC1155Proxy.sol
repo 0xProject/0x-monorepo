@@ -173,7 +173,7 @@ contract ERC1155Proxy is
 
                 ////////// STEP 2/4 //////////
                 let scaleAmount := calldataload(100)
-                let tokenValuesOffset := mload(100)
+                let tokenValuesOffset := add(mload(100), 4) // add 4 for calldata offset
                 let tokenValuesLengthInBytes := mul(
                     mload(tokenValuesOffset),
                     32
