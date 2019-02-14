@@ -78,7 +78,6 @@ describe('ERC1155Token', () => {
         );
         const createFungibleTokenLog = txReceipt.logs[0] as LogWithDecodedArgs<ERC1155MixedFungibleMintableTransferSingleEventArgs>;
         dummyFungibleTokenId = createFungibleTokenLog.args._id;
-        console.log(`DUMMY FUNGIBLE TOKEN ID  = ${dummyFungibleTokenId}`);
         // Mint some fungible token
         await web3Wrapper.awaitTransactionSuccessAsync(
             await token.mintFungible.sendTransactionAsync(
@@ -89,7 +88,6 @@ describe('ERC1155Token', () => {
             ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        console.log(`ALL DONE SETUP`);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

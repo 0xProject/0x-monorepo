@@ -14,6 +14,15 @@ export interface ERC721TokenIdsByOwner {
     };
 }
 
+export interface ERC1155HoldingsByOwner {
+    [ownerAddress: string]: {
+        [tokenAddress: string]: {
+            [tokenId: string]: BigNumber;
+        };
+    };
+}
+
+
 export interface SubmissionContractEventArgs {
     transactionId: BigNumber;
 }
