@@ -87,7 +87,7 @@ function _toGeneric(radarMarket: RadarMarket, radarOrder: RadarSignedOrder): Gen
     return {
         price: radarOrder.price.toString(),
         // Use the remaining fillable amount
-        amount: radarOrder.remainingQuoteTokenAmount.toString(),
+        amount: radarOrder.remainingBaseTokenAmount.toString(),
     };
 }
 
