@@ -1,12 +1,9 @@
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
-import styled from 'styled-components';
-require('moment-precise-range-plugin');
 
-import { colors } from 'ts/style/colors';
-
-import { Heading, Paragraph } from 'ts/components/text';
+import { number } from 'prop-types';
+import { Paragraph } from 'ts/components/text';
 
 interface Props {
     deadline: number;
@@ -71,25 +68,34 @@ function getRelativeTime(deadline: moment.Moment): string {
     return millisToDaysHoursMinutes(duration.asMilliseconds());
 }
 
-function pad(numberToPad: number): string {
-    let result = `${numberToPad}`;
-
-    if (result.length < 2) {
-        result = `0${result}`;
-    }
-
-    return result;
+interface TimeStructure {
+    year?: number;
+    month?: number;
+    week?: number;
+    day?: number;
+    hour?: number;
+    minute?: number;
+    second?: number;
+    [key: string]: number;
 }
 
-function millisToDaysHoursMinutes(ms: number): string {
-    const minutesPerDay = 60 * 24;
-    const seconds = ms / 1000;
-    let totalMinutes = seconds / 60;
+function millisToDaysHoursMinutes(futureDateMs: number): string {
+    let delta = Math.abs(futureDateMs - now.milliseconds()) / 1000;                           // delta
+    const result: TimeStructure = {};                                                                // result
+    const structure: TimeStructure = {                                                                  // structure
+        // year: 31536000,
+        // month: 2592000,
+        // week: 604800, // uncomment row to ignore
+        day: 86400,   // feel free to add your own row
+        hour: 3600,
+        minute: 60,
+        second: 1,
+    };
 
-    const days = totalMinutes / minutesPerDay;
-    totalMinutes -= minutesPerDay * days;
-    const hours = totalMinutes / 60;
-    totalMinutes -= hours * 60;
+    _.keys(structure).forEach((key: string) => {
+        result[key] = Math.floor(delta / structure[key]);
+        delta -= result[key] * structure[key];
+    });
 
-    return `${days} days ${pad(hours)} hours ${pad(totalMinutes)} mins`;
+    return `${result.day} days ${result.hour} hours ${result.minute} mins`;
 }
