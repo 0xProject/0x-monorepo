@@ -11,7 +11,7 @@ export const RADAR_SOURCE = 'radar';
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class RadarSource {
-    private static _parseRadarOrderResponse(radarOrderResponse: any): RadarSignedOrder {
+    public static parseRadarOrderResponse(radarOrderResponse: any): RadarSignedOrder {
         return {
             ...radarOrderResponse,
             ...orderParsingUtils.convertStringsFieldsToBigNumbers(radarOrderResponse, [
@@ -45,9 +45,9 @@ export class RadarSource {
         return {
             ...jsonResp,
             // tslint:disable-next-line:no-unbound-method
-            bids: jsonResp.bids.map(RadarSource._parseRadarOrderResponse),
+            bids: jsonResp.bids.map(RadarSource.parseRadarOrderResponse),
             // tslint:disable-next-line:no-unbound-method
-            asks: jsonResp.asks.map(RadarSource._parseRadarOrderResponse),
+            asks: jsonResp.asks.map(RadarSource.parseRadarOrderResponse),
         };
     }
 }
