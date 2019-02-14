@@ -21,7 +21,7 @@ export class TokenOrderBookSnapshotsAddMakerAddress1550163069315 implements Migr
             `);
             await queryRunner.query(`
                 ALTER TABLE ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}
-                    DROP CONSTRAINT "token_orderbook_snapshots_pkey",
+                    DROP CONSTRAINT "token_orderbook_snapshots_pkey1",
                     ADD PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol, maker_address);
             `);
         }
