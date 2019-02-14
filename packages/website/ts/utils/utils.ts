@@ -285,6 +285,9 @@ export const utils = {
         );
         return isTestNetwork;
     },
+    getGoogleSheetLeadUrl(form: string): string {
+        return configs.GOOGLE_SHEETS_LEAD_FORMS[form];
+    },
     getCurrentBaseUrl(): string {
         const port = window.location.port;
         const hasPort = !_.isUndefined(port);

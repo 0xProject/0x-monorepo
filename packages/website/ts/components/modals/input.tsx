@@ -1,6 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { colors } from '../../style/colors';
+import { CheckMark } from '../ui/check_mark';
+import { Container } from '../ui/container';
+
 export enum InputWidth {
     Half,
     Full,
@@ -16,9 +20,48 @@ interface InputProps {
     required?: boolean;
 }
 
+interface OptionSelectorProps {
+    name: string;
+    width?: InputWidth;
+    label: string;
+    errors?: ErrorProps;
+    isErrors?: boolean;
+    required?: boolean;
+    children: React.ReactNode;
+    isFlex?: boolean;
+}
+
+interface CheckBoxProps {
+    label: string;
+    onClick: (e: React.MouseEvent<HTMLElement>) => void;
+    isSelected: boolean;
+}
+
 interface ErrorProps {
     [key: string]: string;
 }
+
+export const OptionSelector = (props: OptionSelectorProps) => {
+    const id = `input-${name}`;
+    return (
+        <InputWrapper {...props}>
+            <Label htmlFor={id}>{props.label}</Label>
+            <Container id={id}>{props.children}</Container>
+        </InputWrapper>
+    );
+};
+
+export const CheckBoxInput = (props: CheckBoxProps) => {
+    const { isSelected, label, onClick } = props;
+    return (
+        <Container onClick={onClick} className="flex items-center">
+            <Container marginRight="10px">
+                <CheckMark isChecked={isSelected} color={colors.brandLight} />
+            </Container>
+            <Label style={{ marginBottom: '0' }}>{label}</Label>
+        </Container>
+    );
+};
 
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
     const { name, label, type, errors } = props;
