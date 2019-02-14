@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-coverage",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -29,8 +29,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-coverage/README.md",
     "dependencies": {
-        "@0x/sol-tracing-utils": "^6.0.2",
-        "@0x/subproviders": "^3.0.2",
+        "@0x/sol-tracing-utils": "^6.0.3",
+        "@0x/subproviders": "^3.0.3",
         "@0x/typescript-typings": "^4.0.0",
         "ethereum-types": "^2.0.0",
         "lodash": "^4.17.11"

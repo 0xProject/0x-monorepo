@@ -1,4 +1,5 @@
 import {
+    DutchAuction,
     ERC20Proxy,
     ERC20Token,
     ERC721Proxy,
@@ -8,6 +9,7 @@ import {
     OrderValidator,
     WETH9,
 } from '@0x/contract-artifacts';
+import { AbiDecoder } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -87,6 +89,7 @@ export class ContractWrappers {
         };
         this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
         const artifactsArray = [
+            DutchAuction,
             ERC20Proxy,
             ERC20Token,
             ERC721Proxy,
@@ -97,7 +100,7 @@ export class ContractWrappers {
             WETH9,
         ];
         _.forEach(artifactsArray, artifact => {
-            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi);
+            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
         });
         const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
@@ -167,5 +170,12 @@ export class ContractWrappers {
      */
     public getProvider(): Provider {
         return this._web3Wrapper.getProvider();
+    }
+    /**
+     * Get the abi decoder instance currently used by contract-wrappers
+     * @return  AbiDecoder instance
+     */
+    public getAbiDecoder(): AbiDecoder {
+        return this._web3Wrapper.abiDecoder;
     }
 }

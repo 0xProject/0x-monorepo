@@ -65,6 +65,11 @@ export class MethodDataType extends AbstractSetDataType {
         return this._methodSelector;
     }
 
+    public getReturnValueDataItem(): DataItem {
+        const returnValueDataItem = this._returnDataType.getDataItem();
+        return returnValueDataItem;
+    }
+
     private _computeSignature(): string {
         const memberSignature = this._computeSignatureOfMembers();
         const methodSignature = `${this.getDataItem().name}${memberSignature}`;

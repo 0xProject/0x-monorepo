@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.1.0 - _February 9, 2019_
+
+    * Added calldata decoding to ContractWrappers (#1569)
+
 ## v7.0.2 - _February 7, 2019_
 
     * Dependencies updated

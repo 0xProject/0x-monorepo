@@ -384,6 +384,7 @@ export enum WebsitePaths {
     Migrations = '/docs/migrations',
     Careers = '/careers',
     Credits = '/credits',
+    Vote = '/vote',
 }
 
 export enum DocPackages {

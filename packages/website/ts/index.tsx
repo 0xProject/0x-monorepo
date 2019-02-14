@@ -26,6 +26,7 @@ import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
 import { NextMarketMaker } from 'ts/pages/market_maker';
+import { VotePlaceholder } from 'ts/pages/vote_placeholder';
 import { NextWhy } from 'ts/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -115,6 +116,7 @@ render(
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact={true} path={WebsitePaths.Vote} component={VotePlaceholder as any} />
                                 <Route
                                     exact={true}
                                     path={WebsitePaths.AboutMission}
