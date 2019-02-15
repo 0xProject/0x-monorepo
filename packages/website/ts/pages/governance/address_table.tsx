@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { constants as sharedConstants } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { constants } from 'ts/utils/constants';
