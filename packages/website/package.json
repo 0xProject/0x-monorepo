@@ -37,7 +37,6 @@
         "@types/react-loadable": "^5.4.2",
         "@types/react-syntax-highlighter": "^0.0.8",
         "@types/styled-components": "4.1.1",
-        "@types/web3": "^1.0.14",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",
