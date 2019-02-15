@@ -44,9 +44,9 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
         const { userAddresses, addressBalances } = this.props;
         const { selectedAddressIndex } = this.state;
         const rows = _.map(userAddresses, (userAddress: string, i: number) => {
-            const balanceInZrx = addressBalances[i];
+            const balanceInZrxBaseUnits = addressBalances[i];
             const addressRowId = `address-${userAddress}`;
-            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInZrx, constants.DECIMAL_PLACES_ETH);
+            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInZrxBaseUnits, constants.DECIMAL_PLACES_ETH);
             const balanceString = `${balanceInEth.toString()} ZRX`;
             return (
                 <AddressTableRow
