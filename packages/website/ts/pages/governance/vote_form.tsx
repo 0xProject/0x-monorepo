@@ -205,7 +205,6 @@ export class VoteForm extends React.Component<Props> {
             zeip,
             preference: votePreference,
             from: makerAddress,
-            // title: 'MultiAssetProxy: Allow multiple assets per side of a single order',
         };
 
         const typedData = {
@@ -221,10 +220,7 @@ export class VoteForm extends React.Component<Props> {
         const voteHashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         const voteHashHex = `0x${voteHashBuffer.toString('hex')}`;
         try {
-            // const provider = web3Wrapper.getProvider();
-            const signature = isLedger
-                ? await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, makerAddress)
-                : await this._eip712SignatureAsync(makerAddress, typedData);
+            const signature = await this._createSignatureAsync(makerAddress, typedData);
             const signedVote = { ...message, signature, from: makerAddress };
             const isProduction = window.location.host.includes('0x.org');
             const voteEndpoint = isProduction ? 'https://vote.0x.org/v1/vote' : 'http://localhost:3000/v1/vote';
@@ -260,6 +256,29 @@ export class VoteForm extends React.Component<Props> {
             return null as any;
         }
     };
+    private async _createSignatureAsync(signerAddress: string, typedData: any): Promise<string> {
+        const { providerEngine } = this.props;
+
+        try {
+            const signatureHex = await this._eip712SignatureAsync(signerAddress, typedData);
+            return signatureHex;
+        } catch (err) {
+            // HACK: We are unable to handle specific errors thrown since provider is not an object
+            //       under our control. It could be Metamask Web3, Ethers, or any general RPC provider.
+            //       We check for a user denying the signature request in a way that supports Metamask and
+            //       Coinbase Wallet. Unfortunately for signers with a different error message,
+            //       they will receive two signature requests.
+            if (err.message.includes('User denied message signature')) {
+                throw err;
+            }
+
+            const voteHashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
+            const voteHashHex = `0x${voteHashBuffer.toString('hex')}`;
+            const signatureHex = await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, signerAddress);
+
+            return signatureHex;
+        }
+    }
     private readonly _eip712SignatureAsync = async (address: string, typedData: any): Promise<string> => {
         const signature = await this.props.web3Wrapper.signTypedDataAsync(address, typedData);
         const ecSignatureRSV = this._parseSignatureHexAsRSV(signature);
