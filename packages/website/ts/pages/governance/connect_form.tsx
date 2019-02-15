@@ -58,6 +58,7 @@ interface Props {
     onDismiss?: () => void;
     onWalletConnected?: (props: WalletConnectedProps) => void;
     onVoted?: () => void;
+    onError?: (errorMessage: string) => void;
     web3Wrapper?: Web3Wrapper;
     currentBalance: string;
     web3?: any;
@@ -273,12 +274,16 @@ export class ConnectForm extends React.Component<Props, State> {
     private async _onConnectLedgerClickAsync(): Promise<boolean> {
         const isU2FSupported = await utils.isU2FSupportedAsync();
         if (!isU2FSupported) {
+            const errorMessage = 'U2F not supported by this browser. Try using Chrome.';
+
             // logUtils.log(`U2F not supported in this browser`);
-            this.setState({
-                errors: {
-                    connectionError: 'U2F not supported by this browser. Try using Chrome.',
-                },
-            });
+            this.props.onError ?
+                this.props.onError(errorMessage) : this.setState({
+                    errors: {
+                        connectionError: errorMessage,
+                    },
+                });
+
             return false;
         }
 
@@ -314,11 +319,13 @@ export class ConnectForm extends React.Component<Props, State> {
         this.updateLedgerDerivationPathIfExists(this.state.derivationPath);
         didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (!didSucceed) {
-            this.setState({
-                errors: {
-                    connectionError: 'Failed to connect to Ledger.',
-                },
-            });
+            const errorMessage = 'Failed to connect to Ledger.';
+            this.props.onError ?
+                this.props.onError(errorMessage) : this.setState({
+                    errors: {
+                        connectionError: errorMessage,
+                    },
+                });
         }
         return didSucceed;
     }
@@ -334,11 +341,13 @@ export class ConnectForm extends React.Component<Props, State> {
         } catch (err) {
             // console.log(err);
             // logUtils.log(`Ledger error: ${JSON.stringify(err)}`);
-            this.setState({
-                errors: {
-                    connectionError: 'Failed to connect. Follow the instructions and try again.',
-                },
-            });
+            const errorMessage = 'Failed to connect. Follow the instructions and try again.';
+            this.props.onError ?
+                this.props.onError(errorMessage) : this.setState({
+                    errors: {
+                        connectionError: errorMessage,
+                    },
+                });
             return false;
         }
 

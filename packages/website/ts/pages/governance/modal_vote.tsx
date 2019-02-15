@@ -18,6 +18,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
 
 import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_form';
+import { ErrorModal } from 'ts/pages/governance/error_modal';
 import { VoteForm } from 'ts/pages/governance/vote_form';
 
 import {
@@ -43,6 +44,7 @@ interface State {
     isLedger: boolean;
     ledgerSubproviderIfExists?: LedgerSubprovider;
     isSuccessful: boolean;
+    isErrorModalOpen?: boolean;
     isU2fSupported: boolean;
     isVoted: boolean;
     votePreference: string | null;
@@ -100,7 +102,7 @@ export class ModalVote extends React.Component<Props> {
     }
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
-        const { isSuccessful, selectedAddress, currentBalance } = this.state;
+        const { isSuccessful, selectedAddress, currentBalance, isErrorModalOpen, errorMessage } = this.state;
         const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
             <>
@@ -131,6 +133,7 @@ export class ModalVote extends React.Component<Props> {
                             <span>Close</span>
                             <Icon name="close-modal" size={27} margin={[0, 0, 0, 0]} />
                         </ButtonClose>
+                        <ErrorModal isOpen={isErrorModalOpen} text={errorMessage} onClose={this._onCloseError.bind(this)} />
                     </StyledDialogContent>
                 </DialogOverlay>
             </>
@@ -153,6 +156,7 @@ export class ModalVote extends React.Component<Props> {
                     web3Wrapper={web3Wrapper}
                     onDismiss={this.props.onDismiss}
                     onWalletConnected={this._onWalletConnected.bind(this)}
+                    onError={this._onError.bind(this)}
                 />
             </>
         );
@@ -179,6 +183,7 @@ export class ModalVote extends React.Component<Props> {
                     ledgerSubproviderIfExists={ledgerSubproviderIfExists}
                     providerEngine={providerEngine}
                     onVoted={this._onVoted.bind(this)}
+                    onError={this._onError.bind(this)}
                 />
             </>
         );
@@ -223,10 +228,23 @@ export class ModalVote extends React.Component<Props> {
     }
     private _onDone(): void {
         this.setState({
+            isErrorModalOpen: false,
             isSuccessful: false,
         });
 
         this.props.onDismiss();
+    }
+    private _onError(errorMessage: string): void {
+        this.setState({
+            errorMessage,
+            isErrorModalOpen: true,
+        });
+    }
+    private _onCloseError(): void {
+        this.setState({
+            errorMessage: '',
+            isErrorModalOpen: false,
+        });
     }
 }
 

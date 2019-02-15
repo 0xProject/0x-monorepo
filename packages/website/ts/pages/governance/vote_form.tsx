@@ -41,6 +41,7 @@ export enum VoteValue {
 interface Props {
     onDismiss?: () => void;
     onWalletConnected?: (providerName: string) => void;
+    onError?: (errorMessage: string) => void;
     onVoted?: () => void;
     web3Wrapper?: Web3Wrapper;
     contractWrappers?: ContractWrappers;
@@ -240,8 +241,17 @@ export class VoteForm extends React.Component<Props> {
 
             return signedVote;
         } catch (err) {
+            const errorMessage = err.message;
+
+            // logUtils.log(errorMessage);
+            this.props.onError ?
+                this.props.onError(errorMessage) : this.setState({
+                    errors: {
+                        signError: errorMessage,
+                    },
+                    isSuccessful: false,
+                });
             // console.log(err);
-            this.setState({ errors: { signError: err.message }, isSuccessful: false });
             return null as any;
         }
     };
