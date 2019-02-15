@@ -87,24 +87,7 @@ export async function getTradesAsync(
                 continue;
             }
 
-            // these fields need to be set in order to avoid non-null
-            // constraint exceptions upon database insertion.
-            if (initialDumpTrade.logIndex === undefined) {
-                // for cryptopunks
-                initialDumpTrade.logIndex = 0;
-            }
-            if (initialDumpTrade.assetDescriptor === undefined) {
-                // for cryptopunks
-                initialDumpTrade.assetDescriptor = '';
-            }
-            if (initialDumpTrade.meta === undefined) {
-                // for cryptopunks
-                initialDumpTrade.meta = {};
-            }
-            if (initialDumpTrade.marketAddress === null) {
-                // for decentraland_estate
-                initialDumpTrade.marketAddress = '';
-            }
+            ensureNonNull(initialDumpTrade);
 
             allTrades.push(initialDumpTrade);
         }
@@ -143,6 +126,7 @@ export async function getTradesAsync(
             if (!shouldProcessTrade(tradeFromApi, allTrades)) {
                 continue;
             }
+            ensureNonNull(tradeFromApi);
             allTrades.push(tradeFromApi);
             blockNumber = tradeFromApi.blockNumber;
         }
@@ -212,4 +196,25 @@ function getFullUrlForPublisher(publisher: string): string {
 
 function getInitialDumpUrl(publisher: string): string {
     return `https://nonfungible-dot-com-one-time-data-dump.s3.amazonaws.com/sales_summary_${publisher}.json`;
+}
+
+function ensureNonNull(trade: NonfungibleDotComTradeResponse): void {
+    // these fields need to be set in order to avoid non-null
+    // constraint exceptions upon database insertion.
+    if (trade.logIndex === undefined) {
+        // for cryptopunks
+        trade.logIndex = 0;
+    }
+    if (trade.assetDescriptor === undefined) {
+        // for cryptopunks
+        trade.assetDescriptor = '';
+    }
+    if (trade.meta === undefined) {
+        // for cryptopunks
+        trade.meta = {};
+    }
+    if (trade.marketAddress === null) {
+        // for decentraland_estate
+        trade.marketAddress = '';
+    }
 }
