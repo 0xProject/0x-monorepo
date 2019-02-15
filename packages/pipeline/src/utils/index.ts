@@ -58,7 +58,9 @@ export function handleError(e: any): void {
 export async function fetchSuccessfullyOrThrowAsync(url: string): Promise<any> {
     const response = await fetchAsync(url);
     if (!response.ok) {
-        throw new Error(`Unsuccessful HTTP status code (${response.status}): ${response.statusText}`);
+        throw new Error(
+            `Failed to fetch URL ${url}.  Unsuccessful HTTP status code (${response.status}): ${response.statusText}`,
+        );
     }
     return response.json();
 }
