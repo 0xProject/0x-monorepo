@@ -1,6 +1,8 @@
+import { stringify } from 'querystring';
+
 import { logUtils } from '@0x/utils';
 
-import axios from 'axios';
+import { fetchSuccessfullyOrThrowAsync } from '../../utils';
 
 // URL to use for getting nft trades from nonfungible.com.
 export const NONFUNGIBLE_DOT_COM_URL = 'https://nonfungible.com/api/v1';
@@ -76,8 +78,10 @@ export async function getTradesAsync(
         logUtils.log('getting trades from one-time dump');
         // caller needs trades that are in the initial data dump, so get them
         // from there, then later go to the API for the rest.
-        const initialDumpResponse = await axios.get<NonfungibleDotComHistoryResponse>(getInitialDumpUrl(publisher));
-        const initialDumpTrades = initialDumpResponse.data.data;
+        const initialDumpResponse: NonfungibleDotComHistoryResponse = await fetchSuccessfullyOrThrowAsync(
+            getInitialDumpUrl(publisher),
+        );
+        const initialDumpTrades = initialDumpResponse.data;
         for (const initialDumpTrade of initialDumpTrades) {
             if (!shouldProcessTrade(initialDumpTrade, allTrades)) {
                 continue;
@@ -192,14 +196,14 @@ async function _getTradesWithOffsetAsync(
     publisher: string,
     offset: number,
 ): Promise<NonfungibleDotComHistoryResponse> {
-    const resp = await axios.get<NonfungibleDotComHistoryResponse>(url, {
-        params: {
+    const resp: NonfungibleDotComHistoryResponse = await fetchSuccessfullyOrThrowAsync(
+        `${url}?${stringify({
             publisher,
             start: offset,
             length: MAX_TRADES_PER_QUERY,
-        },
-    });
-    return resp.data;
+        })}`,
+    );
+    return resp;
 }
 
 function getFullUrlForPublisher(publisher: string): string {
