@@ -26,7 +26,7 @@ export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) =
         },
     });
     // const totalBalance = tally.totalBalance.toFormat(3, 2);
-    const { yes, no, totalBalance } = tally;
+    const { yes, totalBalance } = tally;
     const HUNDRED = new BigNumber(100);
     const totalBalanceString = Web3Wrapper.toUnitAmount(totalBalance, 18).toFormat(0, 2);
     let yesPercentage = HUNDRED.times(yes.dividedBy(totalBalance));

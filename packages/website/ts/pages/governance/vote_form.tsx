@@ -184,7 +184,7 @@ export class VoteForm extends React.Component<Props> {
         e.preventDefault();
 
         const { zeip, votePreference } = this.state;
-        const { currentBalance, selectedAddress, isLedger, providerEngine } = this.props;
+        const { currentBalance, selectedAddress } = this.props;
         // Query the available addresses
         // const addresses = await web3Wrapper.getAvailableAddressesAsync();
         // Use the first account as the maker
