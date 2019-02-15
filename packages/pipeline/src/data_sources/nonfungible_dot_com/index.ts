@@ -92,7 +92,7 @@ export async function getTradesAsync(publisher: string, blockNumberStart: number
             }
             if (initialDumpTrade.meta === undefined) {
                 // for cryptopunks
-                initialDumpTrade.meta = new Object();
+                initialDumpTrade.meta = {};
             }
             if (initialDumpTrade.marketAddress === null) {
                 // for decentraland_estate
