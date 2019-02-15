@@ -56,7 +56,7 @@ const riskLabels: LabelInterface = {
 
 const proposalData = {
     zeipId: 1,
-    title: 'MultiAssetProxy Approval',
+    title: 'ZEIP23: Trading Bundles of Assets',
     summary: `MultiAssetProxy brings support for trading arbitrary bundles of assets in 0x protocol. Historically only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets and even mix ERC721 and ERC20 to trade in a single order.`,
     url: '#',
     votingDeadline: 1551584000,
