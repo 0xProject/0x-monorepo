@@ -67,17 +67,6 @@ interface ErrorProps {
     [key: string]: string;
 }
 
-export enum SignatureType {
-    Illegal, // unused 0
-    Invalid, // unused 1
-    EIP712, // 2
-    EthSign, // 3
-    Wallet, // unused 4
-    Validator, // unused 5
-    PreSigned, // unused 6
-    NSignatureTypes, // unused 7
-}
-
 export class ModalVote extends React.Component<Props> {
     public networkId: number;
     public state: State = {
