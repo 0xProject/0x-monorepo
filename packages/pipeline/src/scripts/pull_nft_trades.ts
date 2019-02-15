@@ -5,7 +5,7 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 import { getTradesAsync, knownPublishers } from '../data_sources/nonfungible_dot_com';
 import { NftTrade } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { parseNonFungibleDotComTrades } from '../parsers/non_fungible_dot_com';
+import { parseNonFungibleDotComTrades } from '../parsers/nonfungible_dot_com';
 import { handleError } from '../utils';
 
 // Number of trades to save at once.

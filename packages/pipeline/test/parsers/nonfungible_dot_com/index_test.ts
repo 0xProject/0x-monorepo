@@ -5,7 +5,7 @@ import 'mocha';
 
 import { NonfungibleDotComTrade } from '../../../src/data_sources/nonfungible_dot_com';
 import { NftTrade } from '../../../src/entities';
-import { _parseNonFungibleDotComTrade } from '../../../src/parsers/non_fungible_dot_com';
+import { _parseNonFungibleDotComTrade } from '../../../src/parsers/nonfungible_dot_com';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
