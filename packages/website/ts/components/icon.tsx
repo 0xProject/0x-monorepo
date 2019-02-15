@@ -4,8 +4,10 @@ import styled from 'styled-components';
 
 import { Paragraph } from 'ts/components/text';
 import { getCSSPadding, PaddingInterface } from 'ts/constants/utilities';
+import { colors } from 'ts/style/colors';
 
 interface IconProps extends PaddingInterface {
+    color?: string;
     name?: string;
     component?: React.ReactNode;
     size?: 'small' | 'medium' | 'large' | 'hero' | number;
@@ -32,6 +34,10 @@ export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
     return null;
 };
 
+Icon.defaultProps = {
+    color: colors.brandLight,
+};
+
 export const InlineIconWrap = styled.div<PaddingInterface>`
     margin: ${props => getCSSPadding(props.margin)};
     display: flex;
@@ -52,6 +58,7 @@ const _getSize = (size: string | number = 'small'): string => {
 };
 
 const StyledIcon = styled.figure<IconProps>`
+    color: ${props => props.color && props.color};
     width: ${props => _getSize(props.size)};
     height: ${props => _getSize(props.size)};
     margin: ${props => getCSSPadding(props.margin)};
