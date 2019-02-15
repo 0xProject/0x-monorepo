@@ -25,9 +25,9 @@ async function getAndSaveTradesAsync(): Promise<void> {
     for (const publisher of knownPublishers) {
         console.log(`Getting latest trades for NFT ${publisher}...`);
         const tradeWithHighestBlockNumber = await tradesRepository
-            .createQueryBuilder('nonfungible_dot_com')
-            .where('nonfungible_dot_com.publisher = :publisher', { publisher })
-            .orderBy({ 'nonfungible_dot_com.block_number': 'DESC' })
+            .createQueryBuilder('nonfungible_dot_com_trades')
+            .where('nonfungible_dot_com_trades.publisher = :publisher', { publisher })
+            .orderBy({ 'nonfungible_dot_com_trades.block_number': 'DESC' })
             .getOne();
         const highestExistingBlockNumber =
             tradeWithHighestBlockNumber === undefined ? 0 : tradeWithHighestBlockNumber.blockNumber;

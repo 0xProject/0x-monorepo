@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 const nftTrades = new Table({
-    name: 'raw.nonfungible_dot_com',
+    name: 'raw.nonfungible_dot_com_trades',
     columns: [
         { name: 'publisher', type: 'varchar', isPrimary: true },
         { name: 'transaction_hash', type: 'varchar', isPrimary: true },
