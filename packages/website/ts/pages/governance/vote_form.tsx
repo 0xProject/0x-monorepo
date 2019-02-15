@@ -21,7 +21,7 @@ import { PreferenceSelecter } from 'ts/pages/governance/preference_selecter';
 import { signatureUtils } from '0x.js';
 import * as ethUtil from 'ethereumjs-util';
 
-import { ECSignature } from '@0x/types';
+import { ECSignature, SignatureType } from '@0x/types';
 
 import {
     LedgerSubprovider,
@@ -75,17 +75,6 @@ interface FormProps {
 
 interface ErrorProps {
     [key: string]: string;
-}
-
-export enum SignatureType {
-    Illegal, // unused 0
-    Invalid, // unused 1
-    EIP712, // 2
-    EthSign, // 3
-    Wallet, // unused 4
-    Validator, // unused 5
-    PreSigned, // unused 6
-    NSignatureTypes, // unused 7
 }
 
 export class VoteForm extends React.Component<Props> {
