@@ -19,7 +19,7 @@ import { GlobalStyle } from 'ts/constants/globalStyle';
 
 import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_form';
 import { ErrorModal } from 'ts/pages/governance/error_modal';
-import { VoteForm } from 'ts/pages/governance/vote_form';
+import { VoteForm, VoteInfo } from 'ts/pages/governance/vote_form';
 
 import {
     LedgerSubprovider,
@@ -33,7 +33,7 @@ interface Props {
     isOpen?: boolean;
     onDismiss?: () => void;
     onWalletConnected?: (providerName: string) => void;
-    onVoted?: () => void;
+    onVoted?: (voteInfo: VoteInfo) => void;
 }
 
 interface State {
@@ -217,13 +217,13 @@ export class ModalVote extends React.Component<Props> {
 
         this.props.onWalletConnected(providerName);
     }
-    private _onVoted(): void {
+    private _onVoted(voteInfo: VoteInfo): void {
         this.setState({
             isSuccessful: true,
         });
 
         if (this.props.onVoted) {
-            this.props.onVoted();
+            this.props.onVoted(voteInfo);
         }
     }
     private _onDone(): void {
