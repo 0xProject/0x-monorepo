@@ -76,9 +76,9 @@ const expected: NftTrade = {
     publisher: 'cryptokitties',
 };
 
-describe('bloxy', () => {
+describe('nonfungible.com', () => {
     describe('_parseNonFungibleDotComTrade', () => {
-        it(`converts BloxyTrade to DexTrade entity`, () => {
+        it(`converts NonfungibleDotComTrade to NftTrade entity`, () => {
             const actual = _parseNonFungibleDotComTrade(expected.publisher, input);
             expect(actual).deep.equal(expected);
         });
