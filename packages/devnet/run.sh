@@ -17,6 +17,11 @@ mkdir -p /var/log
     --rpcport 8501 \
     --rpcvhosts '*' \
     --rpcapi 'personal,db,eth,net,web3,txpool,miner,debug' \
+    --ws \
+    --wsaddr 0.0.0.0 \
+    --wsport 8546 \
+    --wsorigins '*' \
+    --wsapi 'personal,db,eth,net,web3,txpool,miner,debug' \
     --networkid 50 \
     --gasprice '2000000000' \
     --targetgaslimit '0x4c4b400000' \

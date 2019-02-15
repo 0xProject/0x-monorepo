@@ -18,14 +18,17 @@ docker build -t 0x-devnet .
 To start the network, run:
 
 ```
-docker run -it --rm -p 8501:8501 0x-devnet
+docker run -it --rm -p 8501:8501 -p 8546:8546 0x-devnet
 ```
 
 Depending on your OS and how you installed docker, you may need to prefix any
 docker commands with `sudo`.
 
-The Docker container exposes the JSON RPC API at port 8501, and this is the
+The Docker container exposes the HTTP JSON RPC API at port 8501, and this is the
 primary way you are expected to interact with the devnet. The following
+endpoints are supported: `personal,db,eth,net,web3,txpool,miner,debug`.
+
+It also exposes the WS JSON RPC API at port 8546. The following
 endpoints are supported: `personal,db,eth,net,web3,txpool,miner,debug`.
 
 You can stop the network with `docker stop` and it will automatically clean up
