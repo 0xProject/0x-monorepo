@@ -62,5 +62,6 @@ export function parseParadexOrder(
     tokenOrder.quoteAssetSymbol = paradexMarket.quoteToken;
     tokenOrder.quoteAssetAddress = paradexMarket.quoteTokenAddress as string;
     tokenOrder.quoteVolume = price.times(amount);
+    tokenOrder.makerAddress = 'unknown';
     return tokenOrder;
 }

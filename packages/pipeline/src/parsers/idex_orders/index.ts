@@ -65,6 +65,7 @@ export function parseIdexOrder(
     tokenOrder.price = price;
     tokenOrder.baseVolume = amount;
     tokenOrder.quoteVolume = price.times(amount);
+    tokenOrder.makerAddress = 'unknown';
 
     if (orderType === OrderType.Bid) {
         tokenOrder.baseAssetSymbol = idexOrderParam.buySymbol;

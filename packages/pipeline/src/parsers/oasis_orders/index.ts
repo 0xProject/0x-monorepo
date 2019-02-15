@@ -67,5 +67,6 @@ export function parseOasisOrder(
     tokenOrder.quoteAssetSymbol = oasisMarket.quote;
     tokenOrder.quoteAssetAddress = null; // Oasis doesn't provide address information
     tokenOrder.quoteVolume = price.times(amount);
+    tokenOrder.makerAddress = 'unknown';
     return tokenOrder;
 }

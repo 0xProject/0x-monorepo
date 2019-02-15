@@ -65,5 +65,7 @@ export function parseDdexOrder(
     tokenOrder.quoteAssetSymbol = ddexMarket.quoteToken;
     tokenOrder.quoteAssetAddress = ddexMarket.quoteTokenAddress;
     tokenOrder.quoteVolume = price.times(amount);
+
+    tokenOrder.makerAddress = 'unknown';
     return tokenOrder;
 }
