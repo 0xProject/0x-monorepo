@@ -32,22 +32,7 @@ export const Countdown: React.StatelessComponent<Props> = ({ deadline }) => {
     return (
         <div>
             <div style={{ display: 'flex', marginBottom: '10px' }}>
-                <Paragraph style={{ marginRight: '10px' }}>{voteText} </Paragraph>
-            </div>
-        </div>
-    );
-};
-
-export const VoteDeadline: React.StatelessComponent<Props> = ({ deadline }) => {
-    const time = moment(deadline, 'X');
-    const isPassed = time.isBefore(now);
-
-    return (
-        <div>
-            <div style={{ display: 'flex', marginBottom: '10px' }}>
-                <Paragraph isMuted={0.5} style={{ marginRight: '10px' }}>
-                    Vote {isPassed ? 'ended' : 'ends'}: {time.format('YYYY/MM/DD h:mm:ss Z')}
-                </Paragraph>
+                <Paragraph>{voteText} </Paragraph>
             </div>
         </div>
     );
