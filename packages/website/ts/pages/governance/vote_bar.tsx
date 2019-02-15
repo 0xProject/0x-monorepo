@@ -5,13 +5,13 @@ import styled from 'styled-components';
 interface VoteBarProps {
     label: string;
     color: string;
-    percentage: number;
+    percentage: string;
     marginBottom?: string;
 }
 
 interface VoteColumnProps {
     color: string;
-    width: number;
+    width: string;
 }
 
 export const VoteBar: React.StatelessComponent<VoteBarProps> = ({ percentage, color, label, marginBottom }) => {

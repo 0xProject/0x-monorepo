@@ -1,22 +1,20 @@
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
-
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
+import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { Countdown } from 'ts/pages/governance/countdown';
-import { RatingBar } from 'ts/pages/governance/rating_bar';
-import { VoteStats } from 'ts/pages/governance/vote_stats';
-
-import { ModalContact } from 'ts/components/modals/modal_contact';
 import { ModalVote } from 'ts/pages/governance/modal_vote';
+import { RatingBar } from 'ts/pages/governance/rating_bar';
+import { VoteInfo, VoteValue } from 'ts/pages/governance/vote_form';
+import { VoteStats } from 'ts/pages/governance/vote_stats';
 import { colors } from 'ts/style/colors';
-
-import { BigNumber } from '@0x/utils';
 
 interface LabelInterface {
     [key: number]: string;
@@ -24,10 +22,8 @@ interface LabelInterface {
 
 export interface TallyInterface {
     zeip?: string;
-    yes?: string;
-    yesPercentage?: number;
-    no?: string;
-    noPercentage?: number;
+    yes?: BigNumber;
+    no?: BigNumber;
     blockNumber?: string;
     totalVotes?: string;
     totalBalance?: BigNumber;
@@ -113,8 +109,8 @@ export class Governance extends React.Component {
         providerName: 'Metamask',
         tally: {
             totalBalance: new BigNumber(0),
-            yesPercentage: 0,
-            noPercentage: 0,
+            yes: new BigNumber(0),
+            no: new BigNumber(0),
         },
     };
     public componentDidMount(): void {
@@ -236,8 +232,19 @@ export class Governance extends React.Component {
         this.setState({ ...this.state, isWalletConnected: true, providerName });
     };
 
-    private readonly _onVoteReceived = (): void => {
-        this.setState({ ...this.state, isVoteReceived: true });
+    private readonly _onVoteReceived = (voteInfo: VoteInfo): void => {
+        const { userBalance, voteValue } = voteInfo;
+        const tally = {...this.state.tally};
+
+        if (voteValue === VoteValue.Yes) {
+            tally.yes = tally.yes.plus(userBalance);
+        } else {
+            tally.no = tally.no.plus(userBalance);
+        }
+
+        tally.totalBalance = tally.yes.plus(tally.no);
+
+        this.setState({ ...this.state, isVoteReceived: true, tally });
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
@@ -259,16 +266,14 @@ export class Governance extends React.Component {
             }
 
             const responseData = await response.json();
-            const { no, yes } = responseData;
-            const HUNDRED = new BigNumber(100);
-            const yesTally = new BigNumber(yes);
-            const totalBalance = yesTally.plus(no);
-            const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance));
-            const noPercentage = HUNDRED.minus(yesPercentage);
+            let { no, yes } = responseData;
+            yes = new BigNumber(yes);
+            no = new BigNumber(no);
+            const totalBalance = yes.plus(no);
             const tally = {
                 ...responseData,
-                yesPercentage: yesPercentage.toFixed(0),
-                noPercentage: noPercentage.toFixed(0),
+                yes: new BigNumber(yes),
+                no: new BigNumber(no),
                 totalBalance,
             };
 

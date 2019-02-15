@@ -38,11 +38,16 @@ export enum VoteValue {
     No = 'No',
 }
 
+export interface VoteInfo {
+    userBalance: BigNumber;
+    voteValue: VoteValue;
+}
+
 interface Props {
     onDismiss?: () => void;
     onWalletConnected?: (providerName: string) => void;
     onError?: (errorMessage: string) => void;
-    onVoted?: () => void;
+    onVoted?: (userInfo: VoteInfo) => void;
     web3Wrapper?: Web3Wrapper;
     contractWrappers?: ContractWrappers;
     currentBalance?: BigNumber;
@@ -179,7 +184,7 @@ export class VoteForm extends React.Component<Props> {
         e.preventDefault();
 
         const { zeip, votePreference } = this.state;
-        const { selectedAddress, isLedger, providerEngine } = this.props;
+        const { currentBalance, selectedAddress, isLedger, providerEngine } = this.props;
         // Query the available addresses
         // const addresses = await web3Wrapper.getAvailableAddressesAsync();
         // Use the first account as the maker
@@ -236,7 +241,7 @@ export class VoteForm extends React.Component<Props> {
             });
 
             if (this.props.onVoted) {
-                this.props.onVoted();
+                this.props.onVoted({ userBalance: currentBalance, voteValue: this._getVoteValueFromString(votePreference) });
             }
 
             return signedVote;
@@ -280,6 +285,9 @@ export class VoteForm extends React.Component<Props> {
         this.setState({
             votePreference: e.currentTarget.value,
         });
+    }
+    private _getVoteValueFromString(value: string): VoteValue {
+        return VoteValue.Yes === value ? VoteValue.Yes : VoteValue.No;
     }
 }
 
