@@ -374,8 +374,8 @@ export class ModalContact extends React.Component<Props> {
             jsonBody = {
                 name: this.nameRef.current.value,
                 email: this.emailRef.current.value,
-                projectOrCompany: this.companyProjectRef.current.value,
-                comments: this.commentsRef.current.value,
+                project_name: this.companyProjectRef.current.value,
+                project_description: this.commentsRef.current.value,
                 services: this.state.creditLeadsServices,
             };
         } else {
