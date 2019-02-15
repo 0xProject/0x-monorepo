@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { NonfungibleDotComTrade } from '../../../src/data_sources/nonfungible_dot_com';
+import { NonfungibleDotComTradeResponse } from '../../../src/data_sources/nonfungible_dot_com';
 import { NftTrade } from '../../../src/entities';
 import { _parseNonFungibleDotComTrade } from '../../../src/parsers/nonfungible_dot_com';
 import { chaiSetup } from '../../utils/chai_setup';
@@ -11,7 +11,7 @@ import { chaiSetup } from '../../utils/chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
-const input: NonfungibleDotComTrade = {
+const input: NonfungibleDotComTradeResponse = {
     _id: '5b4cd04244abdb5ac3a8063f',
     assetDescriptor: 'Kitty #1002',
     assetId: '1002',
@@ -78,7 +78,7 @@ const expected: NftTrade = {
 
 describe('nonfungible.com', () => {
     describe('_parseNonFungibleDotComTrade', () => {
-        it(`converts NonfungibleDotComTrade to NftTrade entity`, () => {
+        it(`converts NonfungibleDotComTradeResponse to NftTrade entity`, () => {
             const actual = _parseNonFungibleDotComTrade(expected.publisher, input);
             expect(actual).deep.equal(expected);
         });

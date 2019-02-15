@@ -25,10 +25,10 @@ export const knownPublishers = [
 ];
 
 export interface NonfungibleDotComHistoryResponse {
-    data: NonfungibleDotComTrade[];
+    data: NonfungibleDotComTradeResponse[];
 }
 
-export interface NonfungibleDotComTrade {
+export interface NonfungibleDotComTradeResponse {
     _id: string;
     transactionHash: string;
     blockNumber: number;
@@ -59,8 +59,11 @@ export interface NonfungibleDotComTrade {
  * @param publisher A valid "publisher" for the nonfungible.com API. (e.g. "cryptokitties")
  * @param blockNumberStart The block number to start querying from.
  */
-export async function getTradesAsync(publisher: string, blockNumberStart: number): Promise<NonfungibleDotComTrade[]> {
-    const allTrades: NonfungibleDotComTrade[] = [];
+export async function getTradesAsync(
+    publisher: string,
+    blockNumberStart: number,
+): Promise<NonfungibleDotComTradeResponse[]> {
+    const allTrades: NonfungibleDotComTradeResponse[] = [];
 
     /**
      * due to high data volumes and rate limiting, we procured an initial data
@@ -144,7 +147,10 @@ export async function getTradesAsync(publisher: string, blockNumberStart: number
     return allTrades;
 }
 
-function shouldProcessTrade(trade: NonfungibleDotComTrade, existingTrades: NonfungibleDotComTrade[]): boolean {
+function shouldProcessTrade(
+    trade: NonfungibleDotComTradeResponse,
+    existingTrades: NonfungibleDotComTradeResponse[],
+): boolean {
     // check to see if this trade is already in existingTrades
     const existingTradeIndex = existingTrades.findIndex(
         // HACK! making assumptions about composition of primary key

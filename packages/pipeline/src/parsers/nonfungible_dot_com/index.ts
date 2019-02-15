@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 import * as R from 'ramda';
 
-import { NonfungibleDotComTrade } from '../../data_sources/nonfungible_dot_com';
+import { NonfungibleDotComTradeResponse } from '../../data_sources/nonfungible_dot_com';
 import { NftTrade } from '../../entities';
 
 /**
@@ -9,7 +9,10 @@ import { NftTrade } from '../../entities';
  * NftTrade entities.
  * @param rawTrades A raw order response from an SRA endpoint.
  */
-export function parseNonFungibleDotComTrades(rawTrades: NonfungibleDotComTrade[], publisher: string): NftTrade[] {
+export function parseNonFungibleDotComTrades(
+    rawTrades: NonfungibleDotComTradeResponse[],
+    publisher: string,
+): NftTrade[] {
     return R.map(_parseNonFungibleDotComTrade.bind(null, publisher), rawTrades);
 }
 
@@ -17,7 +20,7 @@ export function parseNonFungibleDotComTrades(rawTrades: NonfungibleDotComTrade[]
  * Converts a single trade from nonfungible.com into an NftTrade entity.
  * @param rawTrade A single trade from the response from the nonfungible.com API.
  */
-export function _parseNonFungibleDotComTrade(publisher: string, rawTrade: NonfungibleDotComTrade): NftTrade {
+export function _parseNonFungibleDotComTrade(publisher: string, rawTrade: NonfungibleDotComTradeResponse): NftTrade {
     const nftTrade = new NftTrade();
     nftTrade.assetDescriptor = rawTrade.assetDescriptor;
     nftTrade.assetId = rawTrade.assetId;
