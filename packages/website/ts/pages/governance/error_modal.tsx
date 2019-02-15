@@ -72,6 +72,8 @@ const ErrorBox = styled.div`
     border: 1px solid #FD0000;
     padding: 18px 30px;
     margin-bottom: 30px;
+    overflow: auto;
+    max-height: 95px;
 `;
 
 const Text = styled(Paragraph).attrs({
