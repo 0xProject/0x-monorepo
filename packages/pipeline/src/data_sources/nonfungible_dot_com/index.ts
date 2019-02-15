@@ -22,7 +22,7 @@ export const knownPublishers = [
     'etheremon',
     'ethtown',
     // 'knownorigin', // disabled because of null characters in data being rejected by postgres
-    'mythereum',
+    // 'mythereum', // worked at one time, but now seems dead
     'superrare',
 ];
 
