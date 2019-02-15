@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'nonfungible_dot_com_trades', schema: 'raw' })
-export class NftTrade {
+export class NonfungibleDotComTrade {
     @PrimaryColumn({ name: 'transaction_hash' })
     public transactionHash!: string;
     @PrimaryColumn({ name: 'publisher' })

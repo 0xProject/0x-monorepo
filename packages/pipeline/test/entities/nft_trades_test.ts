@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import 'mocha';
 import 'reflect-metadata';
 
-import { NftTrade } from '../../src/entities';
+import { NonfungibleDotComTrade } from '../../src/entities';
 import { createDbConnectionOnceAsync } from '../db_setup';
 import { chaiSetup } from '../utils/chai_setup';
 
@@ -10,7 +10,7 @@ import { testSaveAndFindEntityAsync } from './util';
 
 chaiSetup.configure();
 
-const baseTrade: NftTrade = {
+const baseTrade: NonfungibleDotComTrade = {
     assetDescriptor: 'Kitty #1002',
     assetId: '1002',
     blockNumber: 4608542,
@@ -39,10 +39,10 @@ const baseTrade: NftTrade = {
 };
 
 // tslint:disable:custom-no-magic-numbers
-describe('NftTrade entity', () => {
+describe('NonfungibleDotComTrade entity', () => {
     it('save/find', async () => {
         const connection = await createDbConnectionOnceAsync();
-        const tradesRepository = connection.getRepository(NftTrade);
+        const tradesRepository = connection.getRepository(NonfungibleDotComTrade);
         await testSaveAndFindEntityAsync(tradesRepository, baseTrade);
     });
 });

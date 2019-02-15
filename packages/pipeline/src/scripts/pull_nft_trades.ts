@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { getTradesAsync, knownPublishers } from '../data_sources/nonfungible_dot_com';
-import { NftTrade } from '../entities';
+import { NonfungibleDotComTrade } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseNonFungibleDotComTrades } from '../parsers/nonfungible_dot_com';
 import { handleError } from '../utils';
@@ -20,7 +20,7 @@ let connection: Connection;
 })().catch(handleError);
 
 async function getAndSaveTradesAsync(): Promise<void> {
-    const tradesRepository = connection.getRepository(NftTrade);
+    const tradesRepository = connection.getRepository(NonfungibleDotComTrade);
 
     for (const publisher of knownPublishers) {
         console.log(`Getting latest trades for NFT ${publisher}...`);
