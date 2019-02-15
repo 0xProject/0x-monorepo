@@ -262,16 +262,13 @@ export class Governance extends React.Component {
             const { no, yes } = responseData;
             const HUNDRED = new BigNumber(100);
             const yesTally = new BigNumber(yes);
-            const noTally = new BigNumber(no);
             const totalBalance = yesTally.plus(no);
-            const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance))
-                .toFixed(0);
-            const noPercentage = HUNDRED.times(noTally.dividedBy(totalBalance))
-                .toFixed(0);
+            const yesPercentage = HUNDRED.times(yesTally.dividedBy(totalBalance));
+            const noPercentage = HUNDRED.minus(yesPercentage);
             const tally = {
                 ...responseData,
-                yesPercentage,
-                noPercentage,
+                yesPercentage: yesPercentage.toFixed(0),
+                noPercentage: noPercentage.toFixed(0),
                 totalBalance,
             };
 
