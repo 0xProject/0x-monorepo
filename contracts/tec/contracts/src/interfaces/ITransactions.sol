@@ -18,7 +18,7 @@
 pragma solidity ^0.5.3;
 
 
-contract IExchange {
+contract ITransactions {
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.

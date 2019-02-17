@@ -18,17 +18,17 @@
 
 pragma solidity ^0.5.3;
 
-import "../interfaces/IExchange.sol";
+import "../interfaces/ITransactions.sol";
 
 
 contract LibConstants {
 
      // solhint-disable-next-line var-name-mixedcase
-    IExchange internal EXCHANGE;
+    ITransactions internal EXCHANGE;
 
     constructor (address _exchange)
         public
     {
-        EXCHANGE = IExchange(_exchange);
+        EXCHANGE = ITransactions(_exchange);
     }
 }

@@ -45,7 +45,7 @@ contract MixinTECApprovalVerifier is
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
-    function assertValidTECApproval(
+    function assertValidTECApprovals(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
@@ -67,7 +67,7 @@ contract MixinTECApprovalVerifier is
         ) {
             // Decode single order
             (LibOrder.Order memory order) = abi.decode(
-                transaction.data,
+                transaction.data.slice(4, transaction.data.length),
                 (LibOrder.Order)
             );
 
@@ -90,7 +90,7 @@ contract MixinTECApprovalVerifier is
         ) {
             // Decode all orders
             (LibOrder.Order[] memory orders) = abi.decode(
-                transaction.data,
+                transaction.data.slice(4, transaction.data.length),
                 (LibOrder.Order[])
             );
 
@@ -105,7 +105,7 @@ contract MixinTECApprovalVerifier is
         } else if (exchangeFunctionSelector == MATCH_ORDERS_SELECTOR) {
             // Decode left and right orders
             (LibOrder.Order memory leftOrder, LibOrder.Order memory rightOrder) = abi.decode(
-                transaction.data,
+                transaction.data.slice(4, transaction.data.length),
                 (LibOrder.Order, LibOrder.Order)
             );
 
@@ -182,7 +182,7 @@ contract MixinTECApprovalVerifier is
         );
     }
 
-    /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
+    /// @dev Validates that the feeRecipients of a batch of order have approved a 0x transaction.
     /// @param orders Array of order structs containing order specifications.
     /// @param transactionHash EIP712 hash of the 0x transaction.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
@@ -223,7 +223,7 @@ contract MixinTECApprovalVerifier is
             address approvalSignerAddress = getSignerAddress(approvalHash, approvalSignatures[i]);
     
             // Add approval signer to list of signers
-            approvalSignerAddresses.append(approvalSignerAddress);
+            approvalSignerAddresses = approvalSignerAddresses.append(approvalSignerAddress);
         }
         
         uint256 ordersLength = orders.length;
