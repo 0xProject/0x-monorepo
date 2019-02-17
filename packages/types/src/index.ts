@@ -271,6 +271,8 @@ export enum RevertReason {
     AtLeastOneAddressDoesNotMeetBalanceThreshold = 'AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD',
     FromLessThanToRequired = 'FROM_LESS_THAN_TO_REQUIRED',
     ToLessThanLengthRequired = 'TO_LESS_THAN_LENGTH_REQUIRED',
+    InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
+    ApprovalExpired = 'APPROVAL_EXPIRED',
 }
 
 export enum StatusCodes {
