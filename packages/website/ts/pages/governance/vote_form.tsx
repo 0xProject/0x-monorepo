@@ -52,8 +52,7 @@ interface Props {
     isLedger: boolean;
     injectedProvider?: InjectedProvider;
     ledgerSubproviderIfExists?: LedgerSubprovider;
-    providerEngine?: Provider;
-    web3?: any;
+    provider?: Provider;
 }
 
 interface State {
@@ -68,7 +67,6 @@ interface State {
     signedVote?: SignedVote;
     errorMessage?: string;
     errors: ErrorProps;
-    web3?: any;
 }
 
 interface SignedVote {
@@ -266,7 +264,7 @@ export class VoteForm extends React.Component<Props> {
         }
     };
     private async _signVoteAsync(signerAddress: string, typedData: any): Promise<SignedVote> {
-        const { providerEngine } = this.props;
+        const { provider: providerEngine } = this.props;
         let signatureHex;
 
         try {

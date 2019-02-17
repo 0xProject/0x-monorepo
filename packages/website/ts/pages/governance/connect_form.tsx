@@ -420,7 +420,7 @@ export class ConnectForm extends React.Component<Props, State> {
             const providerName = this._getNameGivenProvider(injectedProviderIfExists);
             // Wrap Metamask in a compatability wrapper MetamaskSubprovider (to handle inconsistencies)
             const signerSubprovider =
-                providerName === constants.PROVIDER_NAME_METAMASK
+                providerName === constants.PROVIDER_NAME_METAMASK || constants.PROVIDER_NAME_COINBASE_WALLET
                     ? new MetamaskSubprovider(injectedProviderIfExists)
                     : new SignerSubprovider(injectedProviderIfExists);
             provider.addProvider(signerSubprovider);
@@ -456,12 +456,7 @@ export class ConnectForm extends React.Component<Props, State> {
         let injectedProviderIfExists = (window as any).ethereum;
         if (!_.isUndefined(injectedProviderIfExists)) {
             if (!_.isUndefined(injectedProviderIfExists.enable)) {
-                try {
-                    await injectedProviderIfExists.enable();
-                } catch (err) {
-                    // console.log(err);
-                    // errorReporter.report(err);
-                }
+                await injectedProviderIfExists.enable();
             }
         } else {
             const injectedWeb3IfExists = (window as any).web3;

@@ -184,7 +184,7 @@ export class ModalVote extends React.Component<Props> {
                     onDismiss={this.props.onDismiss}
                     isLedger={isLedger}
                     ledgerSubproviderIfExists={ledgerSubproviderIfExists}
-                    providerEngine={providerEngine}
+                    provider={providerEngine}
                     onVoted={this._onVoted.bind(this)}
                     onError={this._onError.bind(this)}
                 />
