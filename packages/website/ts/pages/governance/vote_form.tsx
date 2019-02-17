@@ -65,6 +65,7 @@ interface State {
     zeip: string;
     voteHash?: string;
     signedVote?: SignedVote;
+    comment?: string;
     errorMessage?: string;
     errors: ErrorProps;
 }
@@ -161,6 +162,7 @@ export class VoteForm extends React.Component<Props> {
                         label="Leave a private message for the 0x team (Optional)"
                         type="textarea"
                         ref={this.commentsRef}
+                        onChange={this._setVoteComment.bind(this)}
                         errors={errors}
                     />
                 </InputRow>
@@ -187,7 +189,7 @@ export class VoteForm extends React.Component<Props> {
     private readonly _createAndSubmitVoteAsync = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
 
-        const { zeip, votePreference } = this.state;
+        const { zeip, votePreference, comment } = this.state;
         const { currentBalance, selectedAddress } = this.props;
         const makerAddress = selectedAddress;
         const domainType = [{ name: 'name', type: 'string' }];
@@ -224,13 +226,14 @@ export class VoteForm extends React.Component<Props> {
 
             const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
             const voteEndpoint = `${voteDomain}/v1/vote`;
+            const requestBody = { ...signedVote, comment };
             const response = await fetch(voteEndpoint, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(signedVote),
+                body: JSON.stringify(requestBody),
             });
             if (response.ok) {
                 if (this.props.onVoted) {
@@ -310,6 +313,11 @@ export class VoteForm extends React.Component<Props> {
     private _setVotePreference(e: ChangeEvent<HTMLInputElement>): void {
         this.setState({
             votePreference: e.currentTarget.value,
+        });
+    }
+    private _setVoteComment(e: ChangeEvent<any>): void {
+        this.setState({
+            comment: e.currentTarget.value,
         });
     }
     private _getVoteValueFromString(value: string): VoteValue {
