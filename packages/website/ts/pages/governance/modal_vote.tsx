@@ -7,7 +7,6 @@ import { colors } from 'ts/style/colors';
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
-// import { LedgerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -21,9 +20,7 @@ import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_f
 import { ErrorModal } from 'ts/pages/governance/error_modal';
 import { VoteForm, VoteInfo } from 'ts/pages/governance/vote_form';
 
-import {
-    LedgerSubprovider,
-} from '@0x/subproviders';
+import { LedgerSubprovider } from '@0x/subproviders';
 import { Provider } from 'ethereum-types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -103,7 +100,9 @@ export class ModalVote extends React.Component<Props> {
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
         const { isSuccessful, selectedAddress, currentBalance, isErrorModalOpen, errorMessage } = this.state;
-        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
+        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(
+            configs.AMOUNT_DISPLAY_PRECSION,
+        );
         return (
             <>
                 <DialogOverlay
@@ -133,7 +132,11 @@ export class ModalVote extends React.Component<Props> {
                             <span>Close</span>
                             <Icon name="close-modal" size={27} margin={[0, 0, 0, 0]} />
                         </ButtonClose>
-                        <ErrorModal isOpen={isErrorModalOpen} text={errorMessage} onClose={this._onCloseError.bind(this)} />
+                        <ErrorModal
+                            isOpen={isErrorModalOpen}
+                            text={errorMessage}
+                            onClose={this._onCloseError.bind(this)}
+                        />
                     </StyledDialogContent>
                 </DialogOverlay>
             </>

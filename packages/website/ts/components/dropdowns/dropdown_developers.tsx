@@ -90,9 +90,7 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
                 <StyledGrid isCentered={false} isWrapped={true}>
                     {_.map(introData, (item, index) => (
                         <li key={`introLink-${index}`}>
-                            <Link to={item.url}>
-                                {item.label}
-                            </Link>
+                            <Link to={item.url}>{item.label}</Link>
                         </li>
                     ))}
                 </StyledGrid>

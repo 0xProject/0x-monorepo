@@ -15,6 +15,8 @@ import { RatingBar } from 'ts/pages/governance/rating_bar';
 import { VoteInfo, VoteValue } from 'ts/pages/governance/vote_form';
 import { VoteStats } from 'ts/pages/governance/vote_stats';
 import { colors } from 'ts/style/colors';
+import { configs } from 'ts/utils/configs';
+import { utils } from 'ts/utils/utils';
 
 interface LabelInterface {
     [key: number]: string;
@@ -51,13 +53,13 @@ const riskLabels: LabelInterface = {
 };
 
 const proposalData = {
-    zeipId: 1,
+    zeipId: 23,
     title: 'ZEIP23: Trading Bundles of Assets',
-    summary: `MultiAssetProxy brings support for trading arbitrary bundles of assets in 0x protocol. Historically only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets and even mix ERC721 and ERC20 to trade in a single order.`,
-    url: '#',
+    summary: `This ZEIP introduces the MultiAssetProxy which brings support for trading arbitrary bundles of assets in 0x protocol. Historically only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets and even mix ERC721 and ERC20 to trade in a single order.`,
+    url: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
     votingDeadline: 1551584000,
     benefit: {
-        title: 'Ecosystem Benefit',
+        title: 'Benefit',
         summary: `Supporting bundled trades is one of the most commonly requested features since the launch of 0x v2. Demand originated from our discussions with gaming and NFT related projects, but this upgrade provides utility to Prediction Markets as well as any relayer that wants to offer baskets of tokens. The MultiAssetProxy will enable new possibilities of trading.`,
         rating: 3,
         links: [
@@ -71,7 +73,7 @@ const proposalData = {
             },
         ],
     },
-    stakes: {
+    risks: {
         title: 'Risk',
         summary: `Deploying the MultiAssetProxy is a hot upgrade to 0x protocol where the state of active contracts is modified. The contracts being modified contain allowances to users tokens. As such the MultiAssetProxy has successfully undergone a third party audit. We encourage the community to verify the MultiAssetProxy code along with the state changes.`,
         rating: 2,
@@ -84,17 +86,6 @@ const proposalData = {
             {
                 text: 'View Audit',
                 url: 'https://github.com/ConsenSys/0x-audit-report-2018-12',
-            },
-        ],
-    },
-    complexity: {
-        title: 'Complexity of Code',
-        summary: `The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastracture that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.`,
-        rating: 1,
-        links: [
-            {
-                text: 'View Code',
-                url: '#',
             },
         ],
     },
@@ -172,11 +163,11 @@ export class Governance extends React.Component {
                         </FlexWrap>
                     </SectionWrap>
                     <SectionWrap>
-                        <Heading>{proposalData.stakes.title}</Heading>
+                        <Heading>{proposalData.risks.title}</Heading>
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
-                                <Paragraph>{proposalData.stakes.summary}</Paragraph>
-                                {_.map(proposalData.stakes.links, (link, index) => (
+                                <Paragraph>{proposalData.risks.summary}</Paragraph>
+                                {_.map(proposalData.risks.links, (link, index) => (
                                     <MoreLink
                                         href={link.url}
                                         target={!_.isUndefined(link.url) ? '_blank' : undefined}
@@ -189,17 +180,16 @@ export class Governance extends React.Component {
                                 ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
-                                <RatingBar color="#AE5400" labels={riskLabels} rating={proposalData.stakes.rating} />
+                                <RatingBar color="#AE5400" labels={riskLabels} rating={proposalData.risks.rating} />
                             </Column>
                         </FlexWrap>
                     </SectionWrap>
                 </Section>
 
                 <Banner
-                    heading="Ready to get started?"
-                    subline="Dive into our docs, or contact us if needed"
-                    mainCta={{ text: 'Get Started', href: '/docs' }}
-                    secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
+                    heading="Need ZRX to vote?"
+                    subline="Use 0x Instant to quickly trade ETH to ZRX for voting"
+                    secondaryCta={{ text: 'Launch Instant', onClick: this._onLaunchInstantClick.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
                 <ModalVote
@@ -211,7 +201,18 @@ export class Governance extends React.Component {
             </SiteWrap>
         );
     }
-    // private _renderSummarySection()
+
+    private readonly _onLaunchInstantClick = (): void => {
+        (window as any).zeroExInstant.render(
+            {
+                orderSource: configs.VOTE_INSTANT_ORDER_SOURCE,
+                availableAssetDatas: configs.VOTE_INSTANT_ASSET_DATAS,
+                defaultSelectedAssetData: configs.VOTE_INSTANT_ASSET_DATAS[0],
+            },
+            'body',
+        );
+    };
+
     private readonly _onOpenContactModal = (): void => {
         this.setState({ ...this.state, isContactModalOpen: true });
     };
@@ -234,7 +235,7 @@ export class Governance extends React.Component {
 
     private readonly _onVoteReceived = (voteInfo: VoteInfo): void => {
         const { userBalance, voteValue } = voteInfo;
-        const tally = {...this.state.tally};
+        const tally = { ...this.state.tally };
 
         if (voteValue === VoteValue.Yes) {
             tally.yes = tally.yes.plus(userBalance);
@@ -248,11 +249,9 @@ export class Governance extends React.Component {
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
-            // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
-            // tslint:disable:no-unbound-method
-            const isProduction = window.location.host.includes('0x.org');
-            const voteEndpoint = isProduction ? 'https://vote.0x.org/v1/tally/' : 'http://localhost:3000/v1/tally/';
-            const response = await fetch(`${voteEndpoint}${proposalData.zeipId}`, {
+            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
+            const voteEndpoint = `${voteDomain}/v1/tally/${proposalData.zeipId}`;
+            const response = await fetch(voteEndpoint, {
                 method: 'get',
                 mode: 'cors',
                 credentials: 'same-origin',

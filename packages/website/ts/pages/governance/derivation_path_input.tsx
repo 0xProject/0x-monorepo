@@ -40,13 +40,18 @@ export class DerivationPathInput extends React.Component<InputProps, InputState>
 
         return (
             <Wrapper>
-                <StyledInput name="derivationPath" label="Derivation Path" type="text" defaultValue={path} ref={this.pathRef} onChange={this._onDerivationPathChanged.bind(this)} />
-                <ButtonUpdate onClick={this._updatePath.bind(this)} isDisabled={!isPathChanged}>Update</ButtonUpdate>
-                {derivationErrMsg !== '' && (
-                    <ErrorParagraph>
-                        {derivationErrMsg}
-                    </ErrorParagraph>
-                )}
+                <StyledInput
+                    name="derivationPath"
+                    label="Derivation Path"
+                    type="text"
+                    defaultValue={path}
+                    ref={this.pathRef}
+                    onChange={this._onDerivationPathChanged.bind(this)}
+                />
+                <ButtonUpdate onClick={this._updatePath.bind(this)} isDisabled={!isPathChanged}>
+                    Update
+                </ButtonUpdate>
+                {derivationErrMsg !== '' && <ErrorParagraph>{derivationErrMsg}</ErrorParagraph>}
             </Wrapper>
         );
     }
@@ -79,13 +84,16 @@ const Wrapper = styled.div<{ marginBottom?: string }>`
 
 const ButtonUpdate = styled(Button).attrs({
     isTransparent: true,
+    isDisabled: true,
     type: 'button',
     color: '#5C5C5C',
     borderColor: '#5C5C5C',
 })`
     margin-left: 30px;
 
-    ${props => props.isDisabled && `
+    ${props =>
+        props.isDisabled &&
+        `
         opacity: 0.5;
         border-color: #ccc;
     `}

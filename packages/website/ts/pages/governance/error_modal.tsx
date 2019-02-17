@@ -25,11 +25,15 @@ export const ErrorModal: React.StatelessComponent<ErrorModalProps> = ({
         <Wrapper isOpen={isOpen}>
             <Inner>
                 <Icon color="#FD0000" name="help" size={100} margin={[0, 0, 'default', 0]} />
-                <Heading color={colors.textDarkPrimary} asElement="h3" size={34}>{heading}</Heading>
+                <Heading color={colors.textDarkPrimary} asElement="h3" size={34}>
+                    {heading}
+                </Heading>
                 <ErrorBox>
                     <Text>{text}</Text>
                 </ErrorBox>
-                <ButtonCta type="button" onClick={onClose}>{buttonText}</ButtonCta>
+                <ButtonCta type="button" onClick={onClose}>
+                    {buttonText}
+                </ButtonCta>
             </Inner>
         </Wrapper>
     );
@@ -52,7 +56,9 @@ const Wrapper = styled.div<ErrorModalProps>`
     opacity: 0;
     visibility: hidden;
 
-    ${props => props.isOpen && `
+    ${props =>
+        props.isOpen &&
+        `
         opacity: 1;
         visibility: visible;
     `}
@@ -60,7 +66,7 @@ const Wrapper = styled.div<ErrorModalProps>`
 
 const Inner = styled.div`
     margin: auto;
-    background-color: #F6F6F6;
+    background-color: #f6f6f6;
     padding: 30px 30px;
     width: 440px;
     height: 440px;
@@ -68,8 +74,8 @@ const Inner = styled.div`
 `;
 
 const ErrorBox = styled.div`
-    background-color: #FDEDED;
-    border: 1px solid #FD0000;
+    background-color: #fdeded;
+    border: 1px solid #fd0000;
     padding: 18px 30px;
     margin-bottom: 30px;
     overflow: auto;

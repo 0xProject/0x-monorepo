@@ -179,11 +179,7 @@ export class ConnectForm extends React.Component<Props, State> {
                     networkId={this.networkId}
                     onSelectAddress={this._onSelectAddressIndex.bind(this)}
                 />
-                {!_.isUndefined(errors.connectionError) && (
-                    <ErrorParagraph>
-                        {errors.connectionError}
-                    </ErrorParagraph>
-                )}
+                {!_.isUndefined(errors.connectionError) && <ErrorParagraph>{errors.connectionError}</ErrorParagraph>}
                 <DerivationPathInput
                     path={derivationPath}
                     onChangePath={this._onChangeDerivationPathAsync.bind(this)}
@@ -200,11 +196,14 @@ export class ConnectForm extends React.Component<Props, State> {
         );
     }
     public async _onChangeDerivationPathAsync(path: string): Promise<void> {
-        this.setState({
-            derivationPath: path,
-        }, async () => {
-            await this._onFetchAddressesForDerivationPathAsync();
-        });
+        this.setState(
+            {
+                derivationPath: path,
+            },
+            async () => {
+                await this._onFetchAddressesForDerivationPathAsync();
+            },
+        );
     }
     public async getUserAccountsAsync(): Promise<string[]> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
@@ -232,7 +231,6 @@ export class ConnectForm extends React.Component<Props, State> {
     }
     public async getZrxBalanceAsync(owner: string): Promise<BigNumber> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-        // const injectedProvider = undefined;
         const injectedProvider = await this._getInjectedProviderIfExistsAsync();
 
         if (!_.isUndefined(injectedProvider)) {
@@ -240,11 +238,8 @@ export class ConnectForm extends React.Component<Props, State> {
             const tokenAddress: string = contractAddresses.zrxToken;
             try {
                 const amount = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, owner);
-                // const formattedAmount = utils.getFormattedAmount(amount, constants.DECIMAL_PLACES_ETH);
-
                 return amount;
             } catch (error) {
-                // console.log(error);
                 return new BigNumber(0);
             }
         }
@@ -260,13 +255,16 @@ export class ConnectForm extends React.Component<Props, State> {
 
         const didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (didSucceed) {
-            this.setState({
-                errors: {},
-                preferredNetworkId: this.networkId,
-            }, async () => {
-                // Always assume selected index is 0 for Metamask
-                await this._updateSelectedAddressAsync(0);
-            });
+            this.setState(
+                {
+                    errors: {},
+                    preferredNetworkId: this.networkId,
+                },
+                async () => {
+                    // Always assume selected index is 0 for Metamask
+                    await this._updateSelectedAddressAsync(0);
+                },
+            );
         }
 
         return didSucceed;
@@ -275,14 +273,13 @@ export class ConnectForm extends React.Component<Props, State> {
         const isU2FSupported = await utils.isU2FSupportedAsync();
         if (!isU2FSupported) {
             const errorMessage = 'U2F not supported by this browser. Try using Chrome.';
-
-            // logUtils.log(`U2F not supported in this browser`);
-            this.props.onError ?
-                this.props.onError(errorMessage) : this.setState({
-                    errors: {
-                        connectionError: errorMessage,
-                    },
-                });
+            this.props.onError
+                ? this.props.onError(errorMessage)
+                : this.setState({
+                      errors: {
+                          connectionError: errorMessage,
+                      },
+                  });
 
             return false;
         }
@@ -320,12 +317,13 @@ export class ConnectForm extends React.Component<Props, State> {
         didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (!didSucceed) {
             const errorMessage = 'Failed to connect to Ledger.';
-            this.props.onError ?
-                this.props.onError(errorMessage) : this.setState({
-                    errors: {
-                        connectionError: errorMessage,
-                    },
-                });
+            this.props.onError
+                ? this.props.onError(errorMessage)
+                : this.setState({
+                      errors: {
+                          connectionError: errorMessage,
+                      },
+                  });
         }
         return didSucceed;
     }
@@ -339,15 +337,14 @@ export class ConnectForm extends React.Component<Props, State> {
                 addressBalances.push(balanceInZrx);
             }
         } catch (err) {
-            // console.log(err);
-            // logUtils.log(`Ledger error: ${JSON.stringify(err)}`);
             const errorMessage = 'Failed to connect. Follow the instructions and try again.';
-            this.props.onError ?
-                this.props.onError(errorMessage) : this.setState({
-                    errors: {
-                        connectionError: errorMessage,
-                    },
-                });
+            this.props.onError
+                ? this.props.onError(errorMessage)
+                : this.setState({
+                      errors: {
+                          connectionError: errorMessage,
+                      },
+                  });
             return false;
         }
 
@@ -492,10 +489,7 @@ export class ConnectForm extends React.Component<Props, State> {
         }
         return networkIdIfExists;
     }
-    private async _resetOrInitializeAsync(
-        networkId: number,
-        shouldUserLedgerProvider: boolean = false,
-    ): Promise<void> {
+    private async _resetOrInitializeAsync(networkId: number, shouldUserLedgerProvider: boolean = false): Promise<void> {
         if (!shouldUserLedgerProvider) {
             // this._dispatcher.updateBlockchainIsLoaded(false);
         }

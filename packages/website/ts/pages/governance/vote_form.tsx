@@ -23,15 +23,12 @@ import * as ethUtil from 'ethereumjs-util';
 
 import { ECSignature, SignatureType } from '@0x/types';
 
-import {
-    LedgerSubprovider,
-} from '@0x/subproviders';
+import { LedgerSubprovider } from '@0x/subproviders';
 import { Provider } from 'ethereum-types';
-import {
-    InjectedProvider,
-} from 'ts/types';
+import { InjectedProvider } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 export enum VoteValue {
     Yes = 'Yes',
@@ -68,10 +65,17 @@ interface State {
     votePreference?: string;
     zeip: string;
     voteHash?: string;
-    signedVote?: any;
+    signedVote?: SignedVote;
     errorMessage?: string;
     errors: ErrorProps;
     web3?: any;
+}
+
+interface SignedVote {
+    signature: string;
+    from: string;
+    zeip: string;
+    preference: string;
 }
 
 interface FormProps {
@@ -83,6 +87,8 @@ interface ErrorProps {
     [key: string]: string;
 }
 
+const defaultZeip = '23';
+
 export class VoteForm extends React.Component<Props> {
     public static defaultProps = {
         currentBalance: new BigNumber(0),
@@ -91,7 +97,7 @@ export class VoteForm extends React.Component<Props> {
         isSuccessful: false,
         isLedger: false,
         isVoted: false,
-        zeip: '1',
+        zeip: defaultZeip,
         errors: {},
     };
     public networkId: number;
@@ -101,7 +107,7 @@ export class VoteForm extends React.Component<Props> {
         isSuccessful: false,
         isVoted: false,
         votePreference: null,
-        zeip: '1',
+        zeip: VoteForm.defaultProps.zeip,
         errors: {},
     };
     // shared fields
@@ -124,9 +130,9 @@ export class VoteForm extends React.Component<Props> {
             .toNumber()
             .toFixed(configs.AMOUNT_DISPLAY_PRECSION);
         return (
-            <Form onSubmit={this._createVoteAsync.bind(this)} isSuccessful={isSuccessful}>
+            <Form onSubmit={this._createAndSubmitVoteAsync.bind(this)} isSuccessful={isSuccessful}>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
-                    MultiAssetProxy Vote
+                    ZEIP23 Vote
                 </Heading>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                     Make sure you are informed to the best of your ability before casting your vote. It will have
@@ -180,22 +186,17 @@ export class VoteForm extends React.Component<Props> {
             </Form>
         );
     }
-    private readonly _createVoteAsync = async (e: FormEvent): Promise<any> => {
+    private readonly _createAndSubmitVoteAsync = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
 
         const { zeip, votePreference } = this.state;
         const { currentBalance, selectedAddress } = this.props;
-        // Query the available addresses
-        // const addresses = await web3Wrapper.getAvailableAddressesAsync();
-        // Use the first account as the maker
-        // const makerAddress = addresses[0];
         const makerAddress = selectedAddress;
         const domainType = [{ name: 'name', type: 'string' }];
         const voteType = [
             { name: 'preference', type: 'string' },
             { name: 'zeip', type: 'uint256' },
             { name: 'from', type: 'address' },
-            // { name: 'title', type: 'string' },
         ];
 
         const domainData = {
@@ -206,7 +207,6 @@ export class VoteForm extends React.Component<Props> {
             preference: votePreference,
             from: makerAddress,
         };
-
         const typedData = {
             types: {
                 EIP712Domain: domainType,
@@ -220,14 +220,13 @@ export class VoteForm extends React.Component<Props> {
         const voteHashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         const voteHashHex = `0x${voteHashBuffer.toString('hex')}`;
         try {
-            const signature = await this._createSignatureAsync(makerAddress, typedData);
-            const signedVote = { ...message, signature, from: makerAddress };
-            const isProduction = window.location.host.includes('0x.org');
-            const voteEndpoint = isProduction ? 'https://vote.0x.org/v1/vote' : 'http://localhost:3000/v1/vote';
-
+            const signedVote = await this._signVoteAsync(makerAddress, typedData);
             // Store the signed Order
             this.setState(prevState => ({ ...prevState, signedVote, voteHash: voteHashHex, isSuccessful: true }));
-            await fetch(voteEndpoint, {
+
+            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
+            const voteEndpoint = `${voteDomain}/v1/vote`;
+            const response = await fetch(voteEndpoint, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -235,33 +234,43 @@ export class VoteForm extends React.Component<Props> {
                 },
                 body: JSON.stringify(signedVote),
             });
-
-            if (this.props.onVoted) {
-                this.props.onVoted({ userBalance: currentBalance, voteValue: this._getVoteValueFromString(votePreference) });
+            if (response.ok) {
+                if (this.props.onVoted) {
+                    this.props.onVoted({
+                        userBalance: currentBalance,
+                        voteValue: this._getVoteValueFromString(votePreference),
+                    });
+                }
+            } else {
+                const responseBody = await response.json();
+                const errorMessage = !_.isUndefined(responseBody.reason) ? responseBody.reason : 'Unknown Error';
+                this.props.onError
+                    ? this.props.onError(errorMessage)
+                    : this.setState({
+                          errors: {
+                              signError: errorMessage,
+                          },
+                          isSuccessful: false,
+                      });
             }
-
-            return signedVote;
         } catch (err) {
             const errorMessage = err.message;
-
-            // logUtils.log(errorMessage);
-            this.props.onError ?
-                this.props.onError(errorMessage) : this.setState({
-                    errors: {
-                        signError: errorMessage,
-                    },
-                    isSuccessful: false,
-                });
-            // console.log(err);
-            return null as any;
+            this.props.onError
+                ? this.props.onError(errorMessage)
+                : this.setState({
+                      errors: {
+                          signError: errorMessage,
+                      },
+                      isSuccessful: false,
+                  });
         }
     };
-    private async _createSignatureAsync(signerAddress: string, typedData: any): Promise<string> {
+    private async _signVoteAsync(signerAddress: string, typedData: any): Promise<SignedVote> {
         const { providerEngine } = this.props;
+        let signatureHex;
 
         try {
-            const signatureHex = await this._eip712SignatureAsync(signerAddress, typedData);
-            return signatureHex;
+            signatureHex = await this._eip712SignatureAsync(signerAddress, typedData);
         } catch (err) {
             // HACK: We are unable to handle specific errors thrown since provider is not an object
             //       under our control. It could be Metamask Web3, Ethers, or any general RPC provider.
@@ -274,10 +283,10 @@ export class VoteForm extends React.Component<Props> {
 
             const voteHashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
             const voteHashHex = `0x${voteHashBuffer.toString('hex')}`;
-            const signatureHex = await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, signerAddress);
-
-            return signatureHex;
+            signatureHex = await signatureUtils.ecSignHashAsync(providerEngine, voteHashHex, signerAddress);
         }
+        const signedVote = { ...typedData.message, signature: signatureHex };
+        return signedVote;
     }
     private readonly _eip712SignatureAsync = async (address: string, typedData: any): Promise<string> => {
         const signature = await this.props.web3Wrapper.signTypedDataAsync(address, typedData);
