@@ -27,7 +27,6 @@ import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
 import { NextMarketMaker } from 'ts/pages/market_maker';
-import { VotePlaceholder } from 'ts/pages/vote_placeholder';
 import { NextWhy } from 'ts/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries

@@ -213,10 +213,6 @@ export class Governance extends React.Component {
         );
     };
 
-    private readonly _onOpenContactModal = (): void => {
-        this.setState({ ...this.state, isContactModalOpen: true });
-    };
-
     private readonly _onDismissContactModal = (): void => {
         this.setState({ ...this.state, isContactModalOpen: false });
     };
