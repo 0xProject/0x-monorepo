@@ -55,7 +55,7 @@ const riskLabels: LabelInterface = {
 
 const proposalData = {
     zeipId: 23,
-    title: 'ZEIP23: Trading Bundles of Assets',
+    title: 'ZEIP-23: Trading Bundles of Assets',
     summary: `This ZEIP introduces the MultiAssetProxy, which adds support for trading arbitrary bundles of assets to 0x protocol. Historically, only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets or even mix ERC721 and ERC20 assets within a single order.`,
     url: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
     votingDeadline: 1551052800,
@@ -184,9 +184,10 @@ export class Governance extends React.Component {
                 </Section>
 
                 <Banner
-                    heading="Need ZRX to vote?"
-                    subline="Use 0x Instant to quickly trade ETH to ZRX for voting"
-                    secondaryCta={{ text: 'Launch Instant', onClick: this._onLaunchInstantClick.bind(this) }}
+                    heading="Vote with ZRX on ZEIP-23"
+                    subline="Use 0x Instant to quickly purchase ZRX for voting"
+                    mainCta={{ text: 'Get ZRX', onClick: this._onLaunchInstantClick.bind(this) }}
+                    secondaryCta={{ text: 'Vote', onClick: this._onOpenVoteModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
                 <ModalVote

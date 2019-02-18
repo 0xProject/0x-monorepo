@@ -1,15 +1,11 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-
-import { TallyInterface } from 'ts/pages/governance/governance';
-
-import { Heading, Paragraph } from 'ts/components/text';
-import { VoteBar } from 'ts/pages/governance/vote_bar';
-
-import { colors } from 'ts/style/colors';
-
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import * as React from 'react';
+
+import { Heading, Paragraph } from 'ts/components/text';
+import { TallyInterface } from 'ts/pages/governance/governance';
+import { VoteBar } from 'ts/pages/governance/vote_bar';
+import { colors } from 'ts/style/colors';
 import { configs } from 'ts/utils/configs';
 
 interface VoteStatsProps {

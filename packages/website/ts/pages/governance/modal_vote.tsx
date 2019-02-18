@@ -120,9 +120,14 @@ export class ModalVote extends React.Component<Props> {
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                                 You voted from {selectedAddress} with {formattedBalance} ZRX
                             </Paragraph>
-                            <Button type="button" onClick={this._onDone.bind(this)}>
-                                Done
-                            </Button>
+                            <ButtonWrap>
+                                <Button type="button" onClick={this._shareViaTwitterAsync.bind(this)}>
+                                    Tweet
+                                </Button>
+                                <Button type="button" onClick={this._onDone.bind(this)}>
+                                    Done
+                                </Button>
+                            </ButtonWrap>
                         </Confirmation>
                         <ButtonClose type="button" onClick={this.props.onDismiss}>
                             <span>Close</span>
@@ -146,6 +151,10 @@ export class ModalVote extends React.Component<Props> {
             default:
                 return this._renderConnectWalletFormContent();
         }
+    }
+    private _shareViaTwitterAsync(): void {
+        const tweetText = encodeURIComponent(`I voted on ZEIP-23! 🗳️#VoteWithZRX https://0x.org/vote`);
+        window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, 'Share your vote', 'width=500,height=400');
     }
     private _renderConnectWalletFormContent(): React.ReactNode {
         const { web3Wrapper } = this.state;
@@ -296,5 +305,27 @@ const Confirmation = styled.div<FormProps>`
         max-width: 492px;
         margin-left: auto;
         margin-right: auto;
+    }
+`;
+
+const ButtonWrap = styled.div`
+    display: inline-block;
+
+    @media (min-width: 768px) {
+        * + * {
+            margin-left: 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        a,
+        button {
+            display: block;
+            width: 220px;
+        }
+
+        * + * {
+            margin-top: 15px;
+        }
     }
 `;
