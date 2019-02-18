@@ -6,25 +6,27 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { TallyInterface } from 'ts/pages/governance/governance';
 import { VoteBar } from 'ts/pages/governance/vote_bar';
 import { colors } from 'ts/style/colors';
-import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
 
 interface VoteStatsProps {
     tally?: TallyInterface;
 }
 export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) => {
-    BigNumber.config({
-        FORMAT: {
-            decimalSeparator: '.',
-            groupSeparator: ',',
-            groupSize: 3,
-            secondaryGroupSize: 0,
-            fractionGroupSeparator: ' ',
-            fractionGroupSize: 0,
-        },
-    });
+    const bigNumberFormat = {
+        decimalSeparator: '.',
+        groupSeparator: ',',
+        groupSize: 3,
+        secondaryGroupSize: 0,
+        fractionGroupSeparator: ' ',
+        fractionGroupSize: 0,
+    };
     const { yes, totalBalance } = tally;
     const HUNDRED = new BigNumber(100);
-    const totalBalanceString = Web3Wrapper.toUnitAmount(totalBalance, 18).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
+    const totalBalanceString = Web3Wrapper.toUnitAmount(totalBalance, constants.DECIMAL_PLACES_ETH).toFormat(
+        0,
+        BigNumber.ROUND_FLOOR,
+        bigNumberFormat,
+    );
     let yesPercentage = HUNDRED.times(yes.dividedBy(totalBalance));
     let noPercentage = HUNDRED.minus(yesPercentage);
 

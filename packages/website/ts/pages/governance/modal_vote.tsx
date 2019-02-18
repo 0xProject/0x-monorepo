@@ -96,8 +96,18 @@ export class ModalVote extends React.Component<Props> {
     public render(): React.ReactNode {
         const { isOpen, onDismiss } = this.props;
         const { isSuccessful, selectedAddress, currentBalance, isErrorModalOpen, errorMessage } = this.state;
-        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFixed(
-            configs.AMOUNT_DISPLAY_PRECSION,
+        const bigNumberFormat = {
+            decimalSeparator: '.',
+            groupSeparator: ',',
+            groupSize: 3,
+            secondaryGroupSize: 0,
+            fractionGroupSeparator: ' ',
+            fractionGroupSize: 0,
+        };
+        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFormat(
+            0,
+            BigNumber.ROUND_FLOOR,
+            bigNumberFormat,
         );
         return (
             <>

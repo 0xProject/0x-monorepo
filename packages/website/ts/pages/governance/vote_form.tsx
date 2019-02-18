@@ -118,13 +118,23 @@ export class VoteForm extends React.Component<Props> {
     public render(): React.ReactNode {
         const { votePreference, errors, isSuccessful } = this.state;
         const { currentBalance, selectedAddress } = this.props;
-        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH)
-            .toNumber()
-            .toFixed(configs.AMOUNT_DISPLAY_PRECSION);
+        const bigNumberFormat = {
+            decimalSeparator: '.',
+            groupSeparator: ',',
+            groupSize: 3,
+            secondaryGroupSize: 0,
+            fractionGroupSeparator: ' ',
+            fractionGroupSize: 0,
+        };
+        const formattedBalance = Web3Wrapper.toUnitAmount(currentBalance, constants.DECIMAL_PLACES_ETH).toFormat(
+            0,
+            BigNumber.ROUND_FLOOR,
+            bigNumberFormat,
+        );
         return (
             <Form onSubmit={this._createAndSubmitVoteAsync.bind(this)} isSuccessful={isSuccessful}>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
-                    ZEIP23 Vote
+                    ZEIP-23 Vote
                 </Heading>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                     Make sure you are informed to the best of your ability before casting your vote. It will have
