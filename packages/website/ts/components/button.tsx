@@ -6,7 +6,7 @@ import { ThemeInterface } from 'ts/components/siteWrap';
 
 import { colors } from 'ts/style/colors';
 
-interface ButtonInterface {
+export interface ButtonInterface {
     bgColor?: string;
     borderColor?: string;
     color?: string;
@@ -22,7 +22,7 @@ interface ButtonInterface {
     type?: string;
     target?: string;
     to?: string;
-    onClick?: () => any;
+    onClick?: (e: Event) => any;
     theme?: ThemeInterface;
     shouldUseAnchorTag?: boolean;
 }

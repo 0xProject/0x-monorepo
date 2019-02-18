@@ -357,7 +357,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
-    private async _onSubmitAsync(e: Event): Promise<void> {
+    private async _onSubmitAsync(e: React.FormEvent): Promise<void> {
         e.preventDefault();
 
         let jsonBody;
