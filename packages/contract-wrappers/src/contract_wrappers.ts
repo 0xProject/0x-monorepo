@@ -9,7 +9,7 @@ import {
     OrderValidator,
     WETH9,
 } from '@0x/contract-artifacts';
-import { AbiDecoder } from '@0x/utils';
+import { AbiDecoder, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -82,7 +82,7 @@ export class ContractWrappers {
      * @return  An instance of the ContractWrappers class.
      */
     constructor(provider: Provider, config: ContractWrappersConfig) {
-        assert.isWeb3Provider('provider', provider);
+        providerUtils.standardizeOrThrow(provider);
         assert.doesConformToSchema('config', config, ContractWrappersConfigSchema);
         const txDefaults = {
             gasPrice: config.gasPrice,

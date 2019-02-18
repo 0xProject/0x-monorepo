@@ -1,5 +1,5 @@
 import { promisify } from '@0x/utils';
-import { JSONRPCRequestPayload, JSONRPCResponsePayload, Provider } from 'ethereum-types';
+import { JSONRPCRequestPayload, JSONRPCResponsePayload, ProviderEngineProvider } from 'ethereum-types';
 
 import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
 /**
@@ -8,7 +8,7 @@ import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../typ
  */
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
-    private engine!: Provider;
+    private engine!: ProviderEngineProvider;
     protected static _createFinalPayload(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Partial<JSONRPCRequestPayloadWithMethod> {
@@ -64,7 +64,7 @@ export abstract class Subprovider {
      * directly.
      * @param engine The ProviderEngine this subprovider is added to
      */
-    public setEngine(engine: Provider): void {
+    public setEngine(engine: ProviderEngineProvider): void {
         this.engine = engine;
     }
 }

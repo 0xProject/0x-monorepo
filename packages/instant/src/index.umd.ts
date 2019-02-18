@@ -1,5 +1,6 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { assetDataUtils } from '@0x/order-utils';
+import { providerUtils } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -50,7 +51,7 @@ const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: stri
         assert.isValidAffiliateInfo('affiliateInfo', config.affiliateInfo);
     }
     if (!_.isUndefined(config.provider)) {
-        assert.isWeb3Provider('provider', config.provider);
+        providerUtils.standardizeOrThrow(config.provider);
     }
     if (!_.isUndefined(config.walletDisplayName)) {
         assert.isString('walletDisplayName', config.walletDisplayName);
@@ -158,7 +159,7 @@ export const hasLiquidityForAssetDataAsync = async (
     assert.isNumber('networkId', networkId);
 
     if (provider !== undefined) {
-        assert.isWeb3Provider('provider', provider);
+        providerUtils.standardizeOrThrow(provider);
     }
 
     const bestProvider: Provider = provider || providerFactory.getFallbackNoSigningProvider(networkId);

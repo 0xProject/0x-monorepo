@@ -1,4 +1,4 @@
-import { AbiEncoder, abiUtils, BigNumber } from '@0x/utils';
+import { AbiEncoder, abiUtils, BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -157,8 +157,9 @@ export class BaseContract {
         provider: Provider,
         txDefaults?: Partial<TxData>,
     ) {
+        const web3WrapperProvider = providerUtils.standardizeOrThrow(provider);
         this.contractName = contractName;
-        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
+        this._web3Wrapper = new Web3Wrapper(web3WrapperProvider, txDefaults);
         this.abi = abi;
         this.address = address;
         const methodAbis = this.abi.filter(

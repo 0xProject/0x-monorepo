@@ -154,18 +154,6 @@ describe('Assertions', () => {
             invalidInputs.forEach(input => expect(assert.isBoolean.bind(assert, variableName, input)).to.throw());
         });
     });
-    describe('#isWeb3Provider', () => {
-        it('should not throw for valid input', () => {
-            const validInputs = [{ send: () => 45 }, { sendAsync: () => 45 }];
-            validInputs.forEach(input =>
-                expect(assert.isWeb3Provider.bind(assert, variableName, input)).to.not.throw(),
-            );
-        });
-        it('should throw for invalid input', () => {
-            const invalidInputs = [42, { random: 'test' }, undefined, new BigNumber(45)];
-            invalidInputs.forEach(input => expect(assert.isWeb3Provider.bind(assert, variableName, input)).to.throw());
-        });
-    });
     describe('#doesConformToSchema', () => {
         const schema = schemas.addressSchema;
         it('should not throw for valid input', () => {

@@ -33,7 +33,7 @@ import {
     OrderStateUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
-import { errorUtils, intervalUtils } from '@0x/utils';
+import { errorUtils, intervalUtils, providerUtils } from '@0x/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -102,7 +102,7 @@ export class OrderWatcher {
         contractAddresses?: ContractAddresses,
         partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
     ) {
-        assert.isWeb3Provider('provider', provider);
+        providerUtils.standardizeOrThrow(provider);
         assert.isNumber('networkId', networkId);
         assert.doesConformToSchema('partialConfig', partialConfig, orderWatcherPartialConfigSchema);
         const config = {

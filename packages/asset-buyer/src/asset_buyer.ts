@@ -2,7 +2,7 @@ import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -56,7 +56,7 @@ export class AssetBuyer {
         orders: SignedOrder[],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
+        providerUtils.standardizeOrThrow(provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
@@ -76,7 +76,7 @@ export class AssetBuyer {
         sraApiUrl: string,
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
+        providerUtils.standardizeOrThrow(provider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
         const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
@@ -97,7 +97,7 @@ export class AssetBuyer {
             constants.DEFAULT_ASSET_BUYER_OPTS,
             options,
         );
-        assert.isWeb3Provider('provider', provider);
+        providerUtils.standardizeOrThrow(provider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);

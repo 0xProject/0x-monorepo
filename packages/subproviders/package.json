@@ -37,7 +37,6 @@
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "4.24.0",
         "@types/eth-lightwallet": "^3.0.0",
-        "@types/ganache-core": "^2.1.2",
         "@types/hdkey": "^0.7.0",
         "@types/web3-provider-engine": "^14.0.0",
         "bip39": "^2.5.0",
