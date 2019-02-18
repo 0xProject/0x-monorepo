@@ -118,7 +118,7 @@ export class ModalVote extends React.Component<Props> {
                     <StyledDialogContent>
                         {this._renderFormContent()}
                         <Confirmation isSuccessful={isSuccessful}>
-                            <Icon name="voting" size="large" margin={[0, 0, 'default', 0]} />
+                            <Icon name="zeip-23" size="large" margin={[0, 0, 'default', 0]} />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
                                 Vote Recieved!
                             </Heading>
