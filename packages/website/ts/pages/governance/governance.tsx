@@ -5,6 +5,7 @@ import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
+import { MetaTags } from 'ts/components/meta_tags';
 import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
@@ -112,6 +113,7 @@ export class Governance extends React.Component {
         const { isVoteReceived, tally } = this.state;
         return (
             <SiteWrap theme="dark">
+                <MetaTags title={'vote on 0x'} description={'Heres how to dothis'} />
                 <DocumentTitle title="Governance Vote - 0x" />
                 <Section maxWidth="1170px" isFlex={true}>
                     <Column width="55%" maxWidth="560px">

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>0x Instant Dev Environment</title>
+        <link rel="stylesheet" href="/external.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+        <script type="text/javascript" src="/instant.js" charset="utf-8"></script>
+    </head>
+
+    <body>
+        <script>
+            const config = {
+                availableAssetDatas: ['0xf47261b0000000000000000000000000439ce375e3ee4dc203d71958beca3c0f417d65cb'],
+                defaultSelectedAssetData: '0xf47261b0000000000000000000000000439ce375e3ee4dc203d71958beca3c0f417d65cb',
+                additionalAssetMetaDataMap: {
+                    '0xf47261b0000000000000000000000000439ce375e3ee4dc203d71958beca3c0f417d65cb': {
+                        assetProxyId: '0xf47261b0',
+                        decimals: 18,
+                        symbol: 'BOI',
+                        name: 'DAPP BOI',
+                        primaryColor: 'blue',
+                    },
+                },
+                orderSource: 'https://bubbly-granite-229322.appspot.com/v2/',
+                networkId: 1,
+            };
+            zeroExInstant.render(config, 'body');
+        </script>
+    </body>
+</html>
