@@ -56,12 +56,12 @@ const riskLabels: LabelInterface = {
 const proposalData = {
     zeipId: 23,
     title: 'ZEIP23: Trading Bundles of Assets',
-    summary: `This ZEIP introduces the MultiAssetProxy which brings support for trading arbitrary bundles of assets in 0x protocol. Historically only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets and even mix ERC721 and ERC20 to trade in a single order.`,
+    summary: `This ZEIP introduces the MultiAssetProxy, which adds support for trading arbitrary bundles of assets to 0x protocol. Historically, only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets or even mix ERC721 and ERC20 assets within a single order.`,
     url: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
     votingDeadline: 1551052800,
     benefit: {
         title: 'Benefit',
-        summary: `Supporting bundled trades is one of the most commonly requested features since the launch of 0x v2. Demand originated from our discussions with gaming and NFT related projects, but this upgrade provides utility to Prediction Markets as well as any relayer that wants to offer baskets of tokens. The MultiAssetProxy will enable new possibilities of trading.`,
+        summary: `Supporting trades for bundles of assets has been one of the most commonly requested features since the launch of 0x v2. The idea for this feature originated from discussions with gaming and NFT related projects. However, this upgrade also provides utility to relayers for prediction markets or baskets of tokens. The MultiAssetProxy will enable brand new ways of trading.`,
         rating: 3,
         links: [
             {
@@ -72,7 +72,7 @@ const proposalData = {
     },
     risks: {
         title: 'Risk',
-        summary: `Deploying the MultiAssetProxy is a hot upgrade to 0x protocol where the state of active contracts is modified. The contracts being modified contain allowances to users tokens. As such the MultiAssetProxy has successfully undergone a third party audit. We encourage the community to verify the MultiAssetProxy code along with the state changes.`,
+        summary: `Deploying the MultiAssetProxy is a hot upgrade that requires modifying the state of existing contracts within 0x protocol. The contracts being modified contain allowances to many users tokens. Therefore, it is possible for bugs within the MultiAssetProxy to result in the loss of user funds. However, the code of the MultiAssetProxy is relatively straightforward and has successfully undergone a full third party audit. We encourage the community to verify the code as well as the state changes.`,
         rating: 2,
         links: [
             {
