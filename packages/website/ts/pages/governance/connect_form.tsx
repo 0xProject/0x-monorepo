@@ -1,24 +1,5 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled from 'styled-components';
-
-import { colors } from 'ts/style/colors';
-
-import '@reach/dialog/styles.css';
-
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-
-import { Button } from 'ts/components/button';
-import { Icon } from 'ts/components/icon';
-import { Heading, Paragraph } from 'ts/components/text';
-import { utils } from 'ts/utils/utils';
-
-import { AddressTable } from 'ts/pages/governance/address_table';
-import { DerivationPathInput } from 'ts/pages/governance/derivation_path_input';
-
 import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
@@ -28,10 +9,24 @@ import {
     SignerSubprovider,
     Web3ProviderEngine,
 } from '@0x/subproviders';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import '@reach/dialog/styles.css';
 import { Provider } from 'ethereum-types';
+import * as _ from 'lodash';
+import * as React from 'react';
+import styled from 'styled-components';
+
+import { Button } from 'ts/components/button';
+import { Icon } from 'ts/components/icon';
+import { Heading, Paragraph } from 'ts/components/text';
+import { AddressTable } from 'ts/pages/governance/address_table';
+import { DerivationPathInput } from 'ts/pages/governance/derivation_path_input';
+import { colors } from 'ts/style/colors';
 import { InjectedProvider, Providers } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 const providerToName: { [provider: string]: string } = {
     [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
@@ -169,7 +164,7 @@ export class ConnectForm extends React.Component<Props, State> {
         return (
             <>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
-                    Choose Adress to Vote From
+                    Choose Address to Vote From
                 </Heading>
                 <AddressTable
                     userAddresses={userAddresses}
@@ -210,7 +205,7 @@ export class ConnectForm extends React.Component<Props, State> {
         const userAccountsIfExists = await web3Wrapper.getAvailableAddressesAsync();
         return userAccountsIfExists;
     }
-    public getLedgerDerivationPathIfExists(): string {
+    public getLedgerDerivationPathIfExists(): string | undefined {
         if (_.isUndefined(this._ledgerSubprovider)) {
             return undefined;
         }

@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
+
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { ModalContact } from 'ts/components/modals/modal_contact';
@@ -57,16 +58,12 @@ const proposalData = {
     title: 'ZEIP23: Trading Bundles of Assets',
     summary: `This ZEIP introduces the MultiAssetProxy which brings support for trading arbitrary bundles of assets in 0x protocol. Historically only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets and even mix ERC721 and ERC20 to trade in a single order.`,
     url: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
-    votingDeadline: 1551584000,
+    votingDeadline: 1551052800,
     benefit: {
         title: 'Benefit',
         summary: `Supporting bundled trades is one of the most commonly requested features since the launch of 0x v2. Demand originated from our discussions with gaming and NFT related projects, but this upgrade provides utility to Prediction Markets as well as any relayer that wants to offer baskets of tokens. The MultiAssetProxy will enable new possibilities of trading.`,
         rating: 3,
         links: [
-            {
-                text: 'Learn More',
-                url: 'https://0xproject.quip.com/k1ERAXnUj2ay/ZEIP23-Support-for-MultiAssetProxy',
-            },
             {
                 text: 'Technical detail',
                 url: 'https://github.com/0xProject/ZEIPs/issues/23',

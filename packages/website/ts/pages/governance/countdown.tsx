@@ -29,6 +29,7 @@ export const Countdown: React.StatelessComponent<Props> = ({ deadline }) => {
     const timeText = !isPassed ? ` • ${getRelativeTime(time)}` : '';
     const voteText = `${voteTextPrefix} ${time.format('L LT')} PST ${timeText}`;
 
+    // TODO convert to container component
     return (
         <div>
             <div style={{ display: 'flex', marginBottom: '10px' }}>

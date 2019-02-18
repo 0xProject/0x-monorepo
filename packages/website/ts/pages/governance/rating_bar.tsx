@@ -3,7 +3,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Paragraph } from 'ts/components/text';
-
 import { colors } from 'ts/style/colors';
 
 interface LabelInterface {
@@ -33,6 +32,7 @@ export const RatingBar: React.StatelessComponent<RatingBarProps> = ({ rating, co
     const ratingPlaceholders = Array.from(new Array(3), (value, index) => index + 1);
     const fillCheck = (currentIndex: number) => currentIndex <= rating;
 
+    // TODO convert this to use a Container component
     return (
         <div>
             <div style={{ display: 'flex', marginBottom: '12px' }}>

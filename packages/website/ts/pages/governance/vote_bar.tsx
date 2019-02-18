@@ -17,6 +17,7 @@ interface VoteColumnProps {
 export const VoteBar: React.StatelessComponent<VoteBarProps> = ({ percentage, color, label, marginBottom }) => {
     const percentageLabel = `${percentage}%`;
 
+    // TODO convert this to use a Container component
     return (
         <Wrapper marginBottom={marginBottom}>
             <VoteColumnPrefix>{label}</VoteColumnPrefix>

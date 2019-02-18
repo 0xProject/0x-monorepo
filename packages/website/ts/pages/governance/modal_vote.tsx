@@ -1,27 +1,21 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled from 'styled-components';
-
-import { colors } from 'ts/style/colors';
-
-import { DialogContent, DialogOverlay } from '@reach/dialog';
-import '@reach/dialog/styles.css';
-
 import { ContractWrappers } from '@0x/contract-wrappers';
+import { LedgerSubprovider } from '@0x/subproviders';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { DialogContent, DialogOverlay } from '@reach/dialog';
+import '@reach/dialog/styles.css';
+import { Provider } from 'ethereum-types';
+import * as React from 'react';
+import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
-
 import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_form';
 import { ErrorModal } from 'ts/pages/governance/error_modal';
 import { VoteForm, VoteInfo } from 'ts/pages/governance/vote_form';
-
-import { LedgerSubprovider } from '@0x/subproviders';
-import { Provider } from 'ethereum-types';
+import { colors } from 'ts/style/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
@@ -66,6 +60,8 @@ interface ErrorProps {
     [key: string]: string;
 }
 
+// This is a copy of the generic form and includes a number of extra fields
+// TODO remove the extraneous fields
 export class ModalVote extends React.Component<Props> {
     public networkId: number;
     public state: State = {

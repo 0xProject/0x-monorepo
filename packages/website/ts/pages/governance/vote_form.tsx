@@ -1,30 +1,21 @@
+import { signatureUtils } from '0x.js';
+import { ContractWrappers } from '@0x/contract-wrappers';
+import { LedgerSubprovider } from '@0x/subproviders';
+import { ECSignature, SignatureType } from '@0x/types';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import '@reach/dialog/styles.css';
+import { Provider } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-
-// tslint:disable-next-line: no-duplicate-imports
-import { ChangeEvent, FormEvent } from 'react';
-
-import { colors } from 'ts/style/colors';
-
-import '@reach/dialog/styles.css';
-
-import { ContractWrappers } from '@0x/contract-wrappers';
-import { BigNumber, signTypedDataUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { Button } from 'ts/components/button';
 import { Input } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { PreferenceSelecter } from 'ts/pages/governance/preference_selecter';
-
-import { signatureUtils } from '0x.js';
-import * as ethUtil from 'ethereumjs-util';
-
-import { ECSignature, SignatureType } from '@0x/types';
-
-import { LedgerSubprovider } from '@0x/subproviders';
-import { Provider } from 'ethereum-types';
+import { colors } from 'ts/style/colors';
 import { InjectedProvider } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
@@ -88,6 +79,8 @@ interface ErrorProps {
 
 const defaultZeip = 23;
 
+// This is a copy of the generic form and includes a number of extra fields
+// TODO remove the extraneous fields
 export class VoteForm extends React.Component<Props> {
     public static defaultProps = {
         currentBalance: new BigNumber(0),
@@ -186,7 +179,7 @@ export class VoteForm extends React.Component<Props> {
             </Form>
         );
     }
-    private readonly _createAndSubmitVoteAsync = async (e: FormEvent): Promise<void> => {
+    private readonly _createAndSubmitVoteAsync = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
 
         const { zeip, votePreference, comment } = this.state;
@@ -310,12 +303,12 @@ export class VoteForm extends React.Component<Props> {
         };
         return ecSignature;
     }
-    private _setVotePreference(e: ChangeEvent<HTMLInputElement>): void {
+    private _setVotePreference(e: React.ChangeEvent<HTMLInputElement>): void {
         this.setState({
             votePreference: e.currentTarget.value,
         });
     }
-    private _setVoteComment(e: ChangeEvent<any>): void {
+    private _setVoteComment(e: React.ChangeEvent<any>): void {
         this.setState({
             comment: e.currentTarget.value,
         });

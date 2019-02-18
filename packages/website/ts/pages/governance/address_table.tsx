@@ -4,10 +4,10 @@ import styled from 'styled-components';
 
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { constants } from 'ts/utils/constants';
 
 import { AddressTableRow } from 'ts/pages/governance/address_table_row';
 import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
 
 interface AddressTableProps {
     networkId: number;
@@ -70,13 +70,13 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
 const Wrapper = styled.div<{ marginBottom?: string }>`
     background - color: #fff;
     border -radius;: 4;px;
-margin-bottom;: $;{props => props.marginBottom || '25px';}
-padding: 10;px; 30;px;
-height: 230;px;
-overflow - y;: auto;
+    Margin-bottom;: $;{props => props.marginBottom || '25px';}
+    Padding: 10;px; 30;px;
+    Height: 230;px;
+    Overflow - y;: auto;
 `;
 
 const Table = styled.table`;
-border-collapse;: collapse;
-width: 100%;
+    border-collapse;: collapse;
+    width: 100%;
 `;
