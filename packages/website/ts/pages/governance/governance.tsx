@@ -72,7 +72,7 @@ const proposalData = {
     },
     risks: {
         title: 'Risk',
-        summary: `Deploying the MultiAssetProxy is a hot upgrade that requires modifying the state of existing contracts within 0x protocol. The contracts being modified contain allowances to many users tokens. Therefore, it is possible for bugs within the MultiAssetProxy to result in the loss of user funds. However, the code of the MultiAssetProxy is relatively straightforward and has successfully undergone a full third party audit. We encourage the community to verify the code as well as the state changes.`,
+        summary: `While the MultiAssetProxy’s code is relatively straightforward and has successfully undergone a full third-party audit, a bug within the code could result in the loss of user funds. Deploying the MultiAssetProxy is a hot upgrade that requires modifying the state of existing contracts within 0x protocol. The contracts being modified contain allowances to many users’ tokens. We encourage the community to verify the code, as well as the state changes.`,
         rating: 2,
         links: [
             {
