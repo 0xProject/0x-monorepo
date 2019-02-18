@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
 import { addFadeInAnimation } from 'ts/constants/animations';
+
+import { Announcement, AnnouncementProps } from './announcement';
 
 interface Props {
     title: string;
@@ -13,6 +14,7 @@ interface Props {
     description: string;
     figure?: React.ReactNode;
     actions?: React.ReactNode;
+    announcement?: AnnouncementProps;
 }
 
 const Section = styled.section`
@@ -126,6 +128,7 @@ export const Hero: React.StatelessComponent<Props> = (props: Props) => (
             {props.figure && <Content width="400px">{props.figure}</Content>}
 
             <Content width={props.maxWidth ? props.maxWidth : props.figure ? '546px' : '678px'}>
+                {!!props.announcement && <Announcement {...props.announcement} />}
                 <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
                     {props.title}
                 </Title>
