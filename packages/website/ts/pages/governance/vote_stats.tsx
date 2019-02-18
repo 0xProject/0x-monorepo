@@ -10,6 +10,7 @@ import { colors } from 'ts/style/colors';
 
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { configs } from 'ts/utils/configs';
 
 interface VoteStatsProps {
     tally?: TallyInterface;
@@ -25,10 +26,9 @@ export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) =
             fractionGroupSize: 0,
         },
     });
-    // const totalBalance = tally.totalBalance.toFormat(3, 2);
     const { yes, totalBalance } = tally;
     const HUNDRED = new BigNumber(100);
-    const totalBalanceString = Web3Wrapper.toUnitAmount(totalBalance, 18).toFormat(0, 2);
+    const totalBalanceString = Web3Wrapper.toUnitAmount(totalBalance, 18).toFixed(configs.AMOUNT_DISPLAY_PRECSION);
     let yesPercentage = HUNDRED.times(yes.dividedBy(totalBalance));
     let noPercentage = HUNDRED.minus(yesPercentage);
 
