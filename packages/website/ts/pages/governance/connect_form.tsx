@@ -32,7 +32,6 @@ import { Provider } from 'ethereum-types';
 import { InjectedProvider, Providers } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 
 const providerToName: { [provider: string]: string } = {
     [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
@@ -60,8 +59,7 @@ interface Props {
     onVoted?: () => void;
     onError?: (errorMessage: string) => void;
     web3Wrapper?: Web3Wrapper;
-    currentBalance: string;
-    web3?: any;
+    currentBalance: BigNumber;
 }
 
 interface State {
@@ -74,7 +72,6 @@ interface State {
     preferredNetworkId: number;
     selectedUserAddressIndex: number;
     errors: ErrorProps;
-    web3?: any;
     userAddresses: string[];
     addressBalances: BigNumber[];
     derivationPath: string;
@@ -90,9 +87,11 @@ enum ConnectSteps {
     SelectAddress,
 }
 
+const ZERO = new BigNumber(0);
+
 export class ConnectForm extends React.Component<Props, State> {
     public static defaultProps = {
-        currentBalance: '0.00',
+        currentBalance: ZERO,
         isWalletConnected: false,
         errors: {},
     };
@@ -145,7 +144,6 @@ export class ConnectForm extends React.Component<Props, State> {
         }
     }
     public _renderButtonsContent(errors: ErrorProps): React.ReactNode {
-        // const { currentBalance, web3Wrapper } = this.state;
         return (
             <div style={{ maxWidth: '470px', margin: '0 auto' }}>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
@@ -155,7 +153,7 @@ export class ConnectForm extends React.Component<Props, State> {
                     In order to vote on this issue you will need to connect a wallet with a balance of ZRX tokens.
                 </Paragraph>
                 <ButtonRow>
-                    <ButtonHalf onClick={this._onConnectWalletClickAsync.bind(this)}>Connect Metamask</ButtonHalf>
+                    <ButtonHalf onClick={this._onConnectWalletClickAsync.bind(this)}>Connect Wallet</ButtonHalf>
                     <ButtonHalf onClick={this._onConnectLedgerClickAsync.bind(this)}>Connect Ledger</ButtonHalf>
                 </ButtonRow>
                 {!_.isUndefined(errors.connectionError) && (
@@ -225,10 +223,6 @@ export class ConnectForm extends React.Component<Props, State> {
         }
         this._ledgerSubprovider.setPath(path);
     }
-    public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
-        const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(owner);
-        return balanceInWei;
-    }
     public async getZrxBalanceAsync(owner: string): Promise<BigNumber> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         const injectedProvider = await this._getInjectedProviderIfExistsAsync();
@@ -240,11 +234,11 @@ export class ConnectForm extends React.Component<Props, State> {
                 const amount = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, owner);
                 return amount;
             } catch (error) {
-                return new BigNumber(0);
+                return ZERO;
             }
         }
 
-        return new BigNumber(0);
+        return ZERO;
     }
     private async _onConnectWalletClickAsync(): Promise<boolean> {
         const shouldUseLedgerProvider = false;
@@ -389,34 +383,34 @@ export class ConnectForm extends React.Component<Props, State> {
         networkIdIfExists?: number,
         shouldUserLedgerProvider: boolean = false,
     ): Promise<[Provider, LedgerSubprovider | undefined]> {
+        // This code is based off of the Blockchain.ts code.
+        // TODO refactor to re-use this utility outside of Blockchain.ts
         const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);
         const isNetworkIdAvailable = !_.isUndefined(networkIdIfExists);
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
+        const provider = new Web3ProviderEngine();
+        const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
+            return new RPCSubprovider(publicNodeUrl);
+        });
 
         if (shouldUserLedgerProvider && isNetworkIdAvailable) {
             const isU2FSupported = await utils.isU2FSupportedAsync();
             if (!isU2FSupported) {
                 throw new Error('Cannot update providerType to LEDGER without U2F support');
             }
-            const provider = new Web3ProviderEngine();
             const ledgerWalletConfigs = {
                 networkId: networkIdIfExists,
                 ledgerEthereumClientFactoryAsync: ledgerEthereumBrowserClientFactoryAsync,
             };
             const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
             provider.addProvider(ledgerSubprovider);
-            provider.addProvider(new FilterSubprovider());
-            const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
-                return new RPCSubprovider(publicNodeUrl);
-            });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, ledgerSubprovider];
         } else if (doesInjectedProviderExist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
-            const provider = new Web3ProviderEngine();
             const providerName = this._getNameGivenProvider(injectedProviderIfExists);
             // Wrap Metamask in a compatability wrapper MetamaskSubprovider (to handle inconsistencies)
             const signerSubprovider =
@@ -424,10 +418,6 @@ export class ConnectForm extends React.Component<Props, State> {
                     ? new MetamaskSubprovider(injectedProviderIfExists)
                     : new SignerSubprovider(injectedProviderIfExists);
             provider.addProvider(signerSubprovider);
-            provider.addProvider(new FilterSubprovider());
-            const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
-                return new RPCSubprovider(publicNodeUrl);
-            });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, undefined];
@@ -438,13 +428,11 @@ export class ConnectForm extends React.Component<Props, State> {
             // If no injectedWeb3 instance, all requests fallback to our public hosted mainnet/testnet node
             // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
             // injected into their browser.
-            const provider = new Web3ProviderEngine();
-            provider.addProvider(new FilterSubprovider());
             const networkId = constants.NETWORK_ID_MAINNET;
-            const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
+            const defaultRpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
-            provider.addProvider(new RedundantSubprovider(rpcSubproviders));
+            provider.addProvider(new RedundantSubprovider(defaultRpcSubproviders));
             provider.start();
             return [provider, undefined];
         }
@@ -485,10 +473,6 @@ export class ConnectForm extends React.Component<Props, State> {
         return networkIdIfExists;
     }
     private async _resetOrInitializeAsync(networkId: number, shouldUserLedgerProvider: boolean = false): Promise<void> {
-        if (!shouldUserLedgerProvider) {
-            // this._dispatcher.updateBlockchainIsLoaded(false);
-        }
-        // this._dispatcher.updateUserWeiBalance(undefined);
         this.networkId = networkId;
         const injectedProviderIfExists = await this._getInjectedProviderIfExistsAsync();
         const [provider, ledgerSubproviderIfExists] = await this._getProviderAsync(
@@ -514,11 +498,6 @@ export class ConnectForm extends React.Component<Props, State> {
             delete this._ledgerSubprovider;
             const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
             this._userAddressIfExists = userAddresses[0];
-            // this._dispatcher.updateUserAddress(this._userAddressIfExists);
-            if (!_.isUndefined(injectedProviderIfExists)) {
-                // this._dispatcher.updateProviderType(ProviderType.Injected);
-            }
-            // await this.fetchTokenInformationAsync();
         }
     }
     private async _getUserAddressesAsync(): Promise<string[]> {

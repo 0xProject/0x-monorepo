@@ -2,9 +2,6 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-// tslint:disable-next-line: no-duplicate-imports
-import { ChangeEvent } from 'react';
-
 import { CheckMark } from 'ts/components/ui/check_mark';
 import { colors } from 'ts/style/colors';
 
@@ -12,7 +9,7 @@ interface RadioProps {
     address: string;
     value: number;
     isActive: boolean;
-    onSelectAddress: (e: ChangeEvent<HTMLInputElement>) => void;
+    onSelectAddress: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 interface PreferenceSelecterProps extends RadioProps {
@@ -27,7 +24,6 @@ interface MarkerProps {
 const Radio: React.StatelessComponent<RadioProps> = ({ address, onSelectAddress, isActive, value }) => {
     return (
         <>
-            {/* <Marker isActive={isActive} /> */}
             <CheckMark isChecked={isActive} color={colors.brandLight} />
             <RadioInput value={value} onChange={onSelectAddress} checked={isActive} />
         </>

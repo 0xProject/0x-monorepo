@@ -19,8 +19,8 @@ const navData = [
     },
     {
         title: 'Governance',
-        description: 'xxxxxxxxx',
-        url: WebsitePaths.Governance,
+        description: 'Vote on changes to the 0x protocol',
+        url: WebsitePaths.Vote,
     },
 ];
 

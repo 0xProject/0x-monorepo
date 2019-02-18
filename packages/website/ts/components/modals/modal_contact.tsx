@@ -7,9 +7,6 @@ import { colors } from 'ts/style/colors';
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
 
-// tslint:disable-next-line: no-duplicate-imports
-import { FormEvent } from 'react';
-
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
 import { CheckBoxInput, Input, InputWidth, OptionSelector } from 'ts/components/modals/input';
@@ -360,7 +357,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
-    private async _onSubmitAsync(e: FormEvent): Promise<void> {
+    private async _onSubmitAsync(e: React.FormEvent): Promise<void> {
         e.preventDefault();
 
         let jsonBody;

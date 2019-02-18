@@ -49,9 +49,6 @@ function millisToDaysHoursMinutes(futureDateMs: number): string {
     let delta = Math.abs(futureDateMs - now.milliseconds()) / 1000;
     const result: TimeStructure = {};
     const structure: TimeStructure = {
-        // year: 31536000,
-        // month: 2592000,
-        // week: 604800,
         day: 86400,
         hour: 3600,
         minute: 60,

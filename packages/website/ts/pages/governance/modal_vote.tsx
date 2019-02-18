@@ -45,7 +45,7 @@ interface State {
     isU2fSupported: boolean;
     isVoted: boolean;
     votePreference: string | null;
-    zeip: string;
+    zeip: number;
     voteHash?: string;
     signedVote?: any;
     errorMessage?: string;
@@ -81,7 +81,7 @@ export class ModalVote extends React.Component<Props> {
         isSuccessful: false,
         isVoted: false,
         votePreference: null,
-        zeip: '1',
+        zeip: 23,
         errors: {},
     };
     // shared fields

@@ -6,9 +6,8 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { constants } from 'ts/utils/constants';
 
-// tslint:disable-next-line: no-duplicate-imports
-import { ChangeEvent } from 'react';
 import { AddressTableRow } from 'ts/pages/governance/address_table_row';
+import { configs } from 'ts/utils/configs';
 
 interface AddressTableProps {
     networkId: number;
@@ -30,7 +29,6 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
         };
     }
     public render(): React.ReactNode {
-        // const { userAddresses, addressBalances } = this.props;
         return (
             <Wrapper>
                 <Table>
@@ -45,8 +43,8 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
         const rows = _.map(userAddresses, (userAddress: string, i: number) => {
             const balanceInZrxBaseUnits = addressBalances[i];
             const addressRowId = `address-${userAddress}`;
-            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInZrxBaseUnits, constants.DECIMAL_PLACES_ETH);
-            const balanceString = `${balanceInEth.toString()} ZRX`;
+            const balanceInZrx = Web3Wrapper.toUnitAmount(balanceInZrxBaseUnits, constants.DECIMAL_PLACES_ETH);
+            const balanceString = `${balanceInZrx.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} ZRX`;
             return (
                 <AddressTableRow
                     key={addressRowId}
@@ -60,8 +58,8 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
         });
         return rows;
     }
-    private _onSelectAddress(e: ChangeEvent<HTMLInputElement>): void {
-        const selectedAddressIndex = parseInt(e.currentTarget.value, 10);
+    private _onSelectAddress(e: React.ChangeEvent<HTMLInputElement>): void {
+        const selectedAddressIndex = _.parseInt(e.currentTarget.value);
         this.setState({ selectedAddressIndex });
 
         if (this.props.onSelectAddress) {
@@ -70,15 +68,15 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
     }
 }
 const Wrapper = styled.div<{ marginBottom?: string }>`
-    background-color: #fff;
-    border-radius: 4px;
-    margin-bottom: ${props => props.marginBottom || '25px'};
-    padding: 10px 30px;
-    height: 230px;
-    overflow-y: auto;
+    background - color: #fff;
+    border -radius;: 4;px;
+margin-bottom;: $;{props => props.marginBottom || '25px';}
+padding: 10;px; 30;px;
+height: 230;px;
+overflow - y;: auto;
 `;
 
-const Table = styled.table`
-    border-collapse: collapse;
-    width: 100%;
+const Table = styled.table`;
+border-collapse;: collapse;
+width: 100%;
 `;

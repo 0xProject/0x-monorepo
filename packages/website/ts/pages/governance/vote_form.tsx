@@ -62,7 +62,7 @@ interface State {
     isVoted: boolean;
     selectedAddress?: string;
     votePreference?: string;
-    zeip: string;
+    zeip: number;
     voteHash?: string;
     signedVote?: SignedVote;
     comment?: string;
@@ -73,7 +73,7 @@ interface State {
 interface SignedVote {
     signature: string;
     from: string;
-    zeip: string;
+    zeip: number;
     preference: string;
 }
 
@@ -86,7 +86,7 @@ interface ErrorProps {
     [key: string]: string;
 }
 
-const defaultZeip = '23';
+const defaultZeip = 23;
 
 export class VoteForm extends React.Component<Props> {
     public static defaultProps = {
