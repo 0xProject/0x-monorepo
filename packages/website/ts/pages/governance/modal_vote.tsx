@@ -16,7 +16,6 @@ import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_f
 import { ErrorModal } from 'ts/pages/governance/error_modal';
 import { VoteForm, VoteInfo } from 'ts/pages/governance/vote_form';
 import { colors } from 'ts/style/colors';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 
 interface Props {
