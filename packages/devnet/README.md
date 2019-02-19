@@ -117,7 +117,7 @@ docker build -t 0xorg/devnet .
 ### Publishing
 
 To publish the docker image, you need to be logged in to DockerHub and have the
-appropriate credentials. Then run:
+appropriate credentials (if you need access, contact @fabioberger). Then run:
 
 ```
 docker push 0xorg/devnet
