@@ -16,8 +16,8 @@ export const providerUtils = {
      */
     standardizeOrThrow(supportedProvider: SupportedProvider): Provider {
         if ((supportedProvider as EIP1193Provider).isEIP1193) {
-            const provider: Provider = {
-                sendAsync: (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
+            const provider = supportedProvider as Provider;
+            provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
                     const method = payload.method;
                     const params = payload.params;
                     (supportedProvider as EIP1193Provider)
@@ -28,15 +28,13 @@ export const providerUtils = {
                         .catch((err: Error) => {
                             callback(err);
                         });
-                },
-            };
+                };
             return provider;
         } else if (_.isUndefined((supportedProvider as any).sendAsync)) {
             // An early version of Web3@1.0 Beta provider only has an async `send` method so
             // we re-assign the send method so that early Web3@1.0 Beta providers work with @0x/web3-wrapper
-            const provider: Provider = {
-                sendAsync: (supportedProvider as any).send,
-            };
+            const provider = supportedProvider as Provider;
+            provider.sendAsync = (supportedProvider as any).send;
             return provider;
         } else if (!_.isUndefined((supportedProvider as any).sendAsync)) {
             return supportedProvider as Provider;
@@ -45,8 +43,8 @@ export const providerUtils = {
             // `isEIP1193` flag. The only common identifier across Web3.js providers is that they all have
             // a `host` property, so we check for it's existence. We put this check last to make it less likely
             // that this condition is hit for other providers that also expose a `host` property.
-            const provider: Provider = {
-                sendAsync: (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
+            const provider = supportedProvider as Provider;
+            provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
                     const method = payload.method;
                     const params = payload.params;
                     (supportedProvider as any)
@@ -57,8 +55,7 @@ export const providerUtils = {
                         .catch((err: Error) => {
                             callback(err);
                         });
-                },
-            };
+                };
             return provider;
         }
         throw new Error(
