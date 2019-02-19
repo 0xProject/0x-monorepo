@@ -77,7 +77,7 @@ export function parseSolidityVersionRange(source: string): string {
  * @return The error message with directories truncated from the contract path.
  */
 export function getNormalizedErrMsg(errMsg: string): string {
-    const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
+    const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol):/;
     const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
     if (_.isNull(errPathMatch)) {
         // This can occur if solidity outputs a general warning, e.g

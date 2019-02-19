@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Add `isOfflineMode` flag to sol-compiler`",
-                "pr": "TODO"
+                "pr": 1625
             }
         ]
     },
