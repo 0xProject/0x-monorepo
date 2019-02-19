@@ -14,6 +14,7 @@ import styled from 'styled-components';
 import { Button } from 'ts/components/button';
 import { Input } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
+import { LedgerSignNote } from 'ts/pages/governance/ledger_sign_note';
 import { PreferenceSelecter } from 'ts/pages/governance/preference_selecter';
 import { colors } from 'ts/style/colors';
 import { InjectedProvider } from 'ts/types';
@@ -50,6 +51,7 @@ interface State {
     isWalletConnected: boolean;
     isSubmitting: boolean;
     isSuccessful: boolean;
+    isAwaitingLedgerSignature: boolean;
     isVoted: boolean;
     selectedAddress?: string;
     votePreference?: string;
@@ -95,6 +97,7 @@ export class VoteForm extends React.Component<Props> {
     public networkId: number;
     public state: State = {
         isWalletConnected: false,
+        isAwaitingLedgerSignature: false,
         isSubmitting: false,
         isSuccessful: false,
         isVoted: false,
@@ -116,7 +119,7 @@ export class VoteForm extends React.Component<Props> {
         super(props);
     }
     public render(): React.ReactNode {
-        const { votePreference, errors, isSuccessful } = this.state;
+        const { votePreference, errors, isSuccessful, isAwaitingLedgerSignature } = this.state;
         const { currentBalance, selectedAddress } = this.props;
         const bigNumberFormat = {
             decimalSeparator: '.',
@@ -185,6 +188,7 @@ export class VoteForm extends React.Component<Props> {
                         Back
                     </Button>
                     <ButtonDisabled disabled={!votePreference}>Submit</ButtonDisabled>
+                    <LedgerSignNote text={'Accept or reject signature on the Ledger'} isVisible={isAwaitingLedgerSignature} />
                 </ButtonRow>
             </Form>
         );
@@ -193,15 +197,19 @@ export class VoteForm extends React.Component<Props> {
         e.preventDefault();
 
         const { zeip, votePreference, comment } = this.state;
-        const { currentBalance, selectedAddress } = this.props;
+        const { currentBalance, selectedAddress, isLedger } = this.props;
         const makerAddress = selectedAddress;
+
+        if (isLedger) {
+            this.setState({ isAwaitingLedgerSignature: true });
+        }
+
         const domainType = [{ name: 'name', type: 'string' }];
         const voteType = [
             { name: 'preference', type: 'string' },
             { name: 'zeip', type: 'uint256' },
             { name: 'from', type: 'address' },
         ];
-
         const domainData = {
             name: '0x Protocol Governance',
         };
@@ -224,8 +232,8 @@ export class VoteForm extends React.Component<Props> {
         const voteHashHex = `0x${voteHashBuffer.toString('hex')}`;
         try {
             const signedVote = await this._signVoteAsync(makerAddress, typedData);
-            // Store the signed Order
-            this.setState(prevState => ({ ...prevState, signedVote, voteHash: voteHashHex, isSuccessful: true }));
+            // Store the signed vote
+            this.setState(prevState => ({ ...prevState, signedVote, voteHash: voteHashHex, isSuccessful: true, isAwaitingLedgerSignature: false }));
 
             const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
             const voteEndpoint = `${voteDomain}/v1/vote`;
@@ -248,27 +256,27 @@ export class VoteForm extends React.Component<Props> {
             } else {
                 const responseBody = await response.json();
                 const errorMessage = !_.isUndefined(responseBody.reason) ? responseBody.reason : 'Unknown Error';
-                this.props.onError
-                    ? this.props.onError(errorMessage)
-                    : this.setState({
-                          errors: {
-                              signError: errorMessage,
-                          },
-                          isSuccessful: false,
-                      });
+                this._handleError(errorMessage);
             }
         } catch (err) {
-            const errorMessage = err.message;
-            this.props.onError
-                ? this.props.onError(errorMessage)
-                : this.setState({
-                      errors: {
-                          signError: errorMessage,
-                      },
-                      isSuccessful: false,
-                  });
+            this._handleError(err.message);
         }
     };
+    private _handleError(errorMessage: string): void {
+        const { onError } = this.props;
+        onError
+            ? onError(errorMessage)
+            : this.setState({
+                    errors: {
+                        signError: errorMessage,
+                    },
+                    isSuccessful: false,
+                    isAwaitingLedgerSignature: false,
+                });
+        this.setState({
+            isAwaitingLedgerSignature: false,
+        });
+    }
     private async _signVoteAsync(signerAddress: string, typedData: any): Promise<SignedVote> {
         const { provider: providerEngine } = this.props;
         let signatureHex;
@@ -340,6 +348,8 @@ const InputRow = styled.div`
 `;
 
 const ButtonRow = styled(InputRow)`
+    position: relative;
+
     @media (max-width: 768px) {
         display: flex;
         flex-direction: column;
