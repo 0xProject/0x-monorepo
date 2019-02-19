@@ -9,7 +9,7 @@ export interface MetaTagsProps {
 
 export const MetaTags: React.StatelessComponent<MetaTagsProps> = ({ title, description, imgSrc }) => (
     <Helmet>
-        {/* <title>{title}</title> */}
+        <title>{title}</title>
         <meta name="description" content={description} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
