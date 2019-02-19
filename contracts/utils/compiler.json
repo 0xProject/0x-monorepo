@@ -2,6 +2,7 @@
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
     "useDockerisedSolc": true,
+    "isOfflineMode": false,
     "compilerSettings": {
         "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
