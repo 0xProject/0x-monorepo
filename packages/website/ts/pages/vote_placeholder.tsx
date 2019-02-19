@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Column, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';

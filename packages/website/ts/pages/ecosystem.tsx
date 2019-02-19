@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
 import { Button } from 'ts/components/button';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Icon } from 'ts/components/icon';
 import { Column, Section, WrapGrid } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';

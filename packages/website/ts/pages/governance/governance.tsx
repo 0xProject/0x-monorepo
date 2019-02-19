@@ -1,11 +1,11 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';

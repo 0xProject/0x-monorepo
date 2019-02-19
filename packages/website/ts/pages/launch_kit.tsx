@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
+
+import { DocumentTitle } from 'ts/components/documentTitle';
 
 import { Hero } from 'ts/components/hero';
 

@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Action, Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Hero } from 'ts/components/hero';
 import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
@@ -66,6 +67,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
+                <DocumentTitle title="Market making - 0x" />
                 <Hero
                     maxWidth="865px"
                     maxWidthHeading="715px"

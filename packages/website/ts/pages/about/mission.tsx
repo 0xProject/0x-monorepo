@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/components/aboutPageLayout';
 import { Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Image } from 'ts/components/image';
 import { Column, Section } from 'ts/components/newLayout';
 import { Heading } from 'ts/components/text';

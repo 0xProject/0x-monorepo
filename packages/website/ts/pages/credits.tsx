@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { CenteredDefinition } from 'ts/components/centeredDefinition';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Hero } from 'ts/components/hero';
 import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { FlexWrap, Section } from 'ts/components/newLayout';
@@ -24,6 +25,7 @@ export class Credits extends React.Component<CreditsProps> {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
+                <DocumentTitle title="Free Credits - 0x" />
                 <Hero
                     maxWidth="865px"
                     maxWidthHeading="765px"

@@ -1,12 +1,12 @@
 import { utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled, { keyframes } from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Hero } from 'ts/components/hero';
 import { Section, SectionProps } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';

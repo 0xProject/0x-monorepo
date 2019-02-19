@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
 import { AboutPageLayout } from 'ts/components/aboutPageLayout';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Column, Section } from 'ts/components/newLayout';
 import { Heading, Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';

@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
 import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { Hero } from 'ts/components/hero';
 import { Column, Section, WrapSticky } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';

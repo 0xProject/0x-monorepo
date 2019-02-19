@@ -1,6 +1,6 @@
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 
+import { DocumentTitle } from 'ts/components/documentTitle';
 import { SectionLandingAbout } from 'ts/components/sections/landing/about';
 import { SectionLandingClients } from 'ts/components/sections/landing/clients';
 import { SectionLandingCta } from 'ts/components/sections/landing/cta';
