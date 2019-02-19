@@ -27,6 +27,7 @@ library LibAddressArray {
     ///      The `addressArray` may need to be reallocated to make space
     ///      for the new address. Because of this we return the resulting
     ///      memory location of `addressArray`.
+    /// @param addressArray Array of addresses.
     /// @param addressToAppend  Address to append.
     /// @return Array of addresses: [... addressArray, addressToAppend]
     function append(address[] memory addressArray, address addressToAppend) 
@@ -83,6 +84,28 @@ library LibAddressArray {
         return addressArray;
     }
 
+    /// @dev Checks if an address array contains the target address.
+    /// @param addressArray Array of addresses.
+    /// @param target Address to search for in array.
+    /// @return True if the addressArray contains the target.
+    function contains(address[] memory addressArray, address target)
+        internal
+        pure
+        returns (bool)
+    {
+        uint256 length = addressArray.length;
+        for (uint256 i = 0; i < length; i++) {
+            if (addressArray[i] == target) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// @dev Finds the index of an address within an array.
+    /// @param addressArray Array of addresses.
+    /// @param target Address to search for in array.
+    /// @return Existence and index of the target in the array.
     function indexOf(address[] memory addressArray, address target)
         internal
         pure
