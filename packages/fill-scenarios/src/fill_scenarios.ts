@@ -3,9 +3,9 @@ import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -19,13 +19,14 @@ export class FillScenarios {
     private readonly _erc20ProxyAddress: string;
     private readonly _erc721ProxyAddress: string;
     constructor(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         userAddresses: string[],
         zrxTokenAddress: string,
         exchangeAddress: string,
         erc20ProxyAddress: string,
         erc721ProxyAddress: string,
     ) {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._web3Wrapper = new Web3Wrapper(provider);
         this._userAddresses = userAddresses;
         this._coinbase = userAddresses[0];

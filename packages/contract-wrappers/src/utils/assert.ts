@@ -5,7 +5,7 @@ import { assetDataUtils, signatureUtils } from '@0x/order-utils';
 import { Order } from '@0x/types'; // tslint:disable-line:no-unused-variable
 import { BigNumber } from '@0x/utils'; // tslint:disable-line:no-unused-variable
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -13,12 +13,12 @@ import { constants } from './constants';
 export const assert = {
     ...sharedAssert,
     async isValidSignatureAsync(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         orderHash: string,
         signature: string,
         signerAddress: string,
     ): Promise<void> {
-        const isValid = await signatureUtils.isValidSignatureAsync(provider, orderHash, signature, signerAddress);
+        const isValid = await signatureUtils.isValidSignatureAsync(supportedProvider, orderHash, signature, signerAddress);
         sharedAssert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
     isValidSubscriptionToken(variableName: string, subscriptionToken: string): void {

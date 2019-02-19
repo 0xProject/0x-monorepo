@@ -2,7 +2,7 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { schemas } from '@0x/json-schemas';
 import { OrderStateInvalid, OrderStateValid, SignedOrder } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as http from 'http';
 import * as WebSocket from 'websocket';
 
@@ -43,7 +43,7 @@ export class OrderWatcherWebSocketServer {
 
     /**
      * Instantiate a new WebSocket server which provides OrderWatcher functionality
-     *  @param provider Web3 provider to use for JSON RPC calls.
+     *  @param supportedProvider Web3 provider to use for JSON RPC calls.
      *  @param networkId NetworkId to watch orders on.
      *  @param contractAddresses Optional contract addresses. Defaults to known
      *  addresses based on networkId.
@@ -51,7 +51,7 @@ export class OrderWatcherWebSocketServer {
      *  @param isVerbose Whether to enable verbose logging. Defaults to true.
      */
     constructor(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         networkId: number,
         contractAddresses?: ContractAddresses,
         orderWatcherConfig?: Partial<OrderWatcherConfig>,
@@ -60,7 +60,7 @@ export class OrderWatcherWebSocketServer {
             orderWatcherConfig !== undefined && orderWatcherConfig.isVerbose !== undefined
                 ? orderWatcherConfig.isVerbose
                 : true;
-        this._orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, orderWatcherConfig);
+        this._orderWatcher = new OrderWatcher(supportedProvider, networkId, contractAddresses, orderWatcherConfig);
         this._connectionStore = new Set();
         this._httpServer = http.createServer();
         this._wsServer = new WebSocket.server({

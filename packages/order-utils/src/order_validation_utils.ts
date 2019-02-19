@@ -117,8 +117,9 @@ export class OrderValidationUtils {
      * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
      * @return An instance of OrderValidationUtils
      */
-    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, provider: Provider) {
+    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, supportedProvider: SupportedProvider) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._provider = provider;
     }
     // TODO(fabio): remove this method once the smart contracts have been refactored

@@ -1,7 +1,7 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { Provider, SupportedProvider } from 'ethereum-types';
 
 // Reusable
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -192,7 +192,7 @@ export interface ZeroExInstantRequiredBaseConfig {
 }
 
 export interface ZeroExInstantOptionalBaseConfig {
-    provider: Provider;
+    provider: SupportedProvider;
     walletDisplayName: string;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;

@@ -52,7 +52,6 @@ export interface Web3JsV2Provider {
  * Interface for providers that conform to EIP 1193
  * Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
  */
-
 export type EIP1193Event = 'accountsChanged' | 'networkChanged' | 'close' | 'connect' | 'notification';
 
 export interface EIP1193Provider {

@@ -20,7 +20,7 @@ import {
     Web3ProviderEngine,
 } from '@0x/subproviders';
 import { SignedOrder, Token as ZeroExToken } from '@0x/types';
-import { BigNumber, intervalUtils, logUtils } from '@0x/utils';
+import { BigNumber, intervalUtils, logUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -597,8 +597,9 @@ export class Blockchain {
                 return undefined;
             }
         }
-        this._injectedProviderIfExists = injectedProviderIfExists;
-        return injectedProviderIfExists;
+        const standardizedInjectedProvider = providerUtils.standardizeOrThrow(injectedProviderIfExists);
+        this._injectedProviderIfExists = standardizedInjectedProvider;
+        return standardizedInjectedProvider;
     }
     private async _getInjectedProviderNetworkIdIfExistsAsync(): Promise<number | undefined> {
         // If the user has an injectedWeb3 instance that is disconnected from a backing

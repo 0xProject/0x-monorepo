@@ -1,6 +1,6 @@
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -52,7 +52,7 @@ export const orderFactory = {
         return order;
     },
     async createSignedOrderAsync(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         makerAddress: string,
         makerAssetAmount: BigNumber,
         makerAssetData: string,
@@ -71,7 +71,7 @@ export const orderFactory = {
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const signature = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
+        const signature = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, makerAddress);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },
