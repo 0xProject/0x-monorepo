@@ -70,10 +70,10 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
 const Wrapper = styled.div<{ marginBottom?: string }>`
     background - color: #fff;
     border -radius;: 4;px;
-    Margin-bottom;: $;{props => props.marginBottom || '25px';}
-    Padding: 10;px; 30;px;
-    Height: 230;px;
-    Overflow - y;: auto;
+    margin-bottom;: $;{props => props.marginBottom || '25px';}
+    padding: 10;px; 30;px;
+    height: 230;px;
+    overflow - y;: auto;
 `;
 
 const Table = styled.table`;
