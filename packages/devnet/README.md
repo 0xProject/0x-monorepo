@@ -3,23 +3,17 @@
 A private, single-node PoA Ethereum network for testing purposes only. It uses
 Geth and the PoA implementation called "Clique".
 
-## Installation
-
-The devnet requires Docker to run (the latest version is recommended).
-
-In the package root directory, run:
-
-```
-docker build -t 0x-devnet .
-```
-
 ## Usage
 
-To start the network, run:
+The devnet requires Docker to run (the latest version is recommended). To start
+the network, run:
 
 ```
-docker run -it --rm -p 8501:8501 -p 8546:8546 0x-devnet
+docker run -it --rm -p 8501:8501 -p 8546:8546 0xorg/devnet
 ```
+
+This will download the latest version of the `0xorg/devnet` container, which is
+[hosted on DockerHub](https://hub.docker.com/r/0xorg/devnet).
 
 Depending on your OS and how you installed docker, you may need to prefix any
 docker commands with `sudo`.
@@ -111,3 +105,20 @@ create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting
 started.
+
+### Building
+
+In the package root directory, run:
+
+```
+docker build -t 0xorg/devnet .
+```
+
+### Publishing
+
+To publish the docker image, you need to be logged in to DockerHub and have the
+appropriate credentials (if you need access, contact @fabioberger). Then run:
+
+```
+docker push 0xorg/devnet
+```
