@@ -45,6 +45,7 @@ const ALL_FILES_IDENTIFIER = '*';
 const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
 const DEFAULT_USE_DOCKERISED_SOLC = false;
+const DEFAULT_IS_OFFLINE_MODE = false;
 // Solc compiler settings cannot be configured from the commandline.
 // If you need this configured, please create a `compiler.json` config file
 // with your desired configurations.
@@ -90,6 +91,7 @@ export class Compiler {
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     private readonly _useDockerisedSolc: boolean;
+    private readonly _isOfflineMode: boolean;
     /**
      * Instantiates a new instance of the Compiler class.
      * @param opts Optional compiler options
@@ -110,6 +112,7 @@ export class Compiler {
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._useDockerisedSolc =
             passedOpts.useDockerisedSolc || config.useDockerisedSolc || DEFAULT_USE_DOCKERISED_SOLC;
+        this._isOfflineMode = passedOpts.isOfflineMode || config.isOfflineMode || DEFAULT_IS_OFFLINE_MODE;
         this._nameResolver = new NameResolver(this._contractsDir);
         const resolver = new FallthroughResolver();
         resolver.appendResolver(new URLResolver());
@@ -211,7 +214,7 @@ export class Compiler {
         // map contract paths to data about them for later verification and persistence
         const contractPathToData: ContractPathToData = {};
 
-        const solcJSReleases = await getSolcJSReleasesAsync();
+        const solcJSReleases = await getSolcJSReleasesAsync(this._isOfflineMode);
         const resolvedContractSources = [];
         for (const contractName of contractNames) {
             const spyResolver = new SpyResolver(this._resolver);
@@ -229,6 +232,13 @@ export class Compiler {
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
                 ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
+            if (_.isNull(solcVersion)) {
+                throw new Error(
+                    `Couldn't find any solidity version satisfying the constraint ${parseSolidityVersionRange(
+                        contractSource.source,
+                    )}`,
+                );
+            }
             const isFirstContractWithThisVersion = _.isUndefined(versionToInputs[solcVersion]);
             if (isFirstContractWithThisVersion) {
                 versionToInputs[solcVersion] = {
@@ -274,7 +284,7 @@ export class Compiler {
                 compilerOutput = await compileDockerAsync(solcVersion, input.standardInput);
             } else {
                 fullSolcVersion = solcJSReleases[solcVersion];
-                compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput);
+                compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput, this._isOfflineMode);
             }
             if (!_.isUndefined(compilerOutput.errors)) {
                 printCompilationErrorsAndWarnings(compilerOutput.errors);

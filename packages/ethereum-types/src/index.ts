@@ -510,6 +510,7 @@ export interface Source {
  * contracts: List of contract names you wish to compile, or alternatively ['*'] to compile all contracts in the
  * specified directory.
  * useDockerisedSolc: If set to true - sol-compiler will try calling a dockerized installations of solc to achieve faster compilation times. Otherwise and by default - solcjs will be used. Defaults to false.
+ * isOfflineMode: If set to true - sol-compiler will not fetch the list of solc releases from github. It will use the hardcoded list. Defaults to false.
  * solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
  * contracts to compile with the the version specified here.
  */
@@ -519,5 +520,6 @@ export interface CompilerOptions {
     compilerSettings?: CompilerSettings;
     contracts?: string[] | '*';
     useDockerisedSolc?: boolean;
+    isOfflineMode?: boolean;
     solcVersion?: string;
 } // tslint:disable-line:max-file-line-count
