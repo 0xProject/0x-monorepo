@@ -256,29 +256,27 @@ export class VoteForm extends React.Component<Props> {
             } else {
                 const responseBody = await response.json();
                 const errorMessage = !_.isUndefined(responseBody.reason) ? responseBody.reason : 'Unknown Error';
-                this.props.onError
-                    ? this.props.onError(errorMessage)
-                    : this.setState({
-                          errors: {
-                              signError: errorMessage,
-                          },
-                          isSuccessful: false,
-                          isAwaitingLedgerSignature: false,
-                      });
+                this._handleError(errorMessage);
             }
         } catch (err) {
-            const errorMessage = err.message;
-            this.props.onError
-                ? this.props.onError(errorMessage)
-                : this.setState({
-                      errors: {
-                          signError: errorMessage,
-                      },
-                      isSuccessful: false,
-                      isAwaitingLedgerSignature: false,
-                  });
+            this._handleError(err.message);
         }
     };
+    private _handleError(errorMessage: string): void {
+        const { onError } = this.props;
+        onError
+            ? onError(errorMessage)
+            : this.setState({
+                    errors: {
+                        signError: errorMessage,
+                    },
+                    isSuccessful: false,
+                    isAwaitingLedgerSignature: false,
+                });
+        this.setState({
+            isAwaitingLedgerSignature: false,
+        });
+    }
     private async _signVoteAsync(signerAddress: string, typedData: any): Promise<SignedVote> {
         const { provider: providerEngine } = this.props;
         let signatureHex;
