@@ -43,13 +43,6 @@ contract MixinTECCore is
     )
         public
     {
-        // Ethereum transaction signer must be the same as 0x transaction signer
-        require(
-            // solhint-disable-next-line avoid-tx-origin
-            transaction.signerAddress == tx.origin,
-            "INVALID_TX_SIGNER"
-        );
-
         // Validate that the 0x transaction has been approves by each feeRecipient
         assertValidTECApprovals(
             transaction,

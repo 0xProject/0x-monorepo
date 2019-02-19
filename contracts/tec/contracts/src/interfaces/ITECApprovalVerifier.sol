@@ -40,31 +40,15 @@ contract ITECApprovalVerifier {
         public
         view;
 
-    /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
-    /// @param order Order struct containing order specifications.
-    /// @param transactionHash EIP712 hash of the 0x transaction.
-    /// @param transactionSignature Proof that the transaction has been signed by the signer.
-    /// @param approvalExpirationTimeSeconds Expiration times in seconds for which the approval signature expires.
-    /// @param approvalSignature Signatures that corresponds to the feeRecipient of the order.
-    function assertValidSingleOrderApproval(
-        LibOrder.Order memory order,
-        bytes32 transactionHash,
-        bytes memory transactionSignature,
-        uint256 approvalExpirationTimeSeconds,
-        bytes memory approvalSignature
-    )
-        public
-        view;
-
-    /// @dev Validates that the feeRecipient of a single order has approved a 0x transaction.
+    /// @dev Validates that the feeRecipients of a batch of order have approved a 0x transaction.
+    /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param orders Array of order structs containing order specifications.
-    /// @param transactionHash EIP712 hash of the 0x transaction.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
-    function assertValidBatchOrderApproval(
+    function assertValidTransactionOrdersApproval(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         LibOrder.Order[] memory orders,
-        bytes32 transactionHash,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
