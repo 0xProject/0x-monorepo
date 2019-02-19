@@ -9,15 +9,10 @@ interface LedgerSignNoteProps {
     isVisible: boolean;
 }
 
-export const LedgerSignNote: React.StatelessComponent<LedgerSignNoteProps> = ({
-    text,
-    isVisible,
-}) => {
+export const LedgerSignNote: React.StatelessComponent<LedgerSignNoteProps> = ({ text, isVisible }) => {
     return (
         <Wrapper isVisible={isVisible}>
-            <Text>
-                {text}
-            </Text>
+            <Text>{text}</Text>
         </Wrapper>
     );
 };
@@ -27,7 +22,7 @@ LedgerSignNote.defaultProps = {
 };
 
 const Wrapper = styled.div<LedgerSignNoteProps>`
-    background-color: #7A7A7A;
+    background-color: #7a7a7a;
     display: flex;
     align-items: center;
     padding: 28px 30px;
@@ -38,8 +33,8 @@ const Wrapper = styled.div<LedgerSignNoteProps>`
     left: 0;
     right: 0;
     justify-content: center;
-    opacity: ${props => props.isVisible ? 1 : 0};
-    visibility: ${props => props.isVisible ? 'visible' : 'hidden'};
+    opacity: ${props => (props.isVisible ? 1 : 0)};
+    visibility: ${props => (props.isVisible ? 'visible' : 'hidden')};
 `;
 
 const Text = styled.p`

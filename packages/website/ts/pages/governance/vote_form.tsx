@@ -188,7 +188,10 @@ export class VoteForm extends React.Component<Props> {
                         Back
                     </Button>
                     <ButtonDisabled disabled={!votePreference}>Submit</ButtonDisabled>
-                    <LedgerSignNote text={'Accept or reject signature on the Ledger'} isVisible={isAwaitingLedgerSignature} />
+                    <LedgerSignNote
+                        text={'Accept or reject signature on the Ledger'}
+                        isVisible={isAwaitingLedgerSignature}
+                    />
                 </ButtonRow>
             </Form>
         );
@@ -233,7 +236,13 @@ export class VoteForm extends React.Component<Props> {
         try {
             const signedVote = await this._signVoteAsync(makerAddress, typedData);
             // Store the signed vote
-            this.setState(prevState => ({ ...prevState, signedVote, voteHash: voteHashHex, isSuccessful: true, isAwaitingLedgerSignature: false }));
+            this.setState(prevState => ({
+                ...prevState,
+                signedVote,
+                voteHash: voteHashHex,
+                isSuccessful: true,
+                isAwaitingLedgerSignature: false,
+            }));
 
             const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
             const voteEndpoint = `${voteDomain}/v1/vote`;
@@ -267,12 +276,12 @@ export class VoteForm extends React.Component<Props> {
         onError
             ? onError(errorMessage)
             : this.setState({
-                    errors: {
-                        signError: errorMessage,
-                    },
-                    isSuccessful: false,
-                    isAwaitingLedgerSignature: false,
-                });
+                  errors: {
+                      signError: errorMessage,
+                  },
+                  isSuccessful: false,
+                  isAwaitingLedgerSignature: false,
+              });
         this.setState({
             isAwaitingLedgerSignature: false,
         });
