@@ -4,7 +4,7 @@ import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { Provider, SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -52,11 +52,11 @@ export class AssetBuyer {
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForProvidedOrders(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         orders: SignedOrder[],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        providerUtils.standardizeOrThrow(provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
@@ -72,11 +72,11 @@ export class AssetBuyer {
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForStandardRelayerAPIUrl(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         sraApiUrl: string,
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        providerUtils.standardizeOrThrow(provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
         const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
@@ -91,13 +91,13 @@ export class AssetBuyer {
      *
      * @return  An instance of AssetBuyer
      */
-    constructor(provider: Provider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
+    constructor(supportedProvider: SupportedProvider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
         const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
             {},
             constants.DEFAULT_ASSET_BUYER_OPTS,
             options,
         );
-        providerUtils.standardizeOrThrow(provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);

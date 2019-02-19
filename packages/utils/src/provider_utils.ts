@@ -3,18 +3,24 @@ import {
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
     Provider,
-    Web3WrapperProvider,
+    SupportedProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
 export const providerUtils = {
-    standardizeOrThrow(provider: Provider): Web3WrapperProvider {
-        if ((provider as EIP1193Provider).isEIP1193) {
-            const web3WrapperProvider: Web3WrapperProvider = {
+    /**
+     * Standardize the supported provider types into our internal provider interface
+     * or throw if unsupported provider supplied.
+     * @param supportedProvider Potentially supported provider instance
+     * @return Provider that conforms of our internal provider interface
+     */
+    standardizeOrThrow(supportedProvider: SupportedProvider): Provider {
+        if ((supportedProvider as EIP1193Provider).isEIP1193) {
+            const provider: Provider = {
                 sendAsync: (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
                     const method = payload.method;
                     const params = payload.params;
-                    (provider as EIP1193Provider)
+                    (supportedProvider as EIP1193Provider)
                         .send(method, params)
                         .then((result: any) => {
                             callback(null, result);
@@ -24,27 +30,26 @@ export const providerUtils = {
                         });
                 },
             };
-            return web3WrapperProvider;
-        } else if (_.isUndefined((provider as any).sendAsync)) {
-            // Web3@1.0 provider doesn't support synchronous http requests,
-            // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with @0x/web3-wrapper
-            const web3WrapperProvider: Web3WrapperProvider = {
-                sendAsync: (provider as any).send,
+            return provider;
+        } else if (_.isUndefined((supportedProvider as any).sendAsync)) {
+            // An early version of Web3@1.0 Beta provider only has an async `send` method so
+            // we re-assign the send method so that early Web3@1.0 Beta providers work with @0x/web3-wrapper
+            const provider: Provider = {
+                sendAsync: (supportedProvider as any).send,
             };
-            return web3WrapperProvider;
-        } else if (!_.isUndefined((provider as any).sendAsync)) {
-            return provider as Web3WrapperProvider;
-        } else if ((provider as any).host) {
-            // HACK(fabio): Web3 1.0 Beta modified their `send` method to comply with EIP1193 but did not add the
-            // `isEIP1193` flag. The only common identifier across Web3 providers is that they all have
+            return provider;
+        } else if (!_.isUndefined((supportedProvider as any).sendAsync)) {
+            return supportedProvider as Provider;
+        } else if ((supportedProvider as any).host) {
+            // HACK(fabio): Later Web3@1.0 Beta modified their `send` method to comply with EIP1193 but did not add the
+            // `isEIP1193` flag. The only common identifier across Web3.js providers is that they all have
             // a `host` property, so we check for it's existence. We put this check last to make it less likely
             // that this condition is hit for other providers that also expose a `host` property.
-            const web3WrapperProvider: Web3WrapperProvider = {
+            const provider: Provider = {
                 sendAsync: (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
                     const method = payload.method;
                     const params = payload.params;
-                    (provider as any)
+                    (supportedProvider as any)
                         .send(method, params)
                         .then((result: any) => {
                             callback(null, result);
@@ -54,7 +59,7 @@ export const providerUtils = {
                         });
                 },
             };
-            return web3WrapperProvider;
+            return provider;
         }
         throw new Error(
             `Unsupported provider found. Please make sure it conforms to one of the supported providers. See 'Provider' type in 'ethereum-types' package.`,

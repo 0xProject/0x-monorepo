@@ -1,6 +1,6 @@
 import { providerUtils } from '@0x/utils';
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
-import { JSONRPCRequestPayload, Web3WrapperProvider } from 'ethereum-types';
+import { JSONRPCRequestPayload, Provider, SupportedProvider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 
 import { Callback, ErrorCallback } from '../types';
@@ -17,16 +17,16 @@ import { Subprovider } from './subprovider';
  */
 export class MetamaskSubprovider extends Subprovider {
     private readonly _web3Wrapper: Web3Wrapper;
-    private readonly _provider: Web3WrapperProvider;
+    private readonly _provider: Provider;
     /**
      * Instantiates a new MetamaskSubprovider
      * @param provider Web3 provider that should handle  all user account related requests
      */
-    constructor(provider: Web3WrapperProvider) {
+    constructor(supportedProvider: SupportedProvider) {
         super();
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._web3Wrapper = new Web3Wrapper(provider);
-        const web3WrapperProvider = providerUtils.standardizeOrThrow(provider);
-        this._provider = web3WrapperProvider;
+        this._provider = provider;
     }
     /**
      * This method conforms to the web3-provider-engine interface.

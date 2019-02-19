@@ -59,6 +59,11 @@ export const assert = {
     isBoolean(variableName: string, value: boolean): void {
         assert.assert(_.isBoolean(value), assert.typeAssertionMessage(variableName, 'boolean', value));
     },
+    // DEPRECATED: Please use providerUtils.standardizeOrThrow() instead
+    isWeb3Provider(variableName: string, value: any): void {
+        const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
+        assert.assert(isWeb3Provider, assert.typeAssertionMessage(variableName, 'Provider', value));
+    },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
         if (_.isUndefined(value)) {
             throw new Error(`${variableName} can't be undefined`);

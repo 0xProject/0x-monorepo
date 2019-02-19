@@ -1,6 +1,6 @@
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
+import { BigNumber, providerUtils } from '@0x/utils';
+import { Provider, SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { OrderError, TradeSide, TransferType } from './types';
@@ -185,7 +185,7 @@ export class OrderValidationUtils {
      */
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         signedOrder: SignedOrder,
         fillTakerAssetAmount: BigNumber,
         takerAddress: string,
@@ -197,6 +197,7 @@ export class OrderValidationUtils {
         if (fillTakerAssetAmount.eq(0)) {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await signatureUtils.isValidSignatureAsync(
             provider,
