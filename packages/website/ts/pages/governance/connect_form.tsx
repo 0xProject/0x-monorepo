@@ -220,20 +220,14 @@ export class ConnectForm extends React.Component<Props, State> {
     }
     public async getZrxBalanceAsync(owner: string): Promise<BigNumber> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-        const injectedProvider = await this._getInjectedProviderIfExistsAsync();
-
-        if (!_.isUndefined(injectedProvider)) {
-            const contractAddresses = getContractAddressesForNetworkOrThrow(this.networkId);
-            const tokenAddress: string = contractAddresses.zrxToken;
-            try {
-                const amount = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, owner);
-                return amount;
-            } catch (error) {
-                return ZERO;
-            }
+        const contractAddresses = getContractAddressesForNetworkOrThrow(this.networkId);
+        const tokenAddress: string = contractAddresses.zrxToken;
+        try {
+            const amount = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, owner);
+            return amount;
+        } catch (error) {
+            return ZERO;
         }
-
-        return ZERO;
     }
     private async _onConnectWalletClickAsync(): Promise<boolean> {
         const shouldUseLedgerProvider = false;
