@@ -10,6 +10,7 @@ export { ExchangeFillEvent } from './exchange_fill_event';
 export { NonfungibleDotComTrade } from './nonfungible_dot_com_trade';
 export { OHLCVExternal } from './ohlcv_external';
 export { Relayer } from './relayer';
+export { Slippage } from './slippage';
 export { SraOrder } from './sra_order';
 export { SraOrdersObservedTimeStamp, createObservedTimestampForOrder } from './sra_order_observed_timestamp';
 export { TokenMetadata } from './token_metadata';
