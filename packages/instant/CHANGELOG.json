@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {

@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added types SupportedProvider, GanacheProvider, Web3JsProvider, ZeroExProvider, EIP1193Provider",
+                "pr": 1627
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
