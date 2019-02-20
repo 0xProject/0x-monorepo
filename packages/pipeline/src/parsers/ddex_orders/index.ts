@@ -7,7 +7,7 @@ import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
 /**
- * Marque function of this file.
+ * Marquee function of this file.
  * 1) Takes in orders from an orderbook,
  * other information attached.
  * @param ddexOrderbook A raw orderbook that we pull from the Ddex API.

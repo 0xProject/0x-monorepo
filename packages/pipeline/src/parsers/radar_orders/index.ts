@@ -15,7 +15,7 @@ export interface AggregateOrdersByMaker {
 }
 
 /**
- * Marque function of this file.
+ * Marquee function of this file.
  * 1) Takes in orders from an orderbook,
  * other information attached.
  * @param radarOrderbook A raw orderbook that we pull from the radar API.

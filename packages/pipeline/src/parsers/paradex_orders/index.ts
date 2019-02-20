@@ -5,7 +5,7 @@ import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
 /**
- * Marque function of this file.
+ * Marquee function of this file.
  * 1) Takes in orders from an orderbook (orders are already aggregated by price point),
  * 2) For each aggregated order, forms a TokenOrder entity with market data and
  * other information attached.
