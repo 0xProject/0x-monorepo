@@ -4,9 +4,12 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-interface LedgerSignNoteProps {
-    text?: string;
+interface WrapperProps {
     isVisible: boolean;
+}
+
+interface LedgerSignNoteProps extends WrapperProps {
+    text: string;
 }
 
 export const LedgerSignNote: React.StatelessComponent<LedgerSignNoteProps> = ({ text, isVisible }) => {
@@ -21,7 +24,7 @@ LedgerSignNote.defaultProps = {
     isVisible: false,
 };
 
-const Wrapper = styled.div<LedgerSignNoteProps>`
+const Wrapper = styled.div<WrapperProps>`
     background-color: #7a7a7a;
     display: flex;
     align-items: center;
