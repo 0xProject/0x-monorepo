@@ -91,7 +91,11 @@ export class AssetBuyer {
      *
      * @return  An instance of AssetBuyer
      */
-    constructor(supportedProvider: SupportedProvider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
+    constructor(
+        supportedProvider: SupportedProvider,
+        orderProvider: OrderProvider,
+        options: Partial<AssetBuyerOpts> = {},
+    ) {
         const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
             {},
             constants.DEFAULT_ASSET_BUYER_OPTS,

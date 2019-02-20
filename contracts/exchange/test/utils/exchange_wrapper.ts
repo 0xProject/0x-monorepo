@@ -1,4 +1,11 @@
-import { FillResults, formatters, LogDecoder, OrderInfo, orderUtils, Web3ProviderEngine } from '@0x/contracts-test-utils';
+import {
+    FillResults,
+    formatters,
+    LogDecoder,
+    OrderInfo,
+    orderUtils,
+    Web3ProviderEngine,
+} from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

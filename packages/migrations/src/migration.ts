@@ -204,7 +204,10 @@ let _cachedContractAddresses: ContractAddresses;
  * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
-export async function runMigrationsOnceAsync(provider: Web3ProviderEngine, txDefaults: TxData): Promise<ContractAddresses> {
+export async function runMigrationsOnceAsync(
+    provider: Web3ProviderEngine,
+    txDefaults: TxData,
+): Promise<ContractAddresses> {
     if (!_.isUndefined(_cachedContractAddresses)) {
         return _cachedContractAddresses;
     }

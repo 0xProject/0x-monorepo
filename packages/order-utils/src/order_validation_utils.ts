@@ -118,7 +118,10 @@ export class OrderValidationUtils {
      * @param supportedProvider Web3 provider to use for JSON RPC calls
      * @return An instance of OrderValidationUtils
      */
-    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, supportedProvider: SupportedProvider) {
+    constructor(
+        orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
+        supportedProvider: SupportedProvider,
+    ) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._provider = provider;

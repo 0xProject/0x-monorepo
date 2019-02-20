@@ -18,7 +18,12 @@ export const assert = {
         signature: string,
         signerAddress: string,
     ): Promise<void> {
-        const isValid = await signatureUtils.isValidSignatureAsync(supportedProvider, orderHash, signature, signerAddress);
+        const isValid = await signatureUtils.isValidSignatureAsync(
+            supportedProvider,
+            orderHash,
+            signature,
+            signerAddress,
+        );
         sharedAssert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
     isValidSubscriptionToken(variableName: string, subscriptionToken: string): void {

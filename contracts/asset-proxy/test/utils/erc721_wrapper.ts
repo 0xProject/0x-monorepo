@@ -1,4 +1,4 @@
-import { constants, ERC721TokenIdsByOwner, txDefaults, Web3ProviderEngine} from '@0x/contracts-test-utils';
+import { constants, ERC721TokenIdsByOwner, txDefaults, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

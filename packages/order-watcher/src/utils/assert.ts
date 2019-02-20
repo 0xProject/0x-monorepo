@@ -17,7 +17,12 @@ export const assert = {
         signature: string,
         signerAddress: string,
     ): Promise<void> {
-        const isValid = await signatureUtils.isValidSignatureAsync(supportedProvider, orderHash, signature, signerAddress);
+        const isValid = await signatureUtils.isValidSignatureAsync(
+            supportedProvider,
+            orderHash,
+            signature,
+            signerAddress,
+        );
         assert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
 };
