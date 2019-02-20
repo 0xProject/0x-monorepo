@@ -20,6 +20,7 @@ COPY run.sh .
 RUN /geth --datadir node0/ init genesis.json
 
 EXPOSE 8501
+EXPOSE 8546
 EXPOSE 30310
 
 ENTRYPOINT ./run.sh

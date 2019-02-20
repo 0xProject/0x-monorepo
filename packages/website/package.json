@@ -13,7 +13,7 @@
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "dev": "webpack-dev-server --mode development --content-base public --https",
-        "deploy_dogfood": "npm run build:prod; aws s3 sync ./public/. s3://dogfood.0x.org --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_dogfood": "npm run build:prod; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_staging": "npm run build:prod; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_live": "DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build:prod; aws s3 sync ./public/. s3://0x.org --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js"
     },
@@ -50,6 +50,7 @@
         "lodash": "^4.17.11",
         "material-ui": "^0.20.0",
         "moment": "2.21.0",
+        "moment-precise-range-plugin": "^1.3.0",
         "numeral": "^2.0.6",
         "polished": "^1.9.2",
         "query-string": "^6.0.0",

@@ -77,7 +77,7 @@ export function parseSolidityVersionRange(source: string): string {
  * @return The error message with directories truncated from the contract path.
  */
 export function getNormalizedErrMsg(errMsg: string): string {
-    const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol)/;
+    const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol):/;
     const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
     if (_.isNull(errPathMatch)) {
         // This can occur if solidity outputs a general warning, e.g
@@ -121,8 +121,12 @@ let solcJSReleasesCache: BinaryPaths | undefined;
 
 /**
  * Fetches the list of available solidity compilers
+ * @param isOfflineMode Offline mode flag
  */
-export async function getSolcJSReleasesAsync(): Promise<BinaryPaths> {
+export async function getSolcJSReleasesAsync(isOfflineMode: boolean): Promise<BinaryPaths> {
+    if (isOfflineMode) {
+        return constants.SOLC_BIN_PATHS;
+    }
     if (_.isUndefined(solcJSReleasesCache)) {
         const versionList = await fetch('https://ethereum.github.io/solc-bin/bin/list.json');
         const versionListJSON = await versionList.json();
@@ -135,12 +139,14 @@ export async function getSolcJSReleasesAsync(): Promise<BinaryPaths> {
  * Compiles the contracts and prints errors/warnings
  * @param solcVersion Version of a solc compiler
  * @param standardInput Solidity standard JSON input
+ * @param isOfflineMode Offline mode flag
  */
 export async function compileSolcJSAsync(
     solcVersion: string,
     standardInput: solc.StandardInput,
+    isOfflineMode: boolean,
 ): Promise<solc.StandardOutput> {
-    const solcInstance = await getSolcJSAsync(solcVersion);
+    const solcInstance = await getSolcJSAsync(solcVersion, isOfflineMode);
     const standardInputStr = JSON.stringify(standardInput);
     const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr);
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
@@ -329,9 +335,10 @@ function recursivelyGatherDependencySources(
  * Gets the solidity compiler instance. If the compiler is already cached - gets it from FS,
  * otherwise - fetches it and caches it.
  * @param solcVersion The compiler version. e.g. 0.5.0
+ * @param isOfflineMode Offline mode flag
  */
-export async function getSolcJSAsync(solcVersion: string): Promise<solc.SolcInstance> {
-    const solcJSReleases = await getSolcJSReleasesAsync();
+export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean): Promise<solc.SolcInstance> {
+    const solcJSReleases = await getSolcJSReleasesAsync(isOfflineMode);
     const fullSolcVersion = solcJSReleases[solcVersion];
     if (_.isUndefined(fullSolcVersion)) {
         throw new Error(`${solcVersion} is not a known compiler version`);

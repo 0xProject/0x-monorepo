@@ -3,29 +3,26 @@
 A private, single-node PoA Ethereum network for testing purposes only. It uses
 Geth and the PoA implementation called "Clique".
 
-## Installation
-
-The devnet requires Docker to run (the latest version is recommended).
-
-In the package root directory, run:
-
-```
-docker build -t 0x-devnet .
-```
-
 ## Usage
 
-To start the network, run:
+The devnet requires Docker to run (the latest version is recommended). To start
+the network, run:
 
 ```
-docker run -it --rm -p 8501:8501 0x-devnet
+docker run -it --rm -p 8501:8501 -p 8546:8546 0xorg/devnet
 ```
+
+This will download the latest version of the `0xorg/devnet` container, which is
+[hosted on DockerHub](https://hub.docker.com/r/0xorg/devnet).
 
 Depending on your OS and how you installed docker, you may need to prefix any
 docker commands with `sudo`.
 
-The Docker container exposes the JSON RPC API at port 8501, and this is the
+The Docker container exposes the HTTP JSON RPC API at port 8501, and this is the
 primary way you are expected to interact with the devnet. The following
+endpoints are supported: `personal,db,eth,net,web3,txpool,miner,debug`.
+
+It also exposes the WS JSON RPC API at port 8546. The following
 endpoints are supported: `personal,db,eth,net,web3,txpool,miner,debug`.
 
 You can stop the network with `docker stop` and it will automatically clean up
@@ -108,3 +105,20 @@ create an issue in this repository.
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting
 started.
+
+### Building
+
+In the package root directory, run:
+
+```
+docker build -t 0xorg/devnet .
+```
+
+### Publishing
+
+To publish the docker image, you need to be logged in to DockerHub and have the
+appropriate credentials (if you need access, contact @fabioberger). Then run:
+
+```
+docker push 0xorg/devnet
+```

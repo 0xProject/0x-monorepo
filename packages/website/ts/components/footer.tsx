@@ -33,6 +33,7 @@ const linkRows: LinkRows[] = [
         links: [
             { url: WebsitePaths.Instant, text: '0x Instant' },
             { url: WebsitePaths.LaunchKit, text: '0x Launch Kit' },
+            { url: WebsitePaths.Vote, text: 'Governance' },
         ],
     },
     {
@@ -62,6 +63,7 @@ const linkRows: LinkRows[] = [
             { url: constants.URL_ZEROEX_CHAT, text: 'Discord Chat', shouldOpenInNewTab: true },
             { url: constants.URL_FACEBOOK, text: 'Facebook', shouldOpenInNewTab: true },
             { url: constants.URL_REDDIT, text: 'Reddit', shouldOpenInNewTab: true },
+            { url: constants.URL_FORUM, text: 'Forum', shouldOpenInNewTab: true },
         ],
     },
 ];

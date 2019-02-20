@@ -191,6 +191,10 @@ export enum ExchangeContractErrs {
     InsufficientRemainingFillAmount = 'INSUFFICIENT_REMAINING_FILL_AMOUNT',
 }
 
+export interface GoogleSheetLeadUrls {
+    [key: string]: string;
+}
+
 export interface ContractResponse {
     logs: ContractEvent[];
 }
@@ -361,6 +365,7 @@ export enum WebsitePaths {
     Instant = '/instant',
     Ecosystem = '/eap',
     MarketMaker = '/market-maker',
+    Governance = '/governance',
     Why = '/why',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
@@ -379,6 +384,8 @@ export enum WebsitePaths {
     AssetBuyer = '/docs/asset-buyer',
     Migrations = '/docs/migrations',
     Careers = '/careers',
+    Credits = '/credits',
+    Vote = '/vote',
 }
 
 export enum DocPackages {

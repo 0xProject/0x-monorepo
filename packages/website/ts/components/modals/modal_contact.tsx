@@ -9,7 +9,7 @@ import '@reach/dialog/styles.css';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
-import { Input, InputWidth } from 'ts/components/modals/input';
+import { CheckBoxInput, Input, InputWidth, OptionSelector } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
 import { utils } from 'ts/utils/utils';
@@ -17,7 +17,31 @@ import { utils } from 'ts/utils/utils';
 export enum ModalContactType {
     General = 'GENERAL',
     MarketMaker = 'MARKET_MAKER',
+    Credits = 'CREDITS',
 }
+
+interface ServiceOptionMetadata {
+    label: string;
+    name: string;
+}
+const CREDIT_SERVICES_OPTIONS: ServiceOptionMetadata[] = [
+    {
+        label: 'AWS',
+        name: 'aws',
+    },
+    {
+        label: 'Facebook Ads',
+        name: 'facebook_ads',
+    },
+    {
+        label: 'Alchemy',
+        name: 'alchemy',
+    },
+    {
+        label: 'Digital Ocean',
+        name: 'digital_ocean',
+    },
+];
 
 interface Props {
     theme?: GlobalStyle;
@@ -50,6 +74,7 @@ export class ModalContact extends React.Component<Props> {
         modalContactType: ModalContactType.General,
     };
     public state = {
+        creditLeadsServices: [] as string[],
         isSubmitting: false,
         isSuccessful: false,
         errors: {},
@@ -64,6 +89,7 @@ export class ModalContact extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
+
     public constructor(props: Props) {
         super(props);
     }
@@ -93,7 +119,7 @@ export class ModalContact extends React.Component<Props> {
                                 >
                                     Back
                                 </Button>
-                                <Button>Submit</Button>
+                                <Button color={colors.white}>Submit</Button>
                             </ButtonRow>
                         </Form>
                         <Confirmation isSuccessful={isSuccessful}>
@@ -105,7 +131,9 @@ export class ModalContact extends React.Component<Props> {
                                 We'll get back to you soon. If you need quick support in the meantime, reach out to the
                                 0x team on Discord.
                             </Paragraph>
-                            <Button onClick={this.props.onDismiss}>Done</Button>
+                            <Button color={colors.white} onClick={this.props.onDismiss}>
+                                Done
+                            </Button>
                         </Confirmation>
                     </StyledDialogContent>
                 </DialogOverlay>
@@ -116,6 +144,8 @@ export class ModalContact extends React.Component<Props> {
         switch (this.props.modalContactType) {
             case ModalContactType.MarketMaker:
                 return this._renderMarketMakerFormContent(errors);
+            case ModalContactType.Credits:
+                return this._renderCreditsFormContent(errors);
             case ModalContactType.General:
             default:
                 return this._renderGeneralFormContent(errors);
@@ -191,6 +221,84 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
+
+    private _renderCreditsFormContent(errors: ErrorProps): React.ReactNode {
+        return (
+            <>
+                <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                    If you are building on top of 0x full time, please fill out this form and our Relayer Success
+                    Manager will be in touch.
+                </Paragraph>
+                <InputRow>
+                    <Input
+                        name="name"
+                        label="Your name"
+                        type="text"
+                        width={InputWidth.Half}
+                        ref={this.nameRef}
+                        required={true}
+                        errors={errors}
+                    />
+                    <Input
+                        name="email"
+                        label="Your email"
+                        type="email"
+                        ref={this.emailRef}
+                        required={true}
+                        errors={errors}
+                        width={InputWidth.Half}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="companyOrProject"
+                        label="Name of your project / company"
+                        type="text"
+                        ref={this.companyProjectRef}
+                        required={false}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="comments"
+                        label="Brief project description"
+                        type="textarea"
+                        ref={this.commentsRef}
+                        required={false}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <OptionSelector
+                        isFlex={true}
+                        name="services"
+                        label="Which credits are you interested in?"
+                        errors={errors}
+                    >
+                        {CREDIT_SERVICES_OPTIONS.map((metadata: ServiceOptionMetadata) => {
+                            return (
+                                <CheckBoxInput
+                                    onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
+                                    key={`checkbox-${metadata.name}`}
+                                    isSelected={_.includes(this.state.creditLeadsServices, metadata.name)}
+                                    label={metadata.label}
+                                />
+                            );
+                        })}
+                    </OptionSelector>
+                </InputRow>
+            </>
+        );
+    }
+
+    private _handleCheckBoxInput(checkBoxName: string): void {
+        const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
+            ? _.pull(this.state.creditLeadsServices, checkBoxName)
+            : _.concat(this.state.creditLeadsServices, checkBoxName);
+        this.setState({ creditLeadsServices: newCreditLeadsServices });
+    }
+
     private _renderGeneralFormContent(errors: ErrorProps): React.ReactNode {
         return (
             <>
@@ -249,7 +357,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
-    private async _onSubmitAsync(e: Event): Promise<void> {
+    private async _onSubmitAsync(e: React.FormEvent): Promise<void> {
         e.preventDefault();
 
         let jsonBody;
@@ -261,6 +369,14 @@ export class ModalContact extends React.Component<Props> {
                 fundSize: this.fundSizeRef.current.value,
                 projectOrCompany: this.companyProjectRef.current.value,
                 comments: this.commentsRef.current.value,
+            };
+        } else if (this.props.modalContactType === ModalContactType.Credits) {
+            jsonBody = {
+                name: this.nameRef.current.value,
+                email: this.emailRef.current.value,
+                project_name: this.companyProjectRef.current.value,
+                project_description: this.commentsRef.current.value,
+                services: this.state.creditLeadsServices,
             };
         } else {
             jsonBody = {
@@ -274,8 +390,17 @@ export class ModalContact extends React.Component<Props> {
 
         this.setState({ ...this.state, errors: [], isSubmitting: true });
 
-        const endpoint =
-            this.props.modalContactType === ModalContactType.MarketMaker ? '/market_maker_leads' : '/leads';
+        let endpoint;
+        switch (this.props.modalContactType) {
+            case ModalContactType.Credits:
+                endpoint = '/credit_leads';
+                break;
+            case ModalContactType.MarketMaker:
+                endpoint = '/market_maker_leads';
+                break;
+            default:
+                endpoint = '/leads';
+        }
 
         try {
             // Disabling no-unbound method b/c no reason for _.isEmpty to be bound
@@ -388,3 +513,4 @@ const Confirmation = styled.div<FormProps>`
         margin-right: auto;
     }
 `;
+// tslint:disable:max-file-line-count

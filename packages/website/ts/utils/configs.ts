@@ -1,4 +1,4 @@
-import { OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { GoogleSheetLeadUrls, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
 
 const BASE_URL = window.location.origin;
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
@@ -7,6 +7,9 @@ export const configs = {
     AMOUNT_DISPLAY_PRECSION: 5,
     BACKEND_BASE_PROD_URL: 'https://website-api.0x.org',
     BACKEND_BASE_STAGING_URL: 'https://staging-website-api.0x.org',
+    GOOGLE_SHEETS_LEAD_FORMS: {
+        CREDITS: 'https://script.google.com/macros/s/AKfycbyN1lJaSGWg2OIzqT8bou4GiqwCmOVjV2v_fiPO/exec',
+    } as GoogleSheetLeadUrls,
     BASE_URL,
     BITLY_ACCESS_TOKEN: 'ffc4c1a31e5143848fb7c523b39f91b9b213d208',
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
@@ -16,6 +19,9 @@ export const configs = {
     DOMAIN_DOGFOOD: 'dogfood.0x.org',
     DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1'],
     DOMAIN_PRODUCTION: '0x.org',
+    DOMAIN_VOTE: 'vote.0x.org',
+    VOTE_INSTANT_ORDER_SOURCE: 'https://api.radarrelay.com/0x/v2/',
+    VOTE_INSTANT_ASSET_DATAS: ['0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498'],
     GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
     LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2018-9-7',

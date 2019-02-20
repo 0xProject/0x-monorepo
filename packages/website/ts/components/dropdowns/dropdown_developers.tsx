@@ -41,6 +41,10 @@ const introData: LinkConfig[] = [
         label: 'Market making',
         url: `${WebsitePaths.MarketMaker}`,
     },
+    {
+        label: 'Free credits',
+        url: `${WebsitePaths.Credits}`,
+    },
 ];
 
 const docsData: LinkConfig[] = [
@@ -85,10 +89,8 @@ export const DropdownDevelopers: React.FunctionComponent<Props> = withTheme((pro
 
                 <StyledGrid isCentered={false} isWrapped={true}>
                     {_.map(introData, (item, index) => (
-                        <li>
-                            <Link key={`introLink-${index}`} to={item.url}>
-                                {item.label}
-                            </Link>
+                        <li key={`introLink-${index}`}>
+                            <Link to={item.url}>{item.label}</Link>
                         </li>
                     ))}
                 </StyledGrid>

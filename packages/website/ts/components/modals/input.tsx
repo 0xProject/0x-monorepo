@@ -1,36 +1,91 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { colors } from '../../style/colors';
+import { CheckMark } from '../ui/check_mark';
+import { Container } from '../ui/container';
+
 export enum InputWidth {
-    Half,
-    Full,
+    Half = 'half',
+    Full = 'full',
 }
 
 interface InputProps {
-    name: string;
-    width?: InputWidth;
-    label: string;
+    className?: string;
+    name?: string;
+    width?: InputWidth | string;
+    label?: string;
     type?: string;
+    defaultValue?: string;
     errors?: ErrorProps;
     isErrors?: boolean;
     required?: boolean;
+    onChange?: (e: React.ChangeEvent) => void;
+}
+
+interface OptionSelectorProps {
+    name: string;
+    width?: InputWidth;
+    label: string;
+    errors?: ErrorProps;
+    isErrors?: boolean;
+    required?: boolean;
+    children: React.ReactNode;
+    isFlex?: boolean;
+}
+
+interface CheckBoxProps {
+    label: string;
+    onClick: (e: React.MouseEvent<HTMLElement>) => void;
+    isSelected: boolean;
 }
 
 interface ErrorProps {
     [key: string]: string;
 }
 
+export const OptionSelector = (props: OptionSelectorProps) => {
+    const id = `input-${name}`;
+    return (
+        <InputWrapper {...props}>
+            <Label htmlFor={id}>{props.label}</Label>
+            <Container id={id}>{props.children}</Container>
+        </InputWrapper>
+    );
+};
+
+export const CheckBoxInput = (props: CheckBoxProps) => {
+    const { isSelected, label, onClick } = props;
+    return (
+        <Container onClick={onClick} className="flex items-center">
+            <Container marginRight="10px">
+                <CheckMark isChecked={isSelected} color={colors.brandLight} />
+            </Container>
+            <Label style={{ marginBottom: '0' }}>{label}</Label>
+        </Container>
+    );
+};
+
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
-    const { name, label, type, errors } = props;
+    const { name, label, type, errors, defaultValue, onChange, width, className } = props;
     const id = `input-${name}`;
     const componentType = type === 'textarea' ? 'textarea' : 'input';
     const isErrors = errors.hasOwnProperty(name) && errors[name] !== null;
     const errorMessage = isErrors ? errors[name] : null;
+    const inputProps = { name, type };
 
     return (
-        <InputWrapper {...props}>
+        <InputWrapper className={className} width={width}>
             <Label htmlFor={id}>{label}</Label>
-            <StyledInput as={componentType} ref={ref} id={id} isErrors={isErrors} {...props} />
+            <StyledInput
+                as={componentType}
+                ref={ref}
+                id={id}
+                isErrors={isErrors}
+                defaultValue={defaultValue}
+                onChange={onChange}
+                {...inputProps}
+            />
             {isErrors && <Error>{errorMessage}</Error>}
         </InputWrapper>
     );
