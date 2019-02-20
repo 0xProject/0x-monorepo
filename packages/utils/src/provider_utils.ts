@@ -29,7 +29,7 @@ export const providerUtils = {
         // Case 1: We've already converted to our ZeroExProvider so noop.
         if ((supportedProvider as any).isStandardizedProvider) {
             return supportedProvider as ZeroExProvider;
-        // Case 2: It's a compliant EIP 1193 Provider
+            // Case 2: It's a compliant EIP 1193 Provider
         } else if ((supportedProvider as EIP1193Provider).isEIP1193) {
             provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
                 const method = payload.method;
@@ -44,27 +44,34 @@ export const providerUtils = {
                     });
             };
             return provider;
-        // Case 3: The provider has a `sendAsync` method, so we use it.
+            // Case 3: The provider has a `sendAsync` method, so we use it.
         } else if (!_.isUndefined((supportedProvider as any).sendAsync)) {
             provider.sendAsync = (supportedProvider as any).sendAsync.bind(supportedProvider);
             return provider;
-        // Case 4: The provider does not have a `sendAsync` method but does have a `send` method
-        // It is most likely a Web3.js provider so we remap it to `sendAsync`. We only support
-        // Web3.js@1.0.0-beta.38 and above.
+            // Case 4: The provider does not have a `sendAsync` method but does have a `send` method
         } else if (!_.isUndefined((supportedProvider as any).send)) {
-            provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
-                const method = payload.method;
-                const params = payload.params;
-                (supportedProvider as any)
-                    .send(method, params)
-                    .then((result: any) => {
-                        callback(null, result);
-                    })
-                    .catch((err: Error) => {
-                        callback(err);
-                    });
-            };
-            return provider;
+            // HACK(fabio): Detect if the `send` method has the old interface `send(payload, cb)` such
+            // as in versions < Web3.js@1.0.0-beta.37. If so, do a simple re-mapping
+            if (_.includes((supportedProvider as any).send.toString(), 'function (payload, callback)')) {
+                provider.sendAsync = (supportedProvider as any).send.bind(supportedProvider);
+                return provider;
+            } else {
+                // If doesn't have old interface, we assume it has new interface `send(method, payload)`
+                // such as in versions > Web3.js@1.0.0-beta.38 and convert it to `sendAsync`
+                provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
+                    const method = payload.method;
+                    const params = payload.params;
+                    (supportedProvider as any)
+                        .send(method, params)
+                        .then((result: any) => {
+                            callback(null, result);
+                        })
+                        .catch((err: Error) => {
+                            callback(err);
+                        });
+                };
+                return provider;
+            }
         }
         throw new Error(
             `Unsupported provider found. Please make sure it conforms to one of the supported providers. See 'Provider' type in 'ethereum-types' package.`,
