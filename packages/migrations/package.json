@@ -45,7 +45,8 @@
         "tslint": "5.11.0",
         "typedoc": "0.13.0",
         "typescript": "3.0.1",
-        "yargs": "^10.0.3"
+        "yargs": "^10.0.3",
+        "web3-provider-engine": "14.0.6"
     },
     "dependencies": {
         "@0x/abi-gen-wrappers": "^3.0.3",
@@ -59,6 +60,7 @@
         "@0x/utils": "^4.1.0",
         "@0x/web3-wrapper": "^5.0.0",
         "@ledgerhq/hw-app-eth": "^4.3.0",
+        "@types/web3-provider-engine": "^14.0.0",
         "ethereum-types": "^2.0.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"

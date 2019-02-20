@@ -33,11 +33,13 @@
         "@0x/subproviders": "^3.0.3",
         "@0x/typescript-typings": "^4.0.0",
         "ethereum-types": "^2.0.0",
-        "lodash": "^4.17.11"
+        "lodash": "^4.17.11",
+        "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.0",
         "@types/node": "*",
+        "@types/web3-provider-engine": "^14.0.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",

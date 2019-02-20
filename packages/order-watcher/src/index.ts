@@ -22,4 +22,12 @@ export {
     SupportedProvider,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
+    Web3JsProvider,
+    GanacheProvider,
+    EIP1193Provider,
+    ZeroExProvider,
+    EIP1193Event,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
 } from 'ethereum-types';
