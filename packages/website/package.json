@@ -40,7 +40,7 @@
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",
-        "bowser": "^1.9.3",
+        "bowser": "^1.9.4",
         "deep-equal": "^1.0.1",
         "ethereum-types": "^2.0.0",
         "ethereumjs-util": "^5.1.1",
