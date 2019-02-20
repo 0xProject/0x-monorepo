@@ -3,7 +3,7 @@ import * as R from 'ramda';
 
 import { aggregateOrders } from '../utils';
 
-import { OasisMarket, OasisOrder } from '../../data_sources/oasis';
+import { OASIS_SOURCE, OasisMarket, OasisOrder } from '../../data_sources/oasis';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
@@ -15,21 +15,19 @@ import { OrderType } from '../../types';
  * @param oasisOrderbook A raw orderbook that we pull from the Oasis API.
  * @param oasisMarket An object containing market data also directly from the API.
  * @param observedTimestamp Time at which the orders for the market were pulled.
- * @param source The exchange where these orders are placed. In this case 'oasis'.
  */
 export function parseOasisOrders(
     oasisOrderbook: OasisOrder[],
     oasisMarket: OasisMarket,
     observedTimestamp: number,
-    source: string,
 ): TokenOrder[] {
     const aggregatedBids = aggregateOrders(R.filter(R.propEq('act', OrderType.Bid), oasisOrderbook));
     const aggregatedAsks = aggregateOrders(R.filter(R.propEq('act', OrderType.Ask), oasisOrderbook));
     const parsedBids = aggregatedBids.map(order =>
-        parseOasisOrder(oasisMarket, observedTimestamp, OrderType.Bid, source, order),
+        parseOasisOrder(oasisMarket, observedTimestamp, OrderType.Bid, order),
     );
     const parsedAsks = aggregatedAsks.map(order =>
-        parseOasisOrder(oasisMarket, observedTimestamp, OrderType.Ask, source, order),
+        parseOasisOrder(oasisMarket, observedTimestamp, OrderType.Ask, order),
     );
     return parsedBids.concat(parsedAsks);
 }
@@ -48,14 +46,13 @@ export function parseOasisOrder(
     oasisMarket: OasisMarket,
     observedTimestamp: number,
     orderType: OrderType,
-    source: string,
     oasisOrder: [string, BigNumber],
 ): TokenOrder {
     const tokenOrder = new TokenOrder();
     const price = new BigNumber(oasisOrder[0]);
     const amount = oasisOrder[1];
 
-    tokenOrder.source = source;
+    tokenOrder.source = OASIS_SOURCE;
     tokenOrder.observedTimestamp = observedTimestamp;
     tokenOrder.orderType = orderType;
     tokenOrder.price = price;

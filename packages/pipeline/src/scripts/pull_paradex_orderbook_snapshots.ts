@@ -2,7 +2,6 @@ import { logUtils } from '@0x/utils';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import {
-    PARADEX_SOURCE,
     ParadexActiveMarketsResponse,
     ParadexMarket,
     ParadexSource,
@@ -75,7 +74,7 @@ async function getAndSaveMarketOrderbookAsync(paradexSource: ParadexSource, mark
     const observedTimestamp = Date.now();
 
     logUtils.log(`${market.symbol}: Parsing orders.`);
-    const orders = parseParadexOrders(paradexOrderbookResponse, market, observedTimestamp, PARADEX_SOURCE);
+    const orders = parseParadexOrders(paradexOrderbookResponse, market, observedTimestamp);
 
     if (orders.length > 0) {
         logUtils.log(`${market.symbol}: Saving ${orders.length} orders.`);

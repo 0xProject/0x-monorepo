@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 
 import { aggregateOrders } from '../utils';
 
-import { IdexOrderbook, IdexOrderParam } from '../../data_sources/idex';
+import { IDEX_SOURCE, IdexOrderbook, IdexOrderParam } from '../../data_sources/idex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
@@ -13,17 +13,14 @@ import { OrderType } from '../../types';
  * 3) Parses them into entities which are then saved into the database.
  * @param idexOrderbook raw orderbook that we pull from the Idex API.
  * @param observedTimestamp Time at which the orders for the market were pulled.
- * @param source The exchange where these orders are placed. In this case 'idex'.
  */
-export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp: number, source: string): TokenOrder[] {
+export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp: number): TokenOrder[] {
     const aggregatedBids = aggregateOrders(idexOrderbook.bids);
     // Any of the bid orders' params will work
     const idexBidOrder = idexOrderbook.bids[0];
     const parsedBids =
         aggregatedBids.length > 0
-            ? aggregatedBids.map(order =>
-                  parseIdexOrder(idexBidOrder.params, observedTimestamp, OrderType.Bid, source, order),
-              )
+            ? aggregatedBids.map(order => parseIdexOrder(idexBidOrder.params, observedTimestamp, OrderType.Bid, order))
             : [];
 
     const aggregatedAsks = aggregateOrders(idexOrderbook.asks);
@@ -31,9 +28,7 @@ export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp:
     const idexAskOrder = idexOrderbook.asks[0];
     const parsedAsks =
         aggregatedAsks.length > 0
-            ? aggregatedAsks.map(order =>
-                  parseIdexOrder(idexAskOrder.params, observedTimestamp, OrderType.Ask, source, order),
-              )
+            ? aggregatedAsks.map(order => parseIdexOrder(idexAskOrder.params, observedTimestamp, OrderType.Ask, order))
             : [];
     return parsedBids.concat(parsedAsks);
 }
@@ -45,21 +40,19 @@ export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp:
  * trades have been placed.
  * @param observedTimestamp The time when the API response returned back to us.
  * @param orderType 'bid' or 'ask' enum.
- * @param source Exchange where these orders were placed.
  * @param idexOrder A <price, amount> tuple which we will convert to volume-basis.
  */
 export function parseIdexOrder(
     idexOrderParam: IdexOrderParam,
     observedTimestamp: number,
     orderType: OrderType,
-    source: string,
     idexOrder: [string, BigNumber],
 ): TokenOrder {
     const tokenOrder = new TokenOrder();
     const price = new BigNumber(idexOrder[0]);
     const amount = idexOrder[1];
 
-    tokenOrder.source = source;
+    tokenOrder.source = IDEX_SOURCE;
     tokenOrder.observedTimestamp = observedTimestamp;
     tokenOrder.orderType = orderType;
     tokenOrder.price = price;

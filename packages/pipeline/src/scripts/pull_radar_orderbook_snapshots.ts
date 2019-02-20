@@ -3,7 +3,7 @@ import { RadarMarket } from '@radarrelay/types';
 import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { RADAR_SOURCE, RadarSource } from '../data_sources/radar';
+import { RadarSource } from '../data_sources/radar';
 import { TokenOrderbookSnapshot as TokenOrder } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseRadarOrders } from '../parsers/radar_orders';
@@ -44,7 +44,7 @@ async function getAndSaveMarketOrderbookAsync(radarSource: RadarSource, market: 
     const observedTimestamp = Date.now();
 
     logUtils.log(`${market.id}: Parsing orders.`);
-    const orders = parseRadarOrders(orderBook, market, observedTimestamp, RADAR_SOURCE);
+    const orders = parseRadarOrders(orderBook, market, observedTimestamp);
 
     if (orders.length > 0) {
         logUtils.log(`${market.id}: Saving ${orders.length} orders.`);

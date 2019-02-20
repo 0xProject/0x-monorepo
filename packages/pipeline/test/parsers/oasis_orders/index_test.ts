@@ -28,7 +28,6 @@ describe('oasis_orders', () => {
             };
             const observedTimestamp: number = Date.now();
             const orderType: OrderType = OrderType.Bid;
-            const source: string = 'oasis';
 
             const expected = new TokenOrder();
             expected.source = 'oasis';
@@ -42,7 +41,7 @@ describe('oasis_orders', () => {
             expected.quoteAssetAddress = null;
             expected.quoteVolume = new BigNumber(5);
             expected.makerAddress = 'unknown';
-            const actual = parseOasisOrder(oasisMarket, observedTimestamp, orderType, source, oasisOrder);
+            const actual = parseOasisOrder(oasisMarket, observedTimestamp, orderType, oasisOrder);
             expect(actual).deep.equal(expected);
         });
     });

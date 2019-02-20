@@ -1,5 +1,5 @@
 import { BigNumber } from '@0x/utils';
-import { RadarBook, RadarMarket, RadarSignedOrder } from '@radarrelay/types';
+import { RadarMarket } from '@radarrelay/types';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -35,7 +35,6 @@ describe('radar_orders', () => {
             } as any) as RadarMarket;
             const observedTimestamp: number = Date.now();
             const orderType: OrderType = OrderType.Bid;
-            const source: string = 'radar';
 
             const expected = new TokenOrder();
             expected.source = 'radar';
@@ -49,7 +48,7 @@ describe('radar_orders', () => {
             expected.baseAssetAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
             expected.baseVolume = new BigNumber(10000000000);
             expected.makerAddress = '0x6eC92694ea172ebC430C30fa31De87620967A082';
-            const actual = parseRadarOrder(radarMarket, observedTimestamp, orderType, source, radarOrder);
+            const actual = parseRadarOrder(radarMarket, observedTimestamp, orderType, radarOrder);
             expect(actual).deep.equal(expected);
         });
     });

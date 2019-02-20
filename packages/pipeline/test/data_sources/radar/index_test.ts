@@ -2,7 +2,6 @@ import { BigNumber } from '@0x/utils';
 import { RadarOrderState, RadarOrderType } from '@radarrelay/types';
 import * as chai from 'chai';
 import 'mocha';
-import * as R from 'ramda';
 
 import { RadarSource } from '../../../src/data_sources/radar';
 import { chaiSetup } from '../../utils/chai_setup';

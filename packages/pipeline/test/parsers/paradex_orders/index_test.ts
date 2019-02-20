@@ -33,7 +33,6 @@ describe('paradex_orders', () => {
             };
             const observedTimestamp: number = Date.now();
             const orderType: OrderType = OrderType.Bid;
-            const source: string = 'paradex';
 
             const expected = new TokenOrder();
             expected.source = 'paradex';
@@ -47,7 +46,7 @@ describe('paradex_orders', () => {
             expected.quoteAssetAddress = '0x0000000000000000000000000000000000000000';
             expected.quoteVolume = new BigNumber(412 * 0.1245);
             expected.makerAddress = 'unknown';
-            const actual = parseParadexOrder(paradexMarket, observedTimestamp, orderType, source, paradexOrder);
+            const actual = parseParadexOrder(paradexMarket, observedTimestamp, orderType, paradexOrder);
             expect(actual).deep.equal(expected);
         });
     });

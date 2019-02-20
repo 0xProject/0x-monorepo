@@ -5,6 +5,7 @@ import * as R from 'ramda';
 
 import { aggregateOrders, GenericRawOrder } from '../utils';
 
+import { RADAR_SOURCE } from '../../data_sources/radar';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
@@ -21,21 +22,19 @@ export interface AggregateOrdersByMaker {
  * @param radarOrderbook A raw orderbook that we pull from the radar API.
  * @param radarMarket An object containing market data also directly from the API.
  * @param observedTimestamp Time at which the orders for the market were pulled.
- * @param source The exchange where these orders are placed. In this case 'radar'.
  */
 export function parseRadarOrders(
     radarOrderbook: RadarBook,
     radarMarket: RadarMarket,
     observedTimestamp: number,
-    source: string,
 ): TokenOrder[] {
     const aggregatedBids = _aggregateOrdersByMaker(radarMarket, radarOrderbook.bids);
     const aggregatedAsks = _aggregateOrdersByMaker(radarMarket, radarOrderbook.asks);
     const parsedBids = aggregatedBids.map(order =>
-        parseRadarOrder(radarMarket, observedTimestamp, OrderType.Bid, source, order),
+        parseRadarOrder(radarMarket, observedTimestamp, OrderType.Bid, order),
     );
     const parsedAsks = aggregatedAsks.map(order =>
-        parseRadarOrder(radarMarket, observedTimestamp, OrderType.Ask, source, order),
+        parseRadarOrder(radarMarket, observedTimestamp, OrderType.Ask, order),
     );
     return parsedBids.concat(parsedAsks);
 }
@@ -47,14 +46,12 @@ export function parseRadarOrders(
  * trades have been placed.
  * @param observedTimestamp The time when the API response returned back to us.
  * @param orderType 'bid' or 'ask' enum.
- * @param source Exchange where these orders were placed.
  * @param aggregateOrder An AggregateOrdersByMaker instance which we will convert to volume-basis.
  */
 export function parseRadarOrder(
     radarMarket: RadarMarket,
     observedTimestamp: number,
     orderType: OrderType,
-    source: string,
     aggregateOrder: AggregateOrdersByMaker,
 ): TokenOrder {
     const tokenOrder = new TokenOrder();
@@ -62,7 +59,7 @@ export function parseRadarOrder(
     const amount = aggregateOrder.amount;
     const splitId = radarMarket.id.split('-');
 
-    tokenOrder.source = source;
+    tokenOrder.source = RADAR_SOURCE;
     tokenOrder.observedTimestamp = observedTimestamp;
     tokenOrder.orderType = orderType;
     tokenOrder.price = price;
