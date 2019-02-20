@@ -6,7 +6,7 @@ import { EdpsSource } from '../data_sources/dex_prices';
 import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { Slippage } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { calculateSlippage } from '../parsers/slippage';
+import { calculateSlippage } from '../transformers/slippage';
 import { handleError } from '../utils';
 
 // Number of orders to save at once.

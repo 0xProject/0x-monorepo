@@ -4,7 +4,7 @@ import 'mocha';
 
 import { EdpsWrapper } from '../../../src/data_sources/dex_prices';
 import { Slippage } from '../../../src/entities';
-import { calculateSlippage } from '../../../src/parsers/slippage';
+import { calculateSlippage } from '../../../src/transformers/slippage';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
