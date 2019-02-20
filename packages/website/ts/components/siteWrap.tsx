@@ -9,6 +9,7 @@ import { GlobalStyles } from 'ts/constants/globalStyle';
 
 interface Props {
     theme?: 'dark' | 'light' | 'gray';
+    isFullScreen?: boolean;
     children: any;
 }
 
@@ -18,6 +19,7 @@ interface State {
 
 interface MainProps {
     isNavToggled: boolean;
+    isFullScreen?: boolean;
 }
 
 export interface ThemeValuesInterface {
@@ -118,7 +120,7 @@ export class SiteWrap extends React.Component<Props, State> {
     };
 
     public render(): React.ReactNode {
-        const { children, theme = 'dark' } = this.props;
+        const { children, theme = 'dark', isFullScreen } = this.props;
         const { isMobileNavOpen } = this.state;
         const currentTheme = GLOBAL_THEMES[theme];
 
@@ -130,7 +132,7 @@ export class SiteWrap extends React.Component<Props, State> {
 
                         <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
 
-                        <Main isNavToggled={isMobileNavOpen}>{children}</Main>
+                        <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>{children}</Main>
 
                         <Footer />
                     </>
@@ -143,4 +145,10 @@ export class SiteWrap extends React.Component<Props, State> {
 const Main = styled.main<MainProps>`
     transition: transform 0.5s, opacity 0.5s;
     opacity: ${props => props.isNavToggled && '0.5'};
+
+    ${props => props.isFullScreen && `
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 108px - 381px);
+    `}
 `;
