@@ -44,7 +44,7 @@ export class AssetBuyer {
     private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
     /**
      * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
@@ -65,7 +65,7 @@ export class AssetBuyer {
     }
     /**
      * Instantiates a new AssetBuyer instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
      *
@@ -85,7 +85,7 @@ export class AssetBuyer {
     }
     /**
      * Instantiates a new AssetBuyer instance
-     * @param   provider            The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orderProvider       An object that conforms to OrderProvider, see type for definition.
      * @param   options             Initialization options for the AssetBuyer. See type definition for details.
      *
