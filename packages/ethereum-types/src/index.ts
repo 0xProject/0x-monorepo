@@ -14,7 +14,8 @@ export interface GanacheProvider {
     sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
 }
 
-// Deprecated
+// DEPRECATED(fabio): This interface should be replaced with the EIP 1193 provider interface
+// We will leave it here until the ecosystem has migrated fully to the new standard
 export interface Provider {
     sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
 }
