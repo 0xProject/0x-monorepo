@@ -41,7 +41,7 @@ describe('oasis_orders', () => {
             expected.quoteAssetSymbol = 'ABC';
             expected.quoteAssetAddress = null;
             expected.quoteVolume = new BigNumber(5);
-
+            expected.makerAddress = 'unknown';
             const actual = parseOasisOrder(oasisMarket, observedTimestamp, orderType, source, oasisOrder);
             expect(actual).deep.equal(expected);
         });

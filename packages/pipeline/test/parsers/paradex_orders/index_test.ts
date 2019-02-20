@@ -46,7 +46,7 @@ describe('paradex_orders', () => {
             expected.quoteAssetSymbol = 'ABC';
             expected.quoteAssetAddress = '0x0000000000000000000000000000000000000000';
             expected.quoteVolume = new BigNumber(412 * 0.1245);
-
+            expected.makerAddress = 'unknown';
             const actual = parseParadexOrder(paradexMarket, observedTimestamp, orderType, source, paradexOrder);
             expect(actual).deep.equal(expected);
         });

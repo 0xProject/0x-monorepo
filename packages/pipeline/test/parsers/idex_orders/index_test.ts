@@ -45,7 +45,7 @@ describe('idex_orders', () => {
             expected.quoteAssetSymbol = 'DEF';
             expected.quoteAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
             expected.quoteVolume = new BigNumber(5);
-
+            expected.makerAddress = 'unknown';
             const actual = parseIdexOrder(idexOrderParam, observedTimestamp, orderType, source, idexOrder);
             expect(actual).deep.equal(expected);
         });
@@ -79,7 +79,7 @@ describe('idex_orders', () => {
             expected.quoteAssetSymbol = 'DEF';
             expected.quoteAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
             expected.quoteVolume = new BigNumber(5);
-
+            expected.makerAddress = 'unknown';
             const actual = parseIdexOrder(idexOrderParam, observedTimestamp, orderType, source, idexOrder);
             expect(actual).deep.equal(expected);
         });
