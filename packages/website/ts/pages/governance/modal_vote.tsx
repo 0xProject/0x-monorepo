@@ -120,7 +120,7 @@ export class ModalVote extends React.Component<Props> {
                         <Confirmation isSuccessful={isSuccessful}>
                             <Icon name="zeip-23" size="large" margin={[0, 0, 'default', 0]} />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
-                                Vote Recieved!
+                                Vote Received!
                             </Heading>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                                 Your vote will help to decide the future of the protocol. You will be receiving a custom

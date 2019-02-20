@@ -31,7 +31,6 @@ describe('ddex_orders', () => {
             };
             const observedTimestamp: number = Date.now();
             const orderType: OrderType = OrderType.Bid;
-            const source: string = 'ddex';
 
             const expected = new TokenOrder();
             expected.source = 'ddex';
@@ -44,8 +43,8 @@ describe('ddex_orders', () => {
             expected.baseAssetSymbol = 'DEF';
             expected.baseAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
             expected.baseVolume = new BigNumber(10);
-
-            const actual = parseDdexOrder(ddexMarket, observedTimestamp, orderType, source, ddexOrder);
+            expected.makerAddress = 'unknown';
+            const actual = parseDdexOrder(ddexMarket, observedTimestamp, orderType, ddexOrder);
             expect(actual).deep.equal(expected);
         });
     });

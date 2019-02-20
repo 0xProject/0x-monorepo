@@ -33,6 +33,10 @@ export interface CryptoCompareOHLCVParams {
     toTs?: number;
 }
 
+export interface CryptoCompareUsdPrice {
+    USD: number;
+}
+
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
@@ -45,6 +49,7 @@ export class CryptoCompareOHLCVSource {
     public readonly defaultExchange = 'CCCAGG';
     public readonly interval = this.intervalBetweenRecords * MAX_PAGE_SIZE; // the hourly API returns data for one interval at a time
     private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
+    private readonly _priceUrl: string = 'https://min-api.cryptocompare.com/data/price?';
 
     // rate-limit for all API calls through this class instance
     private readonly _limiter: Bottleneck;
@@ -95,6 +100,13 @@ export class CryptoCompareOHLCVSource {
             }
         };
         return R.unfold(f, pair);
+    }
+
+    public async getUsdPriceAsync(symbol: string): Promise<number> {
+        const usdUrl = `${this._priceUrl}tsyms=USD&fsym=${symbol}`;
+        const resp = await fetchAsync(usdUrl);
+        const respJson: CryptoCompareUsdPrice = await resp.json();
+        return respJson.USD;
     }
 }
 

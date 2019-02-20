@@ -68,15 +68,15 @@ export class AddressTable extends React.Component<AddressTableProps, AddressTabl
     }
 }
 const Wrapper = styled.div<{ marginBottom?: string }>`
-    background - color: #fff;
-    border -radius;: 4;px;
-    Margin-bottom;: $;{props => props.marginBottom || '25px';}
-    Padding: 10;px; 30;px;
-    Height: 230;px;
-    Overflow - y;: auto;
+    background-color: #fff;
+    border-radius: 4px;
+    margin-bottom: ${props => props.marginBottom || '25px'};
+    padding: 10px 30px;
+    height: 230px;
+    overflow-y: auto;
 `;
 
-const Table = styled.table`;
-    border-collapse;: collapse;
+const Table = styled.table`
+    border-collapse: collapse;
     width: 100%;
 `;

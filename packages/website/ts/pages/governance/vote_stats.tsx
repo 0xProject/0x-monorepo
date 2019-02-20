@@ -11,6 +11,7 @@ import { constants } from 'ts/utils/constants';
 interface VoteStatsProps {
     tally?: TallyInterface;
 }
+
 export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) => {
     const bigNumberFormat = {
         decimalSeparator: '.',
@@ -43,8 +44,8 @@ export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) =
             <Heading asElement="h3" size="small" marginBottom="10px">
                 Results
             </Heading>
-            <VoteBar label="Yes" color={colors.brandLight} percentage={yesPercentage.toFixed(0)} />
-            <VoteBar label="No" color={colors.brandDark} percentage={noPercentage.toFixed(0)} marginBottom="24px" />
+            <VoteBar label="Yes" color={colors.brandLight} percentage={yesPercentage} />
+            <VoteBar label="No" color={colors.brandDark} percentage={noPercentage} marginBottom="24px" />
             <Paragraph marginBottom="24px">({totalBalanceString} ZRX total vote)</Paragraph>
         </>
     );
