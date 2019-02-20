@@ -24,7 +24,7 @@ import { util } from './util/util';
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
 
-const validateInstantRenderConfigAsync = async (config: ZeroExInstantConfig, selector: string) => {
+const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: string) => {
     assert.isValidOrderSource('orderSource', config.orderSource);
     if (!_.isUndefined(config.defaultSelectedAssetData)) {
         assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
@@ -102,7 +102,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
             : config.orderSource,
     });
 
-    validateInstantRenderConfigAsync(coercedConfig, selector);
+    validateInstantRenderConfig(coercedConfig, selector);
 
     if (coercedConfig.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {

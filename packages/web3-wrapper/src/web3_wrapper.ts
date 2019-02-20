@@ -54,7 +54,7 @@ export class Web3Wrapper {
     public abiDecoder: AbiDecoder;
     private _provider: ZeroExProvider;
     // Raw provider passed in. Do not use. Only here to return the unmodified provider passed in via `getProvider()`
-    private _supportedProvider: SupportedProvider;
+    private readonly _supportedProvider: SupportedProvider;
     private readonly _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**

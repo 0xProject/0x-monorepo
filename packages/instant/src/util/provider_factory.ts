@@ -1,6 +1,6 @@
 import { EmptyWalletSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { providerUtils } from '@0x/utils';
-import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { BLOCK_POLLING_INTERVAL_MS, ETHEREUM_NODE_URL_BY_NETWORK } from '../constants';

@@ -24,17 +24,19 @@ export const providerUtils = {
             isParity: (supportedProvider as any).isParity,
             stop: (supportedProvider as any).stop,
             enable: (supportedProvider as any).enable,
-            sendAsync: _.noop, // Will be replaced
+            sendAsync: _.noop.bind(_), // Will be replaced
         };
         // Case 1: We've already converted to our ZeroExProvider so noop.
         if ((supportedProvider as any).isStandardizedProvider) {
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             return supportedProvider as ZeroExProvider;
             // Case 2: It's a compliant EIP 1193 Provider
+            // tslint:disable-next-line:no-unnecessary-type-assertion
         } else if ((supportedProvider as EIP1193Provider).isEIP1193) {
             provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
                 const method = payload.method;
                 const params = payload.params;
-                (supportedProvider as EIP1193Provider)
+                (supportedProvider as any)
                     .send(method, params)
                     .then((result: any) => {
                         callback(null, result);

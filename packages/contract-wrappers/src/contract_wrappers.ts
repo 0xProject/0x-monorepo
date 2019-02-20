@@ -9,9 +9,9 @@ import {
     OrderValidator,
     WETH9,
 } from '@0x/contract-artifacts';
-import { AbiDecoder, providerUtils } from '@0x/utils';
+import { AbiDecoder } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, SupportedProvider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
