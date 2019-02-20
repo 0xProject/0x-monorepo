@@ -377,7 +377,7 @@ export class ConnectForm extends React.Component<Props, State> {
         injectedProviderIfExists?: InjectedProvider,
         networkIdIfExists?: number,
         shouldUserLedgerProvider: boolean = false,
-    ): Promise<[Provider, LedgerSubprovider | undefined]> {
+    ): Promise<[ZeroExProvider, LedgerSubprovider | undefined]> {
         // This code is based off of the Blockchain.ts code.
         // TODO refactor to re-use this utility outside of Blockchain.ts
         const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);
