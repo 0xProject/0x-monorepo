@@ -1,11 +1,12 @@
 import { logUtils } from '@0x/utils';
+import { RadarMarket } from '@radarrelay/types';
 import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { DdexMarket, DdexSource } from '../data_sources/ddex';
+import { RadarSource } from '../data_sources/radar';
 import { TokenOrderbookSnapshot as TokenOrder } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { parseDdexOrders } from '../parsers/ddex_orders';
+import { parseRadarOrders } from '../parsers/radar_orders';
 import { handleError } from '../utils';
 
 // Number of orders to save at once.
@@ -21,11 +22,11 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    const ddexSource = new DdexSource();
-    const markets = await ddexSource.getActiveMarketsAsync();
+    const radarSource = new RadarSource();
+    const markets = await radarSource.getActiveMarketsAsync();
     for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
         await Promise.all(
-            marketsChunk.map(async (market: DdexMarket) => getAndSaveMarketOrderbookAsync(ddexSource, market)),
+            marketsChunk.map(async (market: RadarMarket) => getAndSaveMarketOrderbookAsync(radarSource, market)),
         );
         await new Promise<void>(resolve => setTimeout(resolve, MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY));
     }
@@ -33,17 +34,17 @@ let connection: Connection;
 })().catch(handleError);
 
 /**
- * Retrieve orderbook from Ddex API for a given market. Parse orders and insert
+ * Retrieve orderbook from radar API for a given market. Parse orders and insert
  * them into our database.
- * @param ddexSource Data source which can query Ddex API.
- * @param market Object from Ddex API containing market data.
+ * @param radarSource Data source which can query radar API.
+ * @param market Object from radar API containing market data.
  */
-async function getAndSaveMarketOrderbookAsync(ddexSource: DdexSource, market: DdexMarket): Promise<void> {
-    const orderBook = await ddexSource.getMarketOrderbookAsync(market.id);
+async function getAndSaveMarketOrderbookAsync(radarSource: RadarSource, market: RadarMarket): Promise<void> {
+    const orderBook = await radarSource.getMarketOrderbookAsync(market.id);
     const observedTimestamp = Date.now();
 
     logUtils.log(`${market.id}: Parsing orders.`);
-    const orders = parseDdexOrders(orderBook, market, observedTimestamp);
+    const orders = parseRadarOrders(orderBook, market, observedTimestamp);
 
     if (orders.length > 0) {
         logUtils.log(`${market.id}: Saving ${orders.length} orders.`);

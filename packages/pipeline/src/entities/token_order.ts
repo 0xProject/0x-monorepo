@@ -15,12 +15,14 @@ export class TokenOrderbookSnapshot {
     public price!: BigNumber;
     @PrimaryColumn({ name: 'base_asset_symbol' })
     public baseAssetSymbol!: string;
+    @PrimaryColumn({ name: 'quote_asset_symbol' })
+    public quoteAssetSymbol!: string;
+    @PrimaryColumn({ type: String, name: 'maker_address', default: 'unknown' })
+    public makerAddress!: string;
     @Column({ nullable: true, type: String, name: 'base_asset_address' })
     public baseAssetAddress!: string | null;
     @Column({ name: 'base_volume', type: 'numeric', transformer: bigNumberTransformer })
     public baseVolume!: BigNumber;
-    @PrimaryColumn({ name: 'quote_asset_symbol' })
-    public quoteAssetSymbol!: string;
     @Column({ nullable: true, type: String, name: 'quote_asset_address' })
     public quoteAssetAddress!: string | null;
     @Column({ name: 'quote_volume', type: 'numeric', transformer: bigNumberTransformer })

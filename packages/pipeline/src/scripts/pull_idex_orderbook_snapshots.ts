@@ -2,7 +2,7 @@ import { logUtils } from '@0x/utils';
 import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { IDEX_SOURCE, IdexSource } from '../data_sources/idex';
+import { IdexSource } from '../data_sources/idex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseIdexOrders } from '../parsers/idex_orders';
@@ -51,7 +51,7 @@ async function getAndSaveMarketOrderbookAsync(idexSource: IdexSource, marketId: 
     }
 
     logUtils.log(`${marketId}: Parsing orders.`);
-    const orders = parseIdexOrders(orderBook, observedTimestamp, IDEX_SOURCE);
+    const orders = parseIdexOrders(orderBook, observedTimestamp);
 
     if (orders.length > 0) {
         logUtils.log(`${marketId}: Saving ${orders.length} orders.`);

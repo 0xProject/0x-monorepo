@@ -20,6 +20,7 @@ const tokenOrderbookSnapshot: TokenOrderbookSnapshot = {
     quoteAssetSymbol: 'ABC',
     quoteAssetAddress: '0x00923b9a074762b93650716333b3e1473a15048e',
     quoteVolume: new BigNumber(12.3234234),
+    makerAddress: 'unknown',
 };
 
 describe('TokenOrderbookSnapshot entity', () => {
