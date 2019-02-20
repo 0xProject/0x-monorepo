@@ -115,6 +115,7 @@ export class OrderValidationUtils {
     /**
      * Instantiate OrderValidationUtils
      * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
+     * @param supportedProvider Web3 provider to use for JSON RPC calls
      * @return An instance of OrderValidationUtils
      */
     constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, supportedProvider: SupportedProvider) {
@@ -178,7 +179,7 @@ export class OrderValidationUtils {
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed
      * @param exchangeTradeEmulator ExchangeTradeEmulator to use
-     * @param provider Web3 provider to use for JSON RPC requests
+     * @param supportedProvider Web3 provider to use for JSON RPC requests
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
      * @param takerAddress The taker of the order

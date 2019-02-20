@@ -15,7 +15,7 @@ export class SignerSubprovider extends Subprovider {
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new SignerSubprovider.
-     * @param provider Web3 provider that should handle  all user account related requests
+     * @param supportedProvider Web3 provider that should handle  all user account related requests
      */
     constructor(supportedProvider: SupportedProvider) {
         super();
