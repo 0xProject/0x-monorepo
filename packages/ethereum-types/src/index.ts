@@ -6,19 +6,32 @@ export type JSONRPCErrorCallback = (err: Error | null, result?: JSONRPCResponseP
  * Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
  * Read more about Providers in the 0x wiki.
  */
-export type SupportedProvider = Web3JsProvider | Provider | EIP1193Provider;
+export type SupportedProvider = Web3JsProvider | GanacheProvider | EIP1193Provider | ZeroExProvider;
 
 export type Web3JsProvider = Web3JsV1Provider | Web3JsV2Provider | Web3JsV3Provider;
 
-/**
- * The interface for the provider used by @0x/web3-wrapper
- */
+export interface GanacheProvider {
+    sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
+
+// Deprecated
 export interface Provider {
     sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
 }
 
-export type GanacheProvider = Provider;
-export type ProviderEngineProvider = Provider;
+/**
+ * The interface for the provider used internally by 0x libraries
+ * Any property we use from any SupportedProvider should we explicitly
+ * add here
+ */
+export interface ZeroExProvider {
+    isZeroExProvider?: boolean;
+    isMetaMask?: boolean;
+    isParity?: boolean;
+    stop?: () => void;
+    enable?: () => Promise<void>;
+    sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
 
 /**
  * Web3.js version 1 provider interface

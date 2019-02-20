@@ -49,6 +49,7 @@
         "@types/pluralize": "^0.0.29",
         "@types/require-from-string": "^1.2.0",
         "@types/semver": "5.5.0",
+        "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
@@ -64,7 +65,8 @@
         "types-bn": "^0.0.1",
         "typescript": "3.0.1",
         "web3-typescript-typings": "^0.10.2",
-        "zeppelin-solidity": "1.8.0"
+        "zeppelin-solidity": "1.8.0",
+        "web3-provider-engine": "^14.0.6"
     },
     "dependencies": {
         "@0x/assert": "^2.0.3",

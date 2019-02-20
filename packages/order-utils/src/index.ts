@@ -22,7 +22,7 @@ export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_la
 export { eip712Utils } from './eip712_utils';
 
 export {
-    Provider,
+    SupportedProvider,
     JSONRPCRequestPayload,
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,

@@ -1,6 +1,6 @@
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { Provider, SupportedProvider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { OrderError, TradeSide, TransferType } from './types';
@@ -17,7 +17,7 @@ import { utils } from './utils';
  */
 export class OrderValidationUtils {
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
-    private readonly _provider: Provider;
+    private readonly _provider: ZeroExProvider;
     /**
      * A Typescript implementation mirroring the implementation of isRoundingError in the
      * Exchange smart contract

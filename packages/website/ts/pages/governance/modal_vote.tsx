@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { DialogContent, DialogOverlay } from '@reach/dialog';
 import '@reach/dialog/styles.css';
-import { Provider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as React from 'react';
 import styled from 'styled-components';
 
@@ -45,7 +45,7 @@ interface State {
     errors: ErrorProps;
     web3Wrapper?: Web3Wrapper;
     contractWrappers?: ContractWrappers;
-    providerEngine?: Provider;
+    providerEngine?: ZeroExProvider;
     web3?: any;
     selectedAddress?: string;
 }

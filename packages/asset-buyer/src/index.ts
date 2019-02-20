@@ -3,7 +3,7 @@ export {
     JSONRPCResponsePayload,
     JSONRPCResponseError,
     JSONRPCErrorCallback,
-    Provider,
+    SupportedProvider,
 } from 'ethereum-types';
 export { SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';

@@ -1,5 +1,4 @@
 export {
-    Provider,
     TxData,
     JSONRPCRequestPayload,
     JSONRPCErrorCallback,

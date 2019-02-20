@@ -26,8 +26,7 @@ export class FillScenarios {
         erc20ProxyAddress: string,
         erc721ProxyAddress: string,
     ) {
-        const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider);
         this._userAddresses = userAddresses;
         this._coinbase = userAddresses[0];
         this._zrxTokenAddress = zrxTokenAddress;

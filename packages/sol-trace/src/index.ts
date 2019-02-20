@@ -11,7 +11,7 @@ export { RevertTraceSubprovider } from './revert_trace_subprovider';
 
 export {
     JSONRPCRequestPayload,
-    Provider,
+    SupportedProvider,
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,
     JSONRPCResponseError,

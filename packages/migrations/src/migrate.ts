@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 import { devConstants, web3Factory } from '@0x/dev-utils';
+import { Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { Provider } from 'ethereum-types';
 
 import { runMigrationsAsync } from './migration';
 
 (async () => {
     let providerConfigs;
-    let provider: Provider;
+    let provider: Web3ProviderEngine;
     let txDefaults;
 
     providerConfigs = { shouldUseInProcessGanache: false };

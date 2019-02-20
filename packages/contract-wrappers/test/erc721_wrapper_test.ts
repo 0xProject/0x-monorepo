@@ -3,7 +3,6 @@ import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { DoneCallback } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import { Provider } from 'ethereum-types';
 import 'mocha';
 
 import {
@@ -454,7 +453,7 @@ describe('ERC721Wrapper', () => {
 });
 // tslint:disable:max-file-line-count
 
-function addEmptyWalletSubprovider(p: Provider): Provider {
+function addEmptyWalletSubprovider(p: Web3ProviderEngine): Web3ProviderEngine {
     const providerEngine = new Web3ProviderEngine();
     providerEngine.addProvider(new EmptyWalletSubprovider());
     const currentSubproviders = (p as any)._providers;

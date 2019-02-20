@@ -12,7 +12,7 @@ export { ProfilerSubprovider } from './profiler_subprovider';
 
 export {
     JSONRPCRequestPayload,
-    Provider,
+    SupportedProvider,
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,
     JSONRPCResponseError,

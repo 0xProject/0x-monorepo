@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
 
-import { Provider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import {
     AccountState,
     BlockchainCallErrs,
@@ -301,7 +301,7 @@ export const utils = {
         }
         window.onload = () => resolve();
     }),
-    getProviderType(provider: Provider): Providers | string {
+    getProviderType(provider: ZeroExProvider): Providers | string {
         const constructorName = provider.constructor.name;
         let parsedProviderName = constructorName;
         // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js

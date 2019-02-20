@@ -77,7 +77,7 @@ export {
     BlockParamLiteral,
     BlockParam,
     ContractEventArg,
-    Provider,
+    SupportedProvider,
     ContractAbi,
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,

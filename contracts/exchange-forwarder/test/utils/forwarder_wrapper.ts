@@ -1,8 +1,8 @@
-import { constants, formatters, LogDecoder, MarketSellOrders } from '@0x/contracts-test-utils';
+import { constants, formatters, LogDecoder, MarketSellOrders, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ForwarderContract } from '../../generated-wrappers/forwarder';
@@ -55,7 +55,7 @@ export class ForwarderWrapper {
         const params = formatters.createMarketSellOrders(signedOrders, constants.ZERO_AMOUNT);
         return params;
     }
-    constructor(contractInstance: ForwarderContract, provider: Provider) {
+    constructor(contractInstance: ForwarderContract, provider: Web3ProviderEngine) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);

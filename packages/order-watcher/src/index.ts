@@ -19,7 +19,7 @@ export { SignedOrder } from '@0x/types';
 export {
     JSONRPCRequestPayload,
     JSONRPCErrorCallback,
-    Provider,
+    SupportedProvider,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
 } from 'ethereum-types';

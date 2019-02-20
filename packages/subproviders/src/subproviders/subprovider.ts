@@ -1,5 +1,6 @@
 import { promisify } from '@0x/utils';
-import { JSONRPCRequestPayload, JSONRPCResponsePayload, ProviderEngineProvider } from 'ethereum-types';
+import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
+import Web3ProviderEngine = require('web3-provider-engine');
 
 import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
 /**
@@ -8,7 +9,7 @@ import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../typ
  */
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
-    private engine!: ProviderEngineProvider;
+    private engine!: Web3ProviderEngine;
     protected static _createFinalPayload(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Partial<JSONRPCRequestPayloadWithMethod> {
@@ -64,7 +65,7 @@ export abstract class Subprovider {
      * directly.
      * @param engine The ProviderEngine this subprovider is added to
      */
-    public setEngine(engine: ProviderEngineProvider): void {
+    public setEngine(engine: Web3ProviderEngine): void {
         this.engine = engine;
     }
 }

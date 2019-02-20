@@ -1,7 +1,7 @@
-import { LogDecoder } from '@0x/contracts-test-utils';
+import { LogDecoder, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { AssetProxyOwnerContract } from '../../generated-wrappers/asset_proxy_owner';
@@ -11,7 +11,7 @@ export class AssetProxyOwnerWrapper {
     private readonly _assetProxyOwner: AssetProxyOwnerContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
-    constructor(assetproxyOwnerContract: AssetProxyOwnerContract, provider: Provider) {
+    constructor(assetproxyOwnerContract: AssetProxyOwnerContract, provider: Web3ProviderEngine) {
         this._assetProxyOwner = assetproxyOwnerContract;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);

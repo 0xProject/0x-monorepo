@@ -1,7 +1,7 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { assetDataUtils } from '@0x/order-utils';
 import { providerUtils } from '@0x/utils';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -24,7 +24,7 @@ import { util } from './util/util';
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
 
-const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: string) => {
+const validateInstantRenderConfigAsync = async (config: ZeroExInstantConfig, selector: string) => {
     assert.isValidOrderSource('orderSource', config.orderSource);
     if (!_.isUndefined(config.defaultSelectedAssetData)) {
         assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
@@ -102,7 +102,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
             : config.orderSource,
     });
 
-    validateInstantRenderConfig(coercedConfig, selector);
+    validateInstantRenderConfigAsync(coercedConfig, selector);
 
     if (coercedConfig.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {
@@ -152,17 +152,18 @@ export const hasLiquidityForAssetDataAsync = async (
     assetData: string,
     orderSource: OrderSource,
     networkId: Network = Network.Mainnet,
-    provider?: Provider,
+    supportedProvider?: SupportedProvider,
 ): Promise<boolean> => {
     assert.isHexString('assetData', assetData);
     assert.isValidOrderSource('orderSource', orderSource);
     assert.isNumber('networkId', networkId);
 
+    let provider = supportedProvider;
     if (provider !== undefined) {
-        providerUtils.standardizeOrThrow(provider);
+        provider = providerUtils.standardizeOrThrow(provider);
     }
 
-    const bestProvider: Provider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
+    const bestProvider: ZeroExProvider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
 
     const assetBuyerOptions = { networkId };
 

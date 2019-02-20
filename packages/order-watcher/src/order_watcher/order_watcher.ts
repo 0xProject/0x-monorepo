@@ -34,7 +34,7 @@ import {
 } from '@0x/order-utils';
 import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
 import { errorUtils, intervalUtils, providerUtils } from '@0x/utils';
-import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider, SupportedProvider } from 'ethereum-types';
+import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
@@ -79,7 +79,7 @@ export class OrderWatcher {
     private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
     private readonly _orderByOrderHash: OrderByOrderHash = {};
     private readonly _eventWatcher: EventWatcher;
-    private readonly _provider: Provider;
+    private readonly _provider: ZeroExProvider;
     private readonly _collisionResistantAbiDecoder: CollisionResistanceAbiDecoder;
     private readonly _expirationWatcher: ExpirationWatcher;
     private readonly _orderStateUtils: OrderStateUtils;

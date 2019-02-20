@@ -22,7 +22,7 @@ import {
 import { SignedOrder, Token as ZeroExToken } from '@0x/types';
 import { BigNumber, intervalUtils, logUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
@@ -84,7 +84,7 @@ export class Blockchain {
     private _defaultGasPrice: BigNumber;
     private _watchGasPriceIntervalId: NodeJS.Timer;
     private _injectedProviderIfExists?: InjectedProvider;
-    private static _getNameGivenProvider(provider: Provider): string {
+    private static _getNameGivenProvider(provider: ZeroExProvider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
         if (_.isUndefined(providerNameIfExists)) {

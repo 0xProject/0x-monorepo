@@ -6,7 +6,7 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export {
     BlockParam,
     TxData,
-    Provider,
+    SupportedProvider,
     TransactionReceipt,
     Transaction,
     TraceParams,

@@ -1,7 +1,7 @@
 import { web3Factory } from '@0x/dev-utils';
-import { Provider } from 'ethereum-types';
+import Web3ProviderEngine = require('web3-provider-engine');
 
 const providerConfigs = { shouldUseInProcessGanache: true };
-const provider: Provider = web3Factory.getRpcProvider(providerConfigs);
+const provider: Web3ProviderEngine = web3Factory.getRpcProvider(providerConfigs);
 
 export { provider };

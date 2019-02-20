@@ -4,7 +4,7 @@ import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, SupportedProvider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -34,7 +34,7 @@ interface OrdersEntry {
 }
 
 export class AssetBuyer {
-    public readonly provider: Provider;
+    public readonly provider: ZeroExProvider;
     public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;

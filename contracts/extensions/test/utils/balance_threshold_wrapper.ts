@@ -5,11 +5,12 @@ import {
     OrderInfo,
     orderUtils,
     TransactionFactory,
+    Web3ProviderEngine,
 } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts, BalanceThresholdFilterContract, ExchangeContract } from '../../src';
@@ -24,7 +25,7 @@ export class BalanceThresholdWrapper {
         balanceThresholdFilter: BalanceThresholdFilterContract,
         exchangeContract: ExchangeContract,
         signerTransactionFactory: TransactionFactory,
-        provider: Provider,
+        provider: Web3ProviderEngine,
     ) {
         this._balanceThresholdFilter = balanceThresholdFilter;
         this._exchange = exchangeContract;

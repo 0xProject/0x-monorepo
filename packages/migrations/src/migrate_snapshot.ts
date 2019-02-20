@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { devConstants, web3Factory } from '@0x/dev-utils';
+import { Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { Provider } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -10,7 +10,7 @@ import { runMigrationsAsync } from './migration';
 
 (async () => {
     let providerConfigs;
-    let provider: Provider;
+    let provider: Web3ProviderEngine;
     let txDefaults;
     const packageJsonPath = path.join(__dirname, '..', 'package.json');
     const packageJsonString = fs.readFileSync(packageJsonPath, 'utf8');

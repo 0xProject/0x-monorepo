@@ -52,7 +52,6 @@ export { ECSignature, EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Ty
 
 export {
     JSONRPCRequestPayload,
-    Provider,
     SupportedProvider,
     JSONRPCResponsePayload,
     JSONRPCErrorCallback,

@@ -11,7 +11,6 @@ import {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     LogEntry,
-    Provider,
     RawLogEntry,
     SupportedProvider,
     TraceParams,
@@ -20,6 +19,7 @@ import {
     TransactionReceiptWithDecodedLogs,
     TransactionTrace,
     TxData,
+    ZeroExProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -52,7 +52,9 @@ export class Web3Wrapper {
      */
     public isZeroExWeb3Wrapper = true;
     public abiDecoder: AbiDecoder;
-    private _provider: Provider;
+    private _provider: ZeroExProvider;
+    // Raw provider passed in. Do not use. Only here to return the unmodified provider passed in via `getProvider()`
+    private _supportedProvider: SupportedProvider;
     private readonly _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**
@@ -149,9 +151,9 @@ export class Web3Wrapper {
      * @return  An instance of the Web3Wrapper class.
      */
     constructor(supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.abiDecoder = new AbiDecoder([]);
-        this._provider = provider;
+        this._supportedProvider = supportedProvider;
+        this._provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._txDefaults = txDefaults || {};
         this._jsonRpcRequestId = 1;
     }
@@ -166,7 +168,14 @@ export class Web3Wrapper {
      * Retrieve the Web3 provider
      * @return  Web3 provider instance
      */
-    public getProvider(): Provider {
+    public getProvider(): SupportedProvider {
+        return this._supportedProvider;
+    }
+    /**
+     * Retrieve the Web3 provider
+     * @return  Web3 provider instance
+     */
+    public getZeroExProvider(): ZeroExProvider {
         return this._provider;
     }
     /**

@@ -1,7 +1,7 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider, SupportedProvider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 
 // Reusable
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -109,7 +109,7 @@ export interface AffiliateInfo {
 export interface ProviderState {
     name: string;
     displayName: string;
-    provider: Provider;
+    provider: ZeroExProvider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
     account: Account;

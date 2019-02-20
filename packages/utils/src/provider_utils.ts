@@ -2,8 +2,8 @@ import {
     EIP1193Provider,
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
-    Provider,
     SupportedProvider,
+    ZeroExProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -14,48 +14,56 @@ export const providerUtils = {
      * @param supportedProvider Potentially supported provider instance
      * @return Provider that conforms of our internal provider interface
      */
-    standardizeOrThrow(supportedProvider: SupportedProvider): Provider {
-        if ((supportedProvider as EIP1193Provider).isEIP1193) {
-            const provider = supportedProvider as Provider;
+    standardizeOrThrow(supportedProvider: SupportedProvider): ZeroExProvider {
+        if (supportedProvider === undefined) {
+            throw new Error(`supportedProvider cannot be 'undefined'`);
+        }
+        const provider = {
+            isStandardizedProvider: true,
+            isMetaMask: (supportedProvider as any).isMetaMask,
+            isParity: (supportedProvider as any).isParity,
+            stop: (supportedProvider as any).stop,
+            enable: (supportedProvider as any).enable,
+            sendAsync: _.noop, // Will be replaced
+        };
+        // Case 1: We've already converted to our ZeroExProvider so noop.
+        if ((supportedProvider as any).isStandardizedProvider) {
+            return supportedProvider as ZeroExProvider;
+        // Case 2: It's a compliant EIP 1193 Provider
+        } else if ((supportedProvider as EIP1193Provider).isEIP1193) {
             provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
-                    const method = payload.method;
-                    const params = payload.params;
-                    (supportedProvider as EIP1193Provider)
-                        .send(method, params)
-                        .then((result: any) => {
-                            callback(null, result);
-                        })
-                        .catch((err: Error) => {
-                            callback(err);
-                        });
-                };
+                const method = payload.method;
+                const params = payload.params;
+                (supportedProvider as EIP1193Provider)
+                    .send(method, params)
+                    .then((result: any) => {
+                        callback(null, result);
+                    })
+                    .catch((err: Error) => {
+                        callback(err);
+                    });
+            };
             return provider;
-        } else if (_.isUndefined((supportedProvider as any).sendAsync)) {
-            // An early version of Web3@1.0 Beta provider only has an async `send` method so
-            // we re-assign the send method so that early Web3@1.0 Beta providers work with @0x/web3-wrapper
-            const provider = supportedProvider as Provider;
-            provider.sendAsync = (supportedProvider as any).send;
-            return provider;
+        // Case 3: The provider has a `sendAsync` method, so we use it.
         } else if (!_.isUndefined((supportedProvider as any).sendAsync)) {
-            return supportedProvider as Provider;
-        } else if ((supportedProvider as any).host) {
-            // HACK(fabio): Later Web3@1.0 Beta modified their `send` method to comply with EIP1193 but did not add the
-            // `isEIP1193` flag. The only common identifier across Web3.js providers is that they all have
-            // a `host` property, so we check for it's existence. We put this check last to make it less likely
-            // that this condition is hit for other providers that also expose a `host` property.
-            const provider = supportedProvider as Provider;
+            provider.sendAsync = (supportedProvider as any).sendAsync.bind(supportedProvider);
+            return provider;
+        // Case 4: The provider does not have a `sendAsync` method but does have a `send` method
+        // It is most likely a Web3.js provider so we remap it to `sendAsync`. We only support
+        // Web3.js@1.0.0-beta.38 and above.
+        } else if (!_.isUndefined((supportedProvider as any).send)) {
             provider.sendAsync = (payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback) => {
-                    const method = payload.method;
-                    const params = payload.params;
-                    (supportedProvider as any)
-                        .send(method, params)
-                        .then((result: any) => {
-                            callback(null, result);
-                        })
-                        .catch((err: Error) => {
-                            callback(err);
-                        });
-                };
+                const method = payload.method;
+                const params = payload.params;
+                (supportedProvider as any)
+                    .send(method, params)
+                    .then((result: any) => {
+                        callback(null, result);
+                    })
+                    .catch((err: Error) => {
+                        callback(err);
+                    });
+            };
             return provider;
         }
         throw new Error(

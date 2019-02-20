@@ -10,7 +10,7 @@ export {
 
 export {
     JSONRPCRequestPayload,
-    Provider,
+    SupportedProvider,
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
