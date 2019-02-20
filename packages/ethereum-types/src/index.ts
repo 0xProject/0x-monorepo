@@ -29,8 +29,8 @@ export interface ZeroExProvider {
     isZeroExProvider?: boolean;
     isMetaMask?: boolean;
     isParity?: boolean;
-    stop?: () => void;
-    enable?: () => Promise<void>;
+    stop?(): void;
+    enable?(): Promise<void>;
     sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
 }
 
