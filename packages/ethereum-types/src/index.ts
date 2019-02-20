@@ -11,15 +11,6 @@ export type SupportedProvider = Web3JsProvider | Provider | EIP1193Provider;
 export type Web3JsProvider = Web3JsV1Provider | Web3JsV2Provider | Web3JsV3Provider;
 
 /**
- * Web3.js version 3 provider interface
- * This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
- * however it does not conform entirely.
- */
-export interface Web3JsV3Provider {
-    send(method: string, params?: any[]): Promise<any>;
-}
-
-/**
  * The interface for the provider used by @0x/web3-wrapper
  */
 export interface Provider {
@@ -46,6 +37,15 @@ export interface Web3JsV1Provider {
  */
 export interface Web3JsV2Provider {
     send(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
+
+/**
+ * Web3.js version 3 provider interface
+ * This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
+ * however it does not conform entirely.
+ */
+export interface Web3JsV3Provider {
+    send(method: string, params?: any[]): Promise<any>;
 }
 
 /**
