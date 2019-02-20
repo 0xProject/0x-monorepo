@@ -3,15 +3,16 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Column, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 export const VotePlaceholder = () => (
     <SiteWrap>
-        <DocumentTitle title="0x Vote" />
+        <DocumentTitle {...documentConstants.VOTE} />
         <Section isTextCentered={true} isPadded={true} padding="150px 0px">
             <Column>
                 <Heading size="medium" isCentered={true}>

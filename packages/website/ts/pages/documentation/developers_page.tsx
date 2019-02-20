@@ -4,12 +4,13 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { BrowserType, OperatingSystemType, ScreenWidths } from 'ts/types';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -140,7 +141,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                     colors.white
                 } 50%, ${colors.white} 100%)`}
             >
-                <DocumentTitle title="0x Docs" />
+                <DocumentTitle {...documentConstants.DOCS} />
                 <Helmet>
                     <link rel="stylesheet" href="/css/github-gist.css" />
                 </Helmet>

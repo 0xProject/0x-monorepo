@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { SectionLandingAbout } from 'ts/components/sections/landing/about';
 import { SectionLandingClients } from 'ts/components/sections/landing/clients';
 import { SectionLandingCta } from 'ts/components/sections/landing/cta';
@@ -8,6 +8,7 @@ import { SectionLandingHero } from 'ts/components/sections/landing/hero';
 import { SiteWrap } from 'ts/components/siteWrap';
 
 import { ModalContact } from 'ts/components/modals/modal_contact';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface Props {
     theme: {
@@ -24,7 +25,7 @@ export class NextLanding extends React.Component<Props> {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle title="0x: The protocol for trading tokens on Ethereum" />
+                <DocumentTitle {...documentConstants.LANDING} />
                 <SectionLandingHero />
                 <SectionLandingAbout />
                 <SectionLandingClients />

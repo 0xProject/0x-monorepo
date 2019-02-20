@@ -6,7 +6,7 @@ import styled, { keyframes } from 'styled-components';
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Definition } from 'ts/components/definition';
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Hero } from 'ts/components/hero';
 import { Section, SectionProps } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
@@ -14,6 +14,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { Configurator } from 'ts/pages/instant/configurator';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { utils } from 'ts/utils/utils';
 
 import { ModalContact } from '../components/modals/modal_contact';
@@ -88,7 +89,7 @@ export class Next0xInstant extends React.Component<Props> {
     public render(): React.ReactNode {
         return (
             <SiteWrap>
-                <DocumentTitle title="0x Instant: Quick and secure crypto purchasing" />
+                <DocumentTitle {...documentConstants.INSTANT} />
                 <Hero
                     title="Introducing 0x Instant"
                     description="A free and flexible way to offer simple crypto purchasing in any app or website"

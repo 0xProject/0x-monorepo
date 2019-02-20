@@ -4,9 +4,10 @@ import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/components/aboutPageLayout';
 import { Button } from 'ts/components/button';
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Column, FlexWrap } from 'ts/components/newLayout';
 import { Paragraph } from 'ts/components/text';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface HighlightProps {
     logo: string;
@@ -66,7 +67,7 @@ export const NextAboutPress = () => (
             </>
         }
     >
-        <DocumentTitle title="Press Highlights - 0x" />
+        <DocumentTitle {...documentConstants.PRESS} />
     </AboutPageLayout>
 );
 

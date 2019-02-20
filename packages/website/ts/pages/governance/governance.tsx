@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
@@ -17,6 +17,7 @@ import { VoteInfo, VoteValue } from 'ts/pages/governance/vote_form';
 import { VoteStats } from 'ts/pages/governance/vote_stats';
 import { colors } from 'ts/style/colors';
 import { configs } from 'ts/utils/configs';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { utils } from 'ts/utils/utils';
 
 interface LabelInterface {
@@ -109,7 +110,7 @@ export class Governance extends React.Component {
         const { isVoteReceived, tally } = this.state;
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle title="Governance Vote - 0x" />
+                <DocumentTitle {...documentConstants.VOTE} />
                 <Section maxWidth="1170px" isFlex={true}>
                     <Column width="55%" maxWidth="560px">
                         <Countdown deadline={proposalData.votingDeadline} />

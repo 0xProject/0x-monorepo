@@ -8,7 +8,6 @@ import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
-import { DocumentTitle } from 'ts/components/documentTitle';
 import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
@@ -234,7 +233,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Container>
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
-                <DocumentTitle title={DOCUMENT_TITLE} />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}

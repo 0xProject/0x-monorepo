@@ -4,11 +4,12 @@ import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/components/aboutPageLayout';
 import { Definition } from 'ts/components/definition';
-import { DocumentTitle } from 'ts/components/documentTitle';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Image } from 'ts/components/image';
 import { Column, Section } from 'ts/components/newLayout';
 import { Heading } from 'ts/components/text';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 const values = [
     {
@@ -38,7 +39,7 @@ export const NextAboutMission = () => (
         linkLabel="Our mission and values"
         href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
     >
-        <DocumentTitle title="Our Mission - 0x" />
+        <DocumentTitle {...documentConstants.ABOUT} />
         <Section isFullWidth={true} isPadded={false}>
             <FullWidthImage>
                 <Image src="/images/about/about-office.png" alt="0x Offices" isCentered={true} />
