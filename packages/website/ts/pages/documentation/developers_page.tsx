@@ -2,9 +2,9 @@ import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
+import { DocumentTitle } from 'ts/components/document_title';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
-import { DocumentTitle } from 'ts/components/document_title';
 import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { media } from 'ts/style/media';
