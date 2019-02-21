@@ -2,7 +2,6 @@ import { colors, Link } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
@@ -234,7 +233,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Container>
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
-                <DocumentTitle title={DOCUMENT_TITLE} />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}

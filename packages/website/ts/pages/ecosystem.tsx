@@ -1,16 +1,17 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
 import { Button } from 'ts/components/button';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Icon } from 'ts/components/icon';
 import { Column, Section, WrapGrid } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface BenefitProps {
     title: string;
@@ -55,7 +56,7 @@ const benefits: BenefitProps[] = [
 
 export const NextEcosystem = () => (
     <SiteWrap theme="light">
-        <DocumentTitle title="Ecosystem Acceleration Program: Jumpstart your Business on 0x" />
+        <DocumentTitle {...documentConstants.ECOSYSTEM_PROGRAM} />
         <Section isTextCentered={true}>
             <Column>
                 <Heading size="medium" isCentered={true}>

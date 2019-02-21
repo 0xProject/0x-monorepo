@@ -133,7 +133,6 @@ render(
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
                                     component={LazyZeroExJSDocumentation}
