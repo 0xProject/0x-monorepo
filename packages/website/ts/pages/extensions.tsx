@@ -131,11 +131,11 @@ const CustomSection = styled.div`
     width: calc(100% - 60px);
     max-width: 1500px;
     margin: 0 auto;
-    padding: 120px 0;
+    padding: 0 0 120px;
     position: relative;
 
     @media (max-width: 768px) {
-        padding: 40px 0;
+        padding: 0 0 40px;
     }
 `;
 
