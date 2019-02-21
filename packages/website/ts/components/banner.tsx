@@ -44,7 +44,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                     </Paragraph>
                 )}
             </Column>
-            <Column>
+            <ColumnCta>
                 <ButtonWrap>
                     {mainCta && (
                         <Button
@@ -69,7 +69,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                         </Button>
                     )}
                 </ButtonWrap>
-            </Column>
+            </ColumnCta>
         </CustomSection>
     );
 };
@@ -80,6 +80,9 @@ const CustomSection = styled(Section)`
     margin-top: 0;
 
     @media (max-width: 900px) {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
         text-align: center;
 
         p {
@@ -90,6 +93,10 @@ const CustomSection = styled(Section)`
             margin-bottom: 0;
         }
     }
+`;
+
+const ColumnCta = styled(Column)`
+    flex-shrink: 0;
 `;
 
 const CustomHeading = styled.h2`
