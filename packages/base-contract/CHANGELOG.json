@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.1.0",
+        "version": "5.0.0",
         "changes": [
             {
                 "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
