@@ -21,7 +21,7 @@ export class TokenOrderBookSnapshotsAddMakerAddress1550163069315 implements Migr
             `);
             await queryRunner.query(`
                 ALTER TABLE ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}
-                    DROP CONSTRAINT "token_orderbook_snapshots_pkey1",
+                    DROP CONSTRAINT "token_orderbook_snapshots_pkey",
                     ADD PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol, maker_address);
             `);
         } else {
@@ -32,7 +32,14 @@ export class TokenOrderBookSnapshotsAddMakerAddress1550163069315 implements Migr
     public async down(queryRunner: QueryRunner): Promise<any> {
         const snapshotTable = await queryRunner.getTable(TOKEN_ORDERBOOK_SNAPSHOT_TABLE);
         if (snapshotTable) {
-            await queryRunner.dropColumn(snapshotTable, NEW_COLUMN_NAME);
+            // await queryRunner.dropIndex(snapshotTable, 'token_orderbook_snapshots_pkey');
+            // await queryRunner.dropColumn(snapshotTable, NEW_COLUMN_NAME);
+            await queryRunner.query(`
+                ALTER TABLE ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}
+                    DROP CONSTRAINT "token_orderbook_snapshots_pkey",
+                    DROP COLUMN ${NEW_COLUMN_NAME},
+                    ADD PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol);
+            `);
         } else {
             throw new Error(`Could not find table with name ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}`);
         }
