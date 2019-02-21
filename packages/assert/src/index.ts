@@ -1,5 +1,5 @@
 import { Schema, SchemaValidator } from '@0x/json-schemas';
-import { addressUtils, BigNumber } from '@0x/utils';
+import { addressUtils, BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
 
@@ -59,8 +59,8 @@ export const assert = {
     isBoolean(variableName: string, value: boolean): void {
         assert.assert(_.isBoolean(value), assert.typeAssertionMessage(variableName, 'boolean', value));
     },
-    // DEPRECATED: Please use providerUtils.standardizeOrThrow() instead
     isWeb3Provider(variableName: string, value: any): void {
+        logUtils.warn('DEPRECATED: Please use providerUtils.standardizeOrThrow() instead');
         const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
         assert.assert(isWeb3Provider, assert.typeAssertionMessage(variableName, 'Provider', value));
     },
