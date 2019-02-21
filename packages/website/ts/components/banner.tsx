@@ -31,11 +31,11 @@ interface BorderProps {
 export const Banner: React.StatelessComponent<Props> = (props: Props) => {
     const { heading, subline, mainCta, secondaryCta } = props;
     return (
-        <CustomSection bgColor={colors.brandDark} isFlex={true} flexBreakpoint="900px" paddingMobile="120px 0">
+        <CustomSection bgColor={colors.brandDark} isFlex={true} flexBreakpoint="900px" paddingMobile="120px 0" alignItems="center">
             <Border />
             <Border isBottom={true} />
 
-            <Column>
+            <Column maxWidth="455px">
                 <CustomHeading>{heading}</CustomHeading>
 
                 {subline && (
@@ -77,6 +77,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
 const CustomSection = styled(Section)`
     color: ${colors.white};
     margin-top: 30px;
+    margin-top: 0;
 
     @media (max-width: 900px) {
         text-align: center;
@@ -93,8 +94,11 @@ const CustomSection = styled(Section)`
 
 const CustomHeading = styled.h2`
     font-size: 34px;
+    line-height: normal;
     font-weight: 400;
-    margin-bottom: 10px @media (max-width: 768px) {
+    margin-bottom: 10px;
+
+    @media (max-width: 768px) {
         font-size: 30px;
     }
 `;
