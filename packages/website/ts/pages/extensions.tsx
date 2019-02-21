@@ -39,26 +39,6 @@ const extensionData: Extension[] = [
         title: 'Whitelist Filter',
         description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
     },
-    {
-        icon: 'supportForAllEthereumStandards',
-        title: 'Whitelist Filter',
-        description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
-    },
-    {
-        icon: 'supportForAllEthereumStandards',
-        title: 'Whitelist Filter',
-        description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
-    },
-    {
-        icon: 'supportForAllEthereumStandards',
-        title: 'Whitelist Filter',
-        description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
-    },
-    {
-        icon: 'supportForAllEthereumStandards',
-        title: 'Whitelist Filter',
-        description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
-    },
 ];
 
 export class Extensions extends React.Component {
