@@ -36,7 +36,7 @@ export class TokenOrderBookSnapshotsAddMakerAddress1550163069315 implements Migr
                 ALTER TABLE ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}
                     DROP CONSTRAINT "token_orderbook_snapshots_pkey",
                     DROP COLUMN ${NEW_COLUMN_NAME},
-                    ADD PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol);
+                    ADD CONSTRAINT "token_orderbook_snapshots_pkey" PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol);
             `);
         } else {
             throw new Error(`Could not find table with name ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}`);
