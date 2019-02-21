@@ -2,7 +2,7 @@ import { logUtils } from '@0x/utils';
 import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { OASIS_SOURCE, OasisMarket, OasisSource } from '../data_sources/oasis';
+import { OasisMarket, OasisSource } from '../data_sources/oasis';
 import { TokenOrderbookSnapshot as TokenOrder } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseOasisOrders } from '../parsers/oasis_orders';
@@ -46,7 +46,7 @@ async function getAndSaveMarketOrderbookAsync(oasisSource: OasisSource, market: 
     const observedTimestamp = Date.now();
 
     logUtils.log(`${market.id}: Parsing orders.`);
-    const orders = parseOasisOrders(orderBook, market, observedTimestamp, OASIS_SOURCE);
+    const orders = parseOasisOrders(orderBook, market, observedTimestamp);
 
     if (orders.length > 0) {
         logUtils.log(`${market.id}: Saving ${orders.length} orders.`);

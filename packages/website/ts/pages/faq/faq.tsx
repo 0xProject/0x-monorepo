@@ -1,7 +1,7 @@
 import { colors, Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Footer } from 'ts/components/old_footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Question } from 'ts/pages/faq/question';
@@ -9,6 +9,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { FAQQuestion, FAQSection, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 
 export interface FAQProps {
@@ -412,7 +413,7 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
     public render(): React.ReactNode {
         return (
             <div>
-                <DocumentTitle title="0x FAQ" />
+                <DocumentTitle {...documentConstants.FAQ} />
                 <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />
                 <div id="faq" className="mx-auto max-width-4 pt4" style={{ color: colors.grey800 }}>
                     <h1 className="center" style={{ ...styles.thin }}>

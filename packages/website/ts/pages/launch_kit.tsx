@@ -1,17 +1,15 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
-
-import { Hero } from 'ts/components/hero';
-
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/document_title';
+import { Hero } from 'ts/components/hero';
 import { Icon } from 'ts/components/icon';
-import { SiteWrap } from 'ts/components/siteWrap';
-
 import { Section } from 'ts/components/newLayout';
+import { SiteWrap } from 'ts/components/siteWrap';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 import { ModalContact } from '../components/modals/modal_contact';
 
@@ -36,7 +34,7 @@ export class NextLaunchKit extends React.Component {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle title="0x Launch Kit: Launch a relayer in under a minute" />
+                <DocumentTitle {...documentConstants.LAUNCH_KIT} />
                 <Hero
                     isLargeTitle={false}
                     isFullWidth={false}

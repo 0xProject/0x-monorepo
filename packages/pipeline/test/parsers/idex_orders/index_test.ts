@@ -32,7 +32,6 @@ describe('idex_orders', () => {
             };
             const observedTimestamp: number = Date.now();
             const orderType: OrderType = OrderType.Bid;
-            const source: string = 'idex';
 
             const expected = new TokenOrder();
             expected.source = 'idex';
@@ -45,8 +44,8 @@ describe('idex_orders', () => {
             expected.quoteAssetSymbol = 'DEF';
             expected.quoteAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
             expected.quoteVolume = new BigNumber(5);
-
-            const actual = parseIdexOrder(idexOrderParam, observedTimestamp, orderType, source, idexOrder);
+            expected.makerAddress = 'unknown';
+            const actual = parseIdexOrder(idexOrderParam, observedTimestamp, orderType, idexOrder);
             expect(actual).deep.equal(expected);
         });
         it('correctly converts ask type idexOrder to TokenOrder entity', () => {
@@ -66,7 +65,6 @@ describe('idex_orders', () => {
             };
             const observedTimestamp: number = Date.now();
             const orderType: OrderType = OrderType.Ask;
-            const source: string = 'idex';
 
             const expected = new TokenOrder();
             expected.source = 'idex';
@@ -79,8 +77,8 @@ describe('idex_orders', () => {
             expected.quoteAssetSymbol = 'DEF';
             expected.quoteAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
             expected.quoteVolume = new BigNumber(5);
-
-            const actual = parseIdexOrder(idexOrderParam, observedTimestamp, orderType, source, idexOrder);
+            expected.makerAddress = 'unknown';
+            const actual = parseIdexOrder(idexOrderParam, observedTimestamp, orderType, idexOrder);
             expect(actual).deep.equal(expected);
         });
     });
