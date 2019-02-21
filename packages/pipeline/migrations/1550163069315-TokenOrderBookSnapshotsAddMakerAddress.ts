@@ -22,7 +22,7 @@ export class TokenOrderBookSnapshotsAddMakerAddress1550163069315 implements Migr
             await queryRunner.query(`
                 ALTER TABLE ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}
                     DROP CONSTRAINT "token_orderbook_snapshots_pkey",
-                    ADD PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol, maker_address);
+                    ADD CONSTRAINT "token_orderbook_snapshots_pkey" PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol, maker_address);
             `);
         } else {
             throw new Error(`Could not find table with name ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}`);
