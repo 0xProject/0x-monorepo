@@ -386,6 +386,7 @@ export enum WebsitePaths {
     Careers = '/careers',
     Credits = '/credits',
     Vote = '/vote',
+    Extensions = '/extensions',
 }
 
 export enum DocPackages {
