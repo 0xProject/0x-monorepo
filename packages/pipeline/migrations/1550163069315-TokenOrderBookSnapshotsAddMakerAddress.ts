@@ -32,8 +32,6 @@ export class TokenOrderBookSnapshotsAddMakerAddress1550163069315 implements Migr
     public async down(queryRunner: QueryRunner): Promise<any> {
         const snapshotTable = await queryRunner.getTable(TOKEN_ORDERBOOK_SNAPSHOT_TABLE);
         if (snapshotTable) {
-            // await queryRunner.dropIndex(snapshotTable, 'token_orderbook_snapshots_pkey');
-            // await queryRunner.dropColumn(snapshotTable, NEW_COLUMN_NAME);
             await queryRunner.query(`
                 ALTER TABLE ${TOKEN_ORDERBOOK_SNAPSHOT_TABLE}
                     DROP CONSTRAINT "token_orderbook_snapshots_pkey",
