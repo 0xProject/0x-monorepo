@@ -78,7 +78,7 @@ export class Extensions extends React.Component {
                     actions={<HeroActions />}
                 />
 
-                <Section isFullWidth={true} wrapWidth="100%">
+                <CustomSection>
                     <Grid>
                         {_.map(extensionData, (item, index) => (
                             <Card
@@ -89,7 +89,7 @@ export class Extensions extends React.Component {
                             />
                         ))}
                     </Grid>
-                </Section>
+                </CustomSection>
 
                 <Banner
                     heading="Create your own 0x extension contracts"
@@ -118,7 +118,7 @@ export class Extensions extends React.Component {
 const HeroActions = () => (
     <React.Fragment>
         <Button href={constants.URL_LAUNCH_KIT} isInline={true} target="_blank">
-            Learn More
+            Get Started
         </Button>
 
         <Button href={constants.URL_LAUNCH_KIT_BLOG_POST} isTransparent={true} isInline={true} target="_blank">
@@ -126,6 +126,18 @@ const HeroActions = () => (
         </Button>
     </React.Fragment>
 );
+
+const CustomSection = styled.div`
+    width: calc(100% - 60px);
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 120px 0;
+    position: relative;
+
+    @media (max-width: 768px) {
+        padding: 40px 0;
+    }
+`;
 
 const Grid = styled.div`
     display: grid;
@@ -139,5 +151,9 @@ const Grid = styled.div`
 
     @media (min-width: 900px) {
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (min-width: 1560px) {
+        padding: 0;
     }
 `;

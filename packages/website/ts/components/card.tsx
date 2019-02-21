@@ -39,12 +39,10 @@ const StyledCard = styled.div`
     transition: opacity 0.4s ease-in-out;
 
     @media (max-width: 1200px) {
-        width: 100%;
     }
 
     @media (max-width: 500px) {
-        width: calc(100vw - 10px - 30px);
-        height: 450px;
+        min-height: 450px;
     }
 `;
 
