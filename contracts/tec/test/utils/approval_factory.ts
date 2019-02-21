@@ -6,22 +6,26 @@ import { hashUtils, SignedTECApproval, signingUtils, TECSignatureType } from './
 
 export class ApprovalFactory {
     private readonly _privateKey: Buffer;
-    constructor(privateKey: Buffer) {
+    private readonly _verifyingContractAddress: string;
+    constructor(privateKey: Buffer, verifyingContractAddress: string) {
         this._privateKey = privateKey;
+        this._verifyingContractAddress = verifyingContractAddress;
     }
     public newSignedApproval(
         transaction: SignedZeroExTransaction,
         approvalExpirationTimeSeconds: BigNumber,
         signatureType: TECSignatureType = TECSignatureType.EthSign,
     ): SignedTECApproval {
-        const approvalHashBuff = hashUtils.getApprovalHashBuffer(transaction, approvalExpirationTimeSeconds);
+        const tecTransaction = {
+            ...transaction,
+            verifyingContractAddress: this._verifyingContractAddress,
+        };
+        const approvalHashBuff = hashUtils.getApprovalHashBuffer(tecTransaction, approvalExpirationTimeSeconds);
         const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
-        const transactionHash = hashUtils.getTransactionHashHex(transaction);
         const signedApproval = {
-            transactionHash,
+            transaction: tecTransaction,
             approvalExpirationTimeSeconds,
-            transactionSignature: transaction.signature,
-            approvalSignature: ethUtil.addHexPrefix(signatureBuff.toString('hex')),
+            signature: ethUtil.addHexPrefix(signatureBuff.toString('hex')),
         };
         return signedApproval;
     }

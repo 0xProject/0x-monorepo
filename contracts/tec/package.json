@@ -69,6 +69,7 @@
     },
     "dependencies": {
         "@0x/base-contract": "^4.0.3",
+        "@0x/contracts-asset-proxy": "1.0.2",
         "@0x/contracts-exchange-libs": "^1.0.5",
         "@0x/contracts-exchange": "1.0.2",
         "@0x/contracts-erc20": "1.0.2",

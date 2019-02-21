@@ -1,3 +1,5 @@
+import { BigNumber } from '@0x/utils';
+
 export const constants = {
     TEC_DOMAIN_NAME: '0x Protocol Trade Execution Coordinator',
     TEC_DOMAIN_VERSION: '1.0.0',
@@ -16,4 +18,5 @@ export const constants = {
     CANCEL_ORDERS: 'cancelOrders',
     BATCH_CANCEL_ORDERS: 'batchCancelOrders',
     CANCEL_ORDERS_UP_TO: 'cancelOrdersUpTo',
+    TIME_BUFFER: new BigNumber(1000),
 };

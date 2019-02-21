@@ -1,13 +1,13 @@
+import { SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 export interface TECApproval {
-    transactionHash: string;
-    transactionSignature: string;
+    transaction: SignedZeroExTransaction;
     approvalExpirationTimeSeconds: BigNumber;
 }
 
 export interface SignedTECApproval extends TECApproval {
-    approvalSignature: string;
+    signature: string;
 }
 
 export enum TECSignatureType {

@@ -23,6 +23,7 @@ import "../src/MixinSignatureValidator.sol";
 import "../src/MixinTECApprovalVerifier.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestMixins is
     MixinSignatureValidator,
     MixinTECApprovalVerifier

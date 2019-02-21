@@ -27,7 +27,6 @@ import {
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-const timeBuffer = new BigNumber(1000);
 
 describe('Mixins tests', () => {
     let transactionSignerAddress: string;
@@ -64,12 +63,13 @@ describe('Mixins tests', () => {
             salt: devConstants.ZERO_AMOUNT,
             signature: devConstants.NULL_BYTES,
         };
-        const transactionSignerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[0];
-        const approvalSignerPrivateKey1 = devConstants.TESTRPC_PRIVATE_KEYS[1];
-        const approvalSignerPrivateKey2 = devConstants.TESTRPC_PRIVATE_KEYS[2];
+        const transactionSignerPrivateKey =
+            devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(transactionSignerAddress)];
+        const approvalSignerPrivateKey1 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress1)];
+        const approvalSignerPrivateKey2 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress2)];
         transactionFactory = new TECTransactionFactory(transactionSignerPrivateKey, mixins.address);
-        approvalFactory1 = new ApprovalFactory(approvalSignerPrivateKey1);
-        approvalFactory2 = new ApprovalFactory(approvalSignerPrivateKey2);
+        approvalFactory1 = new ApprovalFactory(approvalSignerPrivateKey1, mixins.address);
+        approvalFactory2 = new ApprovalFactory(approvalSignerPrivateKey2, mixins.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -130,21 +130,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
             });
@@ -157,21 +157,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
             });
@@ -196,21 +196,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: approvalSignerAddress1 },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: approvalSignerAddress1 },
                 );
             });
@@ -235,19 +235,16 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                const approvalSignature = `${approval.approvalSignature.slice(
-                    0,
-                    4,
-                )}FFFFFFFF${approval.approvalSignature.slice(12)}`;
+                const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approvalSignature],
+                        [signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -257,7 +254,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approvalSignature],
+                        [signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -268,7 +265,7 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
@@ -276,7 +273,7 @@ describe('Mixins tests', () => {
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval.approvalSignature],
+                        [approval.signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.ApprovalExpired,
@@ -286,7 +283,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval.approvalSignature],
+                        [approval.signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.ApprovalExpired,
@@ -297,7 +294,7 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
@@ -305,7 +302,7 @@ describe('Mixins tests', () => {
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval.approvalSignature],
+                        [approval.signature],
                         { from: approvalSignerAddress2 },
                     ),
                     RevertReason.InvalidSender,
@@ -315,7 +312,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval.approvalSignature],
+                        [approval.signature],
                         { from: approvalSignerAddress2 },
                     ),
                     RevertReason.InvalidSender,
@@ -334,21 +331,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
             });
@@ -360,21 +357,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
             });
@@ -402,21 +399,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval.approvalSignature],
+                    [approval.signature],
                     { from: transactionSignerAddress },
                 );
             });
@@ -425,7 +422,7 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
@@ -433,14 +430,14 @@ describe('Mixins tests', () => {
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                    [approval1.approvalSignature, approval2.approvalSignature],
+                    [approval1.signature, approval2.signature],
                     { from: transactionSignerAddress },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                    [approval1.approvalSignature, approval2.approvalSignature],
+                    [approval1.signature, approval2.signature],
                     { from: transactionSignerAddress },
                 );
             });
@@ -465,21 +462,21 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval2.approvalSignature],
+                    [approval2.signature],
                     { from: approvalSignerAddress1 },
                 );
                 await mixins.assertValidTECApprovals.callAsync(
                     transaction,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
-                    [approval2.approvalSignature],
+                    [approval2.signature],
                     { from: approvalSignerAddress1 },
                 );
             });
@@ -510,19 +507,16 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                const approvalSignature = `${approval.approvalSignature.slice(
-                    0,
-                    4,
-                )}FFFFFFFF${approval.approvalSignature.slice(12)}`;
+                const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approvalSignature],
+                        [signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -532,7 +526,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approvalSignature],
+                        [signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -543,20 +537,17 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                const approvalSignature2 = `${approval2.approvalSignature.slice(
-                    0,
-                    4,
-                )}FFFFFFFF${approval2.approvalSignature.slice(12)}`;
+                const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                        [approval1.approvalSignature, approvalSignature2],
+                        [approval1.signature, approvalSignature2],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -566,7 +557,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                        [approval1.approvalSignature, approvalSignature2],
+                        [approval1.signature, approvalSignature2],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -577,12 +568,9 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                const approvalSignature2 = `${approval2.approvalSignature.slice(
-                    0,
-                    4,
-                )}FFFFFFFF${approval2.approvalSignature.slice(12)}`;
+                const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
@@ -610,8 +598,8 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds1 = new BigNumber(currentTimestamp).plus(timeBuffer);
-                const approvalExpirationTimeSeconds2 = new BigNumber(currentTimestamp).minus(timeBuffer);
+                const approvalExpirationTimeSeconds1 = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
+                const approvalExpirationTimeSeconds2 = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds1);
                 const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds2);
                 expectContractCallFailedAsync(
@@ -620,7 +608,7 @@ describe('Mixins tests', () => {
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
-                        [approval1.approvalSignature, approval2.approvalSignature],
+                        [approval1.signature, approval2.signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.ApprovalExpired,
@@ -630,7 +618,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
-                        [approval1.approvalSignature, approval2.approvalSignature],
+                        [approval1.signature, approval2.signature],
                         { from: transactionSignerAddress },
                     ),
                     RevertReason.ApprovalExpired,
@@ -641,7 +629,7 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
@@ -649,7 +637,7 @@ describe('Mixins tests', () => {
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval2.approvalSignature],
+                        [approval2.signature],
                         { from: approvalSignerAddress1 },
                     ),
                     RevertReason.ApprovalExpired,
@@ -659,7 +647,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval2.approvalSignature],
+                        [approval2.signature],
                         { from: approvalSignerAddress1 },
                     ),
                     RevertReason.ApprovalExpired,
@@ -670,7 +658,7 @@ describe('Mixins tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTECTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(timeBuffer);
+                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
@@ -678,7 +666,7 @@ describe('Mixins tests', () => {
                         orders,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval1.approvalSignature],
+                        [approval1.signature],
                         { from: approvalSignerAddress2 },
                     ),
                     RevertReason.InvalidSender,
@@ -688,7 +676,7 @@ describe('Mixins tests', () => {
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
-                        [approval1.approvalSignature],
+                        [approval1.signature],
                         { from: approvalSignerAddress2 },
                     ),
                     RevertReason.InvalidSender,
@@ -723,3 +711,4 @@ describe('Mixins tests', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count

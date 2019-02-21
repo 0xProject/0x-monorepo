@@ -178,6 +178,7 @@ contract MixinTECApprovalVerifier is
             selector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
             // Decode all orders
+            // solhint-disable indent
             (orders) = abi.decode(
                 data.slice(4, data.length),
                 (LibOrder.Order[])

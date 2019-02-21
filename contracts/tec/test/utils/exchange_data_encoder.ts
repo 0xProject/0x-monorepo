@@ -27,7 +27,7 @@ export const exchangeDataEncoder = {
         } else if (constants.MARKET_FILL_FN_NAMES.indexOf(fnName) !== -1) {
             data = (exchangeInstance as any)[fnName].getABIEncodedTransactionData(
                 orders,
-                orders[0].takerAssetAmount,
+                orders.map(order => order.takerAssetAmount).reduce((prev, curr) => prev.plus(curr)),
                 orders.map(order => order.signature),
             );
         } else if (fnName === constants.MATCH_ORDERS) {
