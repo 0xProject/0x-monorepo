@@ -1,5 +1,5 @@
 import * as bowser from 'bowser';
-import { Provider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { PROVIDER_TYPE_TO_NAME } from '../constants';
@@ -41,7 +41,7 @@ export const envUtil = {
             return OperatingSystem.Other;
         }
     },
-    getProviderType(provider: Provider): ProviderType | undefined {
+    getProviderType(provider: ZeroExProvider): ProviderType | undefined {
         const anyProvider = provider as any;
         if (provider.constructor.name === 'EthereumProvider') {
             return ProviderType.Mist;
@@ -60,14 +60,14 @@ export const envUtil = {
         }
         return;
     },
-    getProviderName(provider: Provider): string {
+    getProviderName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);
         if (_.isUndefined(providerTypeIfExists)) {
             return provider.constructor.name;
         }
         return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
     },
-    getProviderDisplayName(provider: Provider): string {
+    getProviderDisplayName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);
         if (_.isUndefined(providerTypeIfExists)) {
             return 'Wallet';

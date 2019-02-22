@@ -15,6 +15,7 @@ import {
     TakerAssetFillAmountScenario,
     TakerScenario,
     TraderStateScenario,
+    Web3ProviderEngine,
 } from '@0x/contracts-test-utils';
 import {
     assetDataUtils,
@@ -25,10 +26,10 @@ import {
     OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, errorUtils, logUtils } from '@0x/utils';
+import { BigNumber, errorUtils, logUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
+import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
@@ -59,7 +60,8 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     const [ownerAddress, makerAddress, takerAddress] = userAddresses;
     const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
 
-    const provider = web3Wrapper.getProvider();
+    const supportedProvider = web3Wrapper.getProvider();
+    const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const erc20Wrapper = new ERC20Wrapper(provider, userAddresses, ownerAddress);
     const erc721Wrapper = new ERC721Wrapper(provider, userAddresses, ownerAddress);
 
@@ -351,7 +353,7 @@ export class FillOrderCombinatorialUtils {
         this.testLibsContract = testLibsContract;
     }
     public async testFillOrderScenarioAsync(
-        provider: Provider,
+        provider: Web3ProviderEngine,
         fillScenario: FillScenario,
         isVerbose: boolean = false,
     ): Promise<void> {

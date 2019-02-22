@@ -1,6 +1,6 @@
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
+import { BigNumber, providerUtils } from '@0x/utils';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { OrderError, TradeSide, TransferType } from './types';
@@ -17,7 +17,7 @@ import { utils } from './utils';
  */
 export class OrderValidationUtils {
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
-    private readonly _provider: Provider;
+    private readonly _provider: ZeroExProvider;
     /**
      * A Typescript implementation mirroring the implementation of isRoundingError in the
      * Exchange smart contract
@@ -115,10 +115,15 @@ export class OrderValidationUtils {
     /**
      * Instantiate OrderValidationUtils
      * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
+     * @param supportedProvider Web3 provider to use for JSON RPC calls
      * @return An instance of OrderValidationUtils
      */
-    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, provider: Provider) {
+    constructor(
+        orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
+        supportedProvider: SupportedProvider,
+    ) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._provider = provider;
     }
     // TODO(fabio): remove this method once the smart contracts have been refactored
@@ -177,7 +182,7 @@ export class OrderValidationUtils {
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed
      * @param exchangeTradeEmulator ExchangeTradeEmulator to use
-     * @param provider Web3 provider to use for JSON RPC requests
+     * @param supportedProvider Web3 provider to use for JSON RPC requests
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
      * @param takerAddress The taker of the order
@@ -185,7 +190,7 @@ export class OrderValidationUtils {
      */
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         signedOrder: SignedOrder,
         fillTakerAssetAmount: BigNumber,
         takerAddress: string,
@@ -197,6 +202,7 @@ export class OrderValidationUtils {
         if (fillTakerAssetAmount.eq(0)) {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await signatureUtils.isValidSignatureAsync(
             provider,

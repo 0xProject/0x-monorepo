@@ -12,7 +12,7 @@ import {
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import '@reach/dialog/styles.css';
-import { Provider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
@@ -42,7 +42,7 @@ export interface WalletConnectedProps {
     currentBalance: BigNumber;
     contractWrappers?: ContractWrappers;
     injectedProviderIfExists?: InjectedProvider;
-    providerEngine?: Provider;
+    providerEngine?: ZeroExProvider;
     ledgerSubproviderIfExists?: LedgerSubprovider;
     isLedger?: boolean;
     web3Wrapper?: Web3Wrapper;
@@ -97,7 +97,7 @@ export class ConnectForm extends React.Component<Props, State> {
     private _contractWrappers: ContractWrappers;
     private _injectedProviderIfExists?: InjectedProvider;
     private _web3Wrapper?: Web3Wrapper;
-    private _providerEngine?: Provider;
+    private _providerEngine?: ZeroExProvider;
     private _ledgerSubprovider: LedgerSubprovider;
     public constructor(props: Props) {
         super(props);
@@ -359,7 +359,7 @@ export class ConnectForm extends React.Component<Props, State> {
         const shouldUserLedgerProvider = true;
         await this._resetOrInitializeAsync(networkId, shouldUserLedgerProvider);
     }
-    private _getNameGivenProvider(provider: Provider): string {
+    private _getNameGivenProvider(provider: ZeroExProvider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
         if (_.isUndefined(providerNameIfExists)) {
@@ -371,7 +371,7 @@ export class ConnectForm extends React.Component<Props, State> {
         injectedProviderIfExists?: InjectedProvider,
         networkIdIfExists?: number,
         shouldUserLedgerProvider: boolean = false,
-    ): Promise<[Provider, LedgerSubprovider | undefined]> {
+    ): Promise<[ZeroExProvider, LedgerSubprovider | undefined]> {
         // This code is based off of the Blockchain.ts code.
         // TODO refactor to re-use this utility outside of Blockchain.ts
         const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);

@@ -6,8 +6,73 @@ export type JSONRPCErrorCallback = (err: Error | null, result?: JSONRPCResponseP
  * Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
  * Read more about Providers in the 0x wiki.
  */
+export type SupportedProvider = Web3JsProvider | GanacheProvider | EIP1193Provider | ZeroExProvider;
+
+export type Web3JsProvider = Web3JsV1Provider | Web3JsV2Provider | Web3JsV3Provider;
+
+export interface GanacheProvider {
+    sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
+
+// DEPRECATED(fabio): This interface should be replaced with the EIP 1193 provider interface
+// We will leave it here until the ecosystem has migrated fully to the new standard
 export interface Provider {
     sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
+
+/**
+ * The interface for the provider used internally by 0x libraries
+ * Any property we use from any SupportedProvider should we explicitly
+ * add here
+ */
+export interface ZeroExProvider {
+    // TODO: Consolidate these bools into a single enum value
+    isZeroExProvider?: boolean;
+    isMetaMask?: boolean;
+    isParity?: boolean;
+    stop?(): void;
+    enable?(): Promise<void>;
+    sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
+
+/**
+ * Web3.js version 1 provider interface
+ * This provider interface was implemented in the pre-1.0Beta releases for Web3.js.
+ * This interface allowed sending synchonous requests, support for which was later dropped.
+ */
+export interface Web3JsV1Provider {
+    sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+    send(payload: JSONRPCRequestPayload): JSONRPCResponsePayload;
+}
+
+/**
+ * Web3.js version 2 provider interface
+ * This provider interface was used in a couple of Web3.js 1.0 beta releases
+ * before the first attempts to conform to EIP1193
+ */
+export interface Web3JsV2Provider {
+    send(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
+}
+
+/**
+ * Web3.js version 3 provider interface
+ * This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
+ * however it does not conform entirely.
+ */
+export interface Web3JsV3Provider {
+    send(method: string, params?: any[]): Promise<any>;
+}
+
+/**
+ * Interface for providers that conform to EIP 1193
+ * Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
+ */
+export type EIP1193Event = 'accountsChanged' | 'networkChanged' | 'close' | 'connect' | 'notification';
+
+export interface EIP1193Provider {
+    isEIP1193: boolean;
+    send(method: string, params?: any[]): Promise<any>;
+    on(event: EIP1193Event, listener: (result: any) => void): this;
 }
 
 export type ContractAbi = AbiDefinition[];

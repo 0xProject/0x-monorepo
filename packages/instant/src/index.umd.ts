@@ -1,6 +1,7 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { assetDataUtils } from '@0x/order-utils';
-import { Provider } from 'ethereum-types';
+import { providerUtils } from '@0x/utils';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -50,7 +51,7 @@ const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: stri
         assert.isValidAffiliateInfo('affiliateInfo', config.affiliateInfo);
     }
     if (!_.isUndefined(config.provider)) {
-        assert.isWeb3Provider('provider', config.provider);
+        providerUtils.standardizeOrThrow(config.provider);
     }
     if (!_.isUndefined(config.walletDisplayName)) {
         assert.isString('walletDisplayName', config.walletDisplayName);
@@ -151,17 +152,18 @@ export const hasLiquidityForAssetDataAsync = async (
     assetData: string,
     orderSource: OrderSource,
     networkId: Network = Network.Mainnet,
-    provider?: Provider,
+    supportedProvider?: SupportedProvider,
 ): Promise<boolean> => {
     assert.isHexString('assetData', assetData);
     assert.isValidOrderSource('orderSource', orderSource);
     assert.isNumber('networkId', networkId);
 
+    let provider = supportedProvider;
     if (provider !== undefined) {
-        assert.isWeb3Provider('provider', provider);
+        provider = providerUtils.standardizeOrThrow(provider);
     }
 
-    const bestProvider: Provider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
+    const bestProvider: ZeroExProvider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
 
     const assetBuyerOptions = { networkId };
 

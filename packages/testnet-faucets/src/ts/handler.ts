@@ -5,7 +5,6 @@ import {
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
-    Provider,
     RPCSubprovider,
     signatureUtils,
     SignedOrder,
@@ -48,7 +47,7 @@ const ASSET_AMOUNT = new BigNumber(0.1);
 
 export class Handler {
     private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
-    private static _createProviderEngine(rpcUrl: string): Provider {
+    private static _createProviderEngine(rpcUrl: string): Web3ProviderEngine {
         if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
             throw new Error('Dispenser Private key not found');
         }

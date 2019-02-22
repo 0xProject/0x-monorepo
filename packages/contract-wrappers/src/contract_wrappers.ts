@@ -11,7 +11,7 @@ import {
 } from '@0x/contract-artifacts';
 import { AbiDecoder } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
@@ -76,18 +76,17 @@ export class ContractWrappers {
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
-     * @param   provider    The Provider instance you would like the contract-wrappers library to use for interacting with
+     * @param   supportedProvider    The Provider instance you would like the contract-wrappers library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the ContractWrappers class.
      */
-    constructor(provider: Provider, config: ContractWrappersConfig) {
-        assert.isWeb3Provider('provider', provider);
+    constructor(supportedProvider: SupportedProvider, config: ContractWrappersConfig) {
         assert.doesConformToSchema('config', config, ContractWrappersConfigSchema);
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
         const artifactsArray = [
             DutchAuction,
             ERC20Proxy,
@@ -168,7 +167,7 @@ export class ContractWrappers {
      * Get the provider instance currently used by contract-wrappers
      * @return  Web3 provider instance
      */
-    public getProvider(): Provider {
+    public getProvider(): SupportedProvider {
         return this._web3Wrapper.getProvider();
     }
     /**

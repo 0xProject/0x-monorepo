@@ -5,7 +5,7 @@ import { ECSignature, SignatureType } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import '@reach/dialog/styles.css';
-import { Provider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -44,7 +44,7 @@ interface Props {
     isLedger: boolean;
     injectedProvider?: InjectedProvider;
     ledgerSubproviderIfExists?: LedgerSubprovider;
-    provider?: Provider;
+    provider?: ZeroExProvider;
 }
 
 interface State {

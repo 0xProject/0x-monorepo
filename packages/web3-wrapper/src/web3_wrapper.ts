@@ -1,6 +1,6 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0x/utils';
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify, providerUtils } from '@0x/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -11,14 +11,15 @@ import {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     LogEntry,
-    Provider,
     RawLogEntry,
+    SupportedProvider,
     TraceParams,
     Transaction,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TransactionTrace,
     TxData,
+    ZeroExProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -51,7 +52,9 @@ export class Web3Wrapper {
      */
     public isZeroExWeb3Wrapper = true;
     public abiDecoder: AbiDecoder;
-    private _provider: Provider;
+    private _provider: ZeroExProvider;
+    // Raw provider passed in. Do not use. Only here to return the unmodified provider passed in via `getProvider()`
+    private readonly _supportedProvider: SupportedProvider;
     private readonly _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**
@@ -147,16 +150,10 @@ export class Web3Wrapper {
      * @param   txDefaults  Override TxData defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
-    constructor(provider: Provider, txDefaults?: Partial<TxData>) {
-        assert.isWeb3Provider('provider', provider);
-        if (_.isUndefined((provider as any).sendAsync)) {
-            // Web3@1.0 provider doesn't support synchronous http requests,
-            // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with @0x/web3-wrapper
-            (provider as any).sendAsync = (provider as any).send;
-        }
+    constructor(supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         this.abiDecoder = new AbiDecoder([]);
-        this._provider = provider;
+        this._supportedProvider = supportedProvider;
+        this._provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._txDefaults = txDefaults || {};
         this._jsonRpcRequestId = 1;
     }
@@ -171,15 +168,15 @@ export class Web3Wrapper {
      * Retrieve the Web3 provider
      * @return  Web3 provider instance
      */
-    public getProvider(): Provider {
-        return this._provider;
+    public getProvider(): SupportedProvider {
+        return this._supportedProvider;
     }
     /**
      * Update the used Web3 provider
      * @param provider The new Web3 provider to be set
      */
-    public setProvider(provider: Provider): void {
-        assert.isWeb3Provider('provider', provider);
+    public setProvider(supportedProvider: SupportedProvider): void {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._provider = provider;
     }
     /**

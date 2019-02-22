@@ -52,8 +52,16 @@ export { ECSignature, EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Ty
 
 export {
     JSONRPCRequestPayload,
-    Provider,
+    SupportedProvider,
     JSONRPCResponsePayload,
-    JSONRPCErrorCallback,
     JSONRPCResponseError,
+    JSONRPCErrorCallback,
+    Web3JsProvider,
+    GanacheProvider,
+    EIP1193Provider,
+    ZeroExProvider,
+    EIP1193Event,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
 } from 'ethereum-types';

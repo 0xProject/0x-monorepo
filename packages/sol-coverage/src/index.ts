@@ -8,13 +8,7 @@ export {
     Sources,
 } from '@0x/sol-tracing-utils';
 
-export {
-    JSONRPCRequestPayload,
-    Provider,
-    JSONRPCErrorCallback,
-    JSONRPCResponsePayload,
-    JSONRPCResponseError,
-} from 'ethereum-types';
+export { JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCResponseError } from 'ethereum-types';
 
 export {
     JSONRPCRequestPayloadWithMethod,
@@ -23,3 +17,5 @@ export {
     OnNextCompleted,
     Callback,
 } from '@0x/subproviders';
+
+export import Web3ProviderEngine = require('web3-provider-engine');

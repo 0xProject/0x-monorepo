@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Add back custom web3-provider-engine type definitions",
+                "pr": 1627
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {

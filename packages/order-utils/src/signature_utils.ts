@@ -3,8 +3,9 @@ import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
+import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -17,6 +18,7 @@ import { utils } from './utils';
 export const signatureUtils = {
     /**
      * Verifies that the provided signature is valid according to the 0x Protocol smart contracts
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   data          The hex encoded data signed by the supplied signature.
      * @param   signature     A hex encoded 0x Protocol signature made up of: [TypeSpecificData][SignatureType].
      *          E.g [vrs][SignatureType.EIP712]
@@ -24,12 +26,12 @@ export const signatureUtils = {
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     async isValidSignatureAsync(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         data: string,
         signature: string,
         signerAddress: string,
     ): Promise<boolean> {
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
@@ -84,13 +86,17 @@ export const signatureUtils = {
     },
     /**
      * Verifies that the provided presigned signature is valid according to the 0x Protocol smart contracts
-     * @param   provider      Web3 provider to use for all JSON RPC requests
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   data          The hex encoded data signed by the supplied signature
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
      * @return  Whether the data was preSigned by the supplied signerAddress
      */
-    async isValidPresignedSignatureAsync(provider: Provider, data: string, signerAddress: string): Promise<boolean> {
-        assert.isWeb3Provider('provider', provider);
+    async isValidPresignedSignatureAsync(
+        supportedProvider: SupportedProvider,
+        data: string,
+        signerAddress: string,
+    ): Promise<boolean> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
         assert.isETHAddressHex('signerAddress', signerAddress);
         const web3Wrapper = new Web3Wrapper(provider);
@@ -106,19 +112,19 @@ export const signatureUtils = {
     },
     /**
      * Verifies that the provided wallet signature is valid according to the 0x Protocol smart contracts
-     * @param   provider      Web3 provider to use for all JSON RPC requests
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   data          The hex encoded data signed by the supplied signature.
      * @param   signature     A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
      * @return  Whether the data was preSigned by the supplied signerAddress.
      */
     async isValidWalletSignatureAsync(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         data: string,
         signature: string,
         signerAddress: string,
     ): Promise<boolean> {
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
@@ -130,19 +136,19 @@ export const signatureUtils = {
     },
     /**
      * Verifies that the provided validator signature is valid according to the 0x Protocol smart contracts
-     * @param   provider      Web3 provider to use for all JSON RPC requests
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   data          The hex encoded data signed by the supplied signature.
      * @param   signature     A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
      * @return  Whether the data was preSigned by the supplied signerAddress.
      */
     async isValidValidatorSignatureAsync(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         data: string,
         signature: string,
         signerAddress: string,
     ): Promise<boolean> {
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
@@ -202,15 +208,20 @@ export const signatureUtils = {
     /**
      * Signs an order and returns a SignedOrder. First `eth_signTypedData` is requested
      * then a fallback to `eth_sign` if not available on the supplied provider.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   order The Order to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the supplied Provider.
      * @return  A SignedOrder containing the order and Elliptic curve signature with Signature Type.
      */
-    async ecSignOrderAsync(provider: Provider, order: Order, signerAddress: string): Promise<SignedOrder> {
+    async ecSignOrderAsync(
+        supportedProvider: SupportedProvider,
+        order: Order,
+        signerAddress: string,
+    ): Promise<SignedOrder> {
         assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         try {
-            const signedOrder = await signatureUtils.ecSignTypedDataOrderAsync(provider, order, signerAddress);
+            const signedOrder = await signatureUtils.ecSignTypedDataOrderAsync(supportedProvider, order, signerAddress);
             return signedOrder;
         } catch (err) {
             // HACK: We are unable to handle specific errors thrown since provider is not an object
@@ -222,7 +233,7 @@ export const signatureUtils = {
                 throw err;
             }
             const orderHash = orderHashUtils.getOrderHashHex(order);
-            const signatureHex = await signatureUtils.ecSignHashAsync(provider, orderHash, signerAddress);
+            const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
                 ...order,
                 signature: signatureHex,
@@ -232,13 +243,18 @@ export const signatureUtils = {
     },
     /**
      * Signs an order using `eth_signTypedData` and returns a SignedOrder.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   order The Order to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the supplied Provider.
      * @return  A SignedOrder containing the order and Elliptic curve signature with Signature Type.
      */
-    async ecSignTypedDataOrderAsync(provider: Provider, order: Order, signerAddress: string): Promise<SignedOrder> {
-        assert.isWeb3Provider('provider', provider);
+    async ecSignTypedDataOrderAsync(
+        supportedProvider: SupportedProvider,
+        order: Order,
+        signerAddress: string,
+    ): Promise<SignedOrder> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         const web3Wrapper = new Web3Wrapper(provider);
@@ -270,13 +286,18 @@ export const signatureUtils = {
     },
     /**
      * Signs a hash using `eth_sign` and returns its elliptic curve signature and signature type.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   msgHash       Hex encoded message to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the supplied Provider.
      * @return  A hex encoded string containing the Elliptic curve signature generated by signing the msgHash and the Signature Type.
      */
-    async ecSignHashAsync(provider: Provider, msgHash: string, signerAddress: string): Promise<string> {
-        assert.isWeb3Provider('provider', provider);
+    async ecSignHashAsync(
+        supportedProvider: SupportedProvider,
+        msgHash: string,
+        signerAddress: string,
+    ): Promise<string> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('msgHash', msgHash);
         assert.isETHAddressHex('signerAddress', signerAddress);
         const web3Wrapper = new Web3Wrapper(provider);

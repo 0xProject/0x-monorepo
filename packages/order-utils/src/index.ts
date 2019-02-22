@@ -22,11 +22,19 @@ export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_la
 export { eip712Utils } from './eip712_utils';
 
 export {
-    Provider,
+    SupportedProvider,
     JSONRPCRequestPayload,
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
+    Web3JsProvider,
+    GanacheProvider,
+    EIP1193Provider,
+    ZeroExProvider,
+    EIP1193Event,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
 } from 'ethereum-types';
 
 export {

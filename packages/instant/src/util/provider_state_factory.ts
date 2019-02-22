@@ -1,5 +1,6 @@
+import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
@@ -13,10 +14,11 @@ export const providerStateFactory = {
     getInitialProviderState: (
         orderSource: OrderSource,
         network: Network,
-        provider?: Provider,
+        supportedProvider?: SupportedProvider,
         walletDisplayName?: string,
     ): ProviderState => {
-        if (!_.isUndefined(provider)) {
+        if (!_.isUndefined(supportedProvider)) {
+            const provider = providerUtils.standardizeOrThrow(supportedProvider);
             return providerStateFactory.getInitialProviderStateFromProvider(
                 orderSource,
                 network,
@@ -38,7 +40,7 @@ export const providerStateFactory = {
     getInitialProviderStateFromProvider: (
         orderSource: OrderSource,
         network: Network,
-        provider: Provider,
+        provider: ZeroExProvider,
         walletDisplayName?: string,
     ): ProviderState => {
         const providerState: ProviderState = {

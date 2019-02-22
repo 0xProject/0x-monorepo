@@ -33,8 +33,14 @@ import {
     OrderStateUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
-import { errorUtils, intervalUtils } from '@0x/utils';
-import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
+import { errorUtils, intervalUtils, providerUtils } from '@0x/utils';
+import {
+    BlockParamLiteral,
+    LogEntryEvent,
+    LogWithDecodedArgs,
+    SupportedProvider,
+    ZeroExProvider,
+} from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
@@ -79,7 +85,7 @@ export class OrderWatcher {
     private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
     private readonly _orderByOrderHash: OrderByOrderHash = {};
     private readonly _eventWatcher: EventWatcher;
-    private readonly _provider: Provider;
+    private readonly _provider: ZeroExProvider;
     private readonly _collisionResistantAbiDecoder: CollisionResistanceAbiDecoder;
     private readonly _expirationWatcher: ExpirationWatcher;
     private readonly _orderStateUtils: OrderStateUtils;
@@ -90,19 +96,19 @@ export class OrderWatcher {
     private _callbackIfExists?: OnOrderStateChangeCallback;
     /**
      * Instantiate a new OrderWatcher
-     * @param provider Web3 provider to use for JSON RPC calls
+     * @param supportedProvider Web3 provider to use for JSON RPC calls
      * @param networkId NetworkId to watch orders on
      * @param contractAddresses Optional contract addresses. Defaults to known
      * addresses based on networkId.
      * @param partialConfig Optional configurations
      */
     constructor(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         networkId: number,
         contractAddresses?: ContractAddresses,
         partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
     ) {
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isNumber('networkId', networkId);
         assert.doesConformToSchema('partialConfig', partialConfig, orderWatcherPartialConfigSchema);
         const config = {
@@ -122,7 +128,7 @@ export class OrderWatcher {
             // default values for contractAddresses.
             contractAddresses,
         });
-        this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, STATE_LAYER, config.isVerbose);
+        this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, config.isVerbose);
         const balanceAndProxyAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             contractWrappers.erc20Token,
             contractWrappers.erc721Token,

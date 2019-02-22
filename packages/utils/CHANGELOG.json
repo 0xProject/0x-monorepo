@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface",
+                "pr": 1627
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

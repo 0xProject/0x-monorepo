@@ -1,6 +1,6 @@
 import { intervalUtils, logUtils } from '@0x/utils';
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
-import { BlockParamLiteral, FilterObject, LogEntry, Provider, RawLogEntry } from 'ethereum-types';
+import { BlockParamLiteral, FilterObject, LogEntry, RawLogEntry, SupportedProvider } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -27,13 +27,12 @@ export class EventWatcher {
     private _onLogRemovedSubscriptionToken: string | undefined;
     private readonly _pollingIntervalMs: number;
     constructor(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         pollingIntervalIfExistsMs: undefined | number,
-        stateLayer: BlockParamLiteral,
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider);
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
             : pollingIntervalIfExistsMs;

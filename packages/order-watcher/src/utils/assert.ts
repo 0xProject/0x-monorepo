@@ -5,19 +5,24 @@ import { Schema } from '@0x/json-schemas';
 import { ECSignature } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 // tslint:enable:no-unused-variable
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 
 import { signatureUtils } from '@0x/order-utils';
 
 export const assert = {
     ...sharedAssert,
     async isValidSignatureAsync(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         orderHash: string,
         signature: string,
         signerAddress: string,
     ): Promise<void> {
-        const isValid = await signatureUtils.isValidSignatureAsync(provider, orderHash, signature, signerAddress);
+        const isValid = await signatureUtils.isValidSignatureAsync(
+            supportedProvider,
+            orderHash,
+            signature,
+            signerAddress,
+        );
         assert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
 };

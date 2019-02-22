@@ -2,9 +2,9 @@ import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -34,7 +34,7 @@ interface OrdersEntry {
 }
 
 export class AssetBuyer {
-    public readonly provider: Provider;
+    public readonly provider: ZeroExProvider;
     public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
@@ -44,7 +44,7 @@ export class AssetBuyer {
     private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
     /**
      * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
@@ -52,31 +52,30 @@ export class AssetBuyer {
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForProvidedOrders(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         orders: SignedOrder[],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
-        const assetBuyer = new AssetBuyer(provider, orderProvider, options);
+        const assetBuyer = new AssetBuyer(supportedProvider, orderProvider, options);
         return assetBuyer;
     }
     /**
      * Instantiates a new AssetBuyer instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForStandardRelayerAPIUrl(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         sraApiUrl: string,
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
         const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
@@ -85,19 +84,23 @@ export class AssetBuyer {
     }
     /**
      * Instantiates a new AssetBuyer instance
-     * @param   provider            The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orderProvider       An object that conforms to OrderProvider, see type for definition.
      * @param   options             Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
-    constructor(provider: Provider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
+    constructor(
+        supportedProvider: SupportedProvider,
+        orderProvider: OrderProvider,
+        options: Partial<AssetBuyerOpts> = {},
+    ) {
         const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
             {},
             constants.DEFAULT_ASSET_BUYER_OPTS,
             options,
         );
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);

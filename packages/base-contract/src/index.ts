@@ -7,7 +7,7 @@ import {
     ContractAbi,
     DataItem,
     MethodAbi,
-    Provider,
+    SupportedProvider,
     TxData,
     TxDataPayable,
 } from 'ethereum-types';
@@ -154,11 +154,11 @@ export class BaseContract {
         contractName: string,
         abi: ContractAbi,
         address: string,
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
     ) {
         this.contractName = contractName;
-        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
         this.abi = abi;
         this.address = address;
         const methodAbis = this.abi.filter(

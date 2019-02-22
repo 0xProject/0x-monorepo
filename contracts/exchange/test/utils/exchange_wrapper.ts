@@ -1,8 +1,15 @@
-import { FillResults, formatters, LogDecoder, OrderInfo, orderUtils } from '@0x/contracts-test-utils';
+import {
+    FillResults,
+    formatters,
+    LogDecoder,
+    OrderInfo,
+    orderUtils,
+    Web3ProviderEngine,
+} from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { MethodAbi, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { MethodAbi, TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts, ExchangeContract } from '../../src';
@@ -13,7 +20,7 @@ export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
-    constructor(exchangeContract: ExchangeContract, provider: Provider) {
+    constructor(exchangeContract: ExchangeContract, provider: Web3ProviderEngine | ZeroExProvider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
