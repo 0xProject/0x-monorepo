@@ -172,13 +172,6 @@ export class Web3Wrapper {
         return this._supportedProvider;
     }
     /**
-     * Retrieve the Web3 provider
-     * @return  Web3 provider instance
-     */
-    public getZeroExProvider(): ZeroExProvider {
-        return this._provider;
-    }
-    /**
      * Update the used Web3 provider
      * @param provider The new Web3 provider to be set
      */

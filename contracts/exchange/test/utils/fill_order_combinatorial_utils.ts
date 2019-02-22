@@ -26,7 +26,7 @@ import {
     OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, errorUtils, logUtils } from '@0x/utils';
+import { BigNumber, errorUtils, logUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, TxData } from 'ethereum-types';
@@ -60,7 +60,8 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     const [ownerAddress, makerAddress, takerAddress] = userAddresses;
     const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
 
-    const provider = web3Wrapper.getZeroExProvider();
+    const supportedProvider = web3Wrapper.getProvider();
+    const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const erc20Wrapper = new ERC20Wrapper(provider, userAddresses, ownerAddress);
     const erc721Wrapper = new ERC721Wrapper(provider, userAddresses, ownerAddress);
 
