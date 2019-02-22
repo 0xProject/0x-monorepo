@@ -57,7 +57,6 @@
         "rc-slider": "^8.6.3",
         "react": "^16.5.2",
         "react-copy-to-clipboard": "^5.0.0",
-        "react-document-title": "^2.0.3",
         "react-dom": "^16.5.2",
         "react-flickity-component": "^3.1.0",
         "react-headroom": "2.2.2",

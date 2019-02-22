@@ -1,14 +1,15 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
 import { AboutPageLayout } from 'ts/components/aboutPageLayout';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Column, Section } from 'ts/components/newLayout';
 import { Heading, Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface TeamMember {
     name: string;
@@ -194,7 +195,7 @@ export const NextAboutTeam = () => (
         linkLabel="Join the team"
         to={WebsitePaths.AboutJobs}
     >
-        <DocumentTitle title="Our Team - 0x" />
+        <DocumentTitle {...documentConstants.TEAM} />
         <Section maxWidth="1170px" wrapWidth="100%" isFlex={true} flexBreakpoint="900px">
             <Column>
                 <Heading size="medium">0x Team</Heading>

@@ -1,17 +1,18 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import ScrollableAnchor, { configureAnchors } from 'react-scrollable-anchor';
 import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Hero } from 'ts/components/hero';
 import { Column, Section, WrapSticky } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Slide, Slider } from 'ts/components/slider/slider';
 import { Heading } from 'ts/components/text';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 import { ModalContact } from '../components/modals/modal_contact';
 
@@ -99,7 +100,7 @@ export class NextWhy extends React.Component {
         );
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle title="Features & Benefits - 0x" />
+                <DocumentTitle {...documentConstants.WHY} />
                 <Hero
                     title="The exchange layer for the crypto economy"
                     description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens."

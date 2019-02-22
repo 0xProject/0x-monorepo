@@ -5,12 +5,14 @@ import * as React from 'react';
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Action, Definition } from 'ts/components/definition';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Hero } from 'ts/components/hero';
 import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface OfferData {
     icon: string;
@@ -66,6 +68,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
+                <DocumentTitle {...documentConstants.MARKET_MAKER_PROGRAM} />
                 <Hero
                     maxWidth="865px"
                     maxWidthHeading="715px"
