@@ -56,11 +56,10 @@ export class AssetBuyer {
         orders: SignedOrder[],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
-        const assetBuyer = new AssetBuyer(provider, orderProvider, options);
+        const assetBuyer = new AssetBuyer(supportedProvider, orderProvider, options);
         return assetBuyer;
     }
     /**
