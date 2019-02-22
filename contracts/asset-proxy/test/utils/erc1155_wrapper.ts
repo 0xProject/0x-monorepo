@@ -196,9 +196,25 @@ export class ERC1155Wrapper {
         const nonFungibleHoldingsByOwner: ERC1155NonFungibleHoldingsByOwner = {};
         for (const dummyTokenContract of this._dummyTokenContracts) {
             const tokenAddress = dummyTokenContract.address;
+            const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+            // Construct batch balance call
+            const tokenOwners: string[] = [];
+            const tokenIds: BigNumber[] = [];
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-                // fungible tokens
+                for (const tokenId of this._fungibleTokenIds) {
+                    tokenOwners.push(tokenOwnerAddress);
+                    tokenIds.push(new BigNumber(tokenId));
+                }
+                for (const nft of this._nfts) {
+                    tokenOwners.push(tokenOwnerAddress);
+                    tokenIds.push(nft.id);
+                }
+            }
+            const balances = await tokenContract.balanceOfBatch.callAsync(tokenOwners, tokenIds);
+            // Parse out balances into fungible / non-fungible token holdings
+            let i = 0;
+            for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                // Fungible tokens
                 for (const tokenId of this._fungibleTokenIds) {
                     if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress])) {
                         tokenHoldingsByOwner[tokenOwnerAddress] = {};
@@ -206,9 +222,9 @@ export class ERC1155Wrapper {
                     if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress])) {
                         tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress] = {};
                     }
-                    tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress][tokenId] = await tokenContract.balanceOf.callAsync(tokenOwnerAddress, new BigNumber(tokenId));
+                    tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress][tokenId] = balances[i++];
                 }
-                // non-fungible tokens
+                // Non-fungible tokens
                 for (const nft of this._nfts) {
                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress])) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress] = {};
@@ -216,11 +232,13 @@ export class ERC1155Wrapper {
                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress])) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress] = {};
                     }
-
                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()])) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()] = [];
                     }
-                    nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()].push(await tokenContract.balanceOf.callAsync(tokenOwnerAddress, nft.id));
+                    const isOwner = balances[i++];
+                    if (isOwner.isEqualTo(1)) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()].push(nft.id);
+                    }
                 }
             }
         }
@@ -233,6 +251,10 @@ export class ERC1155Wrapper {
     public getFungibleTokenIds(): BigNumber[] {
         const fungibleTokenIds = _.map(this._fungibleTokenIds, (tokenIdAsString: string) => {return new BigNumber(tokenIdAsString)});
         return fungibleTokenIds;
+    }
+    public getNonFungibleTokenIds(): BigNumber[] {
+        const nonFungibleTokenIds = _.map(this._nonFungibleTokenIds, (tokenIdAsString: string) => {return new BigNumber(tokenIdAsString)});
+        return nonFungibleTokenIds;
     }
     public getTokenOwnerAddresses(): string[] {
         return this._tokenOwnerAddresses;
