@@ -26,6 +26,7 @@ export interface Provider {
  * add here
  */
 export interface ZeroExProvider {
+    // TODO: Consolidate these bools into a single enum value
     isZeroExProvider?: boolean;
     isMetaMask?: boolean;
     isParity?: boolean;
