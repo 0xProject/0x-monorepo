@@ -106,15 +106,7 @@ export class VoteForm extends React.Component<Props> {
         errors: {},
     };
     // shared fields
-    public nameRef: React.RefObject<HTMLInputElement> = React.createRef();
-    public emailRef: React.RefObject<HTMLInputElement> = React.createRef();
-    public companyProjectRef: React.RefObject<HTMLInputElement> = React.createRef();
     public commentsRef: React.RefObject<HTMLInputElement> = React.createRef();
-    // general lead fields
-    public linkRef: React.RefObject<HTMLInputElement> = React.createRef();
-    // market maker lead fields
-    public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
-    public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
     public constructor(props: Props) {
         super(props);
     }

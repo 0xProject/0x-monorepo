@@ -7,12 +7,10 @@ import { Hero } from 'ts/components/hero';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
-import { Definition } from 'ts/components/definition';
 import { Icon } from 'ts/components/icon';
 import { SiteWrap } from 'ts/components/siteWrap';
 
 import { Card } from 'ts/components/card';
-import { Section } from 'ts/components/newLayout';
 import { constants } from 'ts/utils/constants';
 
 import { ModalContact } from '../components/modals/modal_contact';

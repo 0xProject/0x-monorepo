@@ -1,8 +1,6 @@
-import { utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
-import styled, { keyframes } from 'styled-components';
 
 import { SiteWrap } from 'ts/components/siteWrap';
 import { FullscreenMessage } from 'ts/pages/fullscreen_message';
