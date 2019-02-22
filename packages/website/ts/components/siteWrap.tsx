@@ -132,7 +132,9 @@ export class SiteWrap extends React.Component<Props, State> {
 
                         <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
 
-                        <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>{children}</Main>
+                        <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>
+                            {children}
+                        </Main>
 
                         <Footer />
                     </>
@@ -146,7 +148,9 @@ const Main = styled.main<MainProps>`
     transition: transform 0.5s, opacity 0.5s;
     opacity: ${props => props.isNavToggled && '0.5'};
 
-    ${props => props.isFullScreen && `
+    ${props =>
+        props.isFullScreen &&
+        `
         display: flex;
         align-items: center;
         min-height: calc(100vh - 108px - 381px);

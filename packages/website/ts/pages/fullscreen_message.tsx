@@ -26,7 +26,7 @@ const Heading = styled.h1`
 `;
 
 const Paragraph = styled.p`
-    color: #7A7A7A;
+    color: #7a7a7a;
     font-size: 22px;
     line-height: 1.409090909;
 `;
