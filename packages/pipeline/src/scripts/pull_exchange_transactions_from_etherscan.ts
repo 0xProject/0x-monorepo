@@ -42,7 +42,9 @@ let connection: Connection;
     const rawTransactions = await etherscanSource.getEtherscanTransactionsForAddressAsync(exchangeContractAddress);
     const transactions = parseEtherscanTransactions(rawTransactions);
     logUtils.log(`Saving ${transactions.length} records to database`);
-    await EtherscanTransactionRepository.save(transactions, { chunk: Math.ceil(transactions.length / BATCH_SAVE_SIZE) });
+    await EtherscanTransactionRepository.save(transactions, {
+        chunk: Math.ceil(transactions.length / BATCH_SAVE_SIZE),
+    });
     logUtils.log('Done');
     process.exit(0);
 })().catch(handleError);

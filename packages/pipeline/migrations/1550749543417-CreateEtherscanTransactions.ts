@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 const table = new Table({
     name: 'raw.etherscan_transactions',
     columns: [
         { name: 'hash', type: 'varchar', isPrimary: true },
-        
+
         { name: 'block_number', type: 'numeric', isNullable: false },
         { name: 'timestamp', type: 'numeric', isNullable: false },
         { name: 'block_hash', type: 'varchar', isNullable: false },
@@ -22,12 +22,10 @@ const table = new Table({
         { name: 'cumulative_gas_used', type: 'numeric', isNullable: false },
         { name: 'gas_used', type: 'numeric', isNullable: false },
         { name: 'confirmations', type: 'numeric', isNullable: false },
-
     ],
 });
 
 export class CreateEtherscanTransactions1550749543417 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(table);
     }

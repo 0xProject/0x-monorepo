@@ -32,11 +32,10 @@ export interface EtherscanTransactionResponse {
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class EtherscanSource {
-
     public readonly _urlBase: string;
 
     constructor(apiKey: string, startBlock: number, endBlock: number) {
-        this._urlBase = `http://api.etherscan.io/api?module=account&action=txlist&startblock=${startBlock}&endblock=${endBlock}&sort=desc&apikey=${apiKey}&address=`;
+        this._urlBase = `http://api.etherscan.io/api?module=account&action=txlist&startblock=${startBlock}&endblock=${endBlock}&sort=asc&apikey=${apiKey}&address=`;
     }
 
     /**

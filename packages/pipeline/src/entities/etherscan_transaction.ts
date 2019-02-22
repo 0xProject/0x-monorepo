@@ -58,5 +58,4 @@ export class EtherscanTransaction {
 
     @Column({ name: 'confirmations', type: 'bigint', transformer: bigNumberTransformer })
     public confirmations!: BigNumber;
-
 }
