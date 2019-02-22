@@ -10,7 +10,7 @@ import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
 import { SiteWrap } from 'ts/components/siteWrap';
 
-import { Card } from 'ts/components/card';
+import { Card, LinkProps } from 'ts/components/card';
 import { constants } from 'ts/utils/constants';
 
 import { ModalContact } from '../components/modals/modal_contact';
@@ -19,23 +19,42 @@ interface Extension {
     icon: string;
     title: string;
     description: string;
+    links?: LinkProps[];
 }
 
 const extensionData: Extension[] = [
     {
-        icon: 'supportForAllEthereumStandards',
+        icon: 'dutchAuction',
         title: 'Dutch Auction',
         description: `Dutch Auctions continually reduce prices until a buyer is found. They're perfect for new or rare assets, and with 0x's off-chain model, they're gas-efficient as well.`,
+        links: [
+            {
+                text: 'Learn More',
+                url: 'https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/DutchAuction/DutchAuction.sol',
+            },
+        ],
     },
     {
-        icon: 'supportForAllEthereumStandards',
+        icon: 'forwarderContract',
         title: 'Forwarder Contract',
         description: `Say goodbye to WETH! The Forwarder Contract will automatically wrap ETH and fill orders, making buying assets on 0x one step simpler.`,
+        links: [
+            {
+                text: 'Learn More',
+                url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md',
+            },
+        ],
     },
     {
-        icon: 'supportForAllEthereumStandards',
+        icon: 'whitelistFilter',
         title: 'Whitelist Filter',
         description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
+        links: [
+            {
+                text: 'Learn More',
+                url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#whitelist',
+            },
+        ],
     },
 ];
 
@@ -64,6 +83,7 @@ export class Extensions extends React.Component {
                                 heading={item.title}
                                 description={item.description}
                                 icon={item.icon}
+                                links={item.links}
                             />
                         ))}
                     </Grid>
@@ -109,7 +129,7 @@ const CustomSection = styled.div`
     width: calc(100% - 60px);
     max-width: 1500px;
     margin: 0 auto;
-    padding: 0 0 120px;
+    padding: 0 0 60px;
     position: relative;
 
     @media (max-width: 768px) {
