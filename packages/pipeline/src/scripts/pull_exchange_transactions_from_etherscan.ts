@@ -16,16 +16,12 @@ const BATCH_SAVE_SIZE = 1000; // Number of orders to save at once.
 const START_BLOCK_OFFSET = 100; // Number of blocks before the last known block to consider when updating fill events.
 const BLOCK_FINALITY_THRESHOLD = 10; // When to consider blocks as final. Used to compute default endBlock.
 
-// API key to use if environment variable has not been set
-const FALLBACK_API_KEY = 'YourApiKeyToken';
-
 let connection: Connection;
 
 (async () => {
-    let apiKey = process.env.ETHERSCAN_API_KEY;
+    const apiKey = process.env.ETHERSCAN_API_KEY;
     if (apiKey === undefined) {
-        logUtils.log(`Missing env var: ETHERSCAN_API_KEY - using default API key: ${FALLBACK_API_KEY}`);
-        apiKey = FALLBACK_API_KEY;
+        throw new Error('Missing required env var: ETHERSCAN_API_KEY');
     }
     connection = await createConnection(ormConfig as ConnectionOptions);
     const provider = web3Factory.getRpcProvider({

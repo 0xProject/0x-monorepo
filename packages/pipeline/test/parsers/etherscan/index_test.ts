@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { EtherscanTransactionResponse } from '../../../src/data_sources/etherscan';
+import { EtherscanResponse, EtherscanTransactionResponse } from '../../../src/data_sources/etherscan';
 import { EtherscanTransaction } from '../../../src/entities';
 import { parseEtherscanTransactions } from '../../../src/parsers/etherscan';
 import { chaiSetup } from '../../utils/chai_setup';
@@ -14,7 +14,7 @@ const expect = chai.expect;
 describe('etherscan_transactions', () => {
     describe('parseEtherscanTransactions', () => {
         it('converts etherscanTransactions to EtherscanTransaction entities', () => {
-            const response: EtherscanTransactionResponse[] = [
+            const result: EtherscanTransactionResponse[] = [
                 {
                     blockNumber: '6271590',
                     timeStamp: '1536083185',
@@ -36,7 +36,11 @@ describe('etherscan_transactions', () => {
                     confirmations: '976529',
                 },
             ];
-
+            const response: EtherscanResponse = {
+                status: '1',
+                message: 'OK',
+                result,
+            };
             const _expected: EtherscanTransaction = {
                 blockNumber: new BigNumber('6271590'),
                 timeStamp: new BigNumber('1536083185'),
@@ -58,7 +62,7 @@ describe('etherscan_transactions', () => {
                 confirmations: new BigNumber('976529'),
             };
             const expected = [_expected];
-            const actual = parseEtherscanTransactions(response);
+            const actual = parseEtherscanTransactions(response.result);
             expect(actual).deep.equal(expected);
         });
     });
