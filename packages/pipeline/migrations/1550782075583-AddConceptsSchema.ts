@@ -1,9 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddConceptsSchema1550782075583 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<any> {
-       await queryRunner.query(`
+        await queryRunner.query(`
             CREATE SCHEMA IF NOT EXISTS concepts;
        `);
     }
@@ -13,5 +12,4 @@ export class AddConceptsSchema1550782075583 implements MigrationInterface {
             DROP SCHEMA IF EXISTS concepts;
         `);
     }
-
 }
