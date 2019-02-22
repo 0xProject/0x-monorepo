@@ -235,8 +235,8 @@ describe('Asset Transfer Proxies', () => {
 
         // Deploy and configure ERC1155 tokens and receiver
         [erc1155Token] = await erc1155Wrapper.deployDummyTokensAsync();
-        const erc1155HoldingsByOwner = await erc1155Wrapper.setBalancesAndAllowancesAsync();
-        erc1155FungibleTokenIds = _.map(_.keys(erc1155HoldingsByOwner[fromAddress][erc1155Token.address]), (tokenIdAsString: string) => {return new BigNumber(tokenIdAsString)});
+        await erc1155Wrapper.setBalancesAndAllowancesAsync();
+        erc1155FungibleTokenIds = erc1155Wrapper.getFungibleTokenIds();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -1338,8 +1338,8 @@ describe('Asset Transfer Proxies', () => {
                 const encodedAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Token.address, tokenIdsToTransfer, tokenValuesToTransfer, callbackData);
                 // Verify pre-condition
                 const initialHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
-                const initialSenderBalance = initialHoldingsByOwner[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
-                const initialReceiverBalance = initialHoldingsByOwner[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const initialSenderBalance = initialHoldingsByOwner.fungible[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const initialReceiverBalance = initialHoldingsByOwner.fungible[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
                 // Perform a transfer from fromAddress to toAddress
                 const perUnitValue = new BigNumber(1000);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
@@ -1359,9 +1359,9 @@ describe('Asset Transfer Proxies', () => {
                 // Verify transfer was successful
                 const totalValueTransferred = tokenValuesToTransfer[0].times(perUnitValue);
                 const newHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
-                const newSenderBalance = newHoldingsByOwner[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const newSenderBalance = newHoldingsByOwner.fungible[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
                 const expectedNewSenderBalance = initialSenderBalance.minus(totalValueTransferred);
-                const newReceiverBalance = newHoldingsByOwner[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const newReceiverBalance = newHoldingsByOwner.fungible[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
                 const expectedNewReceiverBalance = initialReceiverBalance.plus(totalValueTransferred);
                 expect(newSenderBalance).to.be.bignumber.equal(expectedNewSenderBalance);
                 expect(newReceiverBalance).to.be.bignumber.equal(expectedNewReceiverBalance);
@@ -1375,8 +1375,8 @@ describe('Asset Transfer Proxies', () => {
                 const encodedAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Token.address, tokenIdsToTransfer, tokenValuesToTransfer, callbackData);
                 // Verify pre-condition
                 const initialHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
-                const initialSenderBalance = initialHoldingsByOwner[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
-                const initialReceiverBalance = initialHoldingsByOwner[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const initialSenderBalance = initialHoldingsByOwner.fungible[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const initialReceiverBalance = initialHoldingsByOwner.fungible[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
                 // Perform a transfer from fromAddress to toAddress
                 const perUnitValue = new BigNumber(1000);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
@@ -1396,9 +1396,9 @@ describe('Asset Transfer Proxies', () => {
                 // Verify transfer was successful
                 const totalValueTransferred = _.reduce(tokenValuesToTransfer, (sum: BigNumber, value: BigNumber) => {return sum.plus(value)}, new BigNumber(0)).times(perUnitValue);
                 const newHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
-                const newSenderBalance = newHoldingsByOwner[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const newSenderBalance = newHoldingsByOwner.fungible[fromAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
                 const expectedNewSenderBalance = initialSenderBalance.minus(totalValueTransferred);
-                const newReceiverBalance = newHoldingsByOwner[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
+                const newReceiverBalance = newHoldingsByOwner.fungible[toAddress][erc1155Token.address][erc1155TokenIdToTransfer.toString()];
                 const expectedNewReceiverBalance = initialReceiverBalance.plus(totalValueTransferred);
                 expect(newSenderBalance).to.be.bignumber.equal(expectedNewSenderBalance);
                 expect(newReceiverBalance).to.be.bignumber.equal(expectedNewReceiverBalance);
@@ -1414,8 +1414,8 @@ describe('Asset Transfer Proxies', () => {
                 const initialSenderBalances: BigNumber[] = [];
                 const initialReceiverBalances: BigNumber[] = [];
                 _.each(tokenIdsToTransfer, (tokenIdToTransfer: BigNumber) => {
-                    initialSenderBalances.push(initialHoldingsByOwner[fromAddress][erc1155Token.address][tokenIdToTransfer.toString()]);
-                    initialReceiverBalances.push(initialHoldingsByOwner[toAddress][erc1155Token.address][tokenIdToTransfer.toString()]);
+                    initialSenderBalances.push(initialHoldingsByOwner.fungible[fromAddress][erc1155Token.address][tokenIdToTransfer.toString()]);
+                    initialReceiverBalances.push(initialHoldingsByOwner.fungible[toAddress][erc1155Token.address][tokenIdToTransfer.toString()]);
                 });
                 // Perform a transfer from fromAddress to toAddress
                 const perUnitValue = new BigNumber(1000);
@@ -1437,15 +1437,16 @@ describe('Asset Transfer Proxies', () => {
                 const newHoldingsByOwner = await erc1155Wrapper.getBalancesAsync();
                 _.each(tokenIdsToTransfer, (tokenIdToTransfer: BigNumber, i: number) => {
                     const totalValueTransferred = tokenValuesToTransfer[i].times(perUnitValue);
-                    const newSenderBalance = newHoldingsByOwner[fromAddress][erc1155Token.address][tokenIdToTransfer.toString()];
+                    const newSenderBalance = newHoldingsByOwner.fungible[fromAddress][erc1155Token.address][tokenIdToTransfer.toString()];
                     const expectedNewSenderBalance = initialSenderBalances[i].minus(totalValueTransferred);
-                    const newReceiverBalance = newHoldingsByOwner[toAddress][erc1155Token.address][tokenIdToTransfer.toString()];
+                    const newReceiverBalance = newHoldingsByOwner.fungible[toAddress][erc1155Token.address][tokenIdToTransfer.toString()];
                     const expectedNewReceiverBalance = initialReceiverBalances[i].plus(totalValueTransferred);
                     expect(newSenderBalance).to.be.bignumber.equal(expectedNewSenderBalance);
                     expect(newReceiverBalance).to.be.bignumber.equal(expectedNewReceiverBalance);
                 });
             });
             it('should successfully transfer value for a combination of fungible/non-fungible tokens', async () => {
+
             });
             it('should successfully transfer value and ignore extra assetData', async () => {
             });

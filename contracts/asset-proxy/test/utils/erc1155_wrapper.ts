@@ -1,4 +1,4 @@
-import { constants, ERC1155HoldingsByOwner, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
+import { constants, ERC1155HoldingsByOwner, ERC1155FungibleHoldingsByOwner, ERC1155NonFungibleHoldingsByOwner, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -12,7 +12,9 @@ import { artifacts, DummyERC1155TokenContract, ERC1155ProxyContract, DummyERC115
 
 export class ERC1155Wrapper {
     private readonly _tokenOwnerAddresses: string[];
-    private readonly _tokenIds: string[];
+    private readonly _fungibleTokenIds: string[];
+    private readonly _nonFungibleTokenIds: string[];
+    private readonly _nfts: {id: BigNumber, tokenId: BigNumber}[];
     private readonly _contractOwnerAddress: string;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: Provider;
@@ -20,7 +22,7 @@ export class ERC1155Wrapper {
     private readonly _dummyTokenContracts: DummyERC1155TokenContract[];
     private _proxyContract?: ERC1155ProxyContract;
     private _proxyIdIfExists?: string;
-    private _initialTokenIdsByOwner: ERC1155HoldingsByOwner = {};
+    private _initialTokenIdsByOwner: ERC1155HoldingsByOwner = {fungible: {}, nonFungible: {}};
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
@@ -28,7 +30,9 @@ export class ERC1155Wrapper {
         this._dummyTokenContracts = [];
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
-        this._tokenIds = [];
+        this._fungibleTokenIds = [];
+        this._nonFungibleTokenIds = [];
+        this._nfts = [];
     }
     public async deployDummyTokensAsync(): Promise<DummyERC1155TokenContract[]> {
         // tslint:disable-next-line:no-unused-variable
@@ -61,57 +65,72 @@ export class ERC1155Wrapper {
     public async setBalancesAndAllowancesAsync(): Promise<ERC1155HoldingsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateProxyContractExistsOrThrow();
-        this._initialTokenIdsByOwner = {};
+        this._initialTokenIdsByOwner = {
+            fungible: {} as ERC1155FungibleHoldingsByOwner,
+            nonFungible: {}
+        };
+        const fungibleHoldingsByOwner:  ERC1155FungibleHoldingsByOwner = {};
+        const nonFungibleHoldingsByOwner: ERC1155NonFungibleHoldingsByOwner = {};
         for (const dummyTokenContract of this._dummyTokenContracts) {
+            // Fungible Tokens
             for (const i of _.times(constants.NUM_ERC1155_FUNGIBLE_TOKENS_MINT)) {
                 // Create a fungible token
                 const tokenUri = generatePseudoRandomSalt().toString();
-                const tokenId = await this.createTokenAsync(dummyTokenContract.address, tokenUri);
+                const tokenIsNonFungible = false;
+                const tokenId = await this.createTokenAsync(dummyTokenContract.address, tokenUri, tokenIsNonFungible);
                 const tokenIdAsString = tokenId.toString();
-                this._tokenIds.push(tokenIdAsString);
+                this._fungibleTokenIds.push(tokenIdAsString);
                 // Mint tokens for each owner for this token
                 for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                     // tslint:disable-next-line:no-unused-variable
                     await this.mintFungibleAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
-                    if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress])) {
-                        this._initialTokenIdsByOwner[tokenOwnerAddress] = {};
+                    if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress])) {
+                        fungibleHoldingsByOwner[tokenOwnerAddress] = {};
                     }
-                    if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
-                        this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] = {};
+                    if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
+                        fungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address] = {};
                     }
-                    this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString] = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
+                    fungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString] = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
                     await this.approveProxyAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
                 }
             }
+            // Non-Fungible Tokens
+            for (const i of _.times(constants.NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT)) {
+                const tokenUri = generatePseudoRandomSalt().toString();
+                const tokenIsNonFungible = true;
+                const tokenId = await this.createTokenAsync(dummyTokenContract.address, tokenUri, tokenIsNonFungible);
+                const tokenIdAsString = tokenId.toString();
+                this._nonFungibleTokenIds.push(tokenIdAsString);
+                await this.mintNonFungibleAsync(dummyTokenContract.address, tokenId, this._tokenOwnerAddresses);
+                let tokenNonce = 0;
+                for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress] = {};
+                     }
+                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address] = {};
+                     }
+                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString] = [];
+                     }
+                     const nonFungibleId = tokenId.plus(++tokenNonce);
+                     this._nfts.push({id: nonFungibleId, tokenId});
+                     nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString].push(nonFungibleId);
+                     await this.approveProxyAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
+                }
+            }
+        }
+        this._initialTokenIdsByOwner = {
+            fungible: fungibleHoldingsByOwner,
+            nonFungible: nonFungibleHoldingsByOwner,
         }
         return this._initialTokenIdsByOwner;
     }
-    /*
-    public async doesTokenExistAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const owner = await tokenContract.ownerOf.callAsync(tokenId);
-        const doesExist = owner !== constants.NULL_ADDRESS;
-        return doesExist;
-    }
-    */
     public async approveProxyAsync(tokenAddress: string, tokenId: BigNumber, tokenOwner: string): Promise<void> {
         const proxyAddress = (this._proxyContract as ERC1155ProxyContract).address;
-        await this.approveAsync(proxyAddress, tokenAddress, tokenId, tokenOwner);
+        await this.approveProxyForAllAsync(proxyAddress, tokenAddress, tokenOwner);
     }
-    /*
-    public async approveProxyForAllAsync(tokenAddress: string, tokenId: BigNumber, isApproved: boolean): Promise<void> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
-        const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.setApprovalForAll.sendTransactionAsync(proxyAddress, isApproved, {
-                from: tokenOwner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-    }*/
-    
-    public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber, tokenOwner: string): Promise<void> {
+    public async approveProxyForAllAsync(to: string, tokenAddress: string, tokenOwner: string): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await tokenContract.setApprovalForAll.sendTransactionAsync(to, true, {
@@ -120,24 +139,8 @@ export class ERC1155Wrapper {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
-    /*
-    public async transferFromAsync(
-        tokenAddress: string,
-        tokenId: BigNumber,
-        currentOwner: string,
-        userAddress: string,
-    ): Promise<void> {
+    public async createTokenAsync(tokenAddress: string, tokenUri: string, tokenIsNonFungible: boolean): Promise<BigNumber> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.transferFrom.sendTransactionAsync(currentOwner, userAddress, tokenId, {
-                from: currentOwner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-    }*/
-    public async createTokenAsync(tokenAddress: string, tokenUri: string): Promise<BigNumber> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const tokenIsNonFungible = false;
         const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
             await tokenContract.create.sendTransactionAsync(tokenUri, tokenIsNonFungible),
         );
@@ -157,26 +160,23 @@ export class ERC1155Wrapper {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
-    /*
-    public async burnAsync(tokenAddress: string, tokenId: BigNumber, owner: string): Promise<void> {
+    public async mintNonFungibleAsync(tokenAddress: string, tokenId: BigNumber, userAddresses: string[]): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.burn.sendTransactionAsync(owner, tokenId, {
-                from: this._contractOwnerAddress,
-            }),
+            await tokenContract.mintNonFungible.sendTransactionAsync(
+                tokenId,
+                userAddresses,
+                { from: this._contractOwnerAddress }
+            ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
-    */
-   /*
-    // THIS IS NFT ONLY
-    public async ownerOfAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {
+    public async ownerOfNonFungibleAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const owner = await tokenContract.ownerOf.callAsync(tokenId);
         return owner;
-    }*/
-    /*
-    public async isOwnerAsync(userAddress: string, tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
+    }
+    public async isNonFungibleOwnerAsync(userAddress: string, tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await tokenContract.ownerOf.callAsync(tokenId);
         const isOwner = tokenOwner === userAddress;
@@ -185,30 +185,21 @@ export class ERC1155Wrapper {
     public async isProxyApprovedForAllAsync(userAddress: string, tokenAddress: string): Promise<boolean> {
         this._validateProxyContractExistsOrThrow();
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const operator = (this._proxyContract as ERC721ProxyContract).address;
+        const operator = (this._proxyContract as ERC1155ProxyContract).address;
         const didApproveAll = await tokenContract.isApprovedForAll.callAsync(userAddress, operator);
         return didApproveAll;
     }
-    public async isProxyApprovedAsync(tokenAddress: string, tokenId: BigNumber): Promise<boolean> {
-        this._validateProxyContractExistsOrThrow();
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const approvedAddress = await tokenContract.getApproved.callAsync(tokenId);
-        const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
-        const isProxyAnApprovedOperator = approvedAddress === proxyAddress;
-        return isProxyAnApprovedOperator;
-    }
-    */
     public async getBalancesAsync(): Promise<ERC1155HoldingsByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
         this._validateBalancesAndAllowancesSetOrThrow();
-        const tokenHoldingsByOwner: ERC1155HoldingsByOwner = {};
-        const tokenOwnerAddresses: string[] = [];
-        const tokenInfo: Array<{ tokenId: BigNumber; tokenAddress: string }> = [];
+        const tokenHoldingsByOwner: ERC1155FungibleHoldingsByOwner = {};
+        const nonFungibleHoldingsByOwner: ERC1155NonFungibleHoldingsByOwner = {};
         for (const dummyTokenContract of this._dummyTokenContracts) {
             const tokenAddress = dummyTokenContract.address;
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                for (const tokenId of this._tokenIds) {
-                    const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+                const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+                // fungible tokens
+                for (const tokenId of this._fungibleTokenIds) {
                     if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress])) {
                         tokenHoldingsByOwner[tokenOwnerAddress] = {};
                     }
@@ -217,40 +208,32 @@ export class ERC1155Wrapper {
                     }
                     tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress][tokenId] = await tokenContract.balanceOf.callAsync(tokenOwnerAddress, new BigNumber(tokenId));
                 }
-            }
-        }
-        /*
-                
-                
-                const initialTokenOwnerIds = this._initialTokenIdsByOwner[tokenOwnerAddress][
-                    dummyTokenContract.address
-                ];
-                for (const tokenId of initialTokenOwnerIds) {
-                    tokenOwnerAddresses.push(await dummyTokenContract.ownerOf.callAsync(tokenId));
-                    tokenInfo.push({
-                        tokenId,
-                        tokenAddress: dummyTokenContract.address,
-                    });
+                // non-fungible tokens
+                for (const nft of this._nfts) {
+                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress] = {};
+                    }
+                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress] = {};
+                    }
+
+                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()] = [];
+                    }
+                    nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()].push(await tokenContract.balanceOf.callAsync(tokenOwnerAddress, nft.id));
                 }
             }
         }
-        _.forEach(tokenOwnerAddresses, (tokenOwnerAddress, ownerIndex) => {
-            const tokenAddress = tokenInfo[ownerIndex].tokenAddress;
-            const tokenId = tokenInfo[ownerIndex].tokenId;
-            if (_.isUndefined(tokenIdsByOwner[tokenOwnerAddress])) {
-                tokenIdsByOwner[tokenOwnerAddress] = {
-                    [tokenAddress]: [],
-                };
-            }
-            if (_.isUndefined(tokenIdsByOwner[tokenOwnerAddress][tokenAddress])) {
-                tokenIdsByOwner[tokenOwnerAddress][tokenAddress] = [];
-            }
-            tokenIdsByOwner[tokenOwnerAddress][tokenAddress].push(tokenId);
-        });
-        */
-        return tokenHoldingsByOwner;
+        const holdingsByOwner = {
+            fungible: tokenHoldingsByOwner,
+            nonFungible: nonFungibleHoldingsByOwner,
+        }
+        return holdingsByOwner;
     }
-    /*
+    public getFungibleTokenIds(): BigNumber[] {
+        const fungibleTokenIds = _.map(this._fungibleTokenIds, (tokenIdAsString: string) => {return new BigNumber(tokenIdAsString)});
+        return fungibleTokenIds;
+    }
     public getTokenOwnerAddresses(): string[] {
         return this._tokenOwnerAddresses;
     }
@@ -258,7 +241,6 @@ export class ERC1155Wrapper {
         const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
     }
-        */
     private _getTokenContractFromAssetData(tokenAddress: string): DummyERC1155TokenContract {
         const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
         if (_.isUndefined(tokenContractIfExists)) {
@@ -277,9 +259,9 @@ export class ERC1155Wrapper {
         }
     }
     private _validateBalancesAndAllowancesSetOrThrow(): void {
-        if (_.keys(this._initialTokenIdsByOwner).length === 0) {
+        if (_.keys(this._initialTokenIdsByOwner.fungible).length === 0 || _.keys(this._initialTokenIdsByOwner.nonFungible).length === 0) {
             throw new Error(
-                'Dummy ERC721 balances and allowances not yet set, please call "setBalancesAndAllowancesAsync"',
+                'Dummy ERC1155 balances and allowances not yet set, please call "setBalancesAndAllowancesAsync"',
             );
         }
     }
