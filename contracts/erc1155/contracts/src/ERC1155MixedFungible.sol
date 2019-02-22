@@ -117,8 +117,9 @@ contract ERC1155MixedFungible is ERC1155 {
             uint256 id = _ids[i];
             if (isNonFungibleItem(id)) {
                 balances_[i] = nfOwners[id] == _owners[i] ? 1 : 0;
+            } else {
+                balances_[i] = balances[id][_owners[i]];
             }
-            balances_[i] = balances[id][_owners[i]];
         }
 
         return balances_;
