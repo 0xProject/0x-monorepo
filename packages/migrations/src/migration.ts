@@ -3,9 +3,9 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { TxData } from 'ethereum-types';
+import { SupportedProvider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
@@ -13,11 +13,15 @@ import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
 /**
  * Creates and deploys all the contracts that are required for the latest
  * version of the 0x protocol.
- * @param provider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
+ * @param supportedProvider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
  * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
-export async function runMigrationsAsync(provider: Web3ProviderEngine, txDefaults: TxData): Promise<ContractAddresses> {
+export async function runMigrationsAsync(
+    supportedProvider: SupportedProvider,
+    txDefaults: TxData,
+): Promise<ContractAddresses> {
+    const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const web3Wrapper = new Web3Wrapper(provider);
 
     // Proxies
