@@ -21,7 +21,7 @@ with usd_prices as (
     where to_symbol = 'USD' and end_time >= date_part('epoch', now() - interval '2 month')*1000
 ), radar_orderbook as (
     select * from raw.token_orderbook_snapshots
-    where source = 'radar' and observed_timestamp  > date_part('epoch', now() - interval '2 month')*1000
+    where source = 'radar' and observed_timestamp => date_part('epoch', now() - interval '2 month')*1000
 )
 select
     case
