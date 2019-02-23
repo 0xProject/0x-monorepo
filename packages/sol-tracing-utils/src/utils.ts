@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 
 const STATICCALL_GAS_COST = 40;
+const CALL_GAS_COST = 700;
 
 const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
 
@@ -95,29 +96,17 @@ export const utils = {
                     // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
                     newStructLog.gasCost = STATICCALL_GAS_COST;
                 }
-                // if (newStructLog.op === OpCode.MStore) {
-                //     // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                //     newStructLog.gasCost = 3;
-                // }
-                // if (newStructLog.op === OpCode.MLoad) {
-                //     // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                //     newStructLog.gasCost = 3;
-                // }
-                // if (newStructLog.op === OpCode.CallDataCopy) {
-                //     // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                //     newStructLog.gasCost = 3;
-                // }
                 if (newStructLog.op === 'CALL') {
                     const HEX_BASE = 16;
                     const callAddress = parseInt(newStructLog.stack[0], HEX_BASE);
+                    const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
                     // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                    if (callAddress < 50) {
+                    if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
                         const nextStructLog = structLogs[idx + 1];
                         newStructLog.gasCost = structLog.gas - nextStructLog.gas;
                     } else {
-                        newStructLog.gasCost = 700;
+                        newStructLog.gasCost = CALL_GAS_COST;
                     }
-                    // newStructLog.gasCost = 700;
                 }
                 return newStructLog;
             });
