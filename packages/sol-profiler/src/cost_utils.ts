@@ -27,7 +27,7 @@ export const costUtils = {
         const zeroBytesCost = (zeroBytesCountIfExist || 0) * ZERO_BYTE_CALL_DATA_COST;
         const nonZeroBytesCost = (nonZeroBytesCountIfExist || 0) * NON_ZERO_BYTE_CALL_DATA_COST;
         const callDataCost = zeroBytesCost + nonZeroBytesCost;
-        logUtils.logHeader('Call data breakdown', '-');
+        logUtils.header('Call data breakdown', '-');
         logUtils.table({
             'call data size (bytes)': callData.length,
             callDataCost,
@@ -81,7 +81,7 @@ export const costUtils = {
         const linearMemoryCost = G_MEMORY * memoryWordsUsed;
         const quadraticMemoryCost = Math.floor((memoryWordsUsed * memoryWordsUsed) / G_QUAD_COEF);
         const memoryCost = linearMemoryCost + quadraticMemoryCost;
-        logUtils.logHeader('Memory breakdown', '-');
+        logUtils.header('Memory breakdown', '-');
         logUtils.table({
             'memoryCost = linearMemoryCost + quadraticMemoryCost': memoryCost,
             linearMemoryCost,
