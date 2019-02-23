@@ -19,6 +19,7 @@ import * as _ from 'lodash';
 import { costUtils } from './cost_utils';
 
 const CREATE_COST = 32000;
+const BASE_COST = 21000;
 const DEPLOYED_BYTE_COST = 200;
 
 /**
@@ -51,7 +52,6 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
         if (_.isUndefined(receipt)) {
             return;
         }
-        const BASE_COST = 21000;
         if (receipt.gasUsed === BASE_COST) {
             // Value transfer
             return;
