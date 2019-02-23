@@ -23,49 +23,18 @@ import "../src/ERC1155MockReceiver.sol";
 contract DummyERC1155Receiver is
     ERC1155MockReceiver
 {
-    
-    /*
-    // Function selector for ERC1155Receiver.onERC1155Received
-    // 0x150b7a02
-    bytes4 constant internal ERC1155_RECEIVED = bytes4(keccak256("onERC1155Received(address,address,uint256,bytes)"));
-
-    event TokenReceived(
+   event BatchTokenReceived(
         address operator,
         address from,
-        uint256 tokenId,
+        uint256[] tokenIds,
+        uint256[] tokenValues,
         bytes data
     );
 
-    /// @notice Handle the receipt of an NFT
-    /// @dev The ERC1155 smart contract calls this function on the recipient
-    ///      after a `transfer`. This function MAY throw to revert and reject the
-    ///      transfer. Return of other than the magic value MUST result in the
-    ///      transaction being reverted.
-    ///      Note: the contract address is always the message sender.
-    /// @param _operator The address which called `safeTransferFrom` function
-    /// @param _from The address which previously owned the token
-    /// @param _tokenId The NFT identifier which is being transferred
-    /// @param _data Additional data with no specified format
-    /// @return `bytes4(keccak256("onERC1155Received(address,address,uint256,bytes)"))`
-    ///         unless throwing
-    function onERC1155Received(
-        address _operator,
-        address _from,
-        uint256 _tokenId,
-        bytes _data
-    )
-        external
-        returns (bytes4)
-    {
-        emit TokenReceived(
-            _operator,
-            _from,
-            _tokenId,
-            _data
-        );
-        return ERC1155_RECEIVED;
+    function onERC1155BatchReceived(address _operator, address _from, uint256[] calldata _ids, uint256[] calldata _values, bytes calldata _data) external returns(bytes4) {
+        emit BatchTokenReceived(_operator, _from, _ids, _values, _data);
+        return ERC1155_BATCH_RECEIVED;
     }
-    */ 
 }
 
 
