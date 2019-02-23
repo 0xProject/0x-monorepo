@@ -8,7 +8,7 @@ export {
     Sources,
 } from '@0x/sol-tracing-utils';
 
-export { JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCResponseError } from 'ethereum-types';
+export { JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCResponseError, ContractAbi } from 'ethereum-types';
 
 export {
     JSONRPCRequestPayloadWithMethod,
