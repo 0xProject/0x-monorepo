@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Add `logUtils.table` and `logUtils.header`",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {
