@@ -4,19 +4,19 @@
         "changes": [
             {
                 "note": "Big Sol-profiler overhaul. It now has a bunch of new features",
-                "pr": "TODO"
+                "pr": 1638
             },
             {
                 "note": "Added a CLI interface for reporting non line-based profiling info",
-                "pr": "TODO"
+                "pr": 1638
             },
             {
                 "note": "Add memory consumption analysis",
-                "pr": "TODO"
+                "pr": 1638
             },
             {
                 "note": "Add calldata analysis",
-                "pr": "TODO"
+                "pr": 1638
             }
         ]
     },
