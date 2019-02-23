@@ -47,9 +47,7 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
     }
     // tslint:disable prefer-function-over-method
     protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        const receipt = await this._web3Wrapper.getTransactionReceiptIfExistsAsync(
-            traceInfo.txHash,
-        );
+        const receipt = await this._web3Wrapper.getTransactionReceiptIfExistsAsync(traceInfo.txHash);
         if (_.isUndefined(receipt)) {
             return;
         }
