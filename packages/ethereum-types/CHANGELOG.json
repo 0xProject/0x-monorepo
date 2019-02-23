@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Added all existing opcodes to `OpCode` type",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
