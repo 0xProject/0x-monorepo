@@ -11,8 +11,8 @@ import {
     StatementCoverage,
     StatementDescription,
     Subtrace,
+    SubTraceInfo,
     TraceCollector,
-    TraceInfo,
     TraceInfoSubprovider,
     utils,
 } from '@0x/sol-tracing-utils';
@@ -39,8 +39,8 @@ export class CoverageSubprovider extends TraceInfoSubprovider {
         super(defaultFromAddress, traceCollectionSubproviderConfig);
         this._coverageCollector = new TraceCollector(artifactAdapter, isVerbose, coverageHandler);
     }
-    protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        await this._coverageCollector.computeSingleTraceCoverageAsync(traceInfo);
+    protected async _handleSubTraceInfoAsync(subTraceInfo: SubTraceInfo): Promise<void> {
+        await this._coverageCollector.computeSingleTraceCoverageAsync(subTraceInfo);
     }
     /**
      * Write the test coverage results to a file in Istanbul format.

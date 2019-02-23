@@ -33,6 +33,8 @@
         "@0x/subproviders": "^3.0.3",
         "@0x/typescript-typings": "^4.0.0",
         "ethereum-types": "^2.0.0",
+        "ethereumjs-util": "^5.1.1",
+        "@0x/utils": "^4.1.0",
         "lodash": "^4.17.11",
         "web3-provider-engine": "14.0.6"
     },
