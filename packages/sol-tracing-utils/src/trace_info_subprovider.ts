@@ -1,5 +1,4 @@
 import { NodeType } from '@0x/web3-wrapper';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -13,7 +12,7 @@ import { SubTraceInfo, SubTraceInfoExistingContract, SubTraceInfoNewContract, Tr
 export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
     protected abstract _handleSubTraceInfoAsync(subTraceInfo: SubTraceInfo): Promise<void>;
     // tslint:disable prefer-function-over-method
-    protected _handleTraceInfoAsync(_traceInfo: TraceInfo): Promise<void> {
+    protected async _handleTraceInfoAsync(_traceInfo: TraceInfo): Promise<void> {
         return Promise.resolve(undefined);
     }
     protected async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
