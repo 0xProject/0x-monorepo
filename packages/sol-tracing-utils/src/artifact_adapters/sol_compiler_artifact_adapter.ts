@@ -59,7 +59,6 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
                 sourceCodes[value.id] = source.source;
             });
             const contractData = {
-                abi: artifact.compilerOutput.abi,
                 name: artifact.contractName,
                 sourceCodes,
                 sources,

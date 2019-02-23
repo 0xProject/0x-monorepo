@@ -1,4 +1,4 @@
-import { ContractAbi, StructLog, TransactionTrace } from 'ethereum-types';
+import { StructLog, TransactionTrace } from 'ethereum-types';
 
 export interface LineColumn {
     line: number;
@@ -83,7 +83,6 @@ export interface Sources {
 }
 
 export interface ContractData {
-    abi: ContractAbi;
     name: string;
     bytecode: string;
     sourceMap: string;
