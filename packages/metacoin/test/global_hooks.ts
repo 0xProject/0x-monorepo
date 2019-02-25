@@ -1,9 +1,10 @@
 import { env, EnvVars } from '@0x/dev-utils';
 
-import { coverage } from './utils/coverage';
-import { profiler } from './utils/profiler';
-
-after('generate coverage || profiler report', async () => {
+import { coverage, profiler, provider } from '@0x/contracts-test-utils';
+before('start web3 provider', () => {
+    provider.start();
+});
+after('generate coverage report', async () => {
     if (env.parseBoolean(EnvVars.SolidityCoverage)) {
         const coverageSubprovider = coverage.getCoverageSubproviderSingleton();
         await coverageSubprovider.writeCoverageAsync();
@@ -12,4 +13,5 @@ after('generate coverage || profiler report', async () => {
         const profilerSubprovider = profiler.getProfilerSubproviderSingleton();
         await profilerSubprovider.writeProfilerOutputAsync();
     }
+    provider.stop();
 });
