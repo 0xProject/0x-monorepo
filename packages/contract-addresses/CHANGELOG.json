@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Fixed Ganache addresses for OrderValidator & Forwarder"
+            }
+        ]
+    },
+    {
         "timestamp": 1549373905,
         "version": "2.2.1",
         "changes": [
