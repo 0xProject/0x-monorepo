@@ -92,10 +92,10 @@ export class NextAboutJobs extends React.Component<NextAboutJobsProps, NextAbout
                 title="Join Us in Our Mission"
                 description={
                     <>
-                        <Paragraph size="medium">
+                        <Paragraph size="medium" isMuted={0.65}>
                             To create a tokenized world where all value can flow freely.
                         </Paragraph>
-                        <Paragraph size="medium">
+                        <Paragraph size="medium" marginBottom="60px" isMuted={0.65}>
                             We are growing an ecosystem of businesses and projects by solving difficult challenges to
                             make our technology intuitive, flexible, and accessible to all. Join us in building
                             infrastructure upon which the exchange of all assets will take place.

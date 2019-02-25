@@ -191,7 +191,13 @@ const advisors: TeamMember[] = [
 export const NextAboutTeam = () => (
     <AboutPageLayout
         title="We are a global, growing team"
-        description="We are a distributed team with backgrounds in engineering, academic research, business, and design. The 0x Core Team is passionate about accelerating the adoption decentralized technology and believe in its potential to be an equalizing force in the world. Join us and do the most impactful work of your life."
+        description={
+            <>
+                <Paragraph size="medium" marginBottom="60px" isMuted={0.65}>
+                    We are a distributed team with backgrounds in engineering, academic research, business, and design. The 0x Core Team is passionate about accelerating the adoption decentralized technology and believe in its potential to be an equalizing force in the world. Join us and do the most impactful work of your life.
+                </Paragraph>
+            </>
+        }
         linkLabel="Join the team"
         to={WebsitePaths.AboutJobs}
     >

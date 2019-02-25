@@ -26,13 +26,12 @@ export const Select: React.FunctionComponent<SelectProps> = ({
 }) => {
     return (
         <Container>
-            <StyledSelect id={id} onChange={onChange}>
+            <StyledSelect id={id} onChange={onChange} defaultValue={value}>
                 {shouldIncludeEmpty && <option value="">{emptyText}</option>}
                 {items.map((item, index) => (
                     <option
                         key={`${id}-item-${index}`}
                         value={item.value}
-                        selected={item.value === value}
                         onClick={item.onClick}
                     >
                         {item.label}
@@ -40,7 +39,7 @@ export const Select: React.FunctionComponent<SelectProps> = ({
                 ))}
             </StyledSelect>
             <Caret width="12" height="7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11 1L6 6 1 1" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M11 1L6 6 1 1" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </Caret>
         </Container>
     );

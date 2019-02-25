@@ -7,7 +7,7 @@ import { Definition } from 'ts/components/definition';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Image } from 'ts/components/image';
 import { Column, Section } from 'ts/components/newLayout';
-import { Heading } from 'ts/components/text';
+import { Heading, Paragraph } from 'ts/components/text';
 import { constants } from 'ts/utils/constants';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
@@ -35,7 +35,13 @@ const values = [
 export const NextAboutMission = () => (
     <AboutPageLayout
         title="Creating a tokenized world where all value can flow freely."
-        description="0x is important infrastructure for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past."
+        description={
+            <>
+                <Paragraph size="medium" marginBottom="60px" isMuted={0.65}>
+                    0x is important infrastructure for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past.
+                </Paragraph>
+            </>
+        }
         linkLabel="Our mission and values"
         href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
     >
@@ -57,6 +63,7 @@ export const NextAboutMission = () => (
                 <Column width="100%" maxWidth="800px">
                     {_.map(values, (item, index) => (
                         <StyledDefinition
+                            key={`coreValue-${index}`}
                             icon={item.icon}
                             title={item.title}
                             description={item.description}

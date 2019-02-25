@@ -34,9 +34,9 @@ export const AboutPageLayout = (props: Props) => (
                 <Column width="100%" maxWidth="680px">
                     <AnimatedHeading size="medium">{props.title}</AnimatedHeading>
 
-                    <AnimatedParagraph size="medium" marginBottom="60px" isMuted={0.65}>
+                    <AnimatedIntro>
                         {props.description}
-                    </AnimatedParagraph>
+                    </AnimatedIntro>
 
                     {props.linkLabel && (props.href || props.to) && (
                         <AnimatedLink
@@ -61,7 +61,7 @@ const AnimatedHeading = styled(Heading)`
     ${addFadeInAnimation('0.5s')};
 `;
 
-const AnimatedParagraph = styled(Paragraph)`
+const AnimatedIntro = styled.div`
     ${addFadeInAnimation('0.5s', '0.15s')};
 `;
 
