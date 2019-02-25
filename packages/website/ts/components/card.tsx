@@ -52,10 +52,6 @@ export const Card: React.StatelessComponent<CardProps> = (props: CardProps) => {
     );
 };
 
-const StyledIcon = styled(Icon)`
-    height: 100%;
-`
-
 const StyledCard = styled.div`
     background-color: ${colors.backgroundDark};
     display: flex;

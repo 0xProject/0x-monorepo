@@ -6,7 +6,7 @@ import { Button } from 'ts/components/button';
 import { ChapterLink } from 'ts/components/chapter_link';
 import { Column, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
-import { Heading, Paragraph } from 'ts/components/text';
+import { Heading } from 'ts/components/text';
 
 import { addFadeInAnimation } from 'ts/constants/animations';
 import { WebsitePaths } from 'ts/types';
