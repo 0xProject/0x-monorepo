@@ -34,9 +34,7 @@ export const AboutPageLayout = (props: Props) => (
                 <Column width="100%" maxWidth="680px">
                     <AnimatedHeading size="medium">{props.title}</AnimatedHeading>
 
-                    <AnimatedIntro>
-                        {props.description}
-                    </AnimatedIntro>
+                    <AnimatedIntro>{props.description}</AnimatedIntro>
 
                     {props.linkLabel && (props.href || props.to) && (
                         <AnimatedLink

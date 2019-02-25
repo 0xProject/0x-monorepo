@@ -38,7 +38,10 @@ export const NextAboutMission = () => (
         description={
             <>
                 <Paragraph size="medium" marginBottom="60px" isMuted={0.65}>
-                    0x is important infrastructure for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past.
+                    0x is important infrastructure for the emerging crypto economy and enables markets to be created
+                    that couldn't have existed before. As more assets become tokenized, public blockchains provide the
+                    opportunity to establish a new financial stack that is more efficient, transparent, and equitable
+                    than any system in the past.
                 </Paragraph>
             </>
         }

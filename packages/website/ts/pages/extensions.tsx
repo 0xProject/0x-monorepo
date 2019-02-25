@@ -30,7 +30,8 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Learn More',
-                url: 'https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/DutchAuction/DutchAuction.sol',
+                url:
+                    'https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/DutchAuction/DutchAuction.sol',
             },
         ],
     },
@@ -52,7 +53,8 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Learn More',
-                url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#whitelist',
+                url:
+                    'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#whitelist',
             },
         ],
     },

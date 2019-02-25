@@ -29,11 +29,7 @@ export const Select: React.FunctionComponent<SelectProps> = ({
             <StyledSelect id={id} onChange={onChange} defaultValue={value}>
                 {shouldIncludeEmpty && <option value="">{emptyText}</option>}
                 {items.map((item, index) => (
-                    <option
-                        key={`${id}-item-${index}`}
-                        value={item.value}
-                        onClick={item.onClick}
-                    >
+                    <option key={`${id}-item-${index}`} value={item.value} onClick={item.onClick}>
                         {item.label}
                     </option>
                 ))}
