@@ -79,8 +79,8 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         zrx_token="0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c",
         ether_token="0x0b1ba0af832d7c05fd64161e0db78e85978e8082",
         asset_proxy_owner="0x34d402f14d58e001d8efbe6585051bf9706aa064",
-        forwarder="0xb69e673309512a9d726f87304c6984054f87a93b",
-        order_validator="0xe86bb98fcf9bff3512c74589b78fb168200cc546",
+        forwarder="0x6000eca38b8b5bba64986182fe2a69c57f6b5414",
+        order_validator="0x32eecaf51dfea9618e9bc94e9fbfddb1bbdcba15",
     ),
 }
 """A mapping from instances of NetworkId to instances of ContractAddresses.
