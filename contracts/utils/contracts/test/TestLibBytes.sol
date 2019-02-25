@@ -279,10 +279,10 @@ contract TestLibBytes {
     )
         public
         pure
-        returns (bytes memory result)
+        returns (bytes memory result, bytes memory original)
     {
         result = LibBytes.slice(b, from, to);
-        return result;
+        return (result, b);
     }
 
     /// @dev Returns a slice from a byte array without preserving the input.
@@ -298,9 +298,9 @@ contract TestLibBytes {
     )
         public
         pure
-        returns (bytes memory result)
+        returns (bytes memory result, bytes memory original)
     {
         result = LibBytes.sliceDestructive(b, from, to);
-        return result;
+        return (result, b);
     }
 }
