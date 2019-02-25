@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _February 25, 2019_
+
+    * Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface (#1627)
+    * Add `logUtils.table` and `logUtils.header` (#1638)
+
 ## v4.1.0 - _February 9, 2019_
 
     * Added method decoding to AbiDecoder (#1569)

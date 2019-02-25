@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.5 - _February 25, 2019_
+
+    * Fix bug in `LibBytes.slice` and `LibBytes.sliceDestructive` (#1604)
+    * Upgrade contracts to Solidity 0.5.3 (#1604)
+
 ## v2.0.4 - _February 9, 2019_
 
     * Dependencies updated

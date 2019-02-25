@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _February 25, 2019_
+
+    * Dependencies updated
+
 ## v2.1.0 - _February 9, 2019_
 
     * Allow using the Web3Factory in-process Ganache provider with existing DB snapshot (#1602)

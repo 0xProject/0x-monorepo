@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _February 25, 2019_
+
+    * Upgrade contracts to Solidity 0.5.3 (#1604)
+    * Make constants internal (#1604)
+
 ## v1.0.5 - _February 9, 2019_
 
     * Dependencies updated

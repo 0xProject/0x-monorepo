@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _February 25, 2019_
+
+    * Big @0x/sol-profiler overhaul. It now has a bunch of new features (#1638)
+    * Added a CLI interface for reporting non line-based profiling info (#1638)
+    * Add memory consumption analysis (#1638)
+    * Add calldata analysis (#1638)
+
 ## v2.0.4 - _February 9, 2019_
 
     * Dependencies updated

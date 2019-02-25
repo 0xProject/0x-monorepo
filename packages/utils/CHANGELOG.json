@@ -10,7 +10,8 @@
                 "note": "Add `logUtils.table` and `logUtils.header`",
                 "pr": 1638
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "4.1.0",

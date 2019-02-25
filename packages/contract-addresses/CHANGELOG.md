@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.2 - _February 25, 2019_
+
+    * Fixed Ganache addresses for OrderValidator & Forwarder
+
 ## v2.2.1 - _February 5, 2019_
 
     * Dependencies updated

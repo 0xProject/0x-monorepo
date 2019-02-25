@@ -10,7 +10,8 @@
                 "note": "Upgrade contracts to Solidity 0.5.3",
                 "pr": 1604
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,

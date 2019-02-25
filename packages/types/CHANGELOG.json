@@ -6,7 +6,8 @@
                 "note": "Add `FromLessThanToRequired` and `ToLessThanLengthRequired` revert reasons",
                 "pr": 1604
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "2.0.2",

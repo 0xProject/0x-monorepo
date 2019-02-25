@@ -6,7 +6,8 @@
                 "note": "Add `isOfflineMode` flag to sol-compiler`",
                 "pr": 1625
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,

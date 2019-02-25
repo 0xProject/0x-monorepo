@@ -6,7 +6,8 @@
                 "note": "Replace Provider param interface with Web3ProviderEngine",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,

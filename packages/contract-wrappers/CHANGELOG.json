@@ -10,7 +10,8 @@
                 "note": "Update provider params to type SupportedProvider which outlines all supported providers",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "7.1.0",

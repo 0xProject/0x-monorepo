@@ -6,7 +6,8 @@
                 "note": "Add back custom web3-provider-engine type definitions",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "4.0.0",

@@ -5,7 +5,8 @@
             {
                 "note": "Fixed Ganache addresses for OrderValidator & Forwarder"
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549373905,

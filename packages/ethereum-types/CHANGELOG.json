@@ -10,7 +10,8 @@
                 "note": "Added all existing opcodes to `OpCode` type",
                 "pr": 1638
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "2.0.0",
