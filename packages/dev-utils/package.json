@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-utils",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -41,14 +41,14 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/subproviders": "^3.0.3",
-        "@0x/types": "^2.0.2",
-        "@0x/typescript-typings": "^4.0.0",
-        "@0x/utils": "^4.1.0",
-        "@0x/web3-wrapper": "^5.0.0",
+        "@0x/subproviders": "^4.0.0",
+        "@0x/types": "^2.1.0",
+        "@0x/typescript-typings": "^4.1.0",
+        "@0x/utils": "^4.2.0",
+        "@0x/web3-wrapper": "^6.0.0",
         "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
-        "ethereum-types": "^2.0.0",
+        "ethereum-types": "^2.1.0",
         "lodash": "^4.17.11"
     },
     "publishConfig": {
