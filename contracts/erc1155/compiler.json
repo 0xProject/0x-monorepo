@@ -18,9 +18,10 @@
     },
     "contracts": [
         "src/Address.sol",
-        "src/IERC1155.sol",
-        "src/IERC1155TokenReceiver.sol",
-        "src/MyERC1155.sol",
+        "src/ERC1155.sol",
+        "src/ERC1155Mintable.sol",
+        "src/interfaces/IERC1155.sol",
+        "src/interfaces/IERC1155Receiver.sol",
         "test/DummyERC1155Receiver.sol",
         "test/DummyERC1155Token.sol",
         "test/InvalidERC1155Receiver.sol"

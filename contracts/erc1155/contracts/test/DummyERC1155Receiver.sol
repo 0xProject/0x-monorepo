@@ -18,10 +18,10 @@
 
 pragma solidity 0.5.3;
 
-import "../src/IERC1155TokenReceiver.sol";
+import "../src/interfaces/IERC1155Receiver.sol";
 
 contract DummyERC1155Receiver is
-    IERC1155TokenReceiver
+    IERC1155Receiver
 {
 
     bytes4 constant public ERC1155_RECEIVED       = 0xf23a6e61;

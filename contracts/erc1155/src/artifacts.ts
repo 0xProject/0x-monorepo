@@ -8,15 +8,17 @@ import { ContractArtifact } from 'ethereum-types';
 import * as Address from '../generated-artifacts/Address.json';
 import * as DummyERC1155Receiver from '../generated-artifacts/DummyERC1155Receiver.json';
 import * as DummyERC1155Token from '../generated-artifacts/DummyERC1155Token.json';
+import * as ERC1155 from '../generated-artifacts/ERC1155.json';
+import * as ERC1155Mintable from '../generated-artifacts/ERC1155Mintable.json';
 import * as IERC1155 from '../generated-artifacts/IERC1155.json';
-import * as IERC1155TokenReceiver from '../generated-artifacts/IERC1155TokenReceiver.json';
+import * as IERC1155Receiver from '../generated-artifacts/IERC1155Receiver.json';
 import * as InvalidERC1155Receiver from '../generated-artifacts/InvalidERC1155Receiver.json';
-import * as MyERC1155 from '../generated-artifacts/MyERC1155.json';
 export const artifacts = {
     Address: Address as ContractArtifact,
+    ERC1155: ERC1155 as ContractArtifact,
+    ERC1155Mintable: ERC1155Mintable as ContractArtifact,
     IERC1155: IERC1155 as ContractArtifact,
-    IERC1155TokenReceiver: IERC1155TokenReceiver as ContractArtifact,
-    MyERC1155: MyERC1155 as ContractArtifact,
+    IERC1155Receiver: IERC1155Receiver as ContractArtifact,
     DummyERC1155Receiver: DummyERC1155Receiver as ContractArtifact,
     DummyERC1155Token: DummyERC1155Token as ContractArtifact,
     InvalidERC1155Receiver: InvalidERC1155Receiver as ContractArtifact,

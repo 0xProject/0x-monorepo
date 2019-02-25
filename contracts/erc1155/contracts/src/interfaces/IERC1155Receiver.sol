@@ -1,6 +1,6 @@
 pragma solidity ^0.5.3;
 
-interface IERC1155TokenReceiver {
+interface IERC1155Receiver {
 
     /**
         @notice Handle the receipt of a single ERC1155 token type

@@ -23,7 +23,7 @@ import {
     DummyERC1155TokenContract,
     //DummyERC1155TokenTransferEventArgs,
     InvalidERC1155ReceiverContract,
-    MyERC1155TransferSingleEventArgs
+    ERC1155TransferSingleEventArgs
 } from '../src';
 
 chaiSetup.configure();
@@ -79,7 +79,7 @@ describe('ERC1155Token', () => {
                 DUMMY_FUNGIBLE_TOKEN_IS_FUNGIBLE
             )
         );
-        const createFungibleTokenLog = txReceipt.logs[0] as LogWithDecodedArgs<MyERC1155TransferSingleEventArgs>;
+        const createFungibleTokenLog = txReceipt.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
         dummyFungibleTokenId = createFungibleTokenLog.args._id;
         // Mint some fungible token
         await web3Wrapper.awaitTransactionSuccessAsync(
