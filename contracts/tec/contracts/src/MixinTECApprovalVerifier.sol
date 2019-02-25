@@ -96,17 +96,17 @@ contract MixinTECApprovalVerifier is
         uint256 signaturesLength = approvalSignatures.length;
         for (uint256 i = 0; i < signaturesLength; i++) {
             // Create approval message
-            uint256 currentApprovalExpirationTimeseconds = approvalExpirationTimeSeconds[i];
+            uint256 currentApprovalExpirationTimeSeconds = approvalExpirationTimeSeconds[i];
             TECApproval memory approval = TECApproval({
                 transactionHash: transactionHash,
                 transactionSignature: transactionSignature,
-                approvalExpirationTimeSeconds: currentApprovalExpirationTimeseconds
+                approvalExpirationTimeSeconds: currentApprovalExpirationTimeSeconds
             });
 
             // Ensure approval has not expired
             require(
                 // solhint-disable-next-line not-rely-on-time
-                currentApprovalExpirationTimeseconds > block.timestamp,
+                currentApprovalExpirationTimeSeconds > block.timestamp,
                 "APPROVAL_EXPIRED"
             );
 
