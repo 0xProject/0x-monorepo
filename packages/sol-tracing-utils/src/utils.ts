@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
 
 const STATICCALL_GAS_COST = 40;
+const CALL_GAS_COST = 700;
 
 const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
 
@@ -81,16 +82,31 @@ export const utils = {
         return addressUtils.padZeros(new BigNumber(addHexPrefix(stackEntry)).toString(hexBase));
     },
     normalizeStructLogs(structLogs: StructLog[]): StructLog[] {
+        if (_.isEmpty(structLogs)) {
+            return structLogs;
+        }
         if (structLogs[0].depth === 1) {
             // Geth uses 1-indexed depth counter whilst ganache starts from 0
-            const newStructLogs = _.map(structLogs, structLog => {
+            const newStructLogs = _.map(structLogs, (structLog: StructLog, idx: number) => {
                 const newStructLog = {
                     ...structLog,
                     depth: structLog.depth - 1,
                 };
-                if (newStructLog.op === 'STATICCALL') {
+                if (newStructLog.op === OpCode.StaticCall) {
                     // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
                     newStructLog.gasCost = STATICCALL_GAS_COST;
+                }
+                if (newStructLog.op === 'CALL') {
+                    const HEX_BASE = 16;
+                    const callAddress = parseInt(newStructLog.stack[0], HEX_BASE);
+                    const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
+                    // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+                    if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
+                        const nextStructLog = structLogs[idx + 1];
+                        newStructLog.gasCost = structLog.gas - nextStructLog.gas;
+                    } else {
+                        newStructLog.gasCost = CALL_GAS_COST;
+                    }
                 }
                 return newStructLog;
             });
@@ -103,5 +119,8 @@ export const utils = {
         lines[lines.length - 1] = lines[lines.length - 1].slice(0, range.end.column);
         lines[0] = lines[0].slice(range.start.column);
         return lines.join('\n');
+    },
+    shortenHex(hex: string, length: number): string {
+        return `${hex.substr(0, length + 2)}...${hex.substr(hex.length - length, length)}`;
     },
 };

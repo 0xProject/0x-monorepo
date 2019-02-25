@@ -1,4 +1,4 @@
-import { StructLog } from 'ethereum-types';
+import { StructLog, TransactionTrace } from 'ethereum-types';
 
 export interface LineColumn {
     line: number;
@@ -83,6 +83,7 @@ export interface Sources {
 }
 
 export interface ContractData {
+    name: string;
     bytecode: string;
     sourceMap: string;
     runtimeBytecode: string;
@@ -94,22 +95,30 @@ export interface ContractData {
 // Part of the trace executed within the same context
 export type Subtrace = StructLog[];
 
-export interface TraceInfoBase {
+export interface SubTraceInfoBase {
     subtrace: Subtrace;
     txHash: string;
+    subcallDepth: number;
 }
 
-export interface TraceInfoNewContract extends TraceInfoBase {
+export interface SubTraceInfoNewContract extends SubTraceInfoBase {
     address: 'NEW_CONTRACT';
     bytecode: string;
 }
 
-export interface TraceInfoExistingContract extends TraceInfoBase {
+export interface SubTraceInfoExistingContract extends SubTraceInfoBase {
     address: string;
     runtimeBytecode: string;
 }
 
-export type TraceInfo = TraceInfoNewContract | TraceInfoExistingContract;
+export type SubTraceInfo = SubTraceInfoNewContract | SubTraceInfoExistingContract;
+
+export interface TraceInfo {
+    trace: TransactionTrace;
+    txHash: string;
+    address: string;
+    dataIfExists: string | undefined;
+}
 
 export enum BlockParamLiteral {
     Latest = 'latest',

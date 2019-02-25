@@ -5,6 +5,10 @@
             {
                 "note": "Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface",
                 "pr": 1627
+            },
+            {
+                "note": "Add `logUtils.table` and `logUtils.header`",
+                "pr": 1638
             }
         ]
     },

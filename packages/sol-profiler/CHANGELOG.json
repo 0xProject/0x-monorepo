@@ -1,5 +1,26 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Big @0x/sol-profiler overhaul. It now has a bunch of new features",
+                "pr": 1638
+            },
+            {
+                "note": "Added a CLI interface for reporting non line-based profiling info",
+                "pr": 1638
+            },
+            {
+                "note": "Add memory consumption analysis",
+                "pr": 1638
+            },
+            {
+                "note": "Add calldata analysis",
+                "pr": 1638
+            }
+        ]
+    },
+    {
         "timestamp": 1549733923,
         "version": "2.0.4",
         "changes": [
