@@ -245,7 +245,7 @@ export enum OpCode {
     Dup14 = 'DUP14',
     Dup15 = 'DUP15',
     Dup16 = 'DUP16',
-    // 90s: Exchange Operatio
+    // 90s: Exchange Operation
     Swap1 = 'SWAP1',
     Swap2 = 'SWAP2',
     Swap3 = 'SWAP3',
