@@ -117,7 +117,7 @@ export interface TraceInfo {
     trace: TransactionTrace;
     txHash: string;
     address: string;
-    data: string | undefined;
+    dataIfExists: string | undefined;
 }
 
 export enum BlockParamLiteral {

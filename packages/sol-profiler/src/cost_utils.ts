@@ -14,11 +14,11 @@ const G_COPY = 3;
 
 export const costUtils = {
     reportCallDataCost(traceInfo: TraceInfo): number {
-        if (_.isUndefined(traceInfo.data)) {
+        if (_.isUndefined(traceInfo.dataIfExists)) {
             // No call data to report
             return 0;
         }
-        const callData = traceInfo.data;
+        const callData = traceInfo.dataIfExists;
         const callDataBuf = Buffer.from(stripHexPrefix(callData), 'hex');
         const { true: zeroBytesCountIfExist, false: nonZeroBytesCountIfExist } = _.countBy(
             callDataBuf,

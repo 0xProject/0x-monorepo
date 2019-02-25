@@ -15,7 +15,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
     protected async _handleTraceInfoAsync(_traceInfo: TraceInfo): Promise<void> {
         return Promise.resolve(undefined);
     }
-    protected async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
+    protected async _recordTxTraceAsync(address: string, dataIfExists: string | undefined, txHash: string): Promise<void> {
         await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         const nodeType = await this._web3Wrapper.getNodeTypeAsync();
         let trace;
@@ -73,7 +73,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
         const traceInfo = {
             trace,
             address,
-            data,
+            dataIfExists,
             txHash,
         };
         await this._handleTraceInfoAsync(traceInfo);
@@ -90,7 +90,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                         subtrace: traceForThatSubcall,
                         txHash,
                         address: subcallAddress,
-                        bytecode: data as string,
+                        bytecode: dataIfExists as string,
                     };
                 } else {
                     const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
