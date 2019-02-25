@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
 
 library LibBytes {
@@ -179,7 +179,7 @@ library LibBytes {
             "FROM_LESS_THAN_TO_REQUIRED"
         );
         require(
-            to < b.length,
+            to <= b.length,
             "TO_LESS_THAN_LENGTH_REQUIRED"
         );
         
@@ -213,7 +213,7 @@ library LibBytes {
             "FROM_LESS_THAN_TO_REQUIRED"
         );
         require(
-            to < b.length,
+            to <= b.length,
             "TO_LESS_THAN_LENGTH_REQUIRED"
         );
         

@@ -269,6 +269,8 @@ export enum RevertReason {
     InvalidOrBlockedExchangeSelector = 'INVALID_OR_BLOCKED_EXCHANGE_SELECTOR',
     BalanceQueryFailed = 'BALANCE_QUERY_FAILED',
     AtLeastOneAddressDoesNotMeetBalanceThreshold = 'AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD',
+    FromLessThanToRequired = 'FROM_LESS_THAN_TO_REQUIRED',
+    ToLessThanLengthRequired = 'TO_LESS_THAN_LENGTH_REQUIRED',
 }
 
 export enum StatusCodes {

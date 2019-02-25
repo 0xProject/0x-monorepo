@@ -1,5 +1,18 @@
 [
     {
+        "version": "2.0.5",
+        "changes": [
+            {
+                "note": "Fix bug in `LibBytes.slice` and `LibBytes.sliceDestructive`",
+                "pr": 1604
+            },
+            {
+                "note": "Upgrade contracts to Solidity 0.5.3",
+                "pr": 1604
+            }
+        ]
+    },
+    {
         "timestamp": 1549733923,
         "version": "2.0.4",
         "changes": [

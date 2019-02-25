@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.3;
 
 import "../src/LibBytes.sol";
 
@@ -244,14 +244,14 @@ contract TestLibBytes {
     /// @param length Length of bytes to copy from <source> to <dest>
     /// @return mem Memory contents after calling memCopy.
     function testMemcpy(
-        bytes mem,
+        bytes memory mem,
         uint256 dest,
         uint256 source,
         uint256 length
     )
         public // not external, we need input in memory
         pure
-        returns (bytes)
+        returns (bytes memory)
     {
         // Sanity check. Overflows are not checked.
         require(source + length <= mem.length);
@@ -265,5 +265,42 @@ contract TestLibBytes {
 
         // Return modified memory contents
         return mem;
+    }
+
+    /// @dev Returns a slices from a byte array.
+    /// @param b The byte array to take a slice from.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    function publicSlice(
+        bytes memory b,
+        uint256 from,
+        uint256 to
+    )
+        public
+        pure
+        returns (bytes memory result, bytes memory original)
+    {
+        result = LibBytes.slice(b, from, to);
+        return (result, b);
+    }
+
+    /// @dev Returns a slice from a byte array without preserving the input.
+    /// @param b The byte array to take a slice from. Will be destroyed in the process.
+    /// @param from The starting index for the slice (inclusive).
+    /// @param to The final index for the slice (exclusive).
+    /// @return result The slice containing bytes at indices [from, to)
+    /// @dev When `from == 0`, the original array will match the slice. In other cases its state will be corrupted.
+    function publicSliceDestructive(
+        bytes memory b,
+        uint256 from,
+        uint256 to
+    )
+        public
+        pure
+        returns (bytes memory result, bytes memory original)
+    {
+        result = LibBytes.sliceDestructive(b, from, to);
+        return (result, b);
     }
 }
