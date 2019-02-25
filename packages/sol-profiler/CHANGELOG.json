@@ -3,7 +3,7 @@
         "version": "3.0.0",
         "changes": [
             {
-                "note": "Big Sol-profiler overhaul. It now has a bunch of new features",
+                "note": "Big @0x/sol-profiler overhaul. It now has a bunch of new features",
                 "pr": 1638
             },
             {
