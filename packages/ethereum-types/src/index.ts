@@ -228,7 +228,7 @@ export enum OpCode {
     Push30 = 'PUSH30',
     Push31 = 'PUSH31',
     Push32 = 'PUSH32',
-    // 80s: Duplication Operatio
+    // 80s: Duplication Operation
     Dup1 = 'DUP1',
     Dup2 = 'DUP2',
     Dup3 = 'DUP3',
