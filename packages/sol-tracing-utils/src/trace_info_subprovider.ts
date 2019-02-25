@@ -15,7 +15,11 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
     protected async _handleTraceInfoAsync(_traceInfo: TraceInfo): Promise<void> {
         return Promise.resolve(undefined);
     }
-    protected async _recordTxTraceAsync(address: string, dataIfExists: string | undefined, txHash: string): Promise<void> {
+    protected async _recordTxTraceAsync(
+        address: string,
+        dataIfExists: string | undefined,
+        txHash: string,
+    ): Promise<void> {
         await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
         const nodeType = await this._web3Wrapper.getNodeTypeAsync();
         let trace;
