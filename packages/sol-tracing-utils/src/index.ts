@@ -36,7 +36,7 @@ export { TraceCollector, SingleFileSubtraceHandler } from './trace_collector';
 export { TraceInfoSubprovider } from './trace_info_subprovider';
 export { utils } from './utils';
 export { constants } from './constants';
-export { parseSourceMap } from './source_maps';
+export { parseSourceMap, getOffsetToLocation } from './source_maps';
 export { getSourceRangeSnippet } from './get_source_range_snippet';
 export { getRevertTrace } from './revert_trace';
 export { TraceCollectionSubprovider } from './trace_collection_subprovider';

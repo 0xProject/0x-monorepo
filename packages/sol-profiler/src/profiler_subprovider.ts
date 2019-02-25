@@ -1,20 +1,28 @@
 import {
     AbstractArtifactAdapter,
     collectCoverageEntries,
+    constants,
     ContractData,
     Coverage,
-    SingleFileSubtraceHandler,
-    SourceRange,
-    Subtrace,
-    SubTraceInfo,
+    FunctionDescription,
+    getOffsetToLocation,
+    getSourceRangeSnippet,
+    OffsetToLocation,
+    parseSourceMap,
+    SingleFileSourceRange, SingleFileSubtraceHandler, SourceRange,
+    Subtrace, SubTraceInfo, SubTraceInfoExistingContract,
+    SubTraceInfoNewContract,
     TraceCollector,
     TraceInfo,
     TraceInfoSubprovider,
     utils,
 } from '@0x/sol-tracing-utils';
 import { logUtils } from '@0x/utils';
+import chalk from 'chalk';
 import { stripHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
+import * as path from 'path';
+import * as parser from 'solidity-parser-antlr';
 
 import { costUtils } from './cost_utils';
 
@@ -44,7 +52,51 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
         this._profilerCollector = new TraceCollector(artifactAdapter, isVerbose, profilerHandler);
     }
     protected async _handleSubTraceInfoAsync(subTraceInfo: SubTraceInfo): Promise<void> {
-        await this._profilerCollector.computeSingleTraceCoverageAsync(subTraceInfo);
+        const isContractCreation = subTraceInfo.address === constants.NEW_CONTRACT;
+        const bytecode = isContractCreation
+            ? (subTraceInfo as SubTraceInfoNewContract).bytecode
+            : (subTraceInfo as SubTraceInfoExistingContract).runtimeBytecode;
+        const contractData = await this._profilerCollector.getContractDataByTraceInfoIfExistsAsync(
+            subTraceInfo.address,
+            bytecode,
+            isContractCreation,
+        );
+        if (_.isUndefined(contractData)) {
+            return;
+        }
+        const bytecodeHex = stripHexPrefix(bytecode);
+        const functionsLocationsByFileIndex = getFunctionsLocationsByFileIndex(contractData.sourceCodes);
+        const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
+        const pcToSourceRange = parseSourceMap(contractData.sourceCodes, sourceMap, bytecodeHex, contractData.sources);
+        const fileNameToFileIndex = _.invert(contractData.sources);
+        let lastFunctionName: string = '_';
+        const callStack: string[] = [];
+        _.forEach(subTraceInfo.subtrace, structLog => {
+            const sourceRange = pcToSourceRange[structLog.pc];
+            const fileIndex = fileNameToFileIndex[sourceRange.fileName];
+            const functionDescription = findFunctionDescription(functionsLocationsByFileIndex[fileIndex], sourceRange);
+            const functionName = functionDescription.name;
+            if (functionName !== lastFunctionName) {
+                if (callStack.includes(functionName) && !functionName.includes('contract')) {
+                    while (callStack.includes(functionName)) {
+                        callStack.pop();
+                    }
+                    callStack.push(functionName);
+                } else {
+                    const isCall = callStack.length < 1;
+                    const isReturn = !isCall && functionName === callStack[callStack.length - 1];
+                    if (isReturn) {
+                        callStack.pop();
+                    } else {
+                        callStack.push(functionName);
+                    }
+
+                }
+                console.log(callStack.map(str => chalk.bold(str)).join(' - '));
+            }
+            lastFunctionName = functionName;
+        });
+        process.exit(0);
     }
     // tslint:disable prefer-function-over-method
     protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
@@ -157,3 +209,73 @@ export const profilerHandler: SingleFileSubtraceHandler = (
     };
     return partialProfilerOutput;
 };
+
+// tslint:disable max-classes-per-file
+class ASTVisitor {
+    private _entryId = 0;
+    private readonly _functions: FunctionDescription[] = [];
+    private readonly _offsetToLocation: OffsetToLocation;
+    constructor(offsetToLocation: OffsetToLocation) {
+        this._offsetToLocation = offsetToLocation;
+    }
+    public getFunctionDescriptions(): FunctionDescription[] {
+        return this._functions;
+    }
+    public FunctionDefinition(ast: parser.FunctionDefinition): void {
+        this._visitFunctionLikeDefinition(ast);
+    }
+    public ContractDefinition(ast: parser.ContractDefinition): void {
+        this._visitFunctionLikeDefinition({
+            ...ast,
+            name: `contract ${ast.name}`,
+        });
+    }
+    public ModifierDefinition(ast: parser.ModifierDefinition): void {
+        this._visitFunctionLikeDefinition(ast);
+    }
+    public AssemblyFunctionDefinition(ast: parser.AssemblyFunctionDefinition): void {
+        this._visitFunctionLikeDefinition(ast);
+    }
+    private _getExpressionRange(ast: parser.ASTNode): SingleFileSourceRange {
+        const astRange = ast.range as [number, number];
+        const start = this._offsetToLocation[astRange[0]];
+        const end = this._offsetToLocation[astRange[1] + 1];
+        const range = {
+            start,
+            end,
+        };
+        return range;
+    }
+    private _visitFunctionLikeDefinition(ast: parser.ModifierDefinition | parser.FunctionDefinition | parser.AssemblyFunctionDefinition): void {
+        const loc = this._getExpressionRange(ast);
+        this._functions.push({
+            name: (ast as any).name || 'no-name-function',
+            line: loc.start.line,
+            loc,
+        });
+    }
+}
+
+function collectFunctionDescriptions(sourceCode: string): FunctionDescription[] {
+    const ast = parser.parse(sourceCode, { range: true });
+    const offsetToLocation = getOffsetToLocation(sourceCode);
+    const visitor = new ASTVisitor(offsetToLocation);
+    parser.visit(ast, visitor);
+    return visitor.getFunctionDescriptions();
+
+}
+
+function getFunctionsLocationsByFileIndex(sourceCodes: { [fileIndex: number]: string }): { [fileIndex: string]: FunctionDescription[] } {
+    return _.mapValues(sourceCodes, sourceCode => collectFunctionDescriptions(sourceCode));
+}
+
+function findFunctionDescription(functionDescriptions: FunctionDescription[], sourceRange: SourceRange): FunctionDescription {
+    const DEFAULT_FN_DESC = { name: path.basename(sourceRange.fileName), line: 0, loc: { start: { line: 0, column: 0 }, end: { line: 0, column: 0 } } };
+    const fnDescs = _.filter(functionDescriptions, fnDesc => utils.isRangeInside(sourceRange.location, fnDesc.loc));
+    if (fnDescs.length === 0) {
+        return DEFAULT_FN_DESC;
+    } else {
+        const sorted = _.sortBy(fnDescs, [(fnDesc: FunctionDescription) => fnDesc.loc.end.line - fnDesc.loc.start.line]);
+        return sorted[0];
+    }
+}
