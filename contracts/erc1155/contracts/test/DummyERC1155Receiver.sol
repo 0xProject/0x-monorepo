@@ -18,12 +18,16 @@
 
 pragma solidity 0.5.3;
 
-import "../src/ERC1155MockReceiver.sol";
+import "../src/IERC1155TokenReceiver.sol";
 
 contract DummyERC1155Receiver is
-    ERC1155MockReceiver
+    IERC1155TokenReceiver
 {
-   event BatchTokenReceived(
+
+    bytes4 constant public ERC1155_RECEIVED       = 0xf23a6e61;
+    bytes4 constant public ERC1155_BATCH_RECEIVED = 0xbc197c81;
+
+    event BatchTokenReceived(
         address operator,
         address from,
         uint256[] tokenIds,
@@ -36,5 +40,3 @@ contract DummyERC1155Receiver is
         return ERC1155_BATCH_RECEIVED;
     }
 }
-
-

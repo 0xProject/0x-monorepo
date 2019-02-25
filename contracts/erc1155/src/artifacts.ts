@@ -8,34 +8,16 @@ import { ContractArtifact } from 'ethereum-types';
 import * as Address from '../generated-artifacts/Address.json';
 import * as DummyERC1155Receiver from '../generated-artifacts/DummyERC1155Receiver.json';
 import * as DummyERC1155Token from '../generated-artifacts/DummyERC1155Token.json';
-import * as ERC1155 from '../generated-artifacts/ERC1155.json';
-import * as ERC1155AllowanceWrapper from '../generated-artifacts/ERC1155AllowanceWrapper.json';
-import * as ERC1155Mintable from '../generated-artifacts/ERC1155Mintable.json';
-import * as ERC1155MixedFungible from '../generated-artifacts/ERC1155MixedFungible.json';
-import * as ERC1155MixedFungibleMintable from '../generated-artifacts/ERC1155MixedFungibleMintable.json';
-import * as ERC1155MockReceiver from '../generated-artifacts/ERC1155MockReceiver.json';
-import * as ERC165 from '../generated-artifacts/ERC165.json';
 import * as IERC1155 from '../generated-artifacts/IERC1155.json';
-import * as IERC1155Metadata from '../generated-artifacts/IERC1155Metadata.json';
 import * as IERC1155TokenReceiver from '../generated-artifacts/IERC1155TokenReceiver.json';
 import * as InvalidERC1155Receiver from '../generated-artifacts/InvalidERC1155Receiver.json';
-import * as Migrations from '../generated-artifacts/Migrations.json';
-import * as SafeMath from '../generated-artifacts/SafeMath.json';
+import * as MyERC1155 from '../generated-artifacts/MyERC1155.json';
 export const artifacts = {
-    ERC1155MockReceiver: ERC1155MockReceiver as ContractArtifact,
-    IERC1155Metadata: IERC1155Metadata as ContractArtifact,
-    ERC1155: ERC1155 as ContractArtifact,
-    ERC1155Mintable: ERC1155Mintable as ContractArtifact,
-    IERC1155: IERC1155 as ContractArtifact,
-    ERC1155MixedFungibleMintable: ERC1155MixedFungibleMintable as ContractArtifact,
-    SafeMath: SafeMath as ContractArtifact,
     Address: Address as ContractArtifact,
-    Migrations: Migrations as ContractArtifact,
+    IERC1155: IERC1155 as ContractArtifact,
     IERC1155TokenReceiver: IERC1155TokenReceiver as ContractArtifact,
-    ERC1155AllowanceWrapper: ERC1155AllowanceWrapper as ContractArtifact,
-    ERC165: ERC165 as ContractArtifact,
-    ERC1155MixedFungible: ERC1155MixedFungible as ContractArtifact,
+    MyERC1155: MyERC1155 as ContractArtifact,
     DummyERC1155Receiver: DummyERC1155Receiver as ContractArtifact,
-    InvalidERC1155Receiver: InvalidERC1155Receiver as ContractArtifact,
     DummyERC1155Token: DummyERC1155Token as ContractArtifact,
+    InvalidERC1155Receiver: InvalidERC1155Receiver as ContractArtifact,
 };

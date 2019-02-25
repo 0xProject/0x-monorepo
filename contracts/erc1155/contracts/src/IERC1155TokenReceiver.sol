@@ -1,6 +1,7 @@
 pragma solidity ^0.5.3;
 
 interface IERC1155TokenReceiver {
+
     /**
         @notice Handle the receipt of a single ERC1155 token type
         @dev The smart contract calls this function on the recipient

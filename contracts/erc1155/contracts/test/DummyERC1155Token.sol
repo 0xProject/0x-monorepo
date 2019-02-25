@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.3;
 
-import "../src/ERC1155MixedFungibleMintable.sol";
+import "../src/MyERC1155.sol";
 
 // solhint-disable no-empty-blocks
 contract DummyERC1155Token is
-    ERC1155MixedFungibleMintable
+    MyERC1155
 {
 
     string public name;
