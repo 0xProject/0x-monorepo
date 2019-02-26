@@ -57,7 +57,6 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
             return;
         }
         logUtils.header(`Profiling data for ${traceInfo.txHash}`);
-        traceInfo.trace.structLogs = utils.normalizeStructLogs(traceInfo.trace.structLogs);
         const callDataCost = costUtils.reportCallDataCost(traceInfo);
         const memoryCost = costUtils.reportMemoryCost(traceInfo);
         const opcodesCost = costUtils.reportOpcodesCost(traceInfo);

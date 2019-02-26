@@ -5,6 +5,7 @@ import { constants } from './constants';
 import { getContractAddressToTraces } from './trace';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
 import { SubTraceInfo, SubTraceInfoExistingContract, SubTraceInfoNewContract, TraceInfo } from './types';
+import { utils } from './utils';
 
 // TraceInfoSubprovider is extended by subproviders which need to work with one
 // TraceInfo at a time. It has one abstract method: _handleTraceInfoAsync, which
@@ -51,11 +52,11 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                         const isCallDataAccess = opn == 0x37;
                         var stack;
                         if (isCall) {
-                            stack = ['0x'+log.stack.peek(1).toString(16), null];
+                            stack = [null, '0x'+log.stack.peek(1).toString(16)];
                         } else if (isMemoryAccess) {
                             stack = ['0x'+log.stack.peek(0).toString(16)];
                         } else if (isCallDataAccess) {
-                            stack = ['0x'+log.stack.peek(2).toString(16), '0x'+log.stack.peek(1).toString(16), '0x'+log.stack.peek(0).toString(16)];
+                            stack = ['0x'+log.stack.peek(0).toString(16), '0x'+log.stack.peek(1).toString(16), '0x'+log.stack.peek(2).toString(16)];
                         }
                         this.data.push({ pc, gasCost, depth, op, stack, gas });
                     },
@@ -74,6 +75,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                 disableStorage: true,
             });
         }
+        trace.structLogs = utils.normalizeStructLogs(trace.structLogs);
         const traceInfo = {
             trace,
             address,
