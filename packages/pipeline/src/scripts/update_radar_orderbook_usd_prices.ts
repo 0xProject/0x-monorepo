@@ -1,5 +1,5 @@
 import { logUtils } from '@0x/utils';
-import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import * as ormConfig from '../ormconfig';
 import { handleError, isCli } from '../utils';
@@ -16,6 +16,16 @@ if (isCli()) {
     })().catch(handleError);
 }
 
+/**
+ * Join raw radar orderbook data with USD data.
+ * Radar is the only relayer for which we have maker_address data for.
+ * We join on pricing data twice, once to get the price of the quote asset if available,
+ * and once to get the price of the base asset if available.
+ * This query filters out rows that have both those fields null,
+ * ie. it filters out rows it was not able to find a USD price for.
+ * @param connection database connection
+ * @param fromTimestampMs the timestamp to create the table from in ms
+ */
 export async function updateRadarOrderbookUsdPricesAsync(
     connection: Connection,
     fromTimestampMs: number,
