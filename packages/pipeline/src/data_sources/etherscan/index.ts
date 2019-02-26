@@ -21,7 +21,7 @@ export interface EtherscanTransactionResponse {
     gas: string;
     gasPrice: string;
     isError: string;
-    txreceiptStatus: string;
+    txreceipt_status: string;
     input: string;
     contractAddress: string;
     cumulativeGasUsed: string;

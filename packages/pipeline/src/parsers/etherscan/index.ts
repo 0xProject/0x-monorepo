@@ -31,7 +31,7 @@ export function _parseEtherscanTransaction(rawTx: EtherscanTransactionResponse):
     parsedTx.gas = new BigNumber(rawTx.gas);
     parsedTx.gasPrice = new BigNumber(rawTx.gasPrice);
     parsedTx.isError = rawTx.isError === '0' ? false : true;
-    parsedTx.txreceiptStatus = rawTx.txreceiptStatus;
+    parsedTx.txreceiptStatus = rawTx.txreceipt_status;
     parsedTx.input = rawTx.input;
     parsedTx.contractAddress = rawTx.contractAddress;
     parsedTx.cumulativeGasUsed = new BigNumber(rawTx.cumulativeGasUsed);
