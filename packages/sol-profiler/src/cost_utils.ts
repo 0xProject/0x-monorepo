@@ -51,7 +51,7 @@ export const costUtils = {
                 const length = parseInt(structLog.stack[2], HEX_BASE);
                 return memOffset + length;
             } else {
-                return parseInt(structLog.stack[0], HEX_BASE);
+                return parseInt(structLog.stack[structLog.stack.length - 1], HEX_BASE);
             }
         });
         const highestMemoryLocationAccessed = _.max(memoryLocationsAccessed);
