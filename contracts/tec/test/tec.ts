@@ -9,7 +9,7 @@ import {
 import {
     chaiSetup,
     constants as devConstants,
-    expectContractCallFailedAsync,
+    expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     OrderFactory,
     provider,
@@ -189,9 +189,10 @@ describe('TEC tests', () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
                         from: takerAddress,
+                        gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS,
                     }),
                     RevertReason.InvalidApprovalSignature,
                 );
@@ -204,7 +205,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
@@ -222,7 +223,7 @@ describe('TEC tests', () => {
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
@@ -240,7 +241,7 @@ describe('TEC tests', () => {
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
@@ -268,7 +269,7 @@ describe('TEC tests', () => {
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
-                        { from: takerAddress },
+                        { from: takerAddress, gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS },
                     ),
                     devConstants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -301,7 +302,7 @@ describe('TEC tests', () => {
                         transaction.signature,
                         [],
                         [],
-                        { from: feeRecipientAddress },
+                        { from: feeRecipientAddress, gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS },
                     ),
                     devConstants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -332,7 +333,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
@@ -350,7 +351,7 @@ describe('TEC tests', () => {
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
@@ -368,7 +369,7 @@ describe('TEC tests', () => {
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                await expectContractCallFailedAsync(
+                await expectTransactionFailedAsync(
                     tecContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
