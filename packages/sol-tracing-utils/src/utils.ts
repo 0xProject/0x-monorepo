@@ -85,34 +85,66 @@ export const utils = {
         if (_.isEmpty(structLogs)) {
             return structLogs;
         }
+        const reduceDepthBy1 = (structLog: StructLog) => ({
+            ...structLog,
+            depth: structLog.depth - 1,
+        });
+        let normalizedStructLogs = structLogs;
+        // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+        const normalizeStaticCallCost = (structLog: StructLog) => (
+            (structLog.op === OpCode.StaticCall) ? {
+                ...structLog,
+                gasCost: STATICCALL_GAS_COST,
+            } : structLog
+        );
+        // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+        const normalizeCallCost = (structLog: StructLog, idx: number) => {
+            if (structLog.op === OpCode.Call) {
+                const HEX_BASE = 16;
+                const callAddress = parseInt(structLog.stack[0], HEX_BASE);
+                const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
+                if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
+                    const nextStructLog = normalizedStructLogs[idx + 1];
+                    const gasCost = structLog.gas - nextStructLog.gas;
+                    return {
+                        ...structLog,
+                        gasCost,
+                    };
+                } else {
+                    return {
+                        ...structLog,
+                        gasCost: CALL_GAS_COST,
+                    };
+                }
+            } else {
+                return structLog;
+            }
+        };
+        const shiftGasCosts1Left = (structLog: StructLog, idx: number) => {
+            if (idx === structLogs.length - 1) {
+                return {
+                    ...structLog,
+                    gasCost: 0,
+                };
+            } else {
+                const nextStructLog = structLogs[idx + 1];
+                const gasCost = nextStructLog.gasCost;
+                return {
+                    ...structLog,
+                    gasCost,
+                };
+            }
+        };
         if (structLogs[0].depth === 1) {
             // Geth uses 1-indexed depth counter whilst ganache starts from 0
-            const newStructLogs = _.map(structLogs, (structLog: StructLog, idx: number) => {
-                const newStructLog = {
-                    ...structLog,
-                    depth: structLog.depth - 1,
-                };
-                if (newStructLog.op === OpCode.StaticCall) {
-                    // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                    newStructLog.gasCost = STATICCALL_GAS_COST;
-                }
-                if (newStructLog.op === 'CALL') {
-                    const HEX_BASE = 16;
-                    const callAddress = parseInt(newStructLog.stack[0], HEX_BASE);
-                    const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
-                    // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                    if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
-                        const nextStructLog = structLogs[idx + 1];
-                        newStructLog.gasCost = structLog.gas - nextStructLog.gas;
-                    } else {
-                        newStructLog.gasCost = CALL_GAS_COST;
-                    }
-                }
-                return newStructLog;
-            });
-            return newStructLogs;
+            normalizedStructLogs = _.map(structLogs, reduceDepthBy1);
+            normalizedStructLogs = _.map(structLogs, normalizeCallCost);
+            normalizedStructLogs = _.map(structLogs, normalizeStaticCallCost);
+        } else {
+            // Ganache shifts opcodes gas costs so we need to unshift them
+            normalizedStructLogs = _.map(structLogs, shiftGasCosts1Left);
         }
-        return structLogs;
+        return normalizedStructLogs;
     },
     getRange(sourceCode: string, range: SingleFileSourceRange): string {
         const lines = sourceCode.split('\n').slice(range.start.line - 1, range.end.line);
