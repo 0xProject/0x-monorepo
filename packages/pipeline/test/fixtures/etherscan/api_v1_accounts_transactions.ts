@@ -25,6 +25,6 @@ const ParsedEtherscanTransactions: EtherscanTransaction[] = [
         cumulativeGasUsed: new BigNumber('6068925'),
         gasUsed: new BigNumber('6005925'),
         confirmations: new BigNumber('996941'),
-    }
+    },
 ];
 export { ParsedEtherscanTransactions };
