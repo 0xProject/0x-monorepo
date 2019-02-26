@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Remove redundant log message",
+                "pr": 1652
+            }
+        ]
+    },
+    {
         "version": "3.1.1",
         "changes": [
             {
