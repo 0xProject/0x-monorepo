@@ -120,12 +120,6 @@ describe('ERC1155Token', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('batchSafeTransferFrom', () => {
-        beforeEach(async () => {
-            await blockchainLifecycle.startAsync();
-        });
-        afterEach(async () => {
-            await blockchainLifecycle.revertAsync();
-        });
         it('should transfer fungible tokens if called by token owner', async () => {
             // setup test parameters
             const from = spender;
@@ -149,8 +143,6 @@ describe('ERC1155Token', () => {
             );
             // check balances after transfer
             const balancesAfterTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
-            console.log(balancesBeforeTransfer);
-            console.log(balancesAfterTransfer);
             expect(balancesAfterTransfer[fromIdx]).to.be.bignumber.equal(balancesBeforeTransfer[fromIdx].minus(valueToTransfer));
             expect(balancesAfterTransfer[toIdx]).to.be.bignumber.equal(balancesBeforeTransfer[toIdx].plus(valueToTransfer));
         });
@@ -196,26 +188,18 @@ describe('ERC1155Token', () => {
              const valuesToTransfer = [fungibleValueToTransfer, nonFungibleValueToTransfer];
              const callbackData = constants.NULL_BYTES;
              // check balances before transfer
-             console.log('1');
              const balancesBeforeTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
-             console.log('2');
              expect(balancesBeforeTransfer[fromIdxFungible]).to.be.bignumber.equal(spenderInitialBalance);
              expect(balancesBeforeTransfer[toIdxFungible]).to.be.bignumber.equal(receiverInitialBalance);
              expect(balancesBeforeTransfer[fromIdxNonFungible]).to.be.bignumber.equal(nftOwnerBalance);
              expect(balancesBeforeTransfer[toIdxNonFungible]).to.be.bignumber.equal(nftNotOwnerBalance);
              // execute transfer
-             console.log(tokenTypesToTransfer);
-             console.log(valuesToTransfer);
              await web3Wrapper.awaitTransactionSuccessAsync(
                  await token.safeBatchTransferFrom.sendTransactionAsync(from, to, tokenTypesToTransfer, valuesToTransfer, callbackData, {from}),
                  constants.AWAIT_TRANSACTION_MINED_MS,
              );
-             console.log('3');
              // check balances after transfer
              const balancesAfterTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
-             console.log(balancesBeforeTransfer);
-             console.log(fungibleValueToTransfer);
-             console.log(balancesAfterTransfer);
              expect(balancesAfterTransfer[fromIdxFungible]).to.be.bignumber.equal(balancesBeforeTransfer[fromIdxFungible].minus(fungibleValueToTransfer));
              expect(balancesAfterTransfer[toIdxFungible]).to.be.bignumber.equal(balancesBeforeTransfer[toIdxFungible].plus(fungibleValueToTransfer));
              expect(balancesAfterTransfer[fromIdxNonFungible]).to.be.bignumber.equal(nftNotOwnerBalance);

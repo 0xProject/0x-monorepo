@@ -7,9 +7,10 @@ import "./interfaces/IERC1155Receiver.sol";
 
 
 // A sample implementation of core ERC1155 function.
-contract ERC1155 is IERC1155
+contract ERC1155 is
+    IERC1155,
+    SafeMath
 {
-    using SafeMath for uint256;
     using Address for address;
 
     bytes4 constant public ERC1155_RECEIVED       = 0xf23a6e61;
@@ -72,8 +73,8 @@ contract ERC1155 is IERC1155
             // balances[baseType][_from] = balances[baseType][_from].safeSub(_value);
             // balances[baseType][_to]   = balances[baseType][_to].safeAdd(_value);
         } else {
-            balances[_id][_from] = balances[_id][_from].safeSub(_value);
-            balances[_id][_to]   = balances[_id][_to].safeAdd(_value);
+            balances[_id][_from] = safeSub(balances[_id][_from], _value);
+            balances[_id][_to]   = safeAdd(balances[_id][_to], _value);
         }
 
         emit TransferSingle(msg.sender, _from, _to, _id, _value);
@@ -101,8 +102,8 @@ contract ERC1155 is IERC1155
                 require(nfOwners[id] == _from);
                 nfOwners[id] = _to;
             } else {
-                balances[id][_from] = balances[id][_from].safeSub(value);
-                balances[id][_to]   = value.safeAdd(balances[id][_to]);
+                balances[id][_from] = safeSub(balances[id][_from], value);
+                balances[id][_to]   = safeAdd(value, balances[id][_to]);
             }
         }
 

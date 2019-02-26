@@ -5,10 +5,6 @@
             {
                 "note": "Added Address util to check if an account has a contract, based on account's code size",
                 "pr": 0
-            },
-            {
-                "note": "Updated SafeMath to be a library so we can use it as - `using SafeMath for uint256`",
-                "pr": 0
             }
         ]
     },

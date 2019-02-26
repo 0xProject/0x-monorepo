@@ -69,7 +69,7 @@ contract ERC1155Mintable is
             }
         }
 
-        maxIndex[_type] = _to.length.safeAdd(maxIndex[_type]);
+        maxIndex[_type] = safeAdd(_to.length, maxIndex[_type]);
     }
 
     function mintFungible(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external creatorOnly(_id) {
@@ -82,7 +82,7 @@ contract ERC1155Mintable is
             uint256 quantity = _quantities[i];
 
             // Grant the items to the caller
-            balances[_id][to] = quantity.safeAdd(balances[_id][to]);
+            balances[_id][to] = safeAdd(quantity, balances[_id][to]);
 
             // Emit the Transfer/Mint event.
             // the 0x0 source address implies a mint
