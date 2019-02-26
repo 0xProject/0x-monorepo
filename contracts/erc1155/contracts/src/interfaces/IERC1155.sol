@@ -58,15 +58,6 @@ interface IERC1155 {
     event URI(string _value, uint256 indexed _id);
 
     /**
-     */
-    function create(
-        string calldata _uri,
-        bool _isNF
-    )
-    external
-    returns (uint256 _type);
-
-    /**
         @notice Transfers value amount of an _id from the _from address to the _to address specified.
         @dev MUST emit TransferSingle event on success.
         Caller must be approved to manage the _from account's tokens (see isApprovedForAll).

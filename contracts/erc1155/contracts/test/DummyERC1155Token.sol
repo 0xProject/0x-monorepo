@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.3;
 
-import "../src/ERC1155.sol";
+import "../src/ERC1155Mintable.sol";
 
 // solhint-disable no-empty-blocks
 contract DummyERC1155Token is
-    ERC1155
+    ERC1155Mintable
 {
 
     string public name;
