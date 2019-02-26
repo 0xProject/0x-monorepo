@@ -104,7 +104,7 @@ export const utils = {
                 const callAddress = parseInt(structLog.stack[0], HEX_BASE);
                 const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
                 if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
-                    const nextStructLog = normalizedStructLogs[idx + 1];
+                    const nextStructLog = normalizedStructLogs[index + 1];
                     const gasCost = structLog.gas - nextStructLog.gas;
                     return {
                         ...structLog,
