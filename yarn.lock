@@ -472,6 +472,23 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@0x/abi-gen-wrappers@^3.0.1":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-3.0.3.tgz#a30fdb3c520ce45fb327590281d000e086ff9609"
+  dependencies:
+    "@0x/base-contract" "^4.0.3"
+
+"@0x/base-contract@^4.0.1", "@0x/base-contract@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.3.tgz#ea5e3640824ee096813350e55546d98455a57805"
+  dependencies:
+    "@0x/typescript-typings" "^4.0.0"
+    "@0x/utils" "^4.1.0"
+    "@0x/web3-wrapper" "^5.0.0"
+    ethereum-types "^2.0.0"
+    ethers "~4.0.4"
+    lodash "^4.17.11"
+
 "@0x/contracts-exchange-libs@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@0x/contracts-exchange-libs/-/contracts-exchange-libs-1.0.2.tgz#0682c01cdb3e36100bda0ffbdf9badb5b8a01fc4"
@@ -546,12 +563,24 @@
 "@0x/web3-wrapper@^4.0.1":
   version "4.0.2"
   resolved "https://registry.npmjs.org/@0x/web3-wrapper/-/web3-wrapper-4.0.2.tgz#d4e0a4fa1217155e1aed4cd91086654fd99f2959"
-  integrity sha512-XXr/6dtWNWX6JBvYQo+uJ6+8nqVs2DWYZL1OTTt4LmQVwSZt0lcy4mkWi0KxZqoIAVa5ngMXP54LVR8NNLjaLg==
   dependencies:
     "@0x/assert" "^2.0.2"
     "@0x/json-schemas" "^3.0.2"
     "@0x/typescript-typings" "^4.0.0"
     "@0x/utils" "^4.0.3"
+    ethereum-types "^2.0.0"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    lodash "^4.17.11"
+
+"@0x/web3-wrapper@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-5.0.0.tgz#a9b4baf0dca125181885b31c4dd5a3fbf6b87260"
+  dependencies:
+    "@0x/assert" "^2.0.3"
+    "@0x/json-schemas" "^3.0.3"
+    "@0x/typescript-typings" "^4.0.0"
+    "@0x/utils" "^4.1.0"
     ethereum-types "^2.0.0"
     ethereumjs-util "^5.1.1"
     ethers "~4.0.4"

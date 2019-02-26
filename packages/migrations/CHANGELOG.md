@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
 ## v4.0.0 - _February 25, 2019_
 
     * Replace Provider param interface with Web3ProviderEngine (#1627)

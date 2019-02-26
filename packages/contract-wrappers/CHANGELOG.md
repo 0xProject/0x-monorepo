@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
 ## v8.0.0 - _February 25, 2019_
 
     * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
@@ -24,12 +28,13 @@ CHANGELOG
 
 ## v7.0.0 - _February 6, 2019_
 
-    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
     * Use new `ZeroExTransaction` interface (#1576)
     * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
+    * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
 
-## v6.0.0 - _Invalid date_
+## v6.0.0 - _February 5, 2019_
 
+    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
     * Upgrade the bignumber.js to v8.0.2 (#1517)
 
 ## v5.0.1 - _January 17, 2019_

@@ -6,7 +6,8 @@
                 "note": "Fix a bug when combining compilerSettings from different sources",
                 "pr": 1652
             }
-        ]
+        ],
+        "timestamp": 1551220833
     },
     {
         "version": "3.1.0",

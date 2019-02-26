@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _February 26, 2019_
+
+    * Fix a bug when combining compilerSettings from different sources (#1652)
+
 ## v3.1.0 - _February 25, 2019_
 
     * Add `isOfflineMode` flag to sol-compiler` (#1625)

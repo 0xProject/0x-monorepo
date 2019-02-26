@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.1 - _February 26, 2019_
+
+    * Dependencies updated
+
 ## v4.2.0 - _February 25, 2019_
 
     * Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface (#1627)

@@ -6,7 +6,8 @@
                 "note": "Add support for Ganache",
                 "pr": 1647
             }
-        ]
+        ],
+        "timestamp": 1551220833
     },
     {
         "version": "3.0.0",

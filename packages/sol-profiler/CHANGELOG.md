@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _February 26, 2019_
+
+    * Add support for Ganache (#1647)
+
 ## v3.0.0 - _February 25, 2019_
 
     * Big @0x/sol-profiler overhaul. It now has a bunch of new features (#1638)

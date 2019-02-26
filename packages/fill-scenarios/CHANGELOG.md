@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
 ## v3.0.0 - _February 25, 2019_
 
     * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
