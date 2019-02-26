@@ -1,3 +1,4 @@
+import { ExchangeContract } from '@0x/contracts-exchange';
 import {
     FillResults,
     formatters,
@@ -13,7 +14,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, BalanceThresholdFilterContract, ExchangeContract } from '../../src';
+import { artifacts, BalanceThresholdFilterContract } from '../../src';
 
 export class BalanceThresholdWrapper {
     private readonly _balanceThresholdFilter: BalanceThresholdFilterContract;

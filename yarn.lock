@@ -472,50 +472,6 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
-"@0x/contracts-asset-proxy@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/contracts-asset-proxy/-/contracts-asset-proxy-1.0.2.tgz#48a432a52a019ee632e50456f2687c85a5b57535"
-  dependencies:
-    "@0x/base-contract" "^4.0.1"
-    "@0x/contracts-erc20" "^1.0.2"
-    "@0x/contracts-erc721" "^1.0.2"
-    "@0x/contracts-test-utils" "^3.0.1"
-    "@0x/contracts-utils" "^2.0.1"
-    "@0x/order-utils" "^5.0.0"
-    "@0x/types" "^2.0.1"
-    "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.2"
-    "@0x/web3-wrapper" "^4.0.1"
-    ethereum-types "^2.0.0"
-    lodash "^4.17.5"
-
-"@0x/contracts-erc20@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/contracts-erc20/-/contracts-erc20-1.0.2.tgz#67cfefd4458b262d575bb1b07f63bc3dfed4daeb"
-  dependencies:
-    "@0x/base-contract" "^4.0.1"
-    "@0x/contracts-exchange-libs" "^1.0.2"
-    "@0x/contracts-utils" "^2.0.1"
-    "@0x/types" "^2.0.1"
-    "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.2"
-    "@0x/web3-wrapper" "^4.0.1"
-    ethereum-types "^2.0.0"
-    lodash "^4.17.5"
-
-"@0x/contracts-erc721@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/contracts-erc721/-/contracts-erc721-1.0.2.tgz#e7309ae57de266bb9c4947de50ba16a89203ad08"
-  dependencies:
-    "@0x/base-contract" "^4.0.1"
-    "@0x/contracts-utils" "^2.0.1"
-    "@0x/types" "^2.0.1"
-    "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.2"
-    "@0x/web3-wrapper" "^4.0.1"
-    ethereum-types "^2.0.0"
-    lodash "^4.17.5"
-
 "@0x/contracts-exchange-libs@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@0x/contracts-exchange-libs/-/contracts-exchange-libs-1.0.2.tgz#0682c01cdb3e36100bda0ffbdf9badb5b8a01fc4"

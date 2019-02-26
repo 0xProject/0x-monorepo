@@ -1,5 +1,11 @@
-import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { ExchangeWrapper } from '@0x/contracts-exchange';
+import {
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    ERC20ProxyContract,
+    ERC20Wrapper,
+    ERC721ProxyContract,
+} from '@0x/contracts-asset-proxy';
+import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -22,16 +28,7 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    DummyERC20TokenContract,
-    DummyERC721TokenContract,
-    ERC20ProxyContract,
-    ERC721ProxyContract,
-    ExchangeContract,
-    ExchangeFillEventArgs,
-    OrderMatcherContract,
-} from '../src';
+import { artifacts, ExchangeFillEventArgs, OrderMatcherContract } from '../src';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
