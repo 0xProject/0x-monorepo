@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Fix a bug when combining compilerSettings from different sources",
+                "pr": 1652
+            }
+        ]
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {

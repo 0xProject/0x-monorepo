@@ -107,7 +107,11 @@ export class Compiler {
         assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
         this._contractsDir = path.resolve(passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR);
         this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
-        this._compilerSettings = passedOpts.compilerSettings || config.compilerSettings || DEFAULT_COMPILER_SETTINGS;
+        this._compilerSettings = {
+            ...DEFAULT_COMPILER_SETTINGS,
+            ...config.compilerSettings,
+            ...passedOpts.compilerSettings,
+        };
         this._artifactsDir = passedOpts.artifactsDir || config.artifactsDir || DEFAULT_ARTIFACTS_DIR;
         this._specifiedContracts = passedOpts.contracts || config.contracts || ALL_CONTRACTS_IDENTIFIER;
         this._useDockerisedSolc =
