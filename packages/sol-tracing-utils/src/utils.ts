@@ -98,7 +98,7 @@ export const utils = {
             } : structLog
         );
         // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-        const normalizeCallCost = (structLog: StructLog, idx: number) => {
+        const normalizeCallCost = (structLog: StructLog, index: number) => {
             if (structLog.op === OpCode.Call) {
                 const HEX_BASE = 16;
                 const callAddress = parseInt(structLog.stack[0], HEX_BASE);
