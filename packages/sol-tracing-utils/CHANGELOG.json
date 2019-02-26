@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.0.5",
+        "changes": [
+            {
+                "note": "Skip unparseable contracts instead of erring",
+                "pr": 1649
+            }
+        ]
+    },
+    {
         "timestamp": 1551130135,
         "version": "6.0.4",
         "changes": [
