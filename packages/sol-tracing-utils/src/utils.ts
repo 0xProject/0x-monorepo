@@ -91,12 +91,13 @@ export const utils = {
         });
         let normalizedStructLogs = structLogs;
         // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-        const normalizeStaticCallCost = (structLog: StructLog) => (
-            (structLog.op === OpCode.StaticCall) ? {
-                ...structLog,
-                gasCost: STATICCALL_GAS_COST,
-            } : structLog
-        );
+        const normalizeStaticCallCost = (structLog: StructLog) =>
+            structLog.op === OpCode.StaticCall
+                ? {
+                      ...structLog,
+                      gasCost: STATICCALL_GAS_COST,
+                  }
+                : structLog;
         // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
         const normalizeCallCost = (structLog: StructLog, index: number) => {
             if (structLog.op === OpCode.Call) {
