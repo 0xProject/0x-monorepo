@@ -20,10 +20,9 @@ export function getContractAddressToTraces(structLogs: StructLog[], startAddress
     if (_.isEmpty(structLogs)) {
         return contractAddressToTraces;
     }
-    const normalizedStructLogs = utils.normalizeStructLogs(structLogs);
     // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < normalizedStructLogs.length; i++) {
-        const structLog = normalizedStructLogs[i];
+    for (let i = 0; i < structLogs.length; i++) {
+        const structLog = structLogs[i];
         if (structLog.depth !== addressStack.length - 1) {
             throw new Error("Malformed trace. Trace depth doesn't match call stack depth");
         }
@@ -42,7 +41,7 @@ export function getContractAddressToTraces(structLogs: StructLog[], startAddress
             // Sometimes calls don't change the execution context (current address). When we do a transfer to an
             // externally owned account - it does the call and immediately returns because there is no fallback
             // function. We manually check if the call depth had changed to handle that case.
-            const nextStructLog = normalizedStructLogs[i + 1];
+            const nextStructLog = structLogs[i + 1];
             if (nextStructLog.depth !== structLog.depth) {
                 addressStack.push(newAddress);
                 contractAddressToTraces[currentAddress] = (contractAddressToTraces[currentAddress] || []).concat(
@@ -73,8 +72,8 @@ export function getContractAddressToTraces(structLogs: StructLog[], startAddress
             );
             return contractAddressToTraces;
         } else {
-            if (structLog !== _.last(normalizedStructLogs)) {
-                const nextStructLog = normalizedStructLogs[i + 1];
+            if (structLog !== _.last(structLogs)) {
+                const nextStructLog = structLogs[i + 1];
                 if (nextStructLog.depth === structLog.depth) {
                     continue;
                 } else if (nextStructLog.depth === structLog.depth - 1) {

@@ -17,10 +17,9 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
     if (_.isEmpty(structLogs)) {
         return [];
     }
-    const normalizedStructLogs = utils.normalizeStructLogs(structLogs);
     // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < normalizedStructLogs.length; i++) {
-        const structLog = normalizedStructLogs[i];
+    for (let i = 0; i < structLogs.length; i++) {
+        const structLog = structLogs[i];
         if (structLog.depth !== addressStack.length - 1) {
             throw new Error("Malformed trace. Trace depth doesn't match call stack depth");
         }
@@ -38,7 +37,7 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
             // Sometimes calls don't change the execution context (current address). When we do a transfer to an
             // externally owned account - it does the call and immediately returns because there is no fallback
             // function. We manually check if the call depth had changed to handle that case.
-            const nextStructLog = normalizedStructLogs[i + 1];
+            const nextStructLog = structLogs[i + 1];
             if (nextStructLog.depth !== structLog.depth) {
                 addressStack.push(newAddress);
                 evmCallStack.push({
@@ -48,7 +47,7 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
             }
         } else if (utils.isEndOpcode(structLog.op) && structLog.op !== OpCode.Revert) {
             // Just like with calls, sometimes returns/stops don't change the execution context (current address).
-            const nextStructLog = normalizedStructLogs[i + 1];
+            const nextStructLog = structLogs[i + 1];
             if (_.isUndefined(nextStructLog) || nextStructLog.depth !== structLog.depth) {
                 evmCallStack.pop();
                 addressStack.pop();
@@ -76,8 +75,8 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
             );
             return [];
         } else {
-            if (structLog !== _.last(normalizedStructLogs)) {
-                const nextStructLog = normalizedStructLogs[i + 1];
+            if (structLog !== _.last(structLogs)) {
+                const nextStructLog = structLogs[i + 1];
                 if (nextStructLog.depth === structLog.depth) {
                     continue;
                 } else if (nextStructLog.depth === structLog.depth - 1) {

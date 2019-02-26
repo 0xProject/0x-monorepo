@@ -5,6 +5,7 @@ import { constants } from './constants';
 import { getContractAddressToTraces } from './trace';
 import { TraceCollectionSubprovider } from './trace_collection_subprovider';
 import { SubTraceInfo, SubTraceInfoExistingContract, SubTraceInfoNewContract, TraceInfo } from './types';
+import { utils } from './utils';
 
 // TraceInfoSubprovider is extended by subproviders which need to work with one
 // TraceInfo at a time. It has one abstract method: _handleTraceInfoAsync, which
@@ -74,6 +75,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                 disableStorage: true,
             });
         }
+        trace.structLogs = utils.normalizeStructLogs(trace.structLogs);
         const traceInfo = {
             trace,
             address,
