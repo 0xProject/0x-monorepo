@@ -45,11 +45,11 @@
         "version": "7.0.0",
         "changes": [
             {
-                "note": "Fix OrderValidatorWrapper constructor to use the correct address",
-                "pr": 1568
+                "note": "Use new `ZeroExTransaction` interface",
+                "pr": 1576
             },
             {
-                "note": "Use new `ZeroExTransaction` interface",
+                "note": "Rename `getTransactionHex` to `getTransactionHashHex`",
                 "pr": 1576
             },
             {
@@ -63,10 +63,15 @@
         "version": "6.0.0",
         "changes": [
             {
+                "note": "Fix OrderValidatorWrapper constructor to use the correct address",
+                "pr": 1568
+            },
+            {
                 "note": "Upgrade the bignumber.js to v8.0.2",
                 "pr": 1517
             }
-        ]
+        ],
+        "timestamp": 1549373905
     },
     {
         "timestamp": 1547747677,

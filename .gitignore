@@ -83,6 +83,7 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
+contracts/tec/generated-artifacts/
 contracts/exchange/generated-artifacts/
 contracts/asset-proxy/generated-artifacts/
 contracts/multisig/generated-artifacts/
@@ -97,6 +98,7 @@ packages/metacoin/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/wrappers
+contracts/tec/generated-wrappers/
 contracts/exchange/generated-wrappers/
 contracts/asset-proxy/generated-wrappers/
 contracts/multisig/generated-wrappers/

@@ -1,6 +1,11 @@
 import { DutchAuctionWrapper } from '@0x/contract-wrappers';
-import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { ExchangeWrapper } from '@0x/contracts-exchange';
+import {
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    ERC20Wrapper,
+    ERC721Wrapper,
+} from '@0x/contracts-asset-proxy';
+import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -21,15 +26,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    DummyERC20TokenContract,
-    DummyERC721TokenContract,
-    DutchAuctionContract,
-    DutchAuctionTestWrapper,
-    ExchangeContract,
-    WETH9Contract,
-} from '../src';
+import { artifacts, DutchAuctionContract, DutchAuctionTestWrapper, WETH9Contract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -1,5 +1,7 @@
 lib
 .nyc_output
+/contracts/tec/generated-wrappers
+/contracts/tec/generated-artifacts
 /contracts/exchange/generated-wrappers
 /contracts/exchange/generated-artifacts
 /contracts/asset-proxy/generated-wrappers

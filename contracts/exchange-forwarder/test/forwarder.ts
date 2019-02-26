@@ -1,5 +1,10 @@
-import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { ExchangeWrapper } from '@0x/contracts-exchange';
+import {
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    ERC20Wrapper,
+    ERC721Wrapper,
+} from '@0x/contracts-asset-proxy';
+import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -21,15 +26,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import {
-    artifacts,
-    DummyERC20TokenContract,
-    DummyERC721TokenContract,
-    ExchangeContract,
-    ForwarderContract,
-    ForwarderWrapper,
-    WETH9Contract,
-} from '../src';
+import { artifacts, ForwarderContract, ForwarderWrapper, WETH9Contract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -1,7 +1,8 @@
-import { constants, ERC20BalancesByOwner, txDefaults, Web3ProviderEngine } from '@0x/contracts-test-utils';
+import { constants, ERC20BalancesByOwner, txDefaults } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts, DummyERC20TokenContract, ERC20ProxyContract } from '../../src';
@@ -10,7 +11,7 @@ export class ERC20Wrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _contractOwnerAddress: string;
     private readonly _web3Wrapper: Web3Wrapper;
-    private readonly _provider: Web3ProviderEngine;
+    private readonly _provider: ZeroExProvider;
     private readonly _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
     private _proxyIdIfExists?: string;
@@ -21,7 +22,7 @@ export class ERC20Wrapper {
      * @param contractOwnerAddress Desired owner of the contract
      * Instance of ERC20Wrapper
      */
-    constructor(provider: Web3ProviderEngine, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
+    constructor(provider: ZeroExProvider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;

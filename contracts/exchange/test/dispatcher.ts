@@ -1,4 +1,10 @@
-import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import {
+    DummyERC20TokenContract,
+    ERC20ProxyContract,
+    ERC20Wrapper,
+    ERC721ProxyContract,
+    ERC721Wrapper,
+} from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
     constants,
@@ -18,9 +24,6 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    DummyERC20TokenContract,
-    ERC20ProxyContract,
-    ERC721ProxyContract,
     TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
 } from '../src';
