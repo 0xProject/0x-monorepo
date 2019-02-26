@@ -1,9 +1,10 @@
 pragma solidity ^0.5.3;
 
-import "./SafeMath.sol";
-import "./Address.sol";
+import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/Address.sol";
 import "./interfaces/IERC1155.sol";
 import "./interfaces/IERC1155Receiver.sol";
+
 
 // A sample implementation of core ERC1155 function.
 contract ERC1155 is IERC1155
@@ -70,7 +71,7 @@ contract ERC1155 is IERC1155
             nfOwners[id] = dst;
 
             // You could use base-type id to store NF type balances if you wish.
-            // balances[_type][dst] = quantity.add(balances[_type][dst]);
+            // balances[_type][dst] = quantity.safeAdd(balances[_type][dst]);
 
             emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
 
@@ -79,7 +80,7 @@ contract ERC1155 is IERC1155
             }
         }
 
-        maxIndex[_type] = _to.length.add(maxIndex[_type]);
+        maxIndex[_type] = _to.length.safeAdd(maxIndex[_type]);
     }
 
     function mintFungible(uint256 _id, address[] calldata _to, uint256[] calldata _quantities) external creatorOnly(_id) {
@@ -92,7 +93,7 @@ contract ERC1155 is IERC1155
             uint256 quantity = _quantities[i];
 
             // Grant the items to the caller
-            balances[_id][to] = quantity.add(balances[_id][to]);
+            balances[_id][to] = quantity.safeAdd(balances[_id][to]);
 
             // Emit the Transfer/Mint event.
             // the 0x0 source address implies a mint
@@ -153,11 +154,11 @@ contract ERC1155 is IERC1155
             nfOwners[_id] = _to;
             // You could keep balance of NF type in base type id like so:
             // uint256 baseType = getNonFungibleBaseType(_id);
-            // balances[baseType][_from] = balances[baseType][_from].sub(_value);
-            // balances[baseType][_to]   = balances[baseType][_to].add(_value);
+            // balances[baseType][_from] = balances[baseType][_from].safeSub(_value);
+            // balances[baseType][_to]   = balances[baseType][_to].safeAdd(_value);
         } else {
-            balances[_id][_from] = balances[_id][_from].sub(_value);
-            balances[_id][_to]   = balances[_id][_to].add(_value);
+            balances[_id][_from] = balances[_id][_from].safeSub(_value);
+            balances[_id][_to]   = balances[_id][_to].safeAdd(_value);
         }
 
         emit TransferSingle(msg.sender, _from, _to, _id, _value);
@@ -185,8 +186,8 @@ contract ERC1155 is IERC1155
                 require(nfOwners[id] == _from);
                 nfOwners[id] = _to;
             } else {
-                balances[id][_from] = balances[id][_from].sub(value);
-                balances[id][_to]   = value.add(balances[id][_to]);
+                balances[id][_from] = balances[id][_from].safeSub(value);
+                balances[id][_to]   = value.safeAdd(balances[id][_to]);
             }
         }
 
@@ -224,7 +225,7 @@ contract ERC1155 is IERC1155
     /**
     @notice Enable or disable approval for a third party ("operator") to manage all of the caller's tokens.
     @dev MUST emit the ApprovalForAll event on success.
-    @param _operator  Address to add to the set of authorized operators
+    @param _operator  address to safeAdd to the set of authorized operators
     @param _approved  True if the operator is approved, false to revoke approval
     */
     function setApprovalForAll(address _operator, bool _approved) external {
@@ -235,7 +236,7 @@ contract ERC1155 is IERC1155
     /**
         @notice Queries the approval status of an operator for a given owner.
         @param _owner     The owner of the Tokens
-        @param _operator  Address of authorized operator
+        @param _operator  address of authorized operator
         @return           True if the operator is approved, false if not
     */
     function isApprovedForAll(address _owner, address _operator) external view returns (bool) {

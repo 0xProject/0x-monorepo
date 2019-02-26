@@ -18,6 +18,7 @@
         }
     },
     "contracts": [
+        "src/Address.sol",
         "src/LibBytes.sol",
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",

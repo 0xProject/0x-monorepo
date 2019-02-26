@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.5.3;
+pragma solidity ^0.5.3;
 
 import "../src/interfaces/IERC1155Receiver.sol";
 

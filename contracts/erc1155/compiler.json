@@ -17,7 +17,6 @@
         }
     },
     "contracts": [
-        "src/Address.sol",
         "src/ERC1155.sol",
         "src/ERC1155Mintable.sol",
         "src/interfaces/IERC1155.sol",
