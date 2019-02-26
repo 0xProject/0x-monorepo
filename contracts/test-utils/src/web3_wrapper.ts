@@ -64,12 +64,6 @@ if (isCoverageEnabled) {
     prependSubprovider(provider, coverageSubprovider);
 }
 if (isProfilerEnabled) {
-    if (testProvider === ProviderType.Ganache) {
-        logUtils.warn(
-            "Gas costs in Ganache traces are incorrect and we don't recommend using it for profiling. Please switch to Geth",
-        );
-        process.exit(1);
-    }
     const profilerSubprovider = profiler.getProfilerSubproviderSingleton();
     logUtils.log(
         "By default profilerSubprovider is stopped so that you don't get noise from setup code. Don't forget to start it before the code you want to profile and stop it afterwards",
