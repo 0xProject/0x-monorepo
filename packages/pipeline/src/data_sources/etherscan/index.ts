@@ -1,6 +1,6 @@
 import { fetchAsync } from '@0x/utils';
 
-const TIMEOUT = 120000;
+const TIMEOUT = 240000;
 
 export interface EtherscanResponse {
     status: string;
