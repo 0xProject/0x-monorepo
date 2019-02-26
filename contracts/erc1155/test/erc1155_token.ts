@@ -23,7 +23,8 @@ import {
     DummyERC1155TokenContract,
     //DummyERC1155TokenTransferEventArgs,
     InvalidERC1155ReceiverContract,
-    ERC1155TransferSingleEventArgs
+    ERC1155TransferSingleEventArgs,
+    DummyERC1155ReceiverBatchTokenReceivedEventArgs
 } from '../src';
 
 chaiSetup.configure();
@@ -206,7 +207,48 @@ describe('ERC1155Token', () => {
              expect(balancesAfterTransfer[toIdxNonFungible]).to.be.bignumber.equal(nftOwnerBalance);
         });
         it('should trigger callback if transferring to a contract', async () => {
-
+            // setup test parameters
+            const from = spender;
+            const to = erc1155Receiver.address;
+            const fromIdxFungible = 0;
+            const toIdxFungible = 1;
+            const fromIdxNonFungible = 2;
+            const toIdxNonFungible = 3;
+            const participatingOwners = [from, to, from, to];
+            const participatingTokens = [dummyFungibleTokenType, dummyFungibleTokenType, dummyNft, dummyNft];
+            const tokenTypesToTransfer = [dummyFungibleTokenType, dummyNft];
+            const fungibleValueToTransfer = new BigNumber(200);
+            const nonFungibleValueToTransfer = new BigNumber(1);
+            const valuesToTransfer = [fungibleValueToTransfer, nonFungibleValueToTransfer];
+            const callbackData = '0x01020304';
+            // check balances before transfer
+            const balancesBeforeTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
+            expect(balancesBeforeTransfer[fromIdxFungible]).to.be.bignumber.equal(spenderInitialBalance);
+            expect(balancesBeforeTransfer[toIdxFungible]).to.be.bignumber.equal(receiverInitialBalance);
+            expect(balancesBeforeTransfer[fromIdxNonFungible]).to.be.bignumber.equal(nftOwnerBalance);
+            expect(balancesBeforeTransfer[toIdxNonFungible]).to.be.bignumber.equal(nftNotOwnerBalance);
+            // execute transfer
+            const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
+                await token.safeBatchTransferFrom.sendTransactionAsync(from, to, tokenTypesToTransfer, valuesToTransfer, callbackData, {from})
+            );
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<DummyERC1155ReceiverBatchTokenReceivedEventArgs>;
+            // check callback logs
+            expect(receiverLog.args.operator).to.be.equal(from);
+            expect(receiverLog.args.from).to.be.equal(from);
+            expect(receiverLog.args.tokenIds.length).to.be.equal(2);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokenTypesToTransfer[0]);
+            expect(receiverLog.args.tokenIds[1]).to.be.bignumber.equal(tokenTypesToTransfer[1]);
+            expect(receiverLog.args.tokenValues.length).to.be.equal(2);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(valuesToTransfer[0]);
+            expect(receiverLog.args.tokenValues[1]).to.be.bignumber.equal(valuesToTransfer[1]);
+            expect(receiverLog.args.data).to.be.deep.equal(callbackData);
+            // check balances after transfer
+            const balancesAfterTransfer = await token.balanceOfBatch.callAsync(participatingOwners, participatingTokens);
+            expect(balancesAfterTransfer[fromIdxFungible]).to.be.bignumber.equal(balancesBeforeTransfer[fromIdxFungible].minus(fungibleValueToTransfer));
+            expect(balancesAfterTransfer[toIdxFungible]).to.be.bignumber.equal(balancesBeforeTransfer[toIdxFungible].plus(fungibleValueToTransfer));
+            expect(balancesAfterTransfer[fromIdxNonFungible]).to.be.bignumber.equal(nftNotOwnerBalance);
+            expect(balancesAfterTransfer[toIdxNonFungible]).to.be.bignumber.equal(nftOwnerBalance);
         });
     });
 });

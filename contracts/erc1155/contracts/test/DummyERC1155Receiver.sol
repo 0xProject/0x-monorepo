@@ -34,11 +34,12 @@ contract DummyERC1155Receiver is
         address from,
         uint256[] tokenIds,
         uint256[] tokenValues,
-        bytes data
+        bytes data,
+        uint256 a
     );
 
-    function onERC1155BatchReceived(address _operator, address _from, uint256[] calldata _ids, uint256[] calldata _values, bytes calldata _data) external returns(bytes4) {
-        emit BatchTokenReceived(_operator, _from, _ids, _values, _data);
+    function onERC1155BatchReceived(address operator, address _from, uint256[] calldata _ids, uint256[] calldata _values, bytes calldata _data) external returns(bytes4) {
+        emit BatchTokenReceived(operator, _from, _ids, _values, _data, 5);
         return ERC1155_BATCH_RECEIVED;
     }
 }

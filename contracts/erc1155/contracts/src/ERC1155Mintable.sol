@@ -65,7 +65,7 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
 
             if (dst.isContract()) {
-                require(IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, '') == ERC1155_RECEIVED);
+               //require(IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, '') == ERC1155_RECEIVED);
             }
         }
 
@@ -90,7 +90,7 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), to, _id, quantity);
 
             if (to.isContract()) {
-                require(IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, '') == ERC1155_RECEIVED);
+                //require(IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, '') == ERC1155_RECEIVED);
             }
         }
     }
