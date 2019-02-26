@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-compiler",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,7 +42,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
-        "@0x/dev-utils": "^2.1.1",
+        "@0x/dev-utils": "^2.1.2",
         "@0x/tslint-config": "^3.0.0",
         "@types/chokidar": "^1.7.5",
         "@types/mkdirp": "^0.5.2",
@@ -69,13 +69,13 @@
         "zeppelin-solidity": "1.8.0"
     },
     "dependencies": {
-        "@0x/assert": "^2.0.4",
-        "@0x/json-schemas": "^3.0.4",
-        "@0x/sol-resolver": "^2.0.3",
-        "@0x/types": "^2.1.0",
+        "@0x/assert": "^2.0.5",
+        "@0x/json-schemas": "^3.0.5",
+        "@0x/sol-resolver": "^2.0.4",
+        "@0x/types": "^2.1.1",
         "@0x/typescript-typings": "^4.1.0",
-        "@0x/utils": "^4.2.0",
-        "@0x/web3-wrapper": "^6.0.0",
+        "@0x/utils": "^4.2.1",
+        "@0x/web3-wrapper": "^6.0.1",
         "@types/yargs": "^11.0.0",
         "chalk": "^2.3.0",
         "chokidar": "^2.0.4",
