@@ -1,4 +1,5 @@
 import { Compiler, CompilerOptions } from '@0x/sol-compiler';
+import { logUtils } from '@0x/utils';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
@@ -77,11 +78,12 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
             const artifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
             const compilerVersion = artifact.compiler.version;
             if (!compilerVersion.startsWith(this._solcVersion)) {
-                throw new Error(
+                logUtils.warn(
                     `${artifact.contractName} was compiled with solidity ${compilerVersion} but specified version is ${
                         this._solcVersion
-                    } making it impossible to process traces`,
+                    } making it impossible to process traces. Skipping...`
                 );
+                continue;
             }
         }
     }
