@@ -4,6 +4,7 @@
         "changes": [
             {
                 "note": "Fix a bug when combining compilerSettings from different sources",
+                "pr": 1652
             }
         ]
     },
