@@ -82,8 +82,10 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
     private _getTruffleSolcSettings(): Partial<solc.CompilerSettings> {
         const truffleConfig = this._getTruffleConfig();
         if (!_.isUndefined(truffleConfig.solc)) {
+            // Truffle < 5.0
             return (truffleConfig as any).solc.settings;
         } else if (!_.isUndefined((truffleConfig as any).compilers.solc)) {
+            // Truffle >= 5.0
             return (truffleConfig as any).compilers.solc.settings;
         } else {
             return {};
