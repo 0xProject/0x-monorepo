@@ -54,7 +54,7 @@ const extensionData: Extension[] = [
             {
                 text: 'Explore the Docs',
                 url:
-                    'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#whitelist',
+                    'https://github.com/0xProject/0x-monorepo/tree/development/contracts/extensions/contracts/src/BalanceThresholdFilter',
             },
         ],
     },
