@@ -22,7 +22,6 @@
         "src/interfaces/IERC1155.sol",
         "src/interfaces/IERC1155Receiver.sol",
         "test/DummyERC1155Receiver.sol",
-        "test/DummyERC1155Token.sol",
-        "test/InvalidERC1155Receiver.sol"
+        "test/DummyERC1155Token.sol"
     ]
 }
