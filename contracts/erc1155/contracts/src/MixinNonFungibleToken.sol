@@ -18,48 +18,58 @@
 
 pragma solidity ^0.5.3;
 
+import "./mixins/MNonFungibleToken.sol";
 
-contract MixinNonFungibleToken {
-    
-    // Use a split bit implementation.
-    // Store the type in the upper 128 bits..
+
+contract MixinNonFungibleToken is
+    MNonFungibleToken
+{
+    /// Use a split bit implementation.
+    /// Store the type in the upper 128 bits..
     uint256 constant internal TYPE_MASK = uint256(uint128(~0)) << 128;
 
-    // ..and the non-fungible index in the lower 128
+    /// ..and the non-fungible index in the lower 128
     uint256 constant internal NF_INDEX_MASK = uint128(~0);
 
-    // The top bit is a flag to tell if this is a NFI.
+    /// The top bit is a flag to tell if this is a NFI.
     uint256 constant internal TYPE_NF_BIT = 1 << 255;
 
+    /// mapping of nft to owner
     mapping (uint256 => address) internal nfOwners;
 
-    // Only to make code clearer. Should not be functions
+    /// @dev Returns true if token is non-fungible
     function isNonFungible(uint256 _id) public pure returns(bool) {
         return _id & TYPE_NF_BIT == TYPE_NF_BIT;
     }
 
+    /// @dev Returns true if token is fungible
     function isFungible(uint256 _id) public pure returns(bool) {
         return _id & TYPE_NF_BIT == 0;
     }
 
+    /// @dev Returns index of non-fungible token
     function getNonFungibleIndex(uint256 _id) public pure returns(uint256) {
         return _id & NF_INDEX_MASK;
     }
 
+    /// @dev Returns base type of non-fungible token
     function getNonFungibleBaseType(uint256 _id) public pure returns(uint256) {
         return _id & TYPE_MASK;
     }
 
+    /// @dev Returns true if input is base-type of a non-fungible token
     function isNonFungibleBaseType(uint256 _id) public pure returns(bool) {
         // A base type has the NF bit but does not have an index.
         return (_id & TYPE_NF_BIT == TYPE_NF_BIT) && (_id & NF_INDEX_MASK == 0);
     }
 
+    /// @dev Returns true if input is a non-fungible token
     function isNonFungibleItem(uint256 _id) public pure returns(bool) {
         // A base type has the NF bit but does has an index.
         return (_id & TYPE_NF_BIT == TYPE_NF_BIT) && (_id & NF_INDEX_MASK != 0);
     }
     
+    /// @dev returns owner of a non-fungible token
     function ownerOf(uint256 _id) public view returns (address) {
         return nfOwners[_id];
     }
