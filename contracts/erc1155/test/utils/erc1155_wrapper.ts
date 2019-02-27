@@ -6,11 +6,7 @@ import * as _ from 'lodash';
 
 import { BigNumber } from '@0x/utils';
 
-import {
-    artifacts,
-    ERC1155MintableContract,
-    ERC1155TransferSingleEventArgs,
-} from '../../src';
+import { artifacts, ERC1155MintableContract, ERC1155TransferSingleEventArgs } from '../../src';
 
 const expect = chai.expect;
 
