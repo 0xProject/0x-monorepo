@@ -163,6 +163,7 @@ export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
     MultiAsset = '0x94cfcdd7',
+    ERC1155 = '0x9645780d',
 }
 
 export interface ERC20AssetData {
@@ -176,7 +177,15 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+export interface ERC1155AssetData {
+    assetProxyId: string;
+    tokenAddress: string;
+    tokenIds: BigNumber[];
+    tokenValues: BigNumber[];
+    callbackData: string;
+}
+
+export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData;
 
 export interface MultiAssetData {
     assetProxyId: string;
