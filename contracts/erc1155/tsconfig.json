@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
+    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "files": [
+        "generated-artifacts/DummyERC1155Receiver.json",
+        "generated-artifacts/DummyERC1155Token.json",
+        "generated-artifacts/ERC1155.json",
+        "generated-artifacts/ERC1155Mintable.json",
+        "generated-artifacts/IERC1155.json",
+        "generated-artifacts/IERC1155Receiver.json",
+        "generated-artifacts/InvalidERC1155Receiver.json"
+    ],
+    "exclude": ["./deploy/solc/solc_bin"]
+}

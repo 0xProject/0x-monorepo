@@ -1,0 +1,11 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Created ERC1155 contracts package",
+                "pr": 0
+            }
+        ]
+    }
+]

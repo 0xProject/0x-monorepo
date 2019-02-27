@@ -1,0 +1,28 @@
+{
+    "artifactsDir": "generated-artifacts",
+    "contractsDir": "contracts",
+    "useDockerisedSolc": true,
+    "compilerSettings": {
+        "optimizer": { "enabled": true, "runs": 1000000 },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    },
+    "contracts": [
+        "src/ERC1155.sol",
+        "src/ERC1155Mintable.sol",
+        "src/interfaces/IERC1155.sol",
+        "src/interfaces/IERC1155Receiver.sol",
+        "test/DummyERC1155Receiver.sol",
+        "test/DummyERC1155Token.sol",
+        "test/InvalidERC1155Receiver.sol"
+    ]
+}
