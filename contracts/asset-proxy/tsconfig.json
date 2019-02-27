@@ -3,6 +3,9 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
+        "generated-artifacts/DummyERC1155Receiver.json",
+        "generated-artifacts/ERC1155Mintable.json",
+        "generated-artifacts/ERC1155Proxy.json",    
         "generated-artifacts/ERC20Proxy.json",
         "generated-artifacts/ERC721Proxy.json",
         "generated-artifacts/IAssetData.json",

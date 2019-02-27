@@ -1,5 +1,16 @@
 [
     {
+        "name": "ERC1155Proxy",
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add ERC1155Proxy implementation",
+                "pr": 0,
+                "networks": {
+                }
+            }
+        ]
+    {
         "name": "MultiAssetProxy",
         "version": "1.0.0",
         "changes": [
