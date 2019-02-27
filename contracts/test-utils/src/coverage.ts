@@ -14,8 +14,15 @@ export const coverage = {
     _getCoverageSubprovider(): CoverageSubprovider {
         const defaultFromAddress = devConstants.TESTRPC_FIRST_ADDRESS;
         const solCompilerArtifactAdapter = new SolCompilerArtifactAdapter();
-        const isVerbose = true;
-        const subprovider = new CoverageSubprovider(solCompilerArtifactAdapter, defaultFromAddress, isVerbose);
+        const coverageSubproviderConfig = {
+            isVerbose: true,
+            ignoreFilesGlobs: ['**/node_modules/**', '**/interfaces/**', '**/test/**'],
+        };
+        const subprovider = new CoverageSubprovider(
+            solCompilerArtifactAdapter,
+            defaultFromAddress,
+            coverageSubproviderConfig,
+        );
         return subprovider;
     },
 };

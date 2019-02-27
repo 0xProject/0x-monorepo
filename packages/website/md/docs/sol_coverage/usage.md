@@ -49,8 +49,7 @@ import ProviderEngine = require('web3-provider-engine');
 const provider = new ProviderEngine();
 // Some calls might not have `from` address specified. Nevertheless - transactions need to be submitted from an address with at least some funds. defaultFromAddress is the address that will be used to submit those calls as transactions from.
 const defaultFromAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-const isVerbose = true;
-const coverageSubprovider = new CoverageSubprovider(artifactsAdapter, defaultFromAddress, isVerbose);
+const coverageSubprovider = new CoverageSubprovider(artifactsAdapter, defaultFromAddress);
 
 provider.addProvider(coverageSubprovider);
 // Add all your other providers
