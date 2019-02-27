@@ -3,20 +3,18 @@ pragma solidity ^0.5.3;
 import "./lib/SafeMath.sol";
 import "./ERC1155.sol";
 
-/**
-    @dev Mintable form of ERC1155
-    Shows how easy it is to mint new items
-*/
+
+/// @dev Mintable form of ERC1155
+/// Shows how easy it is to mint new items
 contract ERC1155Mintable is
     ERC1155
 {
-
-    uint256 nonce;
+    uint256 internal nonce;
     mapping (uint256 => address) public creators;
     mapping (uint256 => uint256) public maxIndex;
 
     modifier creatorOnly(uint256 _id) {
-        require(creators[_id] == msg.sender, 'not owner');
+        require(creators[_id] == msg.sender);
         _;
     }
 
@@ -32,8 +30,9 @@ contract ERC1155Mintable is
         _type = (++nonce << 128);
 
         // Set a flag if this is an NFI.
-        if (_isNF)
-          _type = _type | TYPE_NF_BIT;
+        if (_isNF) {
+            _type = _type | TYPE_NF_BIT;
+        }
 
         // This will allow restricted access to creators.
         creators[_type] = msg.sender;
@@ -66,7 +65,7 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
 
             if (dst.isContract()) {
-                require(IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, '') == ERC1155_RECEIVED);
+                require(IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, "") == ERC1155_RECEIVED);
             }
         }
 
@@ -91,7 +90,7 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), to, _id, quantity);
 
             if (to.isContract()) {
-                require(IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, '') == ERC1155_RECEIVED);
+                require(IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, "") == ERC1155_RECEIVED);
             }
         }
     }
