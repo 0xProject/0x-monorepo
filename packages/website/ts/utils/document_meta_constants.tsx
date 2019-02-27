@@ -87,7 +87,7 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         keywords: '',
     },
     EXTENSIONS: {
-        title: '',
+        title: '0x Extensions',
         description: 'Support new types of trading on your relayer with 0x Extensions',
         keywords: '',
     },
