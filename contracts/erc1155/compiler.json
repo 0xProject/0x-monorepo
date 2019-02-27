@@ -22,10 +22,10 @@
         "src/mixins/MNonFungibleToken.sol",
         "src/ERC1155Mintable.sol",
         "src/MixinNonFungibleToken.sol",
-        "src/lib/SafeMath.sol",
-        "src/lib/Address.sol",
         "src/interfaces/IERC1155Mintable.sol",
         "src/interfaces/IERC1155Receiver.sol",
-        "src/interfaces/IERC1155.sol"
+        "src/interfaces/IERC1155.sol",
+        "src/utils/SafeMath.sol",
+        "src/utils/Address.sol"
     ]
 }
