@@ -95,6 +95,18 @@ export const assetDataUtils = {
         return assetData;
     },
     /**
+     * Encodes assetData for multiple AssetProxies into a single hex encoded assetData string, usable in the makerAssetData or
+     * takerAssetData fields in a 0x order.
+
+     * @return The hex encoded assetData string
+     */
+    encodeERC1155AssetData(tokenAddress: string, tokenIds: BigNumber[], tokenValues: BigNumber[], callbackData: string): string {
+        const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ['address','uint256[]','uint256[]','bytes']);
+        const args = [tokenAddress, tokenIds, tokenValues, callbackData];
+        const assetData = abiEncoder.encode(args, encodingRules);
+        return assetData;
+    },
+    /**
      * Decodes a MultiAsset assetData hex string into it's corresponding amounts and nestedAssetData
      * @param assetData Hex encoded assetData string to decode
      * @return An object containing the decoded amounts and nestedAssetData
@@ -174,6 +186,7 @@ export const assetDataUtils = {
         if (
             assetProxyId !== AssetProxyId.ERC20 &&
             assetProxyId !== AssetProxyId.ERC721 &&
+            assetProxyId !== AssetProxyId.ERC1155 && 
             assetProxyId !== AssetProxyId.MultiAsset
         ) {
             throw new Error(`Invalid assetProxyId: ${assetProxyId}`);
@@ -199,6 +212,9 @@ export const assetDataUtils = {
      * @param decodedAssetData The decoded asset data to check
      */
     isMultiAssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is MultiAssetData {
+        return decodedAssetData.assetProxyId === AssetProxyId.MultiAsset;
+    },
+    isER1155AssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is MultiAssetData {
         return decodedAssetData.assetProxyId === AssetProxyId.MultiAsset;
     },
     /**
