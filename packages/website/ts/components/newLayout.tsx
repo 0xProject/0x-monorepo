@@ -32,12 +32,14 @@ export interface SectionProps extends WrapProps {
     maxWidth?: string;
     bgColor?: 'dark' | 'light' | string;
     children: any;
+    alignItems?: string;
 }
 
 export interface FlexProps {
     padding?: string;
     isFlex?: boolean;
     flexBreakpoint?: string;
+    alignItems?: string;
 }
 
 export interface ColumnProps {
@@ -76,6 +78,7 @@ export const FlexWrap = styled.div<FlexProps>`
     @media (min-width: ${props => props.flexBreakpoint || '768px'}) {
         display: ${props => props.isFlex && 'flex'};
         justify-content: ${props => props.isFlex && 'space-between'};
+        align-items: ${props => props.alignItems};
     }
 `;
 
