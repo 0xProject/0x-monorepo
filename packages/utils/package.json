@@ -46,7 +46,7 @@
     "dependencies": {
         "@0x/types": "^2.1.1",
         "@0x/typescript-typings": "^4.1.0",
-        "@types/node": "*",
+        "@types/node": "9.6.7",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~8.0.2",
         "chalk": "^2.3.0",

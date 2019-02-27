@@ -37,7 +37,7 @@
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.0",
-        "@types/node": "*",
+        "@types/node": "9.6.7",
         "@types/prettier": "^1.15.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",

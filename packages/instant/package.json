@@ -73,7 +73,7 @@
         "@types/enzyme-adapter-react-16": "^1.0.3",
         "@types/jest": "^23.3.5",
         "@types/lodash": "4.14.104",
-        "@types/node": "*",
+        "@types/node": "9.6.7",
         "@types/react": "16.4.16",
         "@types/react-dom": "16.0.6",
         "@types/react-redux": "^6.0.9",

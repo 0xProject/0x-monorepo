@@ -65,7 +65,7 @@
         "@0x/typescript-typings": "^4.1.0",
         "@0x/utils": "^4.2.1",
         "@0x/web3-wrapper": "^6.0.1",
-        "@types/node": "*",
+        "@types/node": "9.6.7",
         "bn.js": "^4.11.8",
         "ethereum-types": "^2.1.0",
         "ethereumjs-abi": "0.6.5",

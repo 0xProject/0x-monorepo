@@ -49,7 +49,7 @@
         "@types/glob": "5.0.35",
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "*",
+        "@types/node": "9.6.7",
         "@types/sleep": "^0.0.7",
         "@types/tmp": "^0.0.33",
         "@types/yargs": "^11.0.0",

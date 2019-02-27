@@ -39,7 +39,7 @@
         "@0x/utils": "^4.2.1",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "^0.20.0",
-        "@types/node": "*",
+        "@types/node": "9.6.7",
         "@types/react": "*",
         "@types/react-dom": "*",
         "@types/react-scroll": "1.5.3",
