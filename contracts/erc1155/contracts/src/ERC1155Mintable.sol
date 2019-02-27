@@ -1,5 +1,6 @@
 pragma solidity ^0.5.3;
 
+import "./lib/SafeMath.sol";
 import "./ERC1155.sol";
 
 /**

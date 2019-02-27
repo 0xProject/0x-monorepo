@@ -1,7 +1,7 @@
 pragma solidity ^0.5.3;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "@0x/contracts-utils/contracts/src/Address.sol";
+import "./lib/SafeMath.sol";
+import "./lib/Address.sol";
 import "./interfaces/IERC1155.sol";
 import "./interfaces/IERC1155Receiver.sol";
 
