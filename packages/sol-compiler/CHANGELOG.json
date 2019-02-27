@@ -6,7 +6,8 @@
                 "note": "Remove redundant log message",
                 "pr": 1652
             }
-        ]
+        ],
+        "timestamp": 1551299797
     },
     {
         "version": "3.1.1",
