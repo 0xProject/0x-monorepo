@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 
+import { DocumentTitle } from 'ts/components/document_title';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 
 export interface NotFoundProps {
@@ -17,7 +18,7 @@ export class NotFound extends React.Component<NotFoundProps> {
     public render(): React.ReactNode {
         return (
             <SiteWrap isFullScreen={true}>
-                <DocumentTitle title="404 Page Not Found" />
+                <DocumentTitle { ...documentConstants.LANDING } />
 
                 <FullscreenMessage
                     headerText={'404'}

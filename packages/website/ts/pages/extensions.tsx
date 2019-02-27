@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import styled from 'styled-components';
 
 import { Hero } from 'ts/components/hero';
@@ -9,9 +8,10 @@ import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
 import { SiteWrap } from 'ts/components/siteWrap';
-
+import { DocumentTitle } from 'ts/components/document_title';
 import { Card, LinkProps } from 'ts/components/card';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 
 import { ModalContact } from '../components/modals/modal_contact';
 
@@ -67,7 +67,7 @@ export class Extensions extends React.Component {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle title="0x Extensions" />
+                <DocumentTitle {...documentConstants.EXTENSIONS } />
                 <Hero
                     isLargeTitle={false}
                     isFullWidth={false}

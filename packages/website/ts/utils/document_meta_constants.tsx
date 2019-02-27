@@ -86,4 +86,9 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
             '0x is an open protocol that is governed by its users. Cast your votes with ZRX on 0x Improvement Proposals.',
         keywords: '',
     },
+    EXTENSIONS: {
+        title: '',
+        description: 'Support new types of trading on your relayer with 0x Extensions',
+        keywords: '',
+    },
 };
