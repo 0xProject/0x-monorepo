@@ -4,15 +4,15 @@
         "changes": [
             {
                 "note": "Change the interface to accept a configuration object instead of `isVerbose`",
-                "pr": "TODO"
+                "pr": 1656
             },
             {
                 "note": "Add `ignoreFilesGlobs` property on a config object",
-                "pr": "TODO"
+                "pr": 1656
             },
             {
                 "note": "Allow project specific coverage ignore paths by specifying `config.ignoreFilesGlobs`",
-                "pr": "TODO"
+                "pr": 1656
             }
         ]
     },
