@@ -18,7 +18,7 @@ const navData = [
         url: WebsitePaths.LaunchKit,
     },
     {
-        title: '0x Extensions',
+        title: 'Extensions',
         description: 'Support new types of trading on your relayer with 0x Extensions',
         url: WebsitePaths.Extensions,
     },

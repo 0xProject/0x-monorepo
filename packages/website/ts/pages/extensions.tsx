@@ -29,7 +29,7 @@ const extensionData: Extension[] = [
         description: `Dutch Auctions continually reduce prices until a buyer is found. They're perfect for new or rare assets, and with 0x's off-chain model, they're gas-efficient as well.`,
         links: [
             {
-                text: 'Learn More',
+                text: 'Explore the Docs',
                 url:
                     'https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/DutchAuction/DutchAuction.sol',
             },
@@ -41,7 +41,7 @@ const extensionData: Extension[] = [
         description: `Say goodbye to WETH! The Forwarder Contract will automatically wrap ETH and fill orders, making buying assets on 0x one step simpler.`,
         links: [
             {
-                text: 'Learn More',
+                text: 'Explore the Docs',
                 url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md',
             },
         ],
@@ -52,7 +52,7 @@ const extensionData: Extension[] = [
         description: `Restrict access to your relayer with a Whitelist of approved traders. Bring your own list of addresses, or use Wyre's KYC list for free.`,
         links: [
             {
-                text: 'Learn More',
+                text: 'Explore the Docs',
                 url:
                     'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#whitelist',
             },
@@ -73,7 +73,7 @@ export class Extensions extends React.Component {
                     isFullWidth={false}
                     title="0x Extensions"
                     description="Support new types of trading on your relayer with 0x Extensions"
-                    figure={<Icon name="launchKit" size="hero" margin={['small', 0, 'small', 0]} />}
+                    figure={<Icon name="extensions" size="hero" margin={['small', 0, 'small', 0]} />}
                     actions={<HeroActions />}
                 />
 
