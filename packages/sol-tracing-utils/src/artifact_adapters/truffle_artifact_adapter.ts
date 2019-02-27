@@ -1,7 +1,9 @@
 import { Compiler, CompilerOptions } from '@0x/sol-compiler';
 import * as fs from 'fs';
 import * as glob from 'glob';
+import * as _ from 'lodash';
 import * as path from 'path';
+import * as solc from 'solc';
 
 import { ContractData } from '../types';
 
@@ -10,8 +12,15 @@ import { SolCompilerArtifactAdapter } from './sol_compiler_artifact_adapter';
 
 const DEFAULT_TRUFFLE_ARTIFACTS_DIR = './build/contracts';
 
+interface TruffleSolcConfig {
+    version?: string;
+    settings?: solc.CompilerSettings;
+}
 interface TruffleConfig {
-    solc?: any;
+    solc?: TruffleSolcConfig;
+    compilers?: {
+        solc?: TruffleSolcConfig;
+    };
     contracts_build_directory?: string;
 }
 
@@ -32,7 +41,7 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
         const artifactsDir = '.0x-artifacts';
         const contractsDir = path.join(this._projectRoot, 'contracts');
         const truffleConfig = this._getTruffleConfig();
-        const solcConfig = truffleConfig.solc || {};
+        const solcConfig = this._getTruffleSolcSettings();
         const truffleArtifactsDirectory = truffleConfig.contracts_build_directory || DEFAULT_TRUFFLE_ARTIFACTS_DIR;
         this._assertSolidityVersionIsCorrect(truffleArtifactsDirectory);
         const compilerOptions: CompilerOptions = {
@@ -68,6 +77,16 @@ export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
             throw new Error(
                 `Neither ${truffleConfigFileShort} nor ${truffleConfigFileLong} exists. Make sure the project root is correct`,
             );
+        }
+    }
+    private _getTruffleSolcSettings(): Partial<solc.CompilerSettings> {
+        const truffleConfig = this._getTruffleConfig();
+        if (!_.isUndefined(truffleConfig.solc)) {
+            return (truffleConfig as any).solc.settings;
+        } else if (!_.isUndefined((truffleConfig as any).compilers.solc)) {
+            return (truffleConfig as any).compilers.solc.settings;
+        } else {
+            return {};
         }
     }
     private _assertSolidityVersionIsCorrect(truffleArtifactsDirectory: string): void {
