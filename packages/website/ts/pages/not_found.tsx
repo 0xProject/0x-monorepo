@@ -18,7 +18,7 @@ export class NotFound extends React.Component<NotFoundProps> {
     public render(): React.ReactNode {
         return (
             <SiteWrap isFullScreen={true}>
-                <DocumentTitle { ...documentConstants.LANDING } />
+                <DocumentTitle {...documentConstants.LANDING} />
 
                 <FullscreenMessage
                     headerText={'404'}

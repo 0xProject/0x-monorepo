@@ -77,7 +77,7 @@ export const constants = {
     URL_BLOG: 'https://blog.0xproject.com',
     URL_DISCOURSE_FORUM: 'https://forum.0x.org',
     URL_ECOSYSTEM_APPLY: 'https://0x.smapply.io/',
-    URL_EXTENSIONS_BLOG_POST: '',
+    URL_EXTENSIONS_BLOG_POST: 'https://blog.0xproject.com/0x-extensions-enabling-new-types-of-exchange-1db0bf6125b6',
     URL_ECOSYSTEM_BLOG_POST: 'https://blog.0xproject.com/announcing-the-0x-ecosystem-acceleration-program-89d1cb89d565',
     URL_VOTE_BLOG_POST: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
     URL_FIREFOX_U2F_ADDON: 'https://addons.mozilla.org/en-US/firefox/addon/u2f-support-add-on/',
