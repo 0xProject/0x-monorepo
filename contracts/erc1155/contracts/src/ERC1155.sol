@@ -18,8 +18,8 @@
 
 pragma solidity ^0.5.3;
 
-import "./lib/SafeMath.sol";
-import "./lib/Address.sol";
+import "./utils/SafeMath.sol";
+import "./utils/Address.sol";
 import "./interfaces/IERC1155.sol";
 import "./interfaces/IERC1155Receiver.sol";
 import "./MixinNonFungibleToken.sol";
