@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Added `Uint256Underflow` and `TransferRejected` revert reasons",
+                "pr": 0
+            }
+        ]
+    },
+    {
         "timestamp": 1551220833,
         "version": "2.1.1",
         "changes": [
