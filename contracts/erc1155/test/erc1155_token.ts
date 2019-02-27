@@ -15,10 +15,9 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    DummyERC1155ReceiverContract,
-    DummyERC1155ReceiverTokenReceivedEventArgs,
-    DummyERC1155TokenContract,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
+    DummyERC1155ReceiverContract,
+    DummyERC1155TokenContract,
 } from '../src';
 
 import { Erc1155Wrapper } from './utils/erc1155_wrapper';

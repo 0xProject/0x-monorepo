@@ -1,21 +1,15 @@
 import { constants, LogDecoder, Web3ProviderEngine } from '@0x/contracts-test-utils';
-import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { TransactionReceiptWithDecodedLogs, LogWithDecodedArgs } from 'ethereum-types';
-import * as _ from 'lodash';
 import * as chai from 'chai';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import { BigNumber } from '@0x/utils';
 
 import {
     artifacts,
-    DummyERC1155ReceiverContract,
-    DummyERC1155ReceiverTokenReceivedEventArgs,
     DummyERC1155TokenContract,
-    //DummyERC1155TokenTransferEventArgs,
-    InvalidERC1155ReceiverContract,
     ERC1155TransferSingleEventArgs,
-    DummyERC1155ReceiverBatchTokenReceivedEventArgs,
 } from '../../src';
 
 const expect = chai.expect;
@@ -77,6 +71,7 @@ export class Erc1155Wrapper {
                 from: this._contractOwner,
             }),
         );
+        // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
         const token = createFungibleTokenLog.args._id;
         await this._web3Wrapper.awaitTransactionSuccessAsync(
@@ -95,6 +90,7 @@ export class Erc1155Wrapper {
                 from: this._contractOwner,
             }),
         );
+        // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
         const token = createFungibleTokenLog.args._id;
         await this._web3Wrapper.awaitTransactionSuccessAsync(
