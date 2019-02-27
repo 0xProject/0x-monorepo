@@ -33,7 +33,7 @@ const extensionData: Extension[] = [
             {
                 text: 'Explore the Docs',
                 url:
-                    'https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/DutchAuction/DutchAuction.sol',
+                `${WebsitePaths.Wiki}#0x-Extensions`,
             },
         ],
     },
@@ -56,7 +56,7 @@ const extensionData: Extension[] = [
             {
                 text: 'Explore the Docs',
                 url:
-                    'https://github.com/0xProject/0x-monorepo/tree/development/contracts/extensions/contracts/src/BalanceThresholdFilter',
+                `${WebsitePaths.Wiki}#0x-Extensions`,
             },
         ],
     },
