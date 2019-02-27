@@ -3,6 +3,7 @@ import { DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
+import * as chai from 'chai';
 
 import { BigNumber } from '@0x/utils';
 
@@ -16,6 +17,8 @@ import {
     ERC1155TransferSingleEventArgs,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
 } from '../../src';
+
+const expect = chai.expect;
 
 export class Erc1155Wrapper {
     private readonly _erc1155Contract: DummyERC1155TokenContract;
@@ -95,5 +98,21 @@ export class Erc1155Wrapper {
         );
         const nftId = token.plus(1);
         return [token, nftId];
+    }
+    public async assertBalancesAsync(owners: string[], tokens: BigNumber[], expectedBalances: BigNumber[]): Promise<void> {
+        const ownersExtended: string[] = [];
+        const tokensExtended: BigNumber[] = [];
+        _.each(tokens, (token: BigNumber) => {
+            ownersExtended.concat(owners);
+            _.range(0, owners.length, () => {tokensExtended.push(token)});
+            
+        });
+        const balances = await this.getBalancesAsync(
+            ownersExtended,
+            tokensExtended,
+        );
+        _.each(balances, (balance: BigNumber, i: number) => {
+            expect(balance, `${ownersExtended[i]}${tokensExtended[i]}`).to.be.bignumber.equal(expectedBalances[i]);
+        });
     }
 }
