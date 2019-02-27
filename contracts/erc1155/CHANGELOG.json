@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Created ERC1155 contracts package",
-                "pr": 0
+                "pr": 1657
             }
         ]
     }
