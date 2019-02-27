@@ -32,8 +32,7 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Explore the Docs',
-                url:
-                `${WebsitePaths.Wiki}#0x-Extensions`,
+                url: `${WebsitePaths.Wiki}#0x-Extensions`,
             },
         ],
     },
@@ -55,8 +54,7 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Explore the Docs',
-                url:
-                `${WebsitePaths.Wiki}#0x-Extensions`,
+                url: `${WebsitePaths.Wiki}#0x-Extensions`,
             },
         ],
     },
