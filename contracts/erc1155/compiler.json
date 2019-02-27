@@ -19,9 +19,11 @@
     "contracts": [
         "src/ERC1155.sol",
         "src/ERC1155Mintable.sol",
+        "src/MixinNonFungibleToken.sol",
         "src/interfaces/IERC1155.sol",
         "src/interfaces/IERC1155Receiver.sol",
-        "test/DummyERC1155Receiver.sol",
-        "test/DummyERC1155Token.sol"
+        "src/lib/Address.sol",
+        "src/lib/SafeMath.sol",
+        "test/DummyERC1155Receiver.sol"
     ]
 }
