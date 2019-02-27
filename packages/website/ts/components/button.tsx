@@ -5,8 +5,11 @@ import styled from 'styled-components';
 import { ThemeInterface } from 'ts/components/siteWrap';
 
 import { colors } from 'ts/style/colors';
+import { withFilteredProps } from 'ts/utils/filter_props';
 
 export interface ButtonInterface {
+    isDisabled?: boolean;
+    className?: string;
     bgColor?: string;
     borderColor?: string;
     color?: string;
@@ -22,27 +25,29 @@ export interface ButtonInterface {
     type?: string;
     target?: string;
     to?: string;
-    onClick?: (e: Event) => any;
+    onClick?: (e: any) => any;
     theme?: ThemeInterface;
     shouldUseAnchorTag?: boolean;
 }
 
 export const Button: React.StatelessComponent<ButtonInterface> = (props: ButtonInterface) => {
-    const { children, href, isWithArrow, to, shouldUseAnchorTag, target } = props;
+    const { children, href, isWithArrow, to, shouldUseAnchorTag, target, isDisabled, className } = props;
+    const isButton = !href && !to;
     let linkElem;
 
     if (href || shouldUseAnchorTag) {
         linkElem = 'a';
     }
     if (to) {
-        linkElem = ReactRouterLink;
+        linkElem = withFilteredProps(ReactRouterLink, ['className', 'href', 'to', 'onClick', 'target']);
     }
 
     const Component = linkElem ? ButtonBase.withComponent<any>(linkElem) : ButtonBase;
     const targetProp = href && target ? { target } : {};
+    const buttonProps = isButton ? { disabled: isDisabled } : {};
 
     return (
-        <Component {...props} {...targetProp}>
+        <Component className={className} {...buttonProps} {...props} {...targetProp}>
             {children}
 
             {isWithArrow && (
