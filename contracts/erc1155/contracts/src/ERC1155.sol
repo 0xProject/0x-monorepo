@@ -67,10 +67,12 @@ contract ERC1155 is
     {
         require(
             _to != address(0x0),
-            "cannot send to zero address"
+            "CANNOT_TRANSFER_TO_ADDRESS_ZERO"
         );
         require(
-            _from == msg.sender || operatorApproval[_from][msg.sender] == true, "Need operator approval for 3rd party transfers.");
+            _from == msg.sender || operatorApproval[_from][msg.sender] == true,
+            "INSUFFICIENT_ALLOWANCE"
+        );
 
         if (isNonFungible(_id)) {
             require(nfOwners[_id] == _from);
@@ -87,7 +89,11 @@ contract ERC1155 is
         emit TransferSingle(msg.sender, _from, _to, _id, _value);
 
         if (_to.isContract()) {
-            require(IERC1155Receiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data) == ERC1155_RECEIVED);
+            bytes4 callbackReturnValue = IERC1155Receiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data);
+            require(
+                callbackReturnValue == ERC1155_RECEIVED,
+                "BAD_RECEIVER_RETURN_VALUE"
+            );
         }
     }
 
@@ -115,13 +121,20 @@ contract ERC1155 is
     )
         external
     {
-        require(_to != address(0x0), "cannot send to zero address");
-        require(_ids.length == _values.length, "Array length must match");
+        require(
+            _to != address(0x0),
+            "CANNOT_TRANSFER_TO_ADDRESS_ZERO"
+        );
+        require(
+            _ids.length == _values.length,
+            "ARRAY_LENGTH_MISMATCH"
+        );
 
-        // Only supporting a global operator approval allows us to do only 1 check and not to touch storage to handle allowances.
+        // Only supporting a global operator approval allows us to do
+        // only 1 check and not to touch storage to handle allowances.
         require(
             _from == msg.sender || operatorApproval[_from][msg.sender] == true,
-            "Need operator approval for 3rd party transfers."
+            "INSUFFICIENT_ALLOWANCE"
         );
 
         for (uint256 i = 0; i < _ids.length; ++i) {
@@ -141,7 +154,11 @@ contract ERC1155 is
         emit TransferBatch(msg.sender, _from, _to, _ids, _values);
 
         if (_to.isContract()) {
-            require(IERC1155Receiver(_to).onERC1155BatchReceived(msg.sender, _from, _ids, _values, _data) == ERC1155_BATCH_RECEIVED);
+            bytes4 callbackReturnValue = IERC1155Receiver(_to).onERC1155BatchReceived(msg.sender, _from, _ids, _values, _data);
+            require(
+                callbackReturnValue == ERC1155_BATCH_RECEIVED,
+                "BAD_RECEIVER_RETURN_VALUE"
+            );
         }
     }
 
@@ -177,11 +194,9 @@ contract ERC1155 is
     /// @param _ids    ID of the Tokens
     /// @return        The _owner's balance of the Token types requested
     function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory) {
-
         require(_owners.length == _ids.length);
 
         uint256[] memory balances_ = new uint256[](_owners.length);
-
         for (uint256 i = 0; i < _owners.length; ++i) {
             uint256 id = _ids[i];
             if (isNonFungibleItem(id)) {

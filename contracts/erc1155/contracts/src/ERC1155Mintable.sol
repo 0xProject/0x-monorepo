@@ -69,7 +69,10 @@ contract ERC1155Mintable is
         creatorOnly(_id)
     {
 
-        require(isFungible(_id));
+        require(
+            isFungible(_id),
+            "TRIED_TO_MINT_FUNGIBLE_FOR_NON_FUNGIBLE_TOKEN"
+        );
 
         for (uint256 i = 0; i < _to.length; ++i) {
 
@@ -85,7 +88,11 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), to, _id, quantity);
 
             if (to.isContract()) {
-                require(IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, "") == ERC1155_RECEIVED);
+                bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155Received(msg.sender, msg.sender, _id, quantity, "");
+                require(
+                    callbackReturnValue == ERC1155_RECEIVED,
+                    "BAD_RECEIVER_RETURN_VALUE"
+                );
             }
         }
     }
@@ -102,7 +109,10 @@ contract ERC1155Mintable is
     {
         // No need to check this is a nf type rather than an id since
         // creatorOnly() will only let a type pass through.
-        require(isNonFungible(_type));
+        require(
+            isNonFungible(_type),
+            "TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN"
+        );
 
         // Index are 1-based.
         uint256 index = maxIndex[_type] + 1;
@@ -119,7 +129,11 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
 
             if (dst.isContract()) {
-                require(IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, "") == ERC1155_RECEIVED);
+                bytes4 callbackReturnValue = IERC1155Receiver(dst).onERC1155Received(msg.sender, msg.sender, id, 1, "");
+                require(
+                    callbackReturnValue == ERC1155_RECEIVED,
+                    "BAD_RECEIVER_RETURN_VALUE"
+                );
             }
         }
 
