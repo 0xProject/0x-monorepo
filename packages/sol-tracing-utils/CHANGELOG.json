@@ -6,7 +6,8 @@
                 "note": "Fix a bug when `TruffleArtifactAdapter` wasn't parsing solc config in the newest version of trufle",
                 "pr": 1654
             }
-        ]
+        ],
+        "timestamp": 1551299797
     },
     {
         "timestamp": 1551220833,

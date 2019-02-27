@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.6 - _February 27, 2019_
+
+    * Fix a bug when `TruffleArtifactAdapter` wasn't parsing solc config in the newest version of trufle (#1654)
+
 ## v6.0.5 - _February 26, 2019_
 
     * Dependencies updated

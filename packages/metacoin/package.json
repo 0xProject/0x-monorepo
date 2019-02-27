@@ -1,6 +1,6 @@
 {
     "name": "@0x/metacoin",
-    "version": "0.0.42",
+    "version": "0.0.43",
     "engines": {
         "node": ">=6.12"
     },
@@ -33,10 +33,10 @@
         "@0x/abi-gen": "^2.0.5",
         "@0x/abi-gen-templates": "^2.0.1",
         "@0x/base-contract": "^5.0.1",
-        "@0x/contracts-test-utils": "^3.0.6",
-        "@0x/sol-coverage": "^2.0.5",
-        "@0x/sol-profiler": "^3.1.0",
-        "@0x/sol-trace": "^2.0.6",
+        "@0x/contracts-test-utils": "^3.0.7",
+        "@0x/sol-coverage": "^2.0.6",
+        "@0x/sol-profiler": "^3.1.1",
+        "@0x/sol-trace": "^2.0.7",
         "@0x/subproviders": "^4.0.1",
         "@0x/tslint-config": "^3.0.0",
         "@0x/types": "^2.1.1",
@@ -52,7 +52,7 @@
     },
     "devDependencies": {
         "@0x/dev-utils": "^2.1.2",
-        "@0x/sol-compiler": "^3.1.1",
+        "@0x/sol-compiler": "^3.1.2",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",

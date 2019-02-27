@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-exchange-forwarder",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "engines": {
         "node": ">=6.12"
     },
@@ -47,11 +47,11 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/extensions/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^2.0.5",
-        "@0x/contract-wrappers": "^8.0.1",
+        "@0x/contract-wrappers": "^8.0.2",
         "@0x/contracts-gen": "^1.0.4",
-        "@0x/contracts-test-utils": "^3.0.6",
+        "@0x/contracts-test-utils": "^3.0.7",
         "@0x/dev-utils": "^2.1.2",
-        "@0x/sol-compiler": "^3.1.1",
+        "@0x/sol-compiler": "^3.1.2",
         "@0x/tslint-config": "^3.0.0",
         "@types/lodash": "4.14.104",
         "@types/node": "*",
@@ -69,9 +69,9 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.0.1",
-        "@0x/contracts-asset-proxy": "^1.0.7",
-        "@0x/contracts-erc20": "^1.0.7",
-        "@0x/contracts-erc721": "^1.0.7",
+        "@0x/contracts-asset-proxy": "^1.0.8",
+        "@0x/contracts-erc20": "^1.0.8",
+        "@0x/contracts-erc721": "^1.0.8",
         "@0x/contracts-exchange": "1.0.2",
         "@0x/contracts-exchange-libs": "1.0.2",
         "@0x/contracts-utils": "2.0.1",

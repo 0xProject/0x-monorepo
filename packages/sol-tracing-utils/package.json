@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-tracing-utils",
-    "version": "6.0.5",
+    "version": "6.0.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -43,7 +43,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-tracing-utils/README.md",
     "dependencies": {
         "@0x/dev-utils": "^2.1.2",
-        "@0x/sol-compiler": "^3.1.1",
+        "@0x/sol-compiler": "^3.1.2",
         "@0x/sol-resolver": "^2.0.4",
         "@0x/subproviders": "^4.0.1",
         "@0x/typescript-typings": "^4.1.0",
@@ -55,13 +55,13 @@
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "glob": "^7.1.2",
-        "solc": "^0.5.2",
         "istanbul": "^0.4.5",
         "lodash": "^4.17.11",
         "loglevel": "^1.6.1",
         "mkdirp": "^0.5.1",
         "rimraf": "^2.6.2",
         "semaphore-async-await": "^1.5.1",
+        "solc": "^0.5.2",
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
