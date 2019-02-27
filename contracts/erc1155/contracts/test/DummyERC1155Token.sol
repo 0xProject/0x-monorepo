@@ -20,7 +20,7 @@ pragma solidity ^0.5.3;
 
 import "../src/ERC1155Mintable.sol";
 
-// solhint-disable no-empty-blocks
+
 contract DummyERC1155Token is
     ERC1155Mintable
 {
