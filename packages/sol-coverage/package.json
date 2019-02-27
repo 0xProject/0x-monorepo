@@ -32,8 +32,10 @@
         "@0x/sol-tracing-utils": "^6.0.5",
         "@0x/subproviders": "^4.0.1",
         "@0x/typescript-typings": "^4.1.0",
+        "@types/minimatch": "^3.0.3",
         "ethereum-types": "^2.1.0",
         "lodash": "^4.17.11",
+        "minimatch": "^3.0.4",
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {

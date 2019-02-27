@@ -1,4 +1,9 @@
-export { CoverageSubprovider } from './coverage_subprovider';
+export {
+    CoverageSubprovider,
+    CoverageSubproviderConfig,
+    DEFAULT_COVERAGE_SUBPROVIDER_CONFIG,
+    CoverageSubproviderPartialConfig,
+} from './coverage_subprovider';
 export {
     SolCompilerArtifactAdapter,
     TruffleArtifactAdapter,
