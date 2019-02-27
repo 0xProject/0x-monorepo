@@ -246,6 +246,7 @@ export enum RevertReason {
     InvalidMsgValue = 'INVALID_MSG_VALUE',
     InsufficientEthRemaining = 'INSUFFICIENT_ETH_REMAINING',
     Uint256Overflow = 'UINT256_OVERFLOW',
+    Uint256Underflow = 'UINT256_UNDERFLOW',
     Erc721ZeroToAddress = 'ERC721_ZERO_TO_ADDRESS',
     Erc721OwnerMismatch = 'ERC721_OWNER_MISMATCH',
     Erc721InvalidSpender = 'ERC721_INVALID_SPENDER',
@@ -259,6 +260,7 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
+    TransferRejected = 'TRANSFER_REJECTED',
     // DutchAuction
     AuctionInvalidAmount = 'INVALID_AMOUNT',
     AuctionExpired = 'AUCTION_EXPIRED',

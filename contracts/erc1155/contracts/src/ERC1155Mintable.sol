@@ -16,7 +16,7 @@ contract ERC1155Mintable is
     mapping (uint256 => uint256) public maxIndex;
 
     modifier creatorOnly(uint256 _id) {
-        require(creators[_id] == msg.sender);
+        require(creators[_id] == msg.sender, 'not owner');
         _;
     }
 

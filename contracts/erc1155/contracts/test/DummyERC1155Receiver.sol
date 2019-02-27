@@ -26,8 +26,11 @@ contract DummyERC1155Receiver is
 
     bytes4 constant public ERC1155_RECEIVED       = 0xf23a6e61;
     bytes4 constant public ERC1155_BATCH_RECEIVED = 0xbc197c81;
+    bool internal shouldRejectTransfer;
 
-    constructor () public {}
+    constructor () public {
+        shouldRejectTransfer = false;
+    }
 
     event TokenReceived(
         address operator,
@@ -55,6 +58,9 @@ contract DummyERC1155Receiver is
         external
         returns (bytes4)
     {
+        if (shouldRejectTransfer) {
+            revert("TRANSFER_REJECTED");
+        }
         emit TokenReceived(_operator, _from, _id, _value, _data);
         return ERC1155_RECEIVED;
     }
@@ -69,7 +75,14 @@ contract DummyERC1155Receiver is
         external
         returns (bytes4)
     {
+        if (shouldRejectTransfer) {
+            revert("TRANSFER_REJECTED");
+        }
         emit BatchTokenReceived(_operator, _from, _ids, _values, _data);
         return ERC1155_BATCH_RECEIVED;
+    }
+
+    function setRejectTransferFlag(bool _shouldRejectTransfer) external {
+        shouldRejectTransfer = _shouldRejectTransfer;
     }
 }
