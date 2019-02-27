@@ -276,6 +276,16 @@ export enum RevertReason {
     InvalidOrigin = 'INVALID_ORIGIN',
 }
 
+export enum OrderStatus {
+    Invalid,
+    InvalidMakerAssetAmount,
+    InvalidTakerAssetAmount,
+    Fillable,
+    Expired,
+    FullyFilled,
+    Cancelled,
+}
+
 export enum StatusCodes {
     Success = 200,
     NotFound = 404,

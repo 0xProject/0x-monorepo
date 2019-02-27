@@ -1,14 +1,15 @@
-import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
+import { ExchangeContractErrs, OrderStatus, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { OrderError, TradeSide, TransferType } from './types';
+import { TradeSide, TransferType } from './types';
 
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 import { constants } from './constants';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 import { orderHashUtils } from './order_hash';
+import * as RichReverts from './rich_reverts';
 import { signatureUtils } from './signature_utils';
 import { utils } from './utils';
 
@@ -106,10 +107,10 @@ export class OrderValidationUtils {
             TransferType.Fee,
         );
     }
-    private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
+    private static _validateOrderNotExpiredOrThrow(order: SignedOrder): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (expirationTimeSeconds.isLessThan(currentUnixTimestampSec)) {
-            throw new Error(RevertReason.OrderUnfillable);
+        if (order.expirationTimeSeconds.isLessThan(currentUnixTimestampSec)) {
+            throw new RichReverts.OrderStatusError(orderHashUtils.getOrderHashHex(order), OrderStatus.Expired);
         }
     }
     /**
@@ -151,21 +152,21 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
         );
         if (!isValidSignature) {
-            throw new Error(RevertReason.InvalidOrderSignature);
+            throw new RichReverts.SignatureError(orderHash, RichReverts.SignatureErrorCodes.BadSignature);
         }
 
         const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
         if (isCancelled) {
-            throw new Error('CANCELLED');
+            throw new RichReverts.OrderStatusError(orderHash, OrderStatus.Cancelled);
         }
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         if (signedOrder.takerAssetAmount.eq(filledTakerTokenAmount)) {
-            throw new Error('FULLY_FILLED');
+            throw new RichReverts.OrderStatusError(orderHash, OrderStatus.FullyFilled);
         }
         try {
-            OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
+            OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder);
         } catch (err) {
-            throw new Error('EXPIRED');
+            throw new RichReverts.OrderStatusError(orderHash, OrderStatus.Expired);
         }
         let fillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
@@ -196,14 +197,8 @@ export class OrderValidationUtils {
         takerAddress: string,
         zrxAssetData: string,
     ): Promise<BigNumber> {
-        if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
-            throw new Error(RevertReason.OrderUnfillable);
-        }
-        if (fillTakerAssetAmount.eq(0)) {
-            throw new Error(RevertReason.InvalidTakerAmount);
-        }
-        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const isValid = await signatureUtils.isValidSignatureAsync(
             provider,
             orderHash,
@@ -211,16 +206,25 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
         );
         if (!isValid) {
-            throw new Error(OrderError.InvalidSignature);
+            throw new RichReverts.SignatureError(orderHash, RichReverts.SignatureErrorCodes.BadSignature);
+        }
+        if (signedOrder.takerAssetAmount.eq(0)) {
+            throw new RichReverts.OrderStatusError(orderHash, OrderStatus.InvalidTakerAssetAmount);
+        }
+        if (signedOrder.makerAssetAmount.eq(0)) {
+            throw new RichReverts.OrderStatusError(orderHash, OrderStatus.InvalidMakerAssetAmount);
+        }
+        if (fillTakerAssetAmount.eq(0)) {
+            throw new RichReverts.FillError(orderHash, RichReverts.FillErrorCodes.InvalidTakerAmount);
         }
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         if (signedOrder.takerAssetAmount.eq(filledTakerTokenAmount)) {
-            throw new Error(RevertReason.OrderUnfillable);
+            throw new RichReverts.OrderStatusError(orderHash, OrderStatus.FullyFilled);
         }
         if (signedOrder.takerAddress !== constants.NULL_ADDRESS && signedOrder.takerAddress !== takerAddress) {
-            throw new Error(RevertReason.InvalidTaker);
+            throw new RichReverts.InvalidTakerError(orderHash, takerAddress);
         }
-        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
+        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder);
         const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         const desiredFillTakerTokenAmount = remainingTakerTokenAmount.isLessThan(fillTakerAssetAmount)
             ? remainingTakerTokenAmount
@@ -245,7 +249,7 @@ export class OrderValidationUtils {
                 ExchangeContractErrs.InsufficientTakerFeeAllowance,
             ];
             if (_.includes(transferFailedErrorMessages, err.message)) {
-                throw new Error(RevertReason.TransferFailed);
+                throw new RichReverts.StandardError(RevertReason.TransferFailed);
             }
             throw err;
         }
@@ -256,7 +260,7 @@ export class OrderValidationUtils {
             signedOrder.makerAssetAmount,
         );
         if (wouldRoundingErrorOccur) {
-            throw new Error(RevertReason.RoundingError);
+            throw new RichReverts.StandardError(RevertReason.RoundingError);
         }
         return filledTakerTokenAmount;
     }

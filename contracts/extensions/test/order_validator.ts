@@ -7,18 +7,10 @@ import {
     ERC721Wrapper,
 } from '@0x/contracts-asset-proxy';
 import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
-import {
-    chaiSetup,
-    constants,
-    OrderFactory,
-    OrderStatus,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, OrderFactory, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';

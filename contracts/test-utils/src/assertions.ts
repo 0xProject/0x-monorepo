@@ -1,3 +1,4 @@
+import { RichRevertReason } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
@@ -90,7 +91,10 @@ export async function expectInsufficientFundsAsync<T>(p: Promise<T>): Promise<vo
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export async function expectTransactionFailedAsync(p: sendTransactionResult, reason: RevertReason): Promise<void> {
+export async function expectTransactionFailedAsync(
+    p: sendTransactionResult,
+    reason: RevertReason | RichRevertReason,
+): Promise<void> {
     // HACK(albrow): This dummy `catch` should not be necessary, but if you
     // remove it, there is an uncaught exception and the Node process will
     // forcibly exit. It's possible this is a false positive in
@@ -104,7 +108,12 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
     }
     switch (nodeType) {
         case NodeType.Ganache:
-            return expect(p).to.be.rejectedWith(reason);
+            // Handle rich reverts.
+            if (reason instanceof RichRevertReason) {
+                return _expectTransactionRichRevertAsync(p, reason);
+            } else {
+                return expect(p).to.be.rejectedWith(reason);
+            }
         case NodeType.Geth:
             logUtils.warn(
                 'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',
@@ -113,6 +122,25 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
         default:
             throw new Error(`Unknown node type: ${nodeType}`);
     }
+}
+
+async function _expectTransactionRichRevertAsync(p: sendTransactionResult, reason: RichRevertReason): Promise<void> {
+    try {
+        await p;
+    } catch (err) {
+        const info = err.results[_.keys(err.results)[0]];
+        if (info.error === 'revert' && info.return) {
+            return _assertReasonsAreEqual(reason, RichRevertReason.decode(info.return));
+        }
+    }
+    throw new Error(`Expected rich revert ${reason}`);
+}
+
+function _assertReasonsAreEqual(a: RichRevertReason, b: RichRevertReason): void {
+    if (a.equals(b)) {
+        return;
+    }
+    throw new Error(`Expected rich revert ${a}, but instead got ${b}`);
 }
 
 /**
@@ -159,8 +187,39 @@ export async function expectTransactionFailedWithoutReasonAsync(p: sendTransacti
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export async function expectContractCallFailedAsync<T>(p: Promise<T>, reason: RevertReason): Promise<void> {
+export async function expectContractCallFailedAsync<T>(
+    p: Promise<T>,
+    reason: RevertReason | RichRevertReason,
+): Promise<void> {
+    if (reason instanceof RichRevertReason) {
+        return _expectContractCallRichRevertAsync<T>(p, reason);
+    }
     return expect(p).to.be.rejectedWith(reason);
+}
+
+async function _expectContractCallRichRevertAsync<T>(p: Promise<T>, reason: RichRevertReason): Promise<void> {
+    try {
+        const r = await p;
+        // Geth will NOT throw. It will return data as if it had succeeded, but
+        // the return data will be the abi encoded bytes of the revert data.
+        // So we have to guess if the data is a revert by checking if its
+        // length is a multiple of 32 + 4.
+        if (typeof r === 'string' && r.startsWith('0x')) {
+            const payloadLength = r.length - 2;
+            if (payloadLength >= 4 * 2 && (payloadLength - 4 * 2) % (32 * 2) === 0) {
+                if (reason.equals(RichRevertReason.decode(r))) {
+                    return;
+                }
+            }
+        }
+    } catch (err) {
+        // Ganache will throw a revert error.
+        const info = err.results[_.keys(err.results)[0]];
+        if (info.error === 'revert' && info.return) {
+            return _assertReasonsAreEqual(reason, RichRevertReason.decode(info.return));
+        }
+    }
+    throw new Error(`Expected rich revert ${reason}`);
 }
 
 /**

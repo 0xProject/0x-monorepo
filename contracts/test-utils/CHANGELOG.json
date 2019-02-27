@@ -1,5 +1,16 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Update assertions to support RichRevertReason objects"
+            },
+            {
+                "note": "Move OrderStatus enum from here to @0x/types"
+            }
+        ]
+    },
+    {
         "version": "3.0.9",
         "changes": [
             {

@@ -14,14 +14,20 @@ import {
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
-    OrderStatus,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { RevertReason, SignedOrder } from '@0x/types';
+import {
+    assetDataUtils,
+    IncompleteFillError,
+    orderHashUtils,
+    OrderStatusError,
+    SignatureError,
+    SignatureErrorCodes,
+} from '@0x/order-utils';
+import { OrderStatus, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -209,10 +215,11 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
 
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                RevertReason.OrderUnfillable,
+                new OrderStatusError(orderHash, OrderStatus.Expired),
             );
         });
 
@@ -222,10 +229,11 @@ describe('Exchange wrappers', () => {
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
 
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                RevertReason.CompleteFillFailed,
+                new IncompleteFillError(orderHash),
             );
         });
     });
@@ -599,7 +607,7 @@ describe('Exchange wrappers', () => {
                     exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmounts,
                     }),
-                    RevertReason.OrderUnfillable,
+                    new OrderStatusError(orderHashUtils.getOrderHashHex(signedOrders[0]), OrderStatus.FullyFilled),
                 );
             });
         });
@@ -728,7 +736,7 @@ describe('Exchange wrappers', () => {
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
                     // delegatecall and swallow errors.
-                    gas: 450000,
+                    gas: 475000,
                 });
 
                 const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -838,6 +846,9 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
+                const correctOrder = _.assign({}, signedOrders[1], {
+                    takerAssetData: signedOrders[0].takerAssetData,
+                });
 
                 return expectTransactionFailedAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
@@ -845,7 +856,7 @@ describe('Exchange wrappers', () => {
                     }),
                     // We simply use the takerAssetData from the first order for all orders.
                     // If they are not the same, the contract throws when validating the order signature
-                    RevertReason.InvalidOrderSignature,
+                    new SignatureError(orderHashUtils.getOrderHashHex(correctOrder), SignatureErrorCodes.BadSignature),
                 );
             });
         });
@@ -1099,12 +1110,15 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
+                const correctOrder = _.assign({}, signedOrders[1], {
+                    makerAssetData: signedOrders[0].makerAssetData,
+                });
 
                 return expectTransactionFailedAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                    RevertReason.InvalidOrderSignature,
+                    new SignatureError(orderHashUtils.getOrderHashHex(correctOrder), SignatureErrorCodes.BadSignature),
                 );
             });
         });

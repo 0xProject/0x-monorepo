@@ -20,13 +20,15 @@ pragma solidity ^0.4.24;
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
+import "./mixins/MRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
 
 
 contract MixinTransactions is
     LibEIP712,
     MSignatureValidator,
-    MTransactions
+    MTransactions,
+    MRichErrors
 {
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
@@ -49,10 +51,8 @@ contract MixinTransactions is
         external
     {
         // Prevent reentrancy
-        require(
-            currentContextAddress == address(0),
-            "REENTRANCY_ILLEGAL"
-        );
+        if (currentContextAddress != address(0))
+            rrevert(TransactionExecutionError(TransactionExecutionErrorCodes.NO_REENTRANCY));
 
         bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(
             salt,
@@ -61,22 +61,18 @@ contract MixinTransactions is
         ));
 
         // Validate transaction has not been executed
-        require(
-            !transactions[transactionHash],
-            "INVALID_TX_HASH"
-        );
+        if (transactions[transactionHash])
+            rrevert(TransactionExecutionError(TransactionExecutionErrorCodes.ALREADY_EXECUTED));
 
         // Transaction always valid if signer is sender of transaction
         if (signerAddress != msg.sender) {
             // Validate signature
-            require(
-                isValidSignature(
+            if (!isValidSignature(
                     transactionHash,
                     signerAddress,
-                    signature
-                ),
-                "INVALID_TX_SIGNATURE"
-            );
+                    signature)) {
+                rrevert(TransactionExecutionError(TransactionExecutionErrorCodes.BAD_SIGNATURE));
+            }
 
             // Set the current transaction signer
             currentContextAddress = signerAddress;
@@ -84,10 +80,8 @@ contract MixinTransactions is
 
         // Execute transaction
         transactions[transactionHash] = true;
-        require(
-            address(this).delegatecall(data),
-            "FAILED_EXECUTION"
-        );
+        if (!address(this).delegatecall(data))
+            rrevert(TransactionExecutionError(TransactionExecutionErrorCodes.FAILED_EXECUTION));
 
         // Reset current transaction signer if it was previously updated
         if (signerAddress != msg.sender) {

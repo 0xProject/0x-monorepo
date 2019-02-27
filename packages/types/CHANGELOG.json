@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Move OrderStatus enum from /contracts/test-utils into here"
+            }
+        ]
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {

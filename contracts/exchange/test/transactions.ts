@@ -12,8 +12,21 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { OrderWithoutExchangeAddress, RevertReason, SignedOrder, SignedZeroExTransaction } from '@0x/types';
+import {
+    assetDataUtils,
+    generatePseudoRandomSalt,
+    orderHashUtils,
+    OrderStatusError,
+    TransactionExecutionError,
+    TransactionExecutionErrorCodes,
+} from '@0x/order-utils';
+import {
+    OrderStatus,
+    OrderWithoutExchangeAddress,
+    RevertReason,
+    SignedOrder,
+    SignedZeroExTransaction,
+} from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -134,7 +147,7 @@ describe('Exchange transactions', () => {
             it('should throw if not called by specified sender', async () => {
                 return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
-                    RevertReason.FailedExecution,
+                    new TransactionExecutionError(TransactionExecutionErrorCodes.FailedExecution),
                 );
             });
 
@@ -177,7 +190,7 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
-                    RevertReason.InvalidTxHash,
+                    new TransactionExecutionError(TransactionExecutionErrorCodes.AlreadyExecuted),
                 );
             });
 
@@ -197,15 +210,16 @@ describe('Exchange transactions', () => {
             it('should throw if not called by specified sender', async () => {
                 return expectTransactionFailedAsync(
                     exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
-                    RevertReason.FailedExecution,
+                    new TransactionExecutionError(TransactionExecutionErrorCodes.FailedExecution),
                 );
             });
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
                 return expectTransactionFailedAsync(
                     exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
-                    RevertReason.OrderUnfillable,
+                    new OrderStatusError(orderHash, OrderStatus.Cancelled),
                 );
             });
         });
@@ -257,7 +271,7 @@ describe('Exchange transactions', () => {
                         signedFillTx.signature,
                         { from: takerAddress },
                     ),
-                    RevertReason.FailedExecution,
+                    new TransactionExecutionError(TransactionExecutionErrorCodes.FailedExecution),
                 );
             });
 

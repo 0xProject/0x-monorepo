@@ -1,5 +1,16 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Create RichRevertAbi interface and add it to AbiDefinition types"
+            },
+            {
+                "note": "Add RichRevertAbi to AbiDefinition type union"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

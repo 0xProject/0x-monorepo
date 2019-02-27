@@ -24,6 +24,7 @@ import {
     orderHashUtils,
     OrderStateUtils,
     OrderValidationUtils,
+    RichRevertReason,
 } from '@0x/order-utils';
 import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, logUtils, providerUtils } from '@0x/utils';
@@ -409,7 +410,7 @@ export class FillOrderCombinatorialUtils {
                 logUtils.log(`Expecting fillOrder to succeed.`);
             }
         } catch (err) {
-            fillRevertReasonIfExists = err.message;
+            fillRevertReasonIfExists = err.message || err;
             if (isVerbose) {
                 logUtils.log(`Expecting fillOrder to fail with:`);
                 logUtils.log(err);
@@ -430,7 +431,7 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
-        fillRevertReasonIfExists: RevertReason | undefined,
+        fillRevertReasonIfExists: RevertReason | RichRevertReason | undefined,
     ): Promise<void> {
         if (!_.isUndefined(fillRevertReasonIfExists)) {
             return expectTransactionFailedAsync(

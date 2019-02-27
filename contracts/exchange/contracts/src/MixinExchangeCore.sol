@@ -28,6 +28,7 @@ import "./mixins/MExchangeCore.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "./mixins/MRichErrors.sol";
 
 
 contract MixinExchangeCore is
@@ -39,7 +40,8 @@ contract MixinExchangeCore is
     MAssetProxyDispatcher,
     MExchangeCore,
     MSignatureValidator,
-    MTransactions
+    MTransactions,
+    MRichErrors
 {
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
@@ -64,14 +66,12 @@ contract MixinExchangeCore is
         address senderAddress = makerAddress == msg.sender ? address(0) : msg.sender;
 
         // orderEpoch is initialized to 0, so to cancelUpTo we need salt + 1
-        uint256 newOrderEpoch = targetOrderEpoch + 1;  
+        uint256 newOrderEpoch = targetOrderEpoch + 1;
         uint256 oldOrderEpoch = orderEpoch[makerAddress][senderAddress];
 
         // Ensure orderEpoch is monotonically increasing
-        require(
-            newOrderEpoch > oldOrderEpoch, 
-            "INVALID_NEW_ORDER_EPOCH"
-        );
+        if (newOrderEpoch <= oldOrderEpoch)
+            rrevert(EpochOrderError(makerAddress, senderAddress, oldOrderEpoch));
 
         // Update orderEpoch
         orderEpoch[makerAddress][senderAddress] = newOrderEpoch;
@@ -193,7 +193,7 @@ contract MixinExchangeCore is
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
-        
+
         // Assert that the order is fillable by taker
         assertFillableOrder(
             order,
@@ -201,7 +201,7 @@ contract MixinExchangeCore is
             takerAddress,
             signature
         );
-        
+
         // Get amount of takerAsset to fill
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
         uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
@@ -226,7 +226,7 @@ contract MixinExchangeCore is
             orderInfo.orderTakerAssetFilledAmount,
             fillResults
         );
-    
+
         // Settle order
         settleOrder(
             order,
@@ -309,7 +309,7 @@ contract MixinExchangeCore is
             order.takerAssetData
         );
     }
-    
+
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
@@ -325,40 +325,41 @@ contract MixinExchangeCore is
         view
     {
         // An order can only be filled if its status is FILLABLE.
-        require(
-            orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            "ORDER_UNFILLABLE"
-        );
-        
+        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
+            rrevert(OrderStatusError(
+                orderInfo.orderHash,
+                OrderStatus(orderInfo.orderStatus))
+            );
+        }
+
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
-            require(
-                order.senderAddress == msg.sender,
-                "INVALID_SENDER"
-            );
+            if (order.senderAddress != msg.sender)
+                rrevert(InvalidSenderError(orderInfo.orderHash, msg.sender));
         }
-        
+
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
-            require(
-                order.takerAddress == takerAddress,
-                "INVALID_TAKER"
-            );
+            if (order.takerAddress != takerAddress)
+                rrevert(InvalidTakerError(orderInfo.orderHash, takerAddress));
         }
-        
+
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
-            require(
-                isValidSignature(
+            if (!isValidSignature(
                     orderInfo.orderHash,
                     order.makerAddress,
-                    signature
-                ),
-                "INVALID_ORDER_SIGNATURE"
-            );
+                    signature)) {
+                rrevert(
+                    SignatureError(
+                        orderInfo.orderHash,
+                        SignatureErrorCodes.BAD_SIGNATURE
+                    )
+                );
+            }
         }
     }
-    
+
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
@@ -377,27 +378,21 @@ contract MixinExchangeCore is
     {
         // Revert if fill amount is invalid
         // TODO: reconsider necessity for v2.1
-        require(
-            takerAssetFillAmount != 0,
-            "INVALID_TAKER_AMOUNT"
-        );
-        
+        if (takerAssetFillAmount == 0)
+            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.INVALID_TAKER_AMOUNT));
+
         // Make sure taker does not pay more than desired amount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        require(
-            takerAssetFilledAmount <= takerAssetFillAmount,
-            "TAKER_OVERPAY"
-        );
-        
+        if (takerAssetFilledAmount > takerAssetFillAmount)
+            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.TAKER_OVERPAY));
+
         // Make sure order is not overfilled
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        require(
-            safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount) <= order.takerAssetAmount,
-            "ORDER_OVERFILL"
-        );
-        
+        if (safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount) > order.takerAssetAmount)
+            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.OVERFILL));
+
         // Make sure order is filled at acceptable price.
         // The order has an implied price from the makers perspective:
         //    order price = order.makerAssetAmount / order.takerAssetAmount
@@ -415,12 +410,11 @@ contract MixinExchangeCore is
         //     order.makerAssetAmount * takerAssetFilledAmount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        require(
-            safeMul(makerAssetFilledAmount, order.takerAssetAmount)
-            <= 
-            safeMul(order.makerAssetAmount, takerAssetFilledAmount),
-            "INVALID_FILL_PRICE"
-        );
+        if (safeMul(makerAssetFilledAmount, order.takerAssetAmount)
+                >
+                safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
+            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.INVALID_FILL_PRICE));
+        }
     }
 
     /// @dev Validates context for cancelOrder. Succeeds or throws.
@@ -435,25 +429,19 @@ contract MixinExchangeCore is
     {
         // Ensure order is valid
         // An order can only be cancelled if its status is FILLABLE.
-        require(
-            orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            "ORDER_UNFILLABLE"
-        );
+        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE))
+            rrevert(OrderStatusError(orderInfo.orderHash, OrderStatus(orderInfo.orderStatus)));
 
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
-            require(
-                order.senderAddress == msg.sender,
-                "INVALID_SENDER"
-            );
+            if (order.senderAddress != msg.sender)
+                rrevert(InvalidSenderError(orderInfo.orderHash, msg.sender));
         }
 
         // Validate transaction signed by maker
         address makerAddress = getCurrentContextAddress();
-        require(
-            order.makerAddress == makerAddress,
-            "INVALID_MAKER"
-        );
+        if (order.makerAddress != makerAddress)
+            rrevert(InvalidMakerError(orderInfo.orderHash, makerAddress));
     }
 
     /// @dev Calculates amounts filled and fees paid by maker and taker.

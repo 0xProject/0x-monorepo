@@ -20,12 +20,14 @@ pragma solidity ^0.4.24;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "./mixins/MRichErrors.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 
 
 contract MixinAssetProxyDispatcher is
     Ownable,
-    MAssetProxyDispatcher
+    MAssetProxyDispatcher,
+    MRichErrors
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => IAssetProxy) public assetProxies;
@@ -42,10 +44,8 @@ contract MixinAssetProxyDispatcher is
         // Ensure that no asset proxy exists with current id.
         bytes4 assetProxyId = assetProxyContract.getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
-        require(
-            currentAssetProxy == address(0),
-            "ASSET_PROXY_ALREADY_EXISTS"
-        );
+        if (currentAssetProxy != address(0))
+            rrevert(AssetProxyExistsError(currentAssetProxy));
 
         // Add asset proxy and log registration.
         assetProxies[assetProxyId] = assetProxyContract;
@@ -82,11 +82,9 @@ contract MixinAssetProxyDispatcher is
         // Do nothing if no amount should be transferred.
         if (amount > 0 && from != to) {
             // Ensure assetData length is valid
-            require(
-                assetData.length > 3,
-                "LENGTH_GREATER_THAN_3_REQUIRED"
-            );
-            
+            if (assetData.length <= 3)
+                rrevert(AssetProxyDispatchError(AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH));
+
             // Lookup assetProxy. We do not use `LibBytes.readBytes4` for gas efficiency reasons.
             bytes4 assetProxyId;
             assembly {
@@ -98,14 +96,12 @@ contract MixinAssetProxyDispatcher is
             address assetProxy = assetProxies[assetProxyId];
 
             // Ensure that assetProxy exists
-            require(
-                assetProxy != address(0),
-                "ASSET_PROXY_DOES_NOT_EXIST"
-            );
-            
+            if (assetProxy == address(0))
+                rrevert(AssetProxyDispatchError(AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY));
+
             // We construct calldata for the `assetProxy.transferFrom` ABI.
             // The layout of this calldata is in the table below.
-            // 
+            //
             // | Area     | Offset | Length  | Contents                                    |
             // | -------- |--------|---------|-------------------------------------------- |
             // | Header   | 0      | 4       | function selector                           |
@@ -129,12 +125,12 @@ contract MixinAssetProxyDispatcher is
                 // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.
                 let cdEnd := add(cdStart, add(132, dataAreaLength))
 
-                
+
                 /////// Setup Header Area ///////
                 // This area holds the 4-byte `transferFromSelector`.
                 // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
                 mstore(cdStart, 0xa85e59e400000000000000000000000000000000000000000000000000000000)
-                
+
                 /////// Setup Params Area ///////
                 // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.
                 // Notes:
@@ -144,7 +140,7 @@ contract MixinAssetProxyDispatcher is
                 mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 100), amount)
-                
+
                 /////// Setup Data Area ///////
                 // This area holds `assetData`.
                 let dataArea := add(cdStart, 132)
@@ -161,7 +157,7 @@ contract MixinAssetProxyDispatcher is
                     assetProxy,             // call address of asset proxy
                     0,                      // don't send any ETH
                     cdStart,                // pointer to start of input
-                    sub(cdEnd, cdStart),    // length of input  
+                    sub(cdEnd, cdStart),    // length of input
                     cdStart,                // write output over input
                     512                     // reserve 512 bytes for output
                 )

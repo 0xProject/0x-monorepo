@@ -77,7 +77,7 @@ export interface EIP1193Provider {
 
 export type ContractAbi = AbiDefinition[];
 
-export type AbiDefinition = FunctionAbi | EventAbi;
+export type AbiDefinition = FunctionAbi | EventAbi | RichRevertAbi;
 
 export type FunctionAbi = MethodAbi | ConstructorAbi | FallbackAbi;
 
@@ -114,6 +114,13 @@ export interface FallbackAbi {
 
 export interface EventParameter extends DataItem {
     indexed: boolean;
+}
+
+export interface RichRevertAbi {
+    // Should be set to `'error'`.
+    type: string;
+    name: string;
+    arguments?: DataItem[];
 }
 
 export interface EventAbi {

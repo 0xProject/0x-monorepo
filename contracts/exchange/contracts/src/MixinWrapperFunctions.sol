@@ -26,6 +26,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibAbiEncoder.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MWrapperFunctions.sol";
+import "./mixins/MRichErrors.sol";
 
 
 contract MixinWrapperFunctions is
@@ -34,7 +35,8 @@ contract MixinWrapperFunctions is
     LibFillResults,
     LibAbiEncoder,
     MExchangeCore,
-    MWrapperFunctions
+    MWrapperFunctions,
+    MRichErrors
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
@@ -195,7 +197,7 @@ contract MixinWrapperFunctions is
         returns (FillResults memory totalFillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
-    
+
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
@@ -417,10 +419,8 @@ contract MixinWrapperFunctions is
             takerAssetFillAmount,
             signature
         );
-        require(
-            fillResults.takerAssetFilledAmount == takerAssetFillAmount,
-            "COMPLETE_FILL_FAILED"
-        );
+        if (fillResults.takerAssetFilledAmount != takerAssetFillAmount)
+            rrevert(IncompleteFillError(getOrderInfo(order).orderHash));
         return fillResults;
     }
 }

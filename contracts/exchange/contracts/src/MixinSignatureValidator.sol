@@ -22,6 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
+import "./mixins/MRichErrors.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 
@@ -29,10 +30,11 @@ import "./interfaces/IValidator.sol";
 contract MixinSignatureValidator is
     ReentrancyGuard,
     MSignatureValidator,
-    MTransactions
+    MTransactions,
+    MRichErrors
 {
     using LibBytes for bytes;
-    
+
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
 
@@ -51,14 +53,13 @@ contract MixinSignatureValidator is
         external
     {
         if (signerAddress != msg.sender) {
-            require(
-                isValidSignature(
+            if (!isValidSignature(
                     hash,
                     signerAddress,
-                    signature
-                ),
-                "INVALID_SIGNATURE"
-            );
+                    signature)) {
+                rrevert(SignatureError(
+                    hash, SignatureErrorCodes.BAD_SIGNATURE));
+            }
         }
         preSigned[hash][signerAddress] = true;
     }
@@ -96,19 +97,17 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        require(
-            signature.length > 0,
-            "LENGTH_GREATER_THAN_0_REQUIRED"
-        );
+        if (signature.length == 0)
+            rrevert(SignatureError(
+                hash, SignatureErrorCodes.INVALID_LENGTH));
 
         // Pop last byte off of signature byte array.
         uint8 signatureTypeRaw = uint8(signature.popLastByte());
 
         // Ensure signature is supported
-        require(
-            signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
-            "SIGNATURE_UNSUPPORTED"
-        );
+        if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes))
+            rrevert(SignatureError(
+                hash, SignatureErrorCodes.UNSUPPORTED));
 
         SignatureType signatureType = SignatureType(signatureTypeRaw);
 
@@ -124,26 +123,29 @@ contract MixinSignatureValidator is
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
-            revert("SIGNATURE_ILLEGAL");
+            rrevert(
+                SignatureError(
+                    hash, SignatureErrorCodes.ILLEGAL)
+            );
 
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
         } else if (signatureType == SignatureType.Invalid) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
+            if (signature.length != 0) {
+                rrevert(SignatureError(
+                    hash, SignatureErrorCodes.INVALID_LENGTH));
+            }
             isValid = false;
             return isValid;
 
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
+            if (signature.length != 65) {
+                rrevert(SignatureError(
+                    hash, SignatureErrorCodes.INVALID_LENGTH));
+            }
             v = uint8(signature[0]);
             r = signature.readBytes32(1);
             s = signature.readBytes32(33);
@@ -158,10 +160,10 @@ contract MixinSignatureValidator is
 
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
+            if (signature.length != 65) {
+                rrevert(SignatureError(
+                    hash, SignatureErrorCodes.INVALID_LENGTH));
+            }
             v = uint8(signature[0]);
             r = signature.readBytes32(1);
             s = signature.readBytes32(33);
@@ -197,7 +199,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
             address validatorAddress = signature.popLast20Bytes();
-            
+
             // Ensure signer has approved validator.
             if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
@@ -221,7 +223,10 @@ contract MixinSignatureValidator is
         // that we currently support. In this case returning false
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
-        revert("SIGNATURE_UNSUPPORTED");
+        rrevert(
+            SignatureError(
+                hash, SignatureErrorCodes.UNSUPPORTED)
+        );
     }
 
     /// @dev Verifies signature using logic defined by Wallet contract.
@@ -244,9 +249,10 @@ contract MixinSignatureValidator is
             hash,
             signature
         );
+        bool success;
         assembly {
             let cdStart := add(callData, 32)
-            let success := staticcall(
+            success := staticcall(
                 gas,              // forward all gas
                 walletAddress,    // address of Wallet contract
                 cdStart,          // pointer to start of input
@@ -254,22 +260,15 @@ contract MixinSignatureValidator is
                 cdStart,          // write output over input
                 32                // output size is 32 bytes
             )
-
-            switch success
-            case 0 {
-                // Revert with `Error("WALLET_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-            case 1 {
+            if eq(success, 1) {
                 // Signature is valid if call did not revert and returned true
                 isValid := mload(cdStart)
             }
         }
-        return isValid;
+        if (success)
+            return isValid;
+        rrevert(
+            SignatureError(hash, SignatureErrorCodes.WALLET_ERROR));
     }
 
     /// @dev Verifies signature using logic defined by Validator contract.
@@ -294,9 +293,10 @@ contract MixinSignatureValidator is
             signerAddress,
             signature
         );
+        bool success;
         assembly {
             let cdStart := add(callData, 32)
-            let success := staticcall(
+            success := staticcall(
                 gas,               // forward all gas
                 validatorAddress,  // address of Validator contract
                 cdStart,           // pointer to start of input
@@ -304,21 +304,14 @@ contract MixinSignatureValidator is
                 cdStart,           // write output over input
                 32                 // output size is 32 bytes
             )
-
-            switch success
-            case 0 {
-                // Revert with `Error("VALIDATOR_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-            case 1 {
+            if eq(success, 1) {
                 // Signature is valid if call did not revert and returned true
                 isValid := mload(cdStart)
             }
         }
-        return isValid;
+        if (success)
+            return isValid;
+        rrevert(
+            SignatureError(hash, SignatureErrorCodes.VALIDATOR_ERROR));
     }
 }

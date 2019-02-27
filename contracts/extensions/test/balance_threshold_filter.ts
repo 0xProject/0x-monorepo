@@ -1,7 +1,7 @@
 import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { Order, RevertReason, SignedOrder } from '@0x/types';
+import { Order, OrderStatus, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -17,7 +17,6 @@ import {
     ERC20BalancesByOwner,
     expectTransactionFailedAsync,
     OrderFactory,
-    OrderStatus,
     provider,
     TransactionFactory,
     txDefaults,

@@ -34,7 +34,7 @@ contract MMatchOrders is
         LibOrder.Order memory rightOrder
     )
         internal
-        pure;
+        view;
 
     /// @dev Calculates fill amounts for the matched orders.
     ///      Each order is filled at their respective price point. However, the calculations are

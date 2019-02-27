@@ -69,16 +69,6 @@ export interface Token {
     swarmHash: string;
 }
 
-export enum OrderStatus {
-    Invalid,
-    InvalidMakerAssetAmount,
-    InvalidTakerAssetAmount,
-    Fillable,
-    Expired,
-    FullyFilled,
-    Cancelled,
-}
-
 export enum ContractName {
     TokenRegistry = 'TokenRegistry',
     MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',

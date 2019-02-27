@@ -15,7 +15,12 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import {
+    assetDataUtils,
+    AssetProxyDispatchError,
+    AssetProxyDispatchErrorCodes,
+    AssetProxyExistsError,
+} from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -139,7 +144,7 @@ describe('AssetProxyDispatcher', () => {
                 assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
                     from: owner,
                 }),
-                RevertReason.AssetProxyAlreadyExists,
+                new AssetProxyExistsError(proxyAddress),
             );
         });
 
@@ -278,7 +283,7 @@ describe('AssetProxyDispatcher', () => {
                     amount,
                     { from: owner },
                 ),
-                RevertReason.AssetProxyDoesNotExist,
+                new AssetProxyDispatchError(AssetProxyDispatchErrorCodes.UnknownAssetProxy),
             );
         });
     });

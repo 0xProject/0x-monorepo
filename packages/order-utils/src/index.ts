@@ -72,3 +72,5 @@ export {
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
 } from './types';
+
+export * from './rich_reverts';

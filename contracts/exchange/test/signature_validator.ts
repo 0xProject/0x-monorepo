@@ -10,8 +10,8 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { assetDataUtils, orderHashUtils, SignatureError, SignatureErrorCodes, signatureUtils } from '@0x/order-utils';
+import { SignatureType, SignedOrder } from '@0x/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -129,7 +129,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     emptySignature,
                 ),
-                RevertReason.LengthGreaterThan0Required,
+                new SignatureError(orderHashHex, SignatureErrorCodes.InvalidLength),
             );
         });
 
@@ -143,7 +143,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                RevertReason.SignatureUnsupported,
+                new SignatureError(orderHashHex, SignatureErrorCodes.Unsupported),
             );
         });
 
@@ -156,7 +156,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     unsupportedSignatureHex,
                 ),
-                RevertReason.SignatureIllegal,
+                new SignatureError(orderHashHex, SignatureErrorCodes.Illegal),
             );
         });
 
@@ -183,7 +183,7 @@ describe('MixinSignatureValidator', () => {
                     signedOrder.makerAddress,
                     signatureHex,
                 ),
-                RevertReason.Length0Required,
+                new SignatureError(orderHashHex, SignatureErrorCodes.InvalidLength),
             );
         });
 
@@ -343,7 +343,7 @@ describe('MixinSignatureValidator', () => {
                     maliciousWallet.address,
                     signatureHex,
                 ),
-                RevertReason.WalletError,
+                new SignatureError(orderHashHex, SignatureErrorCodes.WalletError),
             );
         });
 
@@ -385,7 +385,7 @@ describe('MixinSignatureValidator', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             await expectContractCallFailedAsync(
                 signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex),
-                RevertReason.ValidatorError,
+                new SignatureError(orderHashHex, SignatureErrorCodes.ValidatorError),
             );
         });
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {

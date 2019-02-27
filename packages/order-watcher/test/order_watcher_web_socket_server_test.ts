@@ -27,7 +27,7 @@ interface WsMessage {
     data: string;
 }
 
-describe('OrderWatcherWebSocketServer', async () => {
+describe.only('OrderWatcherWebSocketServer', async () => {
     let contractWrappers: ContractWrappers;
     let wsServer: OrderWatcherWebSocketServer;
     let wsClient: WebSocket.w3cwebsocket;
@@ -118,7 +118,7 @@ describe('OrderWatcherWebSocketServer', async () => {
         logUtils.log(`${new Date()} [Client] Closed.`);
     });
 
-    it('responds to getStats requests correctly', (done: any) => {
+    it.only('responds to getStats requests correctly', (done: any) => {
         const payload = {
             id: 1,
             jsonrpc: '2.0',

@@ -1,5 +1,13 @@
 [
     {
+        "version": "8.1.0",
+        "changes": [
+            {
+                "note": "Add chai extension to check for equality among RichRevertReason objects"
+            }
+        ]
+    },
+    {
         "version": "8.0.3",
         "changes": [
             {

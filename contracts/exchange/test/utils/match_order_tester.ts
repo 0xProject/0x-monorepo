@@ -4,12 +4,11 @@ import {
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
     OrderInfo,
-    OrderStatus,
     TransferAmountsByMatchOrders as TransferAmounts,
     TransferAmountsLoggedByMatchOrders as LoggedTransferAmounts,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, SignedOrder } from '@0x/types';
+import { AssetProxyId, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
