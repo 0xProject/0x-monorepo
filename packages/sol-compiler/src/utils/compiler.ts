@@ -36,7 +36,6 @@ export async function getContractArtifactIfExistsAsync(
         contractArtifact = JSON.parse(contractArtifactString);
         return contractArtifact;
     } catch (err) {
-        logUtils.warn(`Artifact for ${contractName} does not exist`);
         return undefined;
     }
 }
