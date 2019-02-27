@@ -6,11 +6,13 @@ import { Hero } from 'ts/components/hero';
 
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
+import { Card, LinkProps } from 'ts/components/card';
+import { DocumentTitle } from 'ts/components/document_title';
 import { Icon } from 'ts/components/icon';
 import { SiteWrap } from 'ts/components/siteWrap';
-import { DocumentTitle } from 'ts/components/document_title';
-import { Card, LinkProps } from 'ts/components/card';
+import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
 import { ModalContact } from '../components/modals/modal_contact';
@@ -67,7 +69,7 @@ export class Extensions extends React.Component {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
-                <DocumentTitle {...documentConstants.EXTENSIONS } />
+                <DocumentTitle {...documentConstants.EXTENSIONS} />
                 <Hero
                     isLargeTitle={false}
                     isFullWidth={false}
@@ -96,7 +98,7 @@ export class Extensions extends React.Component {
                     subline="Developers can build custom extensions on 0x to add new modes of exchange"
                     mainCta={{
                         text: 'Get Started',
-                        href: `${constants.URL_LAUNCH_KIT}/#table-of-contents`,
+                        href: `${WebsitePaths.Wiki}#0x-Extensions`,
                         shouldOpenInNewTab: true,
                     }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
@@ -117,11 +119,11 @@ export class Extensions extends React.Component {
 
 const HeroActions = () => (
     <React.Fragment>
-        <Button href={constants.URL_LAUNCH_KIT} isInline={true} target="_blank">
+        <Button href={`${WebsitePaths.Wiki}#0x-Extensions`} isInline={true} target="_blank">
             Get Started
         </Button>
 
-        <Button href={constants.URL_LAUNCH_KIT_BLOG_POST} isTransparent={true} isInline={true} target="_blank">
+        <Button href={constants.URL_EXTENSIONS_BLOG_POST} isTransparent={true} isInline={true} target="_blank">
             Learn More!
         </Button>
     </React.Fragment>
