@@ -8,19 +8,19 @@ import { BigNumber } from '@0x/utils';
 
 import {
     artifacts,
-    DummyERC1155TokenContract,
+    ERC1155MintableContract,
     ERC1155TransferSingleEventArgs,
 } from '../../src';
 
 const expect = chai.expect;
 
 export class Erc1155Wrapper {
-    private readonly _erc1155Contract: DummyERC1155TokenContract;
+    private readonly _erc1155Contract: ERC1155MintableContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _contractOwner: string;
     private readonly _logDecoder: LogDecoder;
 
-    constructor(contractInstance: DummyERC1155TokenContract, provider: Web3ProviderEngine, contractOwner: string) {
+    constructor(contractInstance: ERC1155MintableContract, provider: Web3ProviderEngine, contractOwner: string) {
         this._erc1155Contract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._contractOwner = contractOwner;

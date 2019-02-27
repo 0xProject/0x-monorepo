@@ -17,7 +17,7 @@ import {
     artifacts,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
     DummyERC1155ReceiverContract,
-    DummyERC1155TokenContract,
+    ERC1155MintableContract,
 } from '../src';
 
 import { Erc1155Wrapper } from './utils/erc1155_wrapper';
@@ -39,7 +39,7 @@ describe('ERC1155Token', () => {
     let owner: string;
     let spender: string;
     let receiver: string;
-    let token: DummyERC1155TokenContract;
+    let token: ERC1155MintableContract;
     let erc1155Receiver: DummyERC1155ReceiverContract;
     let nonFungibleToken: BigNumber;
     let erc1155Wrapper: Erc1155Wrapper;
@@ -55,12 +55,10 @@ describe('ERC1155Token', () => {
         // deploy erc1155 contract & receiver
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [owner, spender] = accounts;
-        token = await DummyERC1155TokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyERC1155Token,
+        token = await ERC1155MintableContract.deployFrom0xArtifactAsync(
+            artifacts.ERC1155Mintable,
             provider,
             txDefaults,
-            constants.DUMMY_TOKEN_NAME,
-            constants.DUMMY_TOKEN_SYMBOL,
         );
         erc1155Receiver = await DummyERC1155ReceiverContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC1155Receiver,
