@@ -38,8 +38,9 @@ describe('ERC1155Token', () => {
     // tokens & addresses
     let owner: string;
     let spender: string;
+    let delegatedSpender: string;
     let receiver: string;
-    let token: ERC1155MintableContract;
+    let erc1155Contract: ERC1155MintableContract;
     let erc1155Receiver: DummyERC1155ReceiverContract;
     let nonFungibleToken: BigNumber;
     let erc1155Wrapper: Erc1155Wrapper;
@@ -54,8 +55,8 @@ describe('ERC1155Token', () => {
     before(async () => {
         // deploy erc1155 contract & receiver
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [owner, spender] = accounts;
-        token = await ERC1155MintableContract.deployFrom0xArtifactAsync(
+        [owner, spender, delegatedSpender] = accounts;
+        erc1155Contract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
             artifacts.ERC1155Mintable,
             provider,
             txDefaults,
@@ -67,7 +68,7 @@ describe('ERC1155Token', () => {
         );
         receiver = erc1155Receiver.address;
         // create wrapper & mint erc1155 tokens
-        erc1155Wrapper = new Erc1155Wrapper(token, provider, owner);
+        erc1155Wrapper = new Erc1155Wrapper(erc1155Contract, provider, owner);
         fungibleToken = await erc1155Wrapper.mintFungibleTokenAsync(spender, spenderInitialFungibleBalance);
         [, nonFungibleToken] = await erc1155Wrapper.mintNonFungibleTokenAsync(spender);
     });
@@ -170,7 +171,7 @@ describe('ERC1155Token', () => {
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
             // execute transfer
             await expectTransactionFailedAsync(
-                token.safeTransferFrom.sendTransactionAsync(
+                erc1155Contract.safeTransferFrom.sendTransactionAsync(
                     spender,
                     receiver,
                     tokenToTransfer,
@@ -193,7 +194,7 @@ describe('ERC1155Token', () => {
             );
             // execute transfer
             await expectTransactionFailedAsync(
-                token.safeTransferFrom.sendTransactionAsync(
+                erc1155Contract.safeTransferFrom.sendTransactionAsync(
                     spender,
                     receiver,
                     tokenToTransfer,
@@ -339,7 +340,7 @@ describe('ERC1155Token', () => {
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
             // execute transfer
             await expectTransactionFailedAsync(
-                token.safeBatchTransferFrom.sendTransactionAsync(
+                erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
                     spender,
                     receiver,
                     tokensToTransfer,
@@ -362,7 +363,7 @@ describe('ERC1155Token', () => {
             );
             // execute transfer
             await expectTransactionFailedAsync(
-                token.safeBatchTransferFrom.sendTransactionAsync(
+                erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
                     spender,
                     receiver,
                     tokensToTransfer,
@@ -371,6 +372,114 @@ describe('ERC1155Token', () => {
                     { from: spender },
                 ),
                 RevertReason.TransferRejected,
+            );
+        });
+    });
+    describe('setApprovalForAll', () => {
+        it('should transfer token via safeTransferFrom if called by approved account', async () => {
+            // set approval
+            const isApprovedForAll = true;
+            await erc1155Wrapper.setApprovalForAllAsync(spender, delegatedSpender, isApprovedForAll);
+            const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
+            expect(isApprovedForAllCheck).to.be.true();
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokenToTransfer = fungibleToken;
+            const valueToTransfer = fungibleValueToTransfer;
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedInitialBalances);
+            // execute transfer
+            await erc1155Wrapper.safeTransferFromAsync(
+                spender,
+                receiver,
+                tokenToTransfer,
+                valueToTransfer,
+                receiverCallbackData,
+                delegatedSpender,
+            );
+            // check balances after transfer
+            const expectedFinalBalances = [
+                spenderInitialFungibleBalance.minus(valueToTransfer),
+                receiverInitialFungibleBalance.plus(valueToTransfer),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
+        });
+        it('should throw if trying to transfer tokens via safeTransferFrom by an unapproved account', async () => {
+            // check approval not set
+            const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
+            expect(isApprovedForAllCheck).to.be.false();
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokenToTransfer = fungibleToken;
+            const valueToTransfer = fungibleValueToTransfer;
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedInitialBalances);
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155Contract.safeTransferFrom.sendTransactionAsync(
+                    spender,
+                    receiver,
+                    tokenToTransfer,
+                    valueToTransfer,
+                    receiverCallbackData,
+                    { from: delegatedSpender },
+                ),
+                RevertReason.InsufficientAllowance,
+            );
+        });
+        it('should transfer token via safeBatchTransferFrom if called by approved account', async () => {
+            // set approval
+            const isApprovedForAll = true;
+            await erc1155Wrapper.setApprovalForAllAsync(spender, delegatedSpender, isApprovedForAll);
+            const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
+            expect(isApprovedForAllCheck).to.be.true();
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokensToTransfer = [fungibleToken];
+            const valuesToTransfer = [fungibleValueToTransfer];
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // execute transfer
+            await erc1155Wrapper.safeBatchTransferFromAsync(
+                spender,
+                receiver,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+                delegatedSpender,
+            );
+            // check balances after transfer
+            const expectedFinalBalances = [
+                spenderInitialFungibleBalance.minus(valuesToTransfer[0]),
+                receiverInitialFungibleBalance.plus(valuesToTransfer[0]),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should throw if trying to transfer tokens via safeBatchTransferFrom by an unapproved account', async () => {
+            // check approval not set
+            const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
+            expect(isApprovedForAllCheck).to.be.false();
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokensToTransfer = [fungibleToken];
+            const valuesToTransfer = [fungibleValueToTransfer];
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
+                    spender,
+                    receiver,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    receiverCallbackData,
+                    { from: delegatedSpender },
+                ),
+                RevertReason.InsufficientAllowance,
             );
         });
     });

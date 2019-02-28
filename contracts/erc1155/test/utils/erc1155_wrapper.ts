@@ -32,10 +32,12 @@ export class Erc1155Wrapper {
         token: BigNumber,
         value: BigNumber,
         callbackData: string = '0x',
+        delegatedSpender: string = '',
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        const spender = _.isEmpty(delegatedSpender) ? from : delegatedSpender;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this._erc1155Contract.safeTransferFrom.sendTransactionAsync(from, to, token, value, callbackData, {
-                from,
+                from: spender,
             }),
         );
         return tx;
@@ -46,7 +48,9 @@ export class Erc1155Wrapper {
         tokens: BigNumber[],
         values: BigNumber[],
         callbackData: string = '0x',
+        delegatedSpender: string = '',
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        const spender = _.isEmpty(delegatedSpender) ? from : delegatedSpender;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this._erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
                 from,
@@ -54,7 +58,7 @@ export class Erc1155Wrapper {
                 tokens,
                 values,
                 callbackData,
-                { from },
+                { from: spender },
             ),
         );
         return tx;
@@ -97,6 +101,22 @@ export class Erc1155Wrapper {
         );
         const nftId = token.plus(1);
         return [token, nftId];
+    }
+    public async setApprovalForAllAsync(
+        owner: string,
+        beneficiary: string,
+        isApproved: boolean,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
+            await this._erc1155Contract.setApprovalForAll.sendTransactionAsync(beneficiary, isApproved, {
+                from: owner,
+            }),
+        );
+        return tx;
+    }
+    public async isApprovedForAllAsync(owner: string, beneficiary: string): Promise<boolean> {
+        const isApprovedForAll = await this._erc1155Contract.isApprovedForAll.callAsync(owner, beneficiary);
+        return isApprovedForAll;
     }
     public async assertBalancesAsync(
         owners: string[],
