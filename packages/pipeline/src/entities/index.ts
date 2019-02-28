@@ -4,6 +4,7 @@ import { ExchangeFillEvent } from './exchange_fill_event';
 
 export { Block } from './block';
 export { DexTrade } from './dex_trade';
+export { EtherscanTransaction } from './etherscan_transaction';
 export { ExchangeCancelEvent } from './exchange_cancel_event';
 export { ExchangeCancelUpToEvent } from './exchange_cancel_up_to_event';
 export { ExchangeFillEvent } from './exchange_fill_event';
