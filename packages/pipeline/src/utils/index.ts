@@ -64,10 +64,3 @@ export async function fetchSuccessfullyOrThrowAsync(url: string): Promise<any> {
     }
     return response.json();
 }
-
-/**
- * Tells if the code is being executed in the context of the command line (vs. a require for example)
- */
-export function isCli(): boolean {
-    return require.main === module;
-}

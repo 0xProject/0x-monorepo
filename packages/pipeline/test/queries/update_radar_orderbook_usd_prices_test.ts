@@ -1,6 +1,6 @@
 import 'mocha';
 
-import { updateRadarOrderbookUsdPricesAsync } from '../../src/scripts/update_radar_orderbook_usd_prices';
+import { updateRadarOrderbookUsdPricesAsync } from '../../src/queries/update_radar_orderbook_usd_prices';
 import { createDbConnectionOnceAsync } from '../db_setup';
 import { chaiSetup } from '../utils/chai_setup';
 
