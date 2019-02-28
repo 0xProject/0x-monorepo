@@ -1,5 +1,13 @@
 [
     {
+        "version": "4.2.2",
+        "changes": [
+            {
+                "note": "Fix issue where process is not defined in browser context"
+            }
+        ]
+    },
+    {
         "timestamp": 1551220833,
         "version": "4.2.1",
         "changes": [
