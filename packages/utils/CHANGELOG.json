@@ -3,7 +3,8 @@
         "version": "4.2.2",
         "changes": [
             {
-                "note": "Fix issue where process is not defined in browser context"
+                "note": "Fix issue where process is not defined in browser context",
+                "pr": 1660
             }
         ]
     },

@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import * as _ from 'lodash';
 
 const DEFAULT_TERMINAL_WIDTH = 80;
-const TERMINAL_WIDTH = (process && process.stdout.columns) || DEFAULT_TERMINAL_WIDTH;
+const TERMINAL_WIDTH = _.get(process, 'stdout.columns') || DEFAULT_TERMINAL_WIDTH;
 
 export const logUtils = {
     log(...args: any[]): void {
