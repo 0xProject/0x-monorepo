@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.0.3",
+        "changes": [
+            {
+                "note": "Move contracts-test-utils to dev dependency",
+                "pr": 1657
+            }
+        ]
+    },
+    {
         "timestamp": 1551299797,
         "version": "8.0.2",
         "changes": [
