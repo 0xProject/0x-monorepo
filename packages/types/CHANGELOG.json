@@ -1,10 +1,11 @@
 [
     {
-        "version": "2.1.2",
+        "version": "2.2.2",
         "changes": [
             {
-                "note": "Added `Uint256Underflow` and `TransferRejected` revert reasons",
-                "pr": 0
+                "note": "Added `Uint256Underflow`, `TransferRejected`, and `InsufficientAllowance` revert reasons",
+                "pr": 1657
+                           
             }
         ]
     },
