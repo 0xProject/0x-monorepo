@@ -22,23 +22,23 @@ pragma solidity ^0.5.3;
 contract MNonFungibleToken {
 
     /// @dev Returns true if token is non-fungible
-    function isNonFungible(uint256 _id) public pure returns(bool);
+    function isNonFungible(uint256 id) public pure returns(bool);
 
     /// @dev Returns true if token is fungible
-    function isFungible(uint256 _id) public pure returns(bool);
+    function isFungible(uint256 _d) public pure returns(bool);
 
     /// @dev Returns index of non-fungible token
-    function getNonFungibleIndex(uint256 _id) public pure returns(uint256);
+    function getNonFungibleIndex(uint256 id) public pure returns(uint256);
 
     /// @dev Returns base type of non-fungible token
-    function getNonFungibleBaseType(uint256 _id) public pure returns(uint256);
+    function getNonFungibleBaseType(uint256 id) public pure returns(uint256);
 
     /// @dev Returns true if input is base-type of a non-fungible token
-    function isNonFungibleBaseType(uint256 _id) public pure returns(bool);
+    function isNonFungibleBaseType(uint256 id) public pure returns(bool);
 
     /// @dev Returns true if input is a non-fungible token
-    function isNonFungibleItem(uint256 _id) public pure returns(bool);
+    function isNonFungibleItem(uint256 id) public pure returns(bool);
 
     /// @dev returns owner of a non-fungible token
-    function ownerOf(uint256 _id) public view returns (address);
+    function ownerOf(uint256 id) public view returns (address);
 }

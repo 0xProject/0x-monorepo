@@ -51,45 +51,53 @@ contract ERC1155 is
     /// When transfer is complete, this function MUST check if `_to` is a smart contract (code size > 0).
     /// If so, it MUST call `onERC1155Received` on `_to` and revert if the return value
     /// is not `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))`.
-    /// @param _from    Source address
-    /// @param _to      Target address
-    /// @param _id      ID of the token type
-    /// @param _value   Transfer amount
-    /// @param _data    Additional data with no specified format, sent in call to `_to`
+    /// @param from    Source address
+    /// @param to      Target address
+    /// @param id      ID of the token type
+    /// @param value   Transfer amount
+    /// @param data    Additional data with no specified format, sent in call to `_to`
     function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _id,
-        uint256 _value,
-        bytes calldata _data
+        address from,
+        address to,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
     )
         external
     {
+        // sanity checks
         require(
-            _to != address(0x0),
+            to != address(0x0),
             "CANNOT_TRANSFER_TO_ADDRESS_ZERO"
         );
         require(
-            _from == msg.sender || operatorApproval[_from][msg.sender] == true,
+            from == msg.sender || operatorApproval[from][msg.sender] == true,
             "INSUFFICIENT_ALLOWANCE"
         );
 
-        if (isNonFungible(_id)) {
-            require(nfOwners[_id] == _from);
-            nfOwners[_id] = _to;
+        // perform transfer
+        if (isNonFungible(id)) {
+            require(nfOwners[id] == from);
+            nfOwners[id] = to;
             // You could keep balance of NF type in base type id like so:
             // uint256 baseType = getNonFungibleBaseType(_id);
             // balances[baseType][_from] = balances[baseType][_from].safeSub(_value);
             // balances[baseType][_to]   = balances[baseType][_to].safeAdd(_value);
         } else {
-            balances[_id][_from] = safeSub(balances[_id][_from], _value);
-            balances[_id][_to] = safeAdd(balances[_id][_to], _value);
+            balances[id][from] = safeSub(balances[id][from], value);
+            balances[id][to] = safeAdd(balances[id][to], value);
         }
+        emit TransferSingle(msg.sender, from, to, id, value);
 
-        emit TransferSingle(msg.sender, _from, _to, _id, _value);
-
-        if (_to.isContract()) {
-            bytes4 callbackReturnValue = IERC1155Receiver(_to).onERC1155Received(msg.sender, _from, _id, _value, _data);
+        // if `to` is a contract then trigger its callback
+        if (to.isContract()) {
+            bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155Received(
+                msg.sender,
+                from,
+                id,
+                value,
+                data
+            );
             require(
                 callbackReturnValue == ERC1155_RECEIVED,
                 "BAD_RECEIVER_RETURN_VALUE"
@@ -107,54 +115,62 @@ contract ERC1155 is
     /// When transfer is complete, this function MUST check if `_to` is a smart contract (code size > 0).
     /// If so, it MUST call `onERC1155BatchReceived` on `_to` and revert if the return value
     /// is not `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))`.
-    /// @param _from    Source addresses
-    /// @param _to      Target addresses
-    /// @param _ids     IDs of each token type
-    ///@param _values  Transfer amounts per token type
-    ///  @param _data    Additional data with no specified format, sent in call to `_to`
+    /// @param from    Source addresses
+    /// @param to      Target addresses
+    /// @param ids     IDs of each token type
+    /// @param values  Transfer amounts per token type
+    /// @param data    Additional data with no specified format, sent in call to `_to`
     function safeBatchTransferFrom(
-        address _from,
-        address _to,
-        uint256[] calldata _ids,
-        uint256[] calldata _values,
-        bytes calldata _data
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
     )
         external
     {
+        // sanity checks
         require(
-            _to != address(0x0),
+            to != address(0x0),
             "CANNOT_TRANSFER_TO_ADDRESS_ZERO"
         );
         require(
-            _ids.length == _values.length,
-            "ARRAY_LENGTH_MISMATCH"
+            ids.length == values.length,
+            "TOKEN_AND_VALUES_LENGTH_MISMATCH"
         );
 
         // Only supporting a global operator approval allows us to do
         // only 1 check and not to touch storage to handle allowances.
         require(
-            _from == msg.sender || operatorApproval[_from][msg.sender] == true,
+            from == msg.sender || operatorApproval[from][msg.sender] == true,
             "INSUFFICIENT_ALLOWANCE"
         );
 
-        for (uint256 i = 0; i < _ids.length; ++i) {
+        // perform transfers
+        for (uint256 i = 0; i < ids.length; ++i) {
             // Cache value to local variable to reduce read costs.
-            uint256 id = _ids[i];
-            uint256 value = _values[i];
+            uint256 id = ids[i];
+            uint256 value = values[i];
 
             if (isNonFungible(id)) {
-                require(nfOwners[id] == _from);
-                nfOwners[id] = _to;
+                require(nfOwners[id] == from);
+                nfOwners[id] = to;
             } else {
-                balances[id][_from] = safeSub(balances[id][_from], value);
-                balances[id][_to] = safeAdd(value, balances[id][_to]);
+                balances[id][from] = safeSub(balances[id][from], value);
+                balances[id][to] = safeAdd(value, balances[id][to]);
             }
         }
+        emit TransferBatch(msg.sender, from, to, ids, values);
 
-        emit TransferBatch(msg.sender, _from, _to, _ids, _values);
-
-        if (_to.isContract()) {
-            bytes4 callbackReturnValue = IERC1155Receiver(_to).onERC1155BatchReceived(msg.sender, _from, _ids, _values, _data);
+        // if `to` is a contract then trigger its callback
+        if (to.isContract()) {
+            bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155BatchReceived(
+                msg.sender,
+                from,
+                ids,
+                values,
+                data
+            );
             require(
                 callbackReturnValue == ERC1155_BATCH_RECEIVED,
                 "BAD_RECEIVER_RETURN_VALUE"
@@ -164,45 +180,51 @@ contract ERC1155 is
 
     /// @notice Enable or disable approval for a third party ("operator") to manage all of the caller's tokens.
     /// @dev MUST emit the ApprovalForAll event on success.
-    /// @param _operator  Address to add to the set of authorized operators
-    /// @param _approved  True if the operator is approved, false to revoke approval
-    function setApprovalForAll(address _operator, bool _approved) external {
-        operatorApproval[msg.sender][_operator] = _approved;
-        emit ApprovalForAll(msg.sender, _operator, _approved);
+    /// @param operator  Address to add to the set of authorized operators
+    /// @param approved  True if the operator is approved, false to revoke approval
+    function setApprovalForAll(address operator, bool approved) external {
+        operatorApproval[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
     }
 
     /// @notice Queries the approval status of an operator for a given owner.
-    /// @param _owner     The owner of the Tokens
-    /// @param _operator  Address of authorized operator
+    /// @param owner     The owner of the Tokens
+    /// @param operator  Address of authorized operator
     /// @return           True if the operator is approved, false if not
-    function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
-        return operatorApproval[_owner][_operator];
+    function isApprovedForAll(address owner, address operator) external view returns (bool) {
+        return operatorApproval[owner][operator];
     }
 
     /// @notice Get the balance of an account's Tokens.
-    /// @param _owner  The address of the token holder
-    /// @param _id     ID of the Token
+    /// @param owner  The address of the token holder
+    /// @param id     ID of the Token
     /// @return        The _owner's balance of the Token type requested
-    function balanceOf(address _owner, uint256 _id) external view returns (uint256) {
-        if (isNonFungibleItem(_id))
-            return nfOwners[_id] == _owner ? 1 : 0;
-        return balances[_id][_owner];
+    function balanceOf(address owner, uint256 id) external view returns (uint256) {
+        if (isNonFungibleItem(id)) {
+            return nfOwners[id] == owner ? 1 : 0;
+        }
+        return balances[id][owner];
     }
 
     /// @notice Get the balance of multiple account/token pairs
-    /// @param _owners The addresses of the token holders
-    /// @param _ids    ID of the Tokens
+    /// @param owners The addresses of the token holders
+    /// @param ids    ID of the Tokens
     /// @return        The _owner's balance of the Token types requested
-    function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory) {
-        require(_owners.length == _ids.length);
+    function balanceOfBatch(address[] calldata owners, uint256[] calldata ids) external view returns (uint256[] memory balances_) {
+        // sanity check
+        require(
+            owners.length == ids.length,
+            "OWNERS_AND_IDS_MUST_HAVE_SAME_LENGTH"
+        );
 
-        uint256[] memory balances_ = new uint256[](_owners.length);
-        for (uint256 i = 0; i < _owners.length; ++i) {
-            uint256 id = _ids[i];
+        // get balances
+        balances_ = new uint256[](owners.length);
+        for (uint256 i = 0; i < owners.length; ++i) {
+            uint256 id = ids[i];
             if (isNonFungibleItem(id)) {
-                balances_[i] = nfOwners[id] == _owners[i] ? 1 : 0;
+                balances_[i] = nfOwners[id] == owners[i] ? 1 : 0;
             } else {
-                balances_[i] = balances[id][_owners[i]];
+                balances_[i] = balances[id][owners[i]];
             }
         }
 

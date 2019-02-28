@@ -69,7 +69,7 @@ export class Erc1155Wrapper {
         );
         // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
-        const token = createFungibleTokenLog.args._id;
+        const token = createFungibleTokenLog.args.id;
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._erc1155Contract.mintFungible.sendTransactionAsync(token, [beneficiary], [tokenAmount], {
                 from: this._contractOwner,
@@ -88,7 +88,7 @@ export class Erc1155Wrapper {
         );
         // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
-        const token = createFungibleTokenLog.args._id;
+        const token = createFungibleTokenLog.args.id;
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._erc1155Contract.mintNonFungible.sendTransactionAsync(token, [beneficiary], {
                 from: this._contractOwner,

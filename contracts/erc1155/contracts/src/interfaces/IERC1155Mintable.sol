@@ -10,33 +10,33 @@ contract IERC1155Mintable is
 {
 
     /// @dev creates a new token
-    /// @param _uri URI of token
-    /// @param _isNF is non-fungible token
+    /// @param uri URI of token
+    /// @param isNF is non-fungible token
     /// @return _type of token (a unique identifier)
     function create(
-        string calldata _uri,
-        bool _isNF
+        string calldata uri,
+        bool isNF
     )
         external
-        returns (uint256 _type);
+        returns (uint256 type_);
 
     /// @dev mints fungible tokens
-    /// @param _id token type
-    /// @param _to beneficiaries of minted tokens
-    /// @param _quantities amounts of minted tokens
+    /// @param id token type
+    /// @param to beneficiaries of minted tokens
+    /// @param quantities amounts of minted tokens
     function mintFungible(
-        uint256 _id,
-        address[] calldata _to,
-        uint256[] calldata _quantities
+        uint256 id,
+        address[] calldata to,
+        uint256[] calldata quantities
     )
         external;
 
     /// @dev mints a non-fungible token
-    /// @param _type token type
-    /// @param _to beneficiaries of minted tokens
+    /// @param type_ token type
+    /// @param to beneficiaries of minted tokens
     function mintNonFungible(
-        uint256 _type,
-        address[] calldata _to
+        uint256 type_,
+        address[] calldata to
     )
         external;
 }
