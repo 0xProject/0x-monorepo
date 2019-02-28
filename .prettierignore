@@ -16,6 +16,8 @@ lib
 /contracts/erc20/generated-artifacts
 /contracts/erc721/generated-wrappers
 /contracts/erc721/generated-artifacts
+/contracts/erc1155/generated-wrappers
+/contracts/erc1155/generated-artifacts
 /contracts/extensions/generated-wrappers
 /contracts/extensions/generated-artifacts
 /contracts/exchange-forwarder/generated-wrappers
