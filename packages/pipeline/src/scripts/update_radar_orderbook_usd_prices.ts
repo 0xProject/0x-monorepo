@@ -1,4 +1,3 @@
-import { logUtils } from '@0x/utils';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import * as ormConfig from '../ormconfig';

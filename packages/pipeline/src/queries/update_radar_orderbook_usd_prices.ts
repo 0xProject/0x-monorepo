@@ -1,7 +1,5 @@
 import { logUtils } from '@0x/utils';
-import { Connection, ConnectionOptions, createConnection } from 'typeorm';
-
-import * as ormConfig from '../ormconfig';
+import { Connection } from 'typeorm';
 
 /**
  * Join raw radar orderbook data with USD data.
