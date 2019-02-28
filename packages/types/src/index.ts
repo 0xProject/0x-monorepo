@@ -261,6 +261,7 @@ export enum RevertReason {
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
     TransferRejected = 'TRANSFER_REJECTED',
+    InsufficientAllowance = 'INSUFFICIENT_ALLOWANCE',
     // DutchAuction
     AuctionInvalidAmount = 'INVALID_AMOUNT',
     AuctionExpired = 'AUCTION_EXPIRED',
