@@ -6,7 +6,7 @@ import { logUtils } from '@0x/utils';
 // URL to use for getting dex trades from Bloxy.
 export const BLOXY_DEX_TRADES_URL = 'https://bloxy.info/api/dex/trades';
 // Number of trades to get at once. Must be less than or equal to MAX_OFFSET.
-const TRADES_PER_QUERY = 10000;
+const TRADES_PER_QUERY = 100000;
 // Maximum offset supported by the Bloxy API.
 const MAX_OFFSET = 100000;
 // Buffer to subtract from offset. This means we will request some trades twice
