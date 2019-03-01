@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.3 - _March 1, 2019_
+
+    * Dependencies updated
+
 ## v3.1.2 - _February 27, 2019_
 
     * Remove redundant log message (#1652)

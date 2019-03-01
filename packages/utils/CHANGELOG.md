@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.2 - _March 1, 2019_
+
+    * Fix issue where process is not defined in browser context (#1660)
+
 ## v4.2.1 - _February 26, 2019_
 
     * Dependencies updated

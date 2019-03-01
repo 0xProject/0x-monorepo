@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _March 1, 2019_
+
+    * Change the interface to accept a configuration object instead of `isVerbose` (#1656)
+    * Add `ignoreFilesGlobs` property on a config object (#1656)
+    * Allow project specific coverage ignore paths by specifying `config.ignoreFilesGlobs` (#1656)
+
 ## v2.0.6 - _February 27, 2019_
 
     * Dependencies updated

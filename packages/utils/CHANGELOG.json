@@ -6,7 +6,8 @@
                 "note": "Fix issue where process is not defined in browser context",
                 "pr": 1660
             }
-        ]
+        ],
+        "timestamp": 1551479279
     },
     {
         "timestamp": 1551220833,

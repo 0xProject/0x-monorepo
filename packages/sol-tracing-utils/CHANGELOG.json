@@ -10,7 +10,8 @@
                 "note": "Fix a bug when `opCodes` gas costs were incorrect or `NaN`",
                 "pr": 1663
             }
-        ]
+        ],
+        "timestamp": 1551479279
     },
     {
         "version": "6.0.6",

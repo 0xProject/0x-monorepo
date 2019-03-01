@@ -6,7 +6,8 @@
                 "note": "Move contracts-test-utils and fill-scenarios to dev dependency",
                 "pr": 1657
             }
-        ]
+        ],
+        "timestamp": 1551479279
     },
     {
         "timestamp": 1551299797,

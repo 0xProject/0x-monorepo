@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.2 - _March 1, 2019_
+
+    * Bug fixes related to stack parameters parsing (#1663)
+
 ## v3.1.1 - _February 27, 2019_
 
     * Dependencies updated

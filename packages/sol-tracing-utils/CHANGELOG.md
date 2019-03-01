@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.7 - _March 1, 2019_
+
+    * Fix a bug when `TruffleArtifactAdapter` wasn't correctly parsing solc config in pre-5.0 versions of Truffle (#1663)
+    * Fix a bug when `opCodes` gas costs were incorrect or `NaN` (#1663)
+
 ## v6.0.6 - _February 27, 2019_
 
     * Fix a bug when `TruffleArtifactAdapter` wasn't parsing solc config in the newest version of trufle (#1654)
