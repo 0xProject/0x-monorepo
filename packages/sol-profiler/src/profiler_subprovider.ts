@@ -65,7 +65,7 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
         const transactionBaseCost = BASE_COST;
         let totalCost = callDataCost + opcodesCost + BASE_COST;
         logUtils.header('Final breakdown', '-');
-        if (!_.isNull(receipt.contractAddress)) {
+        if (_.isString(receipt.contractAddress)) {
             const code = await this._web3Wrapper.getContractCodeAsync(receipt.contractAddress);
             const codeBuff = Buffer.from(stripHexPrefix(code), 'hex');
             const codeLength = codeBuff.length;

@@ -3,10 +3,8 @@ import { OpCode, StructLog } from 'ethereum-types';
 import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
-
-const STATICCALL_GAS_COST = 40;
-const CALL_GAS_COST = 700;
 
 const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
 
@@ -95,14 +93,16 @@ export const utils = {
             structLog.op === OpCode.StaticCall
                 ? {
                       ...structLog,
-                      gasCost: STATICCALL_GAS_COST,
+                      gasCost: constants.opCodeToGasCost[structLog.op],
                   }
                 : structLog;
         // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
         const normalizeCallCost = (structLog: StructLog, index: number) => {
             if (structLog.op === OpCode.Call) {
-                const HEX_BASE = 16;
-                const callAddress = parseInt(structLog.stack[0], HEX_BASE);
+                const callAddress = parseInt(
+                    structLog.stack[structLog.stack.length - constants.opCodeToParamToStackOffset[OpCode.Call].to - 1],
+                    constants.HEX_BASE,
+                );
                 const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
                 if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
                     const nextStructLog = normalizedStructLogs[index + 1];
@@ -114,7 +114,7 @@ export const utils = {
                 } else {
                     return {
                         ...structLog,
-                        gasCost: CALL_GAS_COST,
+                        gasCost: constants.opCodeToGasCost[structLog.op],
                     };
                 }
             } else {

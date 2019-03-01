@@ -52,11 +52,11 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                         const isCallDataAccess = opn == 0x37;
                         var stack;
                         if (isCall) {
-                            stack = [null, '0x'+log.stack.peek(1).toString(16)];
+                            stack = ['0x'+log.stack.peek(1).toString(16), null];
                         } else if (isMemoryAccess) {
                             stack = ['0x'+log.stack.peek(0).toString(16)];
                         } else if (isCallDataAccess) {
-                            stack = ['0x'+log.stack.peek(0).toString(16), '0x'+log.stack.peek(1).toString(16), '0x'+log.stack.peek(2).toString(16)];
+                            stack = ['0x'+log.stack.peek(2).toString(16), '0x'+log.stack.peek(1).toString(16), '0x'+log.stack.peek(0).toString(16)];
                         }
                         this.data.push({ pc, gasCost, depth, op, stack, gas });
                     },

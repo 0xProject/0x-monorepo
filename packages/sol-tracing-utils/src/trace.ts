@@ -3,6 +3,7 @@ import { OpCode, StructLog } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { utils } from './utils';
+import { constants } from './constants';
 
 export interface ContractAddressToTraces {
     [contractAddress: string]: StructLog[];
@@ -33,9 +34,8 @@ export function getContractAddressToTraces(structLogs: StructLog[], startAddress
 
         if (utils.isCallLike(structLog.op)) {
             const currentAddress = _.last(addressStack) as string;
-            const jumpAddressOffset = 1;
             const newAddress = utils.getAddressFromStackEntry(
-                structLog.stack[structLog.stack.length - jumpAddressOffset - 1],
+                structLog.stack[structLog.stack.length - constants.opCodeToParamToStackOffset[OpCode.Call].to - 1],
             );
 
             // Sometimes calls don't change the execution context (current address). When we do a transfer to an
