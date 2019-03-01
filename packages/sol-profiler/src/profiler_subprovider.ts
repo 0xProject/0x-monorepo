@@ -125,17 +125,22 @@ export const profilerHandler: SingleFileSubtraceHandler = (
     const profilerEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
     const statementToGasConsumed: { [statementId: string]: number } = {};
     const statementIds = _.keys(profilerEntriesDescription.statementMap);
+    // `interestingStructLogs` are those that map back to source wanges within the current file.
+    // It also doesn't include one that map back to nowhere
+    // This is a perf optimization reducing the work done in the loop over `statementIds`.
+    // TODO(logvinov) Optimize the loop below.
+    const interestingStructLogs = _.filter(subtrace, structLog => {
+        const sourceRange = pcToSourceRange[structLog.pc];
+        if (_.isUndefined(sourceRange)) {
+            return false;
+        }
+        return sourceRange.fileName === absoluteFileName;
+    });
     for (const statementId of statementIds) {
         const statementDescription = profilerEntriesDescription.statementMap[statementId];
         const totalGasCost = _.sum(
-            _.map(subtrace, structLog => {
+            _.map(interestingStructLogs, structLog => {
                 const sourceRange = pcToSourceRange[structLog.pc];
-                if (_.isUndefined(sourceRange)) {
-                    return 0;
-                }
-                if (sourceRange.fileName !== absoluteFileName) {
-                    return 0;
-                }
                 if (utils.isRangeInside(sourceRange.location, statementDescription)) {
                     return structLog.gasCost;
                 } else {
