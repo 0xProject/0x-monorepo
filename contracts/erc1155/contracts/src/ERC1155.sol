@@ -153,7 +153,14 @@ contract ERC1155 is
             uint256 value = values[i];
 
             if (isNonFungible(id)) {
-                require(nfOwners[id] == from);
+                require(
+                    value == 1,
+                    "AMOUNT_EQUAL_TO_ONE_REQUIRED"
+                );
+                require(
+                    nfOwners[id] == from,
+                    "NFT_NOT_OWNED_BY_FROM_ADDRESS"
+                );
                 nfOwners[id] = to;
             } else {
                 balances[id][from] = safeSub(balances[id][from], value);

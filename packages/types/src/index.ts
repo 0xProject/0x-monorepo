@@ -285,6 +285,11 @@ export enum RevertReason {
     ToLessThanLengthRequired = 'TO_LESS_THAN_LENGTH_REQUIRED',
     InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
     ApprovalExpired = 'APPROVAL_EXPIRED',
+    // ERC1155
+    nftNotOwnedByFromAddress = 'NFT_NOT_OWNED_BY_FROM_ADDRESS',
+    amountEqualToOneRequired = 'AMOUNT_EQUAL_TO_ONE_REQUIRED',
+    // ERC1155 Proxy
+    transferGreaterThanZeroRequired = 'TRANSFER_GREATER_THAN_ZERO_REQUIRED',
 }
 
 export enum StatusCodes {
