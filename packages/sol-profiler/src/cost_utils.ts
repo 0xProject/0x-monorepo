@@ -1,4 +1,4 @@
-import { TraceInfo } from '@0x/sol-tracing-utils';
+import { constants, TraceInfo } from '@0x/sol-tracing-utils';
 import { logUtils } from '@0x/utils';
 import { OpCode } from 'ethereum-types';
 import { stripHexPrefix } from 'ethereumjs-util';
@@ -47,11 +47,17 @@ export const costUtils = {
         );
         const memoryLocationsAccessed = _.map(memoryLogs, structLog => {
             if (_.includes(CALL_DATA_OPCODES, structLog.op)) {
-                const memOffset = parseInt(structLog.stack[0], HEX_BASE);
-                const length = parseInt(structLog.stack[2], HEX_BASE);
+                const memoryOffsetStackOffset = constants.opCodeToParamToStackOffset[structLog.op as any].memoryOffset;
+                const lengthStackOffset = constants.opCodeToParamToStackOffset[structLog.op as any].length;
+                const memOffset = parseInt(
+                    structLog.stack[structLog.stack.length - memoryOffsetStackOffset - 1],
+                    HEX_BASE,
+                );
+                const length = parseInt(structLog.stack[structLog.stack.length - lengthStackOffset - 1], HEX_BASE);
                 return memOffset + length;
             } else {
-                return parseInt(structLog.stack[structLog.stack.length - 1], HEX_BASE);
+                const memoryLocationStackOffset = constants.opCodeToParamToStackOffset[structLog.op].offset;
+                return parseInt(structLog.stack[structLog.stack.length - memoryLocationStackOffset - 1], HEX_BASE);
             }
         });
         const highestMemoryLocationAccessed = _.max(memoryLocationsAccessed);
@@ -62,7 +68,8 @@ export const costUtils = {
         const COPY_OPCODES = [OpCode.CallDataCopy];
         const copyLogs = _.filter(structLogs, structLog => _.includes(COPY_OPCODES, structLog.op));
         const copyCosts = _.map(copyLogs, structLog => {
-            const length = parseInt(structLog.stack[2], HEX_BASE);
+            const lengthStackOffset = constants.opCodeToParamToStackOffset[structLog.op as any].length;
+            const length = parseInt(structLog.stack[structLog.stack.length - lengthStackOffset - 1], HEX_BASE);
             return Math.ceil(length / WORD_SIZE) * G_COPY;
         });
         return _.sum(copyCosts);
