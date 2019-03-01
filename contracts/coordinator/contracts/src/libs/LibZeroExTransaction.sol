@@ -25,13 +25,14 @@ contract LibZeroExTransaction is
     LibEIP712Domain
 {
     // Hash for the EIP712 0x transaction schema
-    bytes32 constant internal EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "ZeroExTransaction(",
-        "uint256 salt,",
-        "address signerAddress,",
-        "bytes data",
-        ")"
-    ));
+    //  keccak256(abi.encodePacked(
+    //     "ZeroExTransaction(",
+    //     "uint256 salt,",
+    //     "address signerAddress,",
+    //     "bytes data",
+    //     ")"
+    //  ));
+    bytes32 constant internal EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = 0x213c6f636f3ea94e701c0adf9b2624aa45a6c694f9a292c094f9a81c24b5df4c;
 
     struct ZeroExTransaction {
         uint256 salt;           // Arbitrary number to ensure uniqueness of transaction hash.
@@ -61,8 +62,7 @@ contract LibZeroExTransaction is
         returns (bytes32 result)
     {
         bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
-        bytes32 dataHash = keccak256(transaction.data);
-        // TODO(abandeali1): optimize by loading from memory in assembly
+        bytes memory data = transaction.data;
         uint256 salt = transaction.salt;
         address signerAddress = transaction.signerAddress;
 
@@ -75,6 +75,9 @@ contract LibZeroExTransaction is
         // ));
 
         assembly {
+            // Compute hash of data
+            let dataHash := keccak256(add(data, 32), mload(data))
+    
             // Load free memory pointer
             let memPtr := mload(64)
 
