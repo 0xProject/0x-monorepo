@@ -25,13 +25,14 @@ contract LibCoordinatorApproval is
     LibEIP712Domain
 {
     // Hash for the EIP712 Coordinator approval message
-    bytes32 constant internal EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "CoordinatorApproval(",
-        "bytes32 transactionHash,",
-        "bytes transactionSignature,",
-        "uint256 approvalExpirationTimeSeconds",
-        ")"
-    ));
+    // keccak256(abi.encodePacked(
+    //     "CoordinatorApproval(",
+    //     "bytes32 transactionHash,",
+    //     "bytes transactionSignature,",
+    //     "uint256 approvalExpirationTimeSeconds",
+    //     ")"
+    // ));
+    bytes32 constant internal EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH = 0x9f6a55727f39e17015e248e6457fbf0b18270e56c53093ff432d3db5703e191e;
 
     struct CoordinatorApproval {
         bytes32 transactionHash;                // EIP712 hash of the transaction, using the domain separator of this contract.
@@ -60,8 +61,7 @@ contract LibCoordinatorApproval is
         returns (bytes32 result)
     {
         bytes32 schemaHash = EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH;
-        bytes32 transactionSignatureHash = keccak256(approval.transactionSignature);
-        // TODO(abandeali1): optimize by loading from memory in assembly
+        bytes memory transactionSignature = approval.transactionSignature;
         bytes32 transactionHash = approval.transactionHash;
         uint256 approvalExpirationTimeSeconds = approval.approvalExpirationTimeSeconds;
 
@@ -74,6 +74,9 @@ contract LibCoordinatorApproval is
         // ));
 
         assembly {
+            // Compute hash of transaction signature
+            let transactionSignatureHash := keccak256(add(transactionSignature, 32), mload(transactionSignature))
+        
             // Load free memory pointer
             let memPtr := mload(64)
 
