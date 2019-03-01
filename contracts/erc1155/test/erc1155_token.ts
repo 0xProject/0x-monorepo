@@ -69,8 +69,10 @@ describe('ERC1155Token', () => {
         receiver = erc1155Receiver.address;
         // create wrapper & mint erc1155 tokens
         erc1155Wrapper = new Erc1155Wrapper(erc1155Contract, provider, owner);
-        fungibleToken = await erc1155Wrapper.mintFungibleTokenAsync(spender, spenderInitialFungibleBalance);
-        [, nonFungibleToken] = await erc1155Wrapper.mintNonFungibleTokenAsync(spender);
+        fungibleToken = await erc1155Wrapper.mintFungibleTokensAsync([spender], spenderInitialFungibleBalance);
+        let nonFungibleTokens: BigNumber[];
+        [, nonFungibleTokens] = await erc1155Wrapper.mintNonFungibleTokensAsync([spender]);
+        nonFungibleToken = nonFungibleTokens[0];
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
