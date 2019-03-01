@@ -136,3 +136,13 @@ export interface SourceSnippet {
     fileName: string;
     range: SingleFileSourceRange;
 }
+
+export interface OpCodeToParamToStackOffset {
+    [opCode: string]: {
+        [param: string]: number;
+    };
+}
+
+export interface OpCodeToGasCost {
+    [opCode: string]: number;
+}
