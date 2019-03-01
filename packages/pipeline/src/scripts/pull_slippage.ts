@@ -12,6 +12,9 @@ import { handleError } from '../utils';
 // Number of orders to save at once.
 const BATCH_SAVE_SIZE = 1000;
 
+// Max requests to make to API per second;
+const EDPS_MAX_REQUESTS_PER_SECOND = 1;
+
 // Maximum requests per second to CryptoCompare
 const CRYPTO_COMPARE_MAX_REQS_PER_SECOND = 60;
 
@@ -26,7 +29,7 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    const edpsSource = new EdpsSource();
+    const edpsSource = new EdpsSource(EDPS_MAX_REQUESTS_PER_SECOND);
     const cryptoCompareSource = new CryptoCompareOHLCVSource(CRYPTO_COMPARE_MAX_REQS_PER_SECOND);
 
     logUtils.log('Fetching slippage records');
