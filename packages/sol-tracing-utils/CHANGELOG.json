@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.0.7",
+        "changes": [
+            {
+                "note": "Fix a bug when `TruffleArtifactAdapter` wasn't correctly parsing solc config in the pre 5.0 version of trufle",
+                "pr": "todo"
+            }
+        ]
+    },
+    {
         "version": "6.0.6",
         "changes": [
             {
