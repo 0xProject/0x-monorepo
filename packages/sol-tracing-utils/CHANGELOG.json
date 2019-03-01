@@ -4,11 +4,11 @@
         "changes": [
             {
                 "note": "Fix a bug when `TruffleArtifactAdapter` wasn't correctly parsing solc config in the pre 5.0 version of trufle",
-                "pr": "todo"
+                "pr": 1663
             },
             {
                 "note": "Fix a bug when `opCodes` gas costs were incorrect or `NaN`",
-                "pr": "todo"
+                "pr": 1663
             }
         ]
     },
