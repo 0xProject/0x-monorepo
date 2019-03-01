@@ -179,17 +179,28 @@ contract ERC1155Proxy is
                     32
                 )
                 let tokenValuesBegin := add(tokenValuesOffset, 32)
-                let tokenValuesEnd := add(tokenValuesBegin, add(tokenValuesLengthInBytes, 32))
+                let tokenValuesEnd := add(tokenValuesBegin, tokenValuesLengthInBytes)
                 for { let tokenValueOffset := tokenValuesBegin }
                     lt(tokenValueOffset, tokenValuesEnd)
                     { tokenValueOffset := add(tokenValueOffset, 32) }
                 {
-                    // Load token value and revert if multiplication would result in an overflow
+                    // Load token value and generate scaled value
                     let tokenValue := mload(tokenValueOffset)
                     let scaledTokenValue := mul(tokenValue, scaleAmount)
-                    let expectedTokenValue := div(scaledTokenValue, scaleAmount)
+                    
+                    // Check if scaled value is zero
+                    if iszero(scaledTokenValue) {
+                        // Revert with `Error("TRANSFER_GREATER_THAN_ZERO_REQUIRED")`
+                        mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                        mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                        mstore(64, 0x000000235452414e534645525f475245415445525f5448414e5f5a45524f5f52)
+                        mstore(96, 0x4551554952454400000000000000000000000000000000000000000000000000)
+                        mstore(128, 0)
+                        revert(0, 132)
+                    }
 
-                    // check for multiplication overflow
+                    // Check for multiplication overflow
+                    let expectedTokenValue := div(scaledTokenValue, scaleAmount)
                     if iszero(eq(expectedTokenValue, tokenValue)) {
                         // Revert with `Error("UINT256_OVERFLOW")`
                         mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
