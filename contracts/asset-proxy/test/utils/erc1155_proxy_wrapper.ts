@@ -5,12 +5,14 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { Erc1155Wrapper } from '@0x/contracts-erc1155';
+
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import { artifacts, ERC1155MintableContract, ERC1155ProxyContract, ERC1155MintableTransferSingleEventArgs } from '../../src';
 
 
-export class ERC1155Wrapper {
+export class ERC1155ProxyWrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _fungibleTokenIds: string[];
     private readonly _nonFungibleTokenIds: string[];
@@ -19,7 +21,7 @@ export class ERC1155Wrapper {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: Provider;
     private readonly _logDecoder: LogDecoder;
-    private readonly _dummyTokenContracts: ERC1155MintableContract[];
+    private readonly _dummyTokenWrappers: Erc1155Wrapper[];
     private _proxyContract?: ERC1155ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC1155HoldingsByOwner = {fungible: {}, nonFungible: {}};
@@ -27,25 +29,26 @@ export class ERC1155Wrapper {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
-        this._dummyTokenContracts = [];
+        this._dummyTokenWrappers = [];
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
         this._fungibleTokenIds = [];
         this._nonFungibleTokenIds = [];
         this._nfts = [];
     }
-    public async deployDummyTokensAsync(): Promise<ERC1155MintableContract[]> {
+    public async deployDummyTokensAsync(): Promise<Erc1155Wrapper[]> {
         // tslint:disable-next-line:no-unused-variable
         for (const i of _.times(constants.NUM_DUMMY_ERC1155_TO_DEPLOY)) {
-            this._dummyTokenContracts.push(
-                await ERC1155MintableContract.deployFrom0xArtifactAsync(
-                    artifacts.ERC1155Mintable,
-                    this._provider,
-                    txDefaults,
-                ),
+            const erc1155Contract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
+                artifacts.ERC1155Mintable,
+                this._provider,
+                txDefaults,
             );
+            console.log(erc1155Contract.address);
+            const erc1155Wrapper = new Erc1155Wrapper(erc1155Contract, this._provider, this._contractOwnerAddress);
+            this._dummyTokenWrappers.push(erc1155Wrapper);
         }
-        return this._dummyTokenContracts;
+        return this._dummyTokenWrappers;
     }
     public async deployProxyAsync(): Promise<ERC1155ProxyContract> {
         this._proxyContract = await ERC1155ProxyContract.deployFrom0xArtifactAsync(
@@ -69,53 +72,46 @@ export class ERC1155Wrapper {
         };
         const fungibleHoldingsByOwner:  ERC1155FungibleHoldingsByOwner = {};
         const nonFungibleHoldingsByOwner: ERC1155NonFungibleHoldingsByOwner = {};
-        for (const dummyTokenContract of this._dummyTokenContracts) {
-            // Fungible Tokens
+        // set balances accordingly
+        for (const dummyWrapper of this._dummyTokenWrappers) {
+            const dummyAddress = dummyWrapper.getContract().address;
             for (const i of _.times(constants.NUM_ERC1155_FUNGIBLE_TOKENS_MINT)) {
                 // Create a fungible token
-                const tokenUri = generatePseudoRandomSalt().toString();
-                const tokenIsNonFungible = false;
-                const tokenId = await this.createTokenAsync(dummyTokenContract.address, tokenUri, tokenIsNonFungible);
+                const tokenId = await dummyWrapper.mintFungibleTokensAsync(this._tokenOwnerAddresses, constants.INITIAL_ERC1155_FUNGIBLE_BALANCE);
                 const tokenIdAsString = tokenId.toString();
                 this._fungibleTokenIds.push(tokenIdAsString);
                 // Mint tokens for each owner for this token
                 for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                     // tslint:disable-next-line:no-unused-variable
-                    await this.mintFungibleAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
                     if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress])) {
                         fungibleHoldingsByOwner[tokenOwnerAddress] = {};
                     }
-                    if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
-                        fungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address] = {};
+                    if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress])) {
+                        fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress] = {};
                     }
-                    fungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString] = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
-                    await this.approveProxyAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
+                    fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString] = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
+                    await dummyWrapper.setApprovalForAllAsync(tokenOwnerAddress, (this._proxyContract as ERC1155ProxyContract).address, true);
                 }
             }
             // Non-Fungible Tokens
             for (const i of _.times(constants.NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT)) {
-                const tokenUri = generatePseudoRandomSalt().toString();
-                const tokenIsNonFungible = true;
-                const tokenId = await this.createTokenAsync(dummyTokenContract.address, tokenUri, tokenIsNonFungible);
+                const [tokenId, nftIds] = await dummyWrapper.mintNonFungibleTokensAsync(this._tokenOwnerAddresses);
                 const tokenIdAsString = tokenId.toString();
                 this._nonFungibleTokenIds.push(tokenIdAsString);
-                await this.mintNonFungibleAsync(dummyTokenContract.address, tokenId, this._tokenOwnerAddresses);
-                let tokenNonce = 0;
-                for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
+                _.each(this._tokenOwnerAddresses, async (tokenOwnerAddress: string, i: number) => {
                      if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress])) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress] = {};
                      }
-                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
-                        nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address] = {};
+                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress] = {};
                      }
-                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString])) {
-                        nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString] = [];
+                     if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString])) {
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString] = [];
                      }
-                     const nonFungibleId = tokenId.plus(++tokenNonce);
-                     this._nfts.push({id: nonFungibleId, tokenId});
-                     nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyTokenContract.address][tokenIdAsString].push(nonFungibleId);
-                     await this.approveProxyAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
-                }
+                     this._nfts.push({id: nftIds[i], tokenId});
+                     nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString].push(nftIds[i]);
+                     await dummyWrapper.setApprovalForAllAsync(tokenOwnerAddress, (this._proxyContract as ERC1155ProxyContract).address, true);
+                });
             }
         }
         this._initialTokenIdsByOwner = {
@@ -123,51 +119,6 @@ export class ERC1155Wrapper {
             nonFungible: nonFungibleHoldingsByOwner,
         }
         return this._initialTokenIdsByOwner;
-    }
-    public async approveProxyAsync(tokenAddress: string, tokenId: BigNumber, tokenOwner: string): Promise<void> {
-        const proxyAddress = (this._proxyContract as ERC1155ProxyContract).address;
-        await this.approveProxyForAllAsync(proxyAddress, tokenAddress, tokenOwner);
-    }
-    public async approveProxyForAllAsync(to: string, tokenAddress: string, tokenOwner: string): Promise<void> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.setApprovalForAll.sendTransactionAsync(to, true, {
-                from: tokenOwner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-    }
-    public async createTokenAsync(tokenAddress: string, tokenUri: string, tokenIsNonFungible: boolean): Promise<BigNumber> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await tokenContract.create.sendTransactionAsync(tokenUri, tokenIsNonFungible),
-        );
-        const createFungibleTokenLog = txReceipt.logs[0] as LogWithDecodedArgs<ERC1155MintableTransferSingleEventArgs>;
-        const dummyFungibleTokenId = createFungibleTokenLog.args._id;
-        return dummyFungibleTokenId;
-    }
-    public async mintFungibleAsync(tokenAddress: string, tokenId: BigNumber, userAddress: string): Promise<void> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.mintFungible.sendTransactionAsync(
-                tokenId,
-                [userAddress],
-                [constants.INITIAL_ERC1155_FUNGIBLE_BALANCE],
-                { from: this._contractOwnerAddress }
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-    }
-    public async mintNonFungibleAsync(tokenAddress: string, tokenId: BigNumber, userAddresses: string[]): Promise<void> {
-        const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.mintNonFungible.sendTransactionAsync(
-                tokenId,
-                userAddresses,
-                { from: this._contractOwnerAddress }
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
     }
     public async ownerOfNonFungibleAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
@@ -192,9 +143,9 @@ export class ERC1155Wrapper {
         this._validateBalancesAndAllowancesSetOrThrow();
         const tokenHoldingsByOwner: ERC1155FungibleHoldingsByOwner = {};
         const nonFungibleHoldingsByOwner: ERC1155NonFungibleHoldingsByOwner = {};
-        for (const dummyTokenContract of this._dummyTokenContracts) {
-            const tokenAddress = dummyTokenContract.address;
-            const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
+        for (const dummyTokenWrapper of this._dummyTokenWrappers) {
+            const tokenContract = dummyTokenWrapper.getContract();
+            const tokenAddress = tokenContract.address;
             // Construct batch balance call
             const tokenOwners: string[] = [];
             const tokenIds: BigNumber[] = [];
@@ -208,7 +159,7 @@ export class ERC1155Wrapper {
                     tokenIds.push(nft.id);
                 }
             }
-            const balances = await tokenContract.balanceOfBatch.callAsync(tokenOwners, tokenIds);
+            const balances = await dummyTokenWrapper.getBalancesAsync(tokenOwners, tokenIds);
             // Parse out balances into fungible / non-fungible token holdings
             let i = 0;
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
@@ -257,19 +208,28 @@ export class ERC1155Wrapper {
     public getTokenOwnerAddresses(): string[] {
         return this._tokenOwnerAddresses;
     }
+    public getTokenWrapper(tokenAddress: string): Erc1155Wrapper {
+        const tokenWrapper = _.find(this._dummyTokenWrappers, (wrapper: Erc1155Wrapper) => {return wrapper.getContract().address === tokenAddress});
+        if (_.isUndefined(tokenWrapper)) {
+            throw new Error(`Token: ${tokenAddress} was not deployed through ERC1155Wrapper`);
+        }
+        return tokenWrapper;
+    }
+    /*
     public getTokenAddresses(): string[] {
         const tokenAddresses = _.map(this._dummyTokenContracts, dummyTokenContract => dummyTokenContract.address);
         return tokenAddresses;
     }
+    */
     private _getTokenContractFromAssetData(tokenAddress: string): ERC1155MintableContract {
-        const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
+        const tokenContractIfExists = _.find(this._dummyTokenWrappers, c => c.getContract().address === tokenAddress);
         if (_.isUndefined(tokenContractIfExists)) {
             throw new Error(`Token: ${tokenAddress} was not deployed through ERC1155Wrapper`);
         }
-        return tokenContractIfExists;
+        return tokenContractIfExists.getContract();
     }
     private _validateDummyTokenContractsExistOrThrow(): void {
-        if (_.isUndefined(this._dummyTokenContracts)) {
+        if (_.isUndefined(this._dummyTokenWrappers)) {
             throw new Error('Dummy ERC1155 tokens not yet deployed, please call "deployDummyTokensAsync"');
         }
     }
