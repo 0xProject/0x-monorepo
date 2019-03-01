@@ -125,7 +125,7 @@ export const profilerHandler: SingleFileSubtraceHandler = (
     const profilerEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
     const statementToGasConsumed: { [statementId: string]: number } = {};
     const statementIds = _.keys(profilerEntriesDescription.statementMap);
-    // `interestingStructLogs` are those that map back to source wanges within the current file.
+    // `interestingStructLogs` are those that map back to source ranges within the current file.
     // It also doesn't include one that map back to nowhere
     // This is a perf optimization reducing the work done in the loop over `statementIds`.
     // TODO(logvinov) Optimize the loop below.
