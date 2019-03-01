@@ -22,6 +22,7 @@ const opCodeToGasCost: OpCodeToGasCost = {
 // tslint:disable:number-literal-format
 export const constants = {
     NEW_CONTRACT: 'NEW_CONTRACT' as 'NEW_CONTRACT',
+    HEX_BASE: 16,
     PUSH1: 0x60,
     PUSH2: 0x61,
     PUSH32: 0x7f,
