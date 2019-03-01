@@ -1,4 +1,4 @@
-import { fetchAsync, logUtils } from '@0x/utils';
+import { fetchAsync } from '@0x/utils';
 import Bottleneck from 'bottleneck';
 
 const ONE_SECOND = 1000;
@@ -36,7 +36,6 @@ export class EdpsSource {
      */
     public async getEdpsAsync(direction: string, symbol: string, amount: number): Promise<EdpsWrapper> {
         const edpsUrl = `${EDPS_BASE_URL}/${direction}?amount=${amount}&symbol=${symbol}&decimals=`;
-        logUtils.log(`${direction} ${amount} ${symbol}`);
         const resp = await this._limiter.schedule(() => fetchAsync(edpsUrl));
         const respJson: EdpsResponse = await resp.json();
         const allExchanges: EdpsWrapper = {};
