@@ -2,8 +2,8 @@ import { logUtils } from '@0x/utils';
 import { OpCode, StructLog } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { utils } from './utils';
 import { constants } from './constants';
+import { utils } from './utils';
 
 export interface ContractAddressToTraces {
     [contractAddress: string]: StructLog[];

@@ -1,6 +1,6 @@
 import { OpCode } from 'ethereum-types';
 
-import { OpCodeToParamToStackOffset, OpCodeToGasCost } from './types';
+import { OpCodeToGasCost, OpCodeToParamToStackOffset } from './types';
 
 const opCodeToParamToStackOffset: OpCodeToParamToStackOffset = {
     [OpCode.Call]: {
