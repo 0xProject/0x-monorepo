@@ -128,7 +128,7 @@ export const profilerHandler: SingleFileSubtraceHandler = (
     // `interestingStructLogs` are those that map back to source ranges within the current file.
     // It also doesn't include any that cannot be mapped back
     // This is a perf optimization reducing the work done in the loop over `statementIds`.
-    // TODO(logvinov) Optimize the loop below.
+    // TODO(logvinov): Optimize the loop below.
     const interestingStructLogs = _.filter(subtrace, structLog => {
         const sourceRange = pcToSourceRange[structLog.pc];
         if (_.isUndefined(sourceRange)) {
