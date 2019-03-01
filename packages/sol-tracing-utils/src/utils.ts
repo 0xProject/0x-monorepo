@@ -138,12 +138,12 @@ export const utils = {
         };
         if (structLogs[0].depth === 1) {
             // Geth uses 1-indexed depth counter whilst ganache starts from 0
-            normalizedStructLogs = _.map(structLogs, reduceDepthBy1);
-            normalizedStructLogs = _.map(structLogs, normalizeCallCost);
-            normalizedStructLogs = _.map(structLogs, normalizeStaticCallCost);
+            normalizedStructLogs = _.map(normalizedStructLogs, reduceDepthBy1);
+            normalizedStructLogs = _.map(normalizedStructLogs, normalizeCallCost);
+            normalizedStructLogs = _.map(normalizedStructLogs, normalizeStaticCallCost);
         } else {
             // Ganache shifts opcodes gas costs so we need to unshift them
-            normalizedStructLogs = _.map(structLogs, shiftGasCosts1Left);
+            normalizedStructLogs = _.map(normalizedStructLogs, shiftGasCosts1Left);
         }
         return normalizedStructLogs;
     },
