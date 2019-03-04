@@ -1319,7 +1319,7 @@ describe('Asset Transfer Proxies', () => {
             });
         });
     });
-    describe.only('ERC1155Proxy', () => {
+    describe('ERC1155Proxy', () => {
         it('should revert if undefined function is called', async () => {
             const undefinedSelector = '0x01020304';
             await expectTransactionFailedWithoutReasonAsync(
