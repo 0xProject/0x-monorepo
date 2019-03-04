@@ -1541,21 +1541,41 @@ describe('Asset Transfer Proxies', () => {
                 expect(newSenderBalance).to.be.bignumber.equal(expectedNewSenderBalance);
                 expect(newReceiverBalance).to.be.bignumber.equal(expectedNewReceiverBalance);
             });
-            it.skip('should successfully transfer value for a combination of several fungible/non-fungible tokens', async () => {
-                // Construct ERC1155 asset data
-                const callbackData = "0x";
-                const fungibleTokenIdToTransfer = erc1155FungibleTokenIds[0];
-                const nonFungibleTokenIdToTransfer = erc1155NonFungibleTokenIds[0];
+            it('should successfully transfer value for a combination of several fungible/non-fungible tokens', async () => {
+                // Check inital balances and construct asset data
+                const erc1155Wrapper = erc1155ProxyWrapper.getTokenWrapper(erc1155Token.address);
+                const spenderInitialFungibleBalance = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
+                const receiverInitialFungibleBalance = constants.INITIAL_ERC1155_FUNGIBLE_BALANCE;
+                const expectedInitialBalances = [
+                    // spender balances
+                    spenderInitialFungibleBalance,
+                    spenderInitialFungibleBalance,
+                    spenderInitialFungibleBalance,
+                    new BigNumber(1),
+                    new BigNumber(1),
+                    // receiver balances
+                    receiverInitialFungibleBalance,
+                    receiverInitialFungibleBalance,
+                    receiverInitialFungibleBalance,
+                    new BigNumber(0),
+                    new BigNumber(0),
+                ];
+                const tokenHolders = [
+                    fromAddress,
+                    toAddress,
+                ];
+                const fungibleTokenIdsToTransfer = erc1155FungibleTokenIds.slice(0, 3);
+                const nonFungibleTokenIdsToTransfer = erc1155NonFungibleTokenIds.slice(0, 2);
                 const initialHoldingsByOwner = await erc1155ProxyWrapper.getBalancesAsync();
-                const nftToTransfer = initialHoldingsByOwner.nonFungible[fromAddress][erc1155Token.address][nonFungibleTokenIdToTransfer.toString()][0];
-                const tokenIdsToTransfer = [fungibleTokenIdToTransfer, nftToTransfer];
-                const tokenValuesToTransfer = [new BigNumber(10), new BigNumber(1)];
+                const nftsToTransfer = [
+                    initialHoldingsByOwner.nonFungible[fromAddress][erc1155Token.address][nonFungibleTokenIdsToTransfer[0].toString()][0],
+                    initialHoldingsByOwner.nonFungible[fromAddress][erc1155Token.address][nonFungibleTokenIdsToTransfer[1].toString()][0],
+                ];
+                const tokenIdsToTransfer = fungibleTokenIdsToTransfer.concat(nftsToTransfer);
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokenIdsToTransfer, expectedInitialBalances);
+                const callbackData = "0x";
+                const tokenValuesToTransfer = [spenderInitialFungibleBalance, spenderInitialFungibleBalance, spenderInitialFungibleBalance, new BigNumber(1),new BigNumber(1)];
                 const encodedAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Token.address, tokenIdsToTransfer, tokenValuesToTransfer, callbackData);
-                // Verify precondition
-                const initialSenderBalance = initialHoldingsByOwner.fungible[fromAddress][erc1155Token.address][fungibleTokenIdToTransfer.toString()];
-                const initialReceiverBalance = initialHoldingsByOwner.fungible[toAddress][erc1155Token.address][fungibleTokenIdToTransfer.toString()];
-                const nftHolder = await erc1155ProxyWrapper.ownerOfNonFungibleAsync(erc1155Token.address, nftToTransfer);
-                expect(nftHolder).to.be.equal(fromAddress);
                 // Perform a transfer from fromAddress to toAddress
                 const perUnitValue = new BigNumber(1);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
@@ -1572,23 +1592,22 @@ describe('Asset Transfer Proxies', () => {
                     }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                // Verify non-fungible transfer was successful
-                const newNftHolder = await erc1155ProxyWrapper.ownerOfNonFungibleAsync(erc1155Token.address, nftToTransfer);
-                expect(newNftHolder).to.be.equal(toAddress);
-                // Verify non-fungible balances updated successfully
-                const newHoldingsByOwner = await erc1155ProxyWrapper.getBalancesAsync();
-                const newNftsForFromAddress = newHoldingsByOwner.nonFungible[fromAddress][erc1155Token.address][nonFungibleTokenIdToTransfer.toString()];
-                const newNftsForToAddress = newHoldingsByOwner.nonFungible[toAddress][erc1155Token.address][nonFungibleTokenIdToTransfer.toString()];
-                expect(_.find(newNftsForFromAddress, nftToTransfer)).to.be.undefined();
-                expect(_.find(newNftsForToAddress, nftToTransfer)).to.be.not.undefined();
-                // Verify fungible transfer was successful
-                const totalValueTransferred = tokenValuesToTransfer[0].times(perUnitValue);
-                const newSenderBalance = newHoldingsByOwner.fungible[fromAddress][erc1155Token.address][fungibleTokenIdToTransfer.toString()];
-                const expectedNewSenderBalance = initialSenderBalance.minus(totalValueTransferred);
-                const newReceiverBalance = newHoldingsByOwner.fungible[toAddress][erc1155Token.address][fungibleTokenIdToTransfer.toString()];
-                const expectedNewReceiverBalance = initialReceiverBalance.plus(totalValueTransferred);
-                expect(newSenderBalance).to.be.bignumber.equal(expectedNewSenderBalance);
-                expect(newReceiverBalance).to.be.bignumber.equal(expectedNewReceiverBalance);
+                // Check final balances
+                const expectedFinalBalances = [
+                    // spender balances
+                    new BigNumber(0),
+                    new BigNumber(0),
+                    new BigNumber(0),
+                    new BigNumber(0),
+                    new BigNumber(0),
+                    // receiver balances
+                    receiverInitialFungibleBalance.plus(spenderInitialFungibleBalance),
+                    receiverInitialFungibleBalance.plus(spenderInitialFungibleBalance),
+                    receiverInitialFungibleBalance.plus(spenderInitialFungibleBalance),
+                    new BigNumber(1),
+                    new BigNumber(1),
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokenIdsToTransfer, expectedFinalBalances);
             });
             it('should successfully transfer value and ignore extra assetData', async () => {
                 // Construct ERC1155 asset data
@@ -1944,7 +1963,6 @@ describe('Asset Transfer Proxies', () => {
                 const initialSenderBalance = initialHoldingsByOwner.fungible[fromAddress][erc1155Token.address][fungibleTokenIdToTransfer.toString()];
                 // Construct ERC1155 asset data
                 const callbackData = "0x";
-                console.log('init sender balance - ', initialSenderBalance.toString());
                 const tokenIdsToTransfer = [fungibleTokenIdToTransfer];
                 const tokenValuesToTransfer = [initialSenderBalance];
                 const encodedAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Token.address, tokenIdsToTransfer, tokenValuesToTransfer, callbackData);
