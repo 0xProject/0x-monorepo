@@ -11,33 +11,21 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber, AbiEncoder } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
     artifacts,
-    DummyERC20TokenContract,
-    DummyERC20TokenTransferEventArgs,
-    DummyERC721ReceiverContract,
-    DummyERC721TokenContract,
-    DummyMultipleReturnERC20TokenContract,
-    DummyNoReturnERC20TokenContract,
-    ERC20ProxyContract,
-    ERC20Wrapper,
     ERC721ProxyContract,
-    ERC721Wrapper,
     ERC1155ProxyWrapper,
-    ERC1155ProxyContract,
     IAssetDataContract,
     IAssetProxyContract,
-    MultiAssetProxyContract,
     ERC1155MintableContract,
     DummyERC1155ReceiverContract,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
 } from '../src';
-import values from 'ramda/es/values';
 import { Erc1155Wrapper } from '../../erc1155/lib/src';
 
 chaiSetup.configure();
@@ -45,11 +33,6 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const assetProxyInterface = new IAssetProxyContract(
     artifacts.IAssetProxy.compilerOutput.abi,
-    constants.NULL_ADDRESS,
-    provider,
-);
-const assetDataInterface = new IAssetDataContract(
-    artifacts.IAssetData.compilerOutput.abi,
     constants.NULL_ADDRESS,
     provider,
 );
