@@ -239,8 +239,6 @@ describe('ERC1155Token', () => {
             const valuesToTransfer = [nonFungibleValueToTransfer];
             // check balances before transfer
             const expectedInitialBalances = [
-                spenderInitialFungibleBalance,
-                receiverInitialFungibleBalance,
                 nftOwnerBalance,
                 nftNotOwnerBalance,
             ];
