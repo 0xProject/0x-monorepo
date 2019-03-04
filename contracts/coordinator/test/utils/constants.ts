@@ -6,6 +6,7 @@ export const constants = {
     COORDINATOR_APPROVAL_SCHEMA: {
         name: 'CoordinatorApproval',
         parameters: [
+            { name: 'txOrigin', type: 'address' },
             { name: 'transactionHash', type: 'bytes32' },
             { name: 'transactionSignature', type: 'bytes' },
             { name: 'approvalExpirationTimeSeconds', type: 'uint256' },

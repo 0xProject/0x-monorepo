@@ -7,7 +7,11 @@ import * as _ from 'lodash';
 import { constants } from './index';
 
 export const hashUtils = {
-    getApprovalHashBuffer(transaction: SignedZeroExTransaction, approvalExpirationTimeSeconds: BigNumber): Buffer {
+    getApprovalHashBuffer(
+        transaction: SignedZeroExTransaction,
+        txOrigin: string,
+        approvalExpirationTimeSeconds: BigNumber,
+    ): Buffer {
         const domain = {
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
@@ -15,6 +19,7 @@ export const hashUtils = {
         };
         const transactionHash = hashUtils.getTransactionHashHex(transaction);
         const approval = {
+            txOrigin,
             transactionHash,
             transactionSignature: transaction.signature,
             approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
@@ -30,9 +35,13 @@ export const hashUtils = {
         const hashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         return hashBuffer;
     },
-    getApprovalHashHex(transaction: SignedZeroExTransaction, approvalExpirationTimeSeconds: BigNumber): string {
+    getApprovalHashHex(
+        transaction: SignedZeroExTransaction,
+        txOrigin: string,
+        approvalExpirationTimeSeconds: BigNumber,
+    ): string {
         const hashHex = `0x${hashUtils
-            .getApprovalHashBuffer(transaction, approvalExpirationTimeSeconds)
+            .getApprovalHashBuffer(transaction, txOrigin, approvalExpirationTimeSeconds)
             .toString('hex')}`;
         return hashHex;
     },

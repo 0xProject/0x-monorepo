@@ -126,10 +126,15 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                     await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -161,6 +166,7 @@ describe('Coordinator tests', () => {
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                     await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        feeRecipientAddress,
                         transaction.signature,
                         [],
                         [],
@@ -192,6 +198,7 @@ describe('Coordinator tests', () => {
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [],
                         [],
@@ -209,11 +216,16 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [signature],
@@ -228,10 +240,15 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -246,10 +263,15 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -268,10 +290,15 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                     await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -305,6 +332,7 @@ describe('Coordinator tests', () => {
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                     await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        feeRecipientAddress,
                         transaction.signature,
                         [],
                         [],
@@ -337,11 +365,16 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [signature],
@@ -356,10 +389,15 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -374,10 +412,15 @@ describe('Coordinator tests', () => {
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory.newSignedApproval(
+                    transaction,
+                    takerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
+                        takerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -396,6 +439,7 @@ describe('Coordinator tests', () => {
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
                     transaction,
+                    makerAddress,
                     transaction.signature,
                     [],
                     [],
@@ -423,6 +467,7 @@ describe('Coordinator tests', () => {
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
                     transaction,
+                    makerAddress,
                     transaction.signature,
                     [],
                     [],
@@ -452,6 +497,7 @@ describe('Coordinator tests', () => {
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
                     transaction,
+                    makerAddress,
                     transaction.signature,
                     [],
                     [],
