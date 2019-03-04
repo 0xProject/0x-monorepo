@@ -138,12 +138,12 @@ export class Erc1155Wrapper {
         tokens: BigNumber[],
         expectedBalances: BigNumber[],
     ): Promise<void> {
-        let ownersExtended: string[] = [];
-        const tokensExtended: BigNumber[] = [];
-        _.each(tokens, (token: BigNumber) => {
-            ownersExtended = ownersExtended.concat(owners);
-            _.each(_.range(0, owners.length), () => {
-                tokensExtended.push(token);
+        const ownersExtended: string[] = [];
+        let tokensExtended: BigNumber[] = [];
+        _.each(owners, (owner: string) => {
+            tokensExtended = tokensExtended.concat(tokens);
+            _.each(_.range(0, tokens.length), () => {
+                ownersExtended.push(owner);
             });
         });
         const balances = await this.getBalancesAsync(ownersExtended, tokensExtended);
