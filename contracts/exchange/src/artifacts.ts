@@ -5,9 +5,12 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as DummyERC1155Receiver from '../generated-artifacts/DummyERC1155Receiver.json';
 import * as DummyERC20Token from '../generated-artifacts/DummyERC20Token.json';
 import * as DummyERC721Token from '../generated-artifacts/DummyERC721Token.json';
 import * as DummyNoReturnERC20Token from '../generated-artifacts/DummyNoReturnERC20Token.json';
+import * as ERC1155Mintable from '../generated-artifacts/ERC1155Mintable.json';
+import * as ERC1155Proxy from '../generated-artifacts/ERC1155Proxy.json';
 import * as ERC20Proxy from '../generated-artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
 import * as Exchange from '../generated-artifacts/Exchange.json';
@@ -32,6 +35,7 @@ import * as Validator from '../generated-artifacts/Validator.json';
 import * as Wallet from '../generated-artifacts/Wallet.json';
 import * as Whitelist from '../generated-artifacts/Whitelist.json';
 export const artifacts = {
+    ERC1155Proxy: ERC1155Proxy as ContractArtifact,
     ERC20Proxy: ERC20Proxy as ContractArtifact,
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
@@ -39,6 +43,8 @@ export const artifacts = {
     DummyNoReturnERC20Token: DummyNoReturnERC20Token as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     DummyERC721Token: DummyERC721Token as ContractArtifact,
+    ERC1155Mintable: ERC1155Mintable as ContractArtifact,
+    DummyERC1155Receiver: DummyERC1155Receiver as ContractArtifact,
     TestLibs: TestLibs as ContractArtifact,
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Validator: Validator as ContractArtifact,

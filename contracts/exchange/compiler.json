@@ -18,10 +18,12 @@
         }
     },
     "contracts": [
+        "@0x/contracts-asset-proxy/contracts/src/ERC1155Proxy.sol",
         "@0x/contracts-asset-proxy/contracts/src/ERC20Proxy.sol",
         "@0x/contracts-asset-proxy/contracts/src/ERC721Proxy.sol",
-        "@0x/contracts-asset-proxy/contracts/src/ERC1155Proxy.sol",
         "@0x/contracts-asset-proxy/contracts/src/MultiAssetProxy.sol",
+        "@0x/contracts-erc1155/contracts/src/ERC1155Mintable.sol",
+        "@0x/contracts-erc1155/contracts/test/DummyERC1155Receiver.sol",
         "@0x/contracts-erc20/contracts/test/DummyERC20Token.sol",
         "@0x/contracts-erc20/contracts/test/DummyNoReturnERC20Token.sol",
         "@0x/contracts-erc20/contracts/test/ReentrantERC20Token.sol",
