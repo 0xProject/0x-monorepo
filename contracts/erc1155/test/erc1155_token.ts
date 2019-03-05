@@ -238,10 +238,7 @@ describe('ERC1155Token', () => {
             const tokensToTransfer = [nonFungibleToken];
             const valuesToTransfer = [nonFungibleValueToTransfer];
             // check balances before transfer
-            const expectedInitialBalances = [
-                nftOwnerBalance,
-                nftNotOwnerBalance,
-            ];
+            const expectedInitialBalances = [nftOwnerBalance, nftNotOwnerBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
             await erc1155Wrapper.safeBatchTransferFromAsync(

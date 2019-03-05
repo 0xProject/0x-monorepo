@@ -1,11 +1,9 @@
 import { constants, LogDecoder } from '@0x/contracts-test-utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
-import { Provider } from 'ethereum-types';
-
-import { BigNumber } from '@0x/utils';
 
 import { artifacts, ERC1155MintableContract, ERC1155TransferSingleEventArgs } from '../../src';
 
@@ -67,7 +65,10 @@ export class Erc1155Wrapper {
         );
         return tx;
     }
-    public async mintFungibleTokensAsync(beneficiaries: string[], tokenAmounts: BigNumber | BigNumber[]): Promise<BigNumber> {
+    public async mintFungibleTokensAsync(
+        beneficiaries: string[],
+        tokenAmounts: BigNumber | BigNumber[],
+    ): Promise<BigNumber> {
         const tokenUri = 'dummyFungibleToken';
         const tokenIsNonFungible = false;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
@@ -80,7 +81,9 @@ export class Erc1155Wrapper {
         const token = createFungibleTokenLog.args.id;
         const tokenAmountsAsArray = _.isArray(tokenAmounts) ? tokenAmounts : [];
         if (!_.isArray(tokenAmounts)) {
-            _.each(_.range(0, beneficiaries.length), () => {tokenAmountsAsArray.push(tokenAmounts)});
+            _.each(_.range(0, beneficiaries.length), () => {
+                tokenAmountsAsArray.push(tokenAmounts);
+            });
         }
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._erc1155Contract.mintFungible.sendTransactionAsync(token, beneficiaries, tokenAmountsAsArray, {
