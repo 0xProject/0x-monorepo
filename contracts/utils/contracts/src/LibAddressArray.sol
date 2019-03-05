@@ -91,15 +91,31 @@ library LibAddressArray {
     function contains(address[] memory addressArray, address target)
         internal
         pure
-        returns (bool)
+        returns (bool success)
     {
-        uint256 length = addressArray.length;
-        for (uint256 i = 0; i < length; i++) {
-            if (addressArray[i] == target) {
-                return true;
+        assembly {
+
+            // Calculate byte length of array
+            let arrayByteLen := mul(mload(addressArray), 32)
+            // Calculate beginning of array contents
+            let arrayContentsStart := add(addressArray, 32)
+
+            // Loop through array
+            for {let i:= 0} lt(i, arrayByteLen) {i := add(i, 32)} {
+
+                // Load array element
+                let arrayElement := mload(add(arrayContentsStart, i))
+
+                // Return true if array element equals target
+                if eq(target, arrayElement) {
+                    // Set success to true
+                    success := 1
+                    // Break loop
+                    i := arrayByteLen
+                }
             }
         }
-        return false;
+        return success;
     }
 
     /// @dev Finds the index of an address within an array.
@@ -109,14 +125,31 @@ library LibAddressArray {
     function indexOf(address[] memory addressArray, address target)
         internal
         pure
-        returns (bool, uint256)
+        returns (bool success, uint256 index)
     {
-        uint256 length = addressArray.length;
-        for (uint256 i = 0; i < length; i++) {
-            if (addressArray[i] == target) {
-                return (true, i);
+        assembly {
+
+            // Calculate byte length of array
+            let arrayByteLen := mul(mload(addressArray), 32)
+            // Calculate beginning of array contents
+            let arrayContentsStart := add(addressArray, 32)
+
+            // Loop through array
+            for {let i:= 0} lt(i, arrayByteLen) {i := add(i, 32)} {
+
+                // Load array element
+                let arrayElement := mload(add(arrayContentsStart, i))
+
+                // Return true if array element equals target
+                if eq(target, arrayElement) {
+                    // Set success and index
+                    success := 1
+                    index := div(i, 32)
+                    // Break loop
+                    i := arrayByteLen
+                }
             }
         }
-        return (false, 0);
+        return (success, index);
     }
 }
