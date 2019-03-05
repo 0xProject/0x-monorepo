@@ -33,12 +33,13 @@ export class Erc1155Wrapper {
         to: string,
         token: BigNumber,
         value: BigNumber,
-        callbackData: string = '0x',
-        delegatedSpender: string = '',
+        callbackData?: string,
+        delegatedSpender?: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const spender = _.isEmpty(delegatedSpender) ? from : delegatedSpender;
+        const spender = _.isUndefined(delegatedSpender) ? from : delegatedSpender;
+        const callbackDataHex = _.isUndefined(callbackData) ? '0x' : callbackData;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.safeTransferFrom.sendTransactionAsync(from, to, token, value, callbackData, {
+            await this._erc1155Contract.safeTransferFrom.sendTransactionAsync(from, to, token, value, callbackDataHex, {
                 from: spender,
             }),
         );
@@ -49,17 +50,18 @@ export class Erc1155Wrapper {
         to: string,
         tokens: BigNumber[],
         values: BigNumber[],
-        callbackData: string = '0x',
-        delegatedSpender: string = '',
+        callbackData?: string,
+        delegatedSpender?: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const spender = _.isEmpty(delegatedSpender) ? from : delegatedSpender;
+        const spender = _.isUndefined(delegatedSpender) ? from : delegatedSpender;
+        const callbackDataHex = _.isUndefined(callbackData) ? '0x' : callbackData;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this._erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
                 from,
                 to,
                 tokens,
                 values,
-                callbackData,
+                callbackDataHex,
                 { from: spender },
             ),
         );

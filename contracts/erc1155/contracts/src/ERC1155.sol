@@ -77,7 +77,14 @@ contract ERC1155 is
 
         // perform transfer
         if (isNonFungible(id)) {
-            require(nfOwners[id] == from);
+            require(
+                    value == 1,
+                    "AMOUNT_EQUAL_TO_ONE_REQUIRED"
+            );
+            require(
+                nfOwners[id] == from,
+                "NFT_NOT_OWNED_BY_FROM_ADDRESS"
+            );
             nfOwners[id] = to;
             // You could keep balance of NF type in base type id like so:
             // uint256 baseType = getNonFungibleBaseType(_id);
@@ -164,7 +171,7 @@ contract ERC1155 is
                 nfOwners[id] = to;
             } else {
                 balances[id][from] = safeSub(balances[id][from], value);
-                balances[id][to] = safeAdd(value, balances[id][to]);
+                balances[id][to] = safeAdd(balances[id][to], value);
             }
         }
         emit TransferBatch(msg.sender, from, to, ids, values);
