@@ -13,12 +13,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    ERC1155MintableContract,
-    ERC1155ProxyContract,
-    IAssetProxyContract,
-} from '../../src';
+import { artifacts, ERC1155MintableContract, ERC1155ProxyContract, IAssetProxyContract } from '../../src';
 
 export class ERC1155ProxyWrapper {
     private readonly _tokenOwnerAddresses: string[];
@@ -34,13 +29,13 @@ export class ERC1155ProxyWrapper {
     private _proxyContract?: ERC1155ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC1155HoldingsByOwner = { fungible: {}, nonFungible: {} };
-    
+
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
         this._dummyTokenWrappers = [];
-        this._assetProxyInterface  = new IAssetProxyContract(
+        this._assetProxyInterface = new IAssetProxyContract(
             artifacts.IAssetProxy.compilerOutput.abi,
             constants.NULL_ADDRESS,
             provider,
@@ -132,8 +127,8 @@ export class ERC1155ProxyWrapper {
                 valueMultiplier,
                 receiverCallbackData,
                 authorizedSender,
-                extraData
-            )
+                extraData,
+            ),
         );
         return txReceipt;
     }
@@ -178,7 +173,7 @@ export class ERC1155ProxyWrapper {
             }
             // Non-fungible tokens
             // tslint:disable-next-line:no-unused-variable
-            for (const i of _.times(constants.NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT)) {
+            for (const j of _.times(constants.NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT)) {
                 const [tokenId, nftIds] = await dummyWrapper.mintNonFungibleTokensAsync(this._tokenOwnerAddresses);
                 const tokenIdAsString = tokenId.toString();
                 this._nonFungibleTokenIds.push(tokenIdAsString);
