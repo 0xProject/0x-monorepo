@@ -17,22 +17,22 @@ export interface ERC721TokenIdsByOwner {
 export interface ERC1155FungibleHoldingsByOwner {
     [ownerAddress: string]: {
         [tokenAddress: string]: {
-            [tokenId: string]: BigNumber
-        }
+            [tokenId: string]: BigNumber;
+        };
     };
 }
 
 export interface ERC1155NonFungibleHoldingsByOwner {
     [ownerAddress: string]: {
         [tokenAddress: string]: {
-            [tokenId: string]: BigNumber[]
-        }
+            [tokenId: string]: BigNumber[];
+        };
     };
 }
 
 export interface ERC1155HoldingsByOwner {
-    fungible: ERC1155FungibleHoldingsByOwner,
-    nonFungible: ERC1155NonFungibleHoldingsByOwner,
+    fungible: ERC1155FungibleHoldingsByOwner;
+    nonFungible: ERC1155NonFungibleHoldingsByOwner;
 }
 
 export interface SubmissionContractEventArgs {
