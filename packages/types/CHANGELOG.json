@@ -3,7 +3,7 @@
         "version": "2.2.2",
         "changes": [
             {
-                "note": "Added `Uint256Underflow`, `TransferRejected`, and `InsufficientAllowance` revert reasons",
+                "note": "Added ERC1155 revert reasons",
                 "pr": 1657
                            
             }
