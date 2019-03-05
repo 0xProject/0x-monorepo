@@ -1,5 +1,14 @@
 [
     {
+    "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Added `encodeERC721AssetData` and `decodeERC721AssetData`",
+                "pr": 1661
+            }
+        ]
+    },
+    {
         "timestamp": 1551479279,
         "version": "7.0.2",
         "changes": [
