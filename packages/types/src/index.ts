@@ -246,7 +246,6 @@ export enum RevertReason {
     InvalidMsgValue = 'INVALID_MSG_VALUE',
     InsufficientEthRemaining = 'INSUFFICIENT_ETH_REMAINING',
     Uint256Overflow = 'UINT256_OVERFLOW',
-    Uint256Underflow = 'UINT256_UNDERFLOW',
     Erc721ZeroToAddress = 'ERC721_ZERO_TO_ADDRESS',
     Erc721OwnerMismatch = 'ERC721_OWNER_MISMATCH',
     Erc721InvalidSpender = 'ERC721_INVALID_SPENDER',
@@ -260,8 +259,6 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
-    TransferRejected = 'TRANSFER_REJECTED',
-    InsufficientAllowance = 'INSUFFICIENT_ALLOWANCE',
     // DutchAuction
     AuctionInvalidAmount = 'INVALID_AMOUNT',
     AuctionExpired = 'AUCTION_EXPIRED',
@@ -277,6 +274,18 @@ export enum RevertReason {
     InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
     ApprovalExpired = 'APPROVAL_EXPIRED',
     InvalidOrigin = 'INVALID_ORIGIN',
+    // ERC1155
+    AmountEqualToOneRequired = 'AMOUNT_EQUAL_TO_ONE_REQUIRED',
+    BadReceiverReturnValue = 'BAD_RECEIVER_RETURN_VALUE',
+    CannotTransferToAddressZero = 'CANNOT_TRANSFER_TO_ADDRESS_ZERO',
+    InsufficientAllowance = 'INSUFFICIENT_ALLOWANCE',
+    NFTNotOwnedByFromAddress = 'NFT_NOT_OWNED_BY_FROM_ADDRESS',
+    OwnersAndIdsMustHaveSameLength = 'OWNERS_AND_IDS_MUST_HAVE_SAME_LENGTH',
+    TokenAndValuesLengthMismatch = 'TOKEN_AND_VALUES_LENGTH_MISMATCH',
+    TriedToMintFungibleForNonFungibleToken = 'TRIED_TO_MINT_FUNGIBLE_FOR_NON_FUNGIBLE_TOKEN',
+    TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
+    TransferRejected = 'TRANSFER_REJECTED',
+    Uint256Underflow = 'UINT256_UNDERFLOW',
 }
 
 export enum StatusCodes {
