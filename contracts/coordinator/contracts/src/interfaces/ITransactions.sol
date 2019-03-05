@@ -15,7 +15,7 @@
   limitations under the License.
 
 */
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 
 contract ITransactions {

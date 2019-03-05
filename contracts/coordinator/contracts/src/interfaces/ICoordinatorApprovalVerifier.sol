@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 pragma experimental "ABIEncoderV2";
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
