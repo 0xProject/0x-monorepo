@@ -85,27 +85,55 @@ export class ERC1155ProxyWrapper {
         valuesToTransfer: BigNumber[],
         valueMultiplier: BigNumber,
         receiverCallbackData: string,
-        authorizedSender: string
-    ): Promise<TransactionReceiptWithDecodedLogs> {
+        authorizedSender: string,
+        extraData?: string,
+    ): Promise<string> {
         this._validateProxyContractExistsOrThrow();
-        const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
+        let encodedAssetData = assetDataUtils.encodeERC1155AssetData(
             contractAddress,
             tokensToTransfer,
             valuesToTransfer,
             receiverCallbackData,
         );
+        if (!_.isUndefined(extraData)) {
+            encodedAssetData = `${encodedAssetData}${extraData}`;
+        }
         const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
             encodedAssetData,
             from,
             to,
             valueMultiplier,
         );
+        const txHash = await this._web3Wrapper.sendTransactionAsync({
+            to: (this._proxyContract as ERC1155ProxyContract).address,
+            data,
+            from: authorizedSender,
+        });
+        return txHash;
+    }
+    public async transferFromWithLogsAsync(
+        from: string,
+        to: string,
+        contractAddress: string,
+        tokensToTransfer: BigNumber[],
+        valuesToTransfer: BigNumber[],
+        valueMultiplier: BigNumber,
+        receiverCallbackData: string,
+        authorizedSender: string,
+        extraData?: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._web3Wrapper.sendTransactionAsync({
-                to: (this._proxyContract as ERC1155ProxyContract).address,
-                data,
-                from: authorizedSender,
-            }),
+            await this.transferFromAsync(
+                from,
+                to,
+                contractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorizedSender,
+                extraData
+            )
         );
         return txReceipt;
     }

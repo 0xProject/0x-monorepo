@@ -412,7 +412,7 @@ describe.only('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -451,31 +451,21 @@ describe.only('ERC1155Proxy', () => {
             const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
                 return value.times(perUnitValue);
             });
+            const extraData = '0102030405060708';
             // check balances before transfer
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
                 erc1155Contract.address,
                 tokensToTransfer,
                 valuesToTransfer,
-                receiverCallbackData,
-            );
-            const extraData = '0102030405060708';
-            const encodedAssetDataPlusExtraData = `${encodedAssetData}${extraData}`;
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetDataPlusExtraData,
-                spender,
-                receiverContract,
                 perUnitValue,
-            );
-            const logDecoder = new LogDecoder(web3Wrapper, artifacts);
-            const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                receiverCallbackData,
+                authorized,
+                extraData
             );
             // check receiver log ignored extra asset data
             expect(txReceipt.logs.length).to.be.equal(2);
@@ -513,24 +503,17 @@ describe.only('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiverContract,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiverContract,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.TransferRejected,
             );
         });
@@ -552,24 +535,17 @@ describe.only('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.nftNotOwnedByFromAddress,
             );
         });
@@ -592,24 +568,17 @@ describe.only('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.transferGreaterThanZeroRequired,
             );
         });
@@ -634,24 +603,17 @@ describe.only('ERC1155Proxy', () => {
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
             // note - this will overflow because we are trying to transfer `maxUintValue * 2` of the 2nd token
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.Uint256Overflow,
             );
         });
@@ -670,24 +632,17 @@ describe.only('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.amountEqualToOneRequired,
             );
         });
@@ -706,24 +661,17 @@ describe.only('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.amountEqualToOneRequired,
             );
         });
@@ -738,24 +686,17 @@ describe.only('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.Uint256Underflow,
             );
         });
@@ -775,24 +716,17 @@ describe.only('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: authorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    authorized
+                ),
                 RevertReason.InsufficientAllowance,
             );
         });
@@ -806,24 +740,17 @@ describe.only('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                encodedAssetData,
-                spender,
-                receiver,
-                perUnitValue,
-            );
             await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    to: erc1155Proxy.address,
-                    data,
-                    from: notAuthorized,
-                }),
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    perUnitValue,
+                    receiverCallbackData,
+                    notAuthorized
+                ),
                 RevertReason.SenderNotAuthorized,
             );
         });
