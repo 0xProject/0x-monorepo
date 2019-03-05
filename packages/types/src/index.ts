@@ -310,7 +310,7 @@ export enum RevertReason {
     TransferRejected = 'TRANSFER_REJECTED',
     Uint256Underflow = 'UINT256_UNDERFLOW',
     // ERC1155 Proxy
-    transferGreaterThanZeroRequired = 'TRANSFER_GREATER_THAN_ZERO_REQUIRED',
+    TransferGreaterThanZeroRequired = 'TRANSFER_GREATER_THAN_ZERO_REQUIRED',
 }
 
 export enum StatusCodes {

@@ -3,7 +3,7 @@
     "version": "7.1.0",
         "changes": [
             {
-                "note": "Added `encodeERC721AssetData` and `decodeERC721AssetData`",
+                "note": "Added encoding/decoding fdor ERC1155 asset data",
                 "pr": 1661
             }
         ]
