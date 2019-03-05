@@ -52,7 +52,7 @@ export class ERC1155ProxyWrapper {
      */
     public async deployDummyContractsAsync(): Promise<Erc1155Wrapper[]> {
         // tslint:disable-next-line:no-unused-variable
-        for (const i of _.times(constants.NUM_DUMMY_ERC1155_TO_DEPLOY)) {
+        for (const i of _.times(constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY)) {
             const erc1155Contract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
                 artifacts.ERC1155Mintable,
                 this._provider,

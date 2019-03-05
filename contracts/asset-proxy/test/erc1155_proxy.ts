@@ -124,7 +124,7 @@ describe('ERC1155Proxy', () => {
         });
         it('should have an id of 0x9645780d', async () => {
             const proxyId = await erc1155Proxy.getProxyId.callAsync();
-            // proxy computed using -- bytes4(keccak256("erc1155Contract(address,uint256[],uint256[],bytes)"));
+            // proxy computed using -- bytes4(keccak256("erc1155Token(address,uint256[],uint256[],bytes)"));
             const expectedProxyId = '0x9645780d';
             expect(proxyId).to.equal(expectedProxyId);
         });
@@ -538,7 +538,7 @@ describe('ERC1155Proxy', () => {
                     receiverCallbackData,
                     authorized,
                 ),
-                RevertReason.nftNotOwnedByFromAddress,
+                RevertReason.NFTNotOwnedByFromAddress,
             );
         });
         it('should revert if tansferring 0 amount of any token', async () => {
@@ -571,7 +571,7 @@ describe('ERC1155Proxy', () => {
                     receiverCallbackData,
                     authorized,
                 ),
-                RevertReason.transferGreaterThanZeroRequired,
+                RevertReason.TransferGreaterThanZeroRequired,
             );
         });
         it('should revert if there is a multiplication overflow', async () => {
@@ -635,7 +635,7 @@ describe('ERC1155Proxy', () => {
                     receiverCallbackData,
                     authorized,
                 ),
-                RevertReason.amountEqualToOneRequired,
+                RevertReason.AmountEqualToOneRequired,
             );
         });
         it('should revert if transferring > 1 instances of a non-fungible token (`valuesToTransfer` field >1)', async () => {
@@ -664,7 +664,7 @@ describe('ERC1155Proxy', () => {
                     receiverCallbackData,
                     authorized,
                 ),
-                RevertReason.amountEqualToOneRequired,
+                RevertReason.AmountEqualToOneRequired,
             );
         });
         it('should revert if sender balance is insufficient', async () => {
