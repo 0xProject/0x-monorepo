@@ -100,8 +100,13 @@ export const assetDataUtils = {
 
      * @return The hex encoded assetData string
      */
-    encodeERC1155AssetData(tokenAddress: string, tokenIds: BigNumber[], tokenValues: BigNumber[], callbackData: string): string {
-        const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ['address','uint256[]','uint256[]','bytes']);
+    encodeERC1155AssetData(
+        tokenAddress: string,
+        tokenIds: BigNumber[],
+        tokenValues: BigNumber[],
+        callbackData: string,
+    ): string {
+        const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ['address', 'uint256[]', 'uint256[]', 'bytes']);
         const args = [tokenAddress, tokenIds, tokenValues, callbackData];
         const assetData = abiEncoder.encode(args, encodingRules);
         return assetData;
@@ -186,7 +191,7 @@ export const assetDataUtils = {
         if (
             assetProxyId !== AssetProxyId.ERC20 &&
             assetProxyId !== AssetProxyId.ERC721 &&
-            assetProxyId !== AssetProxyId.ERC1155 && 
+            assetProxyId !== AssetProxyId.ERC1155 &&
             assetProxyId !== AssetProxyId.MultiAsset
         ) {
             throw new Error(`Invalid assetProxyId: ${assetProxyId}`);
