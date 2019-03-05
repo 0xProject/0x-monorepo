@@ -84,7 +84,7 @@ describe('ERC1155Proxy', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         // deploy & configure ERC1155 tokens and receiver
-        [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyTokensAsync();
+        [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
         erc1155Contract = erc1155Wrapper.getContract();
         erc1155Receiver = await DummyERC1155ReceiverContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC1155Receiver,
@@ -694,7 +694,7 @@ describe('ERC1155Proxy', () => {
         });
         it('should revert if sender allowance is insufficient', async () => {
             // dremove allowance for ERC1155 proxy
-            const wrapper = erc1155ProxyWrapper.getTokenWrapper(erc1155Contract.address);
+            const wrapper = erc1155ProxyWrapper.getContractWrapper(erc1155Contract.address);
             const isApproved = false;
             await wrapper.setApprovalForAllAsync(spender, erc1155Proxy.address, isApproved);
             const isApprovedActualValue = await wrapper.isApprovedForAllAsync(spender, erc1155Proxy.address);
