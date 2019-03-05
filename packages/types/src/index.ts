@@ -186,17 +186,17 @@ export interface ERC1155AssetData {
 }
 
 export interface ERC1155AssetDataNoProxyId {
-    tokenAddress: string,
-    tokenValues: BigNumber[],
-    tokenIds: BigNumber[],
-    callbackData: string
-};
+    tokenAddress: string;
+    tokenValues: BigNumber[];
+    tokenIds: BigNumber[];
+    callbackData: string;
+}
 
 export const ERC1155AssetDataAbi = [
-    {name: 'tokenAddress', type: 'address'},
-    {name: 'tokenIds', type: 'uint256[]'},
-    {name: 'tokenValues', type: 'uint256[]'},
-    {name: 'callbackData', type: 'bytes'},
+    { name: 'tokenAddress', type: 'address' },
+    { name: 'tokenIds', type: 'uint256[]' },
+    { name: 'tokenValues', type: 'uint256[]' },
+    { name: 'callbackData', type: 'bytes' },
 ];
 
 export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData;

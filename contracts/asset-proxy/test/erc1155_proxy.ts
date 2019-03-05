@@ -3,13 +3,11 @@ import {
     constants,
     expectTransactionFailedAsync,
     expectTransactionFailedWithoutReasonAsync,
-    LogDecoder,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -24,20 +22,14 @@ import {
     ERC1155MintableContract,
     ERC1155ProxyWrapper,
     ERC721ProxyContract,
-    IAssetProxyContract,
 } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-const assetProxyInterface = new IAssetProxyContract(
-    artifacts.IAssetProxy.compilerOutput.abi,
-    constants.NULL_ADDRESS,
-    provider,
-);
 
 // tslint:disable:no-unnecessary-type-assertion
-describe.only('ERC1155Proxy', () => {
+describe('ERC1155Proxy', () => {
     // constant values used in transfer tests
     const nftOwnerBalance = new BigNumber(1);
     const nftNotOwnerBalance = new BigNumber(0);
@@ -156,7 +148,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check balances after transfer
             const totalValueTransferred = valuesToTransfer[0].times(perUnitValue);
@@ -194,7 +186,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check balances after transfer
             let totalValueTransferred = _.reduce(valuesToTransfer, (sum: BigNumber, value: BigNumber) => {
@@ -240,7 +232,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check balances after transfer
             const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
@@ -281,7 +273,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check balances after transfer
             const expectedFinalBalances = [
@@ -323,7 +315,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check balances after transfer
             const expectedFinalBalances = [
@@ -377,7 +369,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check balances after transfer
             const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
@@ -420,7 +412,7 @@ describe.only('ERC1155Proxy', () => {
                 valuesToTransfer,
                 perUnitValue,
                 receiverCallbackData,
-                authorized
+                authorized,
             );
             // check receiver log ignored extra asset data
             expect(txReceipt.logs.length).to.be.equal(2);
@@ -465,7 +457,7 @@ describe.only('ERC1155Proxy', () => {
                 perUnitValue,
                 receiverCallbackData,
                 authorized,
-                extraData
+                extraData,
             );
             // check receiver log ignored extra asset data
             expect(txReceipt.logs.length).to.be.equal(2);
@@ -512,7 +504,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.TransferRejected,
             );
@@ -544,7 +536,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.nftNotOwnedByFromAddress,
             );
@@ -577,7 +569,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.transferGreaterThanZeroRequired,
             );
@@ -612,7 +604,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.Uint256Overflow,
             );
@@ -641,7 +633,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.amountEqualToOneRequired,
             );
@@ -670,7 +662,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.amountEqualToOneRequired,
             );
@@ -695,7 +687,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.Uint256Underflow,
             );
@@ -725,7 +717,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    authorized
+                    authorized,
                 ),
                 RevertReason.InsufficientAllowance,
             );
@@ -749,7 +741,7 @@ describe.only('ERC1155Proxy', () => {
                     valuesToTransfer,
                     perUnitValue,
                     receiverCallbackData,
-                    notAuthorized
+                    notAuthorized,
                 ),
                 RevertReason.SenderNotAuthorized,
             );
