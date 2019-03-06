@@ -78,6 +78,17 @@ export class BloxySource {
         return uniqueTrades;
     }
 
+    /**
+     * expects date to be in the form 'YYYY-MM-DD'.
+     */
+    public async getDexTradesForDateAsync(date: string): Promise<BloxyTrade[]> {
+        const allTrades = await this._scrapeAllDexTradesForDateAsync(date);
+        logUtils.log(`Removing duplicates from ${allTrades.length} entries`);
+        const uniqueTrades = R.uniqBy((trade: BloxyTrade) => `${trade.tradeIndex}-${trade.tx_hash}`, allTrades);
+        logUtils.log(`Removed ${allTrades.length - uniqueTrades.length} duplicate entries`);
+        return uniqueTrades;
+    }
+
     // Potentially returns duplicate trades.
     private async _scrapeAllDexTradesAsync(lastSeenTimestamp: number): Promise<BloxyTrade[]> {
         let allTrades: BloxyTrade[] = [];
@@ -110,12 +121,56 @@ export class BloxySource {
         return allTrades;
     }
 
+    /**
+     * expects date to be in the form 'YYYY-MM-DD'.
+     * Potentially returns duplicate trades.
+     */
+    private async _scrapeAllDexTradesForDateAsync(date: string): Promise<BloxyTrade[]> {
+        let allTrades: BloxyTrade[] = [];
+
+        // Keep getting trades until we hit one of the following conditions:
+        //
+        //  1. Offset hits MAX_OFFSET (we can't go back any further).
+        //  2. There are no more trades in the response.
+        //
+        for (let offset = 0; offset <= MAX_OFFSET; offset += TRADES_PER_QUERY - OFFSET_BUFFER) {
+            const trades = await this._getTradesForDateWithOffsetAsync(date, offset);
+            if (trades.length === 0) {
+                // There are no more trades left for the days we are querying.
+                // This means we are done.
+                return allTrades;
+            }
+            const sortedTrades = R.reverse(R.sortBy(trade => trade.tx_time, trades));
+            allTrades = allTrades.concat(sortedTrades);
+        }
+        return allTrades;
+    }
+
     private async _getTradesWithOffsetAsync(lastSeenTimestamp: number, offset: number): Promise<BloxyTrade[]> {
         const resp = await axios.get<BloxyTradeResponse>(BLOXY_DEX_TRADES_URL, {
             params: {
                 key: this._apiKey,
                 from_date: dateToISO8601ExtendedCalendarDateFormat(new Date(lastSeenTimestamp)),
                 till_date: dateToISO8601ExtendedCalendarDateFormat(new Date()),
+                limit: TRADES_PER_QUERY,
+                offset,
+            },
+        });
+        if (isError(resp.data)) {
+            throw new Error(`Error in Bloxy API response: ${resp.data.error}`);
+        }
+        return resp.data;
+    }
+
+    /**
+     * expects date to be in the form 'YYYY-MM-DD'.
+     */
+    private async _getTradesForDateWithOffsetAsync(date: string, offset: number): Promise<BloxyTrade[]> {
+        const resp = await axios.get<BloxyTradeResponse>(BLOXY_DEX_TRADES_URL, {
+            params: {
+                key: this._apiKey,
+                from_date: new Date(date),
+                till_date: new Date(date),
                 limit: TRADES_PER_QUERY,
                 offset,
             },
