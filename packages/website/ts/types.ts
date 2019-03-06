@@ -241,6 +241,45 @@ export enum Environments {
 
 export type ContractInstance = any; // TODO: add type definition for Contract
 
+export interface ExploreEntryInstantMetadata {
+    orderSource: string;
+    availableAssetDatas?: string;
+}
+
+export interface ExploreEntry {
+    label: string;
+    description: string;
+    logo_url: string;
+    theme_color: string;
+    url: string;
+    keywords: string[];
+    instant?: ExploreEntryInstantMetadata;
+}
+
+export enum ExploreEntryVisibility {
+    Hidden = 'HIDDEN',
+    Featured = 'FEATURED', // Temporarily unused feature
+    Visible = 'VISIBLE',
+}
+
+export interface RicherExploreEntry extends ExploreEntry {
+    visibility: ExploreEntryVisibility;
+    onInstantClick?(): void;
+}
+
+export enum ExploreFilterType {
+    All = 'ALL',
+    Keyword = 'Keyword',
+}
+
+export interface ExploreFilterMetadata {
+    label: string;
+    filterType: ExploreFilterType;
+    name: string;
+    keyword?: string;
+    active?: boolean;
+}
+
 export interface FAQQuestion {
     prompt: string;
     answer: React.ReactNode;
@@ -387,6 +426,7 @@ export enum WebsitePaths {
     Credits = '/credits',
     Vote = '/vote',
     Extensions = '/extensions',
+    Explore = '/explore',
 }
 
 export enum DocPackages {

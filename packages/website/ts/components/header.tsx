@@ -93,8 +93,8 @@ class HeaderBase extends React.Component<HeaderProps> {
                         </NavLinks>
 
                         <MediaQuery minWidth={990}>
-                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" href="/portal">
-                                Trade on 0x
+                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" href="/explore">
+                                Explore 0x
                             </TradeButton>
                         </MediaQuery>
 

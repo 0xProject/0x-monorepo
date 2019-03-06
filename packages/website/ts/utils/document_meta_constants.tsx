@@ -11,6 +11,12 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
             '0x is an open protocol that enables the peer-to-peer exchange of assets on the Ethereum blockchain.',
         keywords: '',
     },
+    EXPLORE: {
+        title: 'Explore 0x',
+        description:
+            '0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.',
+        keywords: '',
+    },
     WHY: {
         title: '0x: Features and Benefits',
         description:
