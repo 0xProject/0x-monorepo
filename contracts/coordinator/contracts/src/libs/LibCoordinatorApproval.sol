@@ -25,7 +25,7 @@ contract LibCoordinatorApproval is
     LibEIP712Domain
 {
     // Hash for the EIP712 Coordinator approval message
-    bytes32 constant internal EIP712_Coordinator_APPROVAL_SCHEMA_HASH = keccak256(abi.encodePacked(
+    bytes32 constant internal EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH = keccak256(abi.encodePacked(
         "CoordinatorApproval(",
         "bytes32 transactionHash,",
         "bytes transactionSignature,",
@@ -59,7 +59,7 @@ contract LibCoordinatorApproval is
         pure
         returns (bytes32 result)
     {
-        bytes32 schemaHash = EIP712_Coordinator_APPROVAL_SCHEMA_HASH;
+        bytes32 schemaHash = EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH;
         bytes32 transactionSignatureHash = keccak256(approval.transactionSignature);
         // TODO(abandeali1): optimize by loading from memory in assembly
         bytes32 transactionHash = approval.transactionHash;
@@ -67,7 +67,7 @@ contract LibCoordinatorApproval is
 
         // Assembly for more efficiently computing:
         // keccak256(abi.encodePacked(
-        //     EIP712_Coordinator_APPROVAL_SCHEMA_HASH,
+        //     EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH,
         //     approval.transactionHash,
         //     keccak256(approval.transactionSignature)
         //     approval.expiration,
