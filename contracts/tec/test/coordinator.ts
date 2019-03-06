@@ -24,14 +24,14 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
-import { ApprovalFactory, artifacts, constants, exchangeDataEncoder, TECContract } from '../src';
+import { ApprovalFactory, artifacts, constants, exchangeDataEncoder, CoordinatorContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 web3Wrapper.abiDecoder.addABI(exchangeArtifacts.Exchange.compilerOutput.abi);
 // tslint:disable:no-unnecessary-type-assertion
-describe('TEC tests', () => {
+describe('Coordinator tests', () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -41,7 +41,7 @@ describe('TEC tests', () => {
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
-    let tecContract: TECContract;
+    let coordinatorContract: CoordinatorContract;
     let exchange: ExchangeContract;
 
     let erc20Wrapper: ERC20Wrapper;
@@ -86,8 +86,8 @@ describe('TEC tests', () => {
             devConstants.AWAIT_TRANSACTION_MINED_MS,
         );
 
-        tecContract = await TECContract.deployFrom0xArtifactAsync(
-            artifacts.TEC,
+        coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
+            artifacts.Coordinator,
             provider,
             txDefaults,
             exchange.address,
@@ -97,7 +97,7 @@ describe('TEC tests', () => {
         const defaultOrderParams = {
             ...devConstants.STATIC_ORDER_PARAMS,
             exchangeAddress: exchange.address,
-            senderAddress: tecContract.address,
+            senderAddress: coordinatorContract.address,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
@@ -109,7 +109,7 @@ describe('TEC tests', () => {
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
-        approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, tecContract.address);
+        approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -128,7 +128,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await tecContract.executeTransaction.sendTransactionAsync(
+                    await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -144,7 +144,7 @@ describe('TEC tests', () => {
                 const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
                 expect(fillLogArgs.makerAddress).to.eq(makerAddress);
                 expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                expect(fillLogArgs.senderAddress).to.eq(tecContract.address);
+                expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
                 expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
                 expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
                 expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
@@ -159,7 +159,7 @@ describe('TEC tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await tecContract.executeTransaction.sendTransactionAsync(
+                    await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [],
@@ -175,7 +175,7 @@ describe('TEC tests', () => {
                 const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
                 expect(fillLogArgs.makerAddress).to.eq(makerAddress);
                 expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                expect(fillLogArgs.senderAddress).to.eq(tecContract.address);
+                expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
                 expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
                 expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
                 expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
@@ -190,7 +190,7 @@ describe('TEC tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
+                    coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
                         from: takerAddress,
                         gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS,
                     }),
@@ -206,7 +206,7 @@ describe('TEC tests', () => {
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -224,7 +224,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -242,7 +242,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -264,7 +264,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await tecContract.executeTransaction.sendTransactionAsync(
+                    await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -281,7 +281,7 @@ describe('TEC tests', () => {
                     const fillLogArgs = (fillLogs[index] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
                     expect(fillLogArgs.makerAddress).to.eq(makerAddress);
                     expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                    expect(fillLogArgs.senderAddress).to.eq(tecContract.address);
+                    expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
                     expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
                     expect(fillLogArgs.makerAssetData).to.eq(order.makerAssetData);
                     expect(fillLogArgs.takerAssetData).to.eq(order.takerAssetData);
@@ -297,7 +297,7 @@ describe('TEC tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await tecContract.executeTransaction.sendTransactionAsync(
+                    await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [],
@@ -314,7 +314,7 @@ describe('TEC tests', () => {
                     const fillLogArgs = (fillLogs[index] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
                     expect(fillLogArgs.makerAddress).to.eq(makerAddress);
                     expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                    expect(fillLogArgs.senderAddress).to.eq(tecContract.address);
+                    expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
                     expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
                     expect(fillLogArgs.makerAssetData).to.eq(order.makerAssetData);
                     expect(fillLogArgs.takerAssetData).to.eq(order.takerAssetData);
@@ -334,7 +334,7 @@ describe('TEC tests', () => {
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -352,7 +352,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -370,7 +370,7 @@ describe('TEC tests', () => {
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(transaction, approvalExpirationTimeSeconds);
                 await expectTransactionFailedAsync(
-                    tecContract.executeTransaction.sendTransactionAsync(
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
@@ -388,7 +388,7 @@ describe('TEC tests', () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await tecContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
+                await coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
                     from: makerAddress,
                 }),
             );
@@ -398,7 +398,7 @@ describe('TEC tests', () => {
             expect(cancelLogs.length).to.eq(1);
             const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
             expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-            expect(cancelLogArgs.senderAddress).to.eq(tecContract.address);
+            expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
             expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
             expect(cancelLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
             expect(cancelLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
@@ -409,7 +409,7 @@ describe('TEC tests', () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.BATCH_CANCEL_ORDERS, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await tecContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
+                await coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
                     from: makerAddress,
                 }),
             );
@@ -420,7 +420,7 @@ describe('TEC tests', () => {
             orders.forEach((order, index) => {
                 const cancelLogArgs = (cancelLogs[index] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
                 expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-                expect(cancelLogArgs.senderAddress).to.eq(tecContract.address);
+                expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
                 expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
                 expect(cancelLogArgs.makerAssetData).to.eq(order.makerAssetData);
                 expect(cancelLogArgs.takerAssetData).to.eq(order.takerAssetData);
@@ -432,7 +432,7 @@ describe('TEC tests', () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS_UP_TO, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await tecContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
+                await coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
                     from: makerAddress,
                 }),
             );
@@ -442,7 +442,7 @@ describe('TEC tests', () => {
             expect(cancelLogs.length).to.eq(1);
             const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
             expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-            expect(cancelLogArgs.senderAddress).to.eq(tecContract.address);
+            expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
             expect(cancelLogArgs.orderEpoch).to.bignumber.eq(new BigNumber(1));
         });
     });

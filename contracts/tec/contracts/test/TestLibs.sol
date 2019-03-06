@@ -19,23 +19,23 @@
 pragma solidity ^0.5.3;
 pragma experimental "ABIEncoderV2";
 
-import "../src/libs/LibTECApproval.sol";
+import "../src/libs/LibCoordinatorApproval.sol";
 import "../src/libs/LibZeroExTransaction.sol";
 
 
 contract TestLibs is
-    LibTECApproval,
+    LibCoordinatorApproval,
     LibZeroExTransaction
 {
-    /// @dev Calculated the EIP712 hash of the TEC approval mesasage using the domain separator of this contract.
-    /// @param approval TEC approval message containing the transaction hash, transaction signature, and expiration of the approval.
-    /// @return EIP712 hash of the TEC approval message with the domain separator of this contract.
-    function publicGetTECApprovalHash(TECApproval memory approval)
+    /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage using the domain separator of this contract.
+    /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
+    /// @return EIP712 hash of the Coordinator approval message with the domain separator of this contract.
+    function publicGetCoordinatorApprovalHash(CoordinatorApproval memory approval)
         public
         view
         returns (bytes32 approvalHash)
     {
-        approvalHash = getTECApprovalHash(approval);
+        approvalHash = getCoordinatorApprovalHash(approval);
         return approvalHash;
     }
 

@@ -21,45 +21,45 @@ pragma solidity ^0.5.3;
 import "./LibEIP712Domain.sol";
 
 
-contract LibTECApproval is
+contract LibCoordinatorApproval is
     LibEIP712Domain
 {
-    // Hash for the EIP712 TEC approval message
-    bytes32 constant internal EIP712_TEC_APPROVAL_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "TECApproval(",
+    // Hash for the EIP712 Coordinator approval message
+    bytes32 constant internal EIP712_Coordinator_APPROVAL_SCHEMA_HASH = keccak256(abi.encodePacked(
+        "CoordinatorApproval(",
         "bytes32 transactionHash,",
         "bytes transactionSignature,",
         "uint256 approvalExpirationTimeSeconds",
         ")"
     ));
 
-    struct TECApproval {
+    struct CoordinatorApproval {
         bytes32 transactionHash;                // EIP712 hash of the transaction, using the domain separator of this contract.
         bytes transactionSignature;             // Signature of the 0x transaction.
         uint256 approvalExpirationTimeSeconds;  // Timestamp in seconds for which the signature expires.
     }
 
-    /// @dev Calculated the EIP712 hash of the TEC approval mesasage using the domain separator of this contract.
-    /// @param approval TEC approval message containing the transaction hash, transaction signature, and expiration of the approval.
-    /// @return EIP712 hash of the TEC approval message with the domain separator of this contract.
-    function getTECApprovalHash(TECApproval memory approval)
+    /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage using the domain separator of this contract.
+    /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
+    /// @return EIP712 hash of the Coordinator approval message with the domain separator of this contract.
+    function getCoordinatorApprovalHash(CoordinatorApproval memory approval)
         internal
         view
         returns (bytes32 approvalHash)
     {
-        approvalHash = hashEIP712Message(hashTECApproval(approval));
+        approvalHash = hashEIP712Message(hashCoordinatorApproval(approval));
         return approvalHash;
     }
 
-    /// @dev Calculated the EIP712 hash of the TEC approval mesasage with no domain separator.
-    /// @param approval TEC approval message containing the transaction hash, transaction signature, and expiration of the approval.
-    /// @return EIP712 hash of the TEC approval message with no domain separator.
-    function hashTECApproval(TECApproval memory approval)
+    /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage with no domain separator.
+    /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
+    /// @return EIP712 hash of the Coordinator approval message with no domain separator.
+    function hashCoordinatorApproval(CoordinatorApproval memory approval)
         internal
         pure
         returns (bytes32 result)
     {
-        bytes32 schemaHash = EIP712_TEC_APPROVAL_SCHEMA_HASH;
+        bytes32 schemaHash = EIP712_Coordinator_APPROVAL_SCHEMA_HASH;
         bytes32 transactionSignatureHash = keccak256(approval.transactionSignature);
         // TODO(abandeali1): optimize by loading from memory in assembly
         bytes32 transactionHash = approval.transactionHash;
@@ -67,7 +67,7 @@ contract LibTECApproval is
 
         // Assembly for more efficiently computing:
         // keccak256(abi.encodePacked(
-        //     EIP712_TEC_APPROVAL_SCHEMA_HASH,
+        //     EIP712_Coordinator_APPROVAL_SCHEMA_HASH,
         //     approval.transactionHash,
         //     keccak256(approval.transactionSignature)
         //     approval.expiration,

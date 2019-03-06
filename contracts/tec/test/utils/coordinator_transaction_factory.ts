@@ -2,9 +2,9 @@ import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedZeroExTransaction } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 
-import { hashUtils, signingUtils, TECSignatureType } from './index';
+import { hashUtils, signingUtils, CoordinatorSignatureType } from './index';
 
-export class TECTransactionFactory {
+export class CoordinatorTransactionFactory {
     private readonly _signerBuff: Buffer;
     private readonly _verifyingContractAddress: string;
     private readonly _privateKey: Buffer;
@@ -13,9 +13,9 @@ export class TECTransactionFactory {
         this._verifyingContractAddress = verifyingContractAddress;
         this._signerBuff = ethUtil.privateToAddress(this._privateKey);
     }
-    public newSignedTECTransaction(
+    public newSignedCoordinatorTransaction(
         data: string,
-        signatureType: TECSignatureType = TECSignatureType.EthSign,
+        signatureType: CoordinatorSignatureType = CoordinatorSignatureType.EthSign,
     ): SignedZeroExTransaction {
         const transaction = {
             verifyingContractAddress: this._verifyingContractAddress,

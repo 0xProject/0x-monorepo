@@ -3,7 +3,7 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/TEC.json",
+        "generated-artifacts/Coordinator.json",
         "generated-artifacts/TestLibs.json",
         "generated-artifacts/TestMixins.json"
     ],

@@ -58,7 +58,7 @@ describe('Libs tests', () => {
                 approvalExpirationTimeSeconds,
             };
             const expectedApprovalHash = hashUtils.getApprovalHashHex(signedTx, approvalExpirationTimeSeconds);
-            const approvalHash = await testLibs.publicGetTECApprovalHash.callAsync(approval);
+            const approvalHash = await testLibs.publicGetCoordinatorApprovalHash.callAsync(approval);
             expect(expectedApprovalHash).to.eq(approvalHash);
         });
     });

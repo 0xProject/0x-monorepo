@@ -21,16 +21,16 @@ pragma experimental "ABIEncoderV2";
 
 import "./libs/LibConstants.sol";
 import "./MixinSignatureValidator.sol";
-import "./MixinTECApprovalVerifier.sol";
-import "./MixinTECCore.sol";
+import "./MixinCoordinatorApprovalVerifier.sol";
+import "./MixinCoordinatorCore.sol";
 
 
 // solhint-disable no-empty-blocks
-contract TEC is
+contract Coordinator is
     LibConstants,
     MixinSignatureValidator,
-    MixinTECApprovalVerifier,
-    MixinTECCore
+    MixinCoordinatorApprovalVerifier,
+    MixinCoordinatorCore
 {
     constructor (address _exchange)
         public

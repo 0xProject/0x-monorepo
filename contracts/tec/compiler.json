@@ -17,5 +17,5 @@
             }
         }
     },
-    "contracts": ["src/TEC.sol", "test/TestLibs.sol", "test/TestMixins.sol"]
+    "contracts": ["src/Coordinator.sol", "test/TestLibs.sol", "test/TestMixins.sol"]
 }

@@ -23,19 +23,19 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
-import "./libs/LibTECApproval.sol";
+import "./libs/LibCoordinatorApproval.sol";
 import "./libs/LibZeroExTransaction.sol";
 import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTECApprovalVerifier.sol";
+import "./mixins/MCoordinatorApprovalVerifier.sol";
 
 
 // solhint-disable avoid-tx-origin
-contract MixinTECApprovalVerifier is
+contract MixinCoordinatorApprovalVerifier is
     LibExchangeSelectors,
-    LibTECApproval,
+    LibCoordinatorApproval,
     LibZeroExTransaction,
     MSignatureValidator,
-    MTECApprovalVerifier
+    MCoordinatorApprovalVerifier
 {
     using LibBytes for bytes;
     using LibAddressArray for address[];
@@ -46,7 +46,7 @@ contract MixinTECApprovalVerifier is
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
-    function assertValidTECApprovals(
+    function assertValidCoordinatorApprovals(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
@@ -97,7 +97,7 @@ contract MixinTECApprovalVerifier is
         for (uint256 i = 0; i < signaturesLength; i++) {
             // Create approval message
             uint256 currentApprovalExpirationTimeSeconds = approvalExpirationTimeSeconds[i];
-            TECApproval memory approval = TECApproval({
+            CoordinatorApproval memory approval = CoordinatorApproval({
                 transactionHash: transactionHash,
                 transactionSignature: transactionSignature,
                 approvalExpirationTimeSeconds: currentApprovalExpirationTimeSeconds
@@ -111,7 +111,7 @@ contract MixinTECApprovalVerifier is
             );
 
             // Hash approval message and recover signer address
-            bytes32 approvalHash = getTECApprovalHash(approval);
+            bytes32 approvalHash = getCoordinatorApprovalHash(approval);
             address approvalSignerAddress = getSignerAddress(approvalHash, approvalSignatures[i]);
     
             // Add approval signer to list of signers

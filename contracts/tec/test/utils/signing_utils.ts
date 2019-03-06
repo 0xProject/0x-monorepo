@@ -1,10 +1,10 @@
 import * as ethUtil from 'ethereumjs-util';
 
-import { TECSignatureType } from './types';
+import { CoordinatorSignatureType } from './types';
 
 export const signingUtils = {
-    signMessage(message: Buffer, privateKey: Buffer, signatureType: TECSignatureType): Buffer {
-        if (signatureType === TECSignatureType.EthSign) {
+    signMessage(message: Buffer, privateKey: Buffer, signatureType: CoordinatorSignatureType): Buffer {
+        if (signatureType === CoordinatorSignatureType.EthSign) {
             const prefixedMessage = ethUtil.hashPersonalMessage(message);
             const ecSignature = ethUtil.ecsign(prefixedMessage, privateKey);
             const signature = Buffer.concat([
@@ -14,7 +14,7 @@ export const signingUtils = {
                 ethUtil.toBuffer(signatureType),
             ]);
             return signature;
-        } else if (signatureType === TECSignatureType.EIP712) {
+        } else if (signatureType === CoordinatorSignatureType.EIP712) {
             const ecSignature = ethUtil.ecsign(message, privateKey);
             const signature = Buffer.concat([
                 ethUtil.toBuffer(ecSignature.v),

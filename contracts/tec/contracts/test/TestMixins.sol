@@ -20,11 +20,11 @@ pragma solidity 0.5.3;
 pragma experimental "ABIEncoderV2";
 
 import "../src/MixinSignatureValidator.sol";
-import "../src/MixinTECApprovalVerifier.sol";
+import "../src/MixinCoordinatorApprovalVerifier.sol";
 
 
 // solhint-disable no-empty-blocks
 contract TestMixins is
     MixinSignatureValidator,
-    MixinTECApprovalVerifier
+    MixinCoordinatorApprovalVerifier
 {}

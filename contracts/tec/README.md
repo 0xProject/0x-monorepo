@@ -1,13 +1,13 @@
-## Trade Execution Coordinator (TEC)
+## Trade Execution Coordinator (Coordinator)
 
-This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more TECs (Trade Execution Coordinators). Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators (Trade Execution Coordinators). Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
 **Install**
 
 ```bash
-npm install @0x/contracts-tec --save
+npm install @0x/contracts-coordinator --save
 ```
 
 ## Bug bounty
@@ -41,13 +41,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-tec yarn build
+PKG=@0x/contracts-coordinator yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-tec yarn watch
+PKG=@0x/contracts-coordinator yarn watch
 ```
 
 ### Clean

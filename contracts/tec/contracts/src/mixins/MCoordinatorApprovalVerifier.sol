@@ -20,11 +20,11 @@ pragma solidity ^0.5.3;
 pragma experimental "ABIEncoderV2";
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "../interfaces/ITECApprovalVerifier.sol";
+import "../interfaces/ICoordinatorApprovalVerifier.sol";
 
 
-contract MTECApprovalVerifier is
-    ITECApprovalVerifier
+contract MCoordinatorApprovalVerifier is
+    ICoordinatorApprovalVerifier
 {
     /// @dev Decodes the orders from Exchange calldata representing any fill method.
     /// @param data Exchange calldata representing a fill method.

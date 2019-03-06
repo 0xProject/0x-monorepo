@@ -19,17 +19,11 @@
 pragma solidity ^0.5.3;
 pragma experimental "ABIEncoderV2";
 
-import "./libs/LibZeroExTransaction.sol";
-import "./libs/LibConstants.sol";
-import "./mixins/MTECApprovalVerifier.sol";
-import "./interfaces/ITECCore.sol";
+import "../libs/LibZeroExTransaction.sol";
 
 
-contract MixinTECCore is
-    LibConstants,
-    MTECApprovalVerifier,
-    ITECCore
-{
+contract ICoordinatorCore {
+
     /// @dev Executes a 0x transaction that has been signed by the feeRecipients that correspond to each order in the transaction's Exchange calldata.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
@@ -41,22 +35,5 @@ contract MixinTECCore is
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
-        public
-    {
-        // Validate that the 0x transaction has been approves by each feeRecipient
-        assertValidTECApprovals(
-            transaction,
-            transactionSignature,
-            approvalExpirationTimeSeconds,
-            approvalSignatures
-        );
-
-        // Execute the transaction
-        EXCHANGE.executeTransaction(
-            transaction.salt,
-            transaction.signerAddress,
-            transaction.data,
-            transactionSignature
-        );
-    }
+        public;
 }

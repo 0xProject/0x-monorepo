@@ -9,8 +9,8 @@ import { constants } from './index';
 export const hashUtils = {
     getApprovalHashBuffer(transaction: SignedZeroExTransaction, approvalExpirationTimeSeconds: BigNumber): Buffer {
         const domain = {
-            name: constants.TEC_DOMAIN_NAME,
-            version: constants.TEC_DOMAIN_VERSION,
+            name: constants.Coordinator_DOMAIN_NAME,
+            version: constants.Coordinator_DOMAIN_VERSION,
             verifyingContractAddress: transaction.verifyingContractAddress,
         };
         const transactionHash = hashUtils.getTransactionHashHex(transaction);
@@ -20,9 +20,9 @@ export const hashUtils = {
             approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
         };
         const typedData = eip712Utils.createTypedData(
-            constants.TEC_APPROVAL_SCHEMA.name,
+            constants.Coordinator_APPROVAL_SCHEMA.name,
             {
-                TECApproval: constants.TEC_APPROVAL_SCHEMA.parameters,
+                CoordinatorApproval: constants.Coordinator_APPROVAL_SCHEMA.parameters,
             },
             approval,
             domain,
@@ -38,8 +38,8 @@ export const hashUtils = {
     },
     getTransactionHashBuffer(transaction: ZeroExTransaction | SignedZeroExTransaction): Buffer {
         const domain = {
-            name: constants.TEC_DOMAIN_NAME,
-            version: constants.TEC_DOMAIN_VERSION,
+            name: constants.Coordinator_DOMAIN_NAME,
+            version: constants.Coordinator_DOMAIN_VERSION,
             verifyingContractAddress: transaction.verifyingContractAddress,
         };
         const normalizedTransaction = _.mapValues(transaction, value => {

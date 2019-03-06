@@ -2,7 +2,7 @@ import { SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
-import { hashUtils, SignedTECApproval, signingUtils, TECSignatureType } from './index';
+import { hashUtils, SignedCoordinatorApproval, signingUtils, CoordinatorSignatureType } from './index';
 
 export class ApprovalFactory {
     private readonly _privateKey: Buffer;
@@ -14,16 +14,16 @@ export class ApprovalFactory {
     public newSignedApproval(
         transaction: SignedZeroExTransaction,
         approvalExpirationTimeSeconds: BigNumber,
-        signatureType: TECSignatureType = TECSignatureType.EthSign,
-    ): SignedTECApproval {
-        const tecTransaction = {
+        signatureType: CoordinatorSignatureType = CoordinatorSignatureType.EthSign,
+    ): SignedCoordinatorApproval {
+        const coordinatorTransaction = {
             ...transaction,
             verifyingContractAddress: this._verifyingContractAddress,
         };
-        const approvalHashBuff = hashUtils.getApprovalHashBuffer(tecTransaction, approvalExpirationTimeSeconds);
+        const approvalHashBuff = hashUtils.getApprovalHashBuffer(coordinatorTransaction, approvalExpirationTimeSeconds);
         const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
         const signedApproval = {
-            transaction: tecTransaction,
+            transaction: coordinatorTransaction,
             approvalExpirationTimeSeconds,
             signature: ethUtil.addHexPrefix(signatureBuff.toString('hex')),
         };
