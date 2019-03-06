@@ -1,6 +1,6 @@
-## Trade Execution Coordinator (Coordinator)
+## Coordinator
 
-This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators (Trade Execution Coordinators). Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
