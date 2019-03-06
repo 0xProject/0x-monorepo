@@ -47,15 +47,15 @@ const ExploreGridTileLink = styled.a`
     display: block;
 `;
 
-const ExploreGridTileWrapper = styled.div`
+export const ExploreGridTileWrapper = styled.div`
     display: block;
     position: relative;
     background-color: white;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 200ms ease-in-out;
-    &:hover {
-        box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
-    }
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    // transition: box-shadow 200ms ease-in-out;
+    // &:hover {
+    //     box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+    // }
 `;
 
 const ExploreGridButtonWrapper = styled.div`

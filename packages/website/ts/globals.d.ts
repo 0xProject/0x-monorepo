@@ -10,6 +10,7 @@ declare module 'react-anchor-link-smooth-scroll';
 declare module 'react-responsive';
 declare module 'react-scrollable-anchor';
 declare module 'react-headroom';
+declare module 'zeroExInstant';
 
 declare module '*.json' {
     const json: any;

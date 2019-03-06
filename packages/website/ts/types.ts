@@ -256,28 +256,8 @@ export interface ExploreEntry {
     instant?: ExploreEntryInstantMetadata;
 }
 
-export enum ExploreEntryVisibility {
-    Hidden = 'HIDDEN',
-    Featured = 'FEATURED', // Temporarily unused feature
-    Visible = 'VISIBLE',
-}
-
 export interface RicherExploreEntry extends ExploreEntry {
-    visibility: ExploreEntryVisibility;
     onInstantClick?(): void;
-}
-
-export enum ExploreFilterType {
-    All = 'ALL',
-    Keyword = 'Keyword',
-}
-
-export interface ExploreFilterMetadata {
-    label: string;
-    filterType: ExploreFilterType;
-    name: string;
-    keyword?: string;
-    active?: boolean;
 }
 
 export interface FAQQuestion {

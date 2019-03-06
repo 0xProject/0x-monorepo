@@ -18,6 +18,7 @@ export enum ModalContactType {
     General = 'GENERAL',
     MarketMaker = 'MARKET_MAKER',
     Credits = 'CREDITS',
+    Explore = 'EXPLORE',
 }
 
 interface ServiceOptionMetadata {
@@ -142,6 +143,8 @@ export class ModalContact extends React.Component<Props> {
                 return this._renderMarketMakerFormContent(errors);
             case ModalContactType.Credits:
                 return this._renderCreditsFormContent(errors);
+            case ModalContactType.Explore:
+                return this._renderExploreFormContent(errors);
             case ModalContactType.General:
             default:
                 return this._renderGeneralFormContent(errors);
@@ -213,6 +216,99 @@ export class ModalContact extends React.Component<Props> {
                         required={false}
                         errors={errors}
                     />
+                </InputRow>
+            </>
+        );
+    }
+
+    private _renderExploreFormContent(errors: ErrorProps): React.ReactNode {
+        return (
+            <>
+                <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                    If you’re working on an awesome 0x project, we would love to share it on our explore page. Fill out the form
+                    so we can connect you with the right person to help you get started.
+                </Paragraph>
+                <InputRow>
+                    <Input
+                        name="name"
+                        label="Your name"
+                        type="text"
+                        width={InputWidth.Half}
+                        ref={this.nameRef}
+                        required={true}
+                        errors={errors}
+                    />
+                    <Input
+                        name="email"
+                        label="Your email"
+                        type="email"
+                        ref={this.emailRef}
+                        required={true}
+                        errors={errors}
+                        width={InputWidth.Half}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="companyOrProject"
+                        label="Name of your project / company"
+                        type="text"
+                        ref={this.companyProjectRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="comments"
+                        label="Description of your project / company"
+                        type="textarea"
+                        ref={this.commentsRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="link"
+                        label="Project / Company link"
+                        type="text"
+                        ref={this.commentsRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                    Details for 0x Explore page:
+                </Paragraph>
+                <InputRow>
+                    <Input
+                        name="color"
+                        label="Theme Color (in hex)"
+                        type="text"
+                        ref={this.commentsRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <OptionSelector
+                        isFlex={true}
+                        name="instant"
+                        label="Does your project support instant?"
+                        errors={errors}
+                    >
+                        {[{label: 'Yes', name: 'yes'}, {label: 'No', name: 'no'}].map((metadata: ServiceOptionMetadata) => {
+                            return (
+                                <CheckBoxInput
+                                    onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
+                                    key={`checkbox-${metadata.name}`}
+                                    isSelected={_.includes(this.state.creditLeadsServices, metadata.name)}
+                                    label={metadata.label}
+                                />
+                            );
+                        })}
+                    </OptionSelector>
                 </InputRow>
             </>
         );
