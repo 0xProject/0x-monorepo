@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add `InvalidOrigin` revert reason",
+                "pr": 1668
+            }
+        ]
+    },
+    {
         "timestamp": 1551220833,
         "version": "2.1.1",
         "changes": [

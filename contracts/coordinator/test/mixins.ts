@@ -362,7 +362,7 @@ describe('Mixins tests', () => {
                         [approval.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
@@ -373,7 +373,7 @@ describe('Mixins tests', () => {
                         [approval.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
             });
         }
@@ -576,7 +576,7 @@ describe('Mixins tests', () => {
                         [approval2.signature],
                         { from: approvalSignerAddress1 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
@@ -587,7 +587,7 @@ describe('Mixins tests', () => {
                         [approval2.signature],
                         { from: approvalSignerAddress1 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
             });
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[], expiration=[]`, async () => {
@@ -828,7 +828,7 @@ describe('Mixins tests', () => {
                         [approval1.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
@@ -839,7 +839,7 @@ describe('Mixins tests', () => {
                         [approval1.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
             });
         }

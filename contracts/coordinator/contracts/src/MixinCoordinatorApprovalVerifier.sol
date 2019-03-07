@@ -95,7 +95,7 @@ contract MixinCoordinatorApprovalVerifier is
         // Verify that Ethereum tx signer is the same as the approved txOrigin
         require(
             tx.origin == txOrigin,
-            "INVALID_SENDER"
+            "INVALID_ORIGIN"
         );
 
         // Hash 0x transaction
