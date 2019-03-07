@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 export const constants = {
-    COORDINATOR_DOMAIN_NAME: '0x Protocol Trade Execution Coordinator',
+    COORDINATOR_DOMAIN_NAME: '0x Protocol Coordinator',
     COORDINATOR_DOMAIN_VERSION: '1.0.0',
     COORDINATOR_APPROVAL_SCHEMA: {
         name: 'CoordinatorApproval',

@@ -25,7 +25,7 @@ contract LibEIP712Domain {
     string constant internal EIP191_HEADER = "\x19\x01";
 
     // EIP712 Domain Name value
-    string constant internal EIP712_DOMAIN_NAME = "0x Protocol Trade Execution Coordinator";
+    string constant internal EIP712_DOMAIN_NAME = "0x Protocol Coordinator";
 
     // EIP712 Domain Version value
     string constant internal EIP712_DOMAIN_VERSION = "1.0.0";
