@@ -17,10 +17,10 @@ import {
     ApprovalFactory,
     artifacts,
     constants,
-    exchangeDataEncoder,
-    hashUtils,
     CoordinatorSignatureType,
     CoordinatorTransactionFactory,
+    exchangeDataEncoder,
+    hashUtils,
     TestMixinsContract,
 } from '../src';
 

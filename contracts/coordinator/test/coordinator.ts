@@ -24,7 +24,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
-import { ApprovalFactory, artifacts, constants, exchangeDataEncoder, CoordinatorContract } from '../src';
+import { ApprovalFactory, artifacts, constants, CoordinatorContract, exchangeDataEncoder } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

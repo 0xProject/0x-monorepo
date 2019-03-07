@@ -2,7 +2,7 @@ import { SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
-import { hashUtils, SignedCoordinatorApproval, signingUtils, CoordinatorSignatureType } from './index';
+import { CoordinatorSignatureType, hashUtils, SignedCoordinatorApproval, signingUtils } from './index';
 
 export class ApprovalFactory {
     private readonly _privateKey: Buffer;

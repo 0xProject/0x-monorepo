@@ -2,7 +2,7 @@ import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedZeroExTransaction } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 
-import { hashUtils, signingUtils, CoordinatorSignatureType } from './index';
+import { CoordinatorSignatureType, hashUtils, signingUtils } from './index';
 
 export class CoordinatorTransactionFactory {
     private readonly _signerBuff: Buffer;
