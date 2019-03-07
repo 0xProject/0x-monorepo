@@ -81,14 +81,20 @@ describe('Mixins tests', () => {
     describe('getSignerAddress', () => {
         it('should return the correct address using the EthSign signature type', async () => {
             const data = devConstants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedCoordinatorTransaction(data, CoordinatorSignatureType.EthSign);
+            const transaction = transactionFactory.newSignedCoordinatorTransaction(
+                data,
+                CoordinatorSignatureType.EthSign,
+            );
             const transactionHash = hashUtils.getTransactionHashHex(transaction);
             const signerAddress = await mixins.getSignerAddress.callAsync(transactionHash, transaction.signature);
             expect(transaction.signerAddress).to.eq(signerAddress);
         });
         it('should return the correct address using the EIP712 signature type', async () => {
             const data = devConstants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedCoordinatorTransaction(data, CoordinatorSignatureType.EIP712);
+            const transaction = transactionFactory.newSignedCoordinatorTransaction(
+                data,
+                CoordinatorSignatureType.EIP712,
+            );
             const transactionHash = hashUtils.getTransactionHashHex(transaction);
             const signerAddress = await mixins.getSignerAddress.callAsync(transactionHash, transaction.signature);
             expect(transaction.signerAddress).to.eq(signerAddress);

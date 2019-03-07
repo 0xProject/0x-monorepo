@@ -190,10 +190,16 @@ describe('Coordinator tests', () => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = takerTransactionFactory.newSignedTransaction(data);
                 await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
-                        from: takerAddress,
-                        gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS,
-                    }),
+                    coordinatorContract.executeTransaction.sendTransactionAsync(
+                        transaction,
+                        transaction.signature,
+                        [],
+                        [],
+                        {
+                            from: takerAddress,
+                            gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS,
+                        },
+                    ),
                     RevertReason.InvalidApprovalSignature,
                 );
             });
@@ -388,9 +394,15 @@ describe('Coordinator tests', () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
-                    from: makerAddress,
-                }),
+                await coordinatorContract.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    [],
+                    [],
+                    {
+                        from: makerAddress,
+                    },
+                ),
             );
             const cancelLogs = transactionReceipt.logs.filter(
                 log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
@@ -409,9 +421,15 @@ describe('Coordinator tests', () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.BATCH_CANCEL_ORDERS, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
-                    from: makerAddress,
-                }),
+                await coordinatorContract.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    [],
+                    [],
+                    {
+                        from: makerAddress,
+                    },
+                ),
             );
             const cancelLogs = transactionReceipt.logs.filter(
                 log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
@@ -432,9 +450,15 @@ describe('Coordinator tests', () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS_UP_TO, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorContract.executeTransaction.sendTransactionAsync(transaction, transaction.signature, [], [], {
-                    from: makerAddress,
-                }),
+                await coordinatorContract.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    [],
+                    [],
+                    {
+                        from: makerAddress,
+                    },
+                ),
             );
             const cancelLogs = transactionReceipt.logs.filter(
                 log => (log as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).event === 'CancelUpTo',
