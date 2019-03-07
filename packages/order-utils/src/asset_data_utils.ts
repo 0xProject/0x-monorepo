@@ -1,10 +1,10 @@
 import {
     AssetProxyId,
-    ERC20AssetData,
-    ERC721AssetData,
     ERC1155AssetData,
     ERC1155AssetDataAbi,
     ERC1155AssetDataNoProxyId,
+    ERC20AssetData,
+    ERC721AssetData,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
     SingleAssetData,
@@ -107,7 +107,7 @@ export const assetDataUtils = {
             throw new Error(`Invalid assetProxyId. Expected '${AssetProxyId.ERC1155}', got '${assetProxyId}'`);
         }
         const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ERC1155AssetDataAbi);
-        const decodedAssetData = abiEncoder.decode(assetData, decodingRules) as ERC1155AssetDataNoProxyId;
+        const decodedAssetData: ERC1155AssetDataNoProxyId = abiEncoder.decode(assetData, decodingRules);
         return {
             assetProxyId,
             tokenAddress: decodedAssetData.tokenAddress,

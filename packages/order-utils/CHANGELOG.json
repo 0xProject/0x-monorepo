@@ -1,6 +1,6 @@
 [
     {
-    "version": "7.1.0",
+        "version": "7.1.0",
         "changes": [
             {
                 "note": "Added encoding/decoding fdor ERC1155 asset data",
