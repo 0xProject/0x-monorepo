@@ -52,12 +52,18 @@ describe('Libs tests', () => {
                 signature: '0x5678',
             };
             const approvalExpirationTimeSeconds = new BigNumber(0);
+            const txOrigin = constants.NULL_ADDRESS;
             const approval = {
+                txOrigin,
                 transactionHash: hashUtils.getTransactionHashHex(signedTx),
                 transactionSignature: signedTx.signature,
                 approvalExpirationTimeSeconds,
             };
-            const expectedApprovalHash = hashUtils.getApprovalHashHex(signedTx, approvalExpirationTimeSeconds);
+            const expectedApprovalHash = hashUtils.getApprovalHashHex(
+                signedTx,
+                txOrigin,
+                approvalExpirationTimeSeconds,
+            );
             const approvalHash = await testLibs.publicGetCoordinatorApprovalHash.callAsync(approval);
             expect(expectedApprovalHash).to.eq(approvalHash);
         });

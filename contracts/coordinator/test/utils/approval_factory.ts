@@ -13,6 +13,7 @@ export class ApprovalFactory {
     }
     public newSignedApproval(
         transaction: SignedZeroExTransaction,
+        txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
         signatureType: CoordinatorSignatureType = CoordinatorSignatureType.EthSign,
     ): SignedCoordinatorApproval {
@@ -20,9 +21,14 @@ export class ApprovalFactory {
             ...transaction,
             verifyingContractAddress: this._verifyingContractAddress,
         };
-        const approvalHashBuff = hashUtils.getApprovalHashBuffer(coordinatorTransaction, approvalExpirationTimeSeconds);
+        const approvalHashBuff = hashUtils.getApprovalHashBuffer(
+            coordinatorTransaction,
+            txOrigin,
+            approvalExpirationTimeSeconds,
+        );
         const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
         const signedApproval = {
+            txOrigin,
             transaction: coordinatorTransaction,
             approvalExpirationTimeSeconds,
             signature: ethUtil.addHexPrefix(signatureBuff.toString('hex')),

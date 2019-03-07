@@ -137,10 +137,15 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -148,6 +153,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -164,10 +170,15 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -175,6 +186,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -188,14 +200,22 @@ describe('Mixins tests', () => {
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    approvalSignerAddress1,
                     transaction.signature,
                     [],
                     [],
                     { from: approvalSignerAddress1 },
                 );
-                await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                    from: approvalSignerAddress1,
-                });
+                await mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    approvalSignerAddress1,
+                    transaction.signature,
+                    [],
+                    [],
+                    {
+                        from: approvalSignerAddress1,
+                    },
+                );
             });
             it(`Should be successful: function=${fnName}, caller=approver1, senderAddress=[verifier], approval_sig=[approver1], expiration=[invalid]`, async () => {
                 const orders = [defaultOrder];
@@ -203,10 +223,15 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    approvalSignerAddress1,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -214,6 +239,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    approvalSignerAddress1,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -227,14 +253,22 @@ describe('Mixins tests', () => {
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    approvalSignerAddress1,
                     transaction.signature,
                     [],
                     [],
                     { from: approvalSignerAddress1 },
                 );
-                await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                    from: approvalSignerAddress1,
-                });
+                await mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    approvalSignerAddress1,
+                    transaction.signature,
+                    [],
+                    [],
+                    {
+                        from: approvalSignerAddress1,
+                    },
+                );
             });
             it(`Should revert: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[invalid], expiration=[valid]`, async () => {
                 const orders = [defaultOrder];
@@ -242,12 +276,17 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [signature],
@@ -258,6 +297,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [signature],
@@ -272,11 +312,16 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -287,6 +332,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
@@ -301,27 +347,33 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
             });
         }
@@ -338,10 +390,15 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -349,6 +406,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -364,10 +422,15 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -375,6 +438,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -391,14 +455,20 @@ describe('Mixins tests', () => {
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [],
                     [],
                     { from: transactionSignerAddress },
                 );
-                await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                    from: transactionSignerAddress,
-                });
+                await mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [],
+                    [],
+                    { from: transactionSignerAddress },
+                );
             });
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,null], feeRecipient=[approver1,approver1], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, senderAddress: devConstants.NULL_ADDRESS }];
@@ -406,10 +476,15 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -417,6 +492,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
@@ -429,11 +505,20 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval1 = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
+                const approval2 = approvalFactory2.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
                     [approval1.signature, approval2.signature],
@@ -441,6 +526,7 @@ describe('Mixins tests', () => {
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
+                    transactionSignerAddress,
                     transaction.signature,
                     [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
                     [approval1.signature, approval2.signature],
@@ -454,36 +540,54 @@ describe('Mixins tests', () => {
                 await mixins.assertValidTransactionOrdersApproval.callAsync(
                     transaction,
                     orders,
+                    approvalSignerAddress1,
                     transaction.signature,
                     [],
                     [],
                     { from: approvalSignerAddress1 },
                 );
-                await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                    from: approvalSignerAddress1,
-                });
+                await mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    approvalSignerAddress1,
+                    transaction.signature,
+                    [],
+                    [],
+                    { from: approvalSignerAddress1 },
+                );
             });
-            it(`Should be successful: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver2], approval_sig=[approver2], expiration=[valid]`, async () => {
+            it(`Should revert: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver2], approval_sig=[approver2], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
+                const approval2 = approvalFactory2.newSignedApproval(
                     transaction,
-                    orders,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval2.signature],
-                    { from: approvalSignerAddress1 },
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
                 );
-                await mixins.assertValidCoordinatorApprovals.callAsync(
-                    transaction,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval2.signature],
-                    { from: approvalSignerAddress1 },
+                expectContractCallFailedAsync(
+                    mixins.assertValidTransactionOrdersApproval.callAsync(
+                        transaction,
+                        orders,
+                        transactionSignerAddress,
+                        transaction.signature,
+                        [approvalExpirationTimeSeconds],
+                        [approval2.signature],
+                        { from: approvalSignerAddress1 },
+                    ),
+                    RevertReason.InvalidOrigin,
+                );
+                expectContractCallFailedAsync(
+                    mixins.assertValidCoordinatorApprovals.callAsync(
+                        transaction,
+                        transactionSignerAddress,
+                        transaction.signature,
+                        [approvalExpirationTimeSeconds],
+                        [approval2.signature],
+                        { from: approvalSignerAddress1 },
+                    ),
+                    RevertReason.InvalidOrigin,
                 );
             });
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[], expiration=[]`, async () => {
@@ -494,6 +598,7 @@ describe('Mixins tests', () => {
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [],
                         [],
@@ -502,9 +607,14 @@ describe('Mixins tests', () => {
                     RevertReason.InvalidApprovalSignature,
                 );
                 expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                        from: transactionSignerAddress,
-                    }),
+                    mixins.assertValidCoordinatorApprovals.callAsync(
+                        transaction,
+                        transactionSignerAddress,
+                        transaction.signature,
+                        [],
+                        [],
+                        { from: transactionSignerAddress },
+                    ),
                     RevertReason.InvalidApprovalSignature,
                 );
             });
@@ -514,12 +624,17 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [signature],
@@ -530,6 +645,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [signature],
@@ -544,13 +660,22 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
-                const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval1 = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
+                const approval2 = approvalFactory2.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
                         [approval1.signature, approvalSignature2],
@@ -561,6 +686,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
                         [approval1.signature, approvalSignature2],
@@ -575,12 +701,17 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval2 = approvalFactory2.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        approvalSignerAddress1,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approvalSignature2],
@@ -591,6 +722,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        approvalSignerAddress1,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approvalSignature2],
@@ -606,12 +738,21 @@ describe('Mixins tests', () => {
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds1 = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approvalExpirationTimeSeconds2 = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds1);
-                const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds2);
+                const approval1 = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds1,
+                );
+                const approval2 = approvalFactory2.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds2,
+                );
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
                         [approval1.signature, approval2.signature],
@@ -622,6 +763,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
                         [approval1.signature, approval2.signature],
@@ -636,11 +778,16 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval2 = approvalFactory2.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval2 = approvalFactory2.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        approvalSignerAddress1,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval2.signature],
@@ -651,6 +798,7 @@ describe('Mixins tests', () => {
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        approvalSignerAddress1,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval2.signature],
@@ -665,27 +813,33 @@ describe('Mixins tests', () => {
                 const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval1 = approvalFactory1.newSignedApproval(transaction, approvalExpirationTimeSeconds);
+                const approval1 = approvalFactory1.newSignedApproval(
+                    transaction,
+                    transactionSignerAddress,
+                    approvalExpirationTimeSeconds,
+                );
                 expectContractCallFailedAsync(
                     mixins.assertValidTransactionOrdersApproval.callAsync(
                         transaction,
                         orders,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval1.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
+                        transactionSignerAddress,
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval1.signature],
                         { from: approvalSignerAddress2 },
                     ),
-                    RevertReason.InvalidSender,
+                    RevertReason.InvalidOrigin,
                 );
             });
         }
@@ -695,25 +849,40 @@ describe('Mixins tests', () => {
             const orders = [defaultOrder];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS, orders);
             const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
-            await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                from: transactionSignerAddress,
-            });
+            await mixins.assertValidCoordinatorApprovals.callAsync(
+                transaction,
+                transactionSignerAddress,
+                transaction.signature,
+                [],
+                [],
+                { from: transactionSignerAddress },
+            );
         });
         it('should allow the tx signer to call `batchCancelOrders` without approval', async () => {
             const orders = [defaultOrder, defaultOrder];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.BATCH_CANCEL_ORDERS, orders);
             const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
-            await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                from: transactionSignerAddress,
-            });
+            await mixins.assertValidCoordinatorApprovals.callAsync(
+                transaction,
+                transactionSignerAddress,
+                transaction.signature,
+                [],
+                [],
+                { from: transactionSignerAddress },
+            );
         });
         it('should allow the tx signer to call `cancelOrdersUpTo` without approval', async () => {
             const orders: SignedOrder[] = [];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS_UP_TO, orders);
             const transaction = transactionFactory.newSignedCoordinatorTransaction(data);
-            await mixins.assertValidCoordinatorApprovals.callAsync(transaction, transaction.signature, [], [], {
-                from: transactionSignerAddress,
-            });
+            await mixins.assertValidCoordinatorApprovals.callAsync(
+                transaction,
+                transactionSignerAddress,
+                transaction.signature,
+                [],
+                [],
+                { from: transactionSignerAddress },
+            );
         });
     });
 });

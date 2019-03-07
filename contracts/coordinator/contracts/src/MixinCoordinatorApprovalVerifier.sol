@@ -43,11 +43,13 @@ contract MixinCoordinatorApprovalVerifier is
     /// @dev Validates that the 0x transaction has been approved by all of the feeRecipients
     ///      that correspond to each order in the transaction's Exchange calldata.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
+    /// @param txOrigin Required signer of Ethereum transaction calling this function.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
     function assertValidCoordinatorApprovals(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
+        address txOrigin,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
@@ -64,6 +66,7 @@ contract MixinCoordinatorApprovalVerifier is
             assertValidTransactionOrdersApproval(
                 transaction,
                 orders,
+                txOrigin,
                 transactionSignature,
                 approvalExpirationTimeSeconds,
                 approvalSignatures
@@ -74,12 +77,14 @@ contract MixinCoordinatorApprovalVerifier is
     /// @dev Validates that the feeRecipients of a batch of order have approved a 0x transaction.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param orders Array of order structs containing order specifications.
+    /// @param txOrigin Required signer of Ethereum transaction calling this function.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
     function assertValidTransactionOrdersApproval(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         LibOrder.Order[] memory orders,
+        address txOrigin,
         bytes memory transactionSignature,
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
@@ -87,6 +92,12 @@ contract MixinCoordinatorApprovalVerifier is
         public
         view
     {
+        // Verify that Ethereum tx signer is the same as the approved txOrigin
+        require(
+            tx.origin == txOrigin,
+            "INVALID_ORIGIN"
+        );
+
         // Hash 0x transaction
         bytes32 transactionHash = getTransactionHash(transaction);
 
@@ -94,10 +105,11 @@ contract MixinCoordinatorApprovalVerifier is
         address[] memory approvalSignerAddresses = new address[](0);
 
         uint256 signaturesLength = approvalSignatures.length;
-        for (uint256 i = 0; i < signaturesLength; i++) {
+        for (uint256 i = 0; i != signaturesLength; i++) {
             // Create approval message
             uint256 currentApprovalExpirationTimeSeconds = approvalExpirationTimeSeconds[i];
             CoordinatorApproval memory approval = CoordinatorApproval({
+                txOrigin: txOrigin,
                 transactionHash: transactionHash,
                 transactionSignature: transactionSignature,
                 approvalExpirationTimeSeconds: currentApprovalExpirationTimeSeconds
@@ -117,32 +129,23 @@ contract MixinCoordinatorApprovalVerifier is
             // Add approval signer to list of signers
             approvalSignerAddresses = approvalSignerAddresses.append(approvalSignerAddress);
         }
+    
+        // Ethereum transaction signer gives implicit signature of approval
+        approvalSignerAddresses = approvalSignerAddresses.append(tx.origin);
         
         uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i < ordersLength; i++) {
+        for (uint256 i = 0; i != ordersLength; i++) {
             // Do not check approval if the order's senderAddress is null
             if (orders[i].senderAddress == address(0)) {
                 continue;
             }
-            
-            // Ethereum transaction signer gives implicit signature of approval
-            address approverAddress = orders[i].feeRecipientAddress;
-            if (approverAddress == tx.origin) {
-                approvalSignerAddresses = approvalSignerAddresses.append(tx.origin);
-                continue;
-            }
 
             // Ensure feeRecipient of order has approved this 0x transaction
+            address approverAddress = orders[i].feeRecipientAddress;
             bool isOrderApproved = approvalSignerAddresses.contains(approverAddress);
             require(
                 isOrderApproved,
                 "INVALID_APPROVAL_SIGNATURE"
-            );
-
-            // The Ethereum transaction signer must be the 0x transaction signer or an approver of the 0x transaction
-            require(
-                transaction.signerAddress == tx.origin || approvalSignerAddresses.contains(tx.origin),
-                "INVALID_SENDER"
             );
         }
     }

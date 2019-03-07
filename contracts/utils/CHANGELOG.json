@@ -5,6 +5,10 @@
             {
                 "note": "Set evmVersion to byzantium",
                 "pr": 1678
+            },
+            {
+                "note": "Optimize loops in LibAddressArray",
+                "pr": 1668
             }
         ]
     },

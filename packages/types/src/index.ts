@@ -273,6 +273,7 @@ export enum RevertReason {
     ToLessThanLengthRequired = 'TO_LESS_THAN_LENGTH_REQUIRED',
     InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
     ApprovalExpired = 'APPROVAL_EXPIRED',
+    InvalidOrigin = 'INVALID_ORIGIN',
 }
 
 export enum StatusCodes {
