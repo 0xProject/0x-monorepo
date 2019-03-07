@@ -169,8 +169,8 @@ describe('Exchange core', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
-         // Configure ERC1155Proxy
-         await web3Wrapper.awaitTransactionSuccessAsync(
+        // Configure ERC1155Proxy
+        await web3Wrapper.awaitTransactionSuccessAsync(
             await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
@@ -228,9 +228,11 @@ describe('Exchange core', () => {
         erc1155NonFungibleTokensOwnedByTaker = [];
         _.each(nonFungibleTokens, (nonFungibleToken: BigNumber) => {
             const nonFungibleTokenAsString = nonFungibleToken.toString();
-            const nonFungibleTokenHeldByMaker = tokenBalances.nonFungible[makerAddress][erc1155Contract.address][nonFungibleTokenAsString][0];
+            const nonFungibleTokenHeldByMaker =
+                tokenBalances.nonFungible[makerAddress][erc1155Contract.address][nonFungibleTokenAsString][0];
             erc1155NonFungibleTokensOwnedByMaker.push(nonFungibleTokenHeldByMaker);
-            const nonFungibleTokenHeldByTaker = tokenBalances.nonFungible[takerAddress][erc1155Contract.address][nonFungibleTokenAsString][0];
+            const nonFungibleTokenHeldByTaker =
+                tokenBalances.nonFungible[takerAddress][erc1155Contract.address][nonFungibleTokenAsString][0];
             erc1155NonFungibleTokensOwnedByTaker.push(nonFungibleTokenHeldByTaker);
         });
 
@@ -1097,11 +1099,25 @@ describe('Exchange core', () => {
             const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {return value.times(makerAssetAmount)});
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {return value.times(takerAssetAmount)});
+            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
+                return value.times(makerAssetAmount);
+            });
+            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
+                return value.times(takerAssetAmount);
+            });
             const receiverCallbackData = '0x';
-            const makerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, makerAssetsToTransfer, makerValuesToTransfer, receiverCallbackData);
-            const takerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, takerAssetsToTransfer, takerValuesToTransfer, receiverCallbackData);
+            const makerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
+            const takerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1114,9 +1130,9 @@ describe('Exchange core', () => {
             // check balances before transfer
             const expectedInitialBalances = [
                 // makerAddress / makerToken
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / takerToken
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // takerAddress / makerToken
                 constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // takerAddress / takerToken
@@ -1150,11 +1166,25 @@ describe('Exchange core', () => {
             const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {return value.times(makerAssetAmount)});
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {return value.times(takerAssetAmount)});
+            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
+                return value.times(makerAssetAmount);
+            });
+            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
+                return value.times(takerAssetAmount);
+            });
             const receiverCallbackData = '0x';
-            const makerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, makerAssetsToTransfer, makerValuesToTransfer, receiverCallbackData);
-            const takerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, takerAssetsToTransfer, takerValuesToTransfer, receiverCallbackData);
+            const makerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
+            const takerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1171,7 +1201,7 @@ describe('Exchange core', () => {
                 // makerAddress / makerToken
                 nftOwnerBalance,
                 // makerAddress / takerToken
-                nftNotOwnerBalance, 
+                nftNotOwnerBalance,
                 // takerAddress / makerToken
                 nftNotOwnerBalance,
                 // takerAddress / takerToken
@@ -1205,11 +1235,25 @@ describe('Exchange core', () => {
             const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {return value.times(makerAssetAmount)});
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {return value.times(takerAssetAmount)});
+            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
+                return value.times(makerAssetAmount);
+            });
+            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
+                return value.times(takerAssetAmount);
+            });
             const receiverCallbackData = '0x';
-            const makerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, makerAssetsToTransfer, makerValuesToTransfer, receiverCallbackData);
-            const takerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, takerAssetsToTransfer, takerValuesToTransfer, receiverCallbackData);
+            const makerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
+            const takerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1224,11 +1268,11 @@ describe('Exchange core', () => {
             const nftNotOwnerBalance = new BigNumber(0);
             const expectedInitialBalances = [
                 // makerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / makerToken[2]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / takerToken
                 nftNotOwnerBalance,
                 // takerAddress / makerToken[0]
@@ -1282,11 +1326,25 @@ describe('Exchange core', () => {
             const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {return value.times(makerAssetAmount)});
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {return value.times(takerAssetAmount)});
+            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
+                return value.times(makerAssetAmount);
+            });
+            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
+                return value.times(takerAssetAmount);
+            });
             const receiverCallbackData = '0x';
-            const makerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, makerAssetsToTransfer, makerValuesToTransfer, receiverCallbackData);
-            const takerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, takerAssetsToTransfer, takerValuesToTransfer, receiverCallbackData);
+            const makerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
+            const takerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1301,11 +1359,11 @@ describe('Exchange core', () => {
             const nftNotOwnerBalance = new BigNumber(0);
             const expectedInitialBalances = [
                 // makerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / makerToken[1]
                 constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / makerToken[2]
-                nftOwnerBalance, 
+                nftOwnerBalance,
                 // makerAddress / takerToken[0]
                 constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / takerToken[1]
@@ -1380,11 +1438,31 @@ describe('Exchange core', () => {
             const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(10);
             const takerAssetAmount = new BigNumber(20);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {return value.times(makerAssetAmount).times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount)});
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {return value.times(takerAssetAmount).times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount)});
+            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
+                return value
+                    .times(makerAssetAmount)
+                    .times(takerAssetFillAmount)
+                    .dividedToIntegerBy(takerAssetAmount);
+            });
+            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
+                return value
+                    .times(takerAssetAmount)
+                    .times(takerAssetFillAmount)
+                    .dividedToIntegerBy(takerAssetAmount);
+            });
             const receiverCallbackData = '0x';
-            const makerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, makerAssetsToTransfer, makerValuesToTransfer, receiverCallbackData);
-            const takerAssetData = assetDataUtils.encodeERC1155AssetData(erc1155Contract.address, takerAssetsToTransfer, takerValuesToTransfer, receiverCallbackData);
+            const makerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
+            const takerAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1396,7 +1474,7 @@ describe('Exchange core', () => {
             // check balances before transfer
             const expectedInitialBalances = [
                 // makerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE, 
+                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / makerToken[1]
                 constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 // makerAddress / takerToken[0]
