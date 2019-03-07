@@ -1,5 +1,15 @@
 [
     {
+
+        "version": "2.0.9",
+        "changes": [
+            {
+                "note": "Set evmVersion to byzantium",
+                "pr": 1678
+            }
+        ]
+    },
+    {
         "timestamp": 1551479279,
         "version": "2.0.8",
         "changes": [
