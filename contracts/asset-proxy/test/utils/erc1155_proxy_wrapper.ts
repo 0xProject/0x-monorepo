@@ -47,7 +47,7 @@ export class ERC1155ProxyWrapper {
         this._nfts = [];
     }
     /**
-     * @dev Deploys dummy ERC1155 contracts 
+     * @dev Deploys dummy ERC1155 contracts
      * @return An array of ERC1155 wrappers; one for each deployed contract.
      */
     public async deployDummyContractsAsync(): Promise<Erc1155Wrapper[]> {
