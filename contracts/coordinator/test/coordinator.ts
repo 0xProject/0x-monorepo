@@ -517,3 +517,4 @@ describe('Coordinator tests', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count

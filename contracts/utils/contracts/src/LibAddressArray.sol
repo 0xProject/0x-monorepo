@@ -99,19 +99,21 @@ library LibAddressArray {
             let arrayByteLen := mul(mload(addressArray), 32)
             // Calculate beginning of array contents
             let arrayContentsStart := add(addressArray, 32)
+            // Calclulate end of array contents
+            let arrayContentsEnd := add(arrayContentsStart, arrayByteLen)
 
             // Loop through array
-            for {let i:= 0} lt(i, arrayByteLen) {i := add(i, 32)} {
+            for {let i:= arrayContentsStart} lt(i, arrayContentsEnd) {i := add(i, 32)} {
 
                 // Load array element
-                let arrayElement := mload(add(arrayContentsStart, i))
+                let arrayElement := mload(i)
 
                 // Return true if array element equals target
                 if eq(target, arrayElement) {
                     // Set success to true
                     success := 1
                     // Break loop
-                    i := arrayByteLen
+                    i := arrayContentsEnd
                 }
             }
         }
@@ -133,12 +135,14 @@ library LibAddressArray {
             let arrayByteLen := mul(mload(addressArray), 32)
             // Calculate beginning of array contents
             let arrayContentsStart := add(addressArray, 32)
+            // Calclulate end of array contents
+            let arrayContentsEnd := add(arrayContentsStart, arrayByteLen)
 
             // Loop through array
-            for {let i:= 0} lt(i, arrayByteLen) {i := add(i, 32)} {
+            for {let i:= arrayContentsStart} lt(i, arrayContentsEnd) {i := add(i, 32)} {
 
                 // Load array element
-                let arrayElement := mload(add(arrayContentsStart, i))
+                let arrayElement := mload(i)
 
                 // Return true if array element equals target
                 if eq(target, arrayElement) {
@@ -146,7 +150,7 @@ library LibAddressArray {
                     success := 1
                     index := div(i, 32)
                     // Break loop
-                    i := arrayByteLen
+                    i := arrayContentsEnd
                 }
             }
         }
