@@ -70,6 +70,10 @@ const projects: ProjectLogo[] = [
         name: 'Veil',
         imageUrl: 'images/clients/veil.svg',
     },
+    {
+        name: 'Ethfinex',
+        imageUrl: 'images/clients/ethfinex.svg',
+    },
 ];
 
 export const SectionLandingClients = () => (
