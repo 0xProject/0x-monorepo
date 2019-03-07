@@ -1,0 +1,21 @@
+{
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
+    "useDockerisedSolc": true,
+    "compilerSettings": {
+        "evmVersion": "byzantium",
+        "optimizer": { "enabled": true, "runs": 1000000 },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    },
+    "contracts": ["src/Coordinator.sol", "test/TestLibs.sol", "test/TestMixins.sol"]
+}
