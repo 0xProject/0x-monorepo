@@ -70,6 +70,10 @@ const projects: ProjectLogo[] = [
         name: 'Veil',
         imageUrl: 'images/clients/veil.svg',
     },
+    {
+        name: 'Ethfinex',
+        imageUrl: 'images/clients/ethfinex.svg',
+    },
 ];
 
 export const SectionLandingClients = () => (
@@ -91,7 +95,6 @@ const StyledProject = styled.div<StyledProjectInterface>`
 
     img {
         object-fit: contain;
-        width: 100%;
         height: 100%;
     }
 
