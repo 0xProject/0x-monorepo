@@ -5,7 +5,16 @@
     "isOfflineMode": false,
     "compilerSettings": {
         "evmVersion": "byzantium",
-        "optimizer": { "enabled": true, "runs": 1000000 },
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": {
+                "yul": true,
+                "deduplicate": true,
+                "cse": true,
+                "constantOptimizer": true
+            }
+        },
         "outputSelection": {
             "*": {
                 "*": [

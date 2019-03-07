@@ -68,8 +68,8 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.0.2",
-        "@0x/contracts-exchange-libs": "1.0.2",
-        "@0x/contracts-utils": "2.0.1",
+        "@0x/contracts-exchange-libs": "^1.1.3",
+        "@0x/contracts-utils": "^2.0.8",
         "@0x/types": "^2.1.1",
         "@0x/typescript-typings": "^4.1.0",
         "@0x/utils": "^4.2.2",

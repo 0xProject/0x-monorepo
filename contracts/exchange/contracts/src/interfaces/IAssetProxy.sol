@@ -19,19 +19,25 @@
 pragma solidity ^0.5.5;
 
 
-contract IAssetProxyDispatcher {
+contract IAssetProxy {
 
-    /// @dev Registers an asset proxy to its asset proxy id.
-    ///      Once an asset proxy is registered, it cannot be unregistered.
-    /// @param assetProxy Address of new asset proxy to register.
-    function registerAssetProxy(address assetProxy)
+    /// @dev Transfers assets. Either succeeds or throws.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param from Address to transfer asset from.
+    /// @param to Address to transfer asset to.
+    /// @param amount Amount of asset to transfer.
+    function transferFrom(
+        bytes calldata assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
         external;
-
-    /// @dev Gets an asset proxy.
-    /// @param assetProxyId Id of the asset proxy.
-    /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
-    function getAssetProxy(bytes4 assetProxyId)
+    
+    /// @dev Gets the proxy id associated with the proxy address.
+    /// @return Proxy id.
+    function getProxyId()
         external
-        view
-        returns (address);
+        pure
+        returns (bytes4);
 }

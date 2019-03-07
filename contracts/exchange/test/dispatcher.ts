@@ -1,10 +1,5 @@
-import {
-    DummyERC20TokenContract,
-    ERC20ProxyContract,
-    ERC20Wrapper,
-    ERC721ProxyContract,
-    ERC721Wrapper,
-} from '@0x/contracts-asset-proxy';
+import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
     constants,

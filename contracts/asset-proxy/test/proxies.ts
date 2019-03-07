@@ -1,4 +1,16 @@
 import {
+    artifacts as erc20Artifacts,
+    DummyERC20TokenContract,
+    DummyERC20TokenTransferEventArgs,
+    DummyMultipleReturnERC20TokenContract,
+    DummyNoReturnERC20TokenContract,
+} from '@0x/contracts-erc20';
+import {
+    artifacts as erc721Artifacts,
+    DummyERC721ReceiverContract,
+    DummyERC721TokenContract,
+} from '@0x/contracts-erc721';
+import {
     chaiSetup,
     constants,
     expectTransactionFailedAsync,
@@ -18,12 +30,6 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    DummyERC20TokenContract,
-    DummyERC20TokenTransferEventArgs,
-    DummyERC721ReceiverContract,
-    DummyERC721TokenContract,
-    DummyMultipleReturnERC20TokenContract,
-    DummyNoReturnERC20TokenContract,
     ERC20ProxyContract,
     ERC20Wrapper,
     ERC721ProxyContract,
@@ -148,7 +154,7 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_DECIMALS,
         );
         noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyNoReturnERC20Token,
+            erc20Artifacts.DummyNoReturnERC20Token,
             provider,
             txDefaults,
             constants.DUMMY_TOKEN_NAME,
@@ -157,7 +163,7 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
         multipleReturnErc20Token = await DummyMultipleReturnERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyMultipleReturnERC20Token,
+            erc20Artifacts.DummyMultipleReturnERC20Token,
             provider,
             txDefaults,
             constants.DUMMY_TOKEN_NAME,
@@ -198,7 +204,7 @@ describe('Asset Transfer Proxies', () => {
         // Deploy and configure ERC721 tokens and receiver
         [erc721TokenA, erc721TokenB] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Receiver = await DummyERC721ReceiverContract.deployFrom0xArtifactAsync(
-            artifacts.DummyERC721Receiver,
+            erc721Artifacts.DummyERC721Receiver,
             provider,
             txDefaults,
         );

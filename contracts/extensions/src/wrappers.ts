@@ -4,11 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/balance_threshold_filter';
-export * from '../generated-wrappers/dummy_erc20_token';
-export * from '../generated-wrappers/dummy_erc721_token';
 export * from '../generated-wrappers/dutch_auction';
-export * from '../generated-wrappers/erc20_proxy';
-export * from '../generated-wrappers/erc721_proxy';
 export * from '../generated-wrappers/exchange';
 export * from '../generated-wrappers/exchange_wrapper';
 export * from '../generated-wrappers/order_matcher';

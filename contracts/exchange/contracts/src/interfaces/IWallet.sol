@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract IWallet {
@@ -27,7 +27,7 @@ contract IWallet {
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
-        bytes signature
+        bytes calldata signature
     )
         external
         view

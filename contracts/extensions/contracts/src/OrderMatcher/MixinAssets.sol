@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
@@ -39,7 +39,7 @@ contract MixinAssets is
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to withdraw.
     function withdrawAsset(
-        bytes assetData,
+        bytes calldata assetData,
         uint256 amount
     )
         external
@@ -52,7 +52,7 @@ contract MixinAssets is
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to approve for respective proxy.
     function approveAssetProxy(
-        bytes assetData,
+        bytes calldata assetData,
         uint256 amount
     )
         external
@@ -104,7 +104,7 @@ contract MixinAssets is
         // Transfer tokens.
         // We do a raw call so we can check the success separate
         // from the return data.
-        bool success = token.call(abi.encodeWithSelector(
+        (bool success,) = token.call(abi.encodeWithSelector(
             ERC20_TRANSFER_SELECTOR,
             msg.sender,
             amount

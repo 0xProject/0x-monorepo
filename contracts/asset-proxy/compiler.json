@@ -5,7 +5,16 @@
     "isOfflineMode": false,
     "compilerSettings": {
         "evmVersion": "byzantium",
-        "optimizer": { "enabled": true, "runs": 1000000 },
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": {
+                "yul": true,
+                "deduplicate": true,
+                "cse": true,
+                "constantOptimizer": true
+            }
+        },
         "outputSelection": {
             "*": {
                 "*": [
@@ -19,11 +28,6 @@
         }
     },
     "contracts": [
-        "@0x/contracts-erc20/contracts/test/DummyERC20Token.sol",
-        "@0x/contracts-erc20/contracts/test/DummyMultipleReturnERC20Token.sol",
-        "@0x/contracts-erc20/contracts/test/DummyNoReturnERC20Token.sol",
-        "@0x/contracts-erc721/contracts/test/DummyERC721Receiver.sol",
-        "@0x/contracts-erc721/contracts/test/DummyERC721Token.sol",
         "src/ERC20Proxy.sol",
         "src/ERC721Proxy.sol",
         "src/MixinAuthorizable.sol",

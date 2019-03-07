@@ -17,7 +17,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract MExchangeCalldata {
@@ -51,6 +51,7 @@ contract MExchangeCalldata {
     /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
     /// @return makerAddresses The extracted maker addresses.
     function loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
-        internal pure
-        returns (address[] makerAddresses);
+        internal
+        pure
+        returns (address[] memory makerAddresses);
 }

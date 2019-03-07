@@ -15,7 +15,8 @@
   limitations under the License.
 
 */
-pragma solidity ^0.4.24;
+
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";

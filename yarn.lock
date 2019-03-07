@@ -489,6 +489,33 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
+"@0x/contracts-erc20@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/@0x/contracts-erc20/-/contracts-erc20-1.0.8.tgz#882f3acf1a44148800d9bef692aa377627df9ace"
+  dependencies:
+    "@0x/base-contract" "^5.0.1"
+    "@0x/contracts-exchange-libs" "1.0.2"
+    "@0x/contracts-utils" "2.0.1"
+    "@0x/types" "^2.1.1"
+    "@0x/typescript-typings" "^4.1.0"
+    "@0x/utils" "^4.2.1"
+    "@0x/web3-wrapper" "^6.0.1"
+    ethereum-types "^2.1.0"
+    lodash "^4.17.11"
+
+"@0x/contracts-erc721@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/@0x/contracts-erc721/-/contracts-erc721-1.0.8.tgz#d3746c26eec57662654557121601b5bb81085637"
+  dependencies:
+    "@0x/base-contract" "^5.0.1"
+    "@0x/contracts-utils" "2.0.1"
+    "@0x/types" "^2.1.1"
+    "@0x/typescript-typings" "^4.1.0"
+    "@0x/utils" "^4.2.1"
+    "@0x/web3-wrapper" "^6.0.1"
+    ethereum-types "^2.1.0"
+    lodash "^4.17.11"
+
 "@0x/contracts-exchange-libs@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@0x/contracts-exchange-libs/-/contracts-exchange-libs-1.0.2.tgz#0682c01cdb3e36100bda0ffbdf9badb5b8a01fc4"
@@ -7471,11 +7498,13 @@ functional-red-black-tree@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
 
-ganache-cli@6.1.8:
-  version "6.1.8"
-  resolved "https://registry.yarnpkg.com/ganache-cli/-/ganache-cli-6.1.8.tgz#49a8a331683a9652183f82ef1378d17e1814fcd3"
+ganache-cli@6.4.1:
+  version "6.4.1"
+  resolved "https://registry.npmjs.org/ganache-cli/-/ganache-cli-6.4.1.tgz#77c1682883a544dcad160b0e8155e282aefb4f1f"
   dependencies:
-    source-map-support "^0.5.3"
+    bn.js "4.11.8"
+    source-map-support "0.5.9"
+    yargs "11.1.0"
 
 ganache-core@^2.3.3:
   version "2.3.3"
@@ -13473,6 +13502,15 @@ react-dom@^16.3.2:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
+react-dom@^16.4.2:
+  version "16.8.4"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.8.4.tgz#1061a8e01a2b3b0c8160037441c3bf00a0e3bc48"
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.4"
+
 react-dom@^16.5.2:
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.5.2.tgz#b69ee47aa20bab5327b2b9d7c1fe2a30f2cfa9d7"
@@ -13775,6 +13813,15 @@ react@^16.3.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+react@^16.4.2:
+  version "16.8.4"
+  resolved "https://registry.npmjs.org/react/-/react-16.8.4.tgz#fdf7bd9ae53f03a9c4cd1a371432c206be1c4768"
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.4"
 
 react@^16.5.2:
   version "16.5.2"
@@ -14647,6 +14694,13 @@ schedule@^0.5.0:
   dependencies:
     object-assign "^4.1.1"
 
+scheduler@^0.13.4:
+  version "0.13.4"
+  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.13.4.tgz#8fef05e7a3580c76c0364d2df5e550e4c9140298"
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+
 schema-utils@^0.4.4:
   version "0.4.7"
   resolved "https://registry.npmjs.org/schema-utils/-/schema-utils-0.4.7.tgz#ba74f597d2be2ea880131746ee17d0a093c68187"
@@ -15134,6 +15188,19 @@ solc@^0.4.2:
 solc@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/solc/-/solc-0.5.2.tgz#45d5d11569e41c2b2535f3a50fe0616ca771a347"
+  dependencies:
+    command-exists "^1.2.8"
+    fs-extra "^0.30.0"
+    keccak "^1.0.2"
+    memorystream "^0.3.1"
+    require-from-string "^2.0.0"
+    semver "^5.5.0"
+    tmp "0.0.33"
+    yargs "^11.0.0"
+
+solc@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.npmjs.org/solc/-/solc-0.5.5.tgz#bdedd988e1a958f48bb8d84df5414f0ae9f62764"
   dependencies:
     command-exists "^1.2.8"
     fs-extra "^0.30.0"
