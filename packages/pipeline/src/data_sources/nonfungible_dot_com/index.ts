@@ -42,7 +42,7 @@ export interface NonfungibleDotComTradeResponse {
     transactionHash: string;
     blockNumber: number;
     logIndex: number;
-    blockTimestamp: string;
+    blockTimestamp: string | number; // string from API, number from initial dump
     assetId: string;
     assetDescriptor: string;
     nftAddress: string;
@@ -152,6 +152,10 @@ export async function getTradesAsync(
         );
         for (const tradeFromApi of tradesFromApi) {
             ensureNonNull(tradeFromApi);
+
+            // convert date from "2019-03-06T17:36:24.000Z" to unix epoch integer
+            const msPerSec = 1000;
+            tradeFromApi.blockTimestamp = Math.floor(new Date(tradeFromApi.blockTimestamp).valueOf() / msPerSec);
 
             if (tradeFromApi.blockNumber <= blockNumberStop) {
                 blockNumber = blockNumberStop;
