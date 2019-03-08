@@ -1,5 +1,13 @@
 [
     {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add RichRevertReason classes and tests."
+            }
+        ]
+    },
+    {
         "timestamp": 1551479279,
         "version": "7.0.2",
         "changes": [
