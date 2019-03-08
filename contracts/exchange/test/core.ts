@@ -121,7 +121,7 @@ describe('Exchange core', () => {
         );
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-        [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyTokensAsync();
+        [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
         erc1155Contract = erc1155Wrapper.getContract();
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,

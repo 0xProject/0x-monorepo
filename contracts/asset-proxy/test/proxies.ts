@@ -28,6 +28,7 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { Erc1155Wrapper } from '../../erc1155';
 import {
     artifacts,
     ERC20ProxyContract,
@@ -76,6 +77,15 @@ describe('Asset Transfer Proxies', () => {
     let erc721Wrapper: ERC721Wrapper;
     let erc721AFromTokenId: BigNumber;
     let erc721BFromTokenId: BigNumber;
+
+    let erc1155Proxy: ERC721ProxyContract;
+    let erc1155ProxyWrapper: ERC1155ProxyWrapper;
+    let erc1155Contract: ERC1155MintableContract;
+    let erc1155Contract2: ERC1155MintableContract;
+    let erc1155Wrapper: Erc1155Wrapper;
+    let erc1155Wrapper2: Erc1155Wrapper;
+    let erc1155FungibleTokens: BigNumber[];
+    let erc1155NonFungibleTokensOwnedBySpender: BigNumber[];
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -127,6 +137,22 @@ describe('Asset Transfer Proxies', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
+         // Configure ERC115Proxy
+         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
+         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
+         await web3Wrapper.awaitTransactionSuccessAsync(
+             await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
+                 from: owner,
+             }),
+             constants.AWAIT_TRANSACTION_MINED_MS,
+         );
+         await web3Wrapper.awaitTransactionSuccessAsync(
+             await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+                 from: owner,
+             }),
+             constants.AWAIT_TRANSACTION_MINED_MS,
+         );
+
         // Configure MultiAssetProxy
         await web3Wrapper.awaitTransactionSuccessAsync(
             await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
@@ -142,6 +168,12 @@ describe('Asset Transfer Proxies', () => {
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
             await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc1155Proxy.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
@@ -213,6 +245,22 @@ describe('Asset Transfer Proxies', () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721AFromTokenId = erc721Balances[fromAddress][erc721TokenA.address][0];
         erc721BFromTokenId = erc721Balances[fromAddress][erc721TokenB.address][0];
+
+        // Deploy & configure ERC1155 tokens and receiver
+        [erc1155Wrapper, erc1155Wrapper2] = await erc1155ProxyWrapper.deployDummyContractsAsync();
+        erc1155Contract = erc1155Wrapper.getContract();
+        erc1155Contract2 = erc1155Wrapper2.getContract();
+        await erc1155ProxyWrapper.setBalancesAndAllowancesAsync();
+        erc1155FungibleTokens = erc1155ProxyWrapper.getFungibleTokenIds();
+        const nonFungibleTokens = erc1155ProxyWrapper.getNonFungibleTokenIds();
+        const tokenBalances = await erc1155ProxyWrapper.getBalancesAsync();
+        erc1155NonFungibleTokensOwnedBySpender = [];
+        _.each(nonFungibleTokens, (nonFungibleToken: BigNumber) => {
+            const nonFungibleTokenAsString = nonFungibleToken.toString();
+            const nonFungibleTokenHeldBySpender =
+                tokenBalances.nonFungible[fromAddress][erc1155Contract.address][nonFungibleTokenAsString][0];
+                erc1155NonFungibleTokensOwnedBySpender.push(nonFungibleTokenHeldBySpender);
+        });
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -943,6 +991,306 @@ describe('Asset Transfer Proxies', () => {
                 const newOwnerFromAsset2 = await erc721TokenB.ownerOf.callAsync(erc721BFromTokenId);
                 expect(newOwnerFromAsset1).to.be.equal(toAddress);
                 expect(newOwnerFromAsset2).to.be.equal(toAddress);
+            });
+            it('should transfer a fungible ERC1155 token', async () => {
+                // setup test parameters
+                const tokenHolders = [fromAddress, toAddress];
+                const tokensToTransfer = erc1155FungibleTokens.slice(0, 1);
+                const valuesToTransfer = [new BigNumber(25)];
+                const valueMultiplier = new BigNumber(23);
+                const receiverCallbackData = '0x0102030405';
+                // check balances before transfer
+                const expectedInitialBalances = [
+                    // from
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    // to
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+                // encode erc1155 asset data
+                const erc1155AssetData = assetDataUtils.encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    receiverCallbackData,
+                );
+                // encode multi-asset data
+                const multiAssetAmount = new BigNumber(5);
+                const amounts = [valueMultiplier];
+                const nestedAssetData = [erc1155AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    multiAssetAmount,
+                );
+                // execute transfer
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data,
+                        from: authorized,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+                // check balances
+                const totalValueTransferred = valuesToTransfer[0].times(valueMultiplier).times(multiAssetAmount);
+                const expectedFinalBalances = [
+                    // from
+                    expectedInitialBalances[0].minus(totalValueTransferred),
+                    // to
+                    expectedInitialBalances[1].plus(totalValueTransferred),
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+            });
+            it('should successfully transfer multiple fungible tokens of the same ERC1155 contract', async () => {
+                // setup test parameters
+                const tokenHolders = [fromAddress, toAddress];
+                const tokensToTransfer = erc1155FungibleTokens.slice(0, 3);
+                const valuesToTransfer = [new BigNumber(25), new BigNumber(35), new BigNumber(45)];
+                const valueMultiplier = new BigNumber(23);
+                const receiverCallbackData = '0x0102030405';
+                // check balances before transfer
+                const expectedInitialBalances = [
+                    // from
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    // to
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+                // encode erc1155 asset data
+                const erc1155AssetData = assetDataUtils.encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    receiverCallbackData,
+                );
+                // encode multi-asset data
+                const multiAssetAmount = new BigNumber(5);
+                const amounts = [valueMultiplier];
+                const nestedAssetData = [erc1155AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    multiAssetAmount,
+                );
+                // execute transfer
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data,
+                        from: authorized,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+                // check balances
+                const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
+                    return value.times(valueMultiplier).times(multiAssetAmount);
+                });
+                const expectedFinalBalances = [
+                    // from
+                    expectedInitialBalances[0].minus(totalValuesTransferred[0]),
+                    expectedInitialBalances[1].minus(totalValuesTransferred[1]),
+                    expectedInitialBalances[2].minus(totalValuesTransferred[2]),
+                    // to
+                    expectedInitialBalances[3].plus(totalValuesTransferred[0]),
+                    expectedInitialBalances[4].plus(totalValuesTransferred[1]),
+                    expectedInitialBalances[5].plus(totalValuesTransferred[2]),
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+            });
+            it('should successfully transfer multiple fungible/non-fungible tokens of the same ERC1155 contract', async () => {
+                // setup test parameters
+                const tokenHolders = [fromAddress, toAddress];
+                const fungibleTokensToTransfer = erc1155FungibleTokens.slice(0, 1);
+                const nonFungibleTokensToTransfer = erc1155NonFungibleTokensOwnedBySpender.slice(0, 1);
+                const tokensToTransfer = fungibleTokensToTransfer.concat(nonFungibleTokensToTransfer);
+                const valuesToTransfer = [new BigNumber(25), new BigNumber(1)];
+                const valueMultiplier = new BigNumber(1);
+                const receiverCallbackData = '0x0102030405';
+                // check balances before transfer
+                const nftOwnerBalance = new BigNumber(1);
+                const nftNotOwnerBalance = new BigNumber(0);
+                const expectedInitialBalances = [
+                    // from
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    nftOwnerBalance,
+                    // to
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    nftNotOwnerBalance,
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+                // encode erc1155 asset data
+                const erc1155AssetData = assetDataUtils.encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    receiverCallbackData,
+                );
+                // encode multi-asset data
+                const multiAssetAmount = new BigNumber(1);
+                const amounts = [valueMultiplier];
+                const nestedAssetData = [erc1155AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    multiAssetAmount,
+                );
+                // execute transfer
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data,
+                        from: authorized,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+                // check balances
+                const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
+                    return value.times(valueMultiplier).times(multiAssetAmount);
+                });
+                const expectedFinalBalances = [
+                    // from
+                    expectedInitialBalances[0].minus(totalValuesTransferred[0]),
+                    expectedInitialBalances[1].minus(totalValuesTransferred[1]),
+                    // to
+                    expectedInitialBalances[2].plus(totalValuesTransferred[0]),
+                    expectedInitialBalances[3].plus(totalValuesTransferred[1]),
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+            });
+            it('should successfully transfer multiple different ERC1155 tokens', async () => {
+                // setup test parameters
+                const tokenHolders = [fromAddress, toAddress];
+                const tokensToTransfer = erc1155FungibleTokens.slice(0, 1);
+                const valuesToTransfer = [new BigNumber(25)];
+                const valueMultiplier = new BigNumber(23);
+                const receiverCallbackData = '0x0102030405';
+                // check balances before transfer
+                const expectedInitialBalances = [
+                    // from
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    // to
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+                await erc1155Wrapper2.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+                // encode erc1155 asset data
+                const erc1155AssetData1 = assetDataUtils.encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    receiverCallbackData,
+                );
+                const erc1155AssetData2 = assetDataUtils.encodeERC1155AssetData(
+                    erc1155Contract2.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    receiverCallbackData,
+                );
+                // encode multi-asset data
+                const multiAssetAmount = new BigNumber(5);
+                const amounts = [valueMultiplier, valueMultiplier];
+                const nestedAssetData = [erc1155AssetData1, erc1155AssetData2];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    multiAssetAmount,
+                );
+                // execute transfer
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data,
+                        from: authorized,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+                // check balances
+                const totalValueTransferred = valuesToTransfer[0].times(valueMultiplier).times(multiAssetAmount);
+                const expectedFinalBalances = [
+                    // from
+                    expectedInitialBalances[0].minus(totalValueTransferred),
+                    // to
+                    expectedInitialBalances[1].plus(totalValueTransferred),
+                ];
+                await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+                await erc1155Wrapper2.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+            });
+            it('should successfully transfer a combination of ERC20, ERC721, and ERC1155 tokens', async () => {
+                // setup test parameters
+                const inputAmount = new BigNumber(1);
+                const erc20Amount = new BigNumber(10);
+                const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+                const erc721Amount = new BigNumber(1);
+                const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721TokenA.address, erc721AFromTokenId);
+                const erc1155TokenHolders = [fromAddress, toAddress];
+                const erc1155TokensToTransfer = erc1155FungibleTokens.slice(0, 1);
+                const erc1155ValuesToTransfer = [new BigNumber(25)];
+                const erc1155Amount = new BigNumber(23);
+                const erc1155ReceiverCallbackData = '0x0102030405';
+                const erc1155AssetData =  assetDataUtils.encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    erc1155TokensToTransfer,
+                    erc1155ValuesToTransfer,
+                    erc1155ReceiverCallbackData,
+                );
+                const amounts = [erc20Amount, erc721Amount, erc1155Amount];
+                const nestedAssetData = [erc20AssetData, erc721AssetData, erc1155AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    inputAmount,
+                );
+                // check balances before transfer
+                const erc20Balances = await erc20Wrapper.getBalancesAsync();
+                const ownerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
+                expect(ownerFromAsset).to.be.equal(fromAddress);
+                const erc1155ExpectedInitialBalances = [
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                    constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
+                ];
+                await erc1155Wrapper.assertBalancesAsync(erc1155TokenHolders, erc1155TokensToTransfer, erc1155ExpectedInitialBalances);
+                // execute transfer
+                await web3Wrapper.awaitTransactionSuccessAsync(
+                    await web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data,
+                        from: authorized,
+                        gas: 1000000,
+                    }),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+                // check balances after transfer
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+                const totalAmount = inputAmount.times(erc20Amount);
+                expect(newBalances[fromAddress][erc20TokenA.address]).to.be.bignumber.equal(
+                    erc20Balances[fromAddress][erc20TokenA.address].minus(totalAmount),
+                );
+                expect(newBalances[toAddress][erc20TokenA.address]).to.be.bignumber.equal(
+                    erc20Balances[toAddress][erc20TokenA.address].plus(totalAmount),
+                );
+                const newOwnerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
+                expect(newOwnerFromAsset).to.be.equal(toAddress);
+                const erc1155TotalValueTransferred = erc1155ValuesToTransfer[0].times(erc1155Amount).times(inputAmount);
+                const expectedFinalBalances = [
+                    erc1155ExpectedInitialBalances[0].minus(erc1155TotalValueTransferred),
+                    erc1155ExpectedInitialBalances[1].plus(erc1155TotalValueTransferred),
+                ];
+                await erc1155Wrapper.assertBalancesAsync(erc1155TokenHolders, erc1155TokensToTransfer, expectedFinalBalances);
             });
             it('should successfully transfer a combination of ERC20 and ERC721 tokens', async () => {
                 const inputAmount = new BigNumber(1);
