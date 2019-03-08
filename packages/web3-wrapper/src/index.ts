@@ -42,6 +42,7 @@ export {
     MethodAbi,
     ConstructorAbi,
     FallbackAbi,
+    RichRevertAbi,
     DataItem,
     ConstructorStateMutability,
     StateMutability,

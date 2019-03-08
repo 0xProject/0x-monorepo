@@ -5,6 +5,7 @@ export {
     signatureUtils,
     generatePseudoRandomSalt,
     orderHashUtils,
+    RichRevertReason,
     transactionHashUtils,
 } from '@0x/order-utils';
 
@@ -93,6 +94,7 @@ export {
     ERC721AssetData,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
+    RichRevertAbi,
     SignatureType,
     ObjectMap,
     OrderRelevantState,

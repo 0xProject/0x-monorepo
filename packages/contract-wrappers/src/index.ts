@@ -92,6 +92,7 @@ export {
     RawLog,
     FunctionAbi,
     EventAbi,
+    RichRevertAbi,
     EventParameter,
     DecodedLogArgs,
     MethodAbi,

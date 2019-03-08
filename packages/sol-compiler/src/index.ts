@@ -15,6 +15,7 @@ export {
     FunctionAbi,
     MethodAbi,
     ConstructorAbi,
+    RichRevertAbi,
     ConstructorStateMutability,
     ContractAbi,
     OutputField,
