@@ -1,6 +1,15 @@
 [
     {
         "timestamp": 1551130135,
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add 'returnData' field to thrown error when failing to decode call return values."
+            }
+        ]
+    },
+    {
+        "timestamp": 1551130135,
         "version": "2.0.1",
         "changes": [
             {

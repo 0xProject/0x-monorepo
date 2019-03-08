@@ -17,7 +17,12 @@ async callAsync(
     BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
     const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
     // tslint:disable boolean-naming
-    const result = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
+    try {
+        return abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
+    } catch (err) {
+        // Add the raw call data to the error.
+        err.returnData = rawCallResult;
+        throw err;
+    }
     // tslint:enable boolean-naming
-    return result;
 },

@@ -1,4 +1,4 @@
-import { RichRevertReason } from '@0x/order-utils';
+import { StandardError, RichRevertReason } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
@@ -197,29 +197,67 @@ export async function expectContractCallFailedAsync<T>(
     return expect(p).to.be.rejectedWith(reason);
 }
 
-async function _expectContractCallRichRevertAsync<T>(p: Promise<T>, reason: RichRevertReason): Promise<void> {
+/**
+ * A hacky way of expecting a rich revert reason to resolve.
+ * This is because geth does not signal when a revert happens during an
+ * eth_call so we're left to guess whether the returned data is an encoded
+ * rich revert reason.
+ * @param p A Promise resulting from a contract call.
+ * @param reason a rich revert reason
+ * @returns a promise which will reject `p` does not resolve to a rich revert reason.
+ */
+async function _expectContractCallRichRevertAsync<T>(
+        p: Promise<T>,
+        reason: RichRevertReason): Promise<void> {
+
+    let decoded: RichRevertReason | undefined;
     try {
-        const r = await p;
-        // Geth will NOT throw. It will return data as if it had succeeded, but
+        // Geth will not give any indication that a revert happened.
+        // It will return data as if it had succeeded, but
         // the return data will be the abi encoded bytes of the revert data.
-        // So we have to guess if the data is a revert by checking if its
-        // length is a multiple of 32 + 4.
-        if (typeof r === 'string' && r.startsWith('0x')) {
-            const payloadLength = r.length - 2;
-            if (payloadLength >= 4 * 2 && (payloadLength - 4 * 2) % (32 * 2) === 0) {
-                if (reason.equals(RichRevertReason.decode(r))) {
-                    return;
-                }
+        decoded = _tryToDecodeRichRevertReason(await p);
+    } catch (err) {
+        if (err.returnData) {
+            // We get here on geth if the contract wrapper fails to ABI decode the
+            // return data, which is a clue that it might be a rich revert reason.
+            decoded = _tryToDecodeRichRevertReason(err.returnData);
+        } else if (!err.results) {
+            // The contract wrapper caught a standard Error(string) revert reason
+            // so just wrap it in a StandardError.
+            decoded = new StandardError(err.message);
+        } else if (err.results) {
+            // Ganache threw a revert error.
+            const info = err.results[_.keys(err.results)[0]];
+            if (info.error === 'revert' && info.return) {
+                decoded = _tryToDecodeRichRevertReason(info.return);
             }
         }
-    } catch (err) {
-        // Ganache will throw a revert error.
-        const info = err.results[_.keys(err.results)[0]];
-        if (info.error === 'revert' && info.return) {
-            return _assertReasonsAreEqual(reason, RichRevertReason.decode(info.return));
-        }
+    }
+    if (decoded) {
+        return _assertReasonsAreEqual(reason, decoded);
     }
     throw new Error(`Expected rich revert ${reason}`);
+}
+
+/*
+ * Try to guess if the data returned by a call is a rich revert reason.
+ * Returns an instance if it is, undefined if it isn't.
+ * @param data Any data returned by a contract call.
+ */
+function _tryToDecodeRichRevertReason(data: any): RichRevertReason | undefined {
+    // Here we try to guess if the return data is a rich revert.
+    if (typeof data === 'string' && data.startsWith('0x')) {
+        // Ensure its size is a multiple of 32 bytes + 4 byte selector.
+        const payloadLength = data.length - 2;
+        if (payloadLength >= 4 * 2 && (payloadLength - 4 * 2) % (32 * 2) === 0) {
+            try {
+                return RichRevertReason.decode(data);
+            } catch (err) {
+                // Unable to decode. Just fall through.
+            }
+        }
+    }
+    return undefined;
 }
 
 /**
