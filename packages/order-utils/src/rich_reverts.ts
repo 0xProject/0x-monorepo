@@ -122,8 +122,9 @@ export abstract class RichRevertReason {
         for (const name of Object.keys(this.values)) {
             const a = this.values[name];
             const b = _other.values[name];
-            if (a === b)
+            if (a === b) {
                 continue;
+            }
             if (!_.isNil(a) && !_.isNil(b)) {
                 const { type } = this._getArgumentByName(name);
                 if (!checkArgEquality(type, a, b)) {

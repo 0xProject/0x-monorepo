@@ -24,15 +24,15 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import {
     assetDataUtils,
+    EpochOrderError,
+    InvalidMakerError,
     orderHashUtils,
+    OrderStatusError,
+    SignatureError,
     SignatureErrorCodes,
     StandardError,
-    SignatureError,
-    OrderStatusError,
-    InvalidMakerError,
-    EpochOrderError
 } from '@0x/order-utils';
-import { RevertReason, SignatureType, SignedOrder, OrderStatus } from '@0x/types';
+import { OrderStatus, RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';

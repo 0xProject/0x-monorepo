@@ -1,4 +1,4 @@
-import { StandardError, RichRevertReason } from '@0x/order-utils';
+import { RichRevertReason, StandardError } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
@@ -206,10 +206,7 @@ export async function expectContractCallFailedAsync<T>(
  * @param reason a rich revert reason
  * @returns a promise which will reject `p` does not resolve to a rich revert reason.
  */
-async function _expectContractCallRichRevertAsync<T>(
-        p: Promise<T>,
-        reason: RichRevertReason): Promise<void> {
-
+async function _expectContractCallRichRevertAsync<T>(p: Promise<T>, reason: RichRevertReason): Promise<void> {
     let decoded: RichRevertReason | undefined;
     try {
         // Geth will not give any indication that a revert happened.
