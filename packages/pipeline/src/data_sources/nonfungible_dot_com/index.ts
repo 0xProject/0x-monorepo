@@ -17,6 +17,8 @@ export const S3_CHUNK_SIZES: { [publisher: string]: number } = {
 // https://nonfungible.com/
 export const knownPublishers = [
     'axieinfinity',
+    'chainbreakers',
+    'chibifighters',
     'cryptokitties',
     'cryptopunks',
     'cryptovoxels',
@@ -27,6 +29,7 @@ export const knownPublishers = [
     'ethtown',
     // 'knownorigin', // disabled because of null characters in data being rejected by postgres
     // 'mythereum', // worked at one time, but now seems dead
+    'mlbcryptobaseball',
     'superrare',
 ];
 
@@ -86,7 +89,10 @@ export async function getTradesAsync(
      * first.  Later (below) we'll get the more recent trades from the API itself.
      */
 
-    if (blockNumberStart < highestBlockNumbersInIntialDump[publisher]) {
+    if (
+        highestBlockNumbersInInitialDump.hasOwnProperty(publisher) &&
+        blockNumberStart < highestBlockNumbersInInitialDump[publisher]
+    ) {
         logUtils.log('getting trades from initial dump');
         // caller needs trades that are in the initial data dump, so get them
         // from there, then later go to the API for the rest.
@@ -123,7 +129,12 @@ export async function getTradesAsync(
      * until reaching the highest block number in the initial dump.
      */
 
-    const blockNumberStop = Math.max(highestBlockNumbersInIntialDump[publisher] + 1, blockNumberStart);
+    const blockNumberStop = Math.max(
+        highestBlockNumbersInInitialDump.hasOwnProperty(publisher)
+            ? highestBlockNumbersInInitialDump[publisher] + 1
+            : 0,
+        blockNumberStart,
+    );
     for (
         let startParam = 0, blockNumber = Number.MAX_SAFE_INTEGER;
         blockNumber > blockNumberStop;
@@ -131,6 +142,9 @@ export async function getTradesAsync(
     ) {
         const response = await _getTradesWithOffsetAsync(getFullUrlForPublisher(publisher), publisher, startParam);
         const tradesFromApi = response.data;
+        if (tradesFromApi.length === 0) {
+            break;
+        }
         logUtils.log(
             `got ${
                 tradesFromApi.length
@@ -207,7 +221,7 @@ function doesTradeAlreadyExist(
     return true;
 }
 
-const highestBlockNumbersInIntialDump: { [publisher: string]: number } = {
+const highestBlockNumbersInInitialDump: { [publisher: string]: number } = {
     axieinfinity: 7065913,
     cryptokitties: 7204283,
     cryptopunks: 7058897,
