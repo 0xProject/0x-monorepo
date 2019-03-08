@@ -15,6 +15,7 @@
         "./test/fixtures/copper/api_v1_list_leads.json",
         "./test/fixtures/copper/api_v1_list_opportunities.json",
         "./test/fixtures/etherscan/api_v1_accounts_transactions.json",
-        "./test/fixtures/github/api_v3_repo.json"
+        "./test/fixtures/github/api_v3_repo.json",
+        "./test/fixtures/github/api_v3_pulls.json"
     ]
 }

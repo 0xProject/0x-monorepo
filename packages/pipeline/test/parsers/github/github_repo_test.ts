@@ -14,7 +14,7 @@ const expect = chai.expect;
 // tslint:disable:custom-no-magic-numbers
 describe('github_repo', () => {
     describe('parseGithubRepo', () => {
-        it('converts GithubResponse to GithubRepo entities', () => {
+        it('converts GithubRepoResponse to GithubRepo entities', () => {
             const response: GithubRepoResponse = githubRepoResponse;
             const expected = ParsedGithubRepo;
             const observedTimestamp = expected.observedTimestamp;
