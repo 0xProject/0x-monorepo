@@ -137,21 +137,21 @@ describe('Asset Transfer Proxies', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
-         // Configure ERC115Proxy
-         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
-         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-         await web3Wrapper.awaitTransactionSuccessAsync(
-             await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
-                 from: owner,
-             }),
-             constants.AWAIT_TRANSACTION_MINED_MS,
-         );
-         await web3Wrapper.awaitTransactionSuccessAsync(
-             await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                 from: owner,
-             }),
-             constants.AWAIT_TRANSACTION_MINED_MS,
-         );
+        // Configure ERC115Proxy
+        erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
+        erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
 
         // Configure MultiAssetProxy
         await web3Wrapper.awaitTransactionSuccessAsync(
@@ -259,7 +259,7 @@ describe('Asset Transfer Proxies', () => {
             const nonFungibleTokenAsString = nonFungibleToken.toString();
             const nonFungibleTokenHeldBySpender =
                 tokenBalances.nonFungible[fromAddress][erc1155Contract.address][nonFungibleTokenAsString][0];
-                erc1155NonFungibleTokensOwnedBySpender.push(nonFungibleTokenHeldBySpender);
+            erc1155NonFungibleTokensOwnedBySpender.push(nonFungibleTokenHeldBySpender);
         });
     });
     beforeEach(async () => {
@@ -1240,7 +1240,7 @@ describe('Asset Transfer Proxies', () => {
                 const erc1155ValuesToTransfer = [new BigNumber(25)];
                 const erc1155Amount = new BigNumber(23);
                 const erc1155ReceiverCallbackData = '0x0102030405';
-                const erc1155AssetData =  assetDataUtils.encodeERC1155AssetData(
+                const erc1155AssetData = assetDataUtils.encodeERC1155AssetData(
                     erc1155Contract.address,
                     erc1155TokensToTransfer,
                     erc1155ValuesToTransfer,
@@ -1263,7 +1263,11 @@ describe('Asset Transfer Proxies', () => {
                     constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                     constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
                 ];
-                await erc1155Wrapper.assertBalancesAsync(erc1155TokenHolders, erc1155TokensToTransfer, erc1155ExpectedInitialBalances);
+                await erc1155Wrapper.assertBalancesAsync(
+                    erc1155TokenHolders,
+                    erc1155TokensToTransfer,
+                    erc1155ExpectedInitialBalances,
+                );
                 // execute transfer
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await web3Wrapper.sendTransactionAsync({
@@ -1290,7 +1294,11 @@ describe('Asset Transfer Proxies', () => {
                     erc1155ExpectedInitialBalances[0].minus(erc1155TotalValueTransferred),
                     erc1155ExpectedInitialBalances[1].plus(erc1155TotalValueTransferred),
                 ];
-                await erc1155Wrapper.assertBalancesAsync(erc1155TokenHolders, erc1155TokensToTransfer, expectedFinalBalances);
+                await erc1155Wrapper.assertBalancesAsync(
+                    erc1155TokenHolders,
+                    erc1155TokensToTransfer,
+                    expectedFinalBalances,
+                );
             });
             it('should successfully transfer a combination of ERC20 and ERC721 tokens', async () => {
                 const inputAmount = new BigNumber(1);

@@ -1,12 +1,13 @@
 import {
     artifacts as proxyArtifacts,
+    ERC1155ProxyWrapper,
     ERC20ProxyContract,
     ERC20Wrapper,
     ERC721ProxyContract,
     ERC721Wrapper,
     MultiAssetProxyContract,
-    ERC1155ProxyWrapper,
 } from '@0x/contracts-asset-proxy';
+import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import {
     artifacts as erc20Artifacts,
     DummyERC20TokenContract,
@@ -27,7 +28,6 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { ERC1155MintableContract, DummyERC1155ReceiverBatchTokenReceivedEventArgs } from '@0x/contracts-erc1155';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
@@ -38,6 +38,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
+import { Erc1155Wrapper } from '../../erc1155/lib/src';
 import {
     artifacts,
     ExchangeCancelEventArgs,
@@ -46,8 +47,6 @@ import {
     ReentrantERC20TokenContract,
     TestStaticCallReceiverContract,
 } from '../src';
-import { Erc1155Wrapper, ERC1155Contract } from '../../erc1155/lib/src';
-import { Exception } from 'handlebars';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -1087,8 +1086,7 @@ describe('Exchange core', () => {
             );
         });
     });
-
-    describe.only('Testing exchange of erc1155 assets', () => {
+    describe('Testing exchange of erc1155 assets', () => {
         it('should allow a single fungible erc1155 asset to be exchanged for another', async () => {
             // setup test parameters
             const tokenHolders = [makerAddress, takerAddress];
