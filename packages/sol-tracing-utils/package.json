@@ -61,7 +61,7 @@
         "mkdirp": "^0.5.1",
         "rimraf": "^2.6.2",
         "semaphore-async-await": "^1.5.1",
-        "solc": "^0.5.2",
+        "solc": "^0.5.5",
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {

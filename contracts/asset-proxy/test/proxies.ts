@@ -568,7 +568,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721Receiver.address,
                     amount,
                 );
-                const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+                const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...erc721Artifacts });
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(
                     await web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
@@ -760,7 +760,7 @@ describe('Asset Transfer Proxies', () => {
                     inputAmount,
                 );
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
-                const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+                const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...erc20Artifacts });
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(
                     await web3Wrapper.sendTransactionAsync({
                         to: multiAssetProxy.address,

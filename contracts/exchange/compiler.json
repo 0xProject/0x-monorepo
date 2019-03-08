@@ -8,12 +8,7 @@
         "optimizer": {
             "enabled": true,
             "runs": 1000000,
-            "details": {
-                "yul": true,
-                "deduplicate": true,
-                "cse": true,
-                "constantOptimizer": true
-            }
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
         },
         "outputSelection": {
             "*": {
@@ -42,10 +37,10 @@
         "src/interfaces/IValidator.sol",
         "src/interfaces/IWallet.sol",
         "src/interfaces/IWrapperFunctions.sol",
+        "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",
         "test/TestExchangeInternals.sol",
         "test/TestSignatureValidator.sol",
-        "test/TestStaticCallReceiver.sol",
-        "test/ReentrantERC20Token.sol"
+        "test/TestStaticCallReceiver.sol"
     ]
 }
