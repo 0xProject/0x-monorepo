@@ -8,6 +8,7 @@ export { EtherscanTransaction } from './etherscan_transaction';
 export { ExchangeCancelEvent } from './exchange_cancel_event';
 export { ExchangeCancelUpToEvent } from './exchange_cancel_up_to_event';
 export { ExchangeFillEvent } from './exchange_fill_event';
+export { GithubFork } from './github_fork';
 export { GithubRepo } from './github_repo';
 export { GithubPullRequest } from './github_pull_request';
 export { NonfungibleDotComTrade } from './nonfungible_dot_com_trade';

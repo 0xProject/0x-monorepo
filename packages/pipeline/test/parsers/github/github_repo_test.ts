@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 import 'mocha';
 
+import { ParsedGithubRepo } from '../../fixtures/github/api_v3_repo';
+import * as githubRepoResponse from '../../fixtures/github/api_v3_repo.json';
+
 import { GithubRepoResponse } from '../../../src/data_sources/github';
 import { parseGithubRepo } from '../../../src/parsers/github';
 import { chaiSetup } from '../../utils/chai_setup';
-
-import { ParsedGithubRepo } from '../../fixtures/github/api_v3_repo';
-import * as githubRepoResponse from '../../fixtures/github/api_v3_repo.json';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -3,9 +3,9 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 import { logUtils } from '@0x/utils';
 
 import { GithubSource } from '../data_sources/github';
-import { GithubPullRequest, GithubRepo } from '../entities';
+import { GithubFork, GithubPullRequest, GithubRepo } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { parseGithubPulls, parseGithubRepo } from '../parsers/github';
+import { parseGithubForks, parseGithubPulls, parseGithubRepo } from '../parsers/github';
 import { handleError } from '../utils';
 
 const GITHUB_OWNER = '0xProject';
@@ -39,6 +39,20 @@ let connection: Connection;
         page++;
         logUtils.log(`Saving ${pulls.length} pull requests to database.`);
         await GithubPullRequestRepository.save(pulls);
+    }
+
+    // get forks and save
+    const GithubForkRepository = connection.getRepository(GithubFork);
+    numberOfRecords = RECORDS_PER_PAGE;
+    page = 1;
+    while (numberOfRecords === RECORDS_PER_PAGE) {
+        logUtils.log(`Fetching Github forks from API, page: ${page}.`);
+        const rawForks = await githubSource.getGithubForksAsync(page);
+        const forks = parseGithubForks(rawForks, observedTimestamp);
+        numberOfRecords = forks.length;
+        page++;
+        logUtils.log(`Saving ${forks.length} forks to database.`);
+        await GithubForkRepository.save(forks);
     }
 
     process.exit(0);

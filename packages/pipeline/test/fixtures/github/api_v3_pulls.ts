@@ -4,7 +4,7 @@ import { GithubPullRequest } from '../../../src/entities';
 // curl https://api.github.com/repos/0xProject/0x-monorepo/pulls?per_page=1&page=1
 // docs here: https://developer.github.com/v3/pulls/#list-pull-requests
 
-const ParsedGithubPulls: GithubPullRequest = {
+const ParsedGithubPullRequest: GithubPullRequest = {
         observedTimestamp: Date.now(),
         repoName: '0x-monorepo',
         pullRequestNumber: 1684,
@@ -16,4 +16,4 @@ const ParsedGithubPulls: GithubPullRequest = {
         closedAt: null,
         mergedAt: null,
       };
-export { ParsedGithubPulls };
+export { ParsedGithubPullRequest };

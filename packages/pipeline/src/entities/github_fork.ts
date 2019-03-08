@@ -2,13 +2,17 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { numberToBigIntTransformer } from '../utils';
 
-@Entity({ name: 'github_repo', schema: 'raw' })
-export class GithubRepo {
+@Entity({ name: 'github_fork', schema: 'raw' })
+export class GithubFork {
+
     @PrimaryColumn({ name: 'observed_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
 
     @PrimaryColumn({ name: 'name' })
     public name!: string;
+
+    @PrimaryColumn({ name: 'owner_login' })
+    public ownerLogin!: string;
 
     @Column({ name: 'created_at', type: 'bigint', transformer: numberToBigIntTransformer })
     public createdAt!: number;
@@ -34,10 +38,10 @@ export class GithubRepo {
     @Column({ name: 'open_issues', transformer: numberToBigIntTransformer })
     public openIssues!: number;
 
-    @Column({ name: 'network', transformer: numberToBigIntTransformer })
+    @Column({ name: 'network', type: 'integer', nullable: true })
     public network?: number;
 
-    @Column({ name: 'subscribers', transformer: numberToBigIntTransformer })
+    @Column({ name: 'subscribers', type: 'integer', nullable: true })
     public subscribers?: number;
 
 }

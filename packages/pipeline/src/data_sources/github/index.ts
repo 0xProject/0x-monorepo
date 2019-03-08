@@ -32,16 +32,24 @@ export interface GithubPullRequestResponse {
     };
 }
 
+export interface GithubForkResponse extends GithubRepoResponse {
+    owner: {
+        login: string;
+    };
+}
+
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class GithubSource {
     public readonly _repoUrl: string;
     public readonly _pullsUrl: string;
+    public readonly _forksUrl: string;
 
     constructor(owner: string, repo: string) {
         const urlBase = 'https://api.github.com';
         this._repoUrl = `${urlBase}/repos/${owner}/${repo}`;
         this._pullsUrl = `${urlBase}/repos/${owner}/${repo}/pulls?state=all&per_page=100&page=`;
+        this._forksUrl = `${urlBase}/repos/${owner}/${repo}/forks?per_page=100&page=`;
     }
 
     /**
@@ -54,11 +62,20 @@ export class GithubSource {
     }
 
     /**
-     * Call Github API for pull requests and return result.
+     * Call Github API for pull requests and return result - paginated.
      */
     public async getGithubPullsAsync(page: number): Promise<GithubPullRequestResponse[]> {
         const resp = await fetchAsync(`${this._pullsUrl}${page}`);
         const respJson: GithubPullRequestResponse[] = await resp.json();
+        return respJson;
+    }
+
+     /**
+      * Call Github API for forks of repo and return result - paginated.
+      */
+    public async getGithubForksAsync(page: number): Promise<GithubForkResponse[]> {
+        const resp = await fetchAsync(`${this._forksUrl}${page}`);
+        const respJson: GithubForkResponse[] = await resp.json();
         return respJson;
     }
 }
