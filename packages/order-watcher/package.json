@@ -1,6 +1,6 @@
 {
     "name": "@0x/order-watcher",
-    "version": "4.0.3",
+    "version": "4.0.4",
     "description": "An order watcher daemon that watches for order validity",
     "keywords": [
         "0x",
@@ -81,7 +81,7 @@
         "ethereumjs-blockstream": "6.0.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11",
-        "websocket": "^1.0.25"
+        "websocket": "^1.0.26"
     },
     "publishConfig": {
         "access": "public"

@@ -1,5 +1,13 @@
 [
     {
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Update websocket from ^1.0.25 to ^1.0.26"
+            }
+        ]
+    },
+    {
         "timestamp": 1551479279,
         "version": "4.0.3",
         "changes": [
