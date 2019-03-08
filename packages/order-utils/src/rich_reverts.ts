@@ -121,21 +121,14 @@ export abstract class RichRevertReason {
         }
         for (const name of Object.keys(this.values)) {
             const a = this.values[name];
-            if (!_.isNil(a) && !(name in _other.values)) {
-                return false;
-            }
             const b = _other.values[name];
-            // If one is nil and the other isn't, it isn't a match.
-            if ((_.isNil(a) && !_.isNil(b)) || (!_.isNil(a) && _.isNil(b))) {
-                return false;
-            }
+            if (a === b)
+                continue;
             if (!_.isNil(a) && !_.isNil(b)) {
                 const { type } = this._getArgumentByName(name);
                 if (!checkArgEquality(type, a, b)) {
                     return false;
                 }
-            } else {
-                return false;
             }
         }
         return true;
