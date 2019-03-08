@@ -5,19 +5,17 @@ import * as zeroExInstant from 'zeroExInstant';
 
 import { Banner } from 'ts/components/banner';
 import { DocumentTitle } from 'ts/components/document_title';
-import { Icon } from 'ts/components/icon';
 import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { Input as SearchInput } from 'ts/components/ui/search_textfield';
+import { ExploreEntriesOrderingMetadata, ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
 import { ExploreGrid, ExploreGridListTile, ExploreGridListTileVisibility, ExploreGridListTileWidth } from 'ts/pages/explore/explore_grid';
 import { EXPLORE_STATE_DIALOGS, ExploreGridDialogTile } from 'ts/pages/explore/explore_grid_state_tile';
 import { Button as ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
-import { colors } from 'ts/style/colors';
-import { ExploreEntry, ExploreEntryInstantMetadata, RicherExploreEntry } from 'ts/types';
+import { ExploreEntry, ExploreEntryInstantMetadata, RicherExploreEntry, RicherExploreEntryAnalyticActions } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
-import { ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
 
 export interface ExploreProps {}
 
@@ -109,21 +107,25 @@ enum ExploreEntriesModifiers {
     Search = 'SEARCH',
 }
 
-enum ExploreEntriesOrdering {
-    None = 'None',
-    Latest = 'Latest',
-    Popular = 'Popular',
+export enum ExploreEntriesOrdering {
+    None = 'NONE',
+    Latest = 'LATEST',
+    Popular = 'POPULAR',
 }
 
-const ORDERINGS = [ExploreEntriesOrdering.None, ExploreEntriesOrdering.Latest, ExploreEntriesOrdering.Popular];
+const ORDERINGS: ExploreEntriesOrderingMetadata[] = [
+    { label: 'None', ordering: ExploreEntriesOrdering.None},
+    { label: 'Latest', ordering: ExploreEntriesOrdering.Latest},
+    { label: 'Popular', ordering: ExploreEntriesOrdering.Popular},
+];
 
 export class Explore extends React.Component<ExploreProps> {
     public state = {
         isEntriesLoading: false,
         isContactModalOpen: false,
         tiles: [] as ExploreGridListTile[],
-        entries: [] as RicherExploreEntry[],
         entriesOrdering: ExploreEntriesOrdering.None,
+        isEditorialShown: false,
         filters: FILTERS,
         query: '',
     };
@@ -133,7 +135,7 @@ export class Explore extends React.Component<ExploreProps> {
     }
 
     public componentWillMount(): void {
-        // tslint:disable-next-line:no-empty
+        // tslint:disable-next-line:no-floating-promises
         this._loadEntriesAsync().then(() => {
             this._setFilter('all');
         });
@@ -145,7 +147,15 @@ export class Explore extends React.Component<ExploreProps> {
                 <DocumentTitle {...documentConstants.EXPLORE} />
                 <ExploreHero  onSearch={this._changeSearchResults} />
                 <Section padding={'0 0 120px 0'} maxWidth={'1150px'}>
-                    <ExploreToolBar onFilterClick={this._setFilter} filters={this.state.filters} />
+                    <ExploreToolBar
+                        onFilterClick={this._setFilter}
+                        filters={this.state.filters}
+                        editorial={this.state.isEditorialShown}
+                        onEditorial={this._onEditorial}
+                        orderings={ORDERINGS}
+                        activeOrdering={this.state.entriesOrdering}
+                        onOrdering={this._onOrdering}
+                    />
                     <ExploreGrid tiles={this._generateTilesFromState()} />
                 </Section>
                 <Banner
@@ -171,11 +181,27 @@ export class Explore extends React.Component<ExploreProps> {
         this.setState({ isContactModalOpen: false });
     };
 
-    private _launchInstantAsync = (params: ExploreEntryInstantMetadata): void => {
+    private readonly _onEditorial = (newValue: boolean): void => {
+        this.setState({ isEditorialShown: newValue });
+    };
+
+    private readonly _onOrdering = (newValue: string) => {
+        this.setState({ entriesOrdering: newValue });
+        // tslint:disable-next-line:no-floating-promises
+        this._setTilesOrderingAsync(newValue as ExploreEntriesOrdering, this.state.tiles).then((tiles: ExploreGridListTile[]) => {
+            this.setState({ tiles });
+        });
+    };
+
+    private readonly _launchInstantAsync = (params: ExploreEntryInstantMetadata): void => {
         zeroExInstant.render(params, 'body');
     };
 
-    private _generateTilesFromState = (): ExploreGridListTile[] => {
+    private readonly _onAnalytics = (entry: RicherExploreEntry, action: RicherExploreEntryAnalyticActions): void => {
+        // Do Something
+    };
+
+    private readonly _generateTilesFromState = (): ExploreGridListTile[] => {
         if (this.state.isEntriesLoading) {
             return [{
                 name: 'loading',
@@ -195,13 +221,14 @@ export class Explore extends React.Component<ExploreProps> {
         return this.state.tiles;
     }
 
-    private _changeSearchResults = (query: string): void => {
+    private readonly _changeSearchResults = (query: string): void => {
         this.setState({ query: query.trim().toLowerCase() }, () => {
+            // tslint:disable-next-line:no-floating-promises
             this._setEntriesModifier(ExploreEntriesModifiers.Search);
         });
     }
 
-    private _setFilter = (filterName: string, active: boolean = true): void => {
+    private readonly _setFilter = (filterName: string, active: boolean = true): void => {
         let updatedFilters: ExploreFilterMetadata[];
         if (filterName === 'all') {
             updatedFilters = this.state.filters.map(f => {
@@ -222,12 +249,13 @@ export class Explore extends React.Component<ExploreProps> {
             this._setFilter('all');
         } else {
             this.setState({ filters: updatedFilters }, () => {
+                // tslint:disable-next-line:no-floating-promises
                 this._setEntriesModifier(ExploreEntriesModifiers.Filter);
             });
         }
     };
 
-    private _setEntriesModifier = async (modifier: ExploreEntriesModifiers): Promise<void>  => {
+    private readonly _setEntriesModifier = async (modifier: ExploreEntriesModifiers): Promise<void>  => {
         let newTiles: ExploreGridListTile[];
         if (modifier === ExploreEntriesModifiers.Filter || modifier === ExploreEntriesModifiers.Search) {
             const activeFilters = _.filter(this.state.filters, f => f.active);
@@ -257,21 +285,22 @@ export class Explore extends React.Component<ExploreProps> {
     };
 
     // For future versions, ordering can be determined by async processes
-    private _setEntriesOrderingAsync = async (entries: RicherExploreEntry[]): Promise<RicherExploreEntry[]> => {
-        switch (this.state.entriesOrdering) {
-            default: return entries;
+    private readonly _setTilesOrderingAsync = async (entriesOrdering: ExploreEntriesOrdering, tiles: ExploreGridListTile[] ): Promise<ExploreGridListTile[]> => {
+        switch (entriesOrdering) {
+            default: return tiles;
         }
     }
 
     // For future versions, the load entries function can be async
-    private _loadEntriesAsync = async (): Promise<void> => {
+    private readonly _loadEntriesAsync = async (): Promise<void> => {
         this.setState({ isEntriesLoading: true });
         const rawEntries = _.values(PROJECTS);
-        const tiles = (await this._setEntriesOrderingAsync(rawEntries)).map(e => {
+        const tiles = rawEntries.map((e: ExploreEntry) => {
             const richExploreEntry = _.assign({}, e) as RicherExploreEntry;
             if (!!richExploreEntry.instant) {
-                richExploreEntry.onInstantClick = () => this._launchInstantAsync(richExploreEntry.instant);
+                richExploreEntry.onInstantClick = this._launchInstantAsync.bind(this, richExploreEntry.instant);
             }
+            richExploreEntry.onAnalytics = this._onAnalytics.bind(this, richExploreEntry);
             return {
                 name: e.label.toLowerCase(),
                 exploreEntry: richExploreEntry,
@@ -279,7 +308,8 @@ export class Explore extends React.Component<ExploreProps> {
                 width: ExploreGridListTileWidth.OneThird,
             };
         });
-        this.setState({ entries: rawEntries, tiles, isEntriesLoading: false  });
+        const orderedTiles = (await this._setTilesOrderingAsync(this.state.entriesOrdering, tiles));
+        this.setState({ tiles: orderedTiles, isEntriesLoading: false  });
     }
 }
 
@@ -294,6 +324,7 @@ interface ExploreHeroProps {
 }
 
 const ExploreHero = (props: ExploreHeroProps) => {
+    // tslint:disable-next-line:no-unbound-method
     const onSearchDebounce = _.debounce(props.onSearch, 300);
     const onChange = (e: any) => { onSearchDebounce(e.target.value); };
     return <Section maxWidth={'1150px'}>
@@ -325,6 +356,11 @@ const ExploreToolBarContentWrapper = styled.div`
 
 interface ExploreToolBarProps {
     filters: ExploreFilterMetadata[];
+    activeOrdering: ExploreEntriesOrdering;
+    orderings: ExploreEntriesOrderingMetadata[];
+    editorial: boolean;
+    onOrdering: (newValue: string) => void;
+    onEditorial: (newValue: boolean) => void;
     onFilterClick(filterName: string, active: boolean): void;
 }
 
@@ -337,7 +373,7 @@ const ExploreToolBar = (props: ExploreToolBarProps) => {
             })}
         </ExploreToolBarContentWrapper>
         <ExploreToolBarContentWrapper>
-            <ExploreSettingsDropdown orderings={ORDERINGS}/>
+            <ExploreSettingsDropdown {...props}/>
         </ExploreToolBarContentWrapper>
     </ExploreToolBarWrapper>;
 };

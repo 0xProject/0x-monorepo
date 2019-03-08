@@ -256,8 +256,14 @@ export interface ExploreEntry {
     instant?: ExploreEntryInstantMetadata;
 }
 
+export enum RicherExploreEntryAnalyticActions {
+    InstantClick = 'INSTANT_CLICK',
+    LinkClick = 'LINK_CLICK',
+}
+
 export interface RicherExploreEntry extends ExploreEntry {
     onInstantClick?(): void;
+    onAnalytics(action: RicherExploreEntryAnalyticActions): void;
 }
 
 export interface FAQQuestion {

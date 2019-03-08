@@ -4,14 +4,16 @@ import styled from 'styled-components';
 import { Button } from 'ts/components/button';
 import { Heading, Paragraph } from 'ts/components/text';
 import { Image } from 'ts/components/ui/image';
-import { RicherExploreEntry } from 'ts/types';
+import { RicherExploreEntry, RicherExploreEntryAnalyticActions } from 'ts/types';
 
 export const ExploreGridTile = (props: RicherExploreEntry) => {
+    const onInstantClick = !!props.instant ? () => { props.onInstantClick(); props.onAnalytics(RicherExploreEntryAnalyticActions.InstantClick); } : undefined;
+    const onClick = () => { props.onAnalytics(RicherExploreEntryAnalyticActions.LinkClick); };
     return (<ExploreGridTileWrapper>
-        {!!props.instant && (<ExploreGridButtonWrapper>
-            <Button onClick={props.onInstantClick} padding={'12px 18px'} bgColor={'white'}>Instant Trade</Button>
+        {!!onInstantClick && (<ExploreGridButtonWrapper>
+            <Button onClick={onInstantClick} padding={'12px 18px'} bgColor={'white'}>Instant Trade</Button>
         </ExploreGridButtonWrapper>)}
-        <ExploreGridTileLink href={props.url} target="_blank">
+        <ExploreGridTileLink onClick={onClick} href={props.url} target="_blank">
             <ExploreGridHeroWell color={props.theme_color}>
                 <Image
                     src={props.logo_url}

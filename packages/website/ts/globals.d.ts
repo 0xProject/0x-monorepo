@@ -11,6 +11,7 @@ declare module 'react-responsive';
 declare module 'react-scrollable-anchor';
 declare module 'react-headroom';
 declare module 'zeroExInstant';
+declare module 'react-toggle-component';
 
 declare module '*.json' {
     const json: any;

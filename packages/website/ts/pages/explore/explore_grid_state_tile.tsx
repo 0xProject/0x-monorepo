@@ -1,10 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Button } from 'ts/components/button';
 import { Heading, Paragraph } from 'ts/components/text';
 import { Image } from 'ts/components/ui/image';
-import { ExploreGridTileWrapper } from 'ts/pages/explore/explore_grid_tile';
 
 export interface ExploreGridDialogTileProps {
     dialogImageUrl?: string;

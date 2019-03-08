@@ -21,11 +21,11 @@ export enum ModalContactType {
     Explore = 'EXPLORE',
 }
 
-interface ServiceOptionMetadata {
+interface OptionMetadata {
     label: string;
     name: string;
 }
-const CREDIT_SERVICES_OPTIONS: ServiceOptionMetadata[] = [
+const CREDIT_SERVICES_OPTIONS: OptionMetadata[] = [
     {
         label: 'AWS',
         name: 'aws',
@@ -72,6 +72,7 @@ export class ModalContact extends React.Component<Props> {
     };
     public state = {
         creditLeadsServices: [] as string[],
+        exploreSupportInstant: false,
         isSubmitting: false,
         isSuccessful: false,
         errors: {},
@@ -86,6 +87,8 @@ export class ModalContact extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
+    // Explore lead fields
+    public themeColorRef: React.RefObject<HTMLInputElement> = React.createRef();
 
     public constructor(props: Props) {
         super(props);
@@ -273,7 +276,7 @@ export class ModalContact extends React.Component<Props> {
                         name="link"
                         label="Project / Company link"
                         type="text"
-                        ref={this.commentsRef}
+                        ref={this.linkRef}
                         required={true}
                         errors={errors}
                     />
@@ -286,7 +289,7 @@ export class ModalContact extends React.Component<Props> {
                         name="color"
                         label="Theme Color (in hex)"
                         type="text"
-                        ref={this.commentsRef}
+                        ref={this.themeColorRef}
                         required={true}
                         errors={errors}
                     />
@@ -298,12 +301,12 @@ export class ModalContact extends React.Component<Props> {
                         label="Does your project support instant?"
                         errors={errors}
                     >
-                        {[{label: 'Yes', name: 'yes'}, {label: 'No', name: 'no'}].map((metadata: ServiceOptionMetadata) => {
+                        {[{label: 'Yes', name: 'yes'}, {label: 'No', name: 'no'}].map((metadata: OptionMetadata) => {
                             return (
                                 <CheckBoxInput
                                     onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
                                     key={`checkbox-${metadata.name}`}
-                                    isSelected={_.includes(this.state.creditLeadsServices, metadata.name)}
+                                    isSelected={(this.state.exploreSupportInstant && metadata.name === 'yes') || (!this.state.exploreSupportInstant && metadata.name === 'no')}
                                     label={metadata.label}
                                 />
                             );
@@ -368,7 +371,7 @@ export class ModalContact extends React.Component<Props> {
                         label="Which credits are you interested in?"
                         errors={errors}
                     >
-                        {CREDIT_SERVICES_OPTIONS.map((metadata: ServiceOptionMetadata) => {
+                        {CREDIT_SERVICES_OPTIONS.map((metadata: OptionMetadata) => {
                             return (
                                 <CheckBoxInput
                                     onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
@@ -385,10 +388,14 @@ export class ModalContact extends React.Component<Props> {
     }
 
     private _handleCheckBoxInput(checkBoxName: string): void {
-        const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
+        if (this.props.modalContactType === ModalContactType.Credits) {
+            const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
             ? _.pull(this.state.creditLeadsServices, checkBoxName)
             : _.concat(this.state.creditLeadsServices, checkBoxName);
-        this.setState({ creditLeadsServices: newCreditLeadsServices });
+            this.setState({ creditLeadsServices: newCreditLeadsServices });
+        } else if (this.props.modalContactType === ModalContactType.Explore) {
+            this.setState({ exploreSupportInstant: checkBoxName === 'no' ? false : true});
+        }
     }
 
     private _renderGeneralFormContent(errors: ErrorProps): React.ReactNode {
@@ -470,6 +477,16 @@ export class ModalContact extends React.Component<Props> {
                 project_description: this.commentsRef.current.value,
                 services: this.state.creditLeadsServices,
             };
+        } else if (this.props.modalContactType === ModalContactType.Explore) {
+            jsonBody = {
+                name: this.nameRef.current.value,
+                email: this.emailRef.current.value,
+                project_name: this.companyProjectRef.current.value,
+                project_description: this.commentsRef.current.value,
+                link: this.linkRef.current.value,
+                theme_color: this.themeColorRef.current.value,
+                supports_instant: this.state.exploreSupportInstant,
+            };
         } else {
             jsonBody = {
                 name: this.nameRef.current.value,
@@ -484,6 +501,9 @@ export class ModalContact extends React.Component<Props> {
 
         let endpoint;
         switch (this.props.modalContactType) {
+            case ModalContactType.Explore:
+                endpoint = '/explore_leads';
+                break;
             case ModalContactType.Credits:
                 endpoint = '/credit_leads';
                 break;

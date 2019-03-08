@@ -2,10 +2,34 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Icon } from 'ts/components/icon';
-import { Heading, Paragraph } from 'ts/components/text';
+import { Heading } from 'ts/components/text';
 import { Switch } from 'ts/components/ui/switch';
+import { ExploreEntriesOrdering } from 'ts/pages/explore';
 import { Button as ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
 import { colors } from 'ts/style/colors';
+
+export interface ExploreEntriesOrderingMetadata {
+    label: string;
+    ordering: ExploreEntriesOrdering;
+}
+
+const OrderingListWrapper = styled.ul`
+    list-style-type: none;
+`;
+
+interface OrderingListItemProps {
+    active?: boolean;
+}
+
+const OrderingListItem = styled.li<OrderingListItemProps>`
+    margin-bottom: 12px;
+    cursor: pointer;
+    color: ${props => props.active ? colors.brandLight : colors.grey};
+    transition: color 200ms ease-in-out;
+    &:hover {
+        color: ${props => props.active ? colors.brandLight : colors.brandDark};
+    }
+`;
 
 const ExploreSettingsDropdownButton = ({}) => {
     return <ExploreTagButton disableHover={true}>
@@ -89,7 +113,11 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 `;
 
 export interface ExploreSettingsDropdownProps {
-    orderings: string[];
+    activeOrdering: ExploreEntriesOrdering;
+    orderings: ExploreEntriesOrderingMetadata[];
+    onOrdering: (newValue: string) => void;
+    onEditorial: (newValue: boolean) => void;
+    editorial: boolean;
 }
 
 export class ExploreSettingsDropdown extends React.Component<ExploreSettingsDropdownProps> {
@@ -101,7 +129,25 @@ export class ExploreSettingsDropdown extends React.Component<ExploreSettingsDrop
         return <SettingsWrapper>
             <ExploreSettingsDropdownButton/>
             <DropdownWrap>
-                <DropdownContent orderings={this.props.orderings}/>
+                <DropdownContentWrapper>
+                    <div>
+                        <Switch isChecked={this.props.editorial} onToggle={this.props.onEditorial} label="Editorial"/>
+                        <Heading asElement="h4" size={14} color="inherit" marginBottom="0" isMuted={0.35}>
+                            Editorial content reflects the views of the 0x core team.
+                        </Heading>
+                    </div>
+                    <OrderingWrapper>
+                        <Heading asElement="h4" size={14} color="inherit" marginBottom="16px" isMuted={0.35}>
+                            Ordering
+                        </Heading>
+                        <OrderingListWrapper>
+                            {this.props.orderings.map(o => {
+                                const onClick = () => this.props.onOrdering(o.ordering);
+                                return <OrderingListItem onClick={onClick} active={this.props.activeOrdering === o.ordering} key={o.ordering}>{o.label}</OrderingListItem>;
+                            })}
+                        </OrderingListWrapper>
+                    </OrderingWrapper>
+                </DropdownContentWrapper>
             </DropdownWrap>
         </SettingsWrapper>;
     }
@@ -127,26 +173,3 @@ const OrderingWrapper = styled.div`
         left: 0;
     }
 `;
-
-interface DropdownContentProps {
-    orderings: string[];
-}
-
-const DropdownContent = (props: DropdownContentProps) => {
-    return <DropdownContentWrapper>
-        <div>
-            <Switch label="Editorial"/>
-            <Heading asElement="h4" size={14} color="inherit" marginBottom="0" isMuted={0.35}>
-                Editorial content reflects the views of the 0x core team.
-            </Heading>
-        </div>
-        <OrderingWrapper>
-            <Heading asElement="h4" size={14} color="inherit" marginBottom="16px" isMuted={0.35}>
-                Ordering
-            </Heading>
-            {props.orderings.map(o => {
-                return <Paragraph marginBottom="12px" key={o}>{o}</Paragraph>;
-            })}
-        </OrderingWrapper>
-    </DropdownContentWrapper>;
-};

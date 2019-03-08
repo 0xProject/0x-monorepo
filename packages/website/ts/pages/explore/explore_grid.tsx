@@ -57,12 +57,12 @@ export class ExploreGrid extends React.Component<ExptoreGridProps> {
         );
     }
 
-    private _prepareTiles = (): RicherExploreGridListTile[] => {
+    private readonly _prepareTiles = (): RicherExploreGridListTile[] => {
         const visibleTiles = this.props.tiles.filter(t => t.visibility !== ExploreGridListTileVisibility.Hidden);
         return this._generateGridValues(visibleTiles);
     }
 
-    private _generateGridValues = (tiles: ExploreGridListTile[]): RicherExploreGridListTile[] => {
+    private readonly _generateGridValues = (tiles: ExploreGridListTile[]): RicherExploreGridListTile[] => {
         let gridEndCounter = 1;
         const richerTiles = tiles.map(t => {
             if (gridEndCounter + t.width > (ExploreGridListTileWidth.FullWidth + 1)) {
