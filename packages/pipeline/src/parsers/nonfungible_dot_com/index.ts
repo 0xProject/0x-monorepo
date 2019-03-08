@@ -28,7 +28,7 @@ export function _parseNonFungibleDotComTrade(
     nonfungibleDotComTrade.assetDescriptor = rawTrade.assetDescriptor;
     nonfungibleDotComTrade.assetId = rawTrade.assetId;
     nonfungibleDotComTrade.blockNumber = rawTrade.blockNumber;
-    nonfungibleDotComTrade.blockTimestamp = new Date(rawTrade.blockTimestamp).getTime();
+    nonfungibleDotComTrade.blockTimestamp = Math.floor(new Date(rawTrade.blockTimestamp).getTime()/1000);
     nonfungibleDotComTrade.buyerAddress = rawTrade.buyer;
     nonfungibleDotComTrade.logIndex = rawTrade.logIndex;
     nonfungibleDotComTrade.marketAddress = rawTrade.marketAddress;
