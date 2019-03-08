@@ -6,7 +6,7 @@ import { GithubFork } from '../../entities';
  * @param response A Github response from the API.
  */
 export function parseGithubForks(response: GithubForkResponse[], observedTimestamp: number): GithubFork[] {
-    const result: GithubFork[] = response.map( fork => {
+    const result: GithubFork[] = response.map(fork => {
         const parsedFork = new GithubFork();
         parsedFork.observedTimestamp = observedTimestamp;
         parsedFork.name = fork.name;

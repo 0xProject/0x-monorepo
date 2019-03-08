@@ -1,9 +1,9 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 const table = new Table({
     name: 'raw.github_repo',
     columns: [
-        { name: 'observed_timestamp', type: 'numeric', isPrimary: true},
+        { name: 'observed_timestamp', type: 'numeric', isPrimary: true },
         { name: 'name', type: 'varchar', isPrimary: true },
 
         { name: 'created_at', type: 'numeric', isNullable: false },
@@ -16,12 +16,11 @@ const table = new Table({
         { name: 'forks', type: 'numeric', isNullable: false },
         { name: 'open_issues', type: 'numeric', isNullable: false },
         { name: 'network', type: 'numeric', isNullable: false },
-        { name: 'subscribers', type: 'numeric', isNullable: false }        
+        { name: 'subscribers', type: 'numeric', isNullable: false },
     ],
 });
 
 export class CreateGithubRepo1552016339539 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.createTable(table);
     }
@@ -29,5 +28,4 @@ export class CreateGithubRepo1552016339539 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<any> {
         await queryRunner.dropTable(table);
     }
-
 }

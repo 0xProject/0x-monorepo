@@ -4,7 +4,6 @@ import { numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'github_fork', schema: 'raw' })
 export class GithubFork {
-
     @PrimaryColumn({ name: 'observed_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
 
@@ -43,5 +42,4 @@ export class GithubFork {
 
     @Column({ name: 'subscribers', type: 'integer', nullable: true })
     public subscribers?: number;
-
 }

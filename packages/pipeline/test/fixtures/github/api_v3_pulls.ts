@@ -5,15 +5,15 @@ import { GithubPullRequest } from '../../../src/entities';
 // docs here: https://developer.github.com/v3/pulls/#list-pull-requests
 
 const ParsedGithubPullRequest: GithubPullRequest = {
-        observedTimestamp: Date.now(),
-        repoName: '0x-monorepo',
-        pullRequestNumber: 1684,
-        state: 'open',
-        title: '[WIP] Pull Github data',
-        userLogin: 'askeluv',
-        createdAt: 1552019788000,
-        updatedAt: 1552019788000,
-        closedAt: null,
-        mergedAt: null,
-      };
+    observedTimestamp: Date.now(),
+    repoName: '0x-monorepo',
+    pullRequestNumber: 1684,
+    state: 'open',
+    title: '[WIP] Pull Github data',
+    userLogin: 'askeluv',
+    createdAt: 1552019788000,
+    updatedAt: 1552019788000,
+    closedAt: null,
+    mergedAt: null,
+};
 export { ParsedGithubPullRequest };

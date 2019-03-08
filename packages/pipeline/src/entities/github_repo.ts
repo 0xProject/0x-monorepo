@@ -39,5 +39,4 @@ export class GithubRepo {
 
     @Column({ name: 'subscribers', transformer: numberToBigIntTransformer })
     public subscribers?: number;
-
 }

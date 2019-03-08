@@ -70,9 +70,9 @@ export class GithubSource {
         return respJson;
     }
 
-     /**
-      * Call Github API for forks of repo and return result - paginated.
-      */
+    /**
+     * Call Github API for forks of repo and return result - paginated.
+     */
     public async getGithubForksAsync(page: number): Promise<GithubForkResponse[]> {
         const resp = await fetchAsync(`${this._forksUrl}${page}`);
         const respJson: GithubForkResponse[] = await resp.json();

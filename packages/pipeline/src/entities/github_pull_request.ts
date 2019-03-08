@@ -33,5 +33,4 @@ export class GithubPullRequest {
 
     @Column({ name: 'user_login' })
     public userLogin!: string;
-
 }

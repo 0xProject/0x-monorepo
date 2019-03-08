@@ -5,8 +5,11 @@ import { GithubPullRequest } from '../../entities';
  * Converts a Github response from the API into an GithubRepo entity.
  * @param rawRepo A Github response from the API into an GithubRepo entity.
  */
-export function parseGithubPulls(response: GithubPullRequestResponse[], observedTimestamp: number): GithubPullRequest[] {
-    return response.map( pull => {
+export function parseGithubPulls(
+    response: GithubPullRequestResponse[],
+    observedTimestamp: number,
+): GithubPullRequest[] {
+    return response.map(pull => {
         const parsedPullRequest = new GithubPullRequest();
         parsedPullRequest.observedTimestamp = observedTimestamp;
         parsedPullRequest.repoName = pull.base.repo.name;
