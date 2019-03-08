@@ -1,0 +1,1 @@
+export { parseGithubRepo } from './repo';
