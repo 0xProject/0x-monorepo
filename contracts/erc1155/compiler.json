@@ -25,7 +25,6 @@
         "src/MixinNonFungibleToken.sol",
         "src/interfaces/IERC1155Mintable.sol",
         "src/interfaces/IERC1155Receiver.sol",
-        "src/interfaces/IERC1155.sol",
-        "src/utils/Address.sol"
+        "src/interfaces/IERC1155.sol"
     ]
 }
