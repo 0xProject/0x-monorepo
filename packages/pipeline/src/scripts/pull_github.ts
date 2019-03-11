@@ -5,7 +5,12 @@ import { logUtils } from '@0x/utils';
 import { GithubSource } from '../data_sources/github';
 import { GithubFork, GithubPullRequest, GithubRepo } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { enrichGithubForkWithComparisonDetails, parseGithubForks, parseGithubPulls, parseGithubRepo } from '../parsers/github';
+import {
+    enrichGithubForkWithComparisonDetails,
+    parseGithubForks,
+    parseGithubPulls,
+    parseGithubRepo,
+} from '../parsers/github';
 import { handleError } from '../utils';
 
 const GITHUB_OWNER = '0xProject';
@@ -55,11 +60,13 @@ let connection: Connection;
         const rawForks = await githubSource.getGithubForksAsync(page);
         const forks = parseGithubForks(rawForks, observedTimestamp);
         logUtils.log('Fetching compare stats for each fork from API.');
-        const enrichedForks = await Promise.all(forks.map( async fork => {
-            const comparison = await githubSource.getGithubComparisonAsync(fork.ownerLogin, fork.defaultBranch);
-            const enriched = enrichGithubForkWithComparisonDetails(fork, comparison);
-            return enriched;
-        }));
+        const enrichedForks = await Promise.all(
+            forks.map(async fork => {
+                const comparison = await githubSource.getGithubComparisonAsync(fork.ownerLogin, fork.defaultBranch);
+                const enriched = enrichGithubForkWithComparisonDetails(fork, comparison);
+                return enriched;
+            }),
+        );
         numberOfRecords = enrichedForks.length;
         page++;
         logUtils.log(`Saving ${enrichedForks.length} forks to database.`);

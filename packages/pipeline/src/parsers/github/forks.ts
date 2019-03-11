@@ -30,7 +30,10 @@ export function parseGithubForks(response: GithubForkResponse[], observedTimesta
 /**
  * Extends a GithubFork object with additional comparison fields.
  */
-export function enrichGithubForkWithComparisonDetails(githubFork: GithubFork, comparisonResponse: GithubComparisonResponse): GithubFork {
+export function enrichGithubForkWithComparisonDetails(
+    githubFork: GithubFork,
+    comparisonResponse: GithubComparisonResponse,
+): GithubFork {
     const enrichedGithubFork = { ...githubFork }; // clone object
     enrichedGithubFork.status = comparisonResponse.status;
     enrichedGithubFork.aheadBy = comparisonResponse.ahead_by;

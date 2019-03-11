@@ -57,5 +57,4 @@ export class GithubFork {
 
     @Column({ name: 'total_commits', transformer: numberToBigIntTransformer, nullable: true })
     public totalCommits?: number;
-
 }

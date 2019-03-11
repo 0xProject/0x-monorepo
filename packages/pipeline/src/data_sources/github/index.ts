@@ -76,7 +76,9 @@ export class GithubSource {
      * Call Github API for pull requests and return result - paginated.
      */
     public async getGithubPullsAsync(page: number): Promise<GithubPullRequestResponse[]> {
-        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/pulls?access_token=${this._accessToken}&state=all&per_page=100&page=${page}`;
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/pulls?access_token=${
+            this._accessToken
+        }&state=all&per_page=100&page=${page}`;
         const resp = await fetchAsync(url);
         const respJson: GithubPullRequestResponse[] = await resp.json();
         return respJson;
@@ -86,7 +88,9 @@ export class GithubSource {
      * Call Github API for forks of repo and return result - paginated.
      */
     public async getGithubForksAsync(page: number): Promise<GithubForkResponse[]> {
-        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/forks?access_token=${this._accessToken}&per_page=100&page=${page}`;
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/forks?access_token=${
+            this._accessToken
+        }&per_page=100&page=${page}`;
         const resp = await fetchAsync(url);
         const respJson: GithubForkResponse[] = await resp.json();
         return respJson;
@@ -96,7 +100,9 @@ export class GithubSource {
      * Call Github API to get commit status of a fork vs repo's main branch.
      */
     public async getGithubComparisonAsync(forkOwner: string, forkBranch: string): Promise<GithubComparisonResponse> {
-        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/compare/${this._branch}...${forkOwner}:${forkBranch}?access_token=${this._accessToken}`;
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/compare/${
+            this._branch
+        }...${forkOwner}:${forkBranch}?access_token=${this._accessToken}`;
         const resp = await fetchAsync(url);
         const respJson: GithubComparisonResponse = await resp.json();
         return respJson;
