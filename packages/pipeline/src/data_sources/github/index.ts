@@ -36,27 +36,38 @@ export interface GithubForkResponse extends GithubRepoResponse {
     owner: {
         login: string;
     };
+    default_branch: string;
+}
+
+export interface GithubComparisonResponse {
+    status: string;
+    ahead_by: number;
+    behind_by: number;
+    total_commits: number;
 }
 
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class GithubSource {
-    public readonly _repoUrl: string;
-    public readonly _pullsUrl: string;
-    public readonly _forksUrl: string;
+    public readonly _urlBase: string = 'https://api.github.com';
+    public readonly _owner: string;
+    public readonly _repo: string;
+    public readonly _branch: string;
+    public readonly _accessToken: string;
 
-    constructor(owner: string, repo: string) {
-        const urlBase = 'https://api.github.com';
-        this._repoUrl = `${urlBase}/repos/${owner}/${repo}`;
-        this._pullsUrl = `${urlBase}/repos/${owner}/${repo}/pulls?state=all&per_page=100&page=`;
-        this._forksUrl = `${urlBase}/repos/${owner}/${repo}/forks?per_page=100&page=`;
+    constructor(owner: string, repo: string, branch: string, accessToken: string) {
+        this._owner = owner;
+        this._repo = repo;
+        this._branch = branch;
+        this._accessToken = accessToken;
     }
 
     /**
      * Call Github API for repo and return result.
      */
     public async getGithubRepoAsync(): Promise<GithubRepoResponse> {
-        const resp = await fetchAsync(this._repoUrl);
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}?access_token=${this._accessToken}`;
+        const resp = await fetchAsync(url);
         const respJson: GithubRepoResponse = await resp.json();
         return respJson;
     }
@@ -65,7 +76,8 @@ export class GithubSource {
      * Call Github API for pull requests and return result - paginated.
      */
     public async getGithubPullsAsync(page: number): Promise<GithubPullRequestResponse[]> {
-        const resp = await fetchAsync(`${this._pullsUrl}${page}`);
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/pulls?access_token=${this._accessToken}&state=all&per_page=100&page=${page}`;
+        const resp = await fetchAsync(url);
         const respJson: GithubPullRequestResponse[] = await resp.json();
         return respJson;
     }
@@ -74,8 +86,19 @@ export class GithubSource {
      * Call Github API for forks of repo and return result - paginated.
      */
     public async getGithubForksAsync(page: number): Promise<GithubForkResponse[]> {
-        const resp = await fetchAsync(`${this._forksUrl}${page}`);
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/forks?access_token=${this._accessToken}&per_page=100&page=${page}`;
+        const resp = await fetchAsync(url);
         const respJson: GithubForkResponse[] = await resp.json();
+        return respJson;
+    }
+
+    /**
+     * Call Github API to get commit status of a fork vs repo's main branch.
+     */
+    public async getGithubComparisonAsync(forkOwner: string, forkBranch: string): Promise<GithubComparisonResponse> {
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/compare/${this._branch}...${forkOwner}:${forkBranch}?access_token=${this._accessToken}`;
+        const resp = await fetchAsync(url);
+        const respJson: GithubComparisonResponse = await resp.json();
         return respJson;
     }
 }

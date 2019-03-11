@@ -10,7 +10,6 @@ const table = new Table({
         { name: 'created_at', type: 'numeric', isNullable: false },
         { name: 'updated_at', type: 'numeric', isNullable: false },
         { name: 'pushed_at', type: 'numeric', isNullable: false },
-
         { name: 'size', type: 'numeric', isNullable: false },
         { name: 'stargazers', type: 'numeric', isNullable: false },
         { name: 'watchers', type: 'numeric', isNullable: false },
@@ -18,6 +17,11 @@ const table = new Table({
         { name: 'open_issues', type: 'numeric', isNullable: false },
         { name: 'network', type: 'numeric', isNullable: true },
         { name: 'subscribers', type: 'numeric', isNullable: true },
+        { name: 'default_branch', type: 'varchar', isNullable: false },
+        { name: 'status', type: 'varchar', isNullable: true },
+        { name: 'ahead_by', type: 'numeric', isNullable: true },
+        { name: 'behind_by', type: 'numeric', isNullable: true },
+        { name: 'total_commits', type: 'numeric', isNullable: true },
     ],
 });
 

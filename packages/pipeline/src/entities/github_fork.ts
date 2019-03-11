@@ -42,4 +42,20 @@ export class GithubFork {
 
     @Column({ name: 'subscribers', type: 'integer', nullable: true })
     public subscribers?: number;
+
+    @Column({ name: 'default_branch' })
+    public defaultBranch!: string;
+
+    @Column({ name: 'status', nullable: true })
+    public status?: string;
+
+    @Column({ name: 'ahead_by', type: 'integer', nullable: true })
+    public aheadBy?: number;
+
+    @Column({ name: 'behind_by', type: 'integer', nullable: true })
+    public behindBy?: number;
+
+    @Column({ name: 'total_commits', type: 'integer', nullable: true })
+    public totalCommits?: number;
+
 }

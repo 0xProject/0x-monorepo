@@ -1,11 +1,12 @@
 import * as chai from 'chai';
 import 'mocha';
 
-import { GithubForkResponse } from '../../../src/data_sources/github';
-import { parseGithubForks } from '../../../src/parsers/github';
+import { GithubForkResponse, GithubComparisonResponse } from '../../../src/data_sources/github';
+import { parseGithubForks, enrichGithubForkWithComparisonDetails } from '../../../src/parsers/github';
 
-import { ParsedGithubFork } from '../../fixtures/github/api_v3_forks';
+import { ParsedGithubFork, EnrichedGithubFork } from '../../fixtures/github/api_v3_forks';
 import * as githubForksResponse from '../../fixtures/github/api_v3_forks.json';
+import * as githubComparisonResponse from '../../fixtures/github/api_v3_compare.json';
 
 import { chaiSetup } from '../../utils/chai_setup';
 
@@ -16,12 +17,22 @@ const expect = chai.expect;
 describe('github_forks', () => {
     describe('parseGithubForks', () => {
         it('converts GithubForksResponse to GithubFork entities', () => {
-            const response: GithubForkResponse[] = githubForksResponse;
+            const forksResponse: GithubForkResponse[] = githubForksResponse;
             const expected = ParsedGithubFork;
             const observedTimestamp = expected.observedTimestamp;
-            const actualList = parseGithubForks(response, observedTimestamp);
+            const actualList = parseGithubForks(forksResponse, observedTimestamp);
             const actual = actualList[0];
             expect(actual).deep.equal(expected);
         });
     });
+
+    describe('enrichGithubFork', () => {
+        it('enriches GithubFork with comparison details', () => {
+            const comparisonResponse: GithubComparisonResponse = githubComparisonResponse;
+            const expected = EnrichedGithubFork;
+            const actual = enrichGithubForkWithComparisonDetails(ParsedGithubFork, comparisonResponse);
+            expect(actual).deep.equal(expected);
+        });
+    });
+
 });

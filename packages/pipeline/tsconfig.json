@@ -17,6 +17,7 @@
         "./test/fixtures/etherscan/api_v1_accounts_transactions.json",
         "./test/fixtures/github/api_v3_repo.json",
         "./test/fixtures/github/api_v3_pulls.json",
-        "./test/fixtures/github/api_v3_forks.json"
+        "./test/fixtures/github/api_v3_forks.json",
+        "./test/fixtures/github/api_v3_compare.json"
     ]
 }

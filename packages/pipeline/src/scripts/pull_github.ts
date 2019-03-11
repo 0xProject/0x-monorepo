@@ -5,18 +5,23 @@ import { logUtils } from '@0x/utils';
 import { GithubSource } from '../data_sources/github';
 import { GithubFork, GithubPullRequest, GithubRepo } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { parseGithubForks, parseGithubPulls, parseGithubRepo } from '../parsers/github';
+import { enrichGithubForkWithComparisonDetails, parseGithubForks, parseGithubPulls, parseGithubRepo } from '../parsers/github';
 import { handleError } from '../utils';
 
 const GITHUB_OWNER = '0xProject';
 const GITHUB_REPO = '0x-monorepo';
+const GITHUB_BRANCH = 'development';
 const RECORDS_PER_PAGE = 100;
 
 let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    const githubSource = new GithubSource(GITHUB_OWNER, GITHUB_REPO);
+    const accessToken = process.env.GITHUB_ACCESS_TOKEN;
+    if (accessToken === undefined) {
+        throw new Error('Missing required env var: BLOXY_API_KEY');
+    }
+    const githubSource = new GithubSource(GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, accessToken);
     const observedTimestamp = Date.now();
 
     // get repo and save
@@ -49,10 +54,16 @@ let connection: Connection;
         logUtils.log(`Fetching Github forks from API, page: ${page}.`);
         const rawForks = await githubSource.getGithubForksAsync(page);
         const forks = parseGithubForks(rawForks, observedTimestamp);
-        numberOfRecords = forks.length;
+        logUtils.log('Fetching compare stats for each fork from API.');
+        const enrichedForks = await Promise.all(forks.map( async fork => {
+            const comparison = await githubSource.getGithubComparisonAsync(fork.ownerLogin, fork.defaultBranch);
+            const enriched = enrichGithubForkWithComparisonDetails(fork, comparison);
+            return enriched;
+        }));
+        numberOfRecords = enrichedForks.length;
         page++;
-        logUtils.log(`Saving ${forks.length} forks to database.`);
-        await GithubForkRepository.save(forks);
+        logUtils.log(`Saving ${enrichedForks.length} forks to database.`);
+        await GithubForkRepository.save(enrichedForks);
     }
 
     process.exit(0);

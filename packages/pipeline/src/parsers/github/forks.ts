@@ -1,4 +1,4 @@
-import { GithubForkResponse } from '../../data_sources/github';
+import { GithubForkResponse, GithubComparisonResponse } from '../../data_sources/github';
 import { GithubFork } from '../../entities';
 
 /**
@@ -21,7 +21,20 @@ export function parseGithubForks(response: GithubForkResponse[], observedTimesta
         parsedFork.openIssues = fork.open_issues;
         parsedFork.network = fork.network_count;
         parsedFork.subscribers = fork.subscribers_count;
+        parsedFork.defaultBranch = fork.default_branch;
         return parsedFork;
     });
     return result;
+}
+
+/**
+ * Extends a GithubFork object with additional comparison fields.
+ */
+export function enrichGithubForkWithComparisonDetails(githubFork: GithubFork, comparisonResponse: GithubComparisonResponse): GithubFork {
+    const enrichedGithubFork = { ...githubFork }; // clone object
+    enrichedGithubFork.status = comparisonResponse.status;
+    enrichedGithubFork.aheadBy = comparisonResponse.ahead_by;
+    enrichedGithubFork.behindBy = comparisonResponse.behind_by;
+    enrichedGithubFork.totalCommits = comparisonResponse.total_commits;
+    return enrichedGithubFork;
 }
