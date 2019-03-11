@@ -37,10 +37,10 @@ export class GithubFork {
     @Column({ name: 'open_issues', transformer: numberToBigIntTransformer })
     public openIssues!: number;
 
-    @Column({ name: 'network', type: 'integer', nullable: true })
+    @Column({ name: 'network', transformer: numberToBigIntTransformer, nullable: true })
     public network?: number;
 
-    @Column({ name: 'subscribers', type: 'integer', nullable: true })
+    @Column({ name: 'subscribers', transformer: numberToBigIntTransformer, nullable: true })
     public subscribers?: number;
 
     @Column({ name: 'default_branch' })
@@ -49,13 +49,13 @@ export class GithubFork {
     @Column({ name: 'status', nullable: true })
     public status?: string;
 
-    @Column({ name: 'ahead_by', type: 'integer', nullable: true })
+    @Column({ name: 'ahead_by', transformer: numberToBigIntTransformer, nullable: true })
     public aheadBy?: number;
 
-    @Column({ name: 'behind_by', type: 'integer', nullable: true })
+    @Column({ name: 'behind_by', transformer: numberToBigIntTransformer, nullable: true })
     public behindBy?: number;
 
-    @Column({ name: 'total_commits', type: 'integer', nullable: true })
+    @Column({ name: 'total_commits', transformer: numberToBigIntTransformer, nullable: true })
     public totalCommits?: number;
 
 }

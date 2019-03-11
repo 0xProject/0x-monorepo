@@ -1,4 +1,4 @@
-import { GithubForkResponse, GithubComparisonResponse } from '../../data_sources/github';
+import { GithubComparisonResponse, GithubForkResponse } from '../../data_sources/github';
 import { GithubFork } from '../../entities';
 
 /**

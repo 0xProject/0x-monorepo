@@ -1,12 +1,12 @@
 import * as chai from 'chai';
 import 'mocha';
 
-import { GithubForkResponse, GithubComparisonResponse } from '../../../src/data_sources/github';
-import { parseGithubForks, enrichGithubForkWithComparisonDetails } from '../../../src/parsers/github';
+import { GithubComparisonResponse, GithubForkResponse } from '../../../src/data_sources/github';
+import { enrichGithubForkWithComparisonDetails, parseGithubForks } from '../../../src/parsers/github';
 
-import { ParsedGithubFork, EnrichedGithubFork } from '../../fixtures/github/api_v3_forks';
-import * as githubForksResponse from '../../fixtures/github/api_v3_forks.json';
 import * as githubComparisonResponse from '../../fixtures/github/api_v3_compare.json';
+import { EnrichedGithubFork, ParsedGithubFork } from '../../fixtures/github/api_v3_forks';
+import * as githubForksResponse from '../../fixtures/github/api_v3_forks.json';
 
 import { chaiSetup } from '../../utils/chai_setup';
 
@@ -34,5 +34,4 @@ describe('github_forks', () => {
             expect(actual).deep.equal(expected);
         });
     });
-
 });
