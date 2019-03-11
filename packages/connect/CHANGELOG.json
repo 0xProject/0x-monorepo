@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.0.3",
+        "changes": [
+            {
+                "note": "Update websocket@^1.0.25 -> websocket@^1.0.26",
+                "pr": 1685
+            }
+        ]
+    },
+    {
         "timestamp": 1551479279,
         "version": "5.0.2",
         "changes": [
