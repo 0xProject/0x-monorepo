@@ -1,6 +1,10 @@
 import { GreenhouseApplicationResponse } from '../../data_sources/greenhouse';
 import { GreenhouseApplication } from '../../entities';
 
+/**
+ * One-to-one transformation of Greenhouse API application object to corresponding entity
+ * @param response an application object from Greenhouse Harvest API
+ */
 export function parseApplications(response: GreenhouseApplicationResponse): GreenhouseApplication {
     return {
         id: response.id,
