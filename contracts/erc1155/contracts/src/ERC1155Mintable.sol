@@ -1,4 +1,4 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./ERC1155.sol";
