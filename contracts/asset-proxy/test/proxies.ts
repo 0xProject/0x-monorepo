@@ -1,3 +1,4 @@
+import { ERC1155MintableContract, Erc1155Wrapper } from '@0x/contracts-erc1155';
 import {
     artifacts as erc20Artifacts,
     DummyERC20TokenContract,
@@ -28,9 +29,9 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Erc1155Wrapper } from '../../erc1155';
 import {
     artifacts,
+    ERC1155ProxyWrapper,
     ERC20ProxyContract,
     ERC20Wrapper,
     ERC721ProxyContract,

@@ -71,7 +71,7 @@
         "@0x/contracts-asset-proxy": "^1.0.9",
         "@0x/contracts-erc20": "^1.0.9",
         "@0x/contracts-erc721": "^1.0.9",
-        "@0x/contracts-erc1155": "^0.0.1",
+        "@0x/contracts-erc1155": "^1.0.0",
         "@0x/contracts-exchange-libs": "^1.1.3",
         "@0x/contracts-utils": "^2.0.8",
         "@0x/order-utils": "^7.0.2",

@@ -68,11 +68,7 @@ describe('assetDataUtils', () => {
             KNOWN_ERC1155_ENCODING.tokenAddress,
             KNOWN_ERC1155_ENCODING.tokenIds,
             KNOWN_ERC1155_ENCODING.tokenValues,
-<<<<<<< HEAD
             KNOWN_ERC1155_ENCODING.callbackData,
-=======
-            KNOWN_ERC1155_ENCODING.callbackData
->>>>>>> 5bddc5795... ERC1155 Asset Data tests + types
         );
         expect(assetData).to.equal(KNOWN_ERC1155_ENCODING.assetData);
     });
