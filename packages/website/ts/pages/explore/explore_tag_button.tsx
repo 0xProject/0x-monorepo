@@ -29,16 +29,15 @@ export const Button: React.StatelessComponent<ButtonInterface> = (props: ButtonI
     );
 };
 
-Button.defaultProps = {
-};
+Button.defaultProps = {};
 
 const ButtonBase = styled.button<ButtonInterface>`
     appearance: none;
     border: 1px solid transparent;
     display: inline-block;
-    background-color: ${props => props.active ? colors.brandLight : 'transparent'};
-    border-color: ${props => props.active ? colors.brandLight : colors.grey};
-    color: ${props => props.active ? colors.white : colors.grey};
+    background-color: ${props => (props.active ? colors.brandLight : 'transparent')};
+    border-color: ${props => (props.active ? colors.brandLight : colors.grey)};
+    color: ${props => (props.active ? colors.white : colors.grey)};
     padding: 12px 18px;
     padding: ${props => !!props.padding && props.padding};
     text-align: center;
@@ -49,7 +48,7 @@ const ButtonBase = styled.button<ButtonInterface>`
     transition: background-color 0.35s, border-color 0.35s, color 0.35s;
 
     &:hover {
-        border-color: ${props => props.disableHover ? colors.grey : colors.brandLight};
-        color: ${props => props.disableHover ? colors.grey : props.active ? colors.white : colors.brandLight};
+        border-color: ${props => (props.disableHover ? colors.grey : colors.brandLight)};
+        color: ${props => (props.disableHover ? colors.grey : props.active ? colors.white : colors.brandLight)};
     }
 `;

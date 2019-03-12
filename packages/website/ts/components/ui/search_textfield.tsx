@@ -19,7 +19,7 @@ export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLIn
 
     return (
         <InputWrapper className={className} width={width}>
-            <Icon size={20} name="search"/>
+            <Icon size={20} name="search" />
             <StyledInput
                 as={componentType}
                 ref={ref}

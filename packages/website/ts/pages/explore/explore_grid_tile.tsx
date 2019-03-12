@@ -4,28 +4,44 @@ import styled from 'styled-components';
 import { Button } from 'ts/components/button';
 import { Heading, Paragraph } from 'ts/components/text';
 import { Image } from 'ts/components/ui/image';
-import { RicherExploreEntry, RicherExploreEntryAnalyticActions } from 'ts/types';
+import { ExploreAnalyticAction, ExploreProject } from 'ts/types';
 
-export const ExploreGridTile = (props: RicherExploreEntry) => {
-    const onInstantClick = !!props.instant ? () => { props.onInstantClick(); props.onAnalytics(RicherExploreEntryAnalyticActions.InstantClick); } : undefined;
-    const onClick = () => { props.onAnalytics(RicherExploreEntryAnalyticActions.LinkClick); };
-    return (<ExploreGridTileWrapper>
-        {!!onInstantClick && (<ExploreGridButtonWrapper>
-            <Button onClick={onInstantClick} padding={'12px 18px'} bgColor={'white'}>Instant Trade</Button>
-        </ExploreGridButtonWrapper>)}
-        <ExploreGridTileLink onClick={onClick} href={props.url} target="_blank">
-            <ExploreGridHeroWell color={props.theme_color}>
-                <Image
-                    src={props.logo_url}
-                    height={'90px'}
-                />
-            </ExploreGridHeroWell>
-            <ExploreGridContentWell>
-                <Heading marginBottom={'0.5rem'} size={'small'}>{props.label}</Heading>
-                <Paragraph marginBottom={'0.5rem'}>{props.description}</Paragraph>
-            </ExploreGridContentWell>
-        </ExploreGridTileLink>
-    </ExploreGridTileWrapper>);
+const EMPTY_FUNCTION = () => true;
+
+export const ExploreGridTile = (props: ExploreProject) => {
+    // tslint:disable-next-line:no-unbound-method
+    const onAnalytics = props.onAnalytics || EMPTY_FUNCTION;
+    const onInstantClick = !!props.instant
+        ? () => {
+              props.onInstantClick();
+              onAnalytics(ExploreAnalyticAction.InstantClick);
+          }
+        : undefined;
+    const onClick = () => {
+        onAnalytics(ExploreAnalyticAction.LinkClick);
+    };
+    return (
+        <ExploreGridTileWrapper>
+            {!!onInstantClick && (
+                <ExploreGridButtonWrapper>
+                    <Button onClick={onInstantClick} padding={'12px 18px'} bgColor={'white'}>
+                        Instant Trade
+                    </Button>
+                </ExploreGridButtonWrapper>
+            )}
+            <ExploreGridTileLink onClick={onClick} href={props.url} target="_blank">
+                <ExploreGridHeroWell color={props.theme_color}>
+                    <Image src={props.logo_url} height={'90px'} />
+                </ExploreGridHeroWell>
+                <ExploreGridContentWell>
+                    <Heading marginBottom={'0.5rem'} size={'small'}>
+                        {props.label}
+                    </Heading>
+                    <Paragraph marginBottom={'0.5rem'}>{props.description}</Paragraph>
+                </ExploreGridContentWell>
+            </ExploreGridTileLink>
+        </ExploreGridTileWrapper>
+    );
 };
 
 interface ExploreGridHeroWellProps {

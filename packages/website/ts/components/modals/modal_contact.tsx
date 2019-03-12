@@ -228,8 +228,8 @@ export class ModalContact extends React.Component<Props> {
         return (
             <>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
-                    If you’re working on an awesome 0x project, we would love to share it on our explore page. Fill out the form
-                    so we can connect you with the right person to help you get started.
+                    If you’re working on an awesome 0x project, we would love to share it on our explore page. Fill out
+                    the form so we can connect you with the right person to help you get started.
                 </Paragraph>
                 <InputRow>
                     <Input
@@ -301,16 +301,21 @@ export class ModalContact extends React.Component<Props> {
                         label="Does your project support instant?"
                         errors={errors}
                     >
-                        {[{label: 'Yes', name: 'yes'}, {label: 'No', name: 'no'}].map((metadata: OptionMetadata) => {
-                            return (
-                                <CheckBoxInput
-                                    onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
-                                    key={`checkbox-${metadata.name}`}
-                                    isSelected={(this.state.exploreSupportInstant && metadata.name === 'yes') || (!this.state.exploreSupportInstant && metadata.name === 'no')}
-                                    label={metadata.label}
-                                />
-                            );
-                        })}
+                        {[{ label: 'Yes', name: 'yes' }, { label: 'No', name: 'no' }].map(
+                            (metadata: OptionMetadata) => {
+                                return (
+                                    <CheckBoxInput
+                                        onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
+                                        key={`checkbox-${metadata.name}`}
+                                        isSelected={
+                                            (this.state.exploreSupportInstant && metadata.name === 'yes') ||
+                                            (!this.state.exploreSupportInstant && metadata.name === 'no')
+                                        }
+                                        label={metadata.label}
+                                    />
+                                );
+                            },
+                        )}
                     </OptionSelector>
                 </InputRow>
             </>
@@ -390,11 +395,11 @@ export class ModalContact extends React.Component<Props> {
     private _handleCheckBoxInput(checkBoxName: string): void {
         if (this.props.modalContactType === ModalContactType.Credits) {
             const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
-            ? _.pull(this.state.creditLeadsServices, checkBoxName)
-            : _.concat(this.state.creditLeadsServices, checkBoxName);
+                ? _.pull(this.state.creditLeadsServices, checkBoxName)
+                : _.concat(this.state.creditLeadsServices, checkBoxName);
             this.setState({ creditLeadsServices: newCreditLeadsServices });
         } else if (this.props.modalContactType === ModalContactType.Explore) {
-            this.setState({ exploreSupportInstant: checkBoxName === 'no' ? false : true});
+            this.setState({ exploreSupportInstant: checkBoxName === 'no' ? false : true });
         }
     }
 
@@ -456,6 +461,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
+
     private async _onSubmitAsync(e: React.FormEvent): Promise<void> {
         e.preventDefault();
 

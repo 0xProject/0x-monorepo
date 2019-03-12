@@ -25,14 +25,17 @@ export const EXPLORE_STATE_DIALOGS: { [s: string]: ExploreGridDialogTileProps } 
 };
 
 export const ExploreGridDialogTile = (props: ExploreGridDialogTileProps) => {
-    return <ExploreGridDialogTileWrapper>
-        {!!props.dialogImageUrl && <Image
-            src={props.dialogImageUrl}
-            height={'90px'}
-        />}
-        {!!props.title && <Heading marginBottom={'0.5rem'} size={'small'}>{props.title}</Heading>}
-        <Paragraph marginBottom={'0.5rem'}>{props.description}</Paragraph>
-    </ExploreGridDialogTileWrapper>;
+    return (
+        <ExploreGridDialogTileWrapper>
+            {!!props.dialogImageUrl && <Image src={props.dialogImageUrl} height={'90px'} />}
+            {!!props.title && (
+                <Heading marginBottom={'0.5rem'} size={'small'}>
+                    {props.title}
+                </Heading>
+            )}
+            <Paragraph marginBottom={'0.5rem'}>{props.description}</Paragraph>
+        </ExploreGridDialogTileWrapper>
+    );
 };
 
 const ExploreGridDialogTileWrapper = styled.div`

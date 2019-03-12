@@ -4,14 +4,9 @@ import styled from 'styled-components';
 import { Icon } from 'ts/components/icon';
 import { Heading } from 'ts/components/text';
 import { Switch } from 'ts/components/ui/switch';
-import { ExploreEntriesOrdering } from 'ts/pages/explore';
 import { Button as ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
 import { colors } from 'ts/style/colors';
-
-export interface ExploreEntriesOrderingMetadata {
-    label: string;
-    ordering: ExploreEntriesOrdering;
-}
+import { ExploreTilesOrdering, ExploreTilesOrderingMetadata } from 'ts/types';
 
 const OrderingListWrapper = styled.ul`
     list-style-type: none;
@@ -24,20 +19,22 @@ interface OrderingListItemProps {
 const OrderingListItem = styled.li<OrderingListItemProps>`
     margin-bottom: 12px;
     cursor: pointer;
-    color: ${props => props.active ? colors.brandLight : colors.grey};
+    color: ${props => (props.active ? colors.brandLight : colors.grey)};
     transition: color 200ms ease-in-out;
     &:hover {
-        color: ${props => props.active ? colors.brandLight : colors.brandDark};
+        color: ${props => (props.active ? colors.brandLight : colors.brandDark)};
     }
 `;
 
 const ExploreSettingsDropdownButton = ({}) => {
-    return <ExploreTagButton disableHover={true}>
-        <SettingsIconWrapper>
-            <Icon color={colors.grey} name="settings" size={16} />
-        </SettingsIconWrapper>
-        Settings
-    </ExploreTagButton>;
+    return (
+        <ExploreTagButton disableHover={true}>
+            <SettingsIconWrapper>
+                <Icon color={colors.grey} name="settings" size={16} />
+            </SettingsIconWrapper>
+            Settings
+        </ExploreTagButton>
+    );
 };
 
 const SettingsIconWrapper = styled.div`
@@ -113,8 +110,8 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 `;
 
 export interface ExploreSettingsDropdownProps {
-    activeOrdering: ExploreEntriesOrdering;
-    orderings: ExploreEntriesOrderingMetadata[];
+    activeOrdering: ExploreTilesOrdering;
+    orderings: ExploreTilesOrderingMetadata[];
     onOrdering: (newValue: string) => void;
     onEditorial: (newValue: boolean) => void;
     editorial: boolean;
@@ -126,35 +123,48 @@ export class ExploreSettingsDropdown extends React.Component<ExploreSettingsDrop
     }
 
     public render(): React.ReactNode {
-        return <SettingsWrapper>
-            <ExploreSettingsDropdownButton/>
-            <DropdownWrap>
-                <DropdownContentWrapper>
-                    <div>
-                        <Switch isChecked={this.props.editorial} onToggle={this.props.onEditorial} label="Editorial"/>
-                        <Heading asElement="h4" size={14} color="inherit" marginBottom="0" isMuted={0.35}>
-                            Editorial content reflects the views of the 0x core team.
-                        </Heading>
-                    </div>
-                    <OrderingWrapper>
-                        <Heading asElement="h4" size={14} color="inherit" marginBottom="16px" isMuted={0.35}>
-                            Ordering
-                        </Heading>
-                        <OrderingListWrapper>
-                            {this.props.orderings.map(o => {
-                                const onClick = () => this.props.onOrdering(o.ordering);
-                                return <OrderingListItem onClick={onClick} active={this.props.activeOrdering === o.ordering} key={o.ordering}>{o.label}</OrderingListItem>;
-                            })}
-                        </OrderingListWrapper>
-                    </OrderingWrapper>
-                </DropdownContentWrapper>
-            </DropdownWrap>
-        </SettingsWrapper>;
+        return (
+            <SettingsWrapper>
+                <ExploreSettingsDropdownButton />
+                <DropdownWrap>
+                    <DropdownContentWrapper>
+                        <div>
+                            <Switch
+                                isChecked={this.props.editorial}
+                                onToggle={this.props.onEditorial}
+                                label="Editorial"
+                            />
+                            <Heading asElement="h4" size={14} color="inherit" marginBottom="0" isMuted={0.35}>
+                                Editorial content reflects the views of the 0x core team.
+                            </Heading>
+                        </div>
+                        <OrderingWrapper>
+                            <Heading asElement="h4" size={14} color="inherit" marginBottom="16px" isMuted={0.35}>
+                                Ordering
+                            </Heading>
+                            <OrderingListWrapper>
+                                {this.props.orderings.map(o => {
+                                    const onClick = () => this.props.onOrdering(o.ordering);
+                                    return (
+                                        <OrderingListItem
+                                            onClick={onClick}
+                                            active={this.props.activeOrdering === o.ordering}
+                                            key={o.ordering}
+                                        >
+                                            {o.label}
+                                        </OrderingListItem>
+                                    );
+                                })}
+                            </OrderingListWrapper>
+                        </OrderingWrapper>
+                    </DropdownContentWrapper>
+                </DropdownWrap>
+            </SettingsWrapper>
+        );
     }
 }
 
-const DropdownContentWrapper = styled.div`
-`;
+const DropdownContentWrapper = styled.div``;
 
 const OrderingWrapper = styled.div`
     padding-top: 20px;

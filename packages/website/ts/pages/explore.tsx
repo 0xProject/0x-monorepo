@@ -10,122 +10,41 @@ import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { Input as SearchInput } from 'ts/components/ui/search_textfield';
-import { ExploreEntriesOrderingMetadata, ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
-import { ExploreGrid, ExploreGridListTile, ExploreGridListTileVisibility, ExploreGridListTileWidth } from 'ts/pages/explore/explore_grid';
+import { BY_NAME_ORDERINGS, EDITORIAL, FILTERS, ORDERINGS, PROJECTS } from 'ts/pages/explore/explore_content';
+import { ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
+import { ExploreGrid } from 'ts/pages/explore/explore_grid';
 import { EXPLORE_STATE_DIALOGS, ExploreGridDialogTile } from 'ts/pages/explore/explore_grid_state_tile';
 import { Button as ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
-import { ExploreEntry, ExploreEntryInstantMetadata, RicherExploreEntry, RicherExploreEntryAnalyticActions } from 'ts/types';
+import {
+    ExploreAnalyticAction,
+    ExploreFilterMetadata,
+    ExploreProject,
+    ExploreProjectInstantMetadata,
+    ExploreTile,
+    ExploreTilesModifiers,
+    ExploreTilesOrdering,
+    ExploreTilesOrderingMetadata,
+    ExploreTileVisibility,
+    ExploreTileWidth,
+} from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
 export interface ExploreProps {}
 
-const PROJECTS: { [s: string]: ExploreEntry } = {
-    paradex: {
-        label: 'Paradex',
-        description: 'Paradex is a matching relayer with a focus on stable coins that is now a part of Coinbase.',
-        logo_url: '/images/explore/paradex.png',
-        theme_color: '#151628',
-        url: 'https://paradex.io/',
-        keywords: ['relayer'],
-    },
-    veil: {
-        label: 'Veil',
-        description: 'Veil is a non-custodial trading platform for blockchain-based derivatives and prediction markets.',
-        logo_url: '/images/explore/veil.png',
-        theme_color: '#0204EB',
-        url: 'https://veil.co/',
-        keywords: ['relayer'],
-    },
-    radar_relay: {
-        label: 'Radar Relay',
-        description: 'Radar Relay is an open order book relayer made by an international team based in Colorado.',
-        logo_url: '/images/explore/radar_relay.png',
-        theme_color: '#262626',
-        url: 'https://radarrelay.com/',
-        keywords: ['relayer'],
-        instant: {
-            orderSource: 'https://api.radarrelay.com/0x/v2/',
-        },
-    },
-    emoon: {
-        label: 'Emoon',
-        description: 'Emoon is a peer-to-peer marketplace for the exchange of ERC-20 and ERC-721 crypto assets.',
-        logo_url: '/images/explore/emoon.png',
-        theme_color: '#3F89E7',
-        url: 'https://www.emoon.io/',
-        keywords: ['relayer', 'collectibles'],
-    },
-    openrelay: {
-        label: 'OpenRelay',
-        description: 'Open Relay is an open order book relayer with a focus on scalable and open source backend infrastructure.',
-        logo_url: '/images/explore/open_relay.png',
-        theme_color: '#163AAB',
-        url: 'https://openrelay.xyz/',
-        keywords: ['relayer'],
-    },
-    boxswap: {
-        label: 'BoxSwap',
-        description: 'OTC relayer made for swapping ERC-20 and ERC-721 assets in a marketplace communities.',
-        logo_url: '/images/explore/box_swap.png',
-        theme_color: '#FF99DF',
-        url: 'https://boxswap.io/',
-        keywords: ['relayer', 'collectibles'],
-    },
-};
-
-enum ExploreFilterType {
-    All = 'ALL',
-    Keyword = 'Keyword',
+interface ExploreModifierOptions {
+    filter?: ExploreFilterMetadata;
+    query?: string;
+    isEditorialShown?: boolean;
+    tilesOrdering?: ExploreTilesOrdering;
 }
-
-interface ExploreFilterMetadata {
-    label: string;
-    filterType: ExploreFilterType;
-    name: string;
-    keyword?: string;
-    active?: boolean;
-}
-
-const FILTERS: ExploreFilterMetadata[] = [{
-    label: 'All',
-    name: 'all',
-    filterType: ExploreFilterType.All,
-}, {
-    label: 'Relayer',
-    name: 'relayer',
-    filterType: ExploreFilterType.Keyword,
-    keyword: 'relayer',
-}, {
-    label: 'Collectibles',
-    name: 'collectibles',
-    filterType: ExploreFilterType.Keyword,
-    keyword: 'ERC-721',
-}];
-
-enum ExploreEntriesModifiers {
-    Filter = 'FILTER',
-    Search = 'SEARCH',
-}
-
-export enum ExploreEntriesOrdering {
-    None = 'NONE',
-    Latest = 'LATEST',
-    Popular = 'POPULAR',
-}
-
-const ORDERINGS: ExploreEntriesOrderingMetadata[] = [
-    { label: 'None', ordering: ExploreEntriesOrdering.None},
-    { label: 'Latest', ordering: ExploreEntriesOrdering.Latest},
-    { label: 'Popular', ordering: ExploreEntriesOrdering.Popular},
-];
 
 export class Explore extends React.Component<ExploreProps> {
     public state = {
-        isEntriesLoading: false,
+        isTilesLoading: false,
         isContactModalOpen: false,
-        tiles: [] as ExploreGridListTile[],
-        entriesOrdering: ExploreEntriesOrdering.None,
-        isEditorialShown: false,
+        tiles: [] as ExploreTile[],
+        tilesOrdering: ExploreTilesOrdering.None,
+        isEditorialShown: true,
         filters: FILTERS,
         query: '',
     };
@@ -145,7 +64,7 @@ export class Explore extends React.Component<ExploreProps> {
         return (
             <SiteWrap theme="light">
                 <DocumentTitle {...documentConstants.EXPLORE} />
-                <ExploreHero  onSearch={this._changeSearchResults} />
+                <ExploreHero onSearch={this._changeSearchResults} />
                 <Section padding={'0 0 120px 0'} maxWidth={'1150px'}>
                     <ExploreToolBar
                         onFilterClick={this._setFilter}
@@ -153,7 +72,7 @@ export class Explore extends React.Component<ExploreProps> {
                         editorial={this.state.isEditorialShown}
                         onEditorial={this._onEditorial}
                         orderings={ORDERINGS}
-                        activeOrdering={this.state.entriesOrdering}
+                        activeOrdering={this.state.tilesOrdering}
                         onOrdering={this._onOrdering}
                     />
                     <ExploreGrid tiles={this._generateTilesFromState()} />
@@ -182,135 +101,188 @@ export class Explore extends React.Component<ExploreProps> {
     };
 
     private readonly _onEditorial = (newValue: boolean): void => {
-        this.setState({ isEditorialShown: newValue });
+        // tslint:disable-next-line:no-floating-promises
+        this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Editorial, {
+            isEditorialShown: newValue,
+        }).then(newTiles => {
+            this.setState({ isEditorialShown: newValue, tiles: newTiles });
+        });
     };
 
     private readonly _onOrdering = (newValue: string) => {
-        this.setState({ entriesOrdering: newValue });
+        this.setState({ tilesOrdering: newValue });
         // tslint:disable-next-line:no-floating-promises
-        this._setTilesOrderingAsync(newValue as ExploreEntriesOrdering, this.state.tiles).then((tiles: ExploreGridListTile[]) => {
-            this.setState({ tiles });
+        this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Ordering, {
+            tilesOrdering: newValue as ExploreTilesOrdering,
+        }).then(newTiles => {
+            this.setState({ tilesOrdering: newValue, tiles: newTiles });
         });
     };
 
-    private readonly _launchInstantAsync = (params: ExploreEntryInstantMetadata): void => {
+    private readonly _launchInstantAsync = (params: ExploreProjectInstantMetadata): void => {
         zeroExInstant.render(params, 'body');
     };
 
-    private readonly _onAnalytics = (entry: RicherExploreEntry, action: RicherExploreEntryAnalyticActions): void => {
+    private readonly _onAnalytics = (project: ExploreProject, action: ExploreAnalyticAction): void => {
         // Do Something
     };
 
-    private readonly _generateTilesFromState = (): ExploreGridListTile[] => {
-        if (this.state.isEntriesLoading) {
-            return [{
-                name: 'loading',
-                component: <ExploreGridDialogTile {...EXPLORE_STATE_DIALOGS.LOADING} />,
-                visibility: ExploreGridListTileVisibility.Visible,
-                width: ExploreGridListTileWidth.FullWidth,
-            }];
-        }
-        if (_.isEmpty(this.state.tiles.filter(t => !!t.exploreEntry && t.visibility !== ExploreGridListTileVisibility.Hidden))) {
-            return [{
-                name: 'empty',
-                component: <ExploreGridDialogTile {...EXPLORE_STATE_DIALOGS.EMPTY} />,
-                visibility: ExploreGridListTileVisibility.Visible,
-                width: ExploreGridListTileWidth.FullWidth,
-            }];
-        }
-        return this.state.tiles;
+    private _generateEditorialContent(): void {
+        this.setState({ tiles: _.concat([], EDITORIAL, this.state.tiles) });
     }
 
+    private readonly _generateTilesFromState = (): ExploreTile[] => {
+        if (this.state.isTilesLoading) {
+            return [
+                {
+                    name: 'loading',
+                    component: <ExploreGridDialogTile {...EXPLORE_STATE_DIALOGS.LOADING} />,
+                    visibility: ExploreTileVisibility.Visible,
+                    width: ExploreTileWidth.FullWidth,
+                },
+            ];
+        }
+        if (_.isEmpty(this.state.tiles.filter(t => t.visibility !== ExploreTileVisibility.Hidden))) {
+            return [
+                {
+                    name: 'empty',
+                    component: <ExploreGridDialogTile {...EXPLORE_STATE_DIALOGS.EMPTY} />,
+                    visibility: ExploreTileVisibility.Visible,
+                    width: ExploreTileWidth.FullWidth,
+                },
+            ];
+        }
+        return this.state.tiles;
+    };
+
     private readonly _changeSearchResults = (query: string): void => {
-        this.setState({ query: query.trim().toLowerCase() }, () => {
-            // tslint:disable-next-line:no-floating-promises
-            this._setEntriesModifier(ExploreEntriesModifiers.Search);
-        });
-    }
+        const trimmedQuery = query.trim().toLowerCase();
+        // tslint:disable-next-line:no-floating-promises
+        this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Search, {
+            query: trimmedQuery,
+            filter: this.state.filters.find(f => f.active),
+        })
+            .then(async newTiles =>
+                this._generateTilesWithModifier(newTiles, ExploreTilesModifiers.Editorial, {
+                    isEditorialShown: _.isEmpty(trimmedQuery) ? this.state.isEditorialShown : false,
+                }),
+            )
+            .then(newTiles => {
+                this.setState({ query: trimmedQuery, tiles: newTiles });
+            });
+    };
 
     private readonly _setFilter = (filterName: string, active: boolean = true): void => {
         let updatedFilters: ExploreFilterMetadata[];
-        if (filterName === 'all') {
-            updatedFilters = this.state.filters.map(f => {
-                const newFilter = _.assign({}, f);
-                newFilter.active = newFilter.name === 'all' ? active : false;
-                return newFilter;
-            });
-        } else {
-            updatedFilters = this.state.filters.map(f => {
-                const newFilter = _.assign({}, f);
-                newFilter.active = newFilter.name === filterName ? active : newFilter.active;
-                newFilter.active = newFilter.name === 'all' ? false : newFilter.active;
-                return newFilter;
-            });
-        }
+        updatedFilters = this.state.filters.map(f => {
+            const newFilter = _.assign({}, f);
+            newFilter.active = newFilter.name === filterName ? active : false;
+            return newFilter;
+        });
         // If no filters are enabled, default to all
         if (_.filter(updatedFilters, f => f.active).length === 0) {
             this._setFilter('all');
         } else {
-            this.setState({ filters: updatedFilters }, () => {
-                // tslint:disable-next-line:no-floating-promises
-                this._setEntriesModifier(ExploreEntriesModifiers.Filter);
+            // tslint:disable-next-line:no-floating-promises
+            this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Filter, {
+                filter: updatedFilters.find(f => f.active),
+            }).then(newTiles => {
+                this.setState({ filters: updatedFilters, tiles: newTiles });
             });
         }
     };
 
-    private readonly _setEntriesModifier = async (modifier: ExploreEntriesModifiers): Promise<void>  => {
-        let newTiles: ExploreGridListTile[];
-        if (modifier === ExploreEntriesModifiers.Filter || modifier === ExploreEntriesModifiers.Search) {
-            const activeFilters = _.filter(this.state.filters, f => f.active);
-            if (activeFilters.length === 1 && activeFilters[0].name === 'all') {
-                newTiles = _.concat([], this.state.tiles).map(t => {
-                    const newTile = _.assign({}, t);
-                    newTile.visibility = ExploreGridListTileVisibility.Visible;
-                    if (modifier === ExploreEntriesModifiers.Search && !!newTile.exploreEntry) {
-                        newTile.visibility = (_.includes(newTile.exploreEntry.label.toLowerCase(), this.state.query) && ExploreGridListTileVisibility.Visible) || ExploreGridListTileVisibility.Hidden;
-                    }
-                    return newTile;
-                });
-            } else {
-                newTiles = _.concat([], this.state.tiles).map(t => {
-                    const newTile = _.assign({}, t);
-                    if (!!newTile.exploreEntry) {
-                        newTile.visibility = _.intersectionWith(activeFilters, newTile.exploreEntry.keywords, (f, k) => k === f.name).length !== 0 ? ExploreGridListTileVisibility.Visible : ExploreGridListTileVisibility.Hidden;
-                        if (modifier === ExploreEntriesModifiers.Search && newTile.visibility === ExploreGridListTileVisibility.Visible) {
-                            newTile.visibility = (_.includes(newTile.exploreEntry.label.toLowerCase(), this.state.query) && ExploreGridListTileVisibility.Visible) || ExploreGridListTileVisibility.Hidden;
-                        }
-                    }
-                    return newTile;
-                });
-            }
+    private readonly _verifyExploreTilesModifierOptions = (
+        modifier: ExploreTilesModifiers,
+        options: ExploreModifierOptions,
+    ): boolean => {
+        if (modifier === ExploreTilesModifiers.Ordering) {
+            return _.has(options, 'tilesOrdering');
         }
-        this.setState({ tiles: newTiles });
+        if (modifier === ExploreTilesModifiers.Editorial) {
+            return _.has(options, 'isEditorialShown');
+        }
+        if (modifier === ExploreTilesModifiers.Search) {
+            return _.has(options, 'filter') && _.has(options, 'query');
+        }
+        if (modifier === ExploreTilesModifiers.Filter) {
+            return _.has(options, 'filter');
+        }
+        return false;
     };
 
-    // For future versions, ordering can be determined by async processes
-    private readonly _setTilesOrderingAsync = async (entriesOrdering: ExploreEntriesOrdering, tiles: ExploreGridListTile[] ): Promise<ExploreGridListTile[]> => {
-        switch (entriesOrdering) {
-            default: return tiles;
+    private readonly _generateTilesWithModifier = async (
+        tiles: ExploreTile[],
+        modifier: ExploreTilesModifiers,
+        options: ExploreModifierOptions,
+    ): Promise<ExploreTile[]> => {
+        if (!this._verifyExploreTilesModifierOptions(modifier, options)) {
+            return tiles;
         }
-    }
+        if (modifier === ExploreTilesModifiers.Ordering) {
+            if (!!BY_NAME_ORDERINGS[options.tilesOrdering]) {
+                return _.sortBy(tiles, t => _.indexOf(BY_NAME_ORDERINGS[options.tilesOrdering], t.name));
+            } else {
+                return tiles;
+            }
+        }
+        return _.concat([], tiles).map(t => {
+            const newTile = _.assign({}, t);
+            if (modifier === ExploreTilesModifiers.Filter || modifier === ExploreTilesModifiers.Search) {
+                newTile.visibility =
+                    (options.filter.name === 'all' && ExploreTileVisibility.Visible) || newTile.visibility;
+                if (!(options.filter.name === 'all') && !!newTile.exploreProject) {
+                    newTile.visibility =
+                        (_.includes(newTile.exploreProject.keywords, options.filter.name) &&
+                            ExploreTileVisibility.Visible) ||
+                        ExploreTileVisibility.Hidden;
+                }
+            }
+            if (
+                !!newTile.exploreProject &&
+                modifier === ExploreTilesModifiers.Search &&
+                newTile.visibility === ExploreTileVisibility.Visible
+            ) {
+                newTile.visibility =
+                    (_.startsWith(newTile.exploreProject.label.toLowerCase(), options.query) &&
+                        ExploreTileVisibility.Visible) ||
+                    ExploreTileVisibility.Hidden;
+            }
+            if (modifier === ExploreTilesModifiers.Editorial) {
+                if (_.startsWith(t.name, 'editorial')) {
+                    newTile.visibility = options.isEditorialShown
+                        ? ExploreTileVisibility.Visible
+                        : ExploreTileVisibility.Hidden;
+                }
+            }
+            return newTile;
+        });
+    };
 
     // For future versions, the load entries function can be async
     private readonly _loadEntriesAsync = async (): Promise<void> => {
         this.setState({ isEntriesLoading: true });
-        const rawEntries = _.values(PROJECTS);
-        const tiles = rawEntries.map((e: ExploreEntry) => {
-            const richExploreEntry = _.assign({}, e) as RicherExploreEntry;
-            if (!!richExploreEntry.instant) {
-                richExploreEntry.onInstantClick = this._launchInstantAsync.bind(this, richExploreEntry.instant);
+        const rawProjects = _.values(PROJECTS);
+        const tiles = rawProjects.map((e: ExploreProject) => {
+            const exploreProject = _.assign({}, e);
+            if (!!exploreProject.instant) {
+                exploreProject.onInstantClick = this._launchInstantAsync.bind(this, exploreProject.instant);
             }
-            richExploreEntry.onAnalytics = this._onAnalytics.bind(this, richExploreEntry);
             return {
-                name: e.label.toLowerCase(),
-                exploreEntry: richExploreEntry,
-                visibility: ExploreGridListTileVisibility.Visible,
-                width: ExploreGridListTileWidth.OneThird,
+                name: e.name,
+                exploreProject,
+                visibility: ExploreTileVisibility.Visible,
+                width: ExploreTileWidth.OneThird,
+                onAnalytics: this._onAnalytics.bind(this, exploreProject),
             };
         });
-        const orderedTiles = (await this._setTilesOrderingAsync(this.state.entriesOrdering, tiles));
-        this.setState({ tiles: orderedTiles, isEntriesLoading: false  });
-    }
+        const orderedTiles = await this._generateTilesWithModifier(tiles, ExploreTilesModifiers.Ordering, {
+            tilesOrdering: this.state.tilesOrdering,
+        });
+        this.setState({ tiles: orderedTiles, isEntriesLoading: false }, () => {
+            this._generateEditorialContent();
+        });
+    };
 }
 
 const ExploreHeroContentWrapper = styled.div`
@@ -326,13 +298,19 @@ interface ExploreHeroProps {
 const ExploreHero = (props: ExploreHeroProps) => {
     // tslint:disable-next-line:no-unbound-method
     const onSearchDebounce = _.debounce(props.onSearch, 300);
-    const onChange = (e: any) => { onSearchDebounce(e.target.value); };
-    return <Section maxWidth={'1150px'}>
-        <ExploreHeroContentWrapper>
-            <Heading isNoMargin={true} size="large">Explore 0x</Heading>
-            <SearchInput onChange={onChange} width={'28rem'} placeholder="Search tokens, relayers, and dApps..."/>
-        </ExploreHeroContentWrapper>
-    </Section>;
+    const onChange = (e: any) => {
+        onSearchDebounce(e.target.value);
+    };
+    return (
+        <Section maxWidth={'1150px'}>
+            <ExploreHeroContentWrapper>
+                <Heading isNoMargin={true} size="large">
+                    Explore 0x
+                </Heading>
+                <SearchInput onChange={onChange} width={'28rem'} placeholder="Search tokens, relayers, and dApps..." />
+            </ExploreHeroContentWrapper>
+        </Section>
+    );
 };
 
 const ExploreToolBarWrapper = styled.div`
@@ -356,8 +334,8 @@ const ExploreToolBarContentWrapper = styled.div`
 
 interface ExploreToolBarProps {
     filters: ExploreFilterMetadata[];
-    activeOrdering: ExploreEntriesOrdering;
-    orderings: ExploreEntriesOrderingMetadata[];
+    activeOrdering: ExploreTilesOrdering;
+    orderings: ExploreTilesOrderingMetadata[];
     editorial: boolean;
     onOrdering: (newValue: string) => void;
     onEditorial: (newValue: boolean) => void;
@@ -365,15 +343,24 @@ interface ExploreToolBarProps {
 }
 
 const ExploreToolBar = (props: ExploreToolBarProps) => {
-    return <ExploreToolBarWrapper>
-        <ExploreToolBarContentWrapper>
-            {!!props.filters && props.filters.map(f => {
-                const onClick = () => { props.onFilterClick(f.name, !f.active); };
-                return <ExploreTagButton onClick={onClick} active={f.active} key={f.name}>{f.label}</ExploreTagButton>;
-            })}
-        </ExploreToolBarContentWrapper>
-        <ExploreToolBarContentWrapper>
-            <ExploreSettingsDropdown {...props}/>
-        </ExploreToolBarContentWrapper>
-    </ExploreToolBarWrapper>;
+    return (
+        <ExploreToolBarWrapper>
+            <ExploreToolBarContentWrapper>
+                {!!props.filters &&
+                    props.filters.map(f => {
+                        const onClick = () => {
+                            props.onFilterClick(f.name, !f.active);
+                        };
+                        return (
+                            <ExploreTagButton onClick={onClick} active={f.active} key={f.name}>
+                                {f.label}
+                            </ExploreTagButton>
+                        );
+                    })}
+            </ExploreToolBarContentWrapper>
+            <ExploreToolBarContentWrapper>
+                <ExploreSettingsDropdown {...props} />
+            </ExploreToolBarContentWrapper>
+        </ExploreToolBarWrapper>
+    );
 };
