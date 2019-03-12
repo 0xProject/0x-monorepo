@@ -23,6 +23,7 @@
         }
     },
     "contracts": [
+        "src/ERC1155Proxy.sol",
         "src/ERC20Proxy.sol",
         "src/ERC721Proxy.sol",
         "src/MixinAuthorizable.sol",

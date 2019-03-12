@@ -138,22 +138,6 @@ export class Erc1155Wrapper {
         const isApprovedForAll = await this._erc1155Contract.isApprovedForAll.callAsync(owner, beneficiary);
         return isApprovedForAll;
     }
-    public async setApprovalForAllAsync(
-        owner: string,
-        beneficiary: string,
-        isApproved: boolean,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.setApprovalForAll.sendTransactionAsync(beneficiary, isApproved, {
-                from: owner,
-            }),
-        );
-        return tx;
-    }
-    public async isApprovedForAllAsync(owner: string, beneficiary: string): Promise<boolean> {
-        const isApprovedForAll = await this._erc1155Contract.isApprovedForAll.callAsync(owner, beneficiary);
-        return isApprovedForAll;
-    }
     public async assertBalancesAsync(
         owners: string[],
         tokens: BigNumber[],

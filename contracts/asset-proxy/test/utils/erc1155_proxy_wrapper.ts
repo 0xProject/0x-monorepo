@@ -1,4 +1,4 @@
-import { Erc1155Wrapper } from '@0x/contracts-erc1155';
+import { artifacts as erc1155Artifacts, ERC1155MintableContract, Erc1155Wrapper } from '@0x/contracts-erc1155';
 import {
     constants,
     ERC1155FungibleHoldingsByOwner,
@@ -13,7 +13,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ERC1155MintableContract, ERC1155ProxyContract, IAssetProxyContract } from '../../src';
+import { artifacts, ERC1155ProxyContract, IAssetProxyContract } from '../../src';
 
 export class ERC1155ProxyWrapper {
     private readonly _tokenOwnerAddresses: string[];
@@ -33,7 +33,8 @@ export class ERC1155ProxyWrapper {
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        const allArtifacts = _.merge(artifacts, erc1155Artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, allArtifacts);
         this._dummyTokenWrappers = [];
         this._assetProxyInterface = new IAssetProxyContract(
             artifacts.IAssetProxy.compilerOutput.abi,
@@ -54,7 +55,7 @@ export class ERC1155ProxyWrapper {
         // tslint:disable-next-line:no-unused-variable
         for (const i of _.times(constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY)) {
             const erc1155Contract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
-                artifacts.ERC1155Mintable,
+                erc1155Artifacts.ERC1155Mintable,
                 this._provider,
                 txDefaults,
             );

@@ -7,14 +7,13 @@
                 "pr": 1661
             }
         ]
-    },        
+    },
     {
         "version": "2.2.2",
         "changes": [
             {
                 "note": "Added ERC1155 revert reasons",
                 "pr": 1657
-                           
             }
         ]
     },
