@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 
@@ -34,7 +34,7 @@ contract TestStaticCallReceiver {
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
-        bytes signature
+        bytes calldata signature
     )
         external
         returns (bool isValid)
@@ -49,7 +49,7 @@ contract TestStaticCallReceiver {
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
-        bytes signature
+        bytes calldata signature
     )
         external
         returns (bool isValid)

@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "../src/MintableERC20Token.sol";
@@ -32,8 +32,8 @@ contract DummyERC20Token is
     uint256 public constant MAX_MINT_AMOUNT = 10000000000000000000000;
 
     constructor (
-        string _name,
-        string _symbol,
+        string memory _name,
+        string memory _symbol,
         uint256 _decimals,
         uint256 _totalSupply
     )

@@ -15,21 +15,29 @@
   limitations under the License.
 
 */
+
 pragma solidity ^0.5.5;
 
 
-contract ITransactions {
+contract IAssetProxy {
 
-    /// @dev Executes an exchange method call in the context of signer.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @param signature Proof of signer transaction by signer.
-    function executeTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes calldata data,
-        bytes calldata signature
+    /// @dev Transfers assets. Either succeeds or throws.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param from Address to transfer asset from.
+    /// @param to Address to transfer asset to.
+    /// @param amount Amount of asset to transfer.
+    function transferFrom(
+        bytes calldata assetData,
+        address from,
+        address to,
+        uint256 amount
     )
         external;
+    
+    /// @dev Gets the proxy id associated with the proxy address.
+    /// @return Proxy id.
+    function getProxyId()
+        external
+        pure
+        returns (bytes4);
 }

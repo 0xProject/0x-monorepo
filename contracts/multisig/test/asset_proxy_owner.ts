@@ -1,3 +1,4 @@
+import { artifacts as proxyArtifacts, MixinAuthorizableContract } from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
     constants,
@@ -25,7 +26,6 @@ import {
     AssetProxyOwnerExecutionFailureEventArgs,
     AssetProxyOwnerSubmissionEventArgs,
     AssetProxyOwnerWrapper,
-    MixinAuthorizableContract,
     TestAssetProxyOwnerContract,
 } from '../src';
 
@@ -58,12 +58,12 @@ describe('AssetProxyOwner', () => {
         notOwner = accounts[3];
         const initialOwner = accounts[0];
         erc20Proxy = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
-            artifacts.MixinAuthorizable,
+            proxyArtifacts.MixinAuthorizable,
             provider,
             txDefaults,
         );
         erc721Proxy = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
-            artifacts.MixinAuthorizable,
+            proxyArtifacts.MixinAuthorizable,
             provider,
             txDefaults,
         );

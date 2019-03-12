@@ -4,11 +4,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/BalanceThresholdFilter.json",
-        "generated-artifacts/DummyERC20Token.json",
-        "generated-artifacts/DummyERC721Token.json",
         "generated-artifacts/DutchAuction.json",
-        "generated-artifacts/ERC20Proxy.json",
-        "generated-artifacts/ERC721Proxy.json",
         "generated-artifacts/Exchange.json",
         "generated-artifacts/ExchangeWrapper.json",
         "generated-artifacts/OrderMatcher.json",

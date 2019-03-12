@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Add optional types to optimizer settings",
+                "pr": 1682
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {
