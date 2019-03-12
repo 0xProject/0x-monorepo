@@ -21,25 +21,23 @@ pragma solidity ^0.5.5;
 
 contract ReentrancyGuard {
 
-    // Locked state of mutex
-    bool private locked = false;
+    // Mutex counter.
+    // Starts at 1 and increases whenever a nonReentrant function is called.
+    uint256 private reentrancyGuardCounter = 1;
 
-    /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
-    ///      before function execution and unlocked after.
+    /// @dev Functions with this modifer cannot be reentered.
     modifier nonReentrant() {
-        // Ensure mutex is unlocked
+        // Increment the counter.
+        reentrancyGuardCounter += 1;
+        // Remember the current counter value.
+        uint256 localCounter = reentrancyGuardCounter;
+        // Call the function.
+        _;
+        // If the counter value is different from what we remember,
+        // the function was called more than once.
         require(
-            !locked,
+            localCounter == reentrancyGuardCounter,
             "REENTRANCY_ILLEGAL"
         );
-
-        // Lock mutex before function call
-        locked = true;
-
-        // Perform function call
-        _;
-
-        // Unlock mutex after function call
-        locked = false;
     }
 }
