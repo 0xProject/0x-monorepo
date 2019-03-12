@@ -1,4 +1,11 @@
 import {
+    artifacts as erc1155Artifacts,
+    DummyERC1155ReceiverBatchTokenReceivedEventArgs,
+    DummyERC1155ReceiverContract,
+    ERC1155MintableContract,
+    Erc1155Wrapper,
+} from '@0x/contracts-erc1155';
+import {
     chaiSetup,
     constants,
     expectTransactionFailedAsync,
@@ -14,15 +21,7 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Erc1155Wrapper } from '../../erc1155/lib/src';
-import {
-    artifacts,
-    DummyERC1155ReceiverBatchTokenReceivedEventArgs,
-    DummyERC1155ReceiverContract,
-    ERC1155MintableContract,
-    ERC1155ProxyWrapper,
-    ERC721ProxyContract,
-} from '../src';
+import { ERC1155ProxyWrapper, ERC721ProxyContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -87,7 +86,7 @@ describe('ERC1155Proxy', () => {
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
         erc1155Contract = erc1155Wrapper.getContract();
         erc1155Receiver = await DummyERC1155ReceiverContract.deployFrom0xArtifactAsync(
-            artifacts.DummyERC1155Receiver,
+            erc1155Artifacts.DummyERC1155Receiver,
             provider,
             txDefaults,
         );

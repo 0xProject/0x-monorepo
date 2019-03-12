@@ -107,7 +107,8 @@ export const assetDataUtils = {
             throw new Error(`Invalid assetProxyId. Expected '${AssetProxyId.ERC1155}', got '${assetProxyId}'`);
         }
         const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ERC1155AssetDataAbi);
-        const decodedAssetData: ERC1155AssetDataNoProxyId = abiEncoder.decode(assetData, decodingRules);
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        const decodedAssetData = abiEncoder.decode(assetData, decodingRules) as ERC1155AssetDataNoProxyId;
         return {
             assetProxyId,
             tokenAddress: decodedAssetData.tokenAddress,
