@@ -274,6 +274,18 @@ export enum RevertReason {
     InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
     ApprovalExpired = 'APPROVAL_EXPIRED',
     InvalidOrigin = 'INVALID_ORIGIN',
+    // ERC1155
+    AmountEqualToOneRequired = 'AMOUNT_EQUAL_TO_ONE_REQUIRED',
+    BadReceiverReturnValue = 'BAD_RECEIVER_RETURN_VALUE',
+    CannotTransferToAddressZero = 'CANNOT_TRANSFER_TO_ADDRESS_ZERO',
+    InsufficientAllowance = 'INSUFFICIENT_ALLOWANCE',
+    NFTNotOwnedByFromAddress = 'NFT_NOT_OWNED_BY_FROM_ADDRESS',
+    OwnersAndIdsMustHaveSameLength = 'OWNERS_AND_IDS_MUST_HAVE_SAME_LENGTH',
+    TokenAndValuesLengthMismatch = 'TOKEN_AND_VALUES_LENGTH_MISMATCH',
+    TriedToMintFungibleForNonFungibleToken = 'TRIED_TO_MINT_FUNGIBLE_FOR_NON_FUNGIBLE_TOKEN',
+    TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
+    TransferRejected = 'TRANSFER_REJECTED',
+    Uint256Underflow = 'UINT256_UNDERFLOW',
 }
 
 export enum StatusCodes {
