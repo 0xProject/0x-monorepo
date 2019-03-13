@@ -5,6 +5,9 @@
             {
                 "note": "Update websocket from ^1.0.25 to ^1.0.26",
                 "pr": 1685
+            },
+            {
+                "note": "Fix issue where ERC721 Approval events could cause a lookup on undefined object"
             }
         ]
     },
