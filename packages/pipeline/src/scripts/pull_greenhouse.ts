@@ -44,6 +44,7 @@ function getEndDate(): Date {
         return new Date();
     }
 }
+
 async function fetchAndSaveApplicationsAsync(source: GreenhouseSource): Promise<void> {
     const repository = connection.getRepository(GreenhouseApplication);
     const startTime = await getStartDateAsync(connection, 'last_activity_at', 'raw.greenhouse_applications');

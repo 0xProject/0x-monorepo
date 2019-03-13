@@ -4,15 +4,17 @@ const applications = new Table({
     name: 'raw.greenhouse_applications',
     columns: [
         { name: 'id', type: 'bigint', isPrimary: true },
+        { name: 'last_activity_at', type: 'timestamp', isPrimary: true },
+
         { name: 'candidate_id', type: 'bigint' },
         { name: 'applied_at', type: 'timestamp' },
+        { name: 'status', type: 'varchar' },
+
         { name: 'rejected_at', type: 'timestamp', isNullable: true },
-        { name: 'last_activity_at', type: 'timestamp', isPrimary: true },
         { name: 'source_id', type: 'bigint', isNullable: true },
         { name: 'source_name', type: 'varchar', isNullable: true },
         { name: 'credited_to_id', type: 'bigint', isNullable: true },
         { name: 'credited_to_name', type: 'varchar', isNullable: true },
-        { name: 'status', type: 'varchar' },
         { name: 'current_stage_id', type: 'bigint', isNullable: true },
         { name: 'current_stage_name', type: 'varchar', isNullable: true },
     ],
