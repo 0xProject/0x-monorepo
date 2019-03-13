@@ -29,7 +29,6 @@
     "devDependencies": {
         "@0x/tslint-config": "^3.0.0",
         "@types/axios": "^0.14.0",
-        "@types/lodash": "4.14.104",
         "@types/ramda": "^0.25.38",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
@@ -58,7 +57,6 @@
         "bottleneck": "^2.13.2",
         "dockerode": "^2.5.7",
         "ethereum-types": "^2.1.0",
-        "lodash": "^4.17.11",
         "pg": "^7.5.0",
         "prettier": "^1.16.3",
         "ramda": "^0.25.0",

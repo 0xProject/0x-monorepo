@@ -20,7 +20,7 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 
-import { chunk } from 'lodash';
+import { splitEvery } from 'ramda';
 
 import { logUtils } from '@0x/utils';
 
@@ -37,7 +37,7 @@ import {
         readFileSync(`sales_summary_${publisher}.json`).toString(),
     );
 
-    const chunks: NonfungibleDotComTradeResponse[][] = chunk(sourceJson.data, S3_CHUNK_SIZES[publisher]);
+    const chunks: NonfungibleDotComTradeResponse[][] = splitEvery(S3_CHUNK_SIZES[publisher], sourceJson.data);
 
     logUtils.log(`${chunks.length} chunks`);
 
