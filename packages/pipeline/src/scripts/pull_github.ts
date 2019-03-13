@@ -3,11 +3,12 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 import { logUtils } from '@0x/utils';
 
 import { GithubSource } from '../data_sources/github';
-import { GithubFork, GithubPullRequest, GithubRepo } from '../entities';
+import { GithubFork, GithubIssue, GithubPullRequest, GithubRepo } from '../entities';
 import * as ormConfig from '../ormconfig';
 import {
     enrichGithubForkWithComparisonDetails,
     parseGithubForks,
+    parseGithubIssues,
     parseGithubPulls,
     parseGithubRepo,
 } from '../parsers/github';
@@ -71,6 +72,21 @@ let connection: Connection;
         page++;
         logUtils.log(`Saving ${enrichedForks.length} forks to database.`);
         await GithubForkRepository.save(enrichedForks);
+    }
+
+    // get issues and save
+    const GithubIssueRepository = connection.getRepository(GithubIssue);
+    numberOfRecords = RECORDS_PER_PAGE;
+    page = 1;
+    while (numberOfRecords === RECORDS_PER_PAGE) {
+        logUtils.log(`Fetching Github issues from API, page: ${page}.`);
+        const rawIssues = await githubSource.getGithubIssuesAsync(page);
+        const repoFullName = `${GITHUB_OWNER}/${GITHUB_REPO}`;
+        const issues = parseGithubIssues(rawIssues, observedTimestamp, repoFullName);
+        numberOfRecords = issues.length;
+        page++;
+        logUtils.log(`Saving ${issues.length} issues to database.`);
+        await GithubIssueRepository.save(issues);
     }
 
     process.exit(0);

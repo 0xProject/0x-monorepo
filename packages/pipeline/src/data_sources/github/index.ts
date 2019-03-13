@@ -46,6 +46,25 @@ export interface GithubComparisonResponse {
     total_commits: number;
 }
 
+export interface GithubIssueResponse {
+    number: number;
+    title: string;
+    state: string;
+    locked: boolean;
+    assignee?: {
+        login?: string;
+    };
+    created_at: string;
+    updated_at: string;
+    closed_at: string;
+    user: {
+        login: string;
+        type: string;
+        site_admin: boolean;
+    };
+    comments: number;
+}
+
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class GithubSource {
@@ -105,6 +124,18 @@ export class GithubSource {
         }...${forkOwner}:${forkBranch}?access_token=${this._accessToken}`;
         const resp = await fetchAsync(url);
         const respJson: GithubComparisonResponse = await resp.json();
+        return respJson;
+    }
+
+    /**
+     * Call Github API for pull requests and return result - paginated.
+     */
+    public async getGithubIssuesAsync(page: number): Promise<GithubIssueResponse[]> {
+        const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/issues?access_token=${
+            this._accessToken
+        }&state=all&per_page=100&page=${page}`;
+        const resp = await fetchAsync(url);
+        const respJson: GithubIssueResponse[] = await resp.json();
         return respJson;
     }
 }

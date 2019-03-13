@@ -1,7 +1,7 @@
 import 'mocha';
 import 'reflect-metadata';
 
-import { GithubFork, GithubPullRequest, GithubRepo } from '../../src/entities';
+import { GithubFork, GithubIssue, GithubPullRequest, GithubRepo } from '../../src/entities';
 import { createDbConnectionOnceAsync } from '../db_setup';
 import { chaiSetup } from '../utils/chai_setup';
 
@@ -29,6 +29,23 @@ const fork: GithubFork = {
     aheadBy: 1,
     behindBy: 0,
     totalCommits: 1,
+};
+
+const issue: GithubIssue = {
+    observedTimestamp: Date.now(),
+    repoFullName: '0xProject/0x-monorepo',
+    issueNumber: 1691,
+    title: 'An in-range update of source-map-support is breaking the build',
+    state: 'open',
+    locked: false,
+    assigneeLogin: undefined,
+    userLogin: 'greenkeeper[bot]',
+    userType: 'Bot',
+    userSiteAdmin: false,
+    comments: 1,
+    createdAt: Date.parse('2019-03-12T17:30:58Z'),
+    updatedAt: Date.parse('2019-03-12T17:32:26Z'),
+    closedAt: undefined,
 };
 
 const pullRequest: GithubPullRequest = {
@@ -62,8 +79,16 @@ const repo: GithubRepo = {
 describe('GithubFork entity', () => {
     it('save/find', async () => {
         const connection = await createDbConnectionOnceAsync();
-        const forksRepository = connection.getRepository(GithubFork);
-        await testSaveAndFindEntityAsync(forksRepository, fork);
+        const forkRepository = connection.getRepository(GithubFork);
+        await testSaveAndFindEntityAsync(forkRepository, fork);
+    });
+});
+
+describe('GithubIssue entity', () => {
+    it('save/find', async () => {
+        const connection = await createDbConnectionOnceAsync();
+        const issueRepository = connection.getRepository(GithubIssue);
+        await testSaveAndFindEntityAsync(issueRepository, issue);
     });
 });
 
