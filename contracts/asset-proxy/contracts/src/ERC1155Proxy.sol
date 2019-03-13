@@ -53,18 +53,18 @@ contract ERC1155Proxy is
         // | Header   | 0           | 4       | assetProxyId                        |
         // | Params   |             | 4 * 32  | function parameters:                |
         // |          | 4           |         |   1. address of ERC1155 contract    |
-        // |          | 36          |         |   2. offset to tokenIds (*)         |
-        // |          | 68          |         |   3. offset to tokenValues (*)      |
-        // |          | 100         |         |   4. offset to callbackData (*)     |
-        // | Data     |             |         | tokenIds:                           |
-        // |          | 132         | 32      |   1. tokenIds Length                |
-        // |          | 164         | a       |   2. tokenIds Contents              | 
-        // |          |             |         | tokenValues:                        |
-        // |          | 164 + a     | 32      |   1. tokenValues Length             |
-        // |          | 196 + a     | b       |   2. tokenValues Contents           |
-        // |          |             |         | callbackData                        |
-        // |          | 196 + a + b | 32      |   1. callbackData Length            |
-        // |          | 228 + a + b | c       |   2. callbackData Contents          |
+        // |          | 36          |         |   2. offset to ids (*)              |
+        // |          | 68          |         |   3. offset to values (*)           |
+        // |          | 100         |         |   4. offset to data (*)             |
+        // | Data     |             |         | ids:                                |
+        // |          | 132         | 32      |   1. ids Length                     |
+        // |          | 164         | a       |   2. ids Contents                   | 
+        // |          |             |         | values:                             |
+        // |          | 164 + a     | 32      |   1. values Length                  |
+        // |          | 196 + a     | b       |   2. values Contents                |
+        // |          |             |         | data                                |
+        // |          | 196 + a + b | 32      |   1. data Length                    |
+        // |          | 228 + a + b | c       |   2. data Contents                  |
         //
         //
         // Calldata for target ERC155 asset is encoded for safeBatchTransferFrom:
@@ -75,18 +75,18 @@ contract ERC1155Proxy is
         // | Params   |             | 5 * 32  | function parameters:                |
         // |          | 4           |         |   1. from address                   |
         // |          | 36          |         |   2. to address                     |
-        // |          | 68          |         |   3. offset to tokenIds (*)         |
-        // |          | 100         |         |   4. offset to tokenValues (*)      |
-        // |          | 132         |         |   5. offset to callbackData (*)     |
-        // | Data     |             |         | tokenIds:                           |
-        // |          | 164         | 32      |   1. tokenIds Length                |
-        // |          | 196         | a       |   2. tokenIds Contents              | 
-        // |          |             |         | tokenValues:                        |
-        // |          | 196 + a     | 32      |   1. tokenValues Length             |
-        // |          | 228 + a     | b       |   2. tokenValues Contents           |
-        // |          |             |         | callbackData                        |
-        // |          | 228 + a + b | 32      |   1. callbackData Length            |
-        // |          | 260 + a + b | c       |   2. callbackData Contents          |
+        // |          | 68          |         |   3. offset to ids (*)              |
+        // |          | 100         |         |   4. offset to values (*)           |
+        // |          | 132         |         |   5. offset to data (*)             |
+        // | Data     |             |         | ids:                                |
+        // |          | 164         | 32      |   1. ids Length                     |
+        // |          | 196         | a       |   2. ids Contents                   | 
+        // |          |             |         | values:                             |
+        // |          | 196 + a     | 32      |   1. values Length                  |
+        // |          | 228 + a     | b       |   2. values Contents                |
+        // |          |             |         | data                                |
+        // |          | 228 + a + b | 32      |   1. data Length                    |
+        // |          | 260 + a + b | c       |   2. data Contents                  |
         //
         //
         // (*): offset is computed from start of function parameters, so offset
@@ -132,18 +132,18 @@ contract ERC1155Proxy is
 
                 // Construct Table #3 in memory, starting at memory offset 0.
                 // The algorithm below maps asset data from Table #1 and Table #2 to Table #3, while
-                // scaling the `tokenValues` (Table #2) by `amount` (Table #1). Once Table #3 has
+                // scaling the `values` (Table #2) by `amount` (Table #1). Once Table #3 has
                 // been constructed in memory, the destination erc1155 contract is called using this 
                 // as its calldata. This process is divided into four steps, below.
 
                 ////////// STEP 1/4 //////////
                 // Map relevant fields from assetData (Table #2) into memory (Table #3)
                 // The Contents column of Table #2 is the same as Table #3,
-                // beginning from parameter 3 - `offset to tokenIds (*)`
+                // beginning from parameter 3 - `offset to ids (*)`
                 // The offsets in these rows are offset by 32 bytes in Table #3.
                 // Strategy:
                 // 1. Copy the assetData into memory at offset 32
-                // 2. Increment by 32 the offsets to `tokenIds`, `tokenValues`, and `callbackData`
+                // 2. Increment by 32 the offsets to `ids`, `values`, and `data`
 
                 // Load offset to `assetData`
                 let assetDataOffset := calldataload(4)
@@ -160,7 +160,7 @@ contract ERC1155Proxy is
                 // + 32 (length of assetData)
                 calldatacopy(32, add(36, assetDataOffset), assetDataLength)
 
-                // Increment by 32 the offsets to `tokenIds`, `tokenValues`, and `callbackData` 
+                // Increment by 32 the offsets to `ids`, `values`, and `data`
                 mstore(68, add(mload(68), 32))
                 mstore(100, add(mload(100), 32))
                 mstore(132, add(mload(132), 32))
@@ -173,15 +173,15 @@ contract ERC1155Proxy is
 
                 ////////// STEP 2/4 //////////
                 let scaleAmount := calldataload(100)
-                let tokenValuesOffset := add(mload(100), 4) // add 4 for calldata offset
-                let tokenValuesLengthInBytes := mul(
-                    mload(tokenValuesOffset),
+                let valuesOffset := add(mload(100), 4) // add 4 for calldata offset
+                let valuesLengthInBytes := mul(
+                    mload(valuesOffset),
                     32
                 )
-                let tokenValuesBegin := add(tokenValuesOffset, 32)
-                let tokenValuesEnd := add(tokenValuesBegin, tokenValuesLengthInBytes)
-                for { let tokenValueOffset := tokenValuesBegin }
-                    lt(tokenValueOffset, tokenValuesEnd)
+                let valuesBegin := add(valuesOffset, 32)
+                let valuesEnd := add(valuesBegin, valuesLengthInBytes)
+                for { let tokenValueOffset := valuesBegin }
+                    lt(tokenValueOffset, valuesEnd)
                     { tokenValueOffset := add(tokenValueOffset, 32) }
                 {
                     // Load token value and generate scaled value
