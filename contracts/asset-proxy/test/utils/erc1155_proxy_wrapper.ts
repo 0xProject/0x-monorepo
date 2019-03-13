@@ -128,6 +128,7 @@ export class ERC1155ProxyWrapper {
             to: (this._proxyContract as ERC1155ProxyContract).address,
             data,
             from: authorizedSender,
+            gas: 3000000
         });
         return txHash;
     }
