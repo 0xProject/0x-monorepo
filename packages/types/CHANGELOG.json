@@ -1,19 +1,14 @@
 [
     {
-        "version": "2.2.3",
-        "changes": [
-            {
-                "note": "Added `ERC1155AssetData`, `ERC1155AssetDataNoProxyId`, and `ERC1155AssetDataAbi`",
-                "pr": 1661
-            }
-        ]
-    },
-    {
         "version": "2.2.2",
         "changes": [
             {
                 "note": "Added ERC1155 revert reasons",
                 "pr": 1657
+            },
+            {
+                "note": "Added `ERC1155AssetData`, `ERC1155AssetDataNoProxyId`, and `ERC1155AssetDataAbi`",
+                "pr": 1661
             }
         ]
     },
