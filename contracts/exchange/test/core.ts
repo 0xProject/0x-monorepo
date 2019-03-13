@@ -268,13 +268,21 @@ describe('Exchange core', () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
+                    const attackerOrders = await Promise.all([
+                        orderFactory.newSignedOrderAsync({salt: new BigNumber(1)}),
+                        orderFactory.newSignedOrderAsync({salt: new BigNumber(2)}),
+                    ]);
                     await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                        await reentrantErc20Token.setUpUsTheBomb.sendTransactionAsync(
+                            functionId,
+                            attackerOrders,
+                            _.map(attackerOrders, o => o.signature)
+                        ),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
                     await expectTransactionFailedAsync(
                         exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                        RevertReason.TransferFailed,
+                        RevertReason.ReentrancyIllegal,
                     );
                 });
             });

@@ -34,11 +34,6 @@ contract ReentrantERC20Token is
     // solhint-disable-next-line var-name-mixedcase
     IExchange internal EXCHANGE;
 
-    bytes internal constant REENTRANCY_ILLEGAL_REVERT_REASON = abi.encodeWithSelector(
-        bytes4(keccak256("Error(string)")),
-        "REENTRANCY_ILLEGAL"
-    );
-
     // All of these functions are potentially vulnerable to reentrancy
     // We do not test any "noThrow" functions because `fillOrderNoThrow` makes a delegatecall to `fillOrder`
     enum ExchangeFunction {
@@ -52,10 +47,13 @@ contract ReentrantERC20Token is
         CANCEL_ORDER,
         BATCH_CANCEL_ORDERS,
         CANCEL_ORDERS_UP_TO,
-        SET_SIGNATURE_VALIDATOR_APPROVAL
+        SET_SIGNATURE_VALIDATOR_APPROVAL,
+        NONE
     }
 
     uint8 internal currentFunctionId = 0;
+    LibOrder.Order[2] internal orders;
+    bytes[2] internal signatures;
 
     constructor (address _exchange)
         public
@@ -63,15 +61,31 @@ contract ReentrantERC20Token is
         EXCHANGE = IExchange(_exchange);
     }
 
-    /// @dev Set the current function that will be called when `transferFrom` is called.
+    /// @dev Set the reentrancy params.
+    ///      Because reentrancy is lazily-checked (at the end of the transaction),
+    ///      all parameters must be valid in so only the reentrancy revert occurs,
+    ///      as opposed to something like an invalid fill error.
+    ///      Additionally, these should be distinct from the exchange paramaters
+    ///      used to initiate the reentrancy attack.
     /// @param _currentFunctionId Id that corresponds to function name.
-    function setCurrentFunction(uint8 _currentFunctionId)
-        external
+    /// @param _orders Order to pass to functions.
+    /// @param _signatures Signature for the maker of each order in _orders
+    function setUpUsTheBomb(
+        uint8 _currentFunctionId,
+        LibOrder.Order[2] memory _orders,
+        bytes[2] memory _signature
+    )
+        public
     {
         currentFunctionId = _currentFunctionId;
+        for (uint32 i = 0; i < 2; i++) {
+            orders[i] = _orders[i];
+            signatures[i] = _signatures[i];
+        }
     }
 
-    /// @dev A version of `transferFrom` that attempts to reenter the Exchange contract.
+    /// @dev A version of `transferFrom` that attempts to reenter the Exchange contract
+    ///      once.
     /// @param _from The address of the sender
     /// @param _to The address of the recipient
     /// @param _value The amount of token to be transferred
@@ -83,72 +97,63 @@ contract ReentrantERC20Token is
         external
         returns (bool)
     {
-        // This order would normally be invalid, but it will be used strictly for testing reentrnacy.
-        // Any reentrancy checks will happen before any other checks that invalidate the order.
-        LibOrder.Order memory order;
-
-        // Initialize remaining null parameters
-        bytes memory signature;
-        LibOrder.Order[] memory orders;
-        uint256[] memory takerAssetFillAmounts;
-        bytes[] memory signatures;
         bytes memory callData;
 
         // Create callData for function that corresponds to currentFunctionId
         if (currentFunctionId == uint8(ExchangeFunction.FILL_ORDER)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.fillOrder.selector,
-                order,
-                0,
-                signature
+                orders[0],
+                orders[0].takerAssetAmount,
+                signatures[0]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.FILL_OR_KILL_ORDER)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.fillOrKillOrder.selector,
-                order,
-                0,
-                signature
+                orders[0],
+                orders[0].takerAssetAmount,
+                signatures[0]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.batchFillOrders.selector,
                 orders,
-                takerAssetFillAmounts,
+                orders[0].takerAssetFillAmount + orders[1].takerAssetFillAmount,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_OR_KILL_ORDERS)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.batchFillOrKillOrders.selector,
-                orders,
-                takerAssetFillAmounts,
+                orders[0],
+                orders[0].takerAssetFillAmount + orders[1].takerAssetFillAmount,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.marketBuyOrders.selector,
                 orders,
-                0,
+                orders[0].takerAssetFillAmount + orders[1].takerAssetFillAmount,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.marketSellOrders.selector,
                 orders,
-                0,
+                orders[0].takerAssetFillAmount + orders[1].takerAssetFillAmount,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.matchOrders.selector,
-                order,
-                order,
-                signature,
-                signature
+                orders[0],
+                order[1],
+                signature[0],
+                signature[1]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDER)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.cancelOrder.selector,
-                order
+                orders[0]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_CANCEL_ORDERS)) {
             callData = abi.encodeWithSelector(
@@ -158,7 +163,7 @@ contract ReentrantERC20Token is
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDERS_UP_TO)) {
             callData = abi.encodeWithSelector(
                 EXCHANGE.cancelOrdersUpTo.selector,
-                0
+                orders[1].salt
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.SET_SIGNATURE_VALIDATOR_APPROVAL)) {
             callData = abi.encodeWithSelector(
@@ -168,21 +173,15 @@ contract ReentrantERC20Token is
             );
         }
 
-        // Call Exchange function, swallow error
-        address(EXCHANGE).call(callData);
-
-        // Revert reason is 100 bytes
-        bytes memory returnData = new bytes(100);
-
-        // Copy return data
-        assembly {
-            returndatacopy(add(returnData, 32), 0, 100)
+        if (callData.length > 0) {
+            // Reset the current function to reenter so we don't do this infinitely.
+            currentFunctionId = uint8(ExchangeFunction.NONE);
+            // Call Exchange function.
+            // Reentrancy guard is lazy-evaluated, so this will succeed.
+            address(EXCHANGE).call(callData);
         }
 
-        // Revert if function reverted with REENTRANCY_ILLEGAL error
-        require(!REENTRANCY_ILLEGAL_REVERT_REASON.equals(returnData));
-
-        // Transfer will return true if function failed for any other reason
+        // Always succeed.
         return true;
     }
 }
