@@ -158,7 +158,11 @@ contract ERC1155Proxy is
                 // 4 (function selector)
                 // + assetDataOffset
                 // + 32 (length of assetData)
-                calldatacopy(32, add(36, assetDataOffset), assetDataLength)
+                calldatacopy(
+                    32,                         // aligned such that "offset to ids" is at the correct location for Table #3
+                    add(36, assetDataOffset),   // beginning of asset data contents
+                    assetDataLength             // length of asset data
+                )
 
                 // Increment by 32 the offsets to `ids`, `values`, and `data`
                 mstore(68, add(mload(68), 32))
