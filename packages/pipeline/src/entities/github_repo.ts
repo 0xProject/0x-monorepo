@@ -7,8 +7,8 @@ export class GithubRepo {
     @PrimaryColumn({ name: 'observed_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
 
-    @PrimaryColumn({ name: 'name' })
-    public name!: string;
+    @PrimaryColumn({ name: 'full_name' })
+    public fullName!: string;
 
     @Column({ name: 'created_at', type: 'bigint', transformer: numberToBigIntTransformer })
     public createdAt!: number;

@@ -9,7 +9,7 @@ export function parseGithubForks(response: GithubForkResponse[], observedTimesta
     const result: GithubFork[] = response.map(fork => {
         const parsedFork = new GithubFork();
         parsedFork.observedTimestamp = observedTimestamp;
-        parsedFork.name = fork.name;
+        parsedFork.fullName = fork.full_name;
         parsedFork.ownerLogin = fork.owner.login;
         parsedFork.createdAt = Date.parse(fork.created_at);
         parsedFork.updatedAt = Date.parse(fork.updated_at);

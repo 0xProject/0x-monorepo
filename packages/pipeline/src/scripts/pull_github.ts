@@ -24,7 +24,7 @@ let connection: Connection;
     connection = await createConnection(ormConfig as ConnectionOptions);
     const accessToken = process.env.GITHUB_ACCESS_TOKEN;
     if (accessToken === undefined) {
-        throw new Error('Missing required env var: BLOXY_API_KEY');
+        throw new Error('Missing required env var: GITHUB_ACCESS_TOKEN');
     }
     const githubSource = new GithubSource(GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, accessToken);
     const observedTimestamp = Date.now();

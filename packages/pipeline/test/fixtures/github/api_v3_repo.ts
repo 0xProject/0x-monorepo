@@ -6,7 +6,7 @@ import { GithubRepo } from '../../../src/entities';
 
 const ParsedGithubRepo: GithubRepo = {
     observedTimestamp: Date.now(),
-    name: '0x-monorepo',
+    fullName: '0xProject/0x-monorepo',
     createdAt: 1495549053000,
     updatedAt: 1551908929000,
     pushedAt: 1551916745000,

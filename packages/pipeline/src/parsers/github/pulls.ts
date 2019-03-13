@@ -12,7 +12,7 @@ export function parseGithubPulls(
     return response.map(pull => {
         const parsedPullRequest = new GithubPullRequest();
         parsedPullRequest.observedTimestamp = observedTimestamp;
-        parsedPullRequest.repoName = pull.base.repo.name;
+        parsedPullRequest.repoFullName = pull.base.repo.full_name;
         parsedPullRequest.createdAt = Date.parse(pull.created_at);
         parsedPullRequest.updatedAt = Date.parse(pull.updated_at);
         parsedPullRequest.closedAt = pull.closed_at ? Date.parse(pull.closed_at) : null;

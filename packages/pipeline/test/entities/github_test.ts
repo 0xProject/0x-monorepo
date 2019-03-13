@@ -12,7 +12,7 @@ chaiSetup.configure();
 // tslint:disable:custom-no-magic-numbers
 const fork: GithubFork = {
     observedTimestamp: Date.now(),
-    name: '0x-monorepo',
+    fullName: 'NoahZinsmeister/0x-monorepo',
     ownerLogin: 'NoahZinsmeister',
     createdAt: 1552181010000,
     updatedAt: 1552191123000,
@@ -33,7 +33,7 @@ const fork: GithubFork = {
 
 const pullRequest: GithubPullRequest = {
     observedTimestamp: Date.now(),
-    repoName: '0x-monorepo',
+    repoFullName: '0xProject/0x-monorepo',
     pullRequestNumber: 1684,
     state: 'open',
     title: '[WIP] Pull Github data',
@@ -46,7 +46,7 @@ const pullRequest: GithubPullRequest = {
 
 const repo: GithubRepo = {
     observedTimestamp: Date.now(),
-    name: '0x-monorepo',
+    fullName: '0xProject/0x-monorepo',
     createdAt: 1495549053000,
     updatedAt: 1551908929000,
     pushedAt: 1551916745000,

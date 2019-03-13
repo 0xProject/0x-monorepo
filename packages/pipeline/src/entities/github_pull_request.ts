@@ -7,8 +7,8 @@ export class GithubPullRequest {
     @PrimaryColumn({ name: 'observed_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
 
-    @PrimaryColumn({ name: 'repo_name' })
-    public repoName!: string;
+    @PrimaryColumn({ name: 'repo_full_name' })
+    public repoFullName!: string;
 
     @PrimaryColumn({ name: 'pull_request_number', transformer: numberToBigIntTransformer })
     public pullRequestNumber!: number;

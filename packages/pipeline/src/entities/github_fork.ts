@@ -7,8 +7,8 @@ export class GithubFork {
     @PrimaryColumn({ name: 'observed_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
 
-    @PrimaryColumn({ name: 'name' })
-    public name!: string;
+    @PrimaryColumn({ name: 'full_name' })
+    public fullName!: string;
 
     @PrimaryColumn({ name: 'owner_login' })
     public ownerLogin!: string;

@@ -1,7 +1,7 @@
 import { fetchAsync } from '@0x/utils';
 
 export interface GithubRepoResponse {
-    name: string;
+    full_name: string;
     created_at: string;
     updated_at: string;
     pushed_at: string;
@@ -27,7 +27,7 @@ export interface GithubPullRequestResponse {
     };
     base: {
         repo: {
-            name: string;
+            full_name: string;
         };
     };
 }

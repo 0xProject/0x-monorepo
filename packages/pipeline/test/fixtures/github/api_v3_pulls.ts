@@ -6,7 +6,7 @@ import { GithubPullRequest } from '../../../src/entities';
 
 const ParsedGithubPullRequest: GithubPullRequest = {
     observedTimestamp: Date.now(),
-    repoName: '0x-monorepo',
+    repoFullName: '0xProject/0x-monorepo',
     pullRequestNumber: 1684,
     state: 'open',
     title: '[WIP] Pull Github data',

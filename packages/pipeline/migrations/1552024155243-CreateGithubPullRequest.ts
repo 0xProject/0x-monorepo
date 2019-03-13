@@ -4,7 +4,7 @@ const table = new Table({
     name: 'raw.github_pull_request',
     columns: [
         { name: 'observed_timestamp', type: 'numeric', isPrimary: true },
-        { name: 'repo_name', type: 'varchar', isPrimary: true },
+        { name: 'repo_full_name', type: 'varchar', isPrimary: true },
         { name: 'pull_request_number', type: 'numeric', isPrimary: true },
 
         { name: 'created_at', type: 'numeric', isNullable: false },

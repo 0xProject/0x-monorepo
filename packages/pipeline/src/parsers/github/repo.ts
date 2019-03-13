@@ -8,7 +8,7 @@ import { GithubRepo } from '../../entities';
 export function parseGithubRepo(rawRepo: GithubRepoResponse, observedTimestamp: number): GithubRepo {
     const parsedRepo = new GithubRepo();
     parsedRepo.observedTimestamp = observedTimestamp;
-    parsedRepo.name = rawRepo.name;
+    parsedRepo.fullName = rawRepo.full_name;
     parsedRepo.createdAt = Date.parse(rawRepo.created_at);
     parsedRepo.updatedAt = Date.parse(rawRepo.updated_at);
     parsedRepo.pushedAt = Date.parse(rawRepo.pushed_at);

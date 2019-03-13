@@ -4,7 +4,7 @@ const table = new Table({
     name: 'raw.github_repo',
     columns: [
         { name: 'observed_timestamp', type: 'numeric', isPrimary: true },
-        { name: 'name', type: 'varchar', isPrimary: true },
+        { name: 'full_name', type: 'varchar', isPrimary: true },
 
         { name: 'created_at', type: 'numeric', isNullable: false },
         { name: 'updated_at', type: 'numeric', isNullable: false },

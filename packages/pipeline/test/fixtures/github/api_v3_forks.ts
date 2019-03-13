@@ -13,7 +13,7 @@ import { GithubFork } from '../../../src/entities';
 
 const ParsedGithubFork = new GithubFork();
 ParsedGithubFork.observedTimestamp = Date.now();
-ParsedGithubFork.name = '0x-monorepo';
+ParsedGithubFork.fullName = 'NoahZinsmeister/0x-monorepo';
 ParsedGithubFork.ownerLogin = 'NoahZinsmeister';
 ParsedGithubFork.createdAt = 1552181010000; // tslint:disable-line:custom-no-magic-numbers
 ParsedGithubFork.updatedAt = 1552191123000; // tslint:disable-line:custom-no-magic-numbers
