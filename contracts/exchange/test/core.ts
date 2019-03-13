@@ -237,7 +237,7 @@ describe('Exchange core', () => {
                     await reentrantErc20Token.setCurrentFunction.awaitTransactionSuccessAsync(functionId);
                     await expectTransactionFailedAsync(
                         exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                        RevertReason.TransferFailed,
+                        RevertReason.ReentrancyIllegal,
                     );
                 });
             });
