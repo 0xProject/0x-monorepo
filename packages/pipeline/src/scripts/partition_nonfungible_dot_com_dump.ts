@@ -33,14 +33,15 @@ import {
 (() => {
     const publisher = process.argv[2];
 
-    const sourceJson: NonfungibleDotComHistoryResponse = JSON.parse(
-        readFileSync(`sales_summary_${publisher}.json`).toString(),
-    );
+    const inputFilename = `sales_summary_${publisher}.json`;
+    logUtils.log(`Reading input file ${inputFilename}`);
+    const sourceJson: NonfungibleDotComHistoryResponse = JSON.parse(readFileSync(inputFilename).toString());
 
-    const chunks: NonfungibleDotComTradeResponse[][] = splitEvery(S3_CHUNK_SIZES[publisher], sourceJson.data);
+    const chunkSize = S3_CHUNK_SIZES[publisher];
+    logUtils.log(`Splitting data into chunks of ${chunkSize} trades each`);
+    const chunks: NonfungibleDotComTradeResponse[][] = splitEvery(chunkSize, sourceJson.data);
 
-    logUtils.log(`${chunks.length} chunks`);
-
+    logUtils.log(`Writing ${chunks.length} chunks to disk`);
     for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
         writeFileSync(`sales_summary_${publisher}${chunkIndex}.json`, JSON.stringify(chunks[chunkIndex]));
     }
