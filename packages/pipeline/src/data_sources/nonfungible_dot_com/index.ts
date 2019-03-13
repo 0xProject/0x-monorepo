@@ -66,7 +66,9 @@ export interface NonfungibleDotComTradeResponse {
  * Gets and returns all trades for the given publisher, starting at the given block number.
  * Automatically handles pagination.
  * @param publisher A valid "publisher" for the nonfungible.com API. (e.g. "cryptokitties")
- * @param blockNumberStart The block number to start querying from.
+ * @param blockNumberStart The block number to start querying from.  A value of
+ * 0 indicates that trades should be pulled from the initial dump before
+ * querying the API.
  */
 export async function getTradesAsync(
     publisher: string,
@@ -75,7 +77,7 @@ export async function getTradesAsync(
     /**
      * Because we need to de-duplicate trades as they come in, and because some
      * projects have a ton of trades (eg cryptokitties), we can't do a simple
-     * O(n^2) search each trade in all of the trades we've already received.
+     * O(n^2) search for each trade in all of the trades we've already received.
      * So, we temporarily store trades in a map, for quick lookup while
      * de-duplicating.  Later, we'll convert the map to an array for the
      * caller.
@@ -83,22 +85,23 @@ export async function getTradesAsync(
     const blockNumberToTrades = new Map<number, NonfungibleDotComTradeResponse[]>();
 
     /**
-     * due to high data volumes and rate limiting, we procured an initial data
-     * dump from nonfungible.com.  If the requested starting block number is
-     * contained in that initial dump, then pull relevant trades from there
-     * first.  Later (below) we'll get the more recent trades from the API itself.
+     * The API returns trades in reverse chronological order, so highest block
+     * numbers first.  This variable dictates when to stop pulling trades from
+     * the API.
      */
+    let blockNumberStop = blockNumberStart;
 
-    if (
-        highestBlockNumbersInInitialDump.hasOwnProperty(publisher) &&
-        blockNumberStart < highestBlockNumbersInInitialDump[publisher]
-    ) {
+    /**
+     * Due to high data volumes and rate limiting, we procured an initial data
+     * dump from nonfungible.com.  If the sentinel value 0 is passed for
+     * `blockNumberStart`, that indicates we should pull trades from the
+     * initial dump before going to the API.
+     */
+    if (blockNumberStop === 0) {
         logUtils.log('getting trades from initial dump');
-        // caller needs trades that are in the initial data dump, so get them
-        // from there, then later go to the API for the rest.
         const initialDumpResponse: NonfungibleDotComHistoryResponse = await getInitialDumpTradesAsync(publisher);
         const initialDumpTrades = initialDumpResponse.data;
-        logUtils.log(`got ${initialDumpTrades.length} trades from initial dump. now to filter/clean...`);
+        logUtils.log(`got ${initialDumpTrades.length} trades from initial dump.`);
         for (const initialDumpTrade of initialDumpTrades) {
             ensureNonNull(initialDumpTrade);
 
@@ -116,25 +119,18 @@ export async function getTradesAsync(
             }
 
             tradesForBlock.push(initialDumpTrade);
+            blockNumberStop = initialDumpTrade.blockNumber;
         }
-        logUtils.log('Done with filter/clean');
     }
 
     /**
-     * API returns trades in reverse chronological order, so highest block
+     * The API returns trades in reverse chronological order, so highest block
      * numbers first.  The `start` query parameter indicates how far back in
      * time (in number of trades) the results should start.  Here we iterate
      * over both start parameter values and block numbers simultaneously.
      * Start parameter values count up from zero.  Block numbers count down
-     * until reaching the highest block number in the initial dump.
+     * until reaching `blockNumberStop`.
      */
-
-    const blockNumberStop = Math.max(
-        highestBlockNumbersInInitialDump.hasOwnProperty(publisher)
-            ? highestBlockNumbersInInitialDump[publisher] + 1
-            : 0,
-        blockNumberStart,
-    );
     for (
         let startParam = 0, blockNumber = Number.MAX_SAFE_INTEGER;
         blockNumber > blockNumberStop;
@@ -225,21 +221,6 @@ function doesTradeAlreadyExist(
     return true;
 }
 
-const highestBlockNumbersInInitialDump: { [publisher: string]: number } = {
-    axieinfinity: 7065913,
-    cryptokitties: 7204283,
-    cryptopunks: 7058897,
-    cryptovoxels: 7060783,
-    decentraland_estate: 7065181,
-    decentraland: 6938962,
-    etherbots: 5204980,
-    etheremon: 7065370,
-    ethtown: 7064126,
-    knownorigin: 7065160,
-    mythereum: 7065311,
-    superrare: 7065955,
-};
-
 const numberOfTradesInInitialDump: { [publisher: string]: number } = {
     cryptokitties: 1986316,
 };
@@ -300,5 +281,10 @@ async function getInitialDumpTradesAsync(publisher: string): Promise<Nonfungible
         }
         return { data: reconsolidated };
     }
-    return fetchSuccessfullyOrThrowAsync(`${s3UrlPrefix}${publisher}.json`);
+    try {
+        return await fetchSuccessfullyOrThrowAsync(`${s3UrlPrefix}${publisher}.json`);
+    } catch (error) {
+        logUtils.log(`Failed to retrieve initial dump for publisher '${publisher}'.  Assuming there isn't one.`);
+        return { data: [] };
+    }
 }
