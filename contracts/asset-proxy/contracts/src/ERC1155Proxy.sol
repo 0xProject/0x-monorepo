@@ -176,7 +176,7 @@ contract ERC1155Proxy is
                 )
 
                 ////////// STEP 2/4 //////////
-                let scaleAmount := calldataload(100)
+                let amount := calldataload(100)
                 let valuesOffset := add(mload(100), 4) // add 4 for calldata offset
                 let valuesLengthInBytes := mul(
                     mload(valuesOffset),
@@ -190,22 +190,13 @@ contract ERC1155Proxy is
                 {
                     // Load token value and generate scaled value
                     let tokenValue := mload(tokenValueOffset)
-                    let scaledTokenValue := mul(tokenValue, scaleAmount)
-                    
-                    // Check if scaled value is zero
-                    if iszero(scaledTokenValue) {
-                        // Revert with `Error("TRANSFER_GREATER_THAN_ZERO_REQUIRED")`
-                        mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                        mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                        mstore(64, 0x000000235452414e534645525f475245415445525f5448414e5f5a45524f5f52)
-                        mstore(96, 0x4551554952454400000000000000000000000000000000000000000000000000)
-                        mstore(128, 0)
-                        revert(0, 132)
-                    }
+                    let scaledTokenValue := mul(tokenValue, amount)
 
-                    // Check for multiplication overflow
-                    let expectedTokenValue := div(scaledTokenValue, scaleAmount)
-                    if iszero(eq(expectedTokenValue, tokenValue)) {
+                    // Revert if `amount` != 0 and multiplication resulted in an overflow
+                    if iszero(or(
+                        iszero(amount),
+                        eq(div(scaledTokenValue, amount), tokenValue)
+                    )) {
                         // Revert with `Error("UINT256_OVERFLOW")`
                         mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                         mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)

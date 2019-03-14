@@ -540,39 +540,6 @@ describe('ERC1155Proxy', () => {
                 RevertReason.NFTNotOwnedByFromAddress,
             );
         });
-        it('should revert if tansferring 0 amount of any token', async () => {
-            // setup test parameters
-            const tokenHolders = [spender, receiver];
-            const tokensToTransfer = nonFungibleTokensOwnedBySpender.slice(0, 3);
-            const valuesToTransfer = [nonFungibleValueToTransfer, new BigNumber(0), nonFungibleValueToTransfer];
-            const perUnitValue = perUnitValueNft;
-            // check balances before transfer
-            const expectedInitialBalances = [
-                // spender
-                nftOwnerBalance,
-                nftOwnerBalance,
-                nftOwnerBalance,
-                // receiver
-                nftNotOwnerBalance,
-                nftNotOwnerBalance,
-                nftNotOwnerBalance,
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromAsync(
-                    spender,
-                    receiver,
-                    erc1155Contract.address,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    perUnitValue,
-                    receiverCallbackData,
-                    authorized,
-                ),
-                RevertReason.TransferGreaterThanZeroRequired,
-            );
-        });
         it('should revert if there is a multiplication overflow', async () => {
             // setup test parameters
             const tokenHolders = [spender, receiver];
