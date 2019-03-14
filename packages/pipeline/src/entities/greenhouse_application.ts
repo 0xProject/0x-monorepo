@@ -13,14 +13,14 @@ export class GreenhouseApplication {
     public candidate_id!: number;
 
     @Column({ type: 'timestamp' })
-    public applied_at!: string;
+    public applied_at!: Date;
 
     @Column({ type: 'timestamp' })
-    public rejected_at?: string;
+    public rejected_at?: Date;
 
     @Index()
     @PrimaryColumn({ type: 'timestamp' })
-    public last_activity_at!: string;
+    public last_activity_at!: Date;
 
     @Column({ type: 'bigint', transformer: numberToBigIntTransformer })
     public source_id?: number;

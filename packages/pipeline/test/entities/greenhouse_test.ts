@@ -15,7 +15,11 @@ describe('Greenhouse entities', () => {
         it('Greenhouse application', async () => {
             const connection = await createDbConnectionOnceAsync();
             const repository = connection.getRepository(GreenhouseApplication);
-            ParsedApplications.forEach(async entity => testSaveAndFindEntityAsync(repository, entity));
+            ParsedApplications.forEach(async entity => {
+                console.log('hey');
+                await testSaveAndFindEntityAsync(repository, entity);
+                console.log('ok');
+            });
         });
     });
 });

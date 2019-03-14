@@ -9,9 +9,9 @@ export function parseApplications(response: GreenhouseApplicationResponse): Gree
     return {
         id: response.id,
         candidate_id: response.candidate_id,
-        applied_at: new Date(response.applied_at).toISOString(),
-        rejected_at: response.rejected_at ? new Date(response.rejected_at).toISOString() : undefined,
-        last_activity_at: new Date(response.last_activity_at).toISOString(),
+        applied_at: new Date(response.applied_at),
+        rejected_at: response.rejected_at ? new Date(response.rejected_at) : undefined,
+        last_activity_at: new Date(response.last_activity_at),
         source_id: response.source ? response.source.id : undefined,
         source_name: response.source ? response.source.public_name : undefined,
         credited_to_id: response.credited_to ? response.credited_to.id : undefined,
