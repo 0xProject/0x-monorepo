@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.6",
+        "changes": [
+            {
+                "note": "Use new/cheaper reentrancy guard/mutex",
+                "pr": 1699
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "2.1.5",
         "changes": [
