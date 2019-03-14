@@ -31,8 +31,10 @@ export const providerFactory = {
         // TODO(bmillman): make this more resilient to infura failures
         const rpcUrl = ETHEREUM_NODE_URL_BY_NETWORK[network];
         providerEngine.addProvider(new RPCSubprovider(rpcUrl));
-        // // Start the Provider Engine
-        providerEngine.start();
+        // Start the Provider Engine
+        // HACK: Start the provider without unused block polling
+        // providerEngine.start();
+        (providerEngine as any)._ready.go();
         return providerEngine;
     },
 };

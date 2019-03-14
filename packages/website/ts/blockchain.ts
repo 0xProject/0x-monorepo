@@ -125,7 +125,9 @@ export class Blockchain {
                 return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
-            provider.start();
+            // HACK: Start the provider without unused block polling
+            // provider.start();
+            (provider as any)._ready.go();
             return [provider, ledgerSubprovider];
         } else if (doesInjectedProviderExist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
@@ -143,7 +145,9 @@ export class Blockchain {
                 return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
-            provider.start();
+            // HACK: Start the provider without unused block polling
+            // provider.start();
+            (provider as any)._ready.go();
             return [provider, undefined];
         } else if (doesInjectedProviderExist) {
             // Since no public node for this network, all requests go to injectedWeb3 instance
@@ -159,7 +163,9 @@ export class Blockchain {
                 return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
-            provider.start();
+            // HACK: Start the provider without unused block polling
+            // provider.start();
+            (provider as any)._ready.go();
             return [provider, undefined];
         }
     }
