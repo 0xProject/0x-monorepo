@@ -137,7 +137,7 @@ describe('Exchange core', () => {
             artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
-            exchange.address
+            exchange.address,
         );
         // Configure ERC20Proxy
         await web3Wrapper.awaitTransactionSuccessAsync(
@@ -267,7 +267,7 @@ describe('Exchange core', () => {
                 const description = `should not allow fillOrder to reenter the Exchange contract via ${functionName}`;
                 it(description, async () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
-                        makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address)
+                        makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
                     await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(
                         functionId,
