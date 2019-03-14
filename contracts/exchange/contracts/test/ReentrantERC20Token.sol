@@ -22,18 +22,17 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-erc20/contracts/src/ERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "../src/interfaces/IExchange.sol";
-import "../src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "../src/interfaces/IExchange.sol";
 
 
-// solhint-disable no-unused-vars
+// solhint-disable no-unused-vars, not-rely-on-time
 contract ReentrantERC20Token is
     ERC20Token
 {
     using LibBytes for bytes;
 
-    uint8 constant BATCH_SIZE = 3;
+    uint8 internal constant BATCH_SIZE = 3;
 
     // solhint-disable-next-line var-name-mixedcase
     IExchange internal EXCHANGE;
@@ -69,7 +68,7 @@ contract ReentrantERC20Token is
     function setReentrantFunction(
         uint8 _currentFunctionId
     )
-        public
+        external
     {
         currentFunctionId = _currentFunctionId;
     }
@@ -224,7 +223,8 @@ contract ReentrantERC20Token is
     function _createMatchedOrders()
         internal
         view
-        returns (LibOrder.Order[2] memory orders) {
+        returns (LibOrder.Order[2] memory orders)
+    {
 
         LibOrder.Order[] memory _orders = _createOrders(2);
         orders[0] = _orders[0];
