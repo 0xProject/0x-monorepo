@@ -16,8 +16,8 @@ export const providerUtils = {
         if (providerEngine.start === undefined) {
             throw new Error(`Invalid Web3ProviderEngine`);
         }
-        (providerEngine as any)._ready.go();
-        (providerEngine as any)._running = true;
+        providerEngine._ready.go();
+        providerEngine._running = true;
     },
     /**
      * Standardize the supported provider types into our internal provider interface
