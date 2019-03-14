@@ -576,12 +576,12 @@ describe('matchOrders', () => {
                         feeRecipientAddress: feeRecipientAddressRight,
                     });
                     await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
                     await expectTransactionFailedAsync(
                         exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                        RevertReason.TransferFailed,
+                        RevertReason.ReentrancyIllegal,
                     );
                 });
             });
