@@ -123,9 +123,8 @@ describe('Exchange core', () => {
             artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
-            exchange.address,
+            exchange.address
         );
-
         // Configure ERC20Proxy
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
@@ -202,6 +201,8 @@ describe('Exchange core', () => {
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+
+        // Grant the reentrant ERC20 token a
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -216,27 +217,18 @@ describe('Exchange core', () => {
         });
 
         const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, async (functionName: string, functionId: number) => {
+            _.forEach(functionNames, (functionName: string, functionId: number) => {
                 const description = `should not allow fillOrder to reenter the Exchange contract via ${functionName}`;
                 it(description, async () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                        makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address)
                     });
-                    const attackerOrders = await Promise.all([
-                        orderFactory.newSignedOrderAsync({salt: new BigNumber(1)}),
-                        orderFactory.newSignedOrderAsync({salt: new BigNumber(2)}),
-                    ]);
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setUpUsTheBomb.sendTransactionAsync(
-                            functionId,
-                            attackerOrders,
-                            _.map(attackerOrders, o => o.signature)
-                        ),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(
+                        functionId,
                     );
                     await expectTransactionFailedAsync(
                         exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                        RevertReason.ReentrancyIllegal,
+                            RevertReason.ReentrancyIllegal,
                     );
                 });
             });
