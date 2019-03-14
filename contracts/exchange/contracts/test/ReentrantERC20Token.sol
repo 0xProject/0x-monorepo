@@ -27,6 +27,9 @@ import "../src/interfaces/IExchange.sol";
 
 
 // solhint-disable no-unused-vars, not-rely-on-time
+// @dev Because reentrancy is lazily evaluated, after all reentrant calls have
+//      been made, all attacks should be crafted to succeed for the reentrancy
+///     to be properly detected.
 contract ReentrantERC20Token is
     ERC20Token
 {
