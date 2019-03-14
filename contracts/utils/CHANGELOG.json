@@ -17,6 +17,9 @@
             {
                 "note": "Added Address.sol with test for whether or not an address is a contract",
                 "pr": 1657
+            },
+            {
+                "note": "Change ReentrancyGuard implementation to cheaper one"
             }
         ]
     },

@@ -13,6 +13,9 @@
             {
                 "note": "Upgrade contracts to Solidity 0.5.5",
                 "pr": 1682
+            },
+            {
+                "note": "Use new/cheaper reentrancy guard/mutex"
             }
         ]
     },
