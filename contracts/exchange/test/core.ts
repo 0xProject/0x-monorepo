@@ -223,12 +223,10 @@ describe('Exchange core', () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(
-                        functionId,
-                    );
+                    await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId);
                     await expectTransactionFailedAsync(
                         exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                            RevertReason.ReentrancyIllegal,
+                        RevertReason.ReentrancyIllegal,
                     );
                 });
             });
