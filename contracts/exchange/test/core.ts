@@ -148,7 +148,6 @@ describe('Exchange core', () => {
             txDefaults,
             exchange.address,
         );
-
         // Configure ERC20Proxy
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
@@ -214,6 +213,8 @@ describe('Exchange core', () => {
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+
+        // Grant the reentrant ERC20 token a
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -228,13 +229,13 @@ describe('Exchange core', () => {
         });
 
         const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, async (functionName: string, functionId: number) => {
+            _.forEach(functionNames, (functionName: string, functionId: number) => {
                 const description = `should not allow fillOrder to reenter the Exchange contract via ${functionName}`;
                 it(description, async () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                        makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await reentrantErc20Token.setCurrentFunction.awaitTransactionSuccessAsync(functionId);
+                    await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId);
                     await expectTransactionFailedAsync(
                         exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
                         RevertReason.ReentrancyIllegal,
