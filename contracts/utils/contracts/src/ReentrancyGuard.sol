@@ -27,10 +27,8 @@ contract ReentrancyGuard {
 
     /// @dev Functions with this modifer cannot be reentered.
     modifier nonReentrant() {
-        // Increment the counter.
-        reentrancyGuardCounter += 1;
-        // Remember the current counter value.
-        uint256 localCounter = reentrancyGuardCounter;
+        // Increment and remember the current counter value.
+        uint256 localCounter = ++reentrancyGuardCounter;
         // Call the function.
         _;
         // If the counter value is different from what we remember,
