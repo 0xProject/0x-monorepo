@@ -143,12 +143,12 @@ describe('Exchange wrappers', () => {
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
                     await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
                     await expectTransactionFailedAsync(
                         exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                        RevertReason.TransferFailed,
+                        RevertReason.ReentrancyIllegal,
                     );
                 });
             });
@@ -234,7 +234,7 @@ describe('Exchange wrappers', () => {
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
                     await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
                     await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
@@ -453,12 +453,12 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await expectTransactionFailedAsync(
                             exchangeWrapper.batchFillOrdersAsync([signedOrder], takerAddress),
-                            RevertReason.TransferFailed,
+                            RevertReason.ReentrancyIllegal,
                         );
                     });
                 });
@@ -522,12 +522,12 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await expectTransactionFailedAsync(
                             exchangeWrapper.batchFillOrKillOrdersAsync([signedOrder], takerAddress),
-                            RevertReason.TransferFailed,
+                            RevertReason.ReentrancyIllegal,
                         );
                     });
                 });
@@ -608,7 +608,7 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await exchangeWrapper.batchFillOrdersNoThrowAsync([signedOrder], takerAddress);
@@ -740,14 +740,14 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await expectTransactionFailedAsync(
                             exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
                                 takerAssetFillAmount: signedOrder.takerAssetAmount,
                             }),
-                            RevertReason.TransferFailed,
+                            RevertReason.ReentrancyIllegal,
                         );
                     });
                 });
@@ -854,7 +854,7 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await exchangeWrapper.marketSellOrdersNoThrowAsync([signedOrder], takerAddress, {
@@ -1001,14 +1001,14 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await expectTransactionFailedAsync(
                             exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
                                 makerAssetFillAmount: signedOrder.makerAssetAmount,
                             }),
-                            RevertReason.TransferFailed,
+                            RevertReason.ReentrancyIllegal,
                         );
                     });
                 });
@@ -1113,7 +1113,7 @@ describe('Exchange wrappers', () => {
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
                         await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
                         await exchangeWrapper.marketBuyOrdersNoThrowAsync([signedOrder], takerAddress, {
