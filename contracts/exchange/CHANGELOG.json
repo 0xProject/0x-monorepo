@@ -102,8 +102,12 @@
                 "pr": 1682
             },
             {
+<<<<<<< HEAD
                 "note": "Integration testing for ERC1155Proxy",
                 "pr": 1673
+=======
+                "note": "Use new/cheaper reentrancy guard/mutex"
+>>>>>>> 5dd642516... Update changelogs
             }
         ],
         "timestamp": 1553091633
