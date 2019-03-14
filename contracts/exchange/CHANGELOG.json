@@ -15,7 +15,8 @@
                 "pr": 1682
             },
             {
-                "note": "Use new/cheaper reentrancy guard/mutex"
+                "note": "Use new/cheaper reentrancy guard/mutex",
+                "pr": 1699
             }
         ]
     },

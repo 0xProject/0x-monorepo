@@ -19,7 +19,8 @@
                 "pr": 1657
             },
             {
-                "note": "Change ReentrancyGuard implementation to cheaper one"
+                "note": "Change ReentrancyGuard implementation to cheaper one",
+                "pr": 1699
             }
         ]
     },
