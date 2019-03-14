@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
+            }
+        ]
+    },
+    {
         "timestamp": 1553091633,
         "version": "4.2.3",
         "changes": [

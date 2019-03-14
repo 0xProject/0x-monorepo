@@ -61,7 +61,6 @@ import { errorReporter } from 'ts/utils/error_reporter';
 import { fakeTokenRegistry } from 'ts/utils/fake_token_registry';
 import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
 import { utils } from 'ts/utils/utils';
-import FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 
 import MintableArtifacts from '../contracts/Mintable.json';
 
@@ -120,14 +119,11 @@ export class Blockchain {
             };
             const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
             provider.addProvider(ledgerSubprovider);
-            provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
-            // HACK: Start the provider without unused block polling
-            // provider.start();
-            (provider as any)._ready.go();
+            providerUtils.startProviderEngine(provider);
             return [provider, ledgerSubprovider];
         } else if (doesInjectedProviderExist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
@@ -140,14 +136,11 @@ export class Blockchain {
                     ? new MetamaskSubprovider(injectedProviderIfExists)
                     : new SignerSubprovider(injectedProviderIfExists);
             provider.addProvider(signerSubprovider);
-            provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
-            // HACK: Start the provider without unused block polling
-            // provider.start();
-            (provider as any)._ready.go();
+            providerUtils.startProviderEngine(provider);
             return [provider, undefined];
         } else if (doesInjectedProviderExist) {
             // Since no public node for this network, all requests go to injectedWeb3 instance
@@ -157,15 +150,12 @@ export class Blockchain {
             // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
             // injected into their browser.
             const provider = new Web3ProviderEngine();
-            provider.addProvider(new FilterSubprovider());
             const networkId = constants.NETWORK_ID_MAINNET;
             const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkId], publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
             });
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
-            // HACK: Start the provider without unused block polling
-            // provider.start();
-            (provider as any)._ready.go();
+            providerUtils.startProviderEngine(provider);
             return [provider, undefined];
         }
     }

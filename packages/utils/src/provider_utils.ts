@@ -9,6 +9,17 @@ import * as _ from 'lodash';
 
 export const providerUtils = {
     /**
+     * Starts the Web3ProviderEngine without excess block polling
+     * @param providerEngine The Web3ProviderEngine
+     */
+    startProviderEngine(providerEngine: any): void {
+        if (providerEngine.start === undefined) {
+            throw new Error(`Invalid Web3ProviderEngine`);
+        }
+        (providerEngine as any)._ready.go();
+        (providerEngine as any)._running = true;
+    },
+    /**
      * Standardize the supported provider types into our internal provider interface
      * or throw if unsupported provider supplied.
      * @param supportedProvider Potentially supported provider instance

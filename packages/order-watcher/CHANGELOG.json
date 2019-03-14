@@ -13,6 +13,10 @@
             {
                 "note": "Fix race-condition bugs due to async event callbacks modifying shared state",
                 "pr": 1718
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
             }
         ],
         "timestamp": 1553091633

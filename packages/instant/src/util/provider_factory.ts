@@ -3,7 +3,7 @@ import { providerUtils } from '@0x/utils';
 import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { BLOCK_POLLING_INTERVAL_MS, ETHEREUM_NODE_URL_BY_NETWORK } from '../constants';
+import { ETHEREUM_NODE_URL_BY_NETWORK } from '../constants';
 import { Maybe, Network } from '../types';
 
 export const providerFactory = {
@@ -22,9 +22,7 @@ export const providerFactory = {
         return undefined;
     },
     getFallbackNoSigningProvider: (network: Network): Web3ProviderEngine => {
-        const providerEngine = new Web3ProviderEngine({
-            pollingInterval: BLOCK_POLLING_INTERVAL_MS,
-        });
+        const providerEngine = new Web3ProviderEngine();
         // Intercept calls to `eth_accounts` and always return empty
         providerEngine.addProvider(new EmptyWalletSubprovider());
         // Construct an RPC subprovider, all data based requests will be sent via the RPCSubprovider
@@ -32,9 +30,7 @@ export const providerFactory = {
         const rpcUrl = ETHEREUM_NODE_URL_BY_NETWORK[network];
         providerEngine.addProvider(new RPCSubprovider(rpcUrl));
         // Start the Provider Engine
-        // HACK: Start the provider without unused block polling
-        // providerEngine.start();
-        (providerEngine as any)._ready.go();
+        providerUtils.startProviderEngine(providerEngine);
         return providerEngine;
     },
 };
