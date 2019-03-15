@@ -38,7 +38,7 @@ export class Credits extends React.Component<CreditsProps> {
                     actions={this._renderHeroActions()}
                 />
 
-                <Section bgColor="light" maxWidth="715px">
+                <Section bgColor="light" maxWidth="1200px">
                     <Heading
                         asElement="h2"
                         fontWeight={'400'}
@@ -69,9 +69,6 @@ export class Credits extends React.Component<CreditsProps> {
                             iconSize="medium"
                             isInline={true}
                         />
-                    </FlexWrap>
-
-                    <FlexWrap justifyContent="center">
                         <CenteredDefinition
                             title="Digital Ocean"
                             titleSize="small"
