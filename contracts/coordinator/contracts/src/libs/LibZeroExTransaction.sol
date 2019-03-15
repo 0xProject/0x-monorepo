@@ -48,8 +48,8 @@ contract LibZeroExTransaction is
         view
         returns (bytes32 transactionHash)
     {
-        // Note: this transaction hash will differ from the hash produced by the Exchange contract because it utilizes a different domain hash.
-        transactionHash = hashEIP712Message(hashZeroExTransaction(transaction));
+        // Hash the transaction with the domain separator of the Exchange contract.
+        transactionHash = hashEIP712ExchangeMessage(hashZeroExTransaction(transaction));
         return transactionHash;
     }
 
@@ -77,7 +77,7 @@ contract LibZeroExTransaction is
         assembly {
             // Compute hash of data
             let dataHash := keccak256(add(data, 32), mload(data))
-    
+
             // Load free memory pointer
             let memPtr := mload(64)
 
