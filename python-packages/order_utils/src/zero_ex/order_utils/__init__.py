@@ -380,9 +380,9 @@ def is_valid_signature(
     )
     try:
         return (
-            contract.call().isValidSignature(
+            contract.functions.isValidSignature(
                 data, to_checksum_address(signer_address), signature
-            ),
+            ).call(),
             "",
         )
     except web3.exceptions.BadFunctionCallOutput as exception:
