@@ -11,6 +11,7 @@ import { ModalContact } from 'ts/components/modals/modal_contact';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface Props {
+    location: Location;
     theme: {
         bgColor: string;
         textColor: string;
@@ -22,6 +23,15 @@ export class NextLanding extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if ('URLSearchParams' in window) {
+            const urlParams = new URLSearchParams(this.props.location.search);
+            const modal = urlParams.get('modal');
+            if (modal) {
+                this.setState({ isContactModalOpen: true });
+            }
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
@@ -34,7 +44,6 @@ export class NextLanding extends React.Component<Props> {
             </SiteWrap>
         );
     }
-
     public _onOpenContactModal = (): void => {
         this.setState({ isContactModalOpen: true });
     };

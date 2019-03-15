@@ -28,7 +28,6 @@ interface LabelInterface {
 }
 
 interface State {
-    isContactModalOpen: boolean;
     isVoteModalOpen: boolean;
     isWalletConnected: boolean;
     isVoteReceived: boolean;
@@ -50,7 +49,6 @@ const riskLabels: LabelInterface = {
 
 export class Governance extends React.Component<RouteComponentProps<any>> {
     public state: State = {
-        isContactModalOpen: false,
         isVoteModalOpen: false,
         isWalletConnected: false,
         isVoteReceived: false,
@@ -154,7 +152,6 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
                     mainCta={{ text: 'Get ZRX', onClick: this._onLaunchInstantClick.bind(this) }}
                     secondaryCta={{ text: 'Vote', onClick: this._onOpenVoteModal.bind(this) }}
                 />
-                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
                 <ModalVote
                     zeipId={this._proposalData.zeipId}
                     isOpen={this.state.isVoteModalOpen}
@@ -175,10 +172,6 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
             },
             'body',
         );
-    };
-
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ ...this.state, isContactModalOpen: false });
     };
 
     private readonly _onOpenVoteModal = (): void => {
