@@ -13,12 +13,16 @@
             {
                 "note": "Bumped solidity version to ^0.5.5",
                 "pr": 1701
+            },
+            {
+                "note": "Integration testing for ERC1155Proxy",
+                "pr": 1673
             }
         ]
     },
     {
         "timestamp": 1551479279,
-        "version": "1.0.9",
+        "version": "1.å.9",
         "changes": [
             {
                 "note": "Dependencies updated"

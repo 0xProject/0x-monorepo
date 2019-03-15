@@ -9,6 +9,10 @@
             {
                 "note": "Upgrade contracts to Solidity 0.5.5",
                 "pr": 1682
+            },
+            {
+                "note": "Integration testing for ERC1155Proxy",
+                "pr": 1673
             }
         ]
     },
