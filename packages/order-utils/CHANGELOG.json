@@ -1,14 +1,11 @@
 [
     {
-      "version"  : "7.1.0",
-      "changes": [
-          {
-              "note": "Add Coordinator EIP712 constants"
-          },
-          {
-              "note": "Export constants"
-          }
-      ]
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add Coordinator EIP712 constants"
+            }
+        ]
     },
     {
         "timestamp": 1551479279,

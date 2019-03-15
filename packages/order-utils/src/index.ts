@@ -73,5 +73,3 @@ export {
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
 } from './types';
-
-export { constants } from './constants';

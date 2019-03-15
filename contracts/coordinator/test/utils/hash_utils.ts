@@ -1,4 +1,5 @@
-import { constants, eip712Utils, transactionHashUtils } from '@0x/order-utils';
+import { eip712Utils, transactionHashUtils } from '@0x/order-utils';
+import { constants } from '@0x/order-utils/lib/src/constants';
 import { SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
