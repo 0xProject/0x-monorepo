@@ -193,8 +193,7 @@ contract ReentrantERC20Token is
         return true;
     }
 
-    /// @dev Create valid test orders where the maker is set to this contract
-    ///      to succeed in cancel* calls.
+    /// @dev Create valid test orders where the maker is set to this contract.
     function createOrders(
         uint8 count
     )
