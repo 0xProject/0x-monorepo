@@ -10,10 +10,3 @@ export interface CoordinatorApproval {
 export interface SignedCoordinatorApproval extends CoordinatorApproval {
     signature: string;
 }
-
-export enum CoordinatorSignatureType {
-    Illegal,
-    EIP712,
-    EthSign,
-    NSignatureTypes,
-}
