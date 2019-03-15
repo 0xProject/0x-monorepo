@@ -11371,9 +11371,8 @@ nan@2.10.0, nan@>=2.5.1, nan@^2.0.8, nan@^2.2.1, nan@^2.3.0, nan@^2.3.3, nan@^2.
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
 nan@^2.11.0:
-  version "2.13.1"
-  resolved "https://registry.npmjs.org/nan/-/nan-2.13.1.tgz#a15bee3790bde247e8f38f1d446edcdaeb05f2dd"
-  integrity sha512-I6YB/YEuDeUZMmhscXKxGgZlFnhsn5y0hgOZBadkzfTRrZBtJDZeg6eQf7PYMIEclwmorTKK8GztsyOUSVBREA==
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
 
 nano-json-stream-parser@^0.1.2:
   version "0.1.2"
@@ -13564,6 +13563,8 @@ react-highlight@0xproject/react-highlight#react-peer-deps:
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
+    react "^16.4.2"
+    react-dom "^16.4.2"
 
 react-hot-loader@^4.3.3:
   version "4.3.4"
@@ -17653,8 +17654,7 @@ websocket@1.0.26:
 
 websocket@^1.0.26:
   version "1.0.28"
-  resolved "https://registry.npmjs.org/websocket/-/websocket-1.0.28.tgz#9e5f6fdc8a3fe01d4422647ef93abdd8d45a78d3"
-  integrity sha512-00y/20/80P7H4bCYkzuuvvfDvh+dgtXi5kzDf3UcZwN6boTYaKvsrtZ5lIYm1Gsg48siMErd9M4zjSYfYFHTrA==
+  resolved "https://registry.yarnpkg.com/websocket/-/websocket-1.0.28.tgz#9e5f6fdc8a3fe01d4422647ef93abdd8d45a78d3"
   dependencies:
     debug "^2.2.0"
     nan "^2.11.0"

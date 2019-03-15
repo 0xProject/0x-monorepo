@@ -5,6 +5,10 @@
             {
                 "note": "Add Coordinator EIP712 constants",
                 "pr": 1705
+            },
+            {
+                "note": "Added encoding/decoding fdor ERC1155 asset data",
+                "pr": 1661
             }
         ]
     },
