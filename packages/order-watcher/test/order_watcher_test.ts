@@ -90,6 +90,19 @@ describe('OrderWatcher', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
+    describe('DependentOrderHashesTracker', async () => {
+        let makerErc721TokenAddress: string;
+        [makerErc721TokenAddress] = tokenUtils.getDummyERC721TokenAddresses();
+        it('should handle lookups on unknown addresses', async () => {
+            // Regression test
+            // ApprovalForAll events on a token from an untracked address could cause
+            // nested lookups on undefined object
+            // #1550
+            const dependentOrderHashesTracker = (orderWatcher as any)
+                ._dependentOrderHashesTracker as DependentOrderHashesTracker;
+            dependentOrderHashesTracker.getDependentOrderHashesByERC721ByMaker(takerAddress, makerErc721TokenAddress);
+        });
+    });
     describe('#removeOrder', async () => {
         it('should successfully remove existing order', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(

@@ -4,7 +4,12 @@
     "useDockerisedSolc": true,
     "isOfflineMode": false,
     "compilerSettings": {
-        "optimizer": { "enabled": true, "runs": 1000000 },
+        "evmVersion": "byzantium",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
         "outputSelection": {
             "*": {
                 "*": [
@@ -18,6 +23,7 @@
         }
     },
     "contracts": [
+        "src/Address.sol",
         "src/LibBytes.sol",
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",

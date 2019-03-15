@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract ISignatureValidator {
@@ -28,7 +28,7 @@ contract ISignatureValidator {
     function preSign(
         bytes32 hash,
         address signerAddress,
-        bytes signature
+        bytes calldata signature
     )
         external;
     

@@ -86,7 +86,7 @@
         "pluralize": "^7.0.0",
         "require-from-string": "^2.0.1",
         "semver": "5.5.0",
-        "solc": "^0.5.2",
+        "solc": "^0.5.5",
         "source-map-support": "^0.5.0",
         "web3-eth-abi": "^1.0.0-beta.24",
         "yargs": "^10.0.3"

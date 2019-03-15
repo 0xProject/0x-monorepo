@@ -37,6 +37,12 @@ export class DependentOrderHashesTracker {
         this._zrxTokenAddress = zrxTokenAddress;
     }
     public getDependentOrderHashesByERC721ByMaker(makerAddress: string, tokenAddress: string): string[] {
+        if (
+            _.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress]) ||
+            _.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress])
+        ) {
+            return [];
+        }
         const orderHashSets = _.values(
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress],
         );

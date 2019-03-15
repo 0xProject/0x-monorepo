@@ -66,6 +66,15 @@ declare module 'solc' {
         optimizer?: {
             enabled: boolean;
             runs?: number;
+            details?: {
+                peephole?: boolean;
+                jumpdestRemover?: boolean;
+                orderLiterals?: boolean;
+                deduplicate?: boolean;
+                cse?: boolean;
+                constantOptimizer?: boolean;
+                yul?: boolean;
+            };
         };
         evmVersion?: 'homestead' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople';
         metadata?: {

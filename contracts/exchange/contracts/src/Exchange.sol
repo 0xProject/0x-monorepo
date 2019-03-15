@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibConstants.sol";
@@ -37,7 +37,7 @@ contract Exchange is
     MixinAssetProxyDispatcher,
     MixinWrapperFunctions
 {
-    string constant public VERSION = "2.0.1-alpha";
+    string constant public VERSION = "3.0.0";
 
     // Mixins are instantiated in the order they are inherited
     constructor (bytes memory _zrxAssetData)

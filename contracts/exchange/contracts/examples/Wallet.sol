@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "../src/interfaces/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
@@ -44,7 +44,7 @@ contract Wallet is
     /// @return Validity of signature.
     function isValidSignature(
         bytes32 hash,
-        bytes eip712Signature
+        bytes calldata eip712Signature
     )
         external
         view

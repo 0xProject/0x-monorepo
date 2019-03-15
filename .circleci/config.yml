@@ -47,11 +47,12 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-exchange-libs
             - run: yarn wsrun test:circleci @0x/contracts-erc20
             - run: yarn wsrun test:circleci @0x/contracts-erc721
+            - run: yarn wsrun test:circleci @0x/contracts-erc1155
             - run: yarn wsrun test:circleci @0x/contracts-extensions
             - run: yarn wsrun test:circleci @0x/contracts-asset-proxy
             - run: yarn wsrun test:circleci @0x/contracts-exchange
             - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
-            - run: yarn wsrun test:circleci @0x/contracts-tec
+            - run: yarn wsrun test:circleci @0x/contracts-coordinator
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
@@ -68,11 +69,12 @@ jobs:
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange-libs
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-erc20
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-erc721
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-erc1155
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-extensions
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-asset-proxy
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange-forwarder
-            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-tec
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-coordinator
     test-publish:
         resource_class: medium+
         docker:

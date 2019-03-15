@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "../src/interfaces/IERC721Receiver.sol";
 
@@ -51,7 +51,7 @@ contract DummyERC721Receiver is
         address _operator,
         address _from,
         uint256 _tokenId,
-        bytes _data
+        bytes calldata _data
     )
         external
         returns (bytes4)

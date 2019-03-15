@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
@@ -57,8 +57,8 @@ contract MixinBalanceThresholdFilterCore is
     function executeTransaction(
         uint256 salt,
         address signerAddress,
-        bytes signedExchangeTransaction,
-        bytes signature
+        bytes calldata signedExchangeTransaction,
+        bytes calldata signature
     ) 
         external
     {
@@ -92,7 +92,8 @@ contract MixinBalanceThresholdFilterCore is
     /// @param signerAddress Address of transaction signer.
     /// @return addressesToValidate Array of addresses to validate.
     function getAddressesToValidate(address signerAddress)
-        internal pure
+        internal
+        pure
         returns (address[] memory addressesToValidate)
     {
         bytes4 exchangeFunctionSelector = bytes4(exchangeCalldataload(0));

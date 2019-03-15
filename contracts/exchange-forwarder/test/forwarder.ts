@@ -1,10 +1,7 @@
-import {
-    DummyERC20TokenContract,
-    DummyERC721TokenContract,
-    ERC20Wrapper,
-    ERC721Wrapper,
-} from '@0x/contracts-asset-proxy';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -26,7 +23,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, ForwarderContract, ForwarderWrapper, WETH9Contract } from '../src';
+import { artifacts, ForwarderContract, ForwarderWrapper } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -91,14 +88,14 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, provider, txDefaults);
         weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
         wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
         zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            exchangeArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
@@ -169,7 +166,7 @@ describe(ContractName.Forwarder, () => {
     describe('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                artifacts.Exchange,
+                exchangeArtifacts.Exchange,
                 provider,
                 txDefaults,
                 zrxAssetData,

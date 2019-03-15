@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "../src/MintableERC721Token.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
@@ -31,8 +31,8 @@ contract DummyERC721Token is
     string public symbol;
 
     constructor (
-        string _name,
-        string _symbol
+        string memory _name,
+        string memory _symbol
     )
         public
     {

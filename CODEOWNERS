@@ -33,6 +33,8 @@ packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
 packages/web3-wrapper/ @LogvinovLeon @fabioberger
 python-packages/ @feuGeneA
+packages/utils/ @hysz
 
 # Protocol/smart contracts
 contracts/core/test/ @albrow
+contracts/ @abandeali1 @hysz

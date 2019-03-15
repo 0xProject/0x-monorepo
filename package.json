@@ -46,7 +46,7 @@
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
     "config": {
-        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-multisig @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-tec",
+        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-multisig @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer migrations",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
@@ -80,7 +80,7 @@
         "async-child-process": "^1.1.1",
         "bundlewatch": "^0.2.1",
         "coveralls": "^3.0.0",
-        "ganache-cli": "6.1.8",
+        "ganache-cli": "6.4.1",
         "lcov-result-merger": "^3.0.0",
         "lerna": "^3.0.0-beta.25",
         "npm-run-all": "^4.1.2",
