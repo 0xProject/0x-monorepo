@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 
 import "./LibConstants.sol";
 
+
 contract LibEIP712Domain is
     LibConstants
 {
@@ -38,7 +39,6 @@ contract LibEIP712Domain is
 
     // EIP712 Domain Version value for the Exchange
     string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "2";
-
 
     // Hash of the EIP712 Domain Separator Schema
     bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(

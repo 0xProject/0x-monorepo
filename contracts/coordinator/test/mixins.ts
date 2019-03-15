@@ -16,13 +16,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
-import {
-    ApprovalFactory,
-    artifacts,
-    constants,
-    exchangeDataEncoder,
-    TestMixinsContract,
-} from '../src';
+import { ApprovalFactory, artifacts, constants, exchangeDataEncoder, TestMixinsContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -88,20 +82,14 @@ describe('Mixins tests', () => {
     describe('getSignerAddress', () => {
         it('should return the correct address using the EthSign signature type', async () => {
             const data = devConstants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(
-                data,
-                SignatureType.EthSign,
-            );
+            const transaction = transactionFactory.newSignedTransaction(data, SignatureType.EthSign);
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const signerAddress = await mixins.getSignerAddress.callAsync(transactionHash, transaction.signature);
             expect(transaction.signerAddress).to.eq(signerAddress);
         });
         it('should return the correct address using the EIP712 signature type', async () => {
             const data = devConstants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(
-                data,
-                SignatureType.EIP712,
-            );
+            const transaction = transactionFactory.newSignedTransaction(data, SignatureType.EIP712);
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const signerAddress = await mixins.getSignerAddress.callAsync(transactionHash, transaction.signature);
             expect(transaction.signerAddress).to.eq(signerAddress);

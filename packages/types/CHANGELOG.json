@@ -5,6 +5,9 @@
             {
                 "note": "Added ERC1155 revert reasons",
                 "pr": 1657
+            },
+            {
+                "note": "Add `RevertReason.SignatureInvalid` thrown by Coordinator"
             }
         ]
     },

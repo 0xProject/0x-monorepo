@@ -9,10 +9,7 @@ export class ApprovalFactory {
     private readonly _privateKey: Buffer;
     private readonly _verifyingContractAddress: string;
 
-    constructor(
-        privateKey: Buffer,
-        verifyingContractAddress: string) {
-
+    constructor(privateKey: Buffer, verifyingContractAddress: string) {
         this._privateKey = privateKey;
         this._verifyingContractAddress = verifyingContractAddress;
     }
@@ -23,21 +20,16 @@ export class ApprovalFactory {
         approvalExpirationTimeSeconds: BigNumber,
         signatureType: SignatureType = SignatureType.EthSign,
     ): SignedCoordinatorApproval {
-
         const approvalHashBuff = hashUtils.getApprovalHashBuffer(
             transaction,
             this._verifyingContractAddress,
             txOrigin,
             approvalExpirationTimeSeconds,
         );
-        const signatureBuff = signingUtils.signMessage(
-            approvalHashBuff,
-            this._privateKey,
-            signatureType,
-        );
+        const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
         const signedApproval = {
             txOrigin,
-            transaction: transaction,
+            transaction,
             approvalExpirationTimeSeconds,
             signature: ethUtil.addHexPrefix(signatureBuff.toString('hex')),
         };

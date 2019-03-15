@@ -24,6 +24,7 @@ import "../src/libs/LibCoordinatorApproval.sol";
 import "../src/libs/LibZeroExTransaction.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestLibs is
     LibConstants,
     LibCoordinatorApproval,

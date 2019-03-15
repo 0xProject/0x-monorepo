@@ -1,5 +1,5 @@
 import { constants, eip712Utils, transactionHashUtils } from '@0x/order-utils';
-import { SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
+import { SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -13,7 +13,7 @@ export const hashUtils = {
         const domain = {
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
-            verifyingContractAddress: verifyingContractAddress,
+            verifyingContractAddress,
         };
         const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
         const approval = {
@@ -40,12 +40,7 @@ export const hashUtils = {
         approvalExpirationTimeSeconds: BigNumber,
     ): string {
         const hashHex = `0x${hashUtils
-            .getApprovalHashBuffer(
-                transaction,
-                verifyingContractAddress,
-                txOrigin,
-                approvalExpirationTimeSeconds,
-            )
+            .getApprovalHashBuffer(transaction, verifyingContractAddress, txOrigin, approvalExpirationTimeSeconds)
             .toString('hex')}`;
         return hashHex;
     },

@@ -4,6 +4,9 @@
         "changes": [
             {
                 "note": "Created Coordinator package"
+            },
+            {
+                "note": "Use mixed EIP712 domains for transactions and approvals."
             }
         ]
     }
