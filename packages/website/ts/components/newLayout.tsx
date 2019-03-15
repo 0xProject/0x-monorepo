@@ -40,6 +40,7 @@ export interface FlexProps {
     isFlex?: boolean;
     flexBreakpoint?: string;
     alignItems?: string;
+    justifyContent?: string;
 }
 
 export interface ColumnProps {
@@ -77,7 +78,8 @@ export const FlexWrap = styled.div<FlexProps>`
 
     @media (min-width: ${props => props.flexBreakpoint || '768px'}) {
         display: ${props => props.isFlex && 'flex'};
-        justify-content: ${props => props.isFlex && 'space-between'};
+        justify-content: ${props =>
+            props.justifyContent ? props.justifyContent : props.isFlex ? 'space-between' : undefined};
         align-items: ${props => props.alignItems};
     }
 `;
