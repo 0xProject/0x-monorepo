@@ -37,9 +37,6 @@ contract ReentrantERC20Token is
 
     uint8 internal constant BATCH_SIZE = 3;
 
-    // solhint-disable-next-line var-name-mixedcase
-    IExchange internal EXCHANGE;
-
     // All of these functions are potentially vulnerable to reentrancy
     // We do not test any "noThrow" functions because `fillOrderNoThrow` makes a delegatecall to `fillOrder`
     enum ExchangeFunction {
@@ -57,20 +54,20 @@ contract ReentrantERC20Token is
         NONE
     }
 
+    // solhint-disable-next-line
+    IExchange internal exchange;
     uint8 internal currentFunctionId = 0;
 
     constructor (address _exchange)
         public
     {
-        EXCHANGE = IExchange(_exchange);
+        exchange = IExchange(_exchange);
     }
 
     /// @dev Set the exchange function to reenter.
     /// @param _currentFunctionId A number that corresponds to an entry in the
     ///        ExchangeFunction enum
-    function setReentrantFunction(
-        uint8 _currentFunctionId
-    )
+    function setReentrantFunction(uint8 _currentFunctionId)
         external
     {
         currentFunctionId = _currentFunctionId;
@@ -78,13 +75,13 @@ contract ReentrantERC20Token is
 
     /// @dev A version of `transferFrom` that attempts to reenter the Exchange contract
     ///      once.
-    /// @param _from The address of the sender
-    /// @param _to The address of the recipient
-    /// @param _value The amount of token to be transferred
+    /// @param from The address of the sender
+    /// @param to The address of the recipient
+    /// @param value The amount of token to be transferred
     function transferFrom(
-        address _from,
-        address _to,
-        uint256 _value
+        address from,
+        address to,
+        uint256 value
     )
         external
         returns (bool)
@@ -92,58 +89,58 @@ contract ReentrantERC20Token is
         bytes memory callData;
         // Create callData for function that corresponds to currentFunctionId
         if (currentFunctionId == uint8(ExchangeFunction.FILL_ORDER)) {
-            LibOrder.Order memory order = _createOrders(1)[0];
+            LibOrder.Order memory order = createOrders(1)[0];
             callData = abi.encodeWithSelector(
-                EXCHANGE.fillOrder.selector,
+                exchange.fillOrder.selector,
                 order,
                 order.takerAssetAmount,
-                _createWalletSignatures(1)[0]
+                createWalletSignatures(1)[0]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.FILL_OR_KILL_ORDER)) {
-            LibOrder.Order memory order = _createOrders(1)[0];
+            LibOrder.Order memory order = createOrders(1)[0];
             callData = abi.encodeWithSelector(
-                EXCHANGE.fillOrKillOrder.selector,
+                exchange.fillOrKillOrder.selector,
                 order,
                 order.takerAssetAmount,
-                _createWalletSignatures(1)[0]
+                createWalletSignatures(1)[0]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS)) {
-            LibOrder.Order[] memory orders = _createOrders(BATCH_SIZE);
+            LibOrder.Order[] memory orders = createOrders(BATCH_SIZE);
             callData = abi.encodeWithSelector(
-                EXCHANGE.batchFillOrders.selector,
+                exchange.batchFillOrders.selector,
                 orders,
-                _getTakerFillAmounts(orders),
-                _createWalletSignatures(BATCH_SIZE)
+                getTakerFillAmounts(orders),
+                createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_OR_KILL_ORDERS)) {
-            LibOrder.Order[] memory orders = _createOrders(BATCH_SIZE);
+            LibOrder.Order[] memory orders = createOrders(BATCH_SIZE);
             callData = abi.encodeWithSelector(
-                EXCHANGE.batchFillOrKillOrders.selector,
+                exchange.batchFillOrKillOrders.selector,
                 orders,
-                _getTakerFillAmounts(orders),
-                _createWalletSignatures(BATCH_SIZE)
+                getTakerFillAmounts(orders),
+                createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS)) {
-            LibOrder.Order[] memory orders = _createOrders(BATCH_SIZE);
+            LibOrder.Order[] memory orders = createOrders(BATCH_SIZE);
             callData = abi.encodeWithSelector(
-                EXCHANGE.marketBuyOrders.selector,
+                exchange.marketBuyOrders.selector,
                 orders,
-                _sumTakerFillAmounts(orders),
-                _createWalletSignatures(BATCH_SIZE)
+                sumTakerFillAmounts(orders),
+                createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS)) {
-            LibOrder.Order[] memory orders = _createOrders(BATCH_SIZE);
+            LibOrder.Order[] memory orders = createOrders(BATCH_SIZE);
             callData = abi.encodeWithSelector(
-                EXCHANGE.marketSellOrders.selector,
+                exchange.marketSellOrders.selector,
                 orders,
-                _sumTakerFillAmounts(orders),
-                _createWalletSignatures(BATCH_SIZE)
+                sumTakerFillAmounts(orders),
+                createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS)) {
-            LibOrder.Order[2] memory orders = _createMatchedOrders();
-            bytes[] memory signatures = _createWalletSignatures(2);
+            LibOrder.Order[2] memory orders = createMatchedOrders();
+            bytes[] memory signatures = createWalletSignatures(2);
             callData = abi.encodeWithSelector(
-                EXCHANGE.matchOrders.selector,
+                exchange.matchOrders.selector,
                 orders[0],
                 orders[1],
                 signatures[0],
@@ -151,34 +148,34 @@ contract ReentrantERC20Token is
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDER)) {
             callData = abi.encodeWithSelector(
-                EXCHANGE.cancelOrder.selector,
-                _createOrders(1)[0]
+                exchange.cancelOrder.selector,
+                createOrders(1)[0]
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_CANCEL_ORDERS)) {
             callData = abi.encodeWithSelector(
-                EXCHANGE.batchCancelOrders.selector,
-                _createOrders(BATCH_SIZE)
+                exchange.batchCancelOrders.selector,
+                createOrders(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDERS_UP_TO)) {
             callData = abi.encodeWithSelector(
-                EXCHANGE.cancelOrdersUpTo.selector,
+                exchange.cancelOrdersUpTo.selector,
                 1
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.SET_SIGNATURE_VALIDATOR_APPROVAL)) {
             callData = abi.encodeWithSelector(
-                EXCHANGE.setSignatureValidatorApproval.selector,
-                _getRandomAddress(),
+                exchange.setSignatureValidatorApproval.selector,
+                getRandomAddress(),
                 false
             );
         } else {
             return true;
         }
 
-        // Reset the current function to reenter so we don't do this infinitely.
+        // Reset the current function to reenter so we only reenter once.
         currentFunctionId = uint8(ExchangeFunction.NONE);
         // Call Exchange function.
         // Reentrancy guard is lazy-evaluated, so this should succeed.
-        (bool success,) = address(EXCHANGE).call(callData);
+        (bool success,) = address(exchange).call(callData);
         require(success);
         return true;
     }
@@ -198,7 +195,7 @@ contract ReentrantERC20Token is
 
     /// @dev Create valid test orders where the maker is set to this contract
     ///      to succeed in cancel* calls.
-    function _createOrders(
+    function createOrders(
         uint8 count
     )
         internal
@@ -206,10 +203,10 @@ contract ReentrantERC20Token is
         returns (LibOrder.Order[] memory orders)
     {
         orders = new LibOrder.Order[](count);
-        for (uint8 i = 0; i < count; i++) {
+        for (uint8 i = 0; i != count; i++) {
             orders[i].makerAddress = address(this);
             orders[i].takerAddress = address(0x0);
-            orders[i].feeRecipientAddress = _getRandomAddress();
+            orders[i].feeRecipientAddress = getRandomAddress();
             orders[i].senderAddress = address(0x0);
             orders[i].makerAssetAmount = 1 ether;
             orders[i].takerAssetAmount = 2 ether;
@@ -217,83 +214,115 @@ contract ReentrantERC20Token is
             orders[i].takerFee = 0;
             orders[i].expirationTimeSeconds = now + 60 * 60 * 24;
             orders[i].salt = now + i;
-            orders[i].makerAssetData = _createAssetData();
-            orders[i].takerAssetData = _createAssetData();
+            orders[i].makerAssetData = createAssetData();
+            orders[i].takerAssetData = createAssetData();
         }
     }
 
     /// @dev Create two complementary test orders.
-    function _createMatchedOrders()
+    function createMatchedOrders()
         internal
         view
         returns (LibOrder.Order[2] memory orders)
     {
 
-        LibOrder.Order[] memory _orders = _createOrders(2);
+        LibOrder.Order[] memory _orders = createOrders(2);
         orders[0] = _orders[0];
         orders[1] = _orders[1];
         orders[1].takerAssetAmount = orders[1].makerAssetAmount;
         orders[1].makerAssetAmount = orders[0].takerAssetAmount;
     }
 
-    function _getTakerFillAmounts(
+    function getTakerFillAmounts(
         LibOrder.Order[] memory orders
     )
         internal
         pure
         returns (uint256[] memory amounts)
     {
-        amounts = new uint256[](orders.length);
-        for (uint8 i = 0; i < orders.length; i++) {
+        uint256 count = orders.length;
+        amounts = new uint256[](count);
+        for (uint8 i = 0; i != count; i++) {
             amounts[i] = orders[i].takerAssetAmount;
         }
     }
 
-    function _sumTakerFillAmounts(
+    function sumTakerFillAmounts(
         LibOrder.Order[] memory orders
     )
         internal
         pure
         returns (uint256 total)
     {
+        uint256 count = orders.length;
         total = 0;
-        for (uint8 i = 0; i < orders.length; i++) {
+        for (uint8 i = 0; i != count; i++) {
             total += orders[i].takerAssetAmount;
         }
     }
 
-    function _getRandomAddress() internal view returns (address)
+    /// @dev Generate a random address.
+    function getRandomAddress()
+        internal
+        view
+        returns (address)
     {
         return address(
             bytes20(
                 keccak256(
                     abi.encodePacked(
-                        blockhash(block.number-1), now)
+                        blockhash(block.number - 1), now)
                     )
                 )
             );
     }
 
     /// @dev Create empty wallet-verified signatures.
-    function _createWalletSignatures(
+    function createWalletSignatures(
         uint8 count
     )
         internal
         returns (bytes[] memory signatures)
     {
         signatures = new bytes[](count);
-        for (uint i = 0; i < count; i++) {
+        for (uint i = 0; i != count; i++) {
             signatures[i] = new bytes(66);
             signatures[i][65] = bytes1(uint8(0x4));
         }
     }
 
     /// @dev Create asset data that points to this ERC20 contract.
-    function _createAssetData() internal view returns (bytes memory assetData){
+    function createAssetData()
+        internal
+        view
+        returns (bytes memory assetData)
+    {
+        // ERC20 AssetData is encoded as follows:
+        //
+        // | Area     | Offset | Length  | Contents                            |
+        // |----------|--------|---------|-------------------------------------|
+        // | Header   | 0      | 4       | function selector                   |
+        // | Params   |        | 1 * 32  | function parameters:                |
+        // |          | 4      | 12 + 20 |   1. token address                  |
+
+        // We'll build a version of the AssetData in memory in this layout
+        //
+        // | Area     | Offset | Length  | Contents                            |
+        // |----------|--------|---------|-------------------------------------|
+        // | Size     | 0      | 32      | length of the bytes array           |
+        // | Header   | 32     | 4       | function selector                   |
+        // | Params   |        | 1 * 32  | function parameters:                |
+        // |          | 36     | 12 + 20 |   1. token address                  |
+
         assetData = new bytes(36);
         assembly {
-            mstore(assetData, 36)
+            // First 32 bytes of a bytes array holds the size (36), which should
+            // already be set when creating the bytes array.
+
+            // First we encode the the function selector for the
+            // ERC20 asset proxy: 0xf47261b.
             mstore(add(assetData, 32), 0xf47261b000000000000000000000000000000000000000000000000000000000)
+            // Then we encode parameter 1, the token address.
             mstore(add(assetData, 36), address)
         }
         return assetData;
