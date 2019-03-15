@@ -111,7 +111,7 @@ contract LibEIP712Domain is
         // Assembly for more efficient computing:
         // keccak256(abi.encodePacked(
         //     EIP191_HEADER,
-        //     EIP712_COORDINATOR_DOMAIN_HASH,
+        //     EIP712_DOMAIN_HASH,
         //     hashStruct
         // ));
 
