@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinAuthorizable.sol";

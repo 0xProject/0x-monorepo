@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
@@ -41,7 +41,7 @@ contract MixinAssetProxyDispatcher is
 
         // Ensure that no asset proxy exists with current id.
         bytes4 assetProxyId = assetProxyContract.getProxyId();
-        address currentAssetProxy = assetProxies[assetProxyId];
+        address currentAssetProxy = address(assetProxies[assetProxyId]);
         require(
             currentAssetProxy == address(0),
             "ASSET_PROXY_ALREADY_EXISTS"
@@ -63,7 +63,7 @@ contract MixinAssetProxyDispatcher is
         view
         returns (address)
     {
-        return assetProxies[assetProxyId];
+        return address(assetProxies[assetProxyId]);
     }
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
@@ -95,7 +95,7 @@ contract MixinAssetProxyDispatcher is
                     0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
                 )
             }
-            address assetProxy = assetProxies[assetProxyId];
+            address assetProxy = address(assetProxies[assetProxyId]);
 
             // Ensure that assetProxy exists
             require(

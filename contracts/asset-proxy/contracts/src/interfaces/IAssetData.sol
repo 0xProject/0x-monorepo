@@ -17,7 +17,7 @@
 */
 
 // solhint-disable
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 
@@ -36,8 +36,8 @@ interface IAssetData {
         external;
 
     function MultiAsset(
-        uint256[] amounts,
-        bytes[] nestedAssetData
+        uint256[] calldata amounts,
+        bytes[] calldata nestedAssetData
     )
         external;
     
