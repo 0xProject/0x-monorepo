@@ -478,6 +478,30 @@ describe('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
+        it('should transfer nothing if amount=0', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const perUnitValue = new BigNumber(0);
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // execute transfer
+            await erc1155ProxyWrapper.transferFromAsync(
+                spender,
+                receiver,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                perUnitValue,
+                receiverCallbackData,
+                authorized,
+            );
+            // check balances after transfer
+            const expectedFinalBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
         it('should propagate revert reason from erc1155 contract failure', async () => {
             // disable transfers
             const shouldRejectTransfer = true;
