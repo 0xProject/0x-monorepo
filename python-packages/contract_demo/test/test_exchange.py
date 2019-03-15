@@ -50,7 +50,7 @@ def test_get_order_info():
         abi=zero_ex.contract_artifacts.abi_by_name("Exchange"),
     )
 
-    order_info = OrderInfo(*exchange.call().getOrderInfo(order))
+    order_info = OrderInfo(*exchange.functions.getOrderInfo(order).call())
 
     assert isinstance(order_info.order_status, int)
     assert order_info.order_status == 4
@@ -100,7 +100,7 @@ def test_get_orders_info():
         abi=zero_ex.contract_artifacts.abi_by_name("Exchange"),
     )
 
-    orders_info = exchange.call().getOrdersInfo([order])
+    orders_info = exchange.functions.getOrdersInfo([order]).call()
 
     for order_info in orders_info:
         order_info = OrderInfo(*order_info)
