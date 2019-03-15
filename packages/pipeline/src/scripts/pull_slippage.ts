@@ -31,7 +31,7 @@ let connection: Connection;
     connection = await createConnection(ormConfig as ConnectionOptions);
     const edpsSource = new EdpsSource(EDPS_MAX_REQUESTS_PER_SECOND);
     const cryptoCompareSource = new CryptoCompareOHLCVSource(CRYPTO_COMPARE_MAX_REQS_PER_SECOND);
-    let failed: boolean = false;
+    let hasFailed: boolean = false;
 
     logUtils.log('Fetching slippage records');
     const nestedSlippages: Slippage[][][] = await Promise.all(
@@ -50,7 +50,7 @@ let connection: Connection;
                     } catch (e) {
                         logUtils.log(`Error getting data for symbol=${symbol}, amount=${amount}`);
                         logUtils.log(e);
-                        failed = true;
+                        hasFailed = true;
                         return [new Slippage()];
                     }
                 }),
@@ -65,5 +65,5 @@ let connection: Connection;
     logUtils.log(`Saving ${slippages.length} records to database`);
     await SlippageRepository.save(slippages, { chunk: Math.ceil(slippages.length / BATCH_SAVE_SIZE) });
     logUtils.log('Done');
-    process.exit(failed ? 1 : 0);
+    process.exit(hasFailed ? 1 : 0);
 })().catch(handleError);
