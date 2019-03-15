@@ -14,6 +14,7 @@
         "./test/fixtures/copper/api_v1_list_activities.json",
         "./test/fixtures/copper/api_v1_list_leads.json",
         "./test/fixtures/copper/api_v1_list_opportunities.json",
-        "./test/fixtures/etherscan/api_v1_accounts_transactions.json"
+        "./test/fixtures/etherscan/api_v1_accounts_transactions.json",
+        "./test/fixtures/greenhouse/api_v1_applications.json"
     ]
 }
