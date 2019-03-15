@@ -478,12 +478,60 @@ describe('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
-        it('should transfer nothing if amount=0', async () => {
+        it('should transfer nothing if value is zero', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [new BigNumber(0)];
+            const valueMultiplier = valueMultiplierSmall;
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // execute transfer
+            await erc1155ProxyWrapper.transferFromAsync(
+                spender,
+                receiver,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+            );
+            // check balances after transfer
+            const expectedFinalBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should transfer nothing if value multiplier is zero', async () => {
             // setup test parameters
             const tokenHolders = [spender, receiver];
             const tokensToTransfer = fungibleTokens.slice(0, 1);
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = new BigNumber(0);
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // execute transfer
+            await erc1155ProxyWrapper.transferFromAsync(
+                spender,
+                receiver,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+            );
+            // check balances after transfer
+            const expectedFinalBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should transfer nothing if there are no tokens in asset data', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokensToTransfer: BigNumber[] = [];
+            const valuesToTransfer: BigNumber[] = [];
+            const valueMultiplier = valueMultiplierSmall;
             // check balances before transfer
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
