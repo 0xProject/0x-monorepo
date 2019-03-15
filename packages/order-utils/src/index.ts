@@ -63,6 +63,7 @@ export {
     ZeroExTransaction,
     SignedZeroExTransaction,
 } from '@0x/types';
+
 export {
     OrderError,
     TradeSide,
@@ -72,3 +73,5 @@ export {
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
 } from './types';
+
+export { constants } from './constants';

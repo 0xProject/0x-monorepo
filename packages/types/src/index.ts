@@ -204,6 +204,7 @@ export enum RevertReason {
     RoundingError = 'ROUNDING_ERROR',
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
+    SignatureInvalid = 'SIGNATURE_INVALID',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
     TakerOverpay = 'TAKER_OVERPAY',
     OrderOverfill = 'ORDER_OVERFILL',
