@@ -60,10 +60,23 @@ const extensionData: Extension[] = [
     },
 ];
 
-export class Extensions extends React.Component {
+interface Props {
+    location: Location;
+}
+
+export class Extensions extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if ('URLSearchParams' in window) {
+            const urlParams = new URLSearchParams(this.props.location.search);
+            const modal = urlParams.get('modal');
+            if (modal) {
+                this.setState({ isContactModalOpen: true });
+            }
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">

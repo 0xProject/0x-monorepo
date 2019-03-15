@@ -34,7 +34,6 @@ export interface TallyInterface {
 }
 
 interface State {
-    isContactModalOpen: boolean;
     isVoteModalOpen: boolean;
     isWalletConnected: boolean;
     isVoteReceived: boolean;
@@ -89,9 +88,12 @@ const proposalData = {
     },
 };
 
-export class Governance extends React.Component {
+interface Props {
+    location: Location;
+}
+
+export class Governance extends React.Component<Props> {
     public state: State = {
-        isContactModalOpen: false,
         isVoteModalOpen: false,
         isWalletConnected: false,
         isVoteReceived: false,
@@ -190,7 +192,6 @@ export class Governance extends React.Component {
                     mainCta={{ text: 'Get ZRX', onClick: this._onLaunchInstantClick.bind(this) }}
                     secondaryCta={{ text: 'Vote', onClick: this._onOpenVoteModal.bind(this) }}
                 />
-                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
                 <ModalVote
                     isOpen={this.state.isVoteModalOpen}
                     onDismiss={this._onDismissVoteModal}
@@ -210,10 +211,6 @@ export class Governance extends React.Component {
             },
             'body',
         );
-    };
-
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ ...this.state, isContactModalOpen: false });
     };
 
     private readonly _onOpenVoteModal = (): void => {

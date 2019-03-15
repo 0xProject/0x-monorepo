@@ -88,10 +88,23 @@ const useCaseSlides = [
 
 configureAnchors({ offset: -60 });
 
-export class NextWhy extends React.Component {
+interface Props {
+    location: Location;
+}
+
+export class NextWhy extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if ('URLSearchParams' in window) {
+            const urlParams = new URLSearchParams(this.props.location.search);
+            const modal = urlParams.get('modal');
+            if (modal) {
+                this.setState({ isContactModalOpen: true });
+            }
+        }
+    }
     public render(): React.ReactNode {
         const buildAction = (
             <Button href="/docs" isWithArrow={true} isAccentColor={true}>

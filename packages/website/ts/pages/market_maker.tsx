@@ -20,7 +20,10 @@ interface OfferData {
     description: string;
     links?: Action[];
 }
-export interface NextMarketMakerProps {}
+
+interface NextMarketMakerProps {
+    location: Location;
+}
 
 export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
     public state = {
@@ -64,7 +67,15 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
             },
         ];
     }
-
+    public componentDidMount(): void {
+        if ('URLSearchParams' in window) {
+            const urlParams = new URLSearchParams(this.props.location.search);
+            const modal = urlParams.get('modal');
+            if (modal) {
+                this.setState({ isContactModalOpen: true });
+            }
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
