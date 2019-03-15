@@ -74,6 +74,7 @@ const featuresData = [
 ];
 
 interface Props {
+    location: Location;
     theme: {
         bgColor: string;
         textColor: string;
@@ -85,6 +86,15 @@ export class Next0xInstant extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if ('URLSearchParams' in window) {
+            const urlParams = new URLSearchParams(this.props.location.search);
+            const modal = urlParams.get('modal');
+            if (modal) {
+                this.setState({ isContactModalOpen: true });
+            }
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap>

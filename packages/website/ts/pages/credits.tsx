@@ -12,17 +12,26 @@ import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-export interface CreditsProps {}
+export interface CreditsProps {
+    location: Location;
+}
 
 export class Credits extends React.Component<CreditsProps> {
     public state = {
         isContactModalOpen: false,
     };
-
     constructor(props: CreditsProps) {
         super(props);
     }
-
+    public componentDidMount(): void {
+        if ('URLSearchParams' in window) {
+            const urlParams = new URLSearchParams(this.props.location.search);
+            const modal = urlParams.get('modal');
+            if (modal) {
+                this.setState({ isContactModalOpen: true });
+            }
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
