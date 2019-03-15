@@ -3,7 +3,8 @@
         "version": "7.1.0",
         "changes": [
             {
-                "note": "Add Coordinator EIP712 constants"
+                "note": "Add Coordinator EIP712 constants",
+                "pr": 1705
             }
         ]
     },

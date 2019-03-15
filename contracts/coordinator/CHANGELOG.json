@@ -6,10 +6,12 @@
                 "note": "Created Coordinator package"
             },
             {
-                "note": "Use mixed EIP712 domains for transactions and approvals"
+                "note": "Use mixed EIP712 domains for transactions and approvals",
+                "pr": 1705
             },
             {
-                "note": "Add `SignatureType.Invalid`"
+                "note": "Add `SignatureType.Invalid`",
+                "pr": 1705
             }
         ]
     }
