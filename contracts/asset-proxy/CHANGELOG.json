@@ -9,6 +9,10 @@
             {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
+            },
+            {
+                "note": "Add ERC1155Proxy",
+                "pr": 1661
             }
         ]
     },
