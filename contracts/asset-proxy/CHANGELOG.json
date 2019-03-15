@@ -1,14 +1,5 @@
 [
     {
-        "version": "2.1.0",
-        "changes": [
-            {
-                "note": "Add ERC1155Proxy",
-                "pr": 1661
-            }
-        ]
-    },
-    {
         "version": "2.0.0",
         "changes": [
             {
@@ -18,6 +9,10 @@
             {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
+            },
+            {
+                "note": "Add ERC1155Proxy",
+                "pr": 1661
             }
         ]
     },
