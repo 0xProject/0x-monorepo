@@ -218,7 +218,11 @@ contract ERC1155Proxy is
                 mstore(0, 0x2eb2c2d600000000000000000000000000000000000000000000000000000000)
 
                 // Copy `from` and `to` fields from Table #1 to Table #3
-                calldatacopy(4, 36, 64)
+                calldatacopy(
+                    4,          // aligned such that `from` and `to` are at the correct location for Table #3
+                    36,         // beginning of `from` field from Table #1
+                    64          // 32 bytes for `from` + 32 bytes for `to` field
+                )
 
                 ////////// STEP 4/4 //////////
                 // Call into the destination erc1155 contract using as calldata Table #3 (constructed in-memory above)
