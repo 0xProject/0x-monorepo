@@ -79,7 +79,12 @@ class HeaderBase extends React.Component<HeaderProps> {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <Headroom onUnpin={this.onUnpin} downTolerance={4} upTolerance={10}>
+            <Headroom
+                onUnpin={this.onUnpin}
+                downTolerance={4}
+                upTolerance={10}
+                wrapperStyle={{ position: 'relative', zIndex: 2 }}
+            >
                 <StyledHeader isNavToggled={isNavToggled}>
                     <HeaderWrap>
                         <Link to={WebsitePaths.Home}>
@@ -94,7 +99,7 @@ class HeaderBase extends React.Component<HeaderProps> {
 
                         <MediaQuery minWidth={990}>
                             <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" href="/explore">
-                                Explore 0x
+                                Trade on 0x
                             </TradeButton>
                         </MediaQuery>
 

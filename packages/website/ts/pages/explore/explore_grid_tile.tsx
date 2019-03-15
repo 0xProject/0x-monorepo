@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
@@ -6,11 +7,9 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { Image } from 'ts/components/ui/image';
 import { ExploreAnalyticAction, ExploreProject } from 'ts/types';
 
-const EMPTY_FUNCTION = () => true;
-
 export const ExploreGridTile = (props: ExploreProject) => {
     // tslint:disable-next-line:no-unbound-method
-    const onAnalytics = props.onAnalytics || EMPTY_FUNCTION;
+    const onAnalytics = props.onAnalytics || _.noop;
     const onInstantClick = !!props.instant
         ? () => {
               props.onInstantClick();
@@ -21,9 +20,9 @@ export const ExploreGridTile = (props: ExploreProject) => {
         onAnalytics(ExploreAnalyticAction.LinkClick);
     };
     return (
-        <ExploreGridTileWrapper>
+        <ExploreGridTileWrapper style={{ border: 'none' }}>
             {!!onInstantClick && (
-                <ExploreGridButtonWrapper>
+                <ExploreGridButtonWrapper className="explore-grid-instant-button-wrapper">
                     <Button onClick={onInstantClick} padding={'12px 18px'} bgColor={'white'}>
                         Instant Trade
                     </Button>
@@ -59,21 +58,32 @@ const ExploreGridHeroWell = styled.div<ExploreGridHeroWellProps>`
 
 const ExploreGridContentWell = styled.div`
     padding: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-top: 0;
+    flex-grow: 1;
 `;
 
 const ExploreGridTileLink = styled.a`
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 `;
 
 export const ExploreGridTileWrapper = styled.div`
     display: block;
     position: relative;
     background-color: white;
+    height: 100%;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    // transition: box-shadow 200ms ease-in-out;
-    // &:hover {
-    //     box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
-    // }
+    & .explore-grid-instant-button-wrapper {
+        transition: opacity 0.2s, visibility 0.2s 0s;
+        opacity: 0;
+        visibility: hidden;
+    }
+    &:hover .explore-grid-instant-button-wrapper {
+        opacity: 1;
+        visibility: visible;
+    }
 `;
 
 const ExploreGridButtonWrapper = styled.div`

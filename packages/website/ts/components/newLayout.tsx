@@ -93,8 +93,7 @@ const SectionBase = styled.section<SectionProps>`
     width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
     max-width: 1500px;
     margin: 0 auto;
-    padding: ${props => props.isPadded && '120px 0'};
-    padding: ${props => !!props.padding && props.padding};
+    padding: ${props => (!!props.padding && props.padding) || (props.isPadded && '120px 0')};
     background-color: ${props => props.theme[`${props.bgColor}BgColor`] || props.bgColor};
     position: relative;
     overflow: ${props => !props.isFullWidth && 'hidden'};

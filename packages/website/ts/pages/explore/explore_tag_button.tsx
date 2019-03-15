@@ -17,7 +17,7 @@ export interface ButtonInterface {
     theme?: ThemeInterface;
 }
 
-export const Button: React.StatelessComponent<ButtonInterface> = (props: ButtonInterface) => {
+export const ExploreTagButton: React.StatelessComponent<ButtonInterface> = (props: ButtonInterface) => {
     const { children, isDisabled, className } = props;
 
     const buttonProps = { disabled: isDisabled };
@@ -29,7 +29,7 @@ export const Button: React.StatelessComponent<ButtonInterface> = (props: ButtonI
     );
 };
 
-Button.defaultProps = {};
+ExploreTagButton.defaultProps = {};
 
 const ButtonBase = styled.button<ButtonInterface>`
     appearance: none;

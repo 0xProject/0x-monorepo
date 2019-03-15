@@ -14,7 +14,10 @@ import { BY_NAME_ORDERINGS, EDITORIAL, FILTERS, ORDERINGS, PROJECTS } from 'ts/p
 import { ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
 import { ExploreGrid } from 'ts/pages/explore/explore_grid';
 import { EXPLORE_STATE_DIALOGS, ExploreGridDialogTile } from 'ts/pages/explore/explore_grid_state_tile';
-import { Button as ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
+import { ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
+import { analytics } from 'ts/utils/analytics';
+import { constants } from 'ts/utils/constants';
+
 import {
     ExploreAnalyticAction,
     ExploreFilterMetadata,
@@ -43,34 +46,36 @@ export class Explore extends React.Component<ExploreProps> {
         isTilesLoading: false,
         isContactModalOpen: false,
         tiles: [] as ExploreTile[],
-        tilesOrdering: ExploreTilesOrdering.None,
+        tilesOrdering: ExploreTilesOrdering.Popular,
         isEditorialShown: true,
         filters: FILTERS,
         query: '',
     };
 
+    private readonly _debouncedChangeSearchResults: (query: string) => void;
+
     constructor(props: ExploreProps) {
         super(props);
+        this._debouncedChangeSearchResults = _.debounce(this._changeSearchResults, 300);
     }
 
-    public componentWillMount(): void {
-        // tslint:disable-next-line:no-floating-promises
-        this._loadEntriesAsync().then(() => {
-            this._setFilter('all');
-        });
+    // tslint:disable-next-line:async-suffix
+    public async componentDidMount(): Promise<void> {
+        await this._loadEntriesAsync();
+        await this._setFilter('all');
     }
 
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
                 <DocumentTitle {...documentConstants.EXPLORE} />
-                <ExploreHero onSearch={this._changeSearchResults} />
-                <Section padding={'0 0 120px 0'} maxWidth={'1150px'}>
+                <ExploreHero query={this.state.query} onSearch={this._setNewQuery} />
+                <Section padding={'0 0 60px 0'} maxWidth={'1150px'}>
                     <ExploreToolBar
                         onFilterClick={this._setFilter}
                         filters={this.state.filters}
-                        editorial={this.state.isEditorialShown}
-                        onEditorial={this._onEditorial}
+                        // editorial={this.state.isEditorialShown}
+                        // onEditorial={this._onEditorial}
                         orderings={ORDERINGS}
                         activeOrdering={this.state.tilesOrdering}
                         onOrdering={this._onOrdering}
@@ -81,7 +86,7 @@ export class Explore extends React.Component<ExploreProps> {
                     heading="Working on a 0x project?"
                     subline="Lorem Ipsum something then that and say something more."
                     mainCta={{ text: 'Apply Now', onClick: this._onOpenContactModal }}
-                    secondaryCta={{ text: 'Join Discord', href: 'https://discordapp.com/invite/d3FTX3M' }}
+                    secondaryCta={{ text: 'Join Discord', href: constants.URL_ZEROEX_CHAT }}
                 />
                 <ModalContact
                     isOpen={this.state.isContactModalOpen}
@@ -100,23 +105,21 @@ export class Explore extends React.Component<ExploreProps> {
         this.setState({ isContactModalOpen: false });
     };
 
-    private readonly _onEditorial = (newValue: boolean): void => {
-        // tslint:disable-next-line:no-floating-promises
-        this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Editorial, {
+    // tslint:disable-next-line:no-unused-variable
+    private readonly _onEditorial = async (newValue: boolean): Promise<void> => {
+        const newTiles = await this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Editorial, {
             isEditorialShown: newValue,
-        }).then(newTiles => {
-            this.setState({ isEditorialShown: newValue, tiles: newTiles });
         });
+        this.setState({ isEditorialShown: newValue, tiles: newTiles });
     };
 
-    private readonly _onOrdering = (newValue: string) => {
+    private readonly _onOrdering = async (newValue: string): Promise<void> => {
         this.setState({ tilesOrdering: newValue });
         // tslint:disable-next-line:no-floating-promises
-        this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Ordering, {
+        const newTiles = await this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Ordering, {
             tilesOrdering: newValue as ExploreTilesOrdering,
-        }).then(newTiles => {
-            this.setState({ tilesOrdering: newValue, tiles: newTiles });
         });
+        this.setState({ tilesOrdering: newValue, tiles: newTiles });
     };
 
     private readonly _launchInstantAsync = (params: ExploreProjectInstantMetadata): void => {
@@ -125,6 +128,16 @@ export class Explore extends React.Component<ExploreProps> {
 
     private readonly _onAnalytics = (project: ExploreProject, action: ExploreAnalyticAction): void => {
         // Do Something
+        switch (action) {
+            case ExploreAnalyticAction.InstantClick:
+                analytics.track('Explore - Instant - Clicked', { name: project.name });
+                break;
+            case ExploreAnalyticAction.LinkClick:
+                analytics.track('Explore - Link - Clicked', { name: project.name });
+                break;
+            default:
+                break;
+        }
     };
 
     private _generateEditorialContent(): void {
@@ -155,24 +168,24 @@ export class Explore extends React.Component<ExploreProps> {
         return this.state.tiles;
     };
 
-    private readonly _changeSearchResults = (query: string): void => {
-        const trimmedQuery = query.trim().toLowerCase();
-        // tslint:disable-next-line:no-floating-promises
-        this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Search, {
-            query: trimmedQuery,
-            filter: this.state.filters.find(f => f.active),
-        })
-            .then(async newTiles =>
-                this._generateTilesWithModifier(newTiles, ExploreTilesModifiers.Editorial, {
-                    isEditorialShown: _.isEmpty(trimmedQuery) ? this.state.isEditorialShown : false,
-                }),
-            )
-            .then(newTiles => {
-                this.setState({ query: trimmedQuery, tiles: newTiles });
-            });
+    private readonly _setNewQuery = (query: string): void => {
+        this.setState({ query });
+        this._debouncedChangeSearchResults(query);
     };
 
-    private readonly _setFilter = (filterName: string, active: boolean = true): void => {
+    private readonly _changeSearchResults = async (query: string): Promise<void> => {
+        // tslint:disable-next-line:no-floating-promises
+        const searchedTiles = await this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Search, {
+            query,
+            filter: this.state.filters.find(f => f.active),
+        });
+        // const newTiles = this._generateTilesWithModifier(searchedTiles, ExploreTilesModifiers.Editorial, {
+        //     isEditorialShown: _.isEmpty(query) ? this.state.isEditorialShown : false,
+        // })
+        this.setState({ tiles: searchedTiles });
+    };
+
+    private readonly _setFilter = async (filterName: string, active: boolean = true): Promise<void> => {
         let updatedFilters: ExploreFilterMetadata[];
         updatedFilters = this.state.filters.map(f => {
             const newFilter = _.assign({}, f);
@@ -181,14 +194,18 @@ export class Explore extends React.Component<ExploreProps> {
         });
         // If no filters are enabled, default to all
         if (_.filter(updatedFilters, f => f.active).length === 0) {
-            this._setFilter('all');
+            await this._setFilter('all');
         } else {
             // tslint:disable-next-line:no-floating-promises
-            this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Filter, {
-                filter: updatedFilters.find(f => f.active),
-            }).then(newTiles => {
-                this.setState({ filters: updatedFilters, tiles: newTiles });
-            });
+            const newTiles = await this._generateTilesWithModifier(
+                this.state.tiles,
+                _.isEmpty(this.state.query) ? ExploreTilesModifiers.Filter : ExploreTilesModifiers.Search,
+                {
+                    filter: updatedFilters.find(f => f.active),
+                    query: this.state.query,
+                },
+            );
+            this.setState({ filters: updatedFilters, tiles: newTiles });
         }
     };
 
@@ -216,6 +233,7 @@ export class Explore extends React.Component<ExploreProps> {
         modifier: ExploreTilesModifiers,
         options: ExploreModifierOptions,
     ): Promise<ExploreTile[]> => {
+        const trimmedQuery = modifier === ExploreTilesModifiers.Search ? options.query.trim().toLowerCase() : '';
         if (!this._verifyExploreTilesModifierOptions(modifier, options)) {
             return tiles;
         }
@@ -244,7 +262,7 @@ export class Explore extends React.Component<ExploreProps> {
                 newTile.visibility === ExploreTileVisibility.Visible
             ) {
                 newTile.visibility =
-                    (_.startsWith(newTile.exploreProject.label.toLowerCase(), options.query) &&
+                    (_.startsWith(newTile.exploreProject.label.toLowerCase(), trimmedQuery) &&
                         ExploreTileVisibility.Visible) ||
                     ExploreTileVisibility.Hidden;
             }
@@ -280,7 +298,7 @@ export class Explore extends React.Component<ExploreProps> {
             tilesOrdering: this.state.tilesOrdering,
         });
         this.setState({ tiles: orderedTiles, isEntriesLoading: false }, () => {
-            this._generateEditorialContent();
+           // this._generateEditorialContent();
         });
     };
 }
@@ -292,22 +310,21 @@ const ExploreHeroContentWrapper = styled.div`
 `;
 
 interface ExploreHeroProps {
+    query: string;
     onSearch(query: string): void;
 }
 
 const ExploreHero = (props: ExploreHeroProps) => {
-    // tslint:disable-next-line:no-unbound-method
-    const onSearchDebounce = _.debounce(props.onSearch, 300);
     const onChange = (e: any) => {
-        onSearchDebounce(e.target.value);
+        props.onSearch(e.target.value);
     };
     return (
-        <Section maxWidth={'1150px'}>
+        <Section maxWidth={'1150px'} padding={'50px 0 50px 0'}>
             <ExploreHeroContentWrapper>
                 <Heading isNoMargin={true} size="large">
                     Explore 0x
                 </Heading>
-                <SearchInput onChange={onChange} width={'28rem'} placeholder="Search tokens, relayers, and dApps..." />
+                <SearchInput value={props.query} onChange={onChange} width={'22rem'} placeholder="Search..." />
             </ExploreHeroContentWrapper>
         </Section>
     );
@@ -320,7 +337,7 @@ const ExploreToolBarWrapper = styled.div`
 
 const ExploreToolBarContentWrapper = styled.div`
     display: flex;
-    padding: 2rem 0;
+    padding-bottom: 2rem;
     & > * {
         margin: 0 0.3rem;
     }
@@ -336,9 +353,9 @@ interface ExploreToolBarProps {
     filters: ExploreFilterMetadata[];
     activeOrdering: ExploreTilesOrdering;
     orderings: ExploreTilesOrderingMetadata[];
-    editorial: boolean;
+    editorial?: boolean;
     onOrdering: (newValue: string) => void;
-    onEditorial: (newValue: boolean) => void;
+    onEditorial?: (newValue: boolean) => void;
     onFilterClick(filterName: string, active: boolean): void;
 }
 
@@ -358,9 +375,7 @@ const ExploreToolBar = (props: ExploreToolBarProps) => {
                         );
                     })}
             </ExploreToolBarContentWrapper>
-            <ExploreToolBarContentWrapper>
-                <ExploreSettingsDropdown {...props} />
-            </ExploreToolBarContentWrapper>
+            <ExploreSettingsDropdown {...props} />
         </ExploreToolBarWrapper>
     );
 };

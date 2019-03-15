@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Icon } from 'ts/components/icon';
 import { Heading } from 'ts/components/text';
 import { Switch } from 'ts/components/ui/switch';
-import { Button as ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
+import { ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
 import { colors } from 'ts/style/colors';
 import { ExploreTilesOrdering, ExploreTilesOrderingMetadata } from 'ts/types';
 
@@ -32,7 +32,7 @@ const ExploreSettingsDropdownButton = ({}) => {
             <SettingsIconWrapper>
                 <Icon color={colors.grey} name="settings" size={16} />
             </SettingsIconWrapper>
-            Settings
+            Sort
         </ExploreTagButton>
     );
 };
@@ -65,7 +65,7 @@ interface DropdownWrapInterface {
 
 const DropdownWrap = styled.div<DropdownWrapInterface>`
     width: ${props => props.width || 280}px;
-    margin-top: 16px;
+    margin-top: calc(16px - 2rem);
     padding: 16px 24px;
     border: 1px solid transparent;
     border-color: ${props => props.theme.dropdownBorderColor};
@@ -107,27 +107,29 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
     @media (max-width: 768px) {
         display: none;
     }
+    // display: block;
+    // visibility: visible;
+    // opacity: 1;
+    // transform: translate3d(0, 0, 0);
+    // transition: opacity 0.35s, transform 0.35s, visibility 0s;
 `;
 
 export interface ExploreSettingsDropdownProps {
     activeOrdering: ExploreTilesOrdering;
     orderings: ExploreTilesOrderingMetadata[];
     onOrdering: (newValue: string) => void;
-    onEditorial: (newValue: boolean) => void;
-    editorial: boolean;
+    onEditorial?: (newValue: boolean) => void;
+    editorial?: boolean;
 }
 
 export class ExploreSettingsDropdown extends React.Component<ExploreSettingsDropdownProps> {
-    constructor(props: ExploreSettingsDropdownProps) {
-        super(props);
-    }
-
     public render(): React.ReactNode {
         return (
             <SettingsWrapper>
                 <ExploreSettingsDropdownButton />
                 <DropdownWrap>
                     <DropdownContentWrapper>
+                        {!!this.props.onEditorial &&
                         <div>
                             <Switch
                                 isChecked={this.props.editorial}
@@ -137,11 +139,11 @@ export class ExploreSettingsDropdown extends React.Component<ExploreSettingsDrop
                             <Heading asElement="h4" size={14} color="inherit" marginBottom="0" isMuted={0.35}>
                                 Editorial content reflects the views of the 0x core team.
                             </Heading>
-                        </div>
+                        </div>}
                         <OrderingWrapper>
-                            <Heading asElement="h4" size={14} color="inherit" marginBottom="16px" isMuted={0.35}>
+                            {/* <Heading asElement="h4" size={14} color="inherit" marginBottom="16px" isMuted={0.35}>
                                 Ordering
-                            </Heading>
+                            </Heading> */}
                             <OrderingListWrapper>
                                 {this.props.orderings.map(o => {
                                     const onClick = () => this.props.onOrdering(o.ordering);
@@ -167,19 +169,18 @@ export class ExploreSettingsDropdown extends React.Component<ExploreSettingsDrop
 const DropdownContentWrapper = styled.div``;
 
 const OrderingWrapper = styled.div`
-    padding-top: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
     position: relative;
-
-    &:before {
-        content: '';
-        width: 100%;
-        height: 1px;
-        background-color: ${props => props.theme.dropdownColor};
-        opacity: 0.15;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
+    // padding-top: 20px;
+    // margin-bottom: 20px;
+    // &:before {
+    //     content: '';
+    //     width: 100%;
+    //     height: 1px;
+    //     background-color: ${props => props.theme.dropdownColor};
+    //     opacity: 0.15;
+    //     position: absolute;
+    //     top: 0;
+    //     left: 0;
+    // }
 `;

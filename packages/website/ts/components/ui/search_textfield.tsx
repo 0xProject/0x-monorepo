@@ -7,22 +7,24 @@ interface InputProps {
     name?: string;
     width?: string;
     type?: string;
+    value?: string;
     defaultValue?: string;
     placeholder?: string;
     onChange?: (e: React.ChangeEvent) => void;
 }
 
 export const Input = React.forwardRef((props: InputProps, ref?: React.Ref<HTMLInputElement>) => {
-    const { name, type, placeholder, defaultValue, onChange, width, className } = props;
+    const { name, type, placeholder, defaultValue, onChange, width, className, value } = props;
     const componentType = type === 'textarea' ? 'textarea' : 'input';
     const inputProps = { name, type };
 
     return (
         <InputWrapper className={className} width={width}>
-            <Icon size={20} name="search" />
+            <Icon size={18} name="search" />
             <StyledInput
                 as={componentType}
                 ref={ref}
+                value={value}
                 id={`input-${name}`}
                 placeholder={placeholder}
                 defaultValue={defaultValue}
@@ -37,8 +39,8 @@ const StyledInput = styled.input`
     appearance: none;
     border: none;
     color: #000;
-    font-size: 1.294117647rem;
-    padding: 16px 15px 14px;
+    font-size: 22px;
+    padding: 10px 12px 9px;
     outline: none;
     width: 100%;
     min-height: ${props => props.type === 'textarea' && `120px`};

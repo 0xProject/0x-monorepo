@@ -15,10 +15,6 @@ interface RicherExploreGridListTile extends ExploreTile {
 }
 
 export class ExploreGrid extends React.Component<ExptoreGridProps> {
-    constructor(props: ExptoreGridProps) {
-        super(props);
-    }
-
     public render(): React.ReactNode {
         return (
             <ExploreGridList>
@@ -79,6 +75,9 @@ const ExploreGridList = styled.div<ExploreGridListProps>`
     grid-template-columns: repeat(${ExploreTileWidth.FullWidth}, 1fr);
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
+    & > * {
+        align-self: stretch;
+    }
     @media (max-width: 56rem) {
         grid-template-columns: repeat(2, 1fr);
     }

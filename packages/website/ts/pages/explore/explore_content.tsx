@@ -99,23 +99,30 @@ export const FILTERS: ExploreFilterMetadata[] = [
         label: 'Relayer',
         name: 'relayer',
         filterType: ExploreFilterType.Keyword,
-        keyword: 'relayer',
     },
     {
         label: 'Collectibles',
         name: 'collectibles',
         filterType: ExploreFilterType.Keyword,
-        keyword: 'ERC-721',
     },
 ];
 
 export const ORDERINGS: ExploreTilesOrderingMetadata[] = [
-    { label: 'None', ordering: ExploreTilesOrdering.None, type: ExploreTilesOrderingType.HardCodedByName },
-    { label: 'Latest', ordering: ExploreTilesOrdering.Latest, type: ExploreTilesOrderingType.HardCodedByName },
     { label: 'Popular', ordering: ExploreTilesOrdering.Popular, type: ExploreTilesOrderingType.HardCodedByName },
+    {
+        label: 'Recently Added',
+        ordering: ExploreTilesOrdering.RecentlyAdded,
+        type: ExploreTilesOrderingType.HardCodedByName,
+    },
+    {
+        label: 'Alphabetical',
+        ordering: ExploreTilesOrdering.Alphabetical,
+        type: ExploreTilesOrderingType.HardCodedByName,
+    },
 ];
 
 export const BY_NAME_ORDERINGS: { [s: string]: string[] } = {
     [ExploreTilesOrdering.Popular]: ['boxswap', 'veil', 'paradex', 'emoon', 'radar_relay', 'openrelay'],
-    [ExploreTilesOrdering.Latest]: ['veil', 'boxswap', 'emoon', 'paradex', 'radar_relay', 'openrelay'],
+    [ExploreTilesOrdering.RecentlyAdded]: ['veil', 'boxswap', 'emoon', 'paradex', 'radar_relay', 'openrelay'],
+    [ExploreTilesOrdering.Alphabetical]: ['veil', 'boxswap', 'emoon', 'paradex', 'radar_relay', 'openrelay'],
 };

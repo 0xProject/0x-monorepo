@@ -265,8 +265,8 @@ export enum ExploreAnalyticAction {
 }
 
 export enum ExploreTilesOrdering {
-    None = 'NONE',
-    Latest = 'LATEST',
+    Alphabetical = 'ALPHABETICAL',
+    RecentlyAdded = 'RECENTLY_ADDED',
     Popular = 'POPULAR',
 }
 
@@ -297,7 +297,6 @@ export interface ExploreFilterMetadata {
     label: string;
     filterType: ExploreFilterType;
     name: string;
-    keyword?: string;
     active?: boolean;
 }
 
