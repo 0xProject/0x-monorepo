@@ -28,7 +28,7 @@ contract MixinAssetProxyDispatcher is
     MAssetProxyDispatcher
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
-    mapping (bytes4 => IAssetProxy) public assetProxies;
+    mapping (bytes4 => address) public assetProxies;
 
     /// @dev Registers an asset proxy to its asset proxy id.
     ///      Once an asset proxy is registered, it cannot be unregistered.
@@ -37,18 +37,16 @@ contract MixinAssetProxyDispatcher is
         external
         onlyOwner
     {
-        IAssetProxy assetProxyContract = IAssetProxy(assetProxy);
-
         // Ensure that no asset proxy exists with current id.
-        bytes4 assetProxyId = assetProxyContract.getProxyId();
-        address currentAssetProxy = address(assetProxies[assetProxyId]);
+        bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
+        address currentAssetProxy = assetProxies[assetProxyId];
         require(
             currentAssetProxy == address(0),
             "ASSET_PROXY_ALREADY_EXISTS"
         );
 
         // Add asset proxy and log registration.
-        assetProxies[assetProxyId] = assetProxyContract;
+        assetProxies[assetProxyId] = assetProxy;
         emit AssetProxyRegistered(
             assetProxyId,
             assetProxy
@@ -63,7 +61,7 @@ contract MixinAssetProxyDispatcher is
         view
         returns (address)
     {
-        return address(assetProxies[assetProxyId]);
+        return assetProxies[assetProxyId];
     }
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
@@ -95,7 +93,7 @@ contract MixinAssetProxyDispatcher is
                     0xFFFFFFFF00000000000000000000000000000000000000000000000000000000
                 )
             }
-            address assetProxy = address(assetProxies[assetProxyId]);
+            address assetProxy = assetProxies[assetProxyId];
 
             // Ensure that assetProxy exists
             require(
