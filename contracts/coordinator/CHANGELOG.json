@@ -4,6 +4,14 @@
         "changes": [
             {
                 "note": "Created Coordinator package"
+            },
+            {
+                "note": "Use separate EIP712 domains for transactions and approvals",
+                "pr": 1705
+            },
+            {
+                "note": "Add `SignatureType.Invalid`",
+                "pr": 1705
             }
         ]
     }

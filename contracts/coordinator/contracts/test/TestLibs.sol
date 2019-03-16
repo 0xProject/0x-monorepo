@@ -19,14 +19,22 @@
 pragma solidity ^0.5.5;
 pragma experimental "ABIEncoderV2";
 
+import "../src/libs/LibConstants.sol";
 import "../src/libs/LibCoordinatorApproval.sol";
 import "../src/libs/LibZeroExTransaction.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestLibs is
+    LibConstants,
     LibCoordinatorApproval,
     LibZeroExTransaction
 {
+    constructor (address _exchange)
+        public
+        LibConstants(_exchange)
+    {}
+
     /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage using the domain separator of this contract.
     /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
     /// @return EIP712 hash of the Coordinator approval message with the domain separator of this contract.
@@ -39,9 +47,9 @@ contract TestLibs is
         return approvalHash;
     }
 
-    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of this contract.
+    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @return EIP712 hash of the transaction with the domain separator of this contract.
+    /// @return EIP712 hash of the transaction with the domain separator of the Exchange contract.
     function publicGetTransactionHash(ZeroExTransaction memory transaction)
         public
         view

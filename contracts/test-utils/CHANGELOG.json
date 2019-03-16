@@ -14,6 +14,10 @@
             {
                 "note": "Set evmVersion to byzantium",
                 "pr": 1678
+            },
+            {
+                "note": "Remove Coordinator EIP712 constants. They're now in the `order-utils` package.",
+                "pr": 1705
             }
         ]
     },

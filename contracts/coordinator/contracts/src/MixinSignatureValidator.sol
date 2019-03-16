@@ -59,6 +59,17 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Illegal) {
             revert("SIGNATURE_ILLEGAL");
 
+        // Always invalid signature.
+        // Like Illegal, this is always implicitly available and therefore
+        // offered explicitly. It can be implicitly created by providing
+        // a correctly formatted but incorrect signature.
+        } else if (signatureType == SignatureType.Invalid) {
+            require(
+                signature.length == 0,
+                "LENGTH_0_REQUIRED"
+            );
+            revert("SIGNATURE_INVALID");
+
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
             require(

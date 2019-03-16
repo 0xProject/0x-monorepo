@@ -65,6 +65,7 @@ export {
     ZeroExTransaction,
     SignedZeroExTransaction,
 } from '@0x/types';
+
 export {
     OrderError,
     TradeSide,
