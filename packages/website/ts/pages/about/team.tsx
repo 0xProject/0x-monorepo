@@ -158,6 +158,12 @@ const team: TeamMember[] = [
         name: 'Marc Savino',
         title: 'technical sourcer',
     },
+    {
+        imageUrl: '/images/team/danielp.png',
+        name: 'Daniel Pyrathon',
+        title: 'engineer',
+    },
+
 ];
 
 const advisors: TeamMember[] = [
