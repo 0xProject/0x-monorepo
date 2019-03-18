@@ -9,6 +9,7 @@ import '@reach/dialog/styles.css';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
+import { ButtonClose } from 'ts/components/modals/button_close';
 import { CheckBoxInput, Input, InputWidth, OptionSelector } from 'ts/components/modals/input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
@@ -135,6 +136,7 @@ export class ModalContact extends React.Component<Props> {
                                 Done
                             </Button>
                         </Confirmation>
+                        <ButtonClose onClick={this.props.onDismiss} />
                     </StyledDialogContent>
                 </DialogOverlay>
             </>
