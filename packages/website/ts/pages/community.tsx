@@ -94,12 +94,8 @@ export class NextCommunity extends React.Component<Props> {
         isContactModalOpen: false,
     };
     public componentDidMount(): void {
-        if ('URLSearchParams' in window) {
-            const urlParams = new URLSearchParams(this.props.location.search);
-            const modal = urlParams.get('modal');
-            if (modal) {
-                this.setState({ isContactModalOpen: true });
-            }
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
         }
     }
     public render(): React.ReactNode {
@@ -197,11 +193,13 @@ export class NextCommunity extends React.Component<Props> {
         );
     }
 
-    public _onOpenContactModal = (): void => {
+    private _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
         this.setState({ isContactModalOpen: true });
     };
 
-    public _onDismissContactModal = (): void => {
+    private _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
         this.setState({ isContactModalOpen: false });
     };
 }
