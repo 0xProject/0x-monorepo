@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Added artifact for `Coordinaotr` and `CoordinatorRegistry` contracts",
-                "pr": 1503
+                "pr": 1689
             }
         ]
     },
