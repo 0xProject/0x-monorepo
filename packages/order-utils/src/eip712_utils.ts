@@ -6,11 +6,14 @@ import {
     EIP712TypedData,
     EIP712Types,
     Order,
+    SignedZeroExTransaction,
     ZeroExTransaction,
 } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
+import { transactionHashUtils } from './transaction_hash';
 
 export const eip712Utils = {
     /**
@@ -69,7 +72,7 @@ export const eip712Utils = {
     /**
      * Creates an ExecuteTransaction EIP712TypedData object for use with signTypedData and
      * 0x Exchange executeTransaction.
-     * @param   ZeroExTransaction the 0x transaction
+     * @param   zeroExTransaction the 0x transaction
      * @return  A typed data object
      */
     createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
@@ -85,6 +88,42 @@ export const eip712Utils = {
             constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
             { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
+            domain,
+        );
+        return typedData;
+    },
+    /**
+     * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
+     * @param   zeroExTransaction A 0x transaction
+     * @param   verifyingContractAddress The coordinator extension contract address that will be verifying the typedData
+     * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
+     * @param   approvalExpirationTimeSeconds The approvals expiration time
+     * @return  A typed data object
+     */
+    createCoordinatorApprovalTypedData: (
+        transaction: SignedZeroExTransaction,
+        verifyingContractAddress: string,
+        txOrigin: string,
+        approvalExpirationTimeSeconds: BigNumber,
+    ): EIP712TypedData => {
+        const domain = {
+            name: constants.COORDINATOR_DOMAIN_NAME,
+            version: constants.COORDINATOR_DOMAIN_VERSION,
+            verifyingContractAddress,
+        };
+        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+        const approval = {
+            txOrigin,
+            transactionHash,
+            transactionSignature: transaction.signature,
+            approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
+        };
+        const typedData = eip712Utils.createTypedData(
+            constants.COORDINATOR_APPROVAL_SCHEMA.name,
+            {
+                CoordinatorApproval: constants.COORDINATOR_APPROVAL_SCHEMA.parameters,
+            },
+            approval,
             domain,
         );
         return typedData;
