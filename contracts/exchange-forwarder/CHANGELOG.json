@@ -5,6 +5,10 @@
             {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
             }
         ],
         "timestamp": 1553091633

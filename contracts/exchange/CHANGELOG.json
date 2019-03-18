@@ -13,6 +13,10 @@
             {
                 "note": "Integration testing for ERC1155Proxy",
                 "pr": 1673
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
             }
         ],
         "timestamp": 1553091633

@@ -16,6 +16,10 @@
             {
                 "note": "Set `evmVersion` to `constantinople`",
                 "pr": 1707
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
             }
         ],
         "timestamp": 1553091633

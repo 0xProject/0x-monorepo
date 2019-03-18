@@ -14,6 +14,10 @@
             {
                 "note": "Created ERC1155 contracts package",
                 "pr": 1657
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
             }
         ]
     }
