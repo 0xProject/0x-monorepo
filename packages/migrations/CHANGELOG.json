@@ -3,7 +3,8 @@
         "version": "4.1.0",
         "changes": [
             {
-                "note": "Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script"
+                "note": "Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script",
+                "pr": 1689
             }
         ]
     },
