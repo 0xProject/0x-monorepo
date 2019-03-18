@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import FixtureSubprovider = require('web3-provider-engine/subproviders/fixture');
 
-import { promisify } from '@0x/utils';
+import { promisify, providerUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 
 import { NonceTrackerSubprovider, Web3ProviderEngine } from '../../src';
@@ -56,7 +56,7 @@ describe('NonceTrackerSubprovider', () => {
         const nonceTrackerSubprovider = new NonceTrackerSubprovider();
         provider.addProvider(nonceTrackerSubprovider);
         provider.addProvider(createFixtureSubprovider());
-        provider.start();
+        providerUtils.startProviderEngine(provider);
 
         const payload = { ...getTransactionCountPayload, params: ['0x0', 'pending'] };
 
@@ -70,7 +70,7 @@ describe('NonceTrackerSubprovider', () => {
         const nonceTrackerSubprovider = new NonceTrackerSubprovider();
         provider.addProvider(nonceTrackerSubprovider);
         provider.addProvider(createFixtureSubprovider());
-        provider.start();
+        providerUtils.startProviderEngine(provider);
 
         const payload = { ...getTransactionCountPayload, params: ['0x0', 'latest'] };
 
@@ -91,7 +91,7 @@ describe('NonceTrackerSubprovider', () => {
                 },
             }),
         );
-        provider.start();
+        providerUtils.startProviderEngine(provider);
 
         const noncePayload = {
             ...getTransactionCountPayload,
@@ -126,7 +126,7 @@ describe('NonceTrackerSubprovider', () => {
                 },
             }),
         );
-        provider.start();
+        providerUtils.startProviderEngine(provider);
 
         const noncePayload = {
             ...getTransactionCountPayload,
