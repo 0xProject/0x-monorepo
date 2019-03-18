@@ -14,15 +14,7 @@
                 "pr": 1705
             },
             {
-<<<<<<< HEAD
-                "note": "Add `SignatureType.Invalid`",
-                "pr": 1705
-            },
-            {
-                "note": "Set `evmVersion` to `petersburg`",
-=======
                 "note": "Set `evmVersion` to `constantinople`",
->>>>>>> 4a3e9e8f4... fgrtre
                 "pr": 1707
             }
         ]
