@@ -3,7 +3,8 @@ import Bottleneck from 'bottleneck';
 
 const ONE_SECOND = 1000;
 const EDPS_BASE_URL = 'http://23.22.220.126:1337';
-const TIMEOUT = 30 * ONE_SECOND;
+// tslint:disable-next-line:custom-no-magic-numbers
+const TIMEOUT = ONE_SECOND * 30;
 
 export type EdpsResponse = EdpsWrapper[];
 
