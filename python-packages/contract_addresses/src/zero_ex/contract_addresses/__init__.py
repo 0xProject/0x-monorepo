@@ -41,6 +41,9 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0x17992e4ffb22730138e4b62aaa6367fa9d3699a6",
         forwarder="0x5468a1dc173652ee28d249c271fa9933144746b1",
         order_validator="0x9463e518dea6810309563c81d5266c1b1d149138",
+        coordinator_registry="0x45797531b873fd5e519477a070a955764c1a5b07",
+        coordinator="0x24675738816c87ad37e712cc24f309a0c906187f",
+
     ),
     NetworkId.ROPSTEN: ContractAddresses(
         erc20_proxy="0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
@@ -51,6 +54,8 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b",
         forwarder="0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
         order_validator="0x90431a90516ab49af23a0530e04e8c7836e7122f",
+        coordinator_registry="0x403cc23e88c17c4652fb904784d1af640a6722d9",
+        coordinator="0xc442300dcb4df1ff1db0173e77556dc559de6006",
     ),
     NetworkId.RINKEBY: ContractAddresses(
         exchange="0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e",
@@ -61,6 +66,8 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0xe1703da878afcebff5b7624a826902af475b9c03",
         forwarder="0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4",
         order_validator="0x0c5173a51e26b29d6126c686756fb9fbef71f762",
+        coordinator_registry="0x1084b6a398e47907bae43fec3ff4b677db6e4fee",
+        coordinator="0xc05e6c01b83eeedecac2f7bab9367da4d4c108df",
     ),
     NetworkId.KOVAN: ContractAddresses(
         erc20_proxy="0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
@@ -71,6 +78,8 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0x2c824d2882baa668e0d5202b1e7f2922278703f8",
         forwarder="0x17992e4ffb22730138e4b62aaa6367fa9d3699a6",
         order_validator="0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d",
+        coordinator_registry="0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5",
+        coordinator="0x04b2b090bad68b254881d7eb645a258ce66cc998",
     ),
     NetworkId.GANACHE: ContractAddresses(
         exchange="0x48bacb9266a570d521063ef5dd96e61686dbe788",
@@ -81,6 +90,8 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0x34d402f14d58e001d8efbe6585051bf9706aa064",
         forwarder="0x6000eca38b8b5bba64986182fe2a69c57f6b5414",
         order_validator="0x32eecaf51dfea9618e9bc94e9fbfddb1bbdcba15",
+        coordinator_registry="0xaa86dda78e9434aca114b6676fc742a18d15a1cc",
+        coordinator="0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29",
     ),
 }
 """A mapping from instances of NetworkId to instances of ContractAddresses.
