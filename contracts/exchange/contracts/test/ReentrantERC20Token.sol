@@ -16,12 +16,12 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "../src/ERC20Token.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import "@0x/contracts-erc20/contracts/src/ERC20Token.sol";
+import "../src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 

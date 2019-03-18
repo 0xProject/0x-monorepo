@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "./mixins/MSignatureValidator.sol";
@@ -58,6 +58,17 @@ contract MixinSignatureValidator is
         // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
             revert("SIGNATURE_ILLEGAL");
+
+        // Always invalid signature.
+        // Like Illegal, this is always implicitly available and therefore
+        // offered explicitly. It can be implicitly created by providing
+        // a correctly formatted but incorrect signature.
+        } else if (signatureType == SignatureType.Invalid) {
+            require(
+                signature.length == 0,
+                "LENGTH_0_REQUIRED"
+            );
+            revert("SIGNATURE_INVALID");
 
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {

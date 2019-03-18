@@ -8,6 +8,7 @@ export { EtherscanTransaction } from './etherscan_transaction';
 export { ExchangeCancelEvent } from './exchange_cancel_event';
 export { ExchangeCancelUpToEvent } from './exchange_cancel_up_to_event';
 export { ExchangeFillEvent } from './exchange_fill_event';
+export { GreenhouseApplication } from './greenhouse_application';
 export { NonfungibleDotComTrade } from './nonfungible_dot_com_trade';
 export { OHLCVExternal } from './ohlcv_external';
 export { Relayer } from './relayer';

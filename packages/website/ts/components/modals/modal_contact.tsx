@@ -30,10 +30,6 @@ const CREDIT_SERVICES_OPTIONS: ServiceOptionMetadata[] = [
         name: 'aws',
     },
     {
-        label: 'Facebook Ads',
-        name: 'facebook_ads',
-    },
-    {
         label: 'Alchemy',
         name: 'alchemy',
     },

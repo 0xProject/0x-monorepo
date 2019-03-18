@@ -1,10 +1,23 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Added ERC1155Proxy test constants and interfaces",
+                "pr": 1661
+            }
+        ]
+    },
+    {
         "version": "3.0.9",
         "changes": [
             {
                 "note": "Set evmVersion to byzantium",
                 "pr": 1678
+            },
+            {
+                "note": "Remove Coordinator EIP712 constants. They're now in the `order-utils` package.",
+                "pr": 1705
             }
         ]
     },

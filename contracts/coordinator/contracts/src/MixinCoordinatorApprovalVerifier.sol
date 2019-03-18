@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 pragma experimental "ABIEncoderV2";
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
@@ -125,14 +125,14 @@ contract MixinCoordinatorApprovalVerifier is
             // Hash approval message and recover signer address
             bytes32 approvalHash = getCoordinatorApprovalHash(approval);
             address approvalSignerAddress = getSignerAddress(approvalHash, approvalSignatures[i]);
-    
+
             // Add approval signer to list of signers
             approvalSignerAddresses = approvalSignerAddresses.append(approvalSignerAddress);
         }
-    
+
         // Ethereum transaction signer gives implicit signature of approval
         approvalSignerAddresses = approvalSignerAddresses.append(tx.origin);
-        
+
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
             // Do not check approval if the order's senderAddress is null

@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 import "../interfaces/ISignatureValidator.sol";
 
@@ -27,8 +27,9 @@ contract MSignatureValidator is
     // Allowed signature types.
     enum SignatureType {
         Illegal,         // 0x00, default value
-        EIP712,          // 0x01
-        EthSign,         // 0x02
-        NSignatureTypes  // 0x03, number of signature types. Always leave at end.
+        Invalid,         // 0x01
+        EIP712,          // 0x02
+        EthSign,         // 0x03
+        NSignatureTypes  // 0x04, number of signature types. Always leave at end.
     }
 }

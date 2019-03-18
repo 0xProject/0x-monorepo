@@ -1,10 +1,11 @@
 import {
-    DummyERC20TokenContract,
+    artifacts as proxyArtifacts,
     ERC20ProxyContract,
     ERC20Wrapper,
     ERC721ProxyContract,
     ERC721Wrapper,
 } from '@0x/contracts-asset-proxy';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
     constants,
@@ -130,7 +131,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Deploy a new version of the ERC20 Transfer Proxy contract
             const newErc20TransferProxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
-                artifacts.ERC20Proxy,
+                proxyArtifacts.ERC20Proxy,
                 provider,
                 txDefaults,
             );

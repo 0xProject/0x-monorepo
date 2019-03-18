@@ -16,15 +16,22 @@
 
 */
 
-pragma solidity 0.5.3;
+pragma solidity ^0.5.5;
 pragma experimental "ABIEncoderV2";
 
+import "../src/libs/LibConstants.sol";
 import "../src/MixinSignatureValidator.sol";
 import "../src/MixinCoordinatorApprovalVerifier.sol";
 
 
 // solhint-disable no-empty-blocks
 contract TestMixins is
+    LibConstants,
     MixinSignatureValidator,
     MixinCoordinatorApprovalVerifier
-{}
+{
+    constructor (address _exchange)
+        public
+        LibConstants(_exchange)
+    {}
+}

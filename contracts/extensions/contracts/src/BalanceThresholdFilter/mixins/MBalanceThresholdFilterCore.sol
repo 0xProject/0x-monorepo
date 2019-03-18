@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "../interfaces/IThresholdAsset.sol";
@@ -49,6 +49,7 @@ contract MBalanceThresholdFilterCore is
     /// @param signerAddress Address of transaction signer.
     /// @return addressesToValidate Array of addresses to validate.
     function getAddressesToValidate(address signerAddress)
-        internal pure
+        internal
+        pure
         returns (address[] memory addressesToValidate);
 }

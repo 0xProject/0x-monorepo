@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "./DummyERC20Token.sol";
 
@@ -26,8 +26,8 @@ contract DummyNoReturnERC20Token is
     DummyERC20Token
 {
     constructor (
-        string _name,
-        string _symbol,
+        string memory _name,
+        string memory _symbol,
         uint256 _decimals,
         uint256 _totalSupply
     )

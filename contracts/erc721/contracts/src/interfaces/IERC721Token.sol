@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract IERC721Token {
@@ -66,7 +66,7 @@ contract IERC721Token {
         address _from,
         address _to,
         uint256 _tokenId,
-        bytes _data
+        bytes calldata _data
     )
         external;
 

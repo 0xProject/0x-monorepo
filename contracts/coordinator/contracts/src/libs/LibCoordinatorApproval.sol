@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 import "./LibEIP712Domain.sol";
 
@@ -50,7 +50,7 @@ contract LibCoordinatorApproval is
         view
         returns (bytes32 approvalHash)
     {
-        approvalHash = hashEIP712Message(hashCoordinatorApproval(approval));
+        approvalHash = hashEIP712CoordinatorMessage(hashCoordinatorApproval(approval));
         return approvalHash;
     }
 
@@ -79,7 +79,7 @@ contract LibCoordinatorApproval is
         assembly {
             // Compute hash of transaction signature
             let transactionSignatureHash := keccak256(add(transactionSignature, 32), mload(transactionSignature))
-        
+
             // Load free memory pointer
             let memPtr := mload(64)
 

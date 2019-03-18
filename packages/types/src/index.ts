@@ -163,6 +163,7 @@ export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
     MultiAsset = '0x94cfcdd7',
+    ERC1155 = '0x9645780d',
 }
 
 export interface ERC20AssetData {
@@ -176,7 +177,29 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+export interface ERC1155AssetData {
+    assetProxyId: string;
+    tokenAddress: string;
+    tokenIds: BigNumber[];
+    tokenValues: BigNumber[];
+    callbackData: string;
+}
+
+export interface ERC1155AssetDataNoProxyId {
+    tokenAddress: string;
+    tokenValues: BigNumber[];
+    tokenIds: BigNumber[];
+    callbackData: string;
+}
+
+export const ERC1155AssetDataAbi = [
+    { name: 'tokenAddress', type: 'address' },
+    { name: 'tokenIds', type: 'uint256[]' },
+    { name: 'tokenValues', type: 'uint256[]' },
+    { name: 'callbackData', type: 'bytes' },
+];
+
+export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData;
 
 export interface MultiAssetData {
     assetProxyId: string;
@@ -204,6 +227,7 @@ export enum RevertReason {
     RoundingError = 'ROUNDING_ERROR',
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
+    SignatureInvalid = 'SIGNATURE_INVALID',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
     TakerOverpay = 'TAKER_OVERPAY',
     OrderOverfill = 'ORDER_OVERFILL',
@@ -274,6 +298,18 @@ export enum RevertReason {
     InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
     ApprovalExpired = 'APPROVAL_EXPIRED',
     InvalidOrigin = 'INVALID_ORIGIN',
+    // ERC1155
+    AmountEqualToOneRequired = 'AMOUNT_EQUAL_TO_ONE_REQUIRED',
+    BadReceiverReturnValue = 'BAD_RECEIVER_RETURN_VALUE',
+    CannotTransferToAddressZero = 'CANNOT_TRANSFER_TO_ADDRESS_ZERO',
+    InsufficientAllowance = 'INSUFFICIENT_ALLOWANCE',
+    NFTNotOwnedByFromAddress = 'NFT_NOT_OWNED_BY_FROM_ADDRESS',
+    OwnersAndIdsMustHaveSameLength = 'OWNERS_AND_IDS_MUST_HAVE_SAME_LENGTH',
+    TokenAndValuesLengthMismatch = 'TOKEN_AND_VALUES_LENGTH_MISMATCH',
+    TriedToMintFungibleForNonFungibleToken = 'TRIED_TO_MINT_FUNGIBLE_FOR_NON_FUNGIBLE_TOKEN',
+    TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
+    TransferRejected = 'TRANSFER_REJECTED',
+    Uint256Underflow = 'UINT256_UNDERFLOW',
 }
 
 export enum StatusCodes {
