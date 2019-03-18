@@ -24,12 +24,8 @@ export class Credits extends React.Component<CreditsProps> {
         super(props);
     }
     public componentDidMount(): void {
-        if ('URLSearchParams' in window) {
-            const urlParams = new URLSearchParams(this.props.location.search);
-            const modal = urlParams.get('modal');
-            if (modal) {
-                this.setState({ isContactModalOpen: true });
-            }
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
         }
     }
     public render(): React.ReactNode {
@@ -104,12 +100,14 @@ export class Credits extends React.Component<CreditsProps> {
         );
     }
 
-    private readonly _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
+    private readonly _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        this.setState({ isContactModalOpen: false });
     };
 
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
+    private readonly _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
+        this.setState({ isContactModalOpen: true });
     };
 
     private readonly _renderHeroActions = () => (
@@ -117,4 +115,5 @@ export class Credits extends React.Component<CreditsProps> {
             Apply Now
         </Button>
     );
+
 }
