@@ -1,6 +1,6 @@
 {
     "name": "@0x/order-watcher",
-    "version": "4.0.4",
+    "version": "4.0.3",
     "description": "An order watcher daemon that watches for order validity",
     "keywords": [
         "0x",
