@@ -1,4 +1,9 @@
-"""Middleware that captures calls to 'eth_sign' and signs message with local private key."""
+"""Middleware that captures calls to 'eth_sign'.
+
+Description:
+This middleware intercepts all calls to 'eth_sign and enforces all sign
+messages to be signed with a local private key.
+"""
 
 import operator
 from functools import singledispatch
@@ -25,7 +30,7 @@ def key_normalizer(val):
 
 @to_dict
 def gen_normalized_accounts(val):
-    """Generate normalized accounts given private key or eth_account.LocalAccount object."""
+    """Generate normalized accounts."""
     if isinstance(val, (list, tuple, set)):
         for i in val:
             account = to_account(i)
@@ -64,8 +69,11 @@ to_account.register(bytes, private_key_to_account)
 
 
 def construct_local_message_signer(private_key_or_account):
-    """Capture calls to 'eth_sign' to always sign message with a local private key.
+    """Capture calls to 'eth_sign'.
 
+    Description:
+    Intercept calls to 'eth_sign to always sign message with
+    a local private key.
     Keyword arguments:
         private_key_or_account -- A single private key or a tuple,
         list or set of private keys.
