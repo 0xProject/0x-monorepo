@@ -193,12 +193,12 @@ export class NextCommunity extends React.Component<Props> {
         );
     }
 
-    private _onOpenContactModal = (): void => {
+    private readonly _onOpenContactModal = (): void => {
         window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
         this.setState({ isContactModalOpen: true });
     };
 
-    private _onDismissContactModal = (): void => {
+    private readonly _onDismissContactModal = (): void => {
         window.history.replaceState(null, null, window.location.pathname + window.location.search);
         this.setState({ isContactModalOpen: false });
     };
