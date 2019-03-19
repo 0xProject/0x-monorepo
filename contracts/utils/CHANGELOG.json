@@ -15,10 +15,12 @@
                 "pr": 1657
             },
             {
-                "note": "Add unit tests for `LibAddressArray`"
+                "note": "Add unit tests for `LibAddressArray`",
+                "pr": 1712
             },
             {
-                "note": "Fix `LibAddressArray.indexOf` returning incorrect index."
+                "note": "Fix `LibAddressArray.indexOf` returning incorrect index.",
+                "pr": 1712
             }
         ]
     },

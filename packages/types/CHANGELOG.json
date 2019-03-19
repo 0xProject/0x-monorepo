@@ -19,7 +19,8 @@
                 "pr": 1705
             },
             {
-                "note": "Add `RevertReason.InvalidFreeMemoryPtr` thrown by LibAddressArray"
+                "note": "Add `RevertReason.InvalidFreeMemoryPtr` thrown by LibAddressArray",
+                "pr": 1712
             }
         ]
     },
