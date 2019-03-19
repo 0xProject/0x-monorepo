@@ -15,6 +15,8 @@ class ContractAddresses(NamedTuple):  # noqa
     asset_proxy_owner: str
     forwarder: str
     order_validator: str
+    coordinator_registry: str
+    coordinator: str
 
 
 class NetworkId(Enum):
