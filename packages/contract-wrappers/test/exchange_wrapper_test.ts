@@ -294,7 +294,7 @@ describe('ExchangeWrapper', () => {
                 contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
             ).to.eventually.to.be.rejectedWith(RevertReason.InvalidOrderSignature);
         });
-        it.only('should validate the order', async () => {
+        it('should validate the order', async () => {
             await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
         });
     });
