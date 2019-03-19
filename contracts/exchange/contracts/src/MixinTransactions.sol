@@ -15,7 +15,8 @@
   limitations under the License.
 
 */
-pragma solidity ^0.4.24;
+
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
@@ -43,8 +44,8 @@ contract MixinTransactions is
     function executeTransaction(
         uint256 salt,
         address signerAddress,
-        bytes data,
-        bytes signature
+        bytes calldata data,
+        bytes calldata signature
     )
         external
     {
@@ -84,8 +85,9 @@ contract MixinTransactions is
 
         // Execute transaction
         transactions[transactionHash] = true;
+        (bool success,) = address(this).delegatecall(data);
         require(
-            address(this).delegatecall(data),
+            success,
             "FAILED_EXECUTION"
         );
 

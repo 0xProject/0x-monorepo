@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "../interfaces/ISignatureValidator.sol";
 
@@ -51,7 +51,7 @@ contract MSignatureValidator is
     function isValidWalletSignature(
         bytes32 hash,
         address walletAddress,
-        bytes signature
+        bytes memory signature
     )
         internal
         view
@@ -67,7 +67,7 @@ contract MSignatureValidator is
         address validatorAddress,
         bytes32 hash,
         address signerAddress,
-        bytes signature
+        bytes memory signature
     )
         internal
         view

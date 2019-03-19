@@ -1,5 +1,8 @@
 import {
     AssetProxyId,
+    ERC1155AssetData,
+    ERC1155AssetDataAbi,
+    ERC1155AssetDataNoProxyId,
     ERC20AssetData,
     ERC721AssetData,
     MultiAssetData,
@@ -71,6 +74,47 @@ export const assetDataUtils = {
             // TODO(abandeali1): fix return types for `AbiEncoder.Method.decode` so that we can remove type assertion
             tokenAddress: (decodedAssetData as any).tokenContract,
             tokenId: (decodedAssetData as any).tokenId,
+        };
+    },
+    /**
+     * Encodes a set of ERC1155 assets into an assetData string, usable in the makerAssetData or
+     * takerAssetData fields of a 0x order.
+     * @param tokenAddress The token address of the ERC1155 contract
+     * @param tokenIds The Id's of the ERC1155 tokens to transfer
+     * @param tokenValues The values of each respective token Id to transfer
+     * @param callbackData The data forwarded to a receiver, if receiver is a contract.
+     * @return The hex encoded assetData string
+     */
+    encodeERC1155AssetData(
+        tokenAddress: string,
+        tokenIds: BigNumber[],
+        tokenValues: BigNumber[],
+        callbackData: string,
+    ): string {
+        const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ERC1155AssetDataAbi);
+        const args = [tokenAddress, tokenIds, tokenValues, callbackData];
+        const assetData = abiEncoder.encode(args, encodingRules);
+        return assetData;
+    },
+    /**
+     * Decodes an ERC1155 assetData hex string into it's corresponding ERC1155 components.
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded tokenAddress, tokenIds, tokenValues, callbackData & assetProxyId
+     */
+    decodeERC1155AssetData(assetData: string): ERC1155AssetData {
+        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+        if (assetProxyId !== AssetProxyId.ERC1155) {
+            throw new Error(`Invalid assetProxyId. Expected '${AssetProxyId.ERC1155}', got '${assetProxyId}'`);
+        }
+        const abiEncoder = AbiEncoder.createMethod('ERC1155Token', ERC1155AssetDataAbi);
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        const decodedAssetData = abiEncoder.decode(assetData, decodingRules) as ERC1155AssetDataNoProxyId;
+        return {
+            assetProxyId,
+            tokenAddress: decodedAssetData.tokenAddress,
+            tokenIds: decodedAssetData.tokenIds,
+            tokenValues: decodedAssetData.tokenValues,
+            callbackData: decodedAssetData.callbackData,
         };
     },
     /**
@@ -174,6 +218,7 @@ export const assetDataUtils = {
         if (
             assetProxyId !== AssetProxyId.ERC20 &&
             assetProxyId !== AssetProxyId.ERC721 &&
+            assetProxyId !== AssetProxyId.ERC1155 &&
             assetProxyId !== AssetProxyId.MultiAsset
         ) {
             throw new Error(`Invalid assetProxyId: ${assetProxyId}`);
@@ -193,6 +238,13 @@ export const assetDataUtils = {
      */
     isERC721AssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is ERC721AssetData {
         return decodedAssetData.assetProxyId === AssetProxyId.ERC721;
+    },
+    /**
+     * Checks if the decoded asset data is valid ERC1155 data
+     * @param decodedAssetData The decoded asset data to check
+     */
+    isERC1155AssetData(decodedAssetData: SingleAssetData | MultiAssetData): decodedAssetData is ERC1155AssetData {
+        return decodedAssetData.assetProxyId === AssetProxyId.ERC1155;
     },
     /**
      * Checks if the decoded asset data is valid MultiAsset data
@@ -244,6 +296,14 @@ export const assetDataUtils = {
         }
     },
     /**
+     * Throws if the assetData is not ERC1155.
+     * @param assetData Hex encoded assetData string
+     */
+    assertIsERC1155AssetData(assetData: string): void {
+        // If the asset data is correctly decoded then it is valid.
+        assetDataUtils.decodeERC1155AssetData(assetData);
+    },
+    /**
      * Throws if the length or assetProxyId are invalid for the MultiAssetProxy.
      * @param assetData Hex encoded assetData string
      */
@@ -277,6 +337,9 @@ export const assetDataUtils = {
             case AssetProxyId.ERC721:
                 assetDataUtils.assertIsERC721AssetData(assetData);
                 break;
+            case AssetProxyId.ERC1155:
+                assetDataUtils.assertIsERC1155AssetData(assetData);
+                break;
             case AssetProxyId.MultiAsset:
                 assetDataUtils.assertIsMultiAssetData(assetData);
                 break;
@@ -287,7 +350,7 @@ export const assetDataUtils = {
     /**
      * Decode any assetData into it's corresponding assetData object
      * @param assetData Hex encoded assetData string to decode
-     * @return Either a ERC20 or ERC721 assetData object
+     * @return Either a ERC20, ERC721, ERC1155, or MultiAsset assetData object
      */
     decodeAssetDataOrThrow(assetData: string): SingleAssetData | MultiAssetData {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
@@ -298,6 +361,9 @@ export const assetDataUtils = {
             case AssetProxyId.ERC721:
                 const erc721AssetData = assetDataUtils.decodeERC721AssetData(assetData);
                 return erc721AssetData;
+            case AssetProxyId.ERC1155:
+                const erc1155AssetData = assetDataUtils.decodeERC1155AssetData(assetData);
+                return erc1155AssetData;
             case AssetProxyId.MultiAsset:
                 const multiAssetData = assetDataUtils.decodeMultiAssetData(assetData);
                 return multiAssetData;

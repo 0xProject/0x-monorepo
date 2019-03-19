@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 
 import "../src/interfaces/IValidator.sol";
 
@@ -44,7 +44,7 @@ contract Validator is
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
-        bytes signature
+        bytes calldata signature
     )
         external
         view

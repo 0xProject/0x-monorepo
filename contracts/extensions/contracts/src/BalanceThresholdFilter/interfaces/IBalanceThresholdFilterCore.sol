@@ -17,7 +17,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract IBalanceThresholdFilterCore {
@@ -48,8 +48,8 @@ contract IBalanceThresholdFilterCore {
     function executeTransaction(
         uint256 salt,
         address signerAddress,
-        bytes signedExchangeTransaction,
-        bytes signature
+        bytes calldata signedExchangeTransaction,
+        bytes calldata signature
     ) 
         external;
 }

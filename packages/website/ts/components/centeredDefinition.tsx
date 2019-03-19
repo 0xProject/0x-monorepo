@@ -39,7 +39,7 @@ export const CenteredDefinition = (props: CenteredDefinitionProps) => (
 );
 
 const Wrap = styled.div<CenteredDefinitionProps>`
-    padding: 30px 0;
+    padding: 30px 15px;
     max-width: ${props => props.isInline && 'calc(50% - 30px)'};
     text-align: center;
 

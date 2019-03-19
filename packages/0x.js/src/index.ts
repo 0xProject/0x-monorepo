@@ -91,6 +91,8 @@ export {
     SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,
+    ERC1155AssetData,
+    ERC1155AssetDataAbi,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
     SignatureType,

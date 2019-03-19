@@ -17,7 +17,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "./mixins/MExchangeCalldata.sol";
 import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
@@ -34,7 +34,8 @@ contract MixinExchangeCalldata is
     /// @param offset  Offset into the Exchange calldata.
     /// @return value  Corresponding 32 byte value stored at `offset`.
     function exchangeCalldataload(uint256 offset)
-        internal pure
+        internal
+        pure
         returns (bytes32 value)
     {
         assembly {
@@ -58,7 +59,8 @@ contract MixinExchangeCalldata is
     /// @param offset  Offset into the Exchange calldata (minus the 4 byte selector)
     /// @return value  Corresponding 32 byte value stored at `offset` + 4.
     function loadExchangeData(uint256 offset)
-        internal pure
+        internal
+        pure
         returns (bytes32 value)
     {
         value = exchangeCalldataload(offset + 4);
@@ -70,12 +72,13 @@ contract MixinExchangeCalldata is
     /// @param orderParamIndex  Index of the order in the Exchange function's signature.
     /// @return makerAddress The extracted maker address.
     function loadMakerAddressFromOrder(uint256 orderParamIndex)
-        internal pure
+        internal
+        pure
         returns (address makerAddress)
     {
         uint256 orderOffsetInBytes = orderParamIndex * 32;
         uint256 orderPtr = uint256(loadExchangeData(orderOffsetInBytes));
-        makerAddress = address(loadExchangeData(orderPtr));
+        makerAddress = address(uint256(loadExchangeData(orderPtr)));
         return makerAddress;
     }
 
@@ -84,8 +87,9 @@ contract MixinExchangeCalldata is
     /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
     /// @return makerAddresses The extracted maker addresses.
     function loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
-        internal pure
-        returns (address[] makerAddresses)
+        internal
+        pure
+        returns (address[] memory makerAddresses)
     {
         uint256 orderArrayOffsetInBytes = orderArrayParamIndex * 32;
         uint256 orderArrayPtr = uint256(loadExchangeData(orderArrayOffsetInBytes));
@@ -95,7 +99,7 @@ contract MixinExchangeCalldata is
         uint256 orderArrayElementEndPtr = orderArrayElementPtr + orderArrayLengthInBytes;
         for (uint orderPtrOffset = orderArrayElementPtr; orderPtrOffset < orderArrayElementEndPtr; orderPtrOffset += 32) {
             uint256 orderPtr = uint256(loadExchangeData(orderPtrOffset));
-            address makerAddress = address(loadExchangeData(orderPtr + orderArrayElementPtr));
+            address makerAddress = address(uint256(loadExchangeData(orderPtr + orderArrayElementPtr)));
             makerAddresses = makerAddresses.append(makerAddress);
         }
         return makerAddresses;

@@ -12,6 +12,7 @@ export { GithubFork } from './github_fork';
 export { GithubIssue } from './github_issue';
 export { GithubRepo } from './github_repo';
 export { GithubPullRequest } from './github_pull_request';
+export { GreenhouseApplication } from './greenhouse_application';
 export { NonfungibleDotComTrade } from './nonfungible_dot_com_trade';
 export { OHLCVExternal } from './ohlcv_external';
 export { Relayer } from './relayer';

@@ -1,5 +1,26 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Set evmVersion to byzantium",
+                "pr": 1678
+            },
+            {
+                "note": "Optimize loops in LibAddressArray",
+                "pr": 1668
+            },
+            {
+                "note": "Upgrade contracts to Solidity 0.5.5",
+                "pr": 1682
+            },
+            {
+                "note": "Added Address.sol with test for whether or not an address is a contract",
+                "pr": 1657
+            }
+        ]
+    },
+    {
         "timestamp": 1551479279,
         "version": "2.0.8",
         "changes": [

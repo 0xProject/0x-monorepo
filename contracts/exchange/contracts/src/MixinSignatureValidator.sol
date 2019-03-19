@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
@@ -46,7 +46,7 @@ contract MixinSignatureValidator is
     function preSign(
         bytes32 hash,
         address signerAddress,
-        bytes signature
+        bytes calldata signature
     )
         external
     {
@@ -233,7 +233,7 @@ contract MixinSignatureValidator is
     function isValidWalletSignature(
         bytes32 hash,
         address walletAddress,
-        bytes signature
+        bytes memory signature
     )
         internal
         view
@@ -282,7 +282,7 @@ contract MixinSignatureValidator is
         address validatorAddress,
         bytes32 hash,
         address signerAddress,
-        bytes signature
+        bytes memory signature
     )
         internal
         view

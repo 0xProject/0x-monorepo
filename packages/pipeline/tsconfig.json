@@ -19,6 +19,7 @@
         "./test/fixtures/github/api_v3_forks.json",
         "./test/fixtures/github/api_v3_issues.json",
         "./test/fixtures/github/api_v3_pulls.json",
-        "./test/fixtures/github/api_v3_repo.json"
+        "./test/fixtures/github/api_v3_repo.json",
+        "./test/fixtures/greenhouse/api_v1_applications.json"
     ]
 }
