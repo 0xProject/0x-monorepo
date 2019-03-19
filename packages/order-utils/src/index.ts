@@ -7,6 +7,7 @@ export { transactionHashUtils } from './transaction_hash';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderParsingUtils } from './parsing_utils';
+export { orderCalculationUtils } from './order_calculation_utils';
 
 export { OrderStateUtils } from './order_state_utils';
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
@@ -74,4 +75,5 @@ export {
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
+    BalanceAndAllowance,
 } from './types';

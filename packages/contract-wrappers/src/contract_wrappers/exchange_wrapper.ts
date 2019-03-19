@@ -1,10 +1,12 @@
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
-import { Exchange } from '@0x/contract-artifacts';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents, IAssetProxyContract } from '@0x/abi-gen-wrappers';
+import { Exchange, IAssetProxy } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
+    orderCalculationUtils,
+    orderHashUtils,
     OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
@@ -1165,6 +1167,70 @@ export class ExchangeWrapper extends ContractWrapper {
             this.getZRXAssetData(),
             expectedFillTakerTokenAmountIfExists,
         );
+        const filledTakerAmount = await this.getFilledTakerAssetAmountAsync(
+            orderHashUtils.getOrderHashHex(signedOrder),
+        );
+        const makerAssetBalance = await balanceAllowanceStore.getBalanceAsync(
+            signedOrder.makerAssetData,
+            signedOrder.makerAddress,
+        );
+        const makerAssetAllowance = await balanceAllowanceStore.getProxyAllowanceAsync(
+            signedOrder.makerAssetData,
+            signedOrder.makerAddress,
+        );
+        const makerZRXBalance = await balanceAllowanceStore.getBalanceAsync(
+            this.getZRXAssetData(),
+            signedOrder.makerAddress,
+        );
+        const makerZRXAllowance = await balanceAllowanceStore.getProxyAllowanceAsync(
+            this.getZRXAssetData(),
+            signedOrder.makerAddress,
+        );
+        const remainingFillableTakerAssetAmount = orderCalculationUtils.calculateRemainingFillableTakerAssetAmount(
+            signedOrder,
+            filledTakerAmount,
+            { balance: makerAssetBalance, allowance: makerAssetAllowance },
+            { balance: makerZRXBalance, allowance: makerZRXAllowance },
+        );
+
+        await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, remainingFillableTakerAssetAmount);
+    }
+    /**
+     * Validate the transfer from the Maker to the Taker. This is simulated on chain
+     * via an eth_call. If this call fails the asset is unlikely to be transferrable.
+     * @param signedOrder SignedOrder of interest
+     * @param fillTakerAssetAmount Amount we'd like to fill the order for
+     * @param takerAddress The taker of the order, defaults to signedOrder.takerAddress
+     */
+    public async validateMakerTransferThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        fillTakerAssetAmount: BigNumber,
+        takerAddress?: string,
+    ): Promise<void> {
+        const toAddress = _.isUndefined(takerAddress) ? signedOrder.takerAddress : takerAddress;
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const makerAssetData = signedOrder.makerAssetData;
+        const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
+        const assetProxyAddress = await exchangeInstance.assetProxies.callAsync(makerAssetDataProxyId);
+        const assetProxy = new IAssetProxyContract(
+            IAssetProxy.compilerOutput.abi,
+            assetProxyAddress,
+            this._web3Wrapper.getProvider(),
+        );
+        const makerTransferAmount = orderCalculationUtils.getMakerFillAmount(signedOrder, fillTakerAssetAmount);
+
+        const result = await assetProxy.transferFrom.callAsync(
+            makerAssetData,
+            signedOrder.makerAddress,
+            toAddress,
+            makerTransferAmount,
+            {
+                from: this.address,
+            },
+        );
+        if (result !== undefined) {
+            throw new Error('Unknown error occured during maker transfer simulation');
+        }
     }
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed

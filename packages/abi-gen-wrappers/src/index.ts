@@ -8,6 +8,7 @@ export * from './generated-wrappers/erc721_proxy';
 export * from './generated-wrappers/erc721_token';
 export * from './generated-wrappers/exchange';
 export * from './generated-wrappers/forwarder';
+export * from './generated-wrappers/i_asset_proxy';
 export * from './generated-wrappers/i_validator';
 export * from './generated-wrappers/i_wallet';
 export * from './generated-wrappers/multi_asset_proxy';
