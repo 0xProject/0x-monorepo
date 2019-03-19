@@ -163,7 +163,7 @@ export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
     MultiAsset = '0x94cfcdd7',
-    ERC1155 = '0x9645780d',
+    ERC1155 = '0xa7cb5fb7',
 }
 
 export interface ERC20AssetData {
