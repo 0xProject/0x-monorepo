@@ -126,3 +126,13 @@ export const BY_NAME_ORDERINGS: { [s: string]: string[] } = {
     [ExploreTilesOrdering.RecentlyAdded]: ['veil', 'boxswap', 'emoon', 'paradex', 'radar_relay', 'openrelay'],
     [ExploreTilesOrdering.Alphabetical]: ['veil', 'boxswap', 'emoon', 'paradex', 'radar_relay', 'openrelay'],
 };
+
+export const AVAILABLE_ASSET_DATAS: string[] = [
+    '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359', // DAI
+    '0xf47261b0000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    '0xf47261b00000000000000000000000000d8775f648430679a709e98d2b0cb6250d2887ef', // BAT
+    '0xf47261b000000000000000000000000005f4a42e251f2d52b8ed15e9fedaacfcef1fad27', // ZIL
+    '0xf47261b00000000000000000000000000f5d2fb29fb7d3cfee444a200298f468908cc942', // MANA
+    '0xf47261b00000000000000000000000000abdace70d3790235af448c88547603b945604ea', // DNT
+    '0xf47261b000000000000000000000000041e5560054824ea6b0732e656e3ad64e20e94e45', // CVC
+];

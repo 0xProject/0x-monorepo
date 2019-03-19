@@ -306,10 +306,16 @@ export enum ExploreTileVisibility {
 }
 
 export enum ExploreTileWidth {
-    OneThird = 2,
-    FullWidth = 6,
-    Half = 3,
-    TwoThirds = 4,
+    OneThird = 'ONE_THIRD',
+    FullWidth = 'FULL_WIDTH',
+    Half = 'HALF',
+    TwoThirds = 'TWO_THIRDS',
+}
+
+export enum ExploreTileGridWidth {
+    ThreeColumn = 6,
+    TwoColumn = 4,
+    OneColumn = 2,
 }
 
 export interface ExploreTile {

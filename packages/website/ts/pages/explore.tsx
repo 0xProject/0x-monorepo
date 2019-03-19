@@ -10,7 +10,14 @@ import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { Input as SearchInput } from 'ts/components/ui/search_textfield';
-import { BY_NAME_ORDERINGS, EDITORIAL, FILTERS, ORDERINGS, PROJECTS } from 'ts/pages/explore/explore_content';
+import {
+    AVAILABLE_ASSET_DATAS,
+    BY_NAME_ORDERINGS,
+    EDITORIAL,
+    FILTERS,
+    ORDERINGS,
+    PROJECTS,
+} from 'ts/pages/explore/explore_content';
 import { ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
 import { ExploreGrid } from 'ts/pages/explore/explore_grid';
 import { EXPLORE_STATE_DIALOGS, ExploreGridDialogTile } from 'ts/pages/explore/explore_grid_state_tile';
@@ -70,7 +77,7 @@ export class Explore extends React.Component<ExploreProps> {
             <SiteWrap theme="light">
                 <DocumentTitle {...documentConstants.EXPLORE} />
                 <ExploreHero query={this.state.query} onSearch={this._setNewQuery} />
-                <Section padding={'0 0 60px 0'} maxWidth={'1150px'}>
+                <Section isPadded={false} padding={'0 0 60px 0'} maxWidth={'1150px'}>
                     <ExploreToolBar
                         onFilterClick={this._setFilter}
                         filters={this.state.filters}
@@ -115,7 +122,6 @@ export class Explore extends React.Component<ExploreProps> {
 
     private readonly _onOrdering = async (newValue: string): Promise<void> => {
         this.setState({ tilesOrdering: newValue });
-        // tslint:disable-next-line:no-floating-promises
         const newTiles = await this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Ordering, {
             tilesOrdering: newValue as ExploreTilesOrdering,
         });
@@ -127,7 +133,6 @@ export class Explore extends React.Component<ExploreProps> {
     };
 
     private readonly _onAnalytics = (project: ExploreProject, action: ExploreAnalyticAction): void => {
-        // Do Something
         switch (action) {
             case ExploreAnalyticAction.InstantClick:
                 analytics.track('Explore - Instant - Clicked', { name: project.name });
@@ -174,7 +179,6 @@ export class Explore extends React.Component<ExploreProps> {
     };
 
     private readonly _changeSearchResults = async (query: string): Promise<void> => {
-        // tslint:disable-next-line:no-floating-promises
         const searchedTiles = await this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Search, {
             query,
             filter: this.state.filters.find(f => f.active),
@@ -196,7 +200,6 @@ export class Explore extends React.Component<ExploreProps> {
         if (_.filter(updatedFilters, f => f.active).length === 0) {
             await this._setFilter('all');
         } else {
-            // tslint:disable-next-line:no-floating-promises
             const newTiles = await this._generateTilesWithModifier(
                 this.state.tiles,
                 _.isEmpty(this.state.query) ? ExploreTilesModifiers.Filter : ExploreTilesModifiers.Search,
@@ -284,14 +287,17 @@ export class Explore extends React.Component<ExploreProps> {
         const tiles = rawProjects.map((e: ExploreProject) => {
             const exploreProject = _.assign({}, e);
             if (!!exploreProject.instant) {
+                exploreProject.instant = _.assign({}, exploreProject.instant, {
+                    availableAssetDatas: AVAILABLE_ASSET_DATAS,
+                });
                 exploreProject.onInstantClick = this._launchInstantAsync.bind(this, exploreProject.instant);
             }
+            exploreProject.onAnalytics = this._onAnalytics.bind(this, exploreProject);
             return {
                 name: e.name,
                 exploreProject,
                 visibility: ExploreTileVisibility.Visible,
                 width: ExploreTileWidth.OneThird,
-                onAnalytics: this._onAnalytics.bind(this, exploreProject),
             };
         });
         const orderedTiles = await this._generateTilesWithModifier(tiles, ExploreTilesModifiers.Ordering, {
@@ -307,6 +313,23 @@ const ExploreHeroContentWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 100px 0;
+    @media (max-width: 36rem) {
+        display: block;
+        padding: 50px 0;
+    }
+`;
+
+const ExploreSearchInputWrapper = styled.div`
+    width: 22rem;
+    @media (max-width: 52rem) {
+        width: 16rem;
+    }
+    @media (max-width: 36rem) {
+        margin-top: 10px;
+        padding-left: 5px;
+        width: 100%;
+    }
 `;
 
 interface ExploreHeroProps {
@@ -319,12 +342,14 @@ const ExploreHero = (props: ExploreHeroProps) => {
         props.onSearch(e.target.value);
     };
     return (
-        <Section maxWidth={'1150px'} padding={'50px 0 50px 0'}>
+        <Section maxWidth={'1150px'} isPadded={false}>
             <ExploreHeroContentWrapper>
                 <Heading isNoMargin={true} size="large">
                     Explore 0x
                 </Heading>
-                <SearchInput value={props.query} onChange={onChange} width={'22rem'} placeholder="Search..." />
+                <ExploreSearchInputWrapper>
+                    <SearchInput value={props.query} onChange={onChange} placeholder="Search..." />
+                </ExploreSearchInputWrapper>
             </ExploreHeroContentWrapper>
         </Section>
     );
@@ -333,11 +358,17 @@ const ExploreHero = (props: ExploreHeroProps) => {
 const ExploreToolBarWrapper = styled.div`
     display: flex;
     justify-content: space-between;
+    @media (max-width: 36rem) {
+        display: block;
+    }
 `;
 
 const ExploreToolBarContentWrapper = styled.div`
     display: flex;
     padding-bottom: 2rem;
+    @media (max-width: 36rem) {
+        display: none;
+    }
     & > * {
         margin: 0 0.3rem;
     }

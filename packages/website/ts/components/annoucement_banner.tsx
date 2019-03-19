@@ -30,7 +30,7 @@ interface BorderProps {
     isBottom?: boolean;
 }
 
-export const ANNOUNCEMENT_BANNER_HEIGHT = '12rem';
+export const ANNOUNCEMENT_BANNER_HEIGHT = '14rem';
 
 export const AnnouncementBanner: React.StatelessComponent<Props> = (props: Props) => {
     const { heading, subline, mainCta, secondaryCta } = props;
@@ -43,9 +43,9 @@ export const AnnouncementBanner: React.StatelessComponent<Props> = (props: Props
                     <CustomHeading>{heading}</CustomHeading>
 
                     {subline && (
-                        <Paragraph color={colors.white} isMuted={0.5} isNoMargin={true}>
+                        <CustomParagraph color={colors.white} isMuted={0.5} isNoMargin={true}>
                             {subline}
-                        </Paragraph>
+                        </CustomParagraph>
                     )}
                 </Column>
                 <ColumnCta>
@@ -72,15 +72,17 @@ export const AnnouncementBanner: React.StatelessComponent<Props> = (props: Props
                         )}
 
                         {secondaryCta && (
-                            <Button
-                                color={colors.white}
-                                href={secondaryCta.href}
-                                onClick={secondaryCta.onClick}
-                                target={secondaryCta.shouldOpenInNewTab ? '_blank' : ''}
-                                isTransparent={true}
-                            >
-                                {secondaryCta.text}
-                            </Button>
+                            <SecondaryButtonWrapper>
+                                <Button
+                                    color={colors.white}
+                                    href={secondaryCta.href}
+                                    onClick={secondaryCta.onClick}
+                                    target={secondaryCta.shouldOpenInNewTab ? '_blank' : ''}
+                                    isTransparent={true}
+                                >
+                                    {secondaryCta.text}
+                                </Button>
+                            </SecondaryButtonWrapper>
                         )}
                     </ButtonWrap>
                 </ColumnCta>
@@ -93,6 +95,13 @@ interface CustomSectionProps extends SectionProps {
     dismissed: boolean;
 }
 
+const SecondaryButtonWrapper = styled.div`
+    display: inline-block;
+    @media (max-width: 56rem) {
+        display: none;
+    }
+`;
+
 const BannerContentWrapper = styled.div`
     max-width: 1200px;
     display: flex;
@@ -101,6 +110,15 @@ const BannerContentWrapper = styled.div`
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    @media (max-width: 56rem) {
+        flex-direction: column;
+    }
+`;
+
+const CustomParagraph = styled(Paragraph)`
+    @media (max-width: 56rem) {
+        display: none;
+    }
 `;
 
 const CustomSection = styled(Section)<CustomSectionProps>`
@@ -151,22 +169,22 @@ const CustomHeading = styled.h2`
 
 const ButtonWrap = styled.div`
     display: inline-block;
-
-    @media (min-width: 768px) {
-        * + * {
-            margin-left: 15px;
-        }
+    & > button,
+    a {
+        margin: 0 12px;
     }
-
+    & *:first-child {
+        margin-left: 0;
+    }
+    & *:last-child {
+        margin-right: 0;
+    }
     @media (max-width: 768px) {
-        a,
-        button {
-            display: block;
-            width: 220px;
-        }
-
-        * + * {
-            margin-top: 15px;
+        display: flex;
+        flex-direction: column-reverse;
+        & > button,
+        a {
+            margin: 0;
         }
     }
 `;
@@ -185,7 +203,8 @@ const Border = styled.div<BorderProps>`
     top: ${props => !props.isBottom && 0};
     bottom: ${props => props.isBottom && 0};
     transform: translate(-112px);
-
+    z-index: 0;
+    pointer-events: none;
     @media (max-width: 768px) {
         width: calc(100% + 82px);
         height: 40px;

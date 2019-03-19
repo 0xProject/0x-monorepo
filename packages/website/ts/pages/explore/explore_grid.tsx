@@ -3,15 +3,42 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { ExploreGridTile } from 'ts/pages/explore/explore_grid_tile';
-import { ExploreTile, ExploreTileVisibility, ExploreTileWidth } from 'ts/types';
+import { ExploreTile, ExploreTileGridWidth, ExploreTileVisibility, ExploreTileWidth } from 'ts/types';
+
+const EXPLORE_TILE_COL_WIDTH: { [ExploreTileWidth: string]: { [ExploreTileGridWidth: number]: number } } = {
+    [ExploreTileWidth.OneThird]: {
+        [ExploreTileGridWidth.ThreeColumn]: 2,
+        [ExploreTileGridWidth.TwoColumn]: 2,
+        [ExploreTileGridWidth.OneColumn]: 2,
+    },
+    [ExploreTileWidth.FullWidth]: {
+        [ExploreTileGridWidth.ThreeColumn]: 6,
+        [ExploreTileGridWidth.TwoColumn]: 4,
+        [ExploreTileGridWidth.OneColumn]: 2,
+    },
+    [ExploreTileWidth.Half]: {
+        [ExploreTileGridWidth.ThreeColumn]: 3,
+        [ExploreTileGridWidth.TwoColumn]: 4,
+        [ExploreTileGridWidth.OneColumn]: 2,
+    },
+    [ExploreTileWidth.TwoThirds]: {
+        [ExploreTileGridWidth.ThreeColumn]: 4,
+        [ExploreTileGridWidth.TwoColumn]: 4,
+        [ExploreTileGridWidth.OneColumn]: 2,
+    },
+};
 
 export interface ExptoreGridProps {
     tiles: ExploreTile[];
 }
 
-interface RicherExploreGridListTile extends ExploreTile {
+interface ExploreGridTilePosition {
     gridStart: number;
     gridEnd: number;
+}
+
+interface RicherExploreGridListTile extends ExploreTile {
+    tilePositions: { [ExploreTileGridWidth: number]: ExploreGridTilePosition };
 }
 
 export class ExploreGrid extends React.Component<ExptoreGridProps> {
@@ -21,13 +48,13 @@ export class ExploreGrid extends React.Component<ExptoreGridProps> {
                 {this._prepareTiles().map(t => {
                     if (!!t.exploreProject) {
                         return (
-                            <ExploreGridTileWrapper key={t.name} gridStart={t.gridStart} gridEnd={t.gridEnd}>
+                            <ExploreGridTileWrapper key={t.name} tilePositions={t.tilePositions}>
                                 <ExploreGridTile {...t.exploreProject} />
                             </ExploreGridTileWrapper>
                         );
                     } else {
                         return (
-                            <ExploreGridTileWrapper key={t.name} gridStart={t.gridStart} gridEnd={t.gridEnd}>
+                            <ExploreGridTileWrapper key={t.name} tilePositions={t.tilePositions}>
                                 {!!t.component && t.component}
                             </ExploreGridTileWrapper>
                         );
@@ -42,18 +69,32 @@ export class ExploreGrid extends React.Component<ExptoreGridProps> {
         return this._generateGridValues(visibleTiles);
     };
 
-    private readonly _generateGridValues = (tiles: ExploreTile[]): RicherExploreGridListTile[] => {
+    private readonly _generateGridPositions = (
+        tiles: RicherExploreGridListTile[],
+        width: ExploreTileGridWidth,
+    ): RicherExploreGridListTile[] => {
         let gridEndCounter = 1;
-        const richerTiles = tiles.map(t => {
-            if (gridEndCounter + t.width > ExploreTileWidth.FullWidth + 1) {
+        const newTiles = tiles.map(t => {
+            if (gridEndCounter + EXPLORE_TILE_COL_WIDTH[t.width][width] > width + 1) {
                 gridEndCounter = 1;
             }
             const gridStart = gridEndCounter;
-            const gridEnd = gridEndCounter + t.width;
+            const gridEnd = gridEndCounter + EXPLORE_TILE_COL_WIDTH[t.width][width];
             gridEndCounter = gridEnd;
-            const newTile = _.assign({ gridStart, gridEnd }, t);
-            return newTile as RicherExploreGridListTile;
+            const newTilePositions = _.assign({}, t.tilePositions);
+            newTilePositions[width] = { gridStart, gridEnd };
+            return _.assign({}, t, { tilePositions: newTilePositions }) as RicherExploreGridListTile;
         });
+        return newTiles;
+    };
+
+    private readonly _generateGridValues = (tiles: ExploreTile[]): RicherExploreGridListTile[] => {
+        let richerTiles = tiles.map(t => {
+            return _.assign({ tilePositions: {} }, t) as RicherExploreGridListTile;
+        });
+        richerTiles = this._generateGridPositions(richerTiles, ExploreTileGridWidth.ThreeColumn);
+        richerTiles = this._generateGridPositions(richerTiles, ExploreTileGridWidth.TwoColumn);
+        richerTiles = this._generateGridPositions(richerTiles, ExploreTileGridWidth.OneColumn);
         return richerTiles;
     };
 }
@@ -61,27 +102,34 @@ export class ExploreGrid extends React.Component<ExptoreGridProps> {
 interface ExploreGridListProps {}
 
 interface ExploreGridTileWrapperProps {
-    gridStart: number;
-    gridEnd: number;
+    tilePositions: { [ExploreTileGridWidth: number]: ExploreGridTilePosition };
 }
 
 const ExploreGridTileWrapper = styled.div<ExploreGridTileWrapperProps>`
-    grid-column-start: ${props => props.gridStart};
-    grid-column-end: ${props => props.gridEnd};
+    grid-column-start: ${props => props.tilePositions[ExploreTileGridWidth.ThreeColumn].gridStart};
+    grid-column-end: ${props => props.tilePositions[ExploreTileGridWidth.ThreeColumn].gridEnd};
+    @media (max-width: 56rem) {
+        grid-column-start: ${props => props.tilePositions[ExploreTileGridWidth.TwoColumn].gridStart};
+        grid-column-end: ${props => props.tilePositions[ExploreTileGridWidth.TwoColumn].gridEnd};
+    }
+    @media (max-width: 36rem) {
+        grid-column-start: ${props => props.tilePositions[ExploreTileGridWidth.OneColumn].gridStart};
+        grid-column-end: ${props => props.tilePositions[ExploreTileGridWidth.OneColumn].gridEnd};
+    }
 `;
 
 const ExploreGridList = styled.div<ExploreGridListProps>`
     display: grid;
-    grid-template-columns: repeat(${ExploreTileWidth.FullWidth}, 1fr);
+    grid-template-columns: repeat(${ExploreTileGridWidth.ThreeColumn}, 1fr);
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
     & > * {
         align-self: stretch;
     }
     @media (max-width: 56rem) {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(${ExploreTileGridWidth.TwoColumn}, 1fr);
     }
     @media (max-width: 36rem) {
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(${ExploreTileGridWidth.OneColumn}, 1fr);
     }
 `;
