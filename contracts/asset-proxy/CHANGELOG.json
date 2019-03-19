@@ -13,6 +13,10 @@
             {
                 "note": "Bumped solidity version to ^0.5.5",
                 "pr": 1701
+            },
+            {
+                "note": "Integration testing for ERC1155Proxy",
+                "pr": 1673
             }
         ]
     },
