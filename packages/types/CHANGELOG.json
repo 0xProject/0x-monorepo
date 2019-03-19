@@ -17,6 +17,9 @@
             {
                 "note": "Add `RevertReason.SignatureInvalid` thrown by Coordinator",
                 "pr": 1705
+            },
+            {
+                "note": "Add `RevertReason.InvalidFreeMemoryPtr` thrown by LibAddressArray"
             }
         ]
     },
