@@ -1,3 +1,4 @@
+import { DummyERC20TokenContract } from '@0x/abi-gen-wrappers';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
@@ -10,6 +11,7 @@ import 'mocha';
 import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
 import { DecodedLogEvent } from '../src/types';
 
+import { UntransferrableDummyERC20Token } from './artifacts/UntransferrableDummyERC20Token';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
@@ -314,6 +316,29 @@ describe('ExchangeWrapper', () => {
                     expectedFillTakerTokenAmount: new BigNumber(2).pow(256).minus(1),
                 }),
             ).to.eventually.to.be.rejected();
+        });
+        it('should throw when the ERC20 token has transfer restrictions', async () => {
+            const untransferrableToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+                UntransferrableDummyERC20Token,
+                provider,
+                { from: userAddresses[0] },
+                'UntransferrableToken',
+                'UTT',
+                new BigNumber(constants.ZRX_DECIMALS),
+                // tslint:disable-next-line:custom-no-magic-numbers
+                new BigNumber(2).pow(20).minus(1),
+            );
+            const untransferrableMakerAssetData = assetDataUtils.encodeERC20AssetData(untransferrableToken.address);
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                untransferrableMakerAssetData,
+                takerAssetData,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+            );
+            expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder),
+            ).to.eventually.to.be.rejectedWith(RevertReason.TransferFailed);
         });
     });
     describe('#isValidSignature', () => {
