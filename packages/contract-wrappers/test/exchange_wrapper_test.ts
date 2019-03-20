@@ -282,7 +282,7 @@ describe('ExchangeWrapper', () => {
             expect(ordersInfo[1].orderHash).to.be.equal(anotherOrderHash);
         });
     });
-    describe('#validateOrderFillableOrThrowAsync', () => {
+    describe.only('#validateOrderFillableOrThrowAsync', () => {
         it('should throw if signature is invalid', async () => {
             const signedOrderWithInvalidSignature = {
                 ...signedOrder,
@@ -294,8 +294,26 @@ describe('ExchangeWrapper', () => {
                 contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
             ).to.eventually.to.be.rejectedWith(RevertReason.InvalidOrderSignature);
         });
-        it('should validate the order', async () => {
+        it('should validate the order with the current balances and allowances for the maker', async () => {
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                validateRemainingOrderAmountIsFillable: false,
+            });
+        });
+        it('should validate the order with remaining fillable amount for the order', async () => {
             await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+        });
+        it('should validate the order with specified amount', async () => {
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                expectedFillTakerTokenAmount: signedOrder.takerAssetAmount,
+            });
+        });
+        it('should throw if the amount is greater than the allowance/balance', async () => {
+            expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                    // tslint:disable-next-line:custom-no-magic-numbers
+                    expectedFillTakerTokenAmount: new BigNumber(2).pow(256).minus(1),
+                }),
+            ).to.eventually.to.be.rejected();
         });
     });
     describe('#isValidSignature', () => {

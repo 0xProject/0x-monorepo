@@ -1158,42 +1158,55 @@ export class ExchangeWrapper extends ContractWrapper {
         const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
 
-        const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+
+        let fillableTakerAssetAmount;
+        const shouldValidateRemainingOrderAmountIsFillable = _.isUndefined(opts.validateRemainingOrderAmountIsFillable)
+            ? true
+            : opts.validateRemainingOrderAmountIsFillable;
+        const filledTakerTokenAmount = await this.getFilledTakerAssetAmountAsync(
+            orderHashUtils.getOrderHashHex(signedOrder),
+        );
+        if (opts.expectedFillTakerTokenAmount) {
+            // If the caller has specified a taker fill amount, we use this for all validation
+            fillableTakerAssetAmount = opts.expectedFillTakerTokenAmount;
+        } else if (shouldValidateRemainingOrderAmountIsFillable) {
+            // Historically if a fill amount was not specified we would default to the amount
+            // left on the order.
+            fillableTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
+        } else {
+            const makerAssetBalance = await balanceAllowanceStore.getBalanceAsync(
+                signedOrder.makerAssetData,
+                signedOrder.makerAddress,
+            );
+            const makerAssetAllowance = await balanceAllowanceStore.getProxyAllowanceAsync(
+                signedOrder.makerAssetData,
+                signedOrder.makerAddress,
+            );
+            const makerZRXBalance = await balanceAllowanceStore.getBalanceAsync(
+                this.getZRXAssetData(),
+                signedOrder.makerAddress,
+            );
+            const makerZRXAllowance = await balanceAllowanceStore.getProxyAllowanceAsync(
+                this.getZRXAssetData(),
+                signedOrder.makerAddress,
+            );
+            fillableTakerAssetAmount = orderCalculationUtils.calculateRemainingFillableTakerAssetAmount(
+                signedOrder,
+                filledTakerTokenAmount,
+                { balance: makerAssetBalance, allowance: makerAssetAllowance },
+                { balance: makerZRXBalance, allowance: makerZRXAllowance },
+            );
+        }
+
         const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
             this.getZRXAssetData(),
-            expectedFillTakerTokenAmountIfExists,
+            fillableTakerAssetAmount,
         );
-        const filledTakerAmount = await this.getFilledTakerAssetAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrder),
-        );
-        const makerAssetBalance = await balanceAllowanceStore.getBalanceAsync(
-            signedOrder.makerAssetData,
-            signedOrder.makerAddress,
-        );
-        const makerAssetAllowance = await balanceAllowanceStore.getProxyAllowanceAsync(
-            signedOrder.makerAssetData,
-            signedOrder.makerAddress,
-        );
-        const makerZRXBalance = await balanceAllowanceStore.getBalanceAsync(
-            this.getZRXAssetData(),
-            signedOrder.makerAddress,
-        );
-        const makerZRXAllowance = await balanceAllowanceStore.getProxyAllowanceAsync(
-            this.getZRXAssetData(),
-            signedOrder.makerAddress,
-        );
-        const remainingFillableTakerAssetAmount = orderCalculationUtils.calculateRemainingFillableTakerAssetAmount(
-            signedOrder,
-            filledTakerAmount,
-            { balance: makerAssetBalance, allowance: makerAssetAllowance },
-            { balance: makerZRXBalance, allowance: makerZRXAllowance },
-        );
-
-        await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, remainingFillableTakerAssetAmount);
+        await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, fillableTakerAssetAmount);
     }
     /**
      * Validate the transfer from the Maker to the Taker. This is simulated on chain
