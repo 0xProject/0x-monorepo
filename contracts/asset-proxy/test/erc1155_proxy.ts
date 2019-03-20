@@ -15,7 +15,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -123,8 +123,7 @@ describe('ERC1155Proxy', () => {
         });
         it('should have an id of 0x9645780d', async () => {
             const proxyId = await erc1155Proxy.getProxyId.callAsync();
-            // proxy computed using -- bytes4(keccak256("erc1155Token(address,uint256[],uint256[],bytes)"));
-            const expectedProxyId = '0x9645780d';
+            const expectedProxyId = AssetProxyId.ERC1155;
             expect(proxyId).to.equal(expectedProxyId);
         });
     });
