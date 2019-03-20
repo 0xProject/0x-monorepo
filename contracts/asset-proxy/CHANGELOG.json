@@ -3,10 +3,6 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note": "Set evmVersion to byzantium",
-                "pr": 1678
-            },
-            {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
             },
@@ -17,6 +13,10 @@
             {
                 "note": "Bumped solidity version to ^0.5.5",
                 "pr": 1701
+            },
+            {
+                "note": "Integration testing for ERC1155Proxy",
+                "pr": 1673
             }
         ]
     },

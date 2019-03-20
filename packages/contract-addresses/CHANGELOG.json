@@ -5,6 +5,10 @@
             {
                 "note": "Add addresses for coordinator extension contract and coordinator registry",
                 "pr": 1689
+            },
+            {
+                "note": "Added Dutch Auction mainnet address",
+                "pr": 1715
             }
         ]
     },

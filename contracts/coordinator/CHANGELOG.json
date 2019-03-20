@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.1",
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Created Coordinator package"
@@ -12,6 +12,10 @@
             {
                 "note": "Add `SignatureType.Invalid`",
                 "pr": 1705
+            },
+            {
+                "note": "Set `evmVersion` to `constantinople`",
+                "pr": 1707
             }
         ]
     }

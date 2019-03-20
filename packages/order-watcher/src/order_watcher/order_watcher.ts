@@ -42,6 +42,7 @@ import {
     ZeroExProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
+import { Lock } from 'semaphore-async-await';
 
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
@@ -84,6 +85,7 @@ export class OrderWatcher {
     private readonly _dependentOrderHashesTracker: DependentOrderHashesTracker;
     private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
     private readonly _orderByOrderHash: OrderByOrderHash = {};
+    private readonly _lock = new Lock();
     private readonly _eventWatcher: EventWatcher;
     private readonly _provider: ZeroExProvider;
     private readonly _collisionResistantAbiDecoder: CollisionResistanceAbiDecoder;
@@ -196,10 +198,12 @@ export class OrderWatcher {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
         this._callbackIfExists = callback;
-        this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
-        this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
+        this._eventWatcher.subscribe(
+            this._addLockToCallbackAsync.bind(this, this._onEventWatcherCallbackAsync.bind(this)),
+        );
+        this._expirationWatcher.subscribe(this._addLockToCallbackAsync.bind(this, this._onOrderExpired.bind(this)));
         this._cleanupJobIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._cleanupAsync.bind(this),
+            this._addLockToCallbackAsync.bind(this, this._cleanupAsync.bind(this)),
             this._cleanupJobInterval,
             (err: Error) => {
                 this.unsubscribe();
@@ -228,6 +232,17 @@ export class OrderWatcher {
         return {
             orderCount: _.size(this._orderByOrderHash),
         };
+    }
+    private async _addLockToCallbackAsync(cbAsync: any, ...params: any[]): Promise<void> {
+        await this._lock.acquire();
+        try {
+            await cbAsync(...params);
+            await this._lock.release();
+        } catch (err) {
+            // Make sure to releasee the lock if an error is thrown
+            await this._lock.release();
+            throw err;
+        }
     }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
@@ -493,4 +508,4 @@ export class OrderWatcher {
             this._callbackIfExists(null, orderState);
         }
     }
-}
+} // tslint:disable:max-file-line-count

@@ -175,10 +175,14 @@ describe('OrderWatcher', () => {
         });
     });
     describe('tests with cleanup', async () => {
+        beforeEach(async () => {
+            await blockchainLifecycle.startAsync();
+        });
         afterEach(async () => {
             orderWatcher.unsubscribe();
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             orderWatcher.removeOrder(orderHash);
+            await blockchainLifecycle.revertAsync();
         });
         it('should emit orderStateInvalid when makerAddress allowance set to 0 for watched order', (done: DoneCallback) => {
             (async () => {

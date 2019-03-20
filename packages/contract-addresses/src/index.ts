@@ -34,8 +34,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
-        // @todo hysz/dekz: Add mainnet address once deployed.
-        dutchAuction: NULL_ADDRESS,
+        dutchAuction: '0x07b32a653754945666cfca91168bb207323dfe67',
         coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
         coordinator: '0x24675738816c87ad37e712cc24f309a0c906187f',
     },
