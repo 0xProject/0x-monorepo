@@ -85,7 +85,7 @@ export class OrderWatcher {
     private readonly _dependentOrderHashesTracker: DependentOrderHashesTracker;
     private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
     private readonly _orderByOrderHash: OrderByOrderHash = {};
-    private readonly _orderByOrderHashLock = new Lock();
+    private readonly _lock = new Lock();
     private readonly _eventWatcher: EventWatcher;
     private readonly _provider: ZeroExProvider;
     private readonly _collisionResistantAbiDecoder: CollisionResistanceAbiDecoder;
@@ -234,13 +234,13 @@ export class OrderWatcher {
         };
     }
     private async _addLockToCallbackAsync(cbAsync: any, ...params: any[]): Promise<void> {
-        await this._orderByOrderHashLock.acquire();
+        await this._lock.acquire();
         try {
             await cbAsync(...params);
-            await this._orderByOrderHashLock.release();
+            await this._lock.release();
         } catch (err) {
             // Make sure to releasee the lock if an error is thrown
-            await this._orderByOrderHashLock.release();
+            await this._lock.release();
             throw err;
         }
     }
@@ -508,4 +508,4 @@ export class OrderWatcher {
             this._callbackIfExists(null, orderState);
         }
     }
-}
+} // tslint:disable:max-file-line-count
