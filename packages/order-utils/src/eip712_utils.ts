@@ -94,7 +94,7 @@ export const eip712Utils = {
     },
     /**
      * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
-     * @param   zeroExTransaction A 0x transaction
+     * @param   transaction A 0x transaction
      * @param   verifyingContractAddress The coordinator extension contract address that will be verifying the typedData
      * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
      * @param   approvalExpirationTimeSeconds The approvals expiration time
