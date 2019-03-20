@@ -40,8 +40,7 @@ contract TestLibAddressArray {
         return addressArray.append(addressToAppend);
     }
 
-    /// @dev Creates an in-memory copy of `addressArray`,
-    ///      moves the free memory pointer by `freeMemOffset` bytes,
+    /// @dev Moves the free memory pointer by `freeMemOffset` bytes,
     ///      then performs the append.
     ///      This tests the behavior of the address array being reallocated if
     ///      the memory immediately after the old array is claimed.
@@ -64,22 +63,15 @@ contract TestLibAddressArray {
             uint256 newArrayMemStart
         )
     {
-        // Create a copy of the array.
-        result = new address[](addressArray.length);
         assembly {
-            oldArrayMemStart := result
-            let length := mload(addressArray)
-            for { let i := 0 } lt(i, length) { i := add(i, 1) } {
-                mstore(add(result, mul(add(i, 1), 32)),
-                    mload(add(addressArray, mul(add(i, 1), 32))))
-            }
-
+            // Remember the original memory address of the array.
+            oldArrayMemStart := addressArray
             // Move the free memory pointer.
             mstore(0x40, add(mload(0x40), freeMemOffset))
         }
 
         // Call append.
-        result = result.append(addressToAppend);
+        result = addressArray.append(addressToAppend);
 
         // Get the new array memory address.
         assembly {

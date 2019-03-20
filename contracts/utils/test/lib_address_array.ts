@@ -61,8 +61,9 @@ describe('LibAddressArray', () => {
         it('should revert if the free memory pointer was moved to before the end of the array', async () => {
             const arr = _.times(3, () => addressUtils.generatePseudoRandomAddress());
             const addr = addressUtils.generatePseudoRandomAddress();
+            const freeMemOffset = new BigNumber(-1);
             return expectContractCallFailedAsync(
-                lib.testAppendRealloc.callAsync(arr, new BigNumber(-1), addr),
+                lib.testAppendRealloc.callAsync(arr, freeMemOffset, addr),
                 RevertReason.InvalidFreeMemoryPtr,
             );
         });
@@ -70,10 +71,11 @@ describe('LibAddressArray', () => {
         it('should keep the same memory address if free memory pointer does not move', async () => {
             const arr = _.times(3, () => addressUtils.generatePseudoRandomAddress());
             const addr = addressUtils.generatePseudoRandomAddress();
+            const freeMemOffset = new BigNumber(0);
             const expected = [...arr, addr];
             const [result, oldArrayMemStart, newArrayMemStart] = await lib.testAppendRealloc.callAsync(
                 arr,
-                new BigNumber(0),
+                freeMemOffset,
                 addr,
             );
             expect(result).to.deep.equal(expected);
@@ -83,14 +85,19 @@ describe('LibAddressArray', () => {
         it('should change memory address if free memory pointer advances', async () => {
             const arr = _.times(3, () => addressUtils.generatePseudoRandomAddress());
             const addr = addressUtils.generatePseudoRandomAddress();
-            const expected = [...arr, addr];
+            const freeMemOffset = new BigNumber(1);
+            const expectedArray = [...arr, addr];
             const [result, oldArrayMemStart, newArrayMemStart] = await lib.testAppendRealloc.callAsync(
                 arr,
-                new BigNumber(1),
+                freeMemOffset,
                 addr,
             );
-            expect(result).to.deep.equal(expected);
-            expect(newArrayMemStart).bignumber.to.not.be.equal(oldArrayMemStart);
+            // The new location should be the end of the old array + freeMemOffset.
+            const expectedNewArrayMemStart = oldArrayMemStart
+                .plus((arr.length + 1) * 32)
+                .plus(freeMemOffset);
+            expect(result).to.deep.equal(expectedArray);
+            expect(newArrayMemStart).bignumber.to.be.equal(expectedNewArrayMemStart);
         });
     });
 
