@@ -16,6 +16,10 @@ export const providerUtils = {
         if (providerEngine.start === undefined) {
             throw new Error(`Invalid Web3ProviderEngine`);
         }
+        // HACK: When calling start() Web3ProviderEngine starts a block polling service
+        // this continuously pulls data from the network and can result in high data usage
+        // for long running services. If used in a front end application this can cause
+        // a high amount of load on a node (one request per user per block).
         providerEngine._ready.go();
         providerEngine._running = true;
     },
