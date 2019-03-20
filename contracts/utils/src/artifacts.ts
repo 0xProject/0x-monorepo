@@ -5,14 +5,17 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as Address from '../generated-artifacts/Address.json';
 import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as LibBytes from '../generated-artifacts/LibBytes.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../generated-artifacts/ReentrancyGuard.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
 import * as TestConstants from '../generated-artifacts/TestConstants.json';
+import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
 export const artifacts = {
+    Address: Address as ContractArtifact,
     LibBytes: LibBytes as ContractArtifact,
     Ownable: Ownable as ContractArtifact,
     ReentrancyGuard: ReentrancyGuard as ContractArtifact,
@@ -20,4 +23,5 @@ export const artifacts = {
     IOwnable: IOwnable as ContractArtifact,
     TestConstants: TestConstants as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,
+    TestLibAddressArray: TestLibAddressArray as ContractArtifact,
 };

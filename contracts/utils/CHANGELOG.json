@@ -13,6 +13,14 @@
             {
                 "note": "Added Address.sol with test for whether or not an address is a contract",
                 "pr": 1657
+            },
+            {
+                "note": "Add unit tests for `LibAddressArray`",
+                "pr": 1712
+            },
+            {
+                "note": "Fix `LibAddressArray.indexOf` returning incorrect index.",
+                "pr": 1712
             }
         ],
         "timestamp": 1553091633
