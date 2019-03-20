@@ -93,9 +93,7 @@ describe('LibAddressArray', () => {
                 addr,
             );
             // The new location should be the end of the old array + freeMemOffset.
-            const expectedNewArrayMemStart = oldArrayMemStart
-                .plus((arr.length + 1) * 32)
-                .plus(freeMemOffset);
+            const expectedNewArrayMemStart = oldArrayMemStart.plus((arr.length + 1) * 32).plus(freeMemOffset);
             expect(result).to.deep.equal(expectedArray);
             expect(newArrayMemStart).bignumber.to.be.equal(expectedNewArrayMemStart);
         });
