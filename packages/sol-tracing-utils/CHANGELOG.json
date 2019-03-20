@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.0.8",
+        "changes": [
+            {
+                "note": "Update solidity-parser-antlr to 0.4.2",
+                "pr": 1719
+            }
+        ]
+    },
+    {
         "version": "6.0.7",
         "changes": [
             {
