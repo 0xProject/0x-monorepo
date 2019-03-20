@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.3 - _March 20, 2019_
+
+    * Added Dutch Auction mainnet address (#1715)
+
 ## v2.2.2 - _February 25, 2019_
 
     * Fixed Ganache addresses for OrderValidator & Forwarder

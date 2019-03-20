@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.1.0 - _March 20, 2019_
+
+    * Add Coordinator EIP712 constants (#1705)
+    * Added encoding/decoding fdor ERC1155 asset data (#1661)
+
 ## v7.0.2 - _March 1, 2019_
 
     * Dependencies updated

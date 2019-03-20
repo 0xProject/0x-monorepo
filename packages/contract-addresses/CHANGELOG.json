@@ -6,7 +6,8 @@
                 "note": "Added Dutch Auction mainnet address",
                 "pr": 1715
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "version": "2.2.2",

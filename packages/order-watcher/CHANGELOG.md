@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.4 - _March 20, 2019_
+
+    * Update websocket from ^1.0.25 to ^1.0.26 (#1685)
+    * Fix issue where ERC721 Approval events could cause a lookup on undefined object (#1692)
+    * Fix race-condition bugs due to async event callbacks modifying shared state (#1718)
+
 ## v4.0.3 - _March 1, 2019_
 
     * Dependencies updated

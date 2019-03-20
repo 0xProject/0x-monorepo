@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v2.1.0 - _February 25, 2019_
 
     * Added types SupportedProvider, GanacheProvider, Web3JsProvider, ZeroExProvider, EIP1193Provider (#1627)

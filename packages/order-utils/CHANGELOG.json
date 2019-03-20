@@ -10,7 +10,8 @@
                 "note": "Added encoding/decoding fdor ERC1155 asset data",
                 "pr": 1661
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

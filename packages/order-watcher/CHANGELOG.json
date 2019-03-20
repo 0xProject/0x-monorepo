@@ -14,7 +14,8 @@
                 "note": "Fix race-condition bugs due to async event callbacks modifying shared state",
                 "pr": 1718
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

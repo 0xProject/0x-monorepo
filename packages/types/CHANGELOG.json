@@ -18,7 +18,8 @@
                 "note": "Add `RevertReason.SignatureInvalid` thrown by Coordinator",
                 "pr": 1705
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551220833,
