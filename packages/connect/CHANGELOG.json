@@ -6,7 +6,8 @@
                 "note": "Update websocket@^1.0.25 -> websocket@^1.0.26",
                 "pr": 1685
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

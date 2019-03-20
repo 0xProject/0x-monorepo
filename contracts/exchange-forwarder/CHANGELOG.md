@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _March 20, 2019_
+
+    * Do not reexport external dependencies (#1682)
+
 ## v1.0.9 - _March 1, 2019_
 
     * Dependencies updated

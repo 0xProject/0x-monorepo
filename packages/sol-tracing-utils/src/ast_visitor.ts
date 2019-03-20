@@ -73,13 +73,7 @@ export class ASTVisitor {
     public VariableDeclarationStatement(ast: Parser.VariableDeclarationStatement): void {
         this._visitStatement(ast);
     }
-    public Statement(ast: Parser.Statement): void {
-        this._visitStatement(ast);
-    }
     public WhileStatement(ast: Parser.WhileStatement): void {
-        this._visitStatement(ast);
-    }
-    public SimpleStatement(ast: Parser.SimpleStatement): void {
         this._visitStatement(ast);
     }
     public ThrowStatement(ast: Parser.ThrowStatement): void {
@@ -106,9 +100,6 @@ export class ASTVisitor {
         this._visitStatement(ast);
     }
     public AssemblyBlock(ast: Parser.AssemblyBlock): void {
-        this._visitStatement(ast);
-    }
-    public AssemblyExpression(ast: Parser.AssemblyExpression): void {
         this._visitStatement(ast);
     }
     public AssemblyAssignment(ast: Parser.AssemblyAssignment): void {

@@ -6,7 +6,8 @@
                 "note": "Add optional types to optimizer settings",
                 "pr": 1682
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "version": "4.1.0",

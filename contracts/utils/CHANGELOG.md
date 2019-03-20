@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _March 20, 2019_
+
+    * Optimize loops in LibAddressArray (#1668)
+    * Upgrade contracts to Solidity 0.5.5 (#1682)
+    * Added Address.sol with test for whether or not an address is a contract (#1657)
+
 ## v2.0.8 - _March 1, 2019_
 
     * Dependencies updated

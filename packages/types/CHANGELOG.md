@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.0 - _March 20, 2019_
+
+    * Added ERC1155 revert reasons (#1657)
+    * Added `ERC1155AssetData`, `ERC1155AssetDataNoProxyId`, and `ERC1155AssetDataAbi` (#1661)
+    * Add `InvalidOrigin` revert reason (#1668)
+    * Add `RevertReason.SignatureInvalid` thrown by Coordinator (#1705)
+
 ## v2.1.1 - _February 26, 2019_
 
     * Dependencies updated

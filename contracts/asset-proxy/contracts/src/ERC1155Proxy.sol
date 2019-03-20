@@ -26,7 +26,7 @@ contract ERC1155Proxy is
 {
 
     // Id of this proxy.
-    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC1155Token(address,uint256[],uint256[],bytes)"));
+    bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
 
     function () 
         external
