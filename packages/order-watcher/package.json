@@ -81,6 +81,7 @@
         "ethereumjs-blockstream": "6.0.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11",
+        "semaphore-async-await": "^1.5.1",
         "websocket": "^1.0.26"
     },
     "publishConfig": {

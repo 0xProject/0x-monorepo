@@ -9,6 +9,10 @@
             {
                 "note": "Fix issue where ERC721 Approval events could cause a lookup on undefined object",
                 "pr": 1692
+            },
+            {
+                "note": "Fix race-condition bugs due to async event callbacks modifying shared state",
+                "pr": 1718
             }
         ]
     },
