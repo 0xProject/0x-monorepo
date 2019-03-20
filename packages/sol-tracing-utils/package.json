@@ -49,7 +49,7 @@
         "@0x/typescript-typings": "^4.1.0",
         "@0x/utils": "^4.2.2",
         "@0x/web3-wrapper": "^6.0.2",
-        "@types/solidity-parser-antlr": "^0.2.0",
+        "@types/solidity-parser-antlr": "^0.2.3",
         "chalk": "^2.3.0",
         "ethereum-types": "^2.1.0",
         "ethereumjs-util": "^5.1.1",
@@ -62,7 +62,7 @@
         "rimraf": "^2.6.2",
         "semaphore-async-await": "^1.5.1",
         "solc": "^0.5.5",
-        "solidity-parser-antlr": "^0.2.12"
+        "solidity-parser-antlr": "^0.4.2"
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.0",
