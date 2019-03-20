@@ -45,7 +45,6 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         order_validator="0x9463e518dea6810309563c81d5266c1b1d149138",
         coordinator_registry="0x45797531b873fd5e519477a070a955764c1a5b07",
         coordinator="0x24675738816c87ad37e712cc24f309a0c906187f",
-
     ),
     NetworkId.ROPSTEN: ContractAddresses(
         erc20_proxy="0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
