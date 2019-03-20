@@ -136,13 +136,13 @@ setup(
     install_requires=[
         "0x-web3",
         "cytoolz",
-        "eth_utils",
         "eth_account",
         "eth_keys",
-        "toolz",
+        "eth_utils",
         "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
         # above works around https://github.com/ethereum/web3.py/issues/1179
         "mypy_extensions",
+        "toolz",
     ],
     extras_require={
         "dev": [
