@@ -282,7 +282,7 @@ describe('ExchangeWrapper', () => {
             expect(ordersInfo[1].orderHash).to.be.equal(anotherOrderHash);
         });
     });
-    describe.only('#validateOrderFillableOrThrowAsync', () => {
+    describe('#validateOrderFillableOrThrowAsync', () => {
         it('should throw if signature is invalid', async () => {
             const signedOrderWithInvalidSignature = {
                 ...signedOrder,

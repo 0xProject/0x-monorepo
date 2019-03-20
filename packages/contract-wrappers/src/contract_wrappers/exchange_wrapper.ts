@@ -1141,7 +1141,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * Validate if the supplied order is fillable, and throw if it isn't
      * @param signedOrder SignedOrder of interest
      * @param opts ValidateOrderFillableOpts options (e.g expectedFillTakerTokenAmount.
-     * If it isn't supplied, we check if the order is fillable for a non-zero amount)
+     * If it isn't supplied, we check if the order is fillable for the remaining amount.
+     * To check if the order is fillable for any amount set validateRemainingOrderAmountIsFillable to false.)
      */
     public async validateOrderFillableOrThrowAsync(
         signedOrder: SignedOrder,
