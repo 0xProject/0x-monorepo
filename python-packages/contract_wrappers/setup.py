@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""setuptools module for order_utils package."""
+"""setuptools module for contract_wrappers package."""
 
 import subprocess  # nosec
 from shutil import rmtree
@@ -53,14 +53,6 @@ class LintCommand(distutils.command.build_py.build_py):
             path.dirname(path.realpath(argv[0])), "stubs"
         )
 
-        # HACK(gene): until eth_abi releases
-        # https://github.com/ethereum/eth-abi/pull/107 , we need to simply
-        # create an empty file `py.typed` in the eth_abi package directory.
-        import eth_abi
-
-        eth_abi_dir = path.dirname(path.realpath(eth_abi.__file__))
-        Path(path.join(eth_abi_dir, "py.typed")).touch()
-
         # HACK(gene): until eth_utils fixes
         # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
         # create an empty file `py.typed` in the eth_abi package directory.
@@ -86,7 +78,7 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
+        rmtree("src/0x_contract_wrappers.egg-info", ignore_errors=True)
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
@@ -121,7 +113,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
     description = (
         "Publish docs to "
-        + "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-contract-wrappers-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
@@ -147,12 +139,12 @@ with open("README.md", "r") as file_handle:
 
 
 setup(
-    name="0x-order-utils",
+    name="0x-contract-wrappers",
     version="1.0.1",
-    description="Order utilities for 0x applications",
+    description="Python wrappers for 0x smart contracts",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
+    url="https://github.com/0xproject/0x-monorepo/python-packages/contract_wrappers",
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
@@ -168,8 +160,8 @@ setup(
         "0x-contract-addresses",
         "0x-contract-artifacts",
         "0x-json-schemas",
+        "0x-order-utils",
         "0x-web3",
-        "eth-abi",
         "eth_utils",
         "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
         # above works around https://github.com/ethereum/web3.py/issues/1179
@@ -194,7 +186,7 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={"zero_ex.order_utils": ["py.typed"]},
+    package_data={"zero_ex.contract_wrappers": ["py.typed"]},
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(
