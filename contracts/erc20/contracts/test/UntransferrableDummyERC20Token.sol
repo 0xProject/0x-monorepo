@@ -42,19 +42,6 @@ contract UntransferrableDummyERC20Token is
         )
     {}
 
-    // /// @dev send `value` token to `to` from `msg.sender`
-    // /// @param _to The address of the recipient
-    // /// @param _value The amount of token to be transferred
-    // function transfer(address _to, uint256 _value)
-    //     external
-    //     returns (bool)
-    // {
-    //     require(
-    //         false,
-    //         "TRANSFER_DISABLED"
-    //     );
-    // }
-
     /// @dev send `value` token to `to` from `from` on the condition it is approved by `from`
     /// @param _from The address of the sender
     /// @param _to The address of the recipient
