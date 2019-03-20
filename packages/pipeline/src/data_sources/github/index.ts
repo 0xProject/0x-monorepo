@@ -1,4 +1,4 @@
-import { fetchAsync } from '@0x/utils';
+import { fetchAsync, logUtils } from '@0x/utils';
 
 export interface GithubRepoResponse {
     full_name: string;
@@ -136,6 +136,9 @@ export class GithubSource {
         }&state=all&per_page=100&page=${page}`;
         const resp = await fetchAsync(url);
         const respJson: GithubIssueResponse[] = await resp.json();
+        if (!respJson[0]) {
+            logUtils.log(respJson);
+        }
         return respJson;
     }
 }

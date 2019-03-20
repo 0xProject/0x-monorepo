@@ -78,11 +78,20 @@ let connection: Connection;
     const GithubIssueRepository = connection.getRepository(GithubIssue);
     numberOfRecords = RECORDS_PER_PAGE;
     page = 1;
+    const maxAttempts = 3;
+    const repoFullName = `${GITHUB_OWNER}/${GITHUB_REPO}`;
     while (numberOfRecords === RECORDS_PER_PAGE) {
-        logUtils.log(`Fetching Github issues from API, page: ${page}.`);
-        const rawIssues = await githubSource.getGithubIssuesAsync(page);
-        const repoFullName = `${GITHUB_OWNER}/${GITHUB_REPO}`;
-        const issues = parseGithubIssues(rawIssues, observedTimestamp, repoFullName);
+        let rawIssues;
+        let issues;
+        let attempt = 1;
+        do {
+            logUtils.log(`Fetching Github issues from API, page: ${page}.`);
+            if (attempt > 1) {
+                logUtils.log(`Attempt #${attempt}`);
+            }
+            rawIssues = await githubSource.getGithubIssuesAsync(page);
+            issues = parseGithubIssues(rawIssues, observedTimestamp, repoFullName);
+        } while (issues.length === 0 && attempt++ < maxAttempts); // Github API returns no records
         numberOfRecords = issues.length;
         page++;
         logUtils.log(`Saving ${issues.length} issues to database.`);
