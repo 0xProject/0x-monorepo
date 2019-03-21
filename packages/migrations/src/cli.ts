@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
-import { logUtils } from '@0x/utils';
+import { logUtils, providerUtils } from '@0x/utils';
 import * as yargs from 'yargs';
 
 import { runMigrationsAsync } from './migration';
@@ -26,7 +26,7 @@ const args = yargs
     const rpcSubprovider = new RPCSubprovider(args['rpc-url']);
     const provider = new Web3ProviderEngine();
     provider.addProvider(rpcSubprovider);
-    provider.start();
+    providerUtils.startProviderEngine(provider);
     const normalizedFromAddress = (args.from as string).toLowerCase();
     const txDefaults = {
         from: normalizedFromAddress,
