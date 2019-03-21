@@ -46,6 +46,10 @@ class ContractWrapper:
     def get_account_address(self):
         return self._web3.eth.defaultAccount
 
+    def _validate_and_checksum_address(self, address):
+        self._web3.isAddress(address)
+        return to_checksum_address(address)
+
     def _invoke_function_call(
         self, 
         func, 
