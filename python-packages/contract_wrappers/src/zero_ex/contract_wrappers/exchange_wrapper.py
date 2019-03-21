@@ -39,7 +39,7 @@ class ExchangeWrapper(ContractWrapper):
 
     def fill_or_kill_order(
         self,
-        order: Order,
+        order,
         taker_fill_amount,
         signature,
         tx_opts={},
