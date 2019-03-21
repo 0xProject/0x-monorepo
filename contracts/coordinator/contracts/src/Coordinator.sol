@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental "ABIEncoderV2";
 
 import "./libs/LibConstants.sol";
+import "./libs/LibEIP712Domain.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinCoordinatorApprovalVerifier.sol";
 import "./MixinCoordinatorCore.sol";
@@ -28,12 +29,15 @@ import "./MixinCoordinatorCore.sol";
 // solhint-disable no-empty-blocks
 contract Coordinator is
     LibConstants,
+    LibEIP712Domain,
     MixinSignatureValidator,
     MixinCoordinatorApprovalVerifier,
     MixinCoordinatorCore
 {
-    constructor (address _exchange)
+    /// @param _exchange Address of the 0x Exchange contract.
+    /// @param _chainId Chain ID of the network this contract is deployed on.
+    constructor (address _exchange, uint256 _chainId)
         public
-        LibConstants(_exchange)
+        LibConstants(_exchange, _chainId)
     {}
 }
