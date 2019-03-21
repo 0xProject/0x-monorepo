@@ -12,15 +12,20 @@ def exchange_wrapper(ganache_provider):
 
 
 def create_test_order(
-    current_time, maker_address, maker_asset_data, taker_asset_data
+    current_time,
+    maker_address,
+    maker_asset_amount,
+    maker_asset_data,
+    taker_asset_amount,
+    taker_asset_data,
 ):
     order: Order = {
         "makerAddress": maker_address.lower(),
         "takerAddress": "0x0000000000000000000000000000000000000000",
         "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
         "senderAddress": "0x0000000000000000000000000000000000000000",
-        "makerAssetAmount": 2,
-        "takerAssetAmount": 2,
+        "makerAssetAmount": maker_asset_amount,
+        "takerAssetAmount": taker_asset_amount,
         "makerFee": 0,
         "takerFee": 0,
         "expirationTimeSeconds": current_time + 1000000000,
@@ -38,13 +43,12 @@ def test_exchange_wrapper__fill_order(
     ganache_provider,
     get_tx_receipt,
     weth_asset_data,
-    zrx_asset_data,
 ):
     taker = accounts[0]
     maker = accounts[1]
     exchange_address = exchange_wrapper.exchange_address
     order = create_test_order(
-        current_time, maker, zrx_asset_data, weth_asset_data
+        current_time, maker, 1, weth_asset_data, 1, weth_asset_data
     )
     order_hash = generate_order_hash_hex(
         order=order, exchange_address=exchange_address

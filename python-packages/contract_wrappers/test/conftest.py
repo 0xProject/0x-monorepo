@@ -1,11 +1,11 @@
 """Fixtures for pytest"""
 
 import pytest
-from eth_utils import remove_0x_prefix
+from eth_utils import remove_0x_prefix, to_checksum_address
 from web3 import Web3
 from zero_ex.order_utils import asset_data_utils as adu
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-from zero_ex.contract_wrappers.erc_20_wrapper import ERC20Wrapper
+from zero_ex.contract_artifacts import abi_by_name
 
 
 @pytest.fixture
@@ -34,18 +34,15 @@ def erc20_proxy_address():
 
 
 @pytest.fixture
-def erc20_wrapper(ganache_provider):
-    return ERC20Wrapper(ganache_provider)
-
-
-@pytest.fixture
-def zrx_address():
-    return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
-
-
-@pytest.fixture
 def weth_address():
     return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+
+
+@pytest.fixture
+def weth_instance(ganache_provider, weth_address):
+    return Web3(ganache_provider).eth.contract(
+        address=to_checksum_address(weth_address), abi=abi_by_name("WETH9")
+    )
 
 
 @pytest.fixture
