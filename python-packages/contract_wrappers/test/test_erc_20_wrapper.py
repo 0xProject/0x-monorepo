@@ -32,3 +32,14 @@ def test_erc20_wrapper__approve(
         MAX_ALLOWANCE,
         tx_opts={"from_": accounts[1]},
     )
+
+    acc_1_zrx_allowance = erc20_wrapper.allowance(
+        zrx_address, accounts[0], erc20_proxy_address
+    )
+
+    acc_2_zrx_allowance = erc20_wrapper.allowance(
+        zrx_address, accounts[1], erc20_proxy_address
+    )
+
+    assert acc_1_zrx_allowance == int(MAX_ALLOWANCE)
+    assert acc_2_zrx_allowance == int(MAX_ALLOWANCE)
