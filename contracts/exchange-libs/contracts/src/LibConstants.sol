@@ -38,16 +38,12 @@ contract LibConstants {
 
     bytes public ZRX_ASSET_DATA;
 
-    // The chain ID of the network this contract is deployed on.
-    uint256 public CHAIN_ID;
 
     /// @param zrxAssetData Asset data for ZRX token. Used for fee transfers.
-    /// @param chainId Chain ID of the network this contract is deployed on.
-    constructor (bytes memory zrxAssetData, uint256 chainId)
+    constructor (bytes memory zrxAssetData)
         public
     {
         ZRX_ASSET_DATA = zrxAssetData;
-        CHAIN_ID = chainId;
     }
 }
 // solhint-enable max-line-length
