@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ]
+    },
+    {
         "timestamp": 1553091633,
         "version": "1.0.1",
         "changes": [
@@ -14,10 +23,6 @@
             {
                 "note": "Created ERC1155 contracts package",
                 "pr": 1657
-            },
-            {
-                "note": "Run Web3ProviderEngine without excess block polling",
-                "pr": 1695
             }
         ]
     }

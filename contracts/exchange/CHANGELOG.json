@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
@@ -13,10 +22,6 @@
             {
                 "note": "Integration testing for ERC1155Proxy",
                 "pr": 1673
-            },
-            {
-                "note": "Run Web3ProviderEngine without excess block polling",
-                "pr": 1695
             }
         ],
         "timestamp": 1553091633
