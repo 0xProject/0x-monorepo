@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibConstants.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
 import "./MixinExchangeCore.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinWrapperFunctions.sol";
@@ -44,7 +45,8 @@ contract Exchange is
     /// @param _chainId Chain ID of the network this contract is deployed on.
     constructor (bytes memory _zrxAssetData, uint256 _chainId)
         public
-        LibConstants(_zrxAssetData, ) // @TODO: Remove _zrxAssetData when we deploy.
+        LibConstants(_zrxAssetData) // @TODO: Remove _zrxAssetData when we deploy.
+        LibEIP712(_chainId)
         MixinExchangeCore()
         MixinMatchOrders()
         MixinSignatureValidator()
