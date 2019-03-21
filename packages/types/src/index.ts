@@ -771,5 +771,6 @@ export interface PackageJSON {
 export interface EIP712DomainWithDefaultSchema {
     name?: string;
     version?: string;
+    chainId: number;
     verifyingContractAddress: string;
 }
