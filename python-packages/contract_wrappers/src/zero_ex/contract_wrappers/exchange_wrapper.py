@@ -34,11 +34,11 @@ class ExchangeWrapper(ContractWrapper):
             abi=abi_by_name("exchange"),
         )
 
-    def get_fill_event(self, tx_hash):
-        return self._exchange.events.Cancel().processReceipt(tx_hash)
+    def get_fill_event(self, tx_reciept):
+        return self._exchange.events.Fill().processReceipt(tx_reciept)
 
-    def get_cancel_event(self, tx_hash):
-        return self._exchange.events.Cancel().processReceipt(tx_hash)
+    def get_cancel_event(self, tx_reciept):
+        return self._exchange.events.Cancel().processReceipt(tx_reciept)
 
     def fill_order(
         self,

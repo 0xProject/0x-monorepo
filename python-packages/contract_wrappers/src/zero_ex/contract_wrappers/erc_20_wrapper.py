@@ -91,18 +91,18 @@ class ERC20Wrapper(ContractWrapper):
             func=func, tx_opts=None, validate_only=True
         )
 
-    def get_transfer_event(self, token_address, tx_hash):
+    def get_transfer_event(self, token_address, tx_reciept):
         token_address = self._validate_and_checksum_address(token_address)
         return (
             self._erc20(token_address)
             .events.Transfer()
-            .processReceipt(tx_hash)
+            .processReceipt(tx_reciept)
         )
 
-    def get_approval_event(self, token_address, tx_hash):
+    def get_approval_event(self, token_address, tx_reciept):
         token_address = self._validate_and_checksum_address(token_address)
         return (
             self._erc20(token_address)
             .events.Approval()
-            .processReceipt(tx_hash)
+            .processReceipt(tx_reciept)
         )

@@ -42,7 +42,6 @@ def test_exchange_wrapper__fill_order(
 ):
     taker = accounts[0]
     maker = accounts[1]
-
     exchange_address = exchange_wrapper.exchange_address
     order = create_test_order(
         current_time, maker, zrx_asset_data, weth_asset_data
@@ -59,7 +58,6 @@ def test_exchange_wrapper__fill_order(
         tx_opts={"from_": taker},
     )
     assert_valid(transaction_hash.hex(), "/hexSchema")
-
     reciept = get_tx_receipt(transaction_hash)
     fill_event = exchange_wrapper.get_fill_event(reciept)
     fill_log = fill_event[0].args
