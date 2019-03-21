@@ -18,8 +18,11 @@
 
 pragma solidity ^0.5.5;
 
+import "./LibConstants.sol";
 
-contract LibEIP712 {
+contract LibEIP712 is
+    LibConstants
+{
 
     // EIP191 header for EIP712 prefix
     string constant internal EIP191_HEADER = "\x19\x01";
@@ -28,13 +31,14 @@ contract LibEIP712 {
     string constant internal EIP712_DOMAIN_NAME = "0x Protocol";
 
     // EIP712 Domain Version value
-    string constant internal EIP712_DOMAIN_VERSION = "2";
+    string constant internal EIP712_DOMAIN_VERSION = "3.0.0";
 
     // Hash of the EIP712 Domain Separator Schema
     bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
         "EIP712Domain(",
         "string name,",
         "string version,",
+        "uint256 chainId",
         "address verifyingContract",
         ")"
     ));
@@ -50,6 +54,7 @@ contract LibEIP712 {
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
             keccak256(bytes(EIP712_DOMAIN_NAME)),
             keccak256(bytes(EIP712_DOMAIN_VERSION)),
+            CHAIN_ID,
             uint256(address(this))
         ));
     }
@@ -68,7 +73,7 @@ contract LibEIP712 {
         // keccak256(abi.encodePacked(
         //     EIP191_HEADER,
         //     EIP712_DOMAIN_HASH,
-        //     hashStruct    
+        //     hashStruct
         // ));
 
         assembly {
