@@ -292,7 +292,7 @@ describe.only('ExchangeWrapper', () => {
                     '0x1b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403',
             };
 
-            expect(
+            return expect(
                 contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
             ).to.eventually.to.be.rejectedWith(RevertReason.InvalidOrderSignature);
         });
@@ -310,7 +310,7 @@ describe.only('ExchangeWrapper', () => {
             });
         });
         it('should throw if the amount is greater than the allowance/balance', async () => {
-            expect(
+            return expect(
                 contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
                     // tslint:disable-next-line:custom-no-magic-numbers
                     expectedFillTakerTokenAmount: new BigNumber(2).pow(256).minus(1),
@@ -343,12 +343,9 @@ describe.only('ExchangeWrapper', () => {
                     signedOrder.makerAssetAmount,
                 ),
             );
-            try {
-                await contractWrappers.exchange.validateOrderFillableOrThrowAsync(invalidSignedOrder);
-                expect(true).to.be.false(); // never hit
-            } catch (e) {
-                expect(e.message).to.include('TRANSFER_FAILED');
-            }
+            return expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(invalidSignedOrder),
+            ).to.eventually.to.be.rejectedWith('TRANSFER_FAILED');
         });
     });
     describe('#isValidSignature', () => {
