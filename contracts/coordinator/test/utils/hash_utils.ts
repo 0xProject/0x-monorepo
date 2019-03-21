@@ -1,5 +1,4 @@
-import { eip712Utils, transactionHashUtils } from '@0x/order-utils';
-import { constants } from '@0x/order-utils/lib/src/constants';
+import { eip712Utils } from '@0x/order-utils';
 import { SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
@@ -11,25 +10,11 @@ export const hashUtils = {
         txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
     ): Buffer {
-        const domain = {
-            name: constants.COORDINATOR_DOMAIN_NAME,
-            version: constants.COORDINATOR_DOMAIN_VERSION,
+        const typedData = eip712Utils.createCoordinatorApprovalTypedData(
+            transaction,
             verifyingContractAddress,
-        };
-        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-        const approval = {
             txOrigin,
-            transactionHash,
-            transactionSignature: transaction.signature,
-            approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
-        };
-        const typedData = eip712Utils.createTypedData(
-            constants.COORDINATOR_APPROVAL_SCHEMA.name,
-            {
-                CoordinatorApproval: constants.COORDINATOR_APPROVAL_SCHEMA.parameters,
-            },
-            approval,
-            domain,
+            approvalExpirationTimeSeconds,
         );
         const hashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         return hashBuffer;
