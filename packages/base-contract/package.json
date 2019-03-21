@@ -1,6 +1,6 @@
 {
     "name": "@0x/base-contract",
-    "version": "5.0.3",
+    "version": "5.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -40,9 +40,9 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/typescript-typings": "^4.2.0",
-        "@0x/utils": "^4.2.3",
-        "@0x/web3-wrapper": "^6.0.3",
+        "@0x/typescript-typings": "^4.2.1",
+        "@0x/utils": "^4.3.0",
+        "@0x/web3-wrapper": "^6.0.4",
         "ethereum-types": "^2.1.1",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"
