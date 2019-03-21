@@ -17,20 +17,24 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental "ABIEncoderV2";
 
-import "../interfaces/ITransactions.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
+import "../src/libs/LibConstants.sol";
+import "../src/MixinSignatureValidator.sol";
+import "../src/MixinCoordinatorApprovalVerifier.sol";
 
 
-// solhint-disable var-name-mixedcase
-contract LibConstants {
-
-    // The 0x Exchange contract.
-    ITransactions internal EXCHANGE;
-
-    /// @param _exchange Address of the 0x Exchange contract.
-    constructor (address _exchange)
+// solhint-disable no-empty-blocks
+contract TestMixins is
+    LibConstants,
+    LibEIP712,
+    MixinSignatureValidator,
+    MixinCoordinatorApprovalVerifier
+{
+    constructor (address _exchange, uint256 _chainId)
         public
-    {
-        EXCHANGE = ITransactions(_exchange);
-    }
+        LibConstants(_exchange)
+        LibEIP712(_chainId)
+    {}
 }

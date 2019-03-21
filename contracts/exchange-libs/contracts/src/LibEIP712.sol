@@ -18,20 +18,8 @@
 
 pragma solidity ^0.5.5;
 
-import "./LibConstants.sol";
 
-contract LibEIP712 is
-    LibConstants
-{
-
-    // EIP191 header for EIP712 prefix
-    string constant internal EIP191_HEADER = "\x19\x01";
-
-    // EIP712 Domain Name value
-    string constant internal EIP712_DOMAIN_NAME = "0x Protocol";
-
-    // EIP712 Domain Version value
-    string constant internal EIP712_DOMAIN_VERSION = "3.0.0";
+contract LibEIP712 {
 
     // Hash of the EIP712 Domain Separator Schema
     bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
@@ -43,32 +31,66 @@ contract LibEIP712 is
         ")"
     ));
 
+    // EIP712 Exchange Domain Name value
+    string constant internal EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
+
+    // EIP712 Exchange Domain Version value
+    string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
+
     // Hash of the EIP712 Domain Separator data
     // solhint-disable-next-line var-name-mixedcase
-    bytes32 public EIP712_DOMAIN_HASH;
+    bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
 
-    constructor ()
+
+    // Chain ID of the network this contract is deployed on.
+    // solhint-disable-next-line var-name-mixedcase
+    uint256 internal CHAIN_ID;
+
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (uint256 chainId)
         public
     {
-        EIP712_DOMAIN_HASH = keccak256(abi.encodePacked(
-            EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
-            keccak256(bytes(EIP712_DOMAIN_NAME)),
-            keccak256(bytes(EIP712_DOMAIN_VERSION)),
-            CHAIN_ID,
-            uint256(address(this))
-        ));
+        CHAIN_ID = chainId;
+        EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
+            EIP712_EXCHANGE_DOMAIN_NAME,
+            EIP712_EXCHANGE_DOMAIN_VERSION,
+            address(this)
+        );
     }
 
-    /// @dev Calculates EIP712 encoding for a hash struct in this EIP712 Domain.
-    /// @param hashStruct The EIP712 hash struct.
-    /// @return EIP712 hash applied to this EIP712 Domain.
-    function hashEIP712Message(bytes32 hashStruct)
+    /// @dev Calculates a EIP712 domain separator.
+    /// @param name The EIP712 domain name.
+    /// @param version The EIP712 domain version.
+    /// @param verifyingContract The EIP712 verifying contract.
+    /// @return EIP712 domain separator.
+    function hashEIP712Domain(
+        string memory name,
+        string memory version,
+        address verifyingContract
+    )
         internal
         view
         returns (bytes32 result)
     {
-        bytes32 eip712DomainHash = EIP712_DOMAIN_HASH;
+        return keccak256(abi.encodePacked(
+            EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
+            keccak256(bytes(name)),
+            keccak256(bytes(version)),
+            CHAIN_ID,
+            uint256(verifyingContract)
+        ));
+    }
 
+    /// @dev Calculates EIP712 encoding for a hash struct with a given domain hash.
+    /// @param eip712DomainHash Hash of the domain domain separator data, computed
+    ///                         with getDomainHash().
+    /// @param hashStruct The EIP712 hash struct.
+    /// @return EIP712 hash applied to the given EIP712 Domain.
+    function hashEIP712Message(bytes32 eip712DomainHash, bytes32 hashStruct)
+        internal
+        pure
+        returns (bytes32 result)
+    {
         // Assembly for more efficient computing:
         // keccak256(abi.encodePacked(
         //     EIP191_HEADER,
