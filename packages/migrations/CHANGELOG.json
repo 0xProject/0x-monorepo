@@ -5,6 +5,10 @@
             {
                 "note": "Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script",
                 "pr": 1689
+            },
+            {
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
             }
         ]
     },

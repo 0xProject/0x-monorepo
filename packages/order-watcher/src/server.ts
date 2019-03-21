@@ -1,5 +1,6 @@
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { providerUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { OrderWatcherWebSocketServer } from './order_watcher/order_watcher_web_socket_server';
@@ -11,7 +12,7 @@ const provider = new Web3ProviderEngine();
 const jsonRpcUrl = process.env.JSON_RPC_URL || DEFAULT_RPC_URL;
 const rpcSubprovider = new RPCSubprovider(jsonRpcUrl);
 provider.addProvider(rpcSubprovider);
-provider.start();
+providerUtils.startProviderEngine(provider);
 
 const networkId = process.env.NETWORK_ID !== undefined ? _.parseInt(process.env.NETWORK_ID) : GANACHE_NETWORK_ID;
 

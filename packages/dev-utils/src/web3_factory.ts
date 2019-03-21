@@ -5,6 +5,7 @@ import {
     RPCSubprovider,
     Web3ProviderEngine,
 } from '@0x/subproviders';
+import { providerUtils } from '@0x/utils';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 
@@ -68,7 +69,7 @@ export const web3Factory = {
         } else {
             provider.addProvider(new RPCSubprovider(config.rpcUrl || constants.RPC_URL));
         }
-        provider.start();
+        providerUtils.startProviderEngine(provider);
         return provider;
     },
 };

@@ -1,3 +1,4 @@
+import { providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as lightwallet from 'eth-lightwallet';
 import { JSONRPCResponsePayload } from 'ethereum-types';
@@ -88,7 +89,7 @@ describe('EthLightwalletSubprovider', () => {
             provider = new Web3ProviderEngine();
             provider.addProvider(ethLightwalletSubprovider);
             provider.addProvider(ganacheSubprovider);
-            provider.start();
+            providerUtils.startProviderEngine(provider);
         });
         describe('success cases', () => {
             it('returns a list of accounts', (done: DoneCallback) => {

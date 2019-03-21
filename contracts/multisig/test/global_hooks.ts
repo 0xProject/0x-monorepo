@@ -1,9 +1,9 @@
-import { env, EnvVars } from '@0x/dev-utils';
-
 import { coverage, profiler, provider } from '@0x/contracts-test-utils';
+import { env, EnvVars } from '@0x/dev-utils';
+import { providerUtils } from '@0x/utils';
 
-before('start web3 provider engine', () => {
-    provider.start();
+before('start web3 provider', () => {
+    providerUtils.startProviderEngine(provider);
 });
 
 after('generate coverage report', async () => {

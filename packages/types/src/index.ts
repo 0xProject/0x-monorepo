@@ -283,6 +283,8 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
+    // LibAddressArray
+    InvalidFreeMemoryPtr = 'INVALID_FREE_MEMORY_PTR',
     // DutchAuction
     AuctionInvalidAmount = 'INVALID_AMOUNT',
     AuctionExpired = 'AUCTION_EXPIRED',
