@@ -1,5 +1,4 @@
 from eth_utils import to_checksum_address
-from hexbytes import HexBytes
 from web3 import Web3
 from web3.providers.base import BaseProvider
 
@@ -17,12 +16,17 @@ class ContractWrapper:
         self._provider = provider
         self._web3 = Web3(provider)
 
-        if self._web3.eth.defaultAccount:
+        if (
+            self._web3.eth.defaultAccount
+            or len(self._web3.eth.accounts) is not 0
+        ):
             self._can_send_tx = True
         else:
             if hasattr(
                 self._web3, "middleware_stack"
-            ) and self._web3.middleware_stack.get("sign_and_send_raw_middleware"):
+            ) and self._web3.middleware_stack.get(
+                "sign_and_send_raw_middleware"
+            ):
                 if account_address:
                     self._web3.eth.defaultAccount = to_checksum_address(
                         account_address
@@ -37,7 +41,9 @@ class ContractWrapper:
             elif private_key:
                 self._private_key = private_key
                 self._web3.eth.defaultAccount = to_checksum_address(
-                    self._web3.eth.account.privateKeyToAccount(private_key).address
+                    self._web3.eth.account.privateKeyToAccount(
+                        private_key
+                    ).address
                 )
                 self._can_send_tx = True
             else:
@@ -50,12 +56,7 @@ class ContractWrapper:
         self._web3.isAddress(address)
         return to_checksum_address(address)
 
-    def _invoke_function_call(
-        self, 
-        func, 
-        tx_opts,
-        validate_only,
-    ):
+    def _invoke_function_call(self, func, tx_opts, validate_only):
         if validate_only or not self._can_send_tx:
             return func.call()
 
@@ -64,7 +65,7 @@ class ContractWrapper:
             k: v for k, v in prefill_tx_params.items() if v is not None
         }
 
-        if self._private_key:
+        if hasattr(self, "_private_key"):
             return self._sign_and_send_raw_direct(func, tx_params)
         else:
             return func.transact(tx_params)
