@@ -22,7 +22,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('ExchangeWrapper', () => {
+describe.only('ExchangeWrapper', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
     let zrxTokenAddress: string;
@@ -329,16 +329,26 @@ describe('ExchangeWrapper', () => {
                 new BigNumber(2).pow(20).minus(1),
             );
             const untransferrableMakerAssetData = assetDataUtils.encodeERC20AssetData(untransferrableToken.address);
-            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+            const invalidSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 untransferrableMakerAssetData,
                 takerAssetData,
                 makerAddress,
                 takerAddress,
                 fillableAmount,
             );
-            expect(
-                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder),
-            ).to.eventually.to.be.rejectedWith(RevertReason.TransferFailed);
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await contractWrappers.erc20Token.setProxyAllowanceAsync(
+                    untransferrableToken.address,
+                    makerAddress,
+                    signedOrder.makerAssetAmount,
+                ),
+            );
+            try {
+                await contractWrappers.exchange.validateOrderFillableOrThrowAsync(invalidSignedOrder);
+                expect(true).to.be.false(); // never hit
+            } catch (e) {
+                expect(e.message).to.include('TRANSFER_FAILED');
+            }
         });
     });
     describe('#isValidSignature', () => {
