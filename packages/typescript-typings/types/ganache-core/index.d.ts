@@ -1,7 +1,5 @@
 declare module 'ganache-core' {
-    export interface GanacheProvider {
-        sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): void;
-    }
+    const Provider = require('ethereum-types').Provider;
     export interface GanacheOpts {
         verbose?: boolean;
         logger?: {
@@ -15,5 +13,5 @@ declare module 'ganache-core' {
         vmErrorsOnRPCResponse?: boolean;
         db_path?: string;
     }
-    export function provider(opts: GanacheOpts): GanacheProvider;
+    export function provider(opts: GanacheOpts): Provider;
 }
