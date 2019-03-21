@@ -1211,7 +1211,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Validate the transfer from the Maker to the Taker. This is simulated on chain
-     * via an eth_call. If this call fails the asset is unlikely to be transferrable.
+     * via an eth_call. If this call fails the asset is not transferrable.
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
      * @param takerAddress The taker of the order, defaults to signedOrder.takerAddress

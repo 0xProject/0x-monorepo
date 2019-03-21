@@ -317,6 +317,39 @@ describe('ExchangeWrapper', () => {
                 }),
             ).to.eventually.to.be.rejected();
         });
+        it('should throw when the maker does not have enough balance for the remaining order amount', async () => {
+            const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
+            // Change maker balance to have less than the order amount
+            const remainingBalance = makerBalance.minus(signedOrder.makerAssetAmount.minus(1));
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await contractWrappers.erc20Token.transferAsync(
+                    makerTokenAddress,
+                    makerAddress,
+                    constants.NULL_ADDRESS,
+                    remainingBalance,
+                ),
+            );
+            return expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder),
+            ).to.eventually.to.be.rejected();
+        });
+        it('should validate the order when remaining order amount has some fillable amount', async () => {
+            const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
+            // Change maker balance to have less than the order amount
+            const remainingBalance = makerBalance.minus(signedOrder.makerAssetAmount.minus(1));
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await contractWrappers.erc20Token.transferAsync(
+                    makerTokenAddress,
+                    makerAddress,
+                    constants.NULL_ADDRESS,
+                    remainingBalance,
+                ),
+            );
+            // An amount is still transferrable
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                validateRemainingOrderAmountIsFillable: false,
+            });
+        });
         it('should throw when the ERC20 token has transfer restrictions', async () => {
             const untransferrableToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
                 UntransferrableDummyERC20Token,
