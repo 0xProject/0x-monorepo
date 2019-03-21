@@ -40,6 +40,7 @@ export const eip712Utils = {
             domain: {
                 name: _.isUndefined(domain.name) ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
                 version: _.isUndefined(domain.version) ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
+                chainId: domain.chainId,
                 verifyingContract: domain.verifyingContractAddress,
             },
             message,
