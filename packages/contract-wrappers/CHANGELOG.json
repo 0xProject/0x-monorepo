@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.1.0",
+        "changes": [
+            {
+                "note": "Added a simulation for `exchange.validateOrderFillableOrThrowAsync` that simulates maker transfer",
+                "pr": 1714
+            }
+        ]
+    },
+    {
         "timestamp": 1553183790,
         "version": "8.0.5",
         "changes": [

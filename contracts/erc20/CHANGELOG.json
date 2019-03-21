@@ -5,6 +5,10 @@
             {
                 "note": "Run Web3ProviderEngine without excess block polling",
                 "pr": 1695
+            },
+            {
+                "note": "Added UntransferrableDummyERC20Token",
+                "pr": 1714
             }
         ],
         "timestamp": 1553183790

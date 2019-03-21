@@ -1,5 +1,14 @@
 [
     {
+        "version": "7.2.0",
+        "changes": [
+            {
+                "note": "Added `orderCalculationUtils`",
+                "pr": 1714
+            }
+        ]
+    },
+    {
         "timestamp": 1553183790,
         "version": "7.1.1",
         "changes": [
