@@ -2,7 +2,18 @@
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
 import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -10,21 +21,20 @@ import * as ethers from 'ethers';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
-
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class TestLibsContract extends BaseContract {
     public publicGetTransactionHash = {
         async callAsync(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string
-        > {
-            const self = this as any as TestLibsContract;
-            const encodedData = self._strictEncodeArguments('publicGetTransactionHash((uint256,address,bytes))', [transaction
-        ]);
+        ): Promise<string> {
+            const self = (this as any) as TestLibsContract;
+            const encodedData = self._strictEncodeArguments('publicGetTransactionHash((uint256,address,bytes))', [
+                transaction,
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -37,22 +47,25 @@ export class TestLibsContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('publicGetTransactionHash((uint256,address,bytes))');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
     };
     public publicGetTECApprovalHash = {
         async callAsync(
-            approval: {transactionHash: string;transactionSignature: string;approvalExpirationTimeSeconds: BigNumber},
+            approval: {
+                transactionHash: string;
+                transactionSignature: string;
+                approvalExpirationTimeSeconds: BigNumber;
+            },
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string
-        > {
-            const self = this as any as TestLibsContract;
-            const encodedData = self._strictEncodeArguments('publicGetTECApprovalHash((bytes32,bytes,uint256))', [approval
-        ]);
+        ): Promise<string> {
+            const self = (this as any) as TestLibsContract;
+            const encodedData = self._strictEncodeArguments('publicGetTECApprovalHash((bytes32,bytes,uint256))', [
+                approval,
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -65,19 +78,14 @@ export class TestLibsContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('publicGetTECApprovalHash((bytes32,bytes,uint256))');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
     };
     public EIP712_DOMAIN_HASH = {
-        async callAsync(
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string
-        > {
-            const self = this as any as TestLibsContract;
+        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+            const self = (this as any) as TestLibsContract;
             const encodedData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -91,8 +99,7 @@ export class TestLibsContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -108,7 +115,7 @@ export class TestLibsContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return TestLibsContract.deployAsync(bytecode, abi, provider, txDefaults, );
+        return TestLibsContract.deployAsync(bytecode, abi, provider, txDefaults);
     }
     public static async deployAsync(
         bytecode: string,
@@ -118,17 +125,13 @@ export class TestLibsContract extends BaseContract {
     ): Promise<TestLibsContract> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
+            { data: txData },
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );

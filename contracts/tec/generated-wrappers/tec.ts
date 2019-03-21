@@ -2,14 +2,24 @@
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
 import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
-
 
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
@@ -21,12 +31,9 @@ export class TECContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string
-        > {
-            const self = this as any as TECContract;
-            const encodedData = self._strictEncodeArguments('getSignerAddress(bytes32,bytes)', [hash,
-        signature
-        ]);
+        ): Promise<string> {
+            const self = (this as any) as TECContract;
+            const encodedData = self._strictEncodeArguments('getSignerAddress(bytes32,bytes)', [hash, signature]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -39,30 +46,39 @@ export class TECContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getSignerAddress(bytes32,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
     };
     public assertValidTransactionOrdersApproval = {
         async callAsync(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void
-        > {
-            const self = this as any as TECContract;
-            const encodedData = self._strictEncodeArguments('assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes,uint256[],bytes[])', [transaction,
-        orders,
-        transactionSignature,
-        approvalExpirationTimeSeconds,
-        approvalSignatures
-        ]);
+        ): Promise<void> {
+            const self = (this as any) as TECContract;
+            const encodedData = self._strictEncodeArguments(
+                'assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes,uint256[],bytes[])',
+                [transaction, orders, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+            );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -73,30 +89,29 @@ export class TECContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes,uint256[],bytes[])');
+            const abiEncoder = self._lookupAbiEncoder(
+                'assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes,uint256[],bytes[])',
+            );
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
     };
     public assertValidTECApprovals = {
         async callAsync(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void
-        > {
-            const self = this as any as TECContract;
-            const encodedData = self._strictEncodeArguments('assertValidTECApprovals((uint256,address,bytes),bytes,uint256[],bytes[])', [transaction,
-        transactionSignature,
-        approvalExpirationTimeSeconds,
-        approvalSignatures
-        ]);
+        ): Promise<void> {
+            const self = (this as any) as TECContract;
+            const encodedData = self._strictEncodeArguments(
+                'assertValidTECApprovals((uint256,address,bytes),bytes,uint256[],bytes[])',
+                [transaction, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+            );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -107,21 +122,18 @@ export class TECContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('assertValidTECApprovals((uint256,address,bytes),bytes,uint256[],bytes[])');
+            const abiEncoder = self._lookupAbiEncoder(
+                'assertValidTECApprovals((uint256,address,bytes),bytes,uint256[],bytes[])',
+            );
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
     };
     public EIP712_DOMAIN_HASH = {
-        async callAsync(
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string
-        > {
-            const self = this as any as TECContract;
+        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+            const self = (this as any) as TECContract;
             const encodedData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -135,26 +147,24 @@ export class TECContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
     };
     public executeTransaction = {
         async sendTransactionAsync(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             txData: Partial<TxData> = {},
         ): Promise<string> {
-            const self = this as any as TECContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])', [transaction,
-    transactionSignature,
-    approvalExpirationTimeSeconds,
-    approvalSignatures
-    ]);
+            const self = (this as any) as TECContract;
+            const encodedData = self._strictEncodeArguments(
+                'executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])',
+                [transaction, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+            );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -167,25 +177,24 @@ export class TECContract extends BaseContract {
                     transaction,
                     transactionSignature,
                     approvalExpirationTimeSeconds,
-                    approvalSignatures
+                    approvalSignatures,
                 ),
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             txData: Partial<TxData> = {},
         ): Promise<number> {
-            const self = this as any as TECContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])', [transaction,
-    transactionSignature,
-    approvalExpirationTimeSeconds,
-    approvalSignatures
-    ]);
+            const self = (this as any) as TECContract;
+            const encodedData = self._strictEncodeArguments(
+                'executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])',
+                [transaction, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+            );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -198,34 +207,31 @@ export class TECContract extends BaseContract {
             return gas;
         },
         getABIEncodedTransactionData(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
         ): string {
-            const self = this as any as TECContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])', [transaction,
-    transactionSignature,
-    approvalExpirationTimeSeconds,
-    approvalSignatures
-    ]);
+            const self = (this as any) as TECContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])',
+                [transaction, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+            );
             return abiEncodedTransactionData;
         },
         async callAsync(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void
-        > {
-            const self = this as any as TECContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])', [transaction,
-        transactionSignature,
-        approvalExpirationTimeSeconds,
-        approvalSignatures
-        ]);
+        ): Promise<void> {
+            const self = (this as any) as TECContract;
+            const encodedData = self._strictEncodeArguments(
+                'executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])',
+                [transaction, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+            );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -236,10 +242,11 @@ export class TECContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])');
+            const abiEncoder = self._lookupAbiEncoder(
+                'executeTransaction((uint256,address,bytes),bytes,uint256[],bytes[])',
+            );
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -248,7 +255,7 @@ export class TECContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-            _exchange: string,
+        _exchange: string,
     ): Promise<TECContract> {
         if (_.isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
@@ -256,32 +263,28 @@ export class TECContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return TECContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange
-);
+        return TECContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-            _exchange: string,
+        _exchange: string,
     ): Promise<TECContract> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_exchange
-] = BaseContract._formatABIDataItemList(
+        [_exchange] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_exchange
-],
+            [_exchange],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange
-]);
+        const txData = deployInfo.encode(bytecode, [_exchange]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
+            { data: txData },
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
@@ -290,8 +293,7 @@ export class TECContract extends BaseContract {
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`TEC successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new TECContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_exchange
-];
+        contractInstance.constructorArgs = [_exchange];
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
