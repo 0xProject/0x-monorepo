@@ -21,6 +21,7 @@ pragma solidity ^0.5.5;
 import "./LibConstants.sol";
 
 
+// solhint-disable var-name-mixedcase
 contract LibEIP712Domain is
     LibConstants
 {
@@ -38,23 +39,22 @@ contract LibEIP712Domain is
     string constant internal EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
 
     // EIP712 Domain Version value for the Exchange
-    string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "2";
+    string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
 
     // Hash of the EIP712 Domain Separator Schema
     bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
         "EIP712Domain(",
         "string name,",
         "string version,",
+        "uint256 chainId",
         "address verifyingContract",
         ")"
     ));
 
     // Hash of the EIP712 Domain Separator data for the Coordinator
-    // solhint-disable-next-line var-name-mixedcase
     bytes32 public EIP712_COORDINATOR_DOMAIN_HASH;
 
     // Hash of the EIP712 Domain Separator data for the Exchange
-    // solhint-disable-next-line var-name-mixedcase
     bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
 
     constructor ()
@@ -64,6 +64,7 @@ contract LibEIP712Domain is
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
             keccak256(bytes(EIP712_COORDINATOR_DOMAIN_NAME)),
             keccak256(bytes(EIP712_COORDINATOR_DOMAIN_VERSION)),
+            CHAIN_ID,
             uint256(address(this))
         ));
 
@@ -71,6 +72,7 @@ contract LibEIP712Domain is
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
             keccak256(bytes(EIP712_EXCHANGE_DOMAIN_NAME)),
             keccak256(bytes(EIP712_EXCHANGE_DOMAIN_VERSION)),
+            CHAIN_ID,
             uint256(address(EXCHANGE))
         ));
     }
