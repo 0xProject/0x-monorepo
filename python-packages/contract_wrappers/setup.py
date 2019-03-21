@@ -144,7 +144,10 @@ setup(
     description="Python wrappers for 0x smart contracts",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/contract_wrappers",
+    url=(
+        "https://github.com/0xproject/0x-monorepo/tree/development"
+        + "/python-packages/contract_wrappers"
+    ),
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
