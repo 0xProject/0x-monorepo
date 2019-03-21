@@ -1210,7 +1210,7 @@ export class ExchangeWrapper extends ContractWrapper {
         await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, fillableTakerAssetAmount);
     }
     /**
-     * Validate the transfer from the Maker to the Taker. This is simulated on chain
+     * Validate the transfer from the Maker to the Taker. This is simulated on-chain
      * via an eth_call. If this call fails the asset is not transferrable.
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
