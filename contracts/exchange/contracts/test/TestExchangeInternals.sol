@@ -28,7 +28,7 @@ contract TestExchangeInternals is
 {
     constructor ()
         public
-        Exchange("")
+        Exchange("", 1)
     {}
 
     /// @dev Adds properties of both FillResults instances.
@@ -165,7 +165,7 @@ contract TestExchangeInternals is
     {
         return isRoundingErrorCeil(numerator, denominator, target);
     }
- 
+
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.

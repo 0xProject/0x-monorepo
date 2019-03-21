@@ -18,10 +18,10 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
 
 
 contract MixinTransactions is
@@ -29,12 +29,33 @@ contract MixinTransactions is
     MSignatureValidator,
     MTransactions
 {
+
+    // EIP712 Domain Name value
+    string constant internal EIP712_DOMAIN_NAME = "0x Protocol";
+
+    // EIP712 Domain Version value
+    string constant internal EIP712_DOMAIN_VERSION = "3.0.0";
+
+    // Hash of the EIP712 Domain Separator data
+    // solhint-disable-next-line var-name-mixedcase
+    bytes32 public EIP712_DOMAIN_HASH;
+
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
     mapping (bytes32 => bool) public transactions;
 
     // Address of current transaction signer
     address public currentContextAddress;
+
+    constructor ()
+        public
+    {
+        EIP712_DOMAIN_HASH = hashEIP712Domain(
+            EIP712_DOMAIN_NAME,
+            EIP712_DOMAIN_VERSION,
+            address(this)
+        );
+    }
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
@@ -55,11 +76,14 @@ contract MixinTransactions is
             "REENTRANCY_ILLEGAL"
         );
 
-        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(
-            salt,
-            signerAddress,
-            data
-        ));
+        bytes32 transactionHash = hashEIP712Message(
+            EIP712_DOMAIN_HASH,
+            hashZeroExTransaction(
+                salt,
+                signerAddress,
+                data
+           )
+        );
 
         // Validate transaction has not been executed
         require(
