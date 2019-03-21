@@ -25,8 +25,6 @@ import "./DummyERC20Token.sol";
 contract UntransferrableDummyERC20Token is
     DummyERC20Token
 {
-    bool internal _paused;
-
     constructor (
         string memory _name,
         string memory _symbol,
