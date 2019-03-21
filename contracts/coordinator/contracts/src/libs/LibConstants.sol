@@ -21,14 +21,20 @@ pragma solidity ^0.5.5;
 import "../interfaces/ITransactions.sol";
 
 
+// solhint-disable var-name-mixedcase
 contract LibConstants {
 
-     // solhint-disable-next-line var-name-mixedcase
+    // The 0x Exchange contract.
     ITransactions internal EXCHANGE;
+    // The numerical ID of the network this contract is deployed on.
+    uint256 internal CHAIN_ID;
 
-    constructor (address _exchange)
+    /// @param _exchange Address of the 0x Exchange contract.
+    /// @param _chainId Chain ID of the network this contract is deployed on.
+    constructor (address _exchange, uint256 _chainId)
         public
     {
         EXCHANGE = ITransactions(_exchange);
+        CHAIN_ID = _chainId;
     }
 }
