@@ -76,7 +76,7 @@ class TestPublishCommand(distutils.command.build_py.build_py):
     """Custom command to publish to test.pypi.org."""
 
     description = (
-        "Publish dist/* to test.pypi.org. Run sdist & bdist_wheel first."
+        "Publish dist/* to test.pypi.org." "Run sdist & bdist_wheel first."
     )
 
     def run(self):
@@ -123,7 +123,7 @@ setup(
     long_description=README_MD,
     long_description_content_type="text/markdown",
     url="https://github.com/0xproject/0x-monorepo/python-packages/middlewares",
-    author="F. Eugene Aumson",
+    author="Michael Hwang",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
@@ -134,24 +134,22 @@ setup(
         "publish_docs": PublishDocsCommand,
     },
     install_requires=[
-        "0x-web3",
-        "cytoolz",
         "eth_account",
         "eth_keys",
-        "eth_utils",
         "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
         # above works around https://github.com/ethereum/web3.py/issues/1179
         "mypy_extensions",
-        "toolz",
     ],
     extras_require={
         "dev": [
-            "0x-order-utils",
             "0x-contract-addresses",
+            "0x-order-utils",
+            "0x-web3",
             "bandit",
             "black",
             "coverage",
             "coveralls",
+            "eth_utils",
             "mypy",
             "mypy_extensions",
             "pycodestyle",

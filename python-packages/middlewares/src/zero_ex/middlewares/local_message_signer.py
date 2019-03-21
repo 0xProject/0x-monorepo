@@ -5,84 +5,62 @@ This middleware intercepts all calls to 'eth_sign and enforces all sign
 messages to be signed with a local private key.
 """
 
-import operator
 from functools import singledispatch
 from eth_account import Account, messages
 from eth_account.local import LocalAccount
 from eth_keys.datatypes import PrivateKey
-from eth_utils import to_dict
 from hexbytes import HexBytes
-from zero_ex.middlewares._utils import apply_formatter_if, compose
-
-
-TO_HEXSTR_FROM_ETH_KEY = operator.methodcaller("to_hex")
-
-
-def is_eth_key(value):
-    """Check if value is an eth_keys.PrivateKey object."""
-    return isinstance(value, PrivateKey)
-
-
-def key_normalizer(val):
-    """Normalize private key value."""
-    return compose(apply_formatter_if(is_eth_key, TO_HEXSTR_FROM_ETH_KEY, val))
-
-
-@to_dict
-def gen_normalized_accounts(val):
-    """Generate normalized accounts."""
-    if isinstance(val, (list, tuple, set)):
-        for i in val:
-            account = to_account(i)
-            yield account.address, account
-    else:
-        account = to_account(val)
-        yield account.address, account
-        return
 
 
 @singledispatch
-def to_account(val):
-    """Private key type must be supported."""
+def _to_account(private_key_or_account):
+    """Get a `LocalAccount` instance from a private_key or a `LocalAccount`.
+
+    Note that this function is overloaded based on the type on input. This
+    implementation is the base case where none of the supported types are
+    matched and we throw an exception.
+    """
     raise TypeError(
-        "key must be one of the types: "
-        "eth_keys.datatype.PrivateKey, eth_account.local.LocalAccount, "
+        "key must be one of the types:"
+        "eth_keys.datatype.PrivateKey, "
+        "eth_account.local.LocalAccount, "
         "or raw private key as a hex string or byte string. "
-        "Was of type {0}".format(type(val))
+        "Was of type {0}".format(type(private_key_or_account))
     )
 
 
-@to_account.register(LocalAccount)
-def _(val):
-    return val
-
-
-def private_key_to_account(val):
+def _private_key_to_account(private_key):
     """Get the account associated with the private key."""
-    normalized_key = key_normalizer(val)
-    return Account().privateKeyToAccount(normalized_key)
+    if isinstance(private_key, PrivateKey):
+        private_key = private_key.to_hex()
+    else:
+        private_key = HexBytes(private_key).hex()
+    return Account().privateKeyToAccount(private_key)
 
 
-to_account.register(PrivateKey, private_key_to_account)
-to_account.register(str, private_key_to_account)
-to_account.register(bytes, private_key_to_account)
+_to_account.register(LocalAccount, lambda x: x)
+_to_account.register(PrivateKey, _private_key_to_account)
+_to_account.register(str, _private_key_to_account)
+_to_account.register(bytes, _private_key_to_account)
 
 
 def construct_local_message_signer(private_key_or_account):
-    """Capture calls to 'eth_sign'.
+    """Construct a middleware to force `eth_sign` to use local private key.
 
-    Description:
-    Intercept calls to 'eth_sign to always sign message with
-    a local private key.
-    Keyword arguments:
-        private_key_or_account -- A single private key or a tuple,
-        list or set of private keys.
-        Keys can be any of the following formats:
-        - An eth_account.LocalAccount object
-        - An eth_keys.PrivateKey object
-        - A raw private key as a hex string or byte string
+    :param private_key_or_account: a single private key or a tuple,
+        list, or set of private keys. Keys can be any of the following
+        formats:
+
+            - An `eth_account.LocalAccount` object
+            - An `eth_keys.PrivateKey` object
+            - A raw private key as a hex `string` or `bytes`
+
+    :returns: callable local_message_signer_middleware
     """
-    accounts = gen_normalized_accounts(private_key_or_account)
+    if not isinstance(private_key_or_account, (list, tuple, set)):
+        private_key_or_account = [private_key_or_account]
+    accounts = [_to_account(pkoa) for pkoa in private_key_or_account]
+    accounts = {account.address: account for account in accounts}
 
     def local_message_signer_middleware(
         make_request, web3
@@ -90,11 +68,16 @@ def construct_local_message_signer(private_key_or_account):
         def middleware(method, params):
             if method != "eth_sign":
                 return make_request(method, params)
-
-            account = dict(accounts)[params[0]]
-            msg_hash_hexbytes = messages.defunct_hash_message(
-                HexBytes(params[1])
-            )
+            account_address, message = params[:2]
+            account = accounts[account_address]
+            # We will assume any string which looks like a hex is expected
+            # to be converted to hex. Non-hexable strings are forcibly
+            # converted by encoding them to utf-8
+            try:
+                message = HexBytes(message)
+            except Exception:  # pylint: disable=broad-except
+                message = HexBytes(message.encode("utf-8"))
+            msg_hash_hexbytes = messages.defunct_hash_message(message)
             ec_signature = account.signHash(msg_hash_hexbytes)
             return {"result": ec_signature.signature}
 
