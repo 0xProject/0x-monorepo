@@ -125,7 +125,7 @@ export interface ContractWrappersConfig {
  * takerTokenAmount.
  * validateRemainingOrderAmountIsFillable: The validation method ensures that the maker has a sufficient
  * allowance/balance to fill the entire remaining order amount. This is the default. If neither options are
- * specified, the balances and allowances are checked to determine the order is fillable by any amount.
+ * specified, the balances and allowances are checked to determine the order is fillable for a non-zero amount. We call such orders "partially fillable orders".
  */
 export interface ValidateOrderFillableOpts {
     expectedFillTakerTokenAmount?: BigNumber;
