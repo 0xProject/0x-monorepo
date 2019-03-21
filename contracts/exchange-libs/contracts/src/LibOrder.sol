@@ -56,16 +56,16 @@ contract LibOrder is
 
     // solhint-disable max-line-length
     struct Order {
-        address makerAddress;           // Address that created the order.      
-        address takerAddress;           // Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.          
-        address feeRecipientAddress;    // Address that will recieve fees when order is filled.      
+        address makerAddress;           // Address that created the order.
+        address takerAddress;           // Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.
+        address feeRecipientAddress;    // Address that will recieve fees when order is filled.
         address senderAddress;          // Address that is allowed to call Exchange contract methods that affect this order. If set to 0, any address is allowed to call these methods.
-        uint256 makerAssetAmount;       // Amount of makerAsset being offered by maker. Must be greater than 0.        
-        uint256 takerAssetAmount;       // Amount of takerAsset being bid on by maker. Must be greater than 0.        
+        uint256 makerAssetAmount;       // Amount of makerAsset being offered by maker. Must be greater than 0.
+        uint256 takerAssetAmount;       // Amount of takerAsset being bid on by maker. Must be greater than 0.
         uint256 makerFee;               // Amount of ZRX paid to feeRecipient by maker when order is filled. If set to 0, no transfer of ZRX from maker to feeRecipient will be attempted.
         uint256 takerFee;               // Amount of ZRX paid to feeRecipient by taker when order is filled. If set to 0, no transfer of ZRX from taker to feeRecipient will be attempted.
-        uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.          
-        uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.     
+        uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.
+        uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.
         bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The last byte references the id of this proxy.
         bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The last byte references the id of this proxy.
     }
@@ -85,7 +85,7 @@ contract LibOrder is
         view
         returns (bytes32 orderHash)
     {
-        orderHash = hashEIP712Message(hashOrder(order));
+        orderHash = hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashOrder(order));
         return orderHash;
     }
 
@@ -128,13 +128,13 @@ contract LibOrder is
             let temp1 := mload(pos1)
             let temp2 := mload(pos2)
             let temp3 := mload(pos3)
-            
+
             // Hash in place
             mstore(pos1, schemaHash)
             mstore(pos2, makerAssetDataHash)
             mstore(pos3, takerAssetDataHash)
             result := keccak256(pos1, 416)
-            
+
             // Restore
             mstore(pos1, temp1)
             mstore(pos2, temp2)
