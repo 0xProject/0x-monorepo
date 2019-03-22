@@ -1,5 +1,5 @@
-from eth_utils import to_checksum_address
 from itertools import repeat
+from eth_utils import to_checksum_address
 from web3.providers.base import BaseProvider
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
@@ -71,6 +71,32 @@ class ExchangeWrapper(ContractWrapper):
             func=func, tx_opts=tx_opts, validate_only=validate_only
         )
 
+    def batch_fill_orders(
+        self,
+        orders,
+        amounts_int_wei,
+        signatures,
+        tx_opts=None,
+        validate_only=False,
+    ):
+        order_jsdicts = [
+            order_to_jsdict(order, self.exchange_address) for order in orders
+        ]
+        map(assert_valid, order_jsdicts, repeat("/orderSchema"))
+        normalized_fill_amounts = [
+            normalize_token_amount(amounts_int_wei)
+            for taker_fill_amount in amounts_int_wei
+        ]
+        normalized_signatures = [
+            normalize_signature(signature) for signature in signatures
+        ]
+        func = self._exchange.functions.batchFillOrders(
+            orders, normalized_fill_amounts, normalized_signatures
+        )
+        return self._invoke_function_call(
+            func=func, tx_opts=tx_opts, validate_only=validate_only
+        )
+
     def fill_or_kill_order(
         self,
         order,
@@ -92,6 +118,32 @@ class ExchangeWrapper(ContractWrapper):
         normalized_signature = normalize_signature(signature)
         func = self._exchange.functions.fillOrKillOrder(
             order, taker_fill_amount, normalized_signature
+        )
+        return self._invoke_function_call(
+            func=func, tx_opts=tx_opts, validate_only=validate_only
+        )
+
+    def batch_fill_or_kill_orders(
+        self,
+        orders,
+        amounts_int_wei,
+        signatures,
+        tx_opts=None,
+        validate_only=False,
+    ):
+        order_jsdicts = [
+            order_to_jsdict(order, self.exchange_address) for order in orders
+        ]
+        map(assert_valid, order_jsdicts, repeat("/orderSchema"))
+        normalized_fill_amounts = [
+            normalize_token_amount(amounts_int_wei)
+            for taker_fill_amount in amounts_int_wei
+        ]
+        normalized_signatures = [
+            normalize_signature(signature) for signature in signatures
+        ]
+        func = self._exchange.functions.batchFillOrKillOrders(
+            orders, normalized_fill_amounts, normalized_signatures
         )
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
