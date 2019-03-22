@@ -1,5 +1,5 @@
 from itertools import repeat
-from eth_utils import to_checksum_address, remove_0x_prefix
+from eth_utils import remove_0x_prefix
 from web3.providers.base import BaseProvider
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
@@ -28,9 +28,8 @@ class Exchange(ContractWrapper):
         self.address = NETWORK_TO_ADDRESSES[
             NetworkId(int(self._web3.net.version))
         ].exchange
-        self._exchange = self.contract_instance(
-            address=to_checksum_address(self.address),
-            abi=abi_by_name("exchange"),
+        self._exchange = self._contract_instance(
+            address=self.address, abi=abi_by_name("exchange")
         )
 
     def _match_order_maker_with_cancellor(

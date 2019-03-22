@@ -48,11 +48,10 @@ class ContractWrapper:
             else:
                 self._can_send_tx = False
 
-    def get_account_address(self):
-        return self._web3.eth.defaultAccount
-
-    def contract_instance(self, address, abi):
-        return self._web3.eth.contract(address=address, abi=abi)
+    def _contract_instance(self, address, abi):
+        return self._web3.eth.contract(
+            address=to_checksum_address(address), abi=abi
+        )
 
     def _validate_and_checksum_address(self, address: str):
         if not self._web3.isAddress(address):
@@ -94,3 +93,23 @@ class ContractWrapper:
             transaction, private_key=self._private_key
         )
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
+    def execute_method(
+        self, address, abi, method, args, tx_opts=None, validate_only=False
+    ):
+        contract_instance = self._contract_instance(address=address, abi=abi)
+        if hasattr(contract_instance.functions, method):
+            func = getattr(contract_instance.functions, method)(*args)
+            return self._invoke_function_call(
+                func=func, tx_opts=tx_opts, validate_only=validate_only
+            )
+        else:
+            raise Exception(
+                "No method {} found on contract {}.".format(address, method)
+            )
+
+    def get_accounts(self):
+        return self._web3.eth.accounts
+
+    def get_default_account(self):
+        return self._web3.eth.defaultAccount or self.get_accounts()[0]

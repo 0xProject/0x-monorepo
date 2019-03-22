@@ -1,4 +1,3 @@
-from eth_utils import to_checksum_address
 from web3.providers.base import BaseProvider
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
@@ -18,9 +17,8 @@ class ERC20Token(ContractWrapper):
         )
 
     def _erc20(self, token_address):
-        return self.contract_instance(
-            address=to_checksum_address(token_address),
-            abi=abi_by_name("ERC20Token"),
+        return self._contract_instance(
+            address=token_address, abi=abi_by_name("ERC20Token")
         )
 
     def transfer(
