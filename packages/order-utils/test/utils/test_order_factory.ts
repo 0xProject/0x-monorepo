@@ -11,6 +11,7 @@ const BASE_TEST_ORDER: Order = orderFactory.createOrder(
     constants.ZERO_AMOUNT,
     constants.NULL_ERC20_ASSET_DATA,
     constants.NULL_ADDRESS,
+    0,
 );
 const BASE_TEST_SIGNED_ORDER: SignedOrder = {
     ...BASE_TEST_ORDER,
