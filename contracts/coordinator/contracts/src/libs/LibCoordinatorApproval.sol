@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental "ABIEncoderV2";
 
 import "./LibEIP712Domain.sol";
 
@@ -46,7 +47,7 @@ contract LibCoordinatorApproval is
     /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
     /// @return EIP712 hash of the Coordinator approval message with the domain separator of this contract.
     function getCoordinatorApprovalHash(CoordinatorApproval memory approval)
-        internal
+        public
         view
         returns (bytes32 approvalHash)
     {

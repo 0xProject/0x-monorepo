@@ -5,7 +5,6 @@
     "files": [
         "generated-artifacts/Coordinator.json",
         "generated-artifacts/CoordinatorRegistry.json",
-        "generated-artifacts/TestLibs.json",
         "generated-artifacts/TestMixins.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
