@@ -16,6 +16,7 @@ zero_ex.middlewares.local_message_signer
 .. automodule:: zero_ex.middlewares.local_message_signer
    :members:
 
+
 Indices and tables
 ==================
 

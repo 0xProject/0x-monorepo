@@ -1,8 +1,10 @@
 """Middleware that captures calls to 'eth_sign'.
 
 Description:
-This middleware intercepts all calls to 'eth_sign and enforces all sign
-messages to be signed with a local private key.
+An adaptation of the `signing
+<https://github.com/ethereum/web3.py/blob/master/web3/middleware/signing.py>`_
+middleware from web3 python. This middleware intercepts all calls to 'eth_sign'
+and signs messages with a local private key.
 """
 
 from functools import singledispatch
@@ -45,7 +47,7 @@ _to_account.register(bytes, _private_key_to_account)
 
 
 def construct_local_message_signer(private_key_or_account):
-    """Construct a middleware to force `eth_sign` to use local private key.
+    """Construct a local messager signer middleware.
 
     :param private_key_or_account: a single private key or a tuple,
         list, or set of private keys. Keys can be any of the following
@@ -54,8 +56,20 @@ def construct_local_message_signer(private_key_or_account):
             - An `eth_account.LocalAccount` object
             - An `eth_keys.PrivateKey` object
             - A raw private key as a hex `string` or `bytes`
-
     :returns: callable local_message_signer_middleware
+
+    :Example:
+
+    >>> from web3 import Web3
+    >>> from zero_ex.middlewares.local_message_signer import (
+    ...     construct_local_message_signer)
+    >>> WEB3_RPC_URL="https://mainnet.infura.io/v3/INFURA_API_KEY"
+    >>> PRIVATE_KEY=(
+    ...     "f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d")
+    >>> web3_instance = Web3.HTTPProvider(WEB3_RPC_URL)
+    >>> web3_instance.middlewares.add(
+    ...     construct_local_message_signer(PRIVATE_KEY))
+
     """
     if not isinstance(private_key_or_account, (list, tuple, set)):
         private_key_or_account = [private_key_or_account]

@@ -25,10 +25,7 @@ def test_local_message_signer__sign_order():
     private_key = (
         "f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d"
     )
-    # web3_rpc_url = "http://127.0.0.1:8545"
-    web3_rpc_url = (
-        "https://kovan.infura.io/v3/e2c067d9717e492091d1f1d7a2ec55aa"
-    )
+    web3_rpc_url = "http://127.0.0.1:8545"
     web3_instance = Web3.HTTPProvider(web3_rpc_url)
     web3_instance.middlewares.add(construct_local_message_signer(private_key))
     order = make_empty_order()

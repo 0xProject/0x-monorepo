@@ -112,6 +112,19 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
         subprocess.check_call("discharge deploy".split())  # nosec
 
 
+class GanacheCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to pypi.org."""
+
+    description = "Run ganache daemon to support tests."
+
+    def run(self):
+        """Run ganache."""
+        cmd_line = (
+            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
+        ).split()
+        subprocess.call(cmd_line)  # nosec
+
+
 with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
@@ -123,8 +136,8 @@ setup(
     long_description=README_MD,
     long_description_content_type="text/markdown",
     url="https://github.com/0xproject/0x-monorepo/python-packages/middlewares",
-    author="Michael Hwang",
-    author_email="feuGeneA@users.noreply.github.com",
+    author="Michael Huang",
+    author_email="michaelhly@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
@@ -132,10 +145,12 @@ setup(
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
         "publish_docs": PublishDocsCommand,
+        "ganache": GanacheCommand,
     },
     install_requires=[
-        "eth_account",
-        "eth_keys",
+        "eth-account",
+        "eth-keys",
+        "hexbytes",
         "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
         # above works around https://github.com/ethereum/web3.py/issues/1179
         "mypy_extensions",
