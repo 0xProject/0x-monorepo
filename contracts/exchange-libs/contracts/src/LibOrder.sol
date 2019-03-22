@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.5;
 
-import "./LibEIP712.sol";
+import "./LibEIP712ExchangeDomain.sol";
 
 
 contract LibOrder is
-    LibEIP712
+    LibEIP712ExchangeDomain
 {
     // Hash for the EIP712 Order Schema
     bytes32 constant internal EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
@@ -85,7 +85,7 @@ contract LibOrder is
         view
         returns (bytes32 orderHash)
     {
-        orderHash = hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashOrder(order));
+        orderHash = hashEIP712ExchangeMessage(hashOrder(order));
         return orderHash;
     }
 
