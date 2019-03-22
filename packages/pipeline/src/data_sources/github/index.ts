@@ -1,4 +1,7 @@
 import { fetchAsync, logUtils } from '@0x/utils';
+import Bottleneck from 'bottleneck';
+
+const ONE_SECOND = 1000;
 
 export interface GithubRepoResponse {
     full_name: string;
@@ -68,17 +71,22 @@ export interface GithubIssueResponse {
 // tslint:disable:prefer-function-over-method
 // ^ Keep consistency with other sources and help logical organization
 export class GithubSource {
-    public readonly _urlBase: string = 'https://api.github.com';
-    public readonly _owner: string;
-    public readonly _repo: string;
-    public readonly _branch: string;
-    public readonly _accessToken: string;
+    // rate-limit for all API calls through this class instance
+    private readonly _limiter: Bottleneck;
+    private readonly _urlBase: string = 'https://api.github.com';
+    private readonly _owner: string;
+    private readonly _repo: string;
+    private readonly _branch: string;
+    private readonly _accessToken: string;
 
-    constructor(owner: string, repo: string, branch: string, accessToken: string) {
+    constructor(owner: string, repo: string, branch: string, accessToken: string, maxReqsPerSecond: number) {
         this._owner = owner;
         this._repo = repo;
         this._branch = branch;
         this._accessToken = accessToken;
+        this._limiter = new Bottleneck({
+            minTime: ONE_SECOND / maxReqsPerSecond,
+        });
     }
 
     /**
@@ -86,7 +94,7 @@ export class GithubSource {
      */
     public async getGithubRepoAsync(): Promise<GithubRepoResponse> {
         const url = `${this._urlBase}/repos/${this._owner}/${this._repo}?access_token=${this._accessToken}`;
-        const resp = await fetchAsync(url);
+        const resp = await this._limiter.schedule(() => fetchAsync(url));
         const respJson: GithubRepoResponse = await resp.json();
         return respJson;
     }
@@ -98,7 +106,7 @@ export class GithubSource {
         const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/pulls?access_token=${
             this._accessToken
         }&state=all&per_page=100&page=${page}`;
-        const resp = await fetchAsync(url);
+        const resp = await this._limiter.schedule(() => fetchAsync(url));
         const respJson: GithubPullRequestResponse[] = await resp.json();
         return respJson;
     }
@@ -110,7 +118,7 @@ export class GithubSource {
         const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/forks?access_token=${
             this._accessToken
         }&per_page=100&page=${page}`;
-        const resp = await fetchAsync(url);
+        const resp = await this._limiter.schedule(() => fetchAsync(url));
         const respJson: GithubForkResponse[] = await resp.json();
         return respJson;
     }
@@ -122,7 +130,7 @@ export class GithubSource {
         const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/compare/${
             this._branch
         }...${forkOwner}:${forkBranch}?access_token=${this._accessToken}`;
-        const resp = await fetchAsync(url);
+        const resp = await this._limiter.schedule(() => fetchAsync(url));
         const respJson: GithubComparisonResponse = await resp.json();
         return respJson;
     }
@@ -134,7 +142,7 @@ export class GithubSource {
         const url = `${this._urlBase}/repos/${this._owner}/${this._repo}/issues?access_token=${
             this._accessToken
         }&state=all&per_page=100&page=${page}`;
-        const resp = await fetchAsync(url);
+        const resp = await this._limiter.schedule(() => fetchAsync(url));
         const respJson: GithubIssueResponse[] = await resp.json();
         if (!respJson[0]) {
             logUtils.log(respJson);

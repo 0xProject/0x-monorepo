@@ -18,6 +18,7 @@ const GITHUB_OWNER = '0xProject';
 const GITHUB_REPO = '0x-monorepo';
 const GITHUB_BRANCH = 'development';
 const RECORDS_PER_PAGE = 100;
+const MAX_REQUESTS_PER_SECOND = 1;
 
 let connection: Connection;
 
@@ -27,7 +28,13 @@ let connection: Connection;
     if (accessToken === undefined) {
         throw new Error('Missing required env var: GITHUB_ACCESS_TOKEN');
     }
-    const githubSource = new GithubSource(GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, accessToken);
+    const githubSource = new GithubSource(
+        GITHUB_OWNER,
+        GITHUB_REPO,
+        GITHUB_BRANCH,
+        accessToken,
+        MAX_REQUESTS_PER_SECOND,
+    );
     const observedTimestamp = Date.now();
 
     // get repo and save
