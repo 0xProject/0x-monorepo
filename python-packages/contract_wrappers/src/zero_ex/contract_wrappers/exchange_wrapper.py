@@ -5,6 +5,7 @@ from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
 from zero_ex.contract_wrappers.utils import (
+    match_order_maker_with_cancellor,
     normalize_signature,
     normalize_token_amount,
 )
@@ -145,6 +146,74 @@ class ExchangeWrapper(ContractWrapper):
         func = self._exchange.functions.batchFillOrKillOrders(
             orders, normalized_fill_amounts, normalized_signatures
         )
+        return self._invoke_function_call(
+            func=func, tx_opts=tx_opts, validate_only=validate_only
+        )
+
+    def cancel_order(self, order, tx_opts=None, validate_only=False):
+        assert_valid(
+            order_to_jsdict(order, self.exchange_address), "/orderSchema"
+        )
+        maker_address = self._validate_and_checksum_address(
+            order["makerAddress"]
+        )
+        if tx_opts.get("from_"):
+            match_order_maker_with_cancellor(
+                maker_address,
+                self._validate_and_checksum_address(tx_opts["from_"]),
+            )
+        elif self._web3.eth.defaultAccount:
+            match_order_maker_with_cancellor(
+                maker_address, self._web3.eth.defaultAccount
+            )
+        func = self._exchange.functions.cancelOrder(order)
+        return self._invoke_function_call(
+            func=func, tx_opts=tx_opts, validate_only=validate_only
+        )
+
+    def cancel_order(self, order, tx_opts=None, validate_only=False):
+        assert_valid(
+            order_to_jsdict(order, self.exchange_address), "/orderSchema"
+        )
+        maker_address = self._validate_and_checksum_address(
+            order["makerAddress"]
+        )
+        if tx_opts.get("from_"):
+            match_order_maker_with_cancellor(
+                maker_address,
+                self._validate_and_checksum_address(tx_opts["from_"]),
+            )
+        elif self._web3.eth.defaultAccount:
+            match_order_maker_with_cancellor(
+                maker_address, self._web3.eth.defaultAccount
+            )
+        func = self._exchange.functions.cancelOrder(order)
+        return self._invoke_function_call(
+            func=func, tx_opts=tx_opts, validate_only=validate_only
+        )
+
+    def batch_cancel_orders(self, orders, tx_opts=None, validate_only=False):
+        order_jsdicts = [
+            order_to_jsdict(order, self.exchange_address) for order in orders
+        ]
+        map(assert_valid, order_jsdicts, repeat("/orderSchema"))
+        maker_addresses = [
+            self._validate_and_checksum_address(order["makerAddress"])
+            for order in orders
+        ]
+        if tx_opts.get("from_"):
+            map(
+                match_order_maker_with_cancellor,
+                maker_addresses,
+                repeat(tx_opts["from_"]),
+            )
+        elif self._web3.eth.defaultAccount:
+            map(
+                match_order_maker_with_cancellor,
+                maker_addresses,
+                repeat(self._web3.eth.defaultAccount),
+            )
+        func = self._exchange.functions.batchCancelOrders(orders)
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
         )

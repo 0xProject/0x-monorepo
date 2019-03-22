@@ -1,6 +1,7 @@
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
+from zero_ex.json_schemas import assert_valid
 
 
 class ContractWrapper:
@@ -61,9 +62,11 @@ class ContractWrapper:
         if validate_only or not self._can_send_tx:
             return func.call()
 
-        prefill_tx_params = self._get_tx_params(**tx_opts)
+        prefilled_tx_params = self._get_tx_params(**tx_opts)
+        # Bug in tx_data_schema, fails on checksummed address
+        # assert_valid(prefilled_tx_params, "/txDataSchema")
         tx_params = {
-            k: v for k, v in prefill_tx_params.items() if v is not None
+            k: v for k, v in prefilled_tx_params.items() if v is not None
         }
 
         if hasattr(self, "_private_key"):
@@ -75,7 +78,9 @@ class ContractWrapper:
         self, from_=None, gas_price=None, gas_limit=None, value=0, nonce=None
     ):
         return {
-            "from": from_,
+            "from": self._validate_and_checksum_address(from_)
+            if from_
+            else None,
             "value": value,
             "gas": gas_limit,
             "gasPrice": gas_price,
