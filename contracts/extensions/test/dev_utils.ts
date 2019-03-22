@@ -14,7 +14,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -55,6 +55,8 @@ describe('DevUtils', () => {
     });
 
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
+
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress] = _.slice(accounts, 0, 3));
 
@@ -77,6 +79,7 @@ describe('DevUtils', () => {
             provider,
             txDefaults,
             zrxAssetData,
+            new BigNumber(chainId),
         );
         const exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -95,6 +98,7 @@ describe('DevUtils', () => {
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             exchangeAddress: exchange.address,
+            chainId,
             makerAddress,
             feeRecipientAddress: constants.NULL_ADDRESS,
             makerAssetData: erc20AssetData,

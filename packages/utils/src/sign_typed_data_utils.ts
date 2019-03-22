@@ -71,8 +71,13 @@ export const signTypedDataUtils = {
         return ethers.utils.defaultAbiCoder.encode(encodedTypes, encodedValues);
     },
     _normalizeValue(type: string, value: any): EIP712ObjectValue {
-        const normalizedValue = type === 'uint256' && BigNumber.isBigNumber(value) ? value.toString() : value;
-        return normalizedValue;
+        if (type == 'uint256') {
+            if (BigNumber.isBigNumber(value)) {
+                return value.toString(10);
+            }
+            return new BigNumber(value).toString(10);
+        }
+        return value;
     },
     _typeHash(primaryType: string, types: EIP712Types): Buffer {
         return ethUtil.sha3(signTypedDataUtils._encodeType(primaryType, types));

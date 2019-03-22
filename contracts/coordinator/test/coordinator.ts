@@ -21,7 +21,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
@@ -33,6 +33,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 web3Wrapper.abiDecoder.addABI(exchangeArtifacts.Exchange.compilerOutput.abi);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Coordinator tests', () => {
+    let chainId: number;
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -58,6 +59,7 @@ describe('Coordinator tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts.slice(0, 4));
 
@@ -75,6 +77,7 @@ describe('Coordinator tests', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            new BigNumber(chainId),
         );
 
         await web3Wrapper.awaitTransactionSuccessAsync(
@@ -92,12 +95,14 @@ describe('Coordinator tests', () => {
             provider,
             txDefaults,
             exchange.address,
+            new BigNumber(chainId),
         );
 
         // Configure order defaults
         const defaultOrderParams = {
             ...devConstants.STATIC_ORDER_PARAMS,
             exchangeAddress: exchange.address,
+            chainId,
             senderAddress: coordinatorContract.address,
             makerAddress,
             feeRecipientAddress,
@@ -108,9 +113,21 @@ describe('Coordinator tests', () => {
         const takerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         const feeRecipientPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(feeRecipientAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
-        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
-        approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address);
+        makerTransactionFactory = new TransactionFactory(
+            makerPrivateKey,
+            exchange.address,
+            chainId,
+        );
+        takerTransactionFactory = new TransactionFactory(
+            takerPrivateKey,
+            exchange.address,
+            chainId,
+        );
+        approvalFactory = new ApprovalFactory(
+            feeRecipientPrivateKey,
+            coordinatorContract.address,
+            chainId,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

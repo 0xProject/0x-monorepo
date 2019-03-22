@@ -12,6 +12,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -31,6 +32,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('MixinSignatureValidator', () => {
+    let chainId: number;
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let signatureValidator: TestSignatureValidatorContract;
@@ -51,6 +53,7 @@ describe('MixinSignatureValidator', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         signerAddress = makerAddress;
@@ -59,6 +62,7 @@ describe('MixinSignatureValidator', () => {
             artifacts.TestSignatureValidator,
             provider,
             txDefaults,
+            new BigNumber(chainId),
         );
         testWallet = await WalletContract.deployFrom0xArtifactAsync(
             artifacts.Wallet,
@@ -98,6 +102,7 @@ describe('MixinSignatureValidator', () => {
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             exchangeAddress: signatureValidator.address,
+            chainId,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),

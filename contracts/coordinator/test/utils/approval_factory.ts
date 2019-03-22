@@ -8,10 +8,16 @@ import { hashUtils, SignedCoordinatorApproval } from './index';
 export class ApprovalFactory {
     private readonly _privateKey: Buffer;
     private readonly _verifyingContractAddress: string;
+    private readonly _chainId: number;
 
-    constructor(privateKey: Buffer, verifyingContractAddress: string) {
+    constructor(
+        privateKey: Buffer,
+        verifyingContractAddress: string,
+        chainId: number,
+    ) {
         this._privateKey = privateKey;
         this._verifyingContractAddress = verifyingContractAddress;
+        this._chainId = chainId;
     }
 
     public newSignedApproval(
@@ -23,6 +29,7 @@ export class ApprovalFactory {
         const approvalHashBuff = hashUtils.getApprovalHashBuffer(
             transaction,
             this._verifyingContractAddress,
+            this._chainId,
             txOrigin,
             approvalExpirationTimeSeconds,
         );

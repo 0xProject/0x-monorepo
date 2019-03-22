@@ -2,6 +2,7 @@ import {
     EIP1193Provider,
     JSONRPCErrorCallback,
     JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
     SupportedProvider,
     ZeroExProvider,
 } from 'ethereum-types';
@@ -94,4 +95,30 @@ export const providerUtils = {
             `Unsupported provider found. Please make sure it conforms to one of the supported providers. See 'Provider' type in 'ethereum-types' package.`,
         );
     },
+
+    /**
+     * Retrieve the chain ID from a supported provider.
+     * @param supportedProvider A supported provider instance.
+     * @return A promise thar resolves to the chain ID of the network the provider
+     * is connected to.
+     */
+     async getChainIdAsync(supportedProvider: SupportedProvider): Promise<number> {
+         const provider = this.standardizeOrThrow(supportedProvider);
+         return new Promise<number>((accept, reject) => {
+             provider.sendAsync({
+                     jsonrpc: '2.0',
+                     id: _.random(0, 2**64),
+                     method: 'net_version',
+                     params: []
+                 },
+                 (err : Error | null, result?: JSONRPCResponsePayload) => {
+                     if (!_.isNil(err))
+                        reject(err);
+                     if (!result)
+                        throw new Error('Invalid \'net_version\' response');
+                     accept(_.toNumber(result.result));
+                 }
+            );
+        });
+     },
 };
