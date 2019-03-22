@@ -26,7 +26,7 @@ contract LibEIP712 {
         "EIP712Domain(",
         "string name,",
         "string version,",
-        "uint256 chainId",
+        "uint256 chainId,",
         "address verifyingContract",
         ")"
     ));
