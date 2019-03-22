@@ -19,7 +19,6 @@
 pragma solidity ^0.5.5;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "./mixins/MBalanceThresholdFilterCore.sol";
 import "./MixinExchangeCalldata.sol";
 
@@ -27,12 +26,11 @@ import "./MixinExchangeCalldata.sol";
 contract MixinBalanceThresholdFilterCore is
     MBalanceThresholdFilterCore,
     MixinExchangeCalldata,
-    LibOrder,
     LibExchangeSelectors
 {
 
-    /// @dev Executes an Exchange transaction iff the maker and taker meet 
-    ///      the hold at least `BALANCE_THRESHOLD` of the asset `THRESHOLD_ASSET` OR 
+    /// @dev Executes an Exchange transaction iff the maker and taker meet
+    ///      the hold at least `BALANCE_THRESHOLD` of the asset `THRESHOLD_ASSET` OR
     ///      the exchange function is a cancellation.
     ///      Supported Exchange functions:
     ///          batchFillOrders
@@ -59,7 +57,7 @@ contract MixinBalanceThresholdFilterCore is
         address signerAddress,
         bytes calldata signedExchangeTransaction,
         bytes calldata signature
-    ) 
+    )
         external
     {
         // Get accounts whose balances must be validated
@@ -76,7 +74,7 @@ contract MixinBalanceThresholdFilterCore is
             );
         }
         emit ValidatedAddresses(addressesToValidate);
-        
+
         // All addresses are valid. Execute exchange function.
         EXCHANGE.executeTransaction(
             salt,
