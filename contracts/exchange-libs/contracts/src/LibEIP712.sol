@@ -31,17 +31,6 @@ contract LibEIP712 {
         ")"
     ));
 
-    // EIP712 Exchange Domain Name value
-    string constant internal EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
-
-    // EIP712 Exchange Domain Version value
-    string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
-
-    // Hash of the EIP712 Domain Separator data
-    // solhint-disable-next-line var-name-mixedcase
-    bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
-
-
     // Chain ID of the network this contract is deployed on.
     // solhint-disable-next-line var-name-mixedcase
     uint256 internal CHAIN_ID;
@@ -51,11 +40,6 @@ contract LibEIP712 {
         public
     {
         CHAIN_ID = chainId;
-        EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
-            EIP712_EXCHANGE_DOMAIN_NAME,
-            EIP712_EXCHANGE_DOMAIN_VERSION,
-            address(this)
-        );
     }
 
     /// @dev Calculates a EIP712 domain separator.
