@@ -16,7 +16,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
-import { ApprovalFactory, artifacts, constants, exchangeDataEncoder, TestMixinsContract } from '../src';
+import { ApprovalFactory, artifacts, constants, CoordinatorContract, exchangeDataEncoder } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -26,7 +26,7 @@ describe('Mixins tests', () => {
     let transactionSignerAddress: string;
     let approvalSignerAddress1: string;
     let approvalSignerAddress2: string;
-    let mixins: TestMixinsContract;
+    let mixins: CoordinatorContract;
     let transactionFactory: TransactionFactory;
     let approvalFactory1: ApprovalFactory;
     let approvalFactory2: ApprovalFactory;
@@ -40,8 +40,8 @@ describe('Mixins tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        mixins = await TestMixinsContract.deployFrom0xArtifactAsync(
-            artifacts.TestMixins,
+        mixins = await CoordinatorContract.deployFrom0xArtifactAsync(
+            artifacts.Coordinator,
             provider,
             txDefaults,
             exchangeAddress,

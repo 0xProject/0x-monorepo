@@ -2,10 +2,6 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": [
-        "generated-artifacts/Coordinator.json",
-        "generated-artifacts/CoordinatorRegistry.json",
-        "generated-artifacts/TestMixins.json"
-    ],
+    "files": ["generated-artifacts/Coordinator.json", "generated-artifacts/CoordinatorRegistry.json"],
     "exclude": ["./deploy/solc/solc_bin"]
 }

@@ -7,9 +7,7 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as Coordinator from '../generated-artifacts/Coordinator.json';
 import * as CoordinatorRegistry from '../generated-artifacts/CoordinatorRegistry.json';
-import * as TestMixins from '../generated-artifacts/TestMixins.json';
 export const artifacts = {
     Coordinator: Coordinator as ContractArtifact,
     CoordinatorRegistry: CoordinatorRegistry as ContractArtifact,
-    TestMixins: TestMixins as ContractArtifact,
 };
