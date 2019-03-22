@@ -11,7 +11,7 @@ import {
     OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -1239,7 +1239,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeSimulator,
-            this._web3Wrapper.getProvider(),
             signedOrder,
             fillTakerAssetAmount,
             takerAddress,
@@ -1260,8 +1259,9 @@ export class ExchangeWrapper extends ContractWrapper {
      * @return TransactionEncoder
      */
     public async transactionEncoderAsync(): Promise<TransactionEncoder> {
+        const chainId = await providerUtils.getChainIdAsync(this._web3Wrapper.getProvider());
         const exchangeInstance = await this._getExchangeContractAsync();
-        const encoder = new TransactionEncoder(exchangeInstance);
+        const encoder = new TransactionEncoder(exchangeInstance, chainId);
         return encoder;
     }
     // tslint:enable:no-unused-variable

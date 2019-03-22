@@ -15,7 +15,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { OrderWithoutExchangeAddress, RevertReason, SignedOrder, SignedZeroExTransaction } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -26,6 +26,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange transactions', () => {
+    let chainId: number;
     let senderAddress: string;
     let owner: string;
     let makerAddress: string;
@@ -66,6 +67,7 @@ describe('Exchange transactions', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = _.slice(
             accounts,
@@ -88,6 +90,7 @@ describe('Exchange transactions', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            new BigNumber(chainId)
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -104,6 +107,7 @@ describe('Exchange transactions', () => {
             ...constants.STATIC_ORDER_PARAMS,
             senderAddress,
             exchangeAddress: exchange.address,
+            chainId,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
@@ -112,8 +116,16 @@ describe('Exchange transactions', () => {
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
-        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
+        makerTransactionFactory = new TransactionFactory(
+            makerPrivateKey,
+            exchange.address,
+            chainId,
+        );
+        takerTransactionFactory = new TransactionFactory(
+            takerPrivateKey,
+            exchange.address,
+            chainId,
+        );
     });
     describe('executeTransaction', () => {
         describe('fillOrder', () => {
@@ -346,6 +358,7 @@ describe('Exchange transactions', () => {
                 ...constants.STATIC_ORDER_PARAMS,
                 senderAddress: whitelist.address,
                 exchangeAddress: exchange.address,
+                chainId,
                 makerAddress,
                 feeRecipientAddress,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),

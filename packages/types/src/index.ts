@@ -18,6 +18,7 @@ export interface Order {
     takerAssetData: string;
     salt: BigNumber;
     exchangeAddress: string;
+    chainId: number;
     feeRecipientAddress: string;
     expirationTimeSeconds: BigNumber;
 }
@@ -51,6 +52,7 @@ export enum MarketOperation {
  */
 export interface ZeroExTransaction {
     verifyingContractAddress: string;
+    chainId: number;
     salt: BigNumber;
     signerAddress: string;
     data: string;

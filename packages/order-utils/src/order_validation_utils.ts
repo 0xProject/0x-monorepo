@@ -227,7 +227,6 @@ export class OrderValidationUtils {
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed
      * @param exchangeTradeEmulator ExchangeTradeEmulator to use
-     * @param supportedProvider Web3 provider to use for JSON RPC requests
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
      * @param takerAddress The taker of the order
@@ -235,7 +234,6 @@ export class OrderValidationUtils {
      */
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
-        supportedProvider: SupportedProvider,
         signedOrder: SignedOrder,
         fillTakerAssetAmount: BigNumber,
         takerAddress: string,
@@ -247,10 +245,10 @@ export class OrderValidationUtils {
         if (fillTakerAssetAmount.eq(0)) {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
-        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await signatureUtils.isValidSignatureAsync(
-            provider,
+            this._provider,
             orderHash,
             signedOrder.signature,
             signedOrder.makerAddress,

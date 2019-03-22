@@ -43,6 +43,7 @@ describe('RemainingFillableCalculator', () => {
         return {
             signature,
             exchangeAddress: zeroAddress,
+            chainId: 1337,
             feeRecipientAddress: zeroAddress,
             senderAddress: zeroAddress,
             makerAddress: zeroAddress,

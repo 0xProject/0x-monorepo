@@ -1,7 +1,7 @@
 import { addressUtils, chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { transactionHashUtils } from '@0x/order-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 
 import { artifacts, CoordinatorContract, hashUtils } from '../src';
@@ -12,6 +12,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Libs tests', () => {
     let coordinatorContract: CoordinatorContract;
+    let chainId: number;
     const exchangeAddress = addressUtils.generatePseudoRandomAddress();
 
     before(async () => {
@@ -21,11 +22,13 @@ describe('Libs tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
             provider,
             txDefaults,
             exchangeAddress,
+            new BigNumber(chainId),
         );
     });
     beforeEach(async () => {
@@ -39,6 +42,7 @@ describe('Libs tests', () => {
         it('should return the correct transaction hash', async () => {
             const tx = {
                 verifyingContractAddress: exchangeAddress,
+                chainId,
                 salt: new BigNumber(0),
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
@@ -53,6 +57,7 @@ describe('Libs tests', () => {
         it('should return the correct approval hash', async () => {
             const signedTx = {
                 verifyingContractAddress: exchangeAddress,
+                chainId,
                 salt: new BigNumber(0),
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
@@ -69,6 +74,7 @@ describe('Libs tests', () => {
             const expectedApprovalHash = hashUtils.getApprovalHashHex(
                 signedTx,
                 coordinatorContract.address,
+                chainId,
                 txOrigin,
                 approvalExpirationTimeSeconds,
             );
