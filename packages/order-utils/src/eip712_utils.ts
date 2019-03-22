@@ -61,6 +61,7 @@ export const eip712Utils = {
         });
         const domain = {
             verifyingContractAddress: order.exchangeAddress,
+            chainId: order.chainId,
         };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ORDER_SCHEMA.name,
@@ -84,6 +85,7 @@ export const eip712Utils = {
         });
         const domain = {
             verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
+            chainId: zeroExTransaction.chainId,
         };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,

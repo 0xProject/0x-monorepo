@@ -15,7 +15,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -34,6 +34,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('matchOrders', () => {
+    let chainId: number;
     let makerAddressLeft: string;
     let makerAddressRight: string;
     let owner: string;
@@ -76,6 +77,8 @@ describe('matchOrders', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        // Get the chain ID.
+        chainId = await providerUtils.getChainIdAsync(provider);
         // Create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         // Hack(albrow): Both Prettier and TSLint insert a trailing comma below
@@ -119,6 +122,7 @@ describe('matchOrders', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            new BigNumber(chainId)
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -153,6 +157,7 @@ describe('matchOrders', () => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressLeft,
             exchangeAddress: exchange.address,
+            chainId,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
             feeRecipientAddress: feeRecipientAddressLeft,
@@ -161,6 +166,7 @@ describe('matchOrders', () => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressRight,
             exchangeAddress: exchange.address,
+            chainId,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
             feeRecipientAddress: feeRecipientAddressRight,
@@ -175,6 +181,7 @@ describe('matchOrders', () => {
             artifacts.TestExchangeInternals,
             provider,
             txDefaults,
+            new BigNumber(chainId),
         );
     });
     beforeEach(async () => {
