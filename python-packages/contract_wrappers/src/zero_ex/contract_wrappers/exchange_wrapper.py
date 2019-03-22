@@ -75,7 +75,7 @@ class ExchangeWrapper(ContractWrapper):
     def batch_fill_orders(
         self,
         orders,
-        amounts_int_wei,
+        amounts_in_wei,
         signatures,
         tx_opts=None,
         validate_only=False,
@@ -85,8 +85,8 @@ class ExchangeWrapper(ContractWrapper):
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         normalized_fill_amounts = [
-            normalize_token_amount(amounts_int_wei)
-            for taker_fill_amount in amounts_int_wei
+            normalize_token_amount(taker_fill_amount)
+            for taker_fill_amount in amounts_in_wei
         ]
         normalized_signatures = [
             normalize_signature(signature) for signature in signatures
@@ -127,7 +127,7 @@ class ExchangeWrapper(ContractWrapper):
     def batch_fill_or_kill_orders(
         self,
         orders,
-        amounts_int_wei,
+        amounts_in_wei,
         signatures,
         tx_opts=None,
         validate_only=False,
@@ -137,8 +137,8 @@ class ExchangeWrapper(ContractWrapper):
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         normalized_fill_amounts = [
-            normalize_token_amount(amounts_int_wei)
-            for taker_fill_amount in amounts_int_wei
+            normalize_token_amount(taker_fill_amount)
+            for taker_fill_amount in amounts_in_wei
         ]
         normalized_signatures = [
             normalize_signature(signature) for signature in signatures
