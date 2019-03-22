@@ -2,26 +2,23 @@ from eth_utils import to_checksum_address
 from web3.providers.base import BaseProvider
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
-from zero_ex.contract_wrappers.utils import normalize_token_amount
 
 
-class ERC20Wrapper(ContractWrapper):
-    __name__ = "ERC20Wrapper"
-
+class ERC20Token(ContractWrapper):
     def __init__(
         self,
         provider: BaseProvider,
         account_address: str = None,
         private_key: str = None,
     ):
-        super(ERC20Wrapper, self).__init__(
+        super(ERC20Token, self).__init__(
             provider=provider,
             account_address=account_address,
             private_key=private_key,
         )
 
     def _erc20(self, token_address):
-        return self._contract_instance(
+        return self.contract_instance(
             address=to_checksum_address(token_address),
             abi=abi_by_name("ERC20Token"),
         )
@@ -31,7 +28,7 @@ class ERC20Wrapper(ContractWrapper):
     ):
         token_address = self._validate_and_checksum_address(token_address)
         to = self._validate_and_checksum_address(to)
-        value = normalize_token_amount(value)
+        value = int(value)
         func = self._erc20(token_address).functions.transfer(to, value)
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
@@ -42,7 +39,7 @@ class ERC20Wrapper(ContractWrapper):
     ):
         token_address = self._validate_and_checksum_address(token_address)
         spender = self._validate_and_checksum_address(spender)
-        value = normalize_token_amount(value)
+        value = int(value)
         func = self._erc20(token_address).functions.approve(spender, value)
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
@@ -60,7 +57,7 @@ class ERC20Wrapper(ContractWrapper):
         token_address = self._validate_and_checksum_address(token_address)
         from_ = self._validate_and_checksum_address(from_)
         to = self._validate_and_checksum_address(to)
-        value = normalize_token_amount(value)
+        value = int(value)
         func = self._erc20(token_address).functions.transferFrom(
             from_, to, value
         )

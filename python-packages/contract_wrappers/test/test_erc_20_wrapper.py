@@ -1,6 +1,6 @@
 import pytest
 from decimal import Decimal
-from zero_ex.contract_wrappers.erc_20_wrapper import ERC20Wrapper
+from zero_ex.contract_wrappers.erc_20_wrapper import ERC20Token
 
 
 MAX_ALLOWANCE = "{:.0f}".format(Decimal(2) ** 256 - 1)
@@ -8,14 +8,18 @@ MAX_ALLOWANCE = "{:.0f}".format(Decimal(2) ** 256 - 1)
 
 @pytest.fixture
 def erc20_wrapper(ganache_provider):
-    return ERC20Wrapper(ganache_provider)
+    return ERC20Token(ganache_provider)
 
 
 def test_erc20_wrapper__balance_of(
     accounts, erc20_wrapper, weth_address, weth_instance
 ):
-    acc1_original_weth_balance = erc20_wrapper.balance_of(weth_address, accounts[0])
-    acc2_original_weth_balance = erc20_wrapper.balance_of(weth_address, accounts[1])
+    acc1_original_weth_balance = erc20_wrapper.balance_of(
+        weth_address, accounts[0]
+    )
+    acc2_original_weth_balance = erc20_wrapper.balance_of(
+        weth_address, accounts[1]
+    )
 
     expected_difference = 2 * 10 ** 18
 
@@ -28,8 +32,12 @@ def test_erc20_wrapper__balance_of(
     acc1_weth_balance = erc20_wrapper.balance_of(weth_address, accounts[0])
     acc2_weth_balance = erc20_wrapper.balance_of(weth_address, accounts[1])
 
-    assert acc1_weth_balance - acc1_original_weth_balance == expected_difference
-    assert acc2_weth_balance - acc2_original_weth_balance == expected_difference
+    assert (
+        acc1_weth_balance - acc1_original_weth_balance == expected_difference
+    )
+    assert (
+        acc2_weth_balance - acc2_original_weth_balance == expected_difference
+    )
 
 
 def test_erc20_wrapper__approve(

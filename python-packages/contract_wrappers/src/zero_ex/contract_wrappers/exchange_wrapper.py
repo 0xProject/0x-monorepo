@@ -1,14 +1,9 @@
 from itertools import repeat
-from eth_utils import to_checksum_address
+from eth_utils import to_checksum_address, remove_0x_prefix
 from web3.providers.base import BaseProvider
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
-from zero_ex.contract_wrappers.utils import (
-    match_order_maker_with_cancellor,
-    normalize_signature,
-    normalize_token_amount,
-)
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
     generate_order_hash_hex,
@@ -18,16 +13,14 @@ from zero_ex.order_utils import (
 )
 
 
-class ExchangeWrapper(ContractWrapper):
-    __name__ = "ExchangeWrapper"
-
+class Exchange(ContractWrapper):
     def __init__(
         self,
         provider: BaseProvider,
         account_address: str = None,
         private_key: str = None,
     ):
-        super(ExchangeWrapper, self).__init__(
+        super(Exchange, self).__init__(
             provider=provider,
             account_address=account_address,
             private_key=private_key,
@@ -35,10 +28,20 @@ class ExchangeWrapper(ContractWrapper):
         self.address = NETWORK_TO_ADDRESSES[
             NetworkId(int(self._web3.net.version))
         ].exchange
-        self._exchange = self._contract_instance(
+        self._exchange = self.contract_instance(
             address=to_checksum_address(self.address),
             abi=abi_by_name("exchange"),
         )
+
+    def _match_order_maker_with_cancellor(
+        self, maker_address, cancellor_address
+    ):
+        if maker_address != cancellor_address:
+            raise Exception(
+                "Order with makerAddress {} can not be cancelled by {}".format(
+                    maker_address, cancellor_address
+                )
+            )
 
     def get_fill_event(self, tx_reciept):
         return self._exchange.events.Fill().processReceipt(tx_reciept)
@@ -54,17 +57,15 @@ class ExchangeWrapper(ContractWrapper):
         tx_opts=None,
         validate_only=False,
     ):
-        assert_valid(
-            order_to_jsdict(order, self.address), "/orderSchema"
-        )
+        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         is_valid_signature(
             self._provider,
             generate_order_hash_hex(order, self.address),
             signature,
             order["makerAddress"],
         )
-        taker_fill_amount = normalize_token_amount(amount_in_wei)
-        normalized_signature = normalize_signature(signature)
+        taker_fill_amount = int(amount_in_wei)
+        normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrder(
             order, taker_fill_amount, normalized_signature
         )
@@ -85,11 +86,11 @@ class ExchangeWrapper(ContractWrapper):
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         normalized_fill_amounts = [
-            normalize_token_amount(taker_fill_amount)
-            for taker_fill_amount in amounts_in_wei
+            int(taker_fill_amount) for taker_fill_amount in amounts_in_wei
         ]
         normalized_signatures = [
-            normalize_signature(signature) for signature in signatures
+            bytes.fromhex(remove_0x_prefix(signature))
+            for signature in signatures
         ]
         func = self._exchange.functions.batchFillOrders(
             orders, normalized_fill_amounts, normalized_signatures
@@ -106,17 +107,15 @@ class ExchangeWrapper(ContractWrapper):
         tx_opts=None,
         validate_only=False,
     ):
-        assert_valid(
-            order_to_jsdict(order, self.address), "/orderSchema"
-        )
+        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         is_valid_signature(
             self._provider,
             generate_order_hash_hex(order, self.address),
             signature,
             order["makerAddress"],
         )
-        taker_fill_amount = normalize_token_amount(amount_in_wei)
-        normalized_signature = normalize_signature(signature)
+        taker_fill_amount = int(amount_in_wei)
+        normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrKillOrder(
             order, taker_fill_amount, normalized_signature
         )
@@ -137,11 +136,11 @@ class ExchangeWrapper(ContractWrapper):
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         normalized_fill_amounts = [
-            normalize_token_amount(taker_fill_amount)
-            for taker_fill_amount in amounts_in_wei
+            int(taker_fill_amount) for taker_fill_amount in amounts_in_wei
         ]
         normalized_signatures = [
-            normalize_signature(signature) for signature in signatures
+            bytes.fromhex(remove_0x_prefix(signature))
+            for signature in signatures
         ]
         func = self._exchange.functions.batchFillOrKillOrders(
             orders, normalized_fill_amounts, normalized_signatures
@@ -151,19 +150,17 @@ class ExchangeWrapper(ContractWrapper):
         )
 
     def cancel_order(self, order, tx_opts=None, validate_only=False):
-        assert_valid(
-            order_to_jsdict(order, self.address), "/orderSchema"
-        )
+        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         maker_address = self._validate_and_checksum_address(
             order["makerAddress"]
         )
         if tx_opts.get("from_"):
-            match_order_maker_with_cancellor(
+            self._match_order_maker_with_cancellor(
                 maker_address,
                 self._validate_and_checksum_address(tx_opts["from_"]),
             )
         elif self._web3.eth.defaultAccount:
-            match_order_maker_with_cancellor(
+            self._match_order_maker_with_cancellor(
                 maker_address, self._web3.eth.defaultAccount
             )
         func = self._exchange.functions.cancelOrder(order)
@@ -172,19 +169,17 @@ class ExchangeWrapper(ContractWrapper):
         )
 
     def cancel_order(self, order, tx_opts=None, validate_only=False):
-        assert_valid(
-            order_to_jsdict(order, self.address), "/orderSchema"
-        )
+        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         maker_address = self._validate_and_checksum_address(
             order["makerAddress"]
         )
         if tx_opts.get("from_"):
-            match_order_maker_with_cancellor(
+            self._match_order_maker_with_cancellor(
                 maker_address,
                 self._validate_and_checksum_address(tx_opts["from_"]),
             )
         elif self._web3.eth.defaultAccount:
-            match_order_maker_with_cancellor(
+            self._match_order_maker_with_cancellor(
                 maker_address, self._web3.eth.defaultAccount
             )
         func = self._exchange.functions.cancelOrder(order)
@@ -203,13 +198,13 @@ class ExchangeWrapper(ContractWrapper):
         ]
         if tx_opts.get("from_"):
             map(
-                match_order_maker_with_cancellor,
+                self._match_order_maker_with_cancellor,
                 maker_addresses,
                 repeat(tx_opts["from_"]),
             )
         elif self._web3.eth.defaultAccount:
             map(
-                match_order_maker_with_cancellor,
+                self._match_order_maker_with_cancellor,
                 maker_addresses,
                 repeat(self._web3.eth.defaultAccount),
             )

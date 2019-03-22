@@ -1,14 +1,14 @@
 import random
 import pytest
 from eth_utils import remove_0x_prefix
-from zero_ex.contract_wrappers.exchange_wrapper import ExchangeWrapper
+from zero_ex.contract_wrappers.exchange_wrapper import Exchange
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
 
 
 @pytest.fixture
 def exchange_wrapper(ganache_provider):
-    return ExchangeWrapper(provider=ganache_provider)
+    return Exchange(provider=ganache_provider)
 
 
 def create_test_order(
@@ -60,12 +60,12 @@ def test_exchange_wrapper__fill_order(
 ):
     taker = accounts[0]
     maker = accounts[1]
-    address = exchange_wrapper.address
+    exchange_address = exchange_wrapper.address
     order = create_test_order(
         current_time, maker, 1, weth_asset_data, 1, weth_asset_data
     )
     order_hash = generate_order_hash_hex(
-        order=order, address=address
+        order=order, exchange_address=exchange_address
     )
     order_signature = sign_hash(ganache_provider, maker, order_hash)
 
@@ -92,7 +92,7 @@ def test_exchange_wrapper__batch_fill_orders(
 ):
     taker = accounts[0]
     maker = accounts[1]
-    address = exchange_wrapper.address
+    exchange_address = exchange_wrapper.address
     orders = []
     order_1 = create_test_order(
         current_time, maker, 1, weth_asset_data, 1, weth_asset_data
@@ -103,7 +103,7 @@ def test_exchange_wrapper__batch_fill_orders(
     orders.append(order_1)
     orders.append(order_2)
     order_hashes = [
-        generate_order_hash_hex(order=order, address=address)
+        generate_order_hash_hex(order=order, exchange_address=exchange_address)
         for order in orders
     ]
     order_signatures = [
