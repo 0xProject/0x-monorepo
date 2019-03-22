@@ -26,9 +26,9 @@ import "../src/Exchange.sol";
 contract TestExchangeInternals is
     Exchange
 {
-    constructor ()
+    constructor (uint256 chainId)
         public
-        Exchange("", 1)
+        Exchange("", chainId)
     {}
 
     /// @dev Adds properties of both FillResults instances.

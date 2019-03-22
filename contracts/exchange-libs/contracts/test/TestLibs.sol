@@ -19,18 +19,25 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "../src/LibEIP712.sol";
 import "../src/LibMath.sol";
 import "../src/LibOrder.sol";
 import "../src/LibFillResults.sol";
 import "../src/LibAbiEncoder.sol";
 
 
-contract TestLibs is 
+contract TestLibs is
+    LibEIP712,
     LibMath,
     LibOrder,
     LibFillResults,
     LibAbiEncoder
 {
+    constructor (uint256 chainId)
+        public
+        LibEIP712(chainId)
+    {}
+
     function publicAbiEncodeFillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
