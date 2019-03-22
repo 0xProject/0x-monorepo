@@ -19,23 +19,28 @@
 pragma solidity ^0.5.5;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomainConstants.sol";
 import "./LibConstants.sol";
 
 
 // solhint-disable var-name-mixedcase
 contract LibEIP712Domain is
     LibConstants,
-    LibEIP712
+    LibEIP712,
+    LibEIP712ExchangeDomainConstants
 {
 
     // EIP712 Domain Name value for the Coordinator
     string constant internal EIP712_COORDINATOR_DOMAIN_NAME = "0x Protocol Coordinator";
 
     // EIP712 Domain Version value for the Coordinator
-    string constant internal EIP712_COORDINATOR_DOMAIN_VERSION = "1.0.0";
+    string constant internal EIP712_COORDINATOR_DOMAIN_VERSION = "2.0.0";
 
     // Hash of the EIP712 Domain Separator data for the Coordinator
     bytes32 public EIP712_COORDINATOR_DOMAIN_HASH;
+
+    // Hash of the EIP712 Domain Separator data for the Exchange
+    bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
 
     constructor ()
         public
@@ -43,6 +48,11 @@ contract LibEIP712Domain is
         EIP712_COORDINATOR_DOMAIN_HASH = hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
+            address(this)
+        );
+        EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
+            EIP712_EXCHANGE_DOMAIN_NAME,
+            EIP712_EXCHANGE_DOMAIN_VERSION,
             address(this)
         );
     }
