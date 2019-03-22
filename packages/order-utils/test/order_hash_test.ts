@@ -14,8 +14,9 @@ const expect = chai.expect;
 
 describe('Order hashing', () => {
     describe('#getOrderHashHex', () => {
-        const expectedOrderHash = '0x434c6b41e2fb6dfcfe1b45c4492fb03700798e9c1afc6f801ba6203f948c1fa7';
+        const expectedOrderHash = '0x2af69ce573fc9ffc734c88aaafc6907e2619572a462ca1ab2326e0e4bebec127';
         const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
+        const fakeChainID = 1337;
         const order: Order = {
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,
@@ -24,6 +25,7 @@ describe('Order hashing', () => {
             makerAssetData: constants.NULL_ADDRESS,
             takerAssetData: constants.NULL_ADDRESS,
             exchangeAddress: fakeExchangeContractAddress,
+            chainId: fakeChainID,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),

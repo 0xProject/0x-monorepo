@@ -6,7 +6,6 @@ import * as _ from 'lodash';
 export const hashUtils = {
     getApprovalHashBuffer(
         transaction: SignedZeroExTransaction,
-        chainId: BigNumber,
         verifyingContractAddress: string,
         txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
@@ -22,7 +21,6 @@ export const hashUtils = {
     },
     getApprovalHashHex(
         transaction: SignedZeroExTransaction,
-        chainId: BigNumber,
         verifyingContractAddress: string,
         txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
@@ -30,7 +28,6 @@ export const hashUtils = {
         const hashHex = `0x${hashUtils
             .getApprovalHashBuffer(
                 transaction,
-                chainId,
                 verifyingContractAddress,
                 txOrigin,
                 approvalExpirationTimeSeconds)

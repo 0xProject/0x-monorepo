@@ -18,6 +18,7 @@ export interface Order {
     takerAssetData: string;
     salt: BigNumber;
     exchangeAddress: string;
+    chainId: number;
     feeRecipientAddress: string;
     expirationTimeSeconds: BigNumber;
 }
@@ -46,6 +47,7 @@ export interface SignedOrder extends Order {
  */
 export interface ZeroExTransaction {
     verifyingContractAddress: string;
+    chainId: number;
     salt: BigNumber;
     signerAddress: string;
     data: string;
