@@ -64,8 +64,3 @@ export interface OrdersAndRemainingFillAmount<T> {
     ordersRemainingFillableMakerAssetAmounts: BigNumber[];
     remainingFillAmount: BigNumber;
 }
-
-export interface BalanceAndAllowance {
-    balance: BigNumber;
-    allowance: BigNumber;
-}

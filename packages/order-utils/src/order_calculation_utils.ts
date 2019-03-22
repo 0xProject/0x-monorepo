@@ -2,7 +2,6 @@ import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { constants } from './constants';
-import { BalanceAndAllowance } from './types';
 
 export const orderCalculationUtils = {
     /**

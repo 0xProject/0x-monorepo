@@ -75,5 +75,4 @@ export {
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
-    BalanceAndAllowance,
 } from './types';
