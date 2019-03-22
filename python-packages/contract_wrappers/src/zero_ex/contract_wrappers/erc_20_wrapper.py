@@ -21,7 +21,7 @@ class ERC20Wrapper(ContractWrapper):
         )
 
     def _erc20(self, token_address):
-        return self._web3.eth.contract(
+        return self._contract_instance(
             address=to_checksum_address(token_address),
             abi=abi_by_name("ERC20Token"),
         )

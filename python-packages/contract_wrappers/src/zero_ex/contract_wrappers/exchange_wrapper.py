@@ -32,11 +32,11 @@ class ExchangeWrapper(ContractWrapper):
             account_address=account_address,
             private_key=private_key,
         )
-        self.exchange_address = NETWORK_TO_ADDRESSES[
+        self.address = NETWORK_TO_ADDRESSES[
             NetworkId(int(self._web3.net.version))
         ].exchange
-        self._exchange = self._web3.eth.contract(
-            address=to_checksum_address(self.exchange_address),
+        self._exchange = self._contract_instance(
+            address=to_checksum_address(self.address),
             abi=abi_by_name("exchange"),
         )
 
@@ -55,11 +55,11 @@ class ExchangeWrapper(ContractWrapper):
         validate_only=False,
     ):
         assert_valid(
-            order_to_jsdict(order, self.exchange_address), "/orderSchema"
+            order_to_jsdict(order, self.address), "/orderSchema"
         )
         is_valid_signature(
             self._provider,
-            generate_order_hash_hex(order, self.exchange_address),
+            generate_order_hash_hex(order, self.address),
             signature,
             order["makerAddress"],
         )
@@ -81,7 +81,7 @@ class ExchangeWrapper(ContractWrapper):
         validate_only=False,
     ):
         order_jsdicts = [
-            order_to_jsdict(order, self.exchange_address) for order in orders
+            order_to_jsdict(order, self.address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         normalized_fill_amounts = [
@@ -107,11 +107,11 @@ class ExchangeWrapper(ContractWrapper):
         validate_only=False,
     ):
         assert_valid(
-            order_to_jsdict(order, self.exchange_address), "/orderSchema"
+            order_to_jsdict(order, self.address), "/orderSchema"
         )
         is_valid_signature(
             self._provider,
-            generate_order_hash_hex(order, self.exchange_address),
+            generate_order_hash_hex(order, self.address),
             signature,
             order["makerAddress"],
         )
@@ -133,7 +133,7 @@ class ExchangeWrapper(ContractWrapper):
         validate_only=False,
     ):
         order_jsdicts = [
-            order_to_jsdict(order, self.exchange_address) for order in orders
+            order_to_jsdict(order, self.address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         normalized_fill_amounts = [
@@ -152,7 +152,7 @@ class ExchangeWrapper(ContractWrapper):
 
     def cancel_order(self, order, tx_opts=None, validate_only=False):
         assert_valid(
-            order_to_jsdict(order, self.exchange_address), "/orderSchema"
+            order_to_jsdict(order, self.address), "/orderSchema"
         )
         maker_address = self._validate_and_checksum_address(
             order["makerAddress"]
@@ -173,7 +173,7 @@ class ExchangeWrapper(ContractWrapper):
 
     def cancel_order(self, order, tx_opts=None, validate_only=False):
         assert_valid(
-            order_to_jsdict(order, self.exchange_address), "/orderSchema"
+            order_to_jsdict(order, self.address), "/orderSchema"
         )
         maker_address = self._validate_and_checksum_address(
             order["makerAddress"]
@@ -194,7 +194,7 @@ class ExchangeWrapper(ContractWrapper):
 
     def batch_cancel_orders(self, orders, tx_opts=None, validate_only=False):
         order_jsdicts = [
-            order_to_jsdict(order, self.exchange_address) for order in orders
+            order_to_jsdict(order, self.address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         maker_addresses = [

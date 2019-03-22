@@ -1,3 +1,4 @@
+from typing import Dict
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
@@ -16,7 +17,7 @@ class ContractWrapper:
     ):
         self._provider = provider
         self._web3 = Web3(provider)
-
+    
         if (
             self._web3.eth.defaultAccount
             or len(self._web3.eth.accounts) is not 0
@@ -53,7 +54,13 @@ class ContractWrapper:
     def get_account_address(self):
         return self._web3.eth.defaultAccount
 
-    def _validate_and_checksum_address(self, address):
+    def _contract_instance(self, address, abi):
+        return self._web3.eth.contract(
+            address=address,
+            abi = abi,
+        )
+
+    def _validate_and_checksum_address(self, address: str):
         if not self._web3.isAddress(address):
             raise TypeError("Invalid address provided: {}".format(address))
         return to_checksum_address(address)
