@@ -32,6 +32,7 @@ export class OrderFactoryFromScenario {
     private readonly _erc721Token: DummyERC721TokenContract;
     private readonly _erc721Balances: ERC721TokenIdsByOwner;
     private readonly _exchangeAddress: string;
+    private readonly _chainId: number;
     constructor(
         userAddresses: string[],
         zrxAddress: string,
@@ -41,6 +42,7 @@ export class OrderFactoryFromScenario {
         erc721Token: DummyERC721TokenContract,
         erc721Balances: ERC721TokenIdsByOwner,
         exchangeAddress: string,
+        chainId: number
     ) {
         this._userAddresses = userAddresses;
         this._zrxAddress = zrxAddress;
@@ -50,6 +52,7 @@ export class OrderFactoryFromScenario {
         this._erc721Token = erc721Token;
         this._erc721Balances = erc721Balances;
         this._exchangeAddress = exchangeAddress;
+        this._chainId = chainId;
     }
     public generateOrder(orderScenario: OrderScenario): Order {
         const makerAddress = this._userAddresses[1];
@@ -285,6 +288,7 @@ export class OrderFactoryFromScenario {
             takerAssetData,
             salt: generatePseudoRandomSalt(),
             exchangeAddress: this._exchangeAddress,
+            chainId: this._chainId,
             feeRecipientAddress,
             expirationTimeSeconds,
         };

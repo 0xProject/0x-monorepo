@@ -12,7 +12,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { transactionHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -23,6 +23,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Mixins tests', () => {
+    let chainId: number;
     let transactionSignerAddress: string;
     let approvalSignerAddress1: string;
     let approvalSignerAddress2: string;
@@ -40,16 +41,19 @@ describe('Mixins tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         mixins = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
             provider,
             txDefaults,
             exchangeAddress,
+            new BigNumber(chainId),
         );
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [transactionSignerAddress, approvalSignerAddress1, approvalSignerAddress2] = accounts.slice(0, 3);
         defaultOrder = {
             exchangeAddress: devConstants.NULL_ADDRESS,
+            chainId,
             makerAddress: devConstants.NULL_ADDRESS,
             takerAddress: devConstants.NULL_ADDRESS,
             senderAddress: mixins.address,
@@ -68,9 +72,21 @@ describe('Mixins tests', () => {
             devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(transactionSignerAddress)];
         const approvalSignerPrivateKey1 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress1)];
         const approvalSignerPrivateKey2 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress2)];
-        transactionFactory = new TransactionFactory(transactionSignerPrivateKey, exchangeAddress);
-        approvalFactory1 = new ApprovalFactory(approvalSignerPrivateKey1, mixins.address);
-        approvalFactory2 = new ApprovalFactory(approvalSignerPrivateKey2, mixins.address);
+        transactionFactory = new TransactionFactory(
+            transactionSignerPrivateKey,
+            exchangeAddress,
+            chainId,
+        );
+        approvalFactory1 = new ApprovalFactory(
+            approvalSignerPrivateKey1,
+            mixins.address,
+            chainId,
+        );
+        approvalFactory2 = new ApprovalFactory(
+            approvalSignerPrivateKey2,
+            mixins.address,
+            chainId,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

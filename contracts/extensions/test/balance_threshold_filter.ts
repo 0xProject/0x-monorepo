@@ -2,7 +2,7 @@ import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -40,6 +40,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
     const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
 
+    let chainId: number;
     let validMakerAddress: string;
     let validMakerAddress2: string;
     let owner: string;
@@ -88,6 +89,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
     };
 
     before(async () => {
+        // Get the chain ID.
+        chainId = await providerUtils.getChainIdAsync(provider);
         // Create accounts
         await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -131,6 +134,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             provider,
             txDefaults,
             zrxAssetData,
+            new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
         // Register proxies
@@ -164,6 +168,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         // Default order parameters
         defaultOrderParams = {
             exchangeAddress: exchangeInstance.address,
+            chainId,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
@@ -197,25 +202,25 @@ describe(ContractName.BalanceThresholdFilter, () => {
         erc20TakerBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc20BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(takerPrivateKey, exchangeInstance.address),
+            new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
         erc721TakerBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc721BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(takerPrivateKey, exchangeInstance.address),
+            new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
         erc721MakerBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc721BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(makerPrivateKey, exchangeInstance.address),
+            new TransactionFactory(makerPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
         erc721NonValidBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc721BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(invalidAddressPrivateKey, exchangeInstance.address),
+            new TransactionFactory(invalidAddressPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
     });

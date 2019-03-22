@@ -10,7 +10,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 
 import { TestLibsContract } from '../generated-wrappers/test_libs';
@@ -22,6 +22,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange libs', () => {
+    let chainId: number;
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let libs: TestLibsContract;
@@ -35,11 +36,18 @@ describe('Exchange libs', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
-        libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
+        chainId = await providerUtils.getChainIdAsync(provider);
+        libs = await TestLibsContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibs,
+            provider,
+            txDefaults,
+            new BigNumber(chainId),
+        );
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             exchangeAddress: libs.address,
+            chainId,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
