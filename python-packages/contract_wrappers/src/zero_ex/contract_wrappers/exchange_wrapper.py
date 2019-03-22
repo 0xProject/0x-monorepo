@@ -1,8 +1,13 @@
-from eth_utils import to_checksum_address, remove_0x_prefix
+from eth_utils import to_checksum_address
+from itertools import repeat
 from web3.providers.base import BaseProvider
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
+from zero_ex.contract_wrappers.utils import (
+    normalize_signature,
+    normalize_token_amount,
+)
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
     generate_order_hash_hex,
@@ -43,7 +48,7 @@ class ExchangeWrapper(ContractWrapper):
     def fill_order(
         self,
         order,
-        taker_fill_amount,
+        amount_in_wei,
         signature,
         tx_opts=None,
         validate_only=False,
@@ -57,10 +62,10 @@ class ExchangeWrapper(ContractWrapper):
             signature,
             order["makerAddress"],
         )
-        taker_fill_amount = int(taker_fill_amount)
-        signature = bytes.fromhex(remove_0x_prefix(signature))
+        taker_fill_amount = normalize_token_amount(amount_in_wei)
+        normalized_signature = normalize_signature(signature)
         func = self._exchange.functions.fillOrder(
-            order, taker_fill_amount, signature
+            order, taker_fill_amount, normalized_signature
         )
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
@@ -69,7 +74,7 @@ class ExchangeWrapper(ContractWrapper):
     def fill_or_kill_order(
         self,
         order,
-        taker_fill_amount,
+        amount_in_wei,
         signature,
         tx_opts=None,
         validate_only=False,
@@ -83,23 +88,11 @@ class ExchangeWrapper(ContractWrapper):
             signature,
             order["makerAddress"],
         )
-        taker_fill_amount = int(taker_fill_amount)
-        signature = bytes.fromhex(remove_0x_prefix(signature))
+        taker_fill_amount = normalize_token_amount(amount_in_wei)
+        normalized_signature = normalize_signature(signature)
         func = self._exchange.functions.fillOrKillOrder(
-            order, taker_fill_amount, signature
+            order, taker_fill_amount, normalized_signature
         )
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
         )
-
-    # def batch_fill_orders(
-    #     signed_orders,
-    #     taker_asset_fill_amounts,
-    #     taker_address,
-    #     order_transaction_opts
-    # ):
-    # signatures = [x.signature for x in signed_orders]
-    # func = self._exchange.functions.batchFillOrders(
-    #     signed_orders, taker_asset_fill_amounts, signatures
-    # )
-    # return _send_transaction(func, gas_price, gas_limit)

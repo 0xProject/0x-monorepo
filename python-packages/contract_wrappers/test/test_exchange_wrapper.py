@@ -57,7 +57,7 @@ def test_exchange_wrapper__fill_order(
 
     transaction_hash = exchange_wrapper.fill_order(
         order=order,
-        taker_fill_amount=order["takerAssetAmount"],
+        amount_in_wei=order["takerAssetAmount"],
         signature=order_signature,
         tx_opts={"from_": taker},
     )

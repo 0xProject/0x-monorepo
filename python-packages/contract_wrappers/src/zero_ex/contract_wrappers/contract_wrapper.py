@@ -53,7 +53,8 @@ class ContractWrapper:
         return self._web3.eth.defaultAccount
 
     def _validate_and_checksum_address(self, address):
-        self._web3.isAddress(address)
+        if not self._web3.isAddress(address):
+            raise TypeError("Invalid address provided: {}".format(address))
         return to_checksum_address(address)
 
     def _invoke_function_call(self, func, tx_opts, validate_only):

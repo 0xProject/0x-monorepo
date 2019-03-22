@@ -2,6 +2,7 @@ from eth_utils import to_checksum_address
 from web3.providers.base import BaseProvider
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
+from zero_ex.contract_wrappers.utils import normalize_token_amount
 
 
 class ERC20Wrapper(ContractWrapper):
@@ -30,7 +31,7 @@ class ERC20Wrapper(ContractWrapper):
     ):
         token_address = self._validate_and_checksum_address(token_address)
         to = self._validate_and_checksum_address(to)
-        value = int(value)
+        value = normalize_token_amount(value)
         func = self._erc20(token_address).functions.transfer(to, value)
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
@@ -41,7 +42,7 @@ class ERC20Wrapper(ContractWrapper):
     ):
         token_address = self._validate_and_checksum_address(token_address)
         spender = self._validate_and_checksum_address(spender)
-        value = int(value)
+        value = normalize_token_amount(value)
         func = self._erc20(token_address).functions.approve(spender, value)
         return self._invoke_function_call(
             func=func, tx_opts=tx_opts, validate_only=validate_only
@@ -59,7 +60,7 @@ class ERC20Wrapper(ContractWrapper):
         token_address = self._validate_and_checksum_address(token_address)
         from_ = self._validate_and_checksum_address(from_)
         to = self._validate_and_checksum_address(to)
-        value = int(value)
+        value = normalize_token_amount(value)
         func = self._erc20(token_address).functions.transferFrom(
             from_, to, value
         )
