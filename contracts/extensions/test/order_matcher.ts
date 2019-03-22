@@ -23,7 +23,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -36,6 +36,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 // tslint:disable:no-unnecessary-type-assertion
 describe('OrderMatcher', () => {
+    let chainId: number;
     let makerAddressLeft: string;
     let makerAddressRight: string;
     let owner: string;
@@ -69,6 +70,7 @@ describe('OrderMatcher', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         // Create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         // Hack(albrow): Both Prettier and TSLint insert a trailing comma below
@@ -110,6 +112,7 @@ describe('OrderMatcher', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -165,6 +168,7 @@ describe('OrderMatcher', () => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressLeft,
             exchangeAddress: exchange.address,
+            chainId,
             makerAssetData: leftMakerAssetData,
             takerAssetData: leftTakerAssetData,
             feeRecipientAddress: feeRecipientAddressLeft,
@@ -175,6 +179,7 @@ describe('OrderMatcher', () => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressRight,
             exchangeAddress: exchange.address,
+            chainId,
             makerAssetData: leftTakerAssetData,
             takerAssetData: leftMakerAssetData,
             feeRecipientAddress: feeRecipientAddressRight,
@@ -199,6 +204,7 @@ describe('OrderMatcher', () => {
                 provider,
                 txDefaults,
                 constants.NULL_BYTES,
+                new BigNumber(chainId),
             );
             return expectContractCreationFailedAsync(
                 (OrderMatcherContract.deployFrom0xArtifactAsync(

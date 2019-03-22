@@ -19,6 +19,7 @@ const expect = chai.expect;
 describe('Signature utils', () => {
     let makerAddress: string;
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
+    const CHAIN_ID = 1337;
     let order: Order;
     before(async () => {
         const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
@@ -31,6 +32,7 @@ describe('Signature utils', () => {
             makerAssetData: constants.NULL_ADDRESS,
             takerAssetData: constants.NULL_ADDRESS,
             exchangeAddress: fakeExchangeContractAddress,
+            chainId: CHAIN_ID,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
@@ -152,7 +154,7 @@ describe('Signature utils', () => {
     describe('#ecSignOrderAsync', () => {
         it('should default to eth_sign if eth_signTypedData is unavailable', async () => {
             const expectedSignature =
-                '0x1c3582f06356a1314dbf1c0e534c4d8e92e59b056ee607a7ff5a825f5f2cc5e6151c5cc7fdd420f5608e4d5bef108e42ad90c7a4b408caef32e24374cf387b0d7603';
+                '0x1bcbeb571648db1b7e0454175a6a4b4da1ac07cfc5fb5e4c8e4e10aa4aad368a11050ac85be1ca543eb4e1c07b852cbe6619cbab0cbbf05df364d80e126ffe731403';
 
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
@@ -299,7 +301,7 @@ describe('Signature utils', () => {
         });
         it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
             const expectedSignature =
-                '0x1cd472c439833774b55d248c31b6585f21aea1b9363ebb4ec58549e46b62eb5a6f696f5781f62de008ee7f77650ef940d99c97ec1dee67b3f5cea1bbfdfeb2eba602';
+                '0x1baf6c2d23afb5389e29e4274e3dc419939641e94f56a62260a004f2f79b9501c725a1d740c75d1f6e0bdc7b158c62e1ec36b7e9a16086f249fd821fa00d5652db02';
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_signTypedData') {

@@ -15,8 +15,11 @@ import { assert } from './assert';
  */
 export class TransactionEncoder {
     private readonly _exchangeInstance: ExchangeContract;
-    constructor(exchangeInstance: ExchangeContract) {
+    private readonly _chainId: number;
+
+    constructor(exchangeInstance: ExchangeContract, chainId: number) {
         this._exchangeInstance = exchangeInstance;
+        this._chainId = chainId;
     }
     /**
      * Hashes the transaction data for use with the Exchange contract.
@@ -29,6 +32,7 @@ export class TransactionEncoder {
         const exchangeAddress = this._getExchangeContract().address;
         const transaction = {
             verifyingContractAddress: exchangeAddress,
+            chainId: this._chainId,
             salt,
             signerAddress,
             data,

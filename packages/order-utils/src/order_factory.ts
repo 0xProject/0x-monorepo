@@ -1,5 +1,5 @@
 import { Order, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -10,14 +10,18 @@ import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
 export const orderFactory = {
     createOrderFromPartial(partialOrder: Partial<Order>): Order {
-        const defaultOrder = generateEmptyOrder();
+        if (_.isNil(partialOrder.chainId))
+            throw new Error('chainId must be valid');
+        const defaultOrder = generateEmptyOrder(partialOrder.chainId);
         return {
             ...defaultOrder,
             ...partialOrder,
         };
     },
     createSignedOrderFromPartial(partialSignedOrder: Partial<SignedOrder>): SignedOrder {
-        const defaultOrder = generateEmptySignedOrder();
+        if (_.isNil(partialSignedOrder.chainId))
+            throw new Error('chainId must be valid');
+        const defaultOrder = generateEmptySignedOrder(partialSignedOrder.chainId);
         return {
             ...defaultOrder,
             ...partialSignedOrder,
@@ -30,6 +34,7 @@ export const orderFactory = {
         takerAssetAmount: BigNumber,
         takerAssetData: string,
         exchangeAddress: string,
+        chainId: number,
         createOrderOpts: CreateOrderOpts = generateDefaultCreateOrderOpts(),
     ): Order {
         const defaultCreateOrderOpts = generateDefaultCreateOrderOpts();
@@ -48,6 +53,7 @@ export const orderFactory = {
             salt: createOrderOpts.salt || defaultCreateOrderOpts.salt,
             expirationTimeSeconds:
                 createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
+            chainId: chainId,
         };
         return order;
     },
@@ -68,6 +74,7 @@ export const orderFactory = {
             takerAssetAmount,
             takerAssetData,
             exchangeAddress,
+            await providerUtils.getChainIdAsync(supportedProvider),
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
@@ -77,13 +84,13 @@ export const orderFactory = {
     },
 };
 
-function generateEmptySignedOrder(): SignedOrder {
+function generateEmptySignedOrder(chainId: number): SignedOrder {
     return {
-        ...generateEmptyOrder(),
+        ...generateEmptyOrder(chainId),
         signature: constants.NULL_BYTES,
     };
 }
-function generateEmptyOrder(): Order {
+function generateEmptyOrder(chainId: number): Order {
     return {
         senderAddress: constants.NULL_ADDRESS,
         makerAddress: constants.NULL_ADDRESS,
@@ -96,6 +103,7 @@ function generateEmptyOrder(): Order {
         takerAssetData: constants.NULL_BYTES,
         salt: generatePseudoRandomSalt(),
         exchangeAddress: constants.NULL_ADDRESS,
+        chainId: chainId,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
     };

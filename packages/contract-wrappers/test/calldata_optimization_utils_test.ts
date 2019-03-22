@@ -14,8 +14,9 @@ const expect = chai.expect;
 // utility for generating a set of order objects with mostly NULL values
 // except for a specified makerAssetData and takerAssetData
 const FAKE_ORDERS_COUNT = 5;
+const CHAIN_ID = 1337;
 const generateFakeOrders = (makerAssetData: string, takerAssetData: string) =>
-    _.map(_.range(FAKE_ORDERS_COUNT), index => {
+    _.map(_.range(FAKE_ORDERS_COUNT), () => {
         const order = orderFactory.createOrder(
             constants.NULL_ADDRESS,
             constants.ZERO_AMOUNT,
@@ -23,6 +24,7 @@ const generateFakeOrders = (makerAssetData: string, takerAssetData: string) =>
             constants.ZERO_AMOUNT,
             takerAssetData,
             constants.NULL_ADDRESS,
+            CHAIN_ID,
         );
         return {
             ...order,
