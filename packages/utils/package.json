@@ -1,6 +1,6 @@
 {
     "name": "@0x/utils",
-    "version": "4.2.3",
+    "version": "4.3.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,8 +44,8 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/types": "^2.2.0",
-        "@0x/typescript-typings": "^4.2.0",
+        "@0x/types": "^2.2.1",
+        "@0x/typescript-typings": "^4.2.1",
         "@types/node": "*",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~8.0.2",

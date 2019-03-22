@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.4 - _March 21, 2019_
+
+    * Dependencies updated
+
 ## v5.0.3 - _March 20, 2019_
 
     * Update websocket@^1.0.25 -> websocket@^1.0.26 (#1685)

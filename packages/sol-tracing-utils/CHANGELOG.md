@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.9 - _March 21, 2019_
+
+    * Dependencies updated
+
 ## v6.0.8 - _March 20, 2019_
 
     * Update solidity-parser-antlr to 0.4.2 (#1719)

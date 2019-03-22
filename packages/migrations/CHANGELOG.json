@@ -3,10 +3,15 @@
         "version": "4.1.0",
         "changes": [
             {
+                "note": "Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script",
+                "pr": 1689
+            },
+            {
                 "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
                 "pr": 1695
             }
-        ]
+        ],
+        "timestamp": 1553183790
     },
     {
         "timestamp": 1553091633,

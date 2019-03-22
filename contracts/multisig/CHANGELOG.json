@@ -6,7 +6,8 @@
                 "note": "Run Web3ProviderEngine without excess block polling",
                 "pr": 1695
             }
-        ]
+        ],
+        "timestamp": 1553183790
     },
     {
         "version": "3.0.0",

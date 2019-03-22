@@ -492,7 +492,6 @@
 "@0x/contracts-asset-proxy@^1.0.2":
   version "1.0.9"
   resolved "https://registry.npmjs.org/@0x/contracts-asset-proxy/-/contracts-asset-proxy-1.0.9.tgz#3a48e64b93ddc642834bde1bd09cdd84ca688a2b"
-  integrity sha512-AnKE0eDejl3G4xRzwOa2S2usiAoRvyV3lU/sOhwkG53KC6RHQGu9g50zcLHMHmTl9I088eEa423QwbeBxgmtcQ==
   dependencies:
     "@0x/base-contract" "^5.0.2"
     "@0x/contracts-erc20" "^1.0.9"
@@ -523,7 +522,6 @@
 "@0x/contracts-erc20@^1.0.2", "@0x/contracts-erc20@^1.0.9":
   version "1.0.9"
   resolved "https://registry.npmjs.org/@0x/contracts-erc20/-/contracts-erc20-1.0.9.tgz#366ce8222dcae5ade0ea7ca95332416a080f6abf"
-  integrity sha512-CJwEWrGf0tvpnraEW+TPTjpMcwj9yDem1xVbER0qV49RRZupasVIcQmaZi4ZUpZqo4X67ZOx8uijgLXFDB9NDw==
   dependencies:
     "@0x/base-contract" "^5.0.2"
     "@0x/contracts-exchange-libs" "1.0.2"
@@ -551,7 +549,6 @@
 "@0x/contracts-erc721@^1.0.2", "@0x/contracts-erc721@^1.0.9":
   version "1.0.9"
   resolved "https://registry.npmjs.org/@0x/contracts-erc721/-/contracts-erc721-1.0.9.tgz#3991858a3bf5a80dcd6e5fd65e938f8adc3b347c"
-  integrity sha512-Q4T93VEUChyLAz1bNRLidCtJ2/bfU1vsbeZGQeCrmm/Lcjaqm72B44SpLAiLBdTpyTfWT5gfvK+uQr1BtXTUVQ==
   dependencies:
     "@0x/base-contract" "^5.0.2"
     "@0x/contracts-utils" "2.0.1"
@@ -579,7 +576,6 @@
 "@0x/contracts-exchange-libs@^1.0.2":
   version "1.1.3"
   resolved "https://registry.npmjs.org/@0x/contracts-exchange-libs/-/contracts-exchange-libs-1.1.3.tgz#dc9429e9c5fc750e9f5006e5ad53ebd7aa577c28"
-  integrity sha512-M2kAMN6SO78sMyCuJLjen10CqoUNkeCFD2T8MYMpMcWWWFXTlyyeJgPllZf/ySlXSBziyJUcCRZjdwbZfF7AYQ==
   dependencies:
     "@0x/base-contract" "^5.0.2"
     "@0x/contracts-utils" "^2.0.8"
@@ -629,7 +625,6 @@
 "@0x/contracts-utils@^2.0.1", "@0x/contracts-utils@^2.0.8":
   version "2.0.8"
   resolved "https://registry.npmjs.org/@0x/contracts-utils/-/contracts-utils-2.0.8.tgz#b6a3775296e04c7ca9ebea7eae56fda48a43239d"
-  integrity sha512-5I1wq4ImjsIgjBNDl5F6qwJMDc6sm52vVGIxz+v9N6hUcJwaxa/SYeZ4EA5BpFdHK73xtvNe4CeRK2+g9Pt5UA==
   dependencies:
     "@0x/base-contract" "^5.0.2"
     "@0x/order-utils" "^7.0.2"
@@ -13625,6 +13620,16 @@ react-dom@^16.3.2:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
+react-dom@^16.4.2:
+  version "16.8.5"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.8.5.tgz#b3e37d152b49e07faaa8de41fdf562be3463335e"
+  integrity sha512-VIEIvZLpFafsfu4kgmftP5L8j7P1f0YThfVTrANMhZUFMDOsA6e0kfR6wxw/8xxKs4NB59TZYbxNdPCDW34x4w==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.5"
+
 react-dom@^16.5.2:
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.5.2.tgz#b69ee47aa20bab5327b2b9d7c1fe2a30f2cfa9d7"
@@ -13925,6 +13930,16 @@ react@^16.3.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+react@^16.4.2:
+  version "16.8.5"
+  resolved "https://registry.npmjs.org/react/-/react-16.8.5.tgz#49be3b655489d74504ad994016407e8a0445de66"
+  integrity sha512-daCb9TD6FZGvJ3sg8da1tRAtIuw29PbKZW++NN4wqkbEvxL+bZpaaYb4xuftW/SpXmgacf1skXl/ddX6CdOlDw==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.5"
 
 react@^16.5.2:
   version "16.5.2"
@@ -14795,6 +14810,14 @@ schedule@^0.5.0:
   version "0.5.0"
   resolved "https://registry.npmjs.org/schedule/-/schedule-0.5.0.tgz#c128fffa0b402488b08b55ae74bb9df55cc29cc8"
   dependencies:
+    object-assign "^4.1.1"
+
+scheduler@^0.13.5:
+  version "0.13.5"
+  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.13.5.tgz#b7226625167041298af3b98088a9dbbf6d7733a8"
+  integrity sha512-K98vjkQX9OIt/riLhp6F+XtDPtMQhqNcf045vsh+pcuvHq+PHy1xCrH3pq1P40m6yR46lpVvVhKdEOtnimuUJw==
+  dependencies:
+    loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
 schema-utils@^0.4.4:

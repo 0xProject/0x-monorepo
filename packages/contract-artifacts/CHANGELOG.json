@@ -1,5 +1,15 @@
 [
     {
+        "version": "1.4.0",
+        "changes": [
+            {
+                "note": "Added artifact for `Coordinaotr` and `CoordinatorRegistry` contracts",
+                "pr": 1689
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
         "version": "1.3.0",
         "changes": [
             {
