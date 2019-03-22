@@ -53,7 +53,7 @@ contract LibEIP712Domain is
         EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
             EIP712_EXCHANGE_DOMAIN_NAME,
             EIP712_EXCHANGE_DOMAIN_VERSION,
-            address(this)
+            address(EXCHANGE)
         );
     }
 
