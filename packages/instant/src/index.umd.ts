@@ -73,7 +73,7 @@ export const unrender = () => {
     }
 
     ReactDOM.unmountComponentAtNode(injectedDiv);
-    if (parentElement) {
+    if (parentElement && parentElement.contains(injectedDiv)) {
         parentElement.removeChild(injectedDiv);
     }
 };
