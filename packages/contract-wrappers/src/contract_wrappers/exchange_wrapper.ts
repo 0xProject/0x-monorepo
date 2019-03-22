@@ -1189,18 +1189,19 @@ export class ExchangeWrapper extends ContractWrapper {
             this.getZRXAssetData(),
             fillableTakerAssetAmount,
         );
-        await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, fillableTakerAssetAmount);
+        const makerTransferAmount = orderCalculationUtils.getMakerFillAmount(signedOrder, fillableTakerAssetAmount);
+        await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, makerTransferAmount);
     }
     /**
-     * Validate the transfer from the Maker to the Taker. This is simulated on-chain
+     * Validate the transfer from the maker to the taker. This is simulated on-chain
      * via an eth_call. If this call fails, the asset is currently nontransferable.
      * @param signedOrder SignedOrder of interest
-     * @param fillTakerAssetAmount Amount we'd like to fill the order for
-     * @param takerAddress The taker of the order, defaults to signedOrder.takerAddress
+     * @param makerAssetAmount Amount to transfer from the maker
+     * @param takerAddress The address to transfer to, defaults to signedOrder.takerAddress
      */
     public async validateMakerTransferThrowIfInvalidAsync(
         signedOrder: SignedOrder,
-        fillTakerAssetAmount: BigNumber,
+        makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
         const toAddress = _.isUndefined(takerAddress) ? signedOrder.takerAddress : takerAddress;
@@ -1213,19 +1214,18 @@ export class ExchangeWrapper extends ContractWrapper {
             assetProxyAddress,
             this._web3Wrapper.getProvider(),
         );
-        const makerTransferAmount = orderCalculationUtils.getMakerFillAmount(signedOrder, fillTakerAssetAmount);
 
         const result = await assetProxy.transferFrom.callAsync(
             makerAssetData,
             signedOrder.makerAddress,
             toAddress,
-            makerTransferAmount,
+            makerAssetAmount,
             {
                 from: this.address,
             },
         );
         if (result !== undefined) {
-            throw new Error('Unknown error occured during maker transfer simulation');
+            throw new Error(`Error during maker transfer simulation: ${result}`);
         }
     }
     /**
