@@ -42,21 +42,11 @@ contract ICoordinatorApprovalVerifier {
         public
         view;
 
-    /// @dev Validates that the feeRecipients of a batch of order have approved a 0x transaction.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @param orders Array of order structs containing order specifications.
-    /// @param txOrigin Required signer of Ethereum transaction calling this function.
-    /// @param transactionSignature Proof that the transaction has been signed by the signer.
-    /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
-    /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
-    function assertValidTransactionOrdersApproval(
-        LibZeroExTransaction.ZeroExTransaction memory transaction,
-        LibOrder.Order[] memory orders,
-        address txOrigin,
-        bytes memory transactionSignature,
-        uint256[] memory approvalExpirationTimeSeconds,
-        bytes[] memory approvalSignatures
-    )
+    /// @dev Decodes the orders from Exchange calldata representing any fill method.
+    /// @param data Exchange calldata representing a fill method.
+    /// @return The orders from the Exchange calldata.
+    function decodeOrdersFromFillData(bytes memory data)
         public
-        view;
+        pure
+        returns (LibOrder.Order[] memory orders);
 }
