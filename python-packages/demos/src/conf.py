@@ -5,15 +5,25 @@
 from typing import List
 import pkg_resources
 
+# -- Path setup --------------------------------------------------------------
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+#
+import os
+import sys
 
+sys.path.insert(0, os.path.abspath("."))
+
+# -- Project information -----------------------------------------------------
 # pylint: disable=invalid-name
 # because these variables are not named in upper case, as globals should be.
 
-project = "0x-contract-demo"
+project = "0x-demos"
 # pylint: disable=redefined-builtin
 copyright = "2018, ZeroEx, Intl."
 author = "F. Eugene Aumson"
-version = pkg_resources.get_distribution("0x-contract-demo").version
+version = pkg_resources.get_distribution("0x-demos").version
 release = ""  # The full version, including alpha/beta/rc tags
 
 extensions = [
@@ -46,9 +56,11 @@ html_static_path = ["doc_static"]
 # so a file named "default.css" will overwrite the builtin "default.css".
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "contract_demopydoc"
+htmlhelp_basename = "demospydoc"
 
 # -- Extension configuration:
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {"https://docs.python.org/": None}
+
+autodoc_member_order = "bysource"

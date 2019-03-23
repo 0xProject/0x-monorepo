@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""setuptools module for 0x-contract-demo package."""
+"""setuptools module for 0x-demos package."""
 
 import distutils.command.build_py
 from distutils.command.clean import clean
@@ -20,7 +20,7 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        exit(pytest.main())
+        exit(pytest.main(["--doctest-modules"]))
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -32,17 +32,17 @@ class LintCommand(distutils.command.build_py.build_py):
         """Run linter shell commands."""
         lint_commands = [
             # formatter:
-            "black --line-length 79 --check --diff test setup.py".split(),
+            "black --line-length 79 --check --diff src setup.py".split(),
             # style guide checker (formerly pep8):
-            "pycodestyle test setup.py".split(),
+            "pycodestyle src setup.py".split(),
             # docstring style checker:
-            "pydocstyle test setup.py".split(),
+            "pydocstyle src setup.py".split(),
             # static type checker:
-            "mypy test setup.py".split(),
+            "mypy src setup.py".split(),
             # security issue checker:
             "bandit -r ./setup.py".split(),
             # general linter:
-            "pylint test setup.py".split(),
+            "pylint src setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable
             # fast failures.
         ]
@@ -81,12 +81,23 @@ class GanacheCommand(distutils.command.build_py.build_py):
         subprocess.call(cmd_line)  # nosec
 
 
+class LaunchKitCommand(distutils.command.build_py.build_py):
+    """Custom command to boot up a local 0x-launch-kit in docker."""
+
+    description = "Run launch-kit daemon to support sra_client demos."
+
+    def run(self):
+        """Run 0x-launch-kit."""
+        cmd_line = ("docker run -d -p 3000:3000 0xorg/launch-kit-ci").split()
+        subprocess.call(cmd_line)  # nosec
+
+
 class PublishDocsCommand(distutils.command.build_py.build_py):
     """Custom command to publish docs to S3."""
 
     description = (
         "Publish docs to "
-        + "http://0x-contract-addresses-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-demos-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
@@ -95,26 +106,27 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
 
 setup(
-    name="0x-contract-demo",
+    name="0x-demos",
     version="1.0.0",
     description="Demonstration of calling 0x contracts",
     url=(
         "https://github.com/0xProject/0x-monorepo/tree/development"
-        + "/python-packages/contract_demo"
+        + "/python-packages/demos"
     ),
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
-        "test": TestCommandExtension,
         "ganache": GanacheCommand,
         "publish_docs": PublishDocsCommand,
+        "test": TestCommandExtension,
     },
     install_requires=[
         "0x-contract-addresses",
         "0x-contract-artifacts",
         "0x-order-utils",
+        "0x-sra-client",
         "0x-web3",  # TEMPORARY! pending resolution of our web3.py PR#1147
         "mypy_extensions",
     ],
@@ -139,7 +151,7 @@ setup(
     zip_safe=False,  # required per mypy
     command_options={
         "build_sphinx": {
-            "source_dir": ("setup.py", "test"),
+            "source_dir": ("setup.py", "src"),
             "build_dir": ("setup.py", "build/docs"),
         }
     },

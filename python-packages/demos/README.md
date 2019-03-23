@@ -1,8 +1,8 @@
-## 0x-contract-demo
+## 0x-demos
 
-A demonstration of calling 0x smart contracts from Python.
+Demonstrations of using the 0x python packages.
 
-Read the [documentation](http://0x-contract-demo-py.s3-website-us-east-1.amazonaws.com/)
+Read the [documentation](http://0x-demos-py.s3-website-us-east-1.amazonaws.com/)
 
 ## Contributing
 
@@ -20,7 +20,7 @@ pip install -e .[dev]
 
 ### Test
 
-Tests depend on a running ganache instance with the 0x contracts deployed in it. For convenience, a docker container is provided that has ganache-cli and a snapshot containing the necessary contracts. A shortcut is provided to run that docker container: `./setup.py ganache`. With that running, the tests can be run with `./setup.py test`.
+`./setup.py test`
 
 ### Clean
 
