@@ -65,21 +65,34 @@ const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: stri
     assert.isString('selector', selector);
 };
 
+let injectedDiv: HTMLDivElement | undefined;
+let parentElement: Element | undefined;
+export const unrender = () => {
+    if (!injectedDiv) {
+        return;
+    }
+
+    ReactDOM.unmountComponentAtNode(injectedDiv);
+    if (parentElement && parentElement.contains(injectedDiv)) {
+        parentElement.removeChild(injectedDiv);
+    }
+};
+
 // Render instant and return a callback that allows you to remove it from the DOM.
 const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
     const appendToIfExists = document.querySelector(selector);
     assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
-    const appendTo = appendToIfExists as Element;
-    const injectedDiv = document.createElement('div');
+    parentElement = appendToIfExists as Element;
+    injectedDiv = document.createElement('div');
     injectedDiv.setAttribute('id', INJECTED_DIV_ID);
     injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
-    appendTo.appendChild(injectedDiv);
+    parentElement.appendChild(injectedDiv);
     const closeInstant = () => {
         analytics.trackInstantClosed();
         if (!_.isUndefined(config.onClose)) {
             config.onClose();
         }
-        appendTo.removeChild(injectedDiv);
+        unrender();
     };
     const instantOverlayProps = {
         ...config,
