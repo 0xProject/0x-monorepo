@@ -1,3 +1,11 @@
+"""Lorem Ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+sed do eiusmod tempor incididunt ut labore et dolore magna
+aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+ullamco laboris nisi ut aliquip ex ea commodo consequat.
+"""
+
 from typing import Dict
 from eth_utils import to_checksum_address
 from web3 import Web3
@@ -6,6 +14,8 @@ from zero_ex.json_schemas import assert_valid
 
 
 class ContractWrapper:
+    """Lorem ipsum dolor sit amet, consectetur..."""
+
     def __init__(
         self,
         provider: BaseProvider,
