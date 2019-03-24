@@ -1,4 +1,4 @@
-"""Fixtures for pytest"""
+"""Fixtures for pytest."""
 
 import pytest
 from eth_utils import remove_0x_prefix, to_checksum_address
@@ -8,52 +8,69 @@ from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def ganache_provider():
+    """Get a ganache web3 provider."""
     return Web3.HTTPProvider(endpoint_uri="http://127.0.0.1:8545")
 
 
-@pytest.fixture
-def accounts(ganache_provider):
-    return Web3(ganache_provider).eth.accounts
+@pytest.fixture(scope="module")
+def web3_instance(ganache_provider):  # pylint: disable=redefined-outer-name
+    """Get a web3 instance."""
+    return Web3(ganache_provider)
 
 
-@pytest.fixture
-def current_time(ganache_provider):
-    return Web3(ganache_provider).eth.getBlock("latest").timestamp
+@pytest.fixture(scope="module")
+def web3_eth(web3_instance):  # pylint: disable=redefined-outer-name
+    """Get web3 instance's eth member."""
+    return web3_instance.eth  # pylint: disable=no-member
 
 
-@pytest.fixture
-def get_tx_receipt(ganache_provider):
-    return Web3(ganache_provider).eth.getTransactionReceipt
+@pytest.fixture(scope="module")
+def accounts(web3_eth):  # pylint: disable=redefined-outer-name
+    """Get the accounts associated with the test web3_eth instance."""
+    return web3_eth.accounts
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def erc20_proxy_address():
+    """Get the 0x V2 ERC20 Proxy address."""
     return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def weth_address():
+    """Get address of Wrapped Ether (WETH) token for the Ganache network."""
     return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
 
 
-@pytest.fixture
-def weth_instance(ganache_provider, weth_address):
-    return Web3(ganache_provider).eth.contract(
+@pytest.fixture(scope="module")
+def weth_asset_data(weth_address):  # pylint: disable=redefined-outer-name
+    """Get 0x asset data for Wrapped Ether (WETH) token."""
+    return bytes.fromhex(
+        remove_0x_prefix(adu.encode_erc20_asset_data(weth_address))
+    )
+
+
+@pytest.fixture(scope="module")
+def weth_instance(
+    web3_eth, weth_address
+):  # pylint: disable=redefined-outer-name
+    """Get an instance of the WrapperEther contract."""
+    return web3_eth.contract(
         address=to_checksum_address(weth_address), abi=abi_by_name("WETH9")
     )
 
 
-@pytest.fixture
-def zrx_asset_data(zrx_address):
+@pytest.fixture(scope="module")
+def zrx_address():
+    """Get address of ZRX token for Ganache network."""
+    return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
+
+
+@pytest.fixture(scope="module")
+def zrx_asset_data(zrx_address):  # pylint: disable=redefined-outer-name
+    """Get 0x asset data for ZRX token."""
     return bytes.fromhex(
         remove_0x_prefix(adu.encode_erc20_asset_data(zrx_address))
-    )
-
-
-@pytest.fixture
-def weth_asset_data(weth_address):
-    return bytes.fromhex(
-        remove_0x_prefix(adu.encode_erc20_asset_data(weth_address))
     )

@@ -1,3 +1,4 @@
+"""Test 0x Exchnage wrapper."""
 import random
 import pytest
 from eth_utils import remove_0x_prefix
@@ -6,19 +7,20 @@ from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def exchange_wrapper(ganache_provider):
+    """Get an Exchange wrapper instance."""
     return Exchange(provider=ganache_provider)
 
 
 def create_test_order(
-    current_time,
     maker_address,
     maker_asset_amount,
     maker_asset_data,
     taker_asset_amount,
     taker_asset_data,
 ):
+    """Create a test order."""
     order: Order = {
         "makerAddress": maker_address.lower(),
         "takerAddress": "0x0000000000000000000000000000000000000000",
@@ -28,7 +30,7 @@ def create_test_order(
         "takerAssetAmount": taker_asset_amount,
         "makerFee": 0,
         "takerFee": 0,
-        "expirationTimeSeconds": current_time + 1000000000,
+        "expirationTimeSeconds": 100000000000000,
         "salt": random.randint(1, 1000000000),
         "makerAssetData": maker_asset_data,
         "takerAssetData": taker_asset_data,
@@ -37,6 +39,7 @@ def create_test_order(
 
 
 def assert_fill_log(fill_log, maker, taker, order, order_hash):
+    """assert that the fill log matches the order details"""
     assert fill_log.makerAddress == maker
     assert fill_log.takerAddress == taker
     assert fill_log.feeRecipientAddress == order["feeRecipientAddress"]
@@ -52,18 +55,16 @@ def assert_fill_log(fill_log, maker, taker, order, order_hash):
 
 def test_exchange_wrapper__fill_order(
     accounts,
-    current_time,
-    exchange_wrapper,
+    exchange_wrapper,  # pylint: disable=redefined-outer-name
     ganache_provider,
-    get_tx_receipt,
+    web3_eth,
     weth_asset_data,
 ):
+    """Test filling an order."""
     taker = accounts[0]
     maker = accounts[1]
     exchange_address = exchange_wrapper.address
-    order = create_test_order(
-        current_time, maker, 1, weth_asset_data, 1, weth_asset_data
-    )
+    order = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
     order_hash = generate_order_hash_hex(
         order=order, exchange_address=exchange_address
     )
@@ -71,35 +72,32 @@ def test_exchange_wrapper__fill_order(
 
     transaction_hash = exchange_wrapper.fill_order(
         order=order,
-        amount_in_wei=order["takerAssetAmount"],
+        taker_amount=order["takerAssetAmount"],
         signature=order_signature,
         tx_opts={"from_": taker},
     )
     assert_valid(transaction_hash.hex(), "/hexSchema")
 
-    reciept = get_tx_receipt(transaction_hash)
+    reciept = web3_eth.getTransactionReceipt(transaction_hash)
     fill_event = exchange_wrapper.get_fill_event(reciept)
     assert_fill_log(fill_event[0].args, maker, taker, order, order_hash)
 
 
+# pylint: disable=too-many-locals
 def test_exchange_wrapper__batch_fill_orders(
     accounts,
-    current_time,
-    exchange_wrapper,
+    exchange_wrapper,  # pylint: disable=redefined-outer-name
     ganache_provider,
-    get_tx_receipt,
+    web3_eth,
     weth_asset_data,
 ):
+    """Test filling a batch of orders."""
     taker = accounts[0]
     maker = accounts[1]
     exchange_address = exchange_wrapper.address
     orders = []
-    order_1 = create_test_order(
-        current_time, maker, 1, weth_asset_data, 1, weth_asset_data
-    )
-    order_2 = create_test_order(
-        current_time, maker, 1, weth_asset_data, 1, weth_asset_data
-    )
+    order_1 = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
+    order_2 = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
     orders.append(order_1)
     orders.append(order_2)
     order_hashes = [
@@ -110,17 +108,16 @@ def test_exchange_wrapper__batch_fill_orders(
         sign_hash(ganache_provider, maker, order_hash)
         for order_hash in order_hashes
     ]
-
-    fill_amounts = [order["takerAssetAmount"] for order in orders]
+    taker_amounts = [order["takerAssetAmount"] for order in orders]
     transaction_hash = exchange_wrapper.batch_fill_orders(
         orders=orders,
-        amounts_in_wei=fill_amounts,
+        taker_amounts=taker_amounts,
         signatures=order_signatures,
         tx_opts={"from_": taker},
     )
     assert_valid(transaction_hash.hex(), "/hexSchema")
 
-    reciept = get_tx_receipt(transaction_hash)
+    reciept = web3_eth.getTransactionReceipt(transaction_hash)
     fill_events = exchange_wrapper.get_fill_event(reciept)
     for index, order in enumerate(orders):
         assert_fill_log(

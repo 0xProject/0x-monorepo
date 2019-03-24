@@ -1,19 +1,26 @@
-import pytest
+"""Tests for ERC20Token wrapper."""
 from decimal import Decimal
-from zero_ex.contract_wrappers.erc_20_wrapper import ERC20Token
+import pytest
+
+from zero_ex.contract_wrappers.erc20_wrapper import ERC20Token
 
 
 MAX_ALLOWANCE = "{:.0f}".format(Decimal(2) ** 256 - 1)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def erc20_wrapper(ganache_provider):
+    """Get an instance of ERC20Token wrapper class for testing."""
     return ERC20Token(ganache_provider)
 
 
 def test_erc20_wrapper__balance_of(
-    accounts, erc20_wrapper, weth_address, weth_instance
+    accounts,
+    erc20_wrapper,  # pylint: disable=redefined-outer-name
+    weth_address,
+    weth_instance,  # pylint: disable=redefined-outer-name
 ):
+    """Test getting baance of an account for an ERC20 token."""
     acc1_original_weth_balance = erc20_wrapper.balance_of(
         weth_address, accounts[0]
     )
@@ -41,8 +48,12 @@ def test_erc20_wrapper__balance_of(
 
 
 def test_erc20_wrapper__approve(
-    accounts, erc20_proxy_address, erc20_wrapper, weth_address
+    accounts,
+    erc20_proxy_address,
+    erc20_wrapper,  # pylint: disable=redefined-outer-name
+    weth_address,  # pylint: disable=redefined-outer-name
 ):
+    """Test approving one account to spend balance from another account."""
     erc20_wrapper.approve(
         weth_address,
         erc20_proxy_address,

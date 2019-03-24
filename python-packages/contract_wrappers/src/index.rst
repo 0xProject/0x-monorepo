@@ -1,8 +1,3 @@
-.. 0x-contract-wrappers documentation master file, created by
-   sphinx-quickstart on Fri Mar 22 20:49:31 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Python zero_ex.contract_wrappers
 ================================================
 
@@ -17,6 +12,19 @@ zero_ex.contract_wrappers.contract_wrapper
 ------------------------------------------
 
 .. automodule:: zero_ex.contract_wrappers.contract_wrapper
+   :members:
+
+
+zero_ex.contract_wrappers.exchange_wrapper
+------------------------------------------
+
+.. automodule:: zero_ex.contract_wrappers.exchange_wrapper
+   :members:
+
+zero_ex.contract_wrappers.erc20_wrapper
+------------------------------------------
+
+.. automodule:: zero_ex.contract_wrappers.erc20_wrapper
    :members:
 
 
