@@ -3,9 +3,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import * as zeroExInstant from 'zeroExInstant';
 
-import { Banner } from 'ts/components/banner';
 import { DocumentTitle } from 'ts/components/document_title';
-import { ModalContact, ModalContactType } from 'ts/components/modals/modal_contact';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
@@ -23,7 +21,6 @@ import { ExploreGrid } from 'ts/pages/explore/explore_grid';
 import { EXPLORE_STATE_DIALOGS, ExploreGridDialogTile } from 'ts/pages/explore/explore_grid_state_tile';
 import { ExploreTagButton } from 'ts/pages/explore/explore_tag_button';
 import { analytics } from 'ts/utils/analytics';
-import { constants } from 'ts/utils/constants';
 
 import {
     ExploreAnalyticAction,
@@ -51,7 +48,6 @@ interface ExploreModifierOptions {
 export class Explore extends React.Component<ExploreProps> {
     public state = {
         isTilesLoading: false,
-        isContactModalOpen: false,
         tiles: [] as ExploreTile[],
         tilesOrdering: ExploreTilesOrdering.Popular,
         isEditorialShown: true,
@@ -89,28 +85,9 @@ export class Explore extends React.Component<ExploreProps> {
                     />
                     <ExploreGrid tiles={this._generateTilesFromState()} />
                 </Section>
-                <Banner
-                    heading="Working on a 0x project?"
-                    subline="Lorem Ipsum something then that and say something more."
-                    mainCta={{ text: 'Apply Now', onClick: this._onOpenContactModal }}
-                    secondaryCta={{ text: 'Join Discord', href: constants.URL_ZEROEX_CHAT }}
-                />
-                <ModalContact
-                    isOpen={this.state.isContactModalOpen}
-                    onDismiss={this._onDismissContactModal}
-                    modalContactType={ModalContactType.Explore}
-                />
             </SiteWrap>
         );
     }
-
-    private readonly _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
-    };
-
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
-    };
 
     // tslint:disable-next-line:no-unused-variable
     private readonly _onEditorial = async (newValue: boolean): Promise<void> => {
