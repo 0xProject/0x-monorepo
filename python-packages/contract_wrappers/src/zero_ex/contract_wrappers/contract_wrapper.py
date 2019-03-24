@@ -1,5 +1,5 @@
 """Base wrapper class for accessing ethereum smart contracts."""
-from typing import List, Optional
+from typing import List, Optional, Union
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
@@ -115,7 +115,7 @@ class ContractWrapper:
         address: str,
         abi: dict,
         method: str,
-        args: dict,
+        args: Optional[Union[list, tuple]] = (),
         tx_opts: Optional[dict] = None,
         view_only: bool = False,
     ) -> str:
@@ -124,7 +124,7 @@ class ContractWrapper:
         :param address: string of contract address
         :param abi: dict of contract ABI
         :param method: string name of method to call
-        :param args: dict of arguments for the method
+        :param args: default None, list or tuple of arguments for the method
         :param tx_opts: default None, dictionary of transaction options
         :param view_only: default False, boolean of whether the transaction
             should only be validated.
