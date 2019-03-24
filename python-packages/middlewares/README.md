@@ -26,7 +26,8 @@ pip install -e .[dev]
 
 ### Test
 
-`./setup.py test`
+Tests depend on running a local ethereum JSON-RPC server. For convenience, a docker container is provided that has ganache-cli.
+A shortcut is provided to run that docker container: `./setup.py ganache`. With that running, the tests can be run with `./setup.py test`.
 
 ### Clean
 

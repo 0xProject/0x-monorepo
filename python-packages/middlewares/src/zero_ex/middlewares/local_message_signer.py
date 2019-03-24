@@ -1,10 +1,10 @@
-"""Middleware that captures calls to 'eth_sign'.
+"""Middleware that captures all 'eth_sign' requests to the JSON-RPC-Server.
 
 Description:
 An adaptation of the `signing
 <https://github.com/ethereum/web3.py/blob/master/web3/middleware/signing.py>`_
-middleware from web3 python. This middleware intercepts all calls to 'eth_sign'
-and signs messages with a local private key.
+middleware from web3.py. This middleware intercepts all 'eth_sign' requests to
+an ethereum JSON RPC-Server and signs messages with a local private key.
 """
 
 from functools import singledispatch
