@@ -135,6 +135,70 @@ describe('Mixins tests', () => {
         });
     });
 
+    describe('decodeOrdersFromFillData', () => {
+        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    exchangeAddress: devConstants.NULL_ADDRESS,
+                    signature: devConstants.NULL_BYTES,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of constants.BATCH_FILL_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    exchangeAddress: devConstants.NULL_ADDRESS,
+                    signature: devConstants.NULL_BYTES,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of constants.MARKET_FILL_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    exchangeAddress: devConstants.NULL_ADDRESS,
+                    signature: devConstants.NULL_BYTES,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of [constants.CANCEL_ORDER, constants.BATCH_CANCEL_ORDERS, constants.CANCEL_ORDERS_UP_TO]) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const emptyArray: any[] = [];
+                expect(emptyArray).to.deep.eq(decodedOrders);
+            });
+        }
+        it('should decode an empty array for invalid data', async () => {
+            const data = '0x0123456789';
+            const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+            const emptyArray: any[] = [];
+            expect(emptyArray).to.deep.eq(decodedOrders);
+        });
+        it('should revert if data is less than 4 bytes long', async () => {
+            const data = '0x010203';
+            await expectContractCallFailedAsync(
+                mixins.decodeOrdersFromFillData.callAsync(data),
+                RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
+            );
+        });
+    });
+
     describe('Single order approvals', () => {
         for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
             it(`Should be successful: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1], expiration=[valid]`, async () => {
@@ -620,9 +684,9 @@ describe('Mixins tests', () => {
         }
     });
     describe('cancels', () => {
-        it('should allow the tx signer to call `cancelOrders` without approval', async () => {
+        it('should allow the tx signer to call `cancelOrder` without approval', async () => {
             const orders = [defaultOrder];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDER, orders);
             const transaction = transactionFactory.newSignedTransaction(data);
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,

@@ -38,9 +38,9 @@ contract LibCoordinatorApproval is
 
     struct CoordinatorApproval {
         address txOrigin;                       // Required signer of Ethereum transaction that is submitting approval.
-        bytes32 transactionHash;                // EIP712 hash of the transaction, using the domain separator of this contract.
+        bytes32 transactionHash;                // EIP712 hash of the transaction.
         bytes transactionSignature;             // Signature of the 0x transaction.
-        uint256 approvalExpirationTimeSeconds;  // Timestamp in seconds for which the signature expires.
+        uint256 approvalExpirationTimeSeconds;  // Timestamp in seconds for which the approval expires.
     }
 
     /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage using the domain separator of this contract.
@@ -72,9 +72,10 @@ contract LibCoordinatorApproval is
         // Assembly for more efficiently computing:
         // keccak256(abi.encodePacked(
         //     EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH,
+        //     approval.txOrigin,
         //     approval.transactionHash,
         //     keccak256(approval.transactionSignature)
-        //     approval.expiration,
+        //     approval.approvalExpirationTimeSeconds,
         // ));
 
         assembly {
