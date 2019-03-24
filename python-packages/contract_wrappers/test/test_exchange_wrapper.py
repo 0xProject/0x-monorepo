@@ -57,7 +57,6 @@ def test_exchange_wrapper__fill_order(
     accounts,
     exchange_wrapper,  # pylint: disable=redefined-outer-name
     ganache_provider,
-    web3_eth,
     weth_asset_data,
 ):
     """Test filling an order."""
@@ -70,16 +69,15 @@ def test_exchange_wrapper__fill_order(
     )
     order_signature = sign_hash(ganache_provider, maker, order_hash)
 
-    transaction_hash = exchange_wrapper.fill_order(
+    tx_hash = exchange_wrapper.fill_order(
         order=order,
         taker_amount=order["takerAssetAmount"],
         signature=order_signature,
         tx_opts={"from_": taker},
     )
-    assert_valid(transaction_hash.hex(), "/hexSchema")
+    assert_valid(tx_hash.hex(), "/hexSchema")
 
-    reciept = web3_eth.getTransactionReceipt(transaction_hash)
-    fill_event = exchange_wrapper.get_fill_event(reciept)
+    fill_event = exchange_wrapper.get_fill_event(tx_hash)
     assert_fill_log(fill_event[0].args, maker, taker, order, order_hash)
 
 
@@ -88,7 +86,6 @@ def test_exchange_wrapper__batch_fill_orders(
     accounts,
     exchange_wrapper,  # pylint: disable=redefined-outer-name
     ganache_provider,
-    web3_eth,
     weth_asset_data,
 ):
     """Test filling a batch of orders."""
@@ -109,16 +106,15 @@ def test_exchange_wrapper__batch_fill_orders(
         for order_hash in order_hashes
     ]
     taker_amounts = [order["takerAssetAmount"] for order in orders]
-    transaction_hash = exchange_wrapper.batch_fill_orders(
+    tx_hash = exchange_wrapper.batch_fill_orders(
         orders=orders,
         taker_amounts=taker_amounts,
         signatures=order_signatures,
         tx_opts={"from_": taker},
     )
-    assert_valid(transaction_hash.hex(), "/hexSchema")
+    assert_valid(tx_hash.hex(), "/hexSchema")
 
-    reciept = web3_eth.getTransactionReceipt(transaction_hash)
-    fill_events = exchange_wrapper.get_fill_event(reciept)
+    fill_events = exchange_wrapper.get_fill_event(tx_hash)
     for index, order in enumerate(orders):
         assert_fill_log(
             fill_events[index].args, maker, taker, order, order_hashes[index]
