@@ -8,23 +8,25 @@ Python zero_ex.contract_wrappers
 .. automodule:: zero_ex.contract_wrappers
    :members:
 
-zero_ex.contract_wrappers.contract_wrapper
-------------------------------------------
 
-.. automodule:: zero_ex.contract_wrappers.contract_wrapper
+zero_ex.contract_wrappers.Exchange
+----------------------------------
+
+.. autoclass:: zero_ex.contract_wrappers.Exchange
    :members:
 
 
-zero_ex.contract_wrappers.exchange_wrapper
-------------------------------------------
+zero_ex.contract_wrappers.ERC20Token
+-------------------------------------
 
-.. automodule:: zero_ex.contract_wrappers.exchange_wrapper
+.. autoclass:: zero_ex.contract_wrappers.ERC20Token
    :members:
 
-zero_ex.contract_wrappers.erc20_wrapper
-------------------------------------------
 
-.. automodule:: zero_ex.contract_wrappers.erc20_wrapper
+zero_ex.contract_wrappers.ContractWrapper
+-----------------------------------------
+
+.. autoclass:: zero_ex.contract_wrappers.ContractWrapper
    :members:
 
 

@@ -8,7 +8,6 @@ from web3.datastructures import AttributeDict
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
-from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
     Order,
@@ -16,6 +15,8 @@ from zero_ex.order_utils import (
     is_valid_signature,
     order_to_jsdict,
 )
+
+from .generic_wrapper import ContractWrapper
 
 
 class CancelDisallowedError(Exception):

@@ -2,7 +2,7 @@
 from decimal import Decimal
 import pytest
 
-from zero_ex.contract_wrappers.erc20_wrapper import ERC20Token
+from zero_ex.contract_wrappers import ERC20Token
 
 
 MAX_ALLOWANCE = "{:.0f}".format(Decimal(2) ** 256 - 1)

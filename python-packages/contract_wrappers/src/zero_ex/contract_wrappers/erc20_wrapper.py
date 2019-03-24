@@ -5,7 +5,8 @@ from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
 from zero_ex.contract_artifacts import abi_by_name
-from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
+
+from .generic_wrapper import ContractWrapper
 
 
 class ERC20Token(ContractWrapper):

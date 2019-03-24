@@ -2,7 +2,8 @@
 import random
 import pytest
 from eth_utils import remove_0x_prefix
-from zero_ex.contract_wrappers.exchange_wrapper import Exchange
+
+from zero_ex.contract_wrappers import Exchange
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
 
