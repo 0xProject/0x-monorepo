@@ -7,7 +7,7 @@ an ethereum JSON RPC-Server and signs messages with a local private key.
 """
 
 from functools import singledispatch
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Dict, List, Set, Tuple, Union
 from eth_account import Account, messages
 from eth_account.local import LocalAccount
 from eth_keys.datatypes import PrivateKey
@@ -81,7 +81,7 @@ def construct_local_message_signer(
     if not isinstance(private_key_or_account, (list, tuple, set)):
         private_key_or_account = [private_key_or_account]
     accounts = [_to_account(pkoa) for pkoa in private_key_or_account]
-    address_to_accounts: Dict[str, Any] = {
+    address_to_accounts: Dict[str, LocalAccount] = {
         account.address: account for account in accounts
     }
 
