@@ -1,14 +1,17 @@
 """Wrapper for 0x Exchange Contract (Version 2)."""
-
+from typing import Dict, List, Optional, Tuple, Union
 from itertools import repeat
 from eth_utils import remove_0x_prefix
+from hexbytes import HexBytes
 from web3.providers.base import BaseProvider
+from web3.datastructures import AttributeDict
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
+    Order,
     generate_order_hash_hex,
     is_valid_signature,
     order_to_jsdict,
@@ -48,8 +51,13 @@ class Exchange(ContractWrapper):
         )
 
     def fill_order(
-        self, order, taker_amount, signature, tx_opts=None, view_only=False
-    ):
+        self,
+        order: Order,
+        taker_amount: int,
+        signature: str,
+        tx_opts: Optional[dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Fill a signed order with given amount of taker asset.
 
         This is the most basic way to fill an order. All of the other methods
@@ -70,7 +78,7 @@ class Exchange(ContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: transaction hash
+        :returns: `HexBytes` transaction hash
         """
         assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         is_valid_signature(
@@ -89,8 +97,13 @@ class Exchange(ContractWrapper):
         )
 
     def batch_fill_orders(
-        self, orders, taker_amounts, signatures, tx_opts=None, view_only=False
-    ):
+        self,
+        orders: List[Order],
+        taker_amounts: List[int],
+        signatures: List[str],
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Call `fillOrder` sequentially for orders, amounts and signatures.
 
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
@@ -100,7 +113,7 @@ class Exchange(ContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: transaction hash
+        :returns: `HexBytes` transaction hash
         """
         order_jsdicts = [
             order_to_jsdict(order, self.address) for order in orders
@@ -121,8 +134,13 @@ class Exchange(ContractWrapper):
         )
 
     def fill_or_kill_order(
-        self, order, taker_amount, signature, tx_opts=None, view_only=False
-    ):
+        self,
+        order: Order,
+        taker_amount: int,
+        signature: str,
+        tx_opts: Optional[dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Attemp to `fillOrder`, revert if fill is not exact amount.
 
         :param order: instance of :class:`zero_ex.order_utils.Order`
@@ -132,7 +150,7 @@ class Exchange(ContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: transaction hash
+        :returns: `HexBytes` transaction hash
         """
         assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         is_valid_signature(
@@ -151,8 +169,13 @@ class Exchange(ContractWrapper):
         )
 
     def batch_fill_or_kill_orders(
-        self, orders, taker_amounts, signatures, tx_opts=None, view_only=False
-    ):
+        self,
+        orders: List[Order],
+        taker_amounts: List[int],
+        signatures: List[str],
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Call `fillOrKillOrder` sequentially for orders.
 
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
@@ -162,7 +185,7 @@ class Exchange(ContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: transaction hash
+        :returns: `HexBytes` transaction hash
         """
         order_jsdicts = [
             order_to_jsdict(order, self.address) for order in orders
@@ -182,7 +205,12 @@ class Exchange(ContractWrapper):
             func=func, tx_opts=tx_opts, view_only=view_only
         )
 
-    def cancel_order(self, order, tx_opts=None, view_only=False):
+    def cancel_order(
+        self,
+        order: Order,
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Cancel an order.
 
         See the specification docs for `cancelOrder
@@ -194,13 +222,14 @@ class Exchange(ContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: transaction hash
+        :returns: `HexBytes` transaction hash
         """
         assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         maker_address = self._validate_and_checksum_address(
             order["makerAddress"]
         )
-        if tx_opts.get("from_"):
+
+        if tx_opts and tx_opts.get("from_"):
             self._raise_if_maker_not_canceller(
                 maker_address,
                 self._validate_and_checksum_address(tx_opts["from_"]),
@@ -214,7 +243,12 @@ class Exchange(ContractWrapper):
             func=func, tx_opts=tx_opts, view_only=view_only
         )
 
-    def batch_cancel_orders(self, orders, tx_opts=None, view_only=False):
+    def batch_cancel_orders(
+        self,
+        orders: List[Order],
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Call `cancelOrder` sequentially for provided orders.
 
         :param orders: list of instance of :class:`zero_ex.order_utils.Order`
@@ -222,7 +256,7 @@ class Exchange(ContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: transaction hash
+        :returns: `HexBytes` transaction hash
         """
         order_jsdicts = [
             order_to_jsdict(order, self.address) for order in orders
@@ -232,7 +266,7 @@ class Exchange(ContractWrapper):
             self._validate_and_checksum_address(order["makerAddress"])
             for order in orders
         ]
-        if tx_opts.get("from_"):
+        if tx_opts and tx_opts.get("from_"):
             map(
                 self._raise_if_maker_not_canceller,
                 maker_addresses,
@@ -249,21 +283,27 @@ class Exchange(ContractWrapper):
             func=func, tx_opts=tx_opts, view_only=view_only
         )
 
-    def get_fill_event(self, tx_reciept):
+    def get_fill_event(
+        self, tx_hash: Union[HexBytes, bytes]
+    ) -> Tuple[AttributeDict]:
         """Get fill event for a fill transaction.
 
-        :param tx_receipt: str hash of fill transaction
+        :param tx_hash: `HexBytes` hash of fill transaction
 
-        :returns: `FillResults` instance.
+        :returns: tuple of `FillResults`.
         """
-        return self._exchange.events.Fill().processReceipt(tx_reciept)
+        tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
+        return self._exchange.events.Fill().processReceipt(tx_receipt)
 
-    def get_cancel_event(self, tx_reciept):
+    def get_cancel_event(
+        self, tx_hash: Union[HexBytes, bytes]
+    ) -> Tuple[AttributeDict]:
         """Get cancel event for cancel transaction.
 
-        :param tx_receipt: str hash of cancel transaction
+        :param tx_hash: `HexBytes` hash of cancel transaction
         """
-        return self._exchange.events.Cancel().processReceipt(tx_reciept)
+        tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
+        return self._exchange.events.Cancel().processReceipt(tx_receipt)
 
     @staticmethod
     def _raise_if_maker_not_canceller(maker_address, canceller_address):

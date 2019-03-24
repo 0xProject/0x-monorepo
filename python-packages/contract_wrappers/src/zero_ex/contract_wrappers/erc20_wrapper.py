@@ -1,6 +1,9 @@
 """Wrapper for Ethereum ERC20 Token smart contract."""
-
+from typing import Dict, Optional, Tuple, Union
+from hexbytes import HexBytes
+from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
+
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
 
@@ -38,8 +41,13 @@ class ERC20Token(ContractWrapper):
         )
 
     def transfer(
-        self, token_address, to_address, value, tx_opts=None, view_only=False
-    ):
+        self,
+        token_address: str,
+        to_address: str,
+        value: int,
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Transfer the balance from owner's account to another account.
 
         :param token_address: string address of token smart contract
@@ -61,12 +69,12 @@ class ERC20Token(ContractWrapper):
 
     def approve(
         self,
-        token_address,
-        spender_address,
-        value,
-        tx_opts=None,
-        view_only=False,
-    ):
+        token_address: str,
+        spender_address: str,
+        value: int,
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Approve a `sender_address` to spend up to `value` your account.
 
         :param token_address: string address of token smart contract
@@ -90,13 +98,13 @@ class ERC20Token(ContractWrapper):
 
     def transfer_from(
         self,
-        token_address,
-        authorized_address,
-        to_address,
-        value,
-        tx_opts=None,
-        view_only=False,
-    ):
+        token_address: str,
+        authorized_address: str,
+        to_address: str,
+        value: int,
+        tx_opts: Optional[Dict] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
         """Transfer tokens from `authorized_address` to another address.
 
         Note that the `authorized_address` must have called with `approve`
@@ -126,7 +134,7 @@ class ERC20Token(ContractWrapper):
             func=func, tx_opts=tx_opts, view_only=view_only
         )
 
-    def total_supply(self, token_address):
+    def total_supply(self, token_address: str) -> int:
         """Get total supply of a given ERC20 Token.
 
         :param token_address: string address of token smart contract
@@ -139,7 +147,7 @@ class ERC20Token(ContractWrapper):
             func=func, tx_opts=None, view_only=True
         )
 
-    def balance_of(self, token_address, owner_address):
+    def balance_of(self, token_address: str, owner_address: str) -> int:
         """Get token balance of a given owner address.
 
         :param token_address: string address of token smart contract
@@ -154,7 +162,9 @@ class ERC20Token(ContractWrapper):
             func=func, tx_opts=None, view_only=True
         )
 
-    def allowance(self, token_address, owner_address, spender_address):
+    def allowance(
+        self, token_address: str, owner_address: str, spender_address: str
+    ) -> Union[HexBytes, bytes]:
         """Get the amount of tokens approved for a spender.
 
         :param token_address: string address of token smart contract
@@ -174,28 +184,34 @@ class ERC20Token(ContractWrapper):
             func=func, tx_opts=None, view_only=True
         )
 
-    def get_transfer_event(self, token_address, tx_reciept):
+    def get_transfer_event(
+        self, token_address: str, tx_hash: Union[HexBytes, bytes]
+    ) -> Tuple[AttributeDict]:
         """Get the result of a transfer from its transaction hash.
 
         :param token_address: string address of token smart contract
-        :param tx_receipt: str hash of transfer transaction
+        :param tx_hash: `HexBytes` hash of transfer transaction
         """
+        tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         token_address = self._validate_and_checksum_address(token_address)
         return (
             self._erc20(token_address)
             .events.Transfer()
-            .processReceipt(tx_reciept)
+            .processReceipt(tx_receipt)
         )
 
-    def get_approval_event(self, token_address, tx_reciept):
+    def get_approval_event(
+        self, token_address: str, tx_hash: Union[HexBytes, bytes]
+    ) -> Tuple[AttributeDict]:
         """Get the result of an approval event from its transaction hash.
 
         :param token_address: string address of token smart contract
-        :param tx_receipt: str hash of approve transaction
+        :param tx_hash: `HexBytes` hash of approval transaction
         """
+        tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         token_address = self._validate_and_checksum_address(token_address)
         return (
             self._erc20(token_address)
             .events.Approval()
-            .processReceipt(tx_reciept)
+            .processReceipt(tx_receipt)
         )

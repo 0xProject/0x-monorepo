@@ -1,5 +1,6 @@
-from typing import Dict, Optional, Union
-
+from typing import Any, Callable, Dict, List, Optional, Union
+from hexbytes import HexBytes
+from eth_account.local import LocalAccount
 from web3 import datastructures
 from web3.utils import datatypes
 from web3.providers.base import BaseProvider
@@ -23,7 +24,7 @@ class Web3:
 
     class middleware_stack:
         @staticmethod
-        def get(key: str) -> function: ...
+        def get(key: str) -> Callable: ...
         ...
 
     class net:
@@ -32,13 +33,17 @@ class Web3:
 
 
     class eth:
-        defaultAccount : str
+        defaultAccount: str
+        accounts: List[str]
         ...
 
         class account:
             @staticmethod
-            def privateKeyToAccount(private_key: str) -> Dict: ...
+            def privateKeyToAccount(private_key: str) -> LocalAccount: ...
             ...
+
+        @staticmethod
+        def getTransactionReceipt(tx_hash: Union[HexBytes, bytes]) -> Any: ...
         
         @staticmethod
         def contract(address: str, abi: Dict) -> datatypes.Contract: ...
@@ -46,9 +51,5 @@ class Web3:
 
         @staticmethod
         def isAddress(address: str) -> bool: ...
-        ...
-        
-        @staticmethod
-        def accounts() -> list: ...
         ...
     ...

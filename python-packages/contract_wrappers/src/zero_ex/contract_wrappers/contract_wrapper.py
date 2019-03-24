@@ -1,5 +1,5 @@
 """Base wrapper class for accessing ethereum smart contracts."""
-
+from typing import List, Optional
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
@@ -57,7 +57,7 @@ class ContractWrapper:
             else:
                 self._can_send_tx = False
 
-    def _contract_instance(self, address, abi):
+    def _contract_instance(self, address: str, abi: dict):
         """Get a contract instance.
 
         :param address: string address of contract
@@ -111,19 +111,25 @@ class ContractWrapper:
         return self._web3_eth.sendRawTransaction(signed_tx.rawTransaction)
 
     def execute_method(
-        self, address, abi, method, args, tx_opts=None, view_only=False
-    ):
+        self,
+        address: str,
+        abi: dict,
+        method: str,
+        args: dict,
+        tx_opts: Optional[dict] = None,
+        view_only: bool = False,
+    ) -> str:
         """Execute the method on a contract instance.
 
         :param address: string of contract address
-        :param abi: json of contract ABI
+        :param abi: dict of contract ABI
         :param method: string name of method to call
         :param args: dict of arguments for the method
         :param tx_opts: default None, dictionary of transaction options
         :param view_only: default False, boolean of whether the transaction
             should only be validated.
 
-        :returns: result of transacting with the given contract's function.
+        :returns: str of transaction hash
         """
         contract_instance = self._contract_instance(address=address, abi=abi)
         if hasattr(contract_instance.functions, method):
@@ -135,10 +141,10 @@ class ContractWrapper:
             "No method {} found on contract {}.".format(address, method)
         )
 
-    def get_accounts(self):
+    def get_accounts(self) -> List[str]:
         """Get a list of all accounts associated with the Web3 instance."""
         return self._web3_eth.accounts
 
-    def get_default_account(self):
+    def get_default_account(self) -> str:
         """Get the default account associated with the Web3 instance."""
         return self._web3_eth.defaultAccount or self.get_accounts()[0]
