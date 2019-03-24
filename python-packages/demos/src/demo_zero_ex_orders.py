@@ -28,7 +28,7 @@ def create_order():
     ...     "takerFee": 0,
     ...     "makerAssetAmount": 1 * 10 ** 18,
     ...     "takerAssetAmount": 500 * 10 ** 18,
-    ...     "expirationTimeSeconds": 1553467029 + 60 * 60 * 24,
+    ...     "expirationTimeSeconds": 1553553429,
     ... }
     >>> pprint.pprint(example_order)
     {'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
@@ -45,7 +45,6 @@ def create_order():
      'takerAssetData': '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498',
      'takerFee': 0}
     """  # noqa: E501
-    pass
 
 
 def validate_order():
@@ -72,4 +71,3 @@ def validate_order():
     ... }
     >>> assert_valid(example_order, "/orderSchema")
     """
-    pass

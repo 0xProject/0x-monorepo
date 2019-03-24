@@ -70,17 +70,6 @@ class CleanCommandExtension(clean):
         rmtree(".pytest_cache", ignore_errors=True)
 
 
-class GanacheCommand(distutils.command.build_py.build_py):
-    """Custom command to publish to pypi.org."""
-
-    description = "Run ganache daemon to support tests."
-
-    def run(self):
-        """Run ganache."""
-        cmd_line = "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2".split()
-        subprocess.call(cmd_line)  # nosec
-
-
 class LaunchKitCommand(distutils.command.build_py.build_py):
     """Custom command to boot up a local 0x-launch-kit in docker."""
 
@@ -117,8 +106,8 @@ setup(
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
+        "launch_kit": LaunchKitCommand,
         "lint": LintCommand,
-        "ganache": GanacheCommand,
         "publish_docs": PublishDocsCommand,
         "test": TestCommandExtension,
     },
