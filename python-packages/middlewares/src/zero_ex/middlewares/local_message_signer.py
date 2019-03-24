@@ -1,13 +1,13 @@
 """Middleware that captures all 'eth_sign' requests to the JSON-RPC-Server.
 
-Description:
-An adaptation of the `signing
-<https://github.com/ethereum/web3.py/blob/master/web3/middleware/signing.py>`_
-middleware from web3.py. This middleware intercepts all 'eth_sign' requests to
+An adaptation of the signing middleware from `web3.py
+<https://github.com/ethereum/web3.py/blob/master/web3/middleware/signing.py>`_.
+This middleware intercepts all 'eth_sign' requests to
 an ethereum JSON RPC-Server and signs messages with a local private key.
 """
 
 from functools import singledispatch
+from typing import Any, Dict, List, Set, Tuple, Union
 from eth_account import Account, messages
 from eth_account.local import LocalAccount
 from eth_keys.datatypes import PrivateKey
@@ -46,7 +46,14 @@ _to_account.register(str, _private_key_to_account)
 _to_account.register(bytes, _private_key_to_account)
 
 
-def construct_local_message_signer(private_key_or_account):
+def construct_local_message_signer(
+    private_key_or_account: Union[
+        Union[LocalAccount, PrivateKey, str],
+        List[Union[LocalAccount, PrivateKey, str]],
+        Tuple[Union[LocalAccount, PrivateKey, str]],
+        Set[Union[LocalAccount, PrivateKey, str]],
+    ]
+):
     """Construct a local messager signer middleware.
 
     :param private_key_or_account: a single private key or a tuple,
@@ -74,7 +81,9 @@ def construct_local_message_signer(private_key_or_account):
     if not isinstance(private_key_or_account, (list, tuple, set)):
         private_key_or_account = [private_key_or_account]
     accounts = [_to_account(pkoa) for pkoa in private_key_or_account]
-    accounts = {account.address: account for account in accounts}
+    address_to_accounts: Dict[str, Any] = {
+        account.address: account for account in accounts
+    }
 
     def local_message_signer_middleware(
         make_request, web3
@@ -83,7 +92,7 @@ def construct_local_message_signer(private_key_or_account):
             if method != "eth_sign":
                 return make_request(method, params)
             account_address, message = params[:2]
-            account = accounts[account_address]
+            account = address_to_accounts[account_address]
             # We will assume any string which looks like a hex is expected
             # to be converted to hex. Non-hexable strings are forcibly
             # converted by encoding them to utf-8
