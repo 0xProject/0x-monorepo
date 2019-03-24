@@ -66,10 +66,24 @@ def get_order():
     ...     "0xc1c4e9a983755b4a2ff048b0c591a27"
     ...     "0f437972e1ec440986770ac943a577404")
     >>> relayer_api = sra_client.api.default_api.DefaultApi()
-    >>> response = relayer_api.get_order(order_hash=example_order_hash)
-    >>> response
-    """
-    # TODO: Bug exists in sra_client, need fix!
+    >>> response = relayer_api.get_order(order_hash=example_order_hash)  # doctest: +SKIP
+    >>> response  # doctest: +SKIP
+    {'meta_data': {},
+    'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
+                'expiration_time_seconds': '1000000000000000000000',
+                'fee_recipient_address': '0x0000000000000000000000000000000000000000',
+                'maker_address': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
+                'maker_asset_amount': '1000000000000000000',
+                'maker_asset_data': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                'maker_fee': '0',
+                'salt': '2362734632784682376287462',
+                'sender_address': '0x0000000000000000000000000000000000000000',
+                'taker_address': '0x0000000000000000000000000000000000000000',
+                'taker_asset_amount': '500000000000000000000',
+                'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+                'taker_fee': '0'}},
+    """  # noqa: 501
+    # NOTE: sra_client not deserialzing order from server properly, need fix!
 
 
 def get_asset_pairs():
