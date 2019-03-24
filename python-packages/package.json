@@ -1,9 +1,0 @@
-{
-    "scripts": {
-        "prettier": "prettier --write '**/*.{json,md}' --config .prettierrc",
-        "prettier:ci": "prettier --list-different '**/*.{json,md}' --config .prettierrc"
-    },
-    "devDependencies": {
-        "prettier": "^1.16.4"
-    }
-}
