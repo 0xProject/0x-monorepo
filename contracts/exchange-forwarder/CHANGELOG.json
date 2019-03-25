@@ -24,6 +24,10 @@
             {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
+            },
+            {
+                "note": "Updat contracts to solidity ^0.5.5 and unpin dependencies",
+                "pr": 1732
             }
         ],
         "timestamp": 1553091633
