@@ -188,7 +188,7 @@ class OrderSchema(object):
             r"^\d+$", maker_fee
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `maker_fee`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `maker_fee`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._maker_fee = maker_fee
@@ -219,7 +219,7 @@ class OrderSchema(object):
             r"^\d+$", taker_fee
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `taker_fee`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `taker_fee`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._taker_fee = taker_fee
@@ -281,7 +281,7 @@ class OrderSchema(object):
             r"^\d+$", maker_asset_amount
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `maker_asset_amount`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `maker_asset_amount`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._maker_asset_amount = maker_asset_amount
@@ -312,7 +312,7 @@ class OrderSchema(object):
             r"^\d+$", taker_asset_amount
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `taker_asset_amount`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `taker_asset_amount`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._taker_asset_amount = taker_asset_amount
@@ -403,7 +403,7 @@ class OrderSchema(object):
             )  # noqa: E501
         if salt is not None and not re.search(r"^\d+$", salt):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `salt`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `salt`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._salt = salt
@@ -496,7 +496,7 @@ class OrderSchema(object):
             r"^\d+$", expiration_time_seconds
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `expiration_time_seconds`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `expiration_time_seconds`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._expiration_time_seconds = expiration_time_seconds
