@@ -18,7 +18,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -32,6 +32,7 @@ const DECIMALS_DEFAULT = 18;
 const MAX_WETH_FILL_PERCENTAGE = 95;
 
 describe(ContractName.Forwarder, () => {
+    let chainId: number;
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -64,6 +65,9 @@ describe(ContractName.Forwarder, () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
+
+        chainId = await providerUtils.getChainIdAsync(provider);
+
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
@@ -99,6 +103,7 @@ describe(ContractName.Forwarder, () => {
             provider,
             txDefaults,
             zrxAssetData,
+            new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -115,6 +120,7 @@ describe(ContractName.Forwarder, () => {
         const defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
             exchangeAddress: exchangeInstance.address,
+            chainId,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
@@ -170,6 +176,7 @@ describe(ContractName.Forwarder, () => {
                 provider,
                 txDefaults,
                 zrxAssetData,
+                new BigNumber(chainId),
             );
             return expectContractCreationFailedAsync(
                 (ForwarderContract.deployFrom0xArtifactAsync(
