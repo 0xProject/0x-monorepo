@@ -19,7 +19,7 @@ We will demonstrate some basic steps to help you get started trading on 0x.
 The first step to interact with the 0x smart contract is to import
 the following relevant packages:
 
->>> from decimal import Decimal
+>>> import random
 >>> from eth_utils import to_checksum_address
 >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 >>> from zero_ex.contract_wrappers import (
@@ -191,7 +191,7 @@ creating a signature with the given order data.
 ... 'takerAssetData': bytes.fromhex(
 ...     'f47261b0000000000000000000000000'
 ...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'salt': 24352435243543,
+... 'salt': random.randint(1, 100000000000000000),
 ... 'makerFee': 0,
 ... 'takerFee': 0,
 ... 'makerAssetAmount': 100000000000000000,
@@ -207,7 +207,7 @@ To sign this order, we first need to generate the order hash.
 
 >>> order_hash = generate_order_hash_hex(
 ...     example_order, example_order["exchangeAddress"])
->>> order_hash
+>>> order_hash  # doctest: +SKIP
 'b168e17b66d14a1eb9709acadf7d64c707dc648b322a05f8e7490db6c2e16ccc'
 
 Now our maker can sign this order hash with our web3 provider and
@@ -215,7 +215,7 @@ the `sign_hash` function from the order utils package.
 
 >>> maker_signature = sign_hash(
 ...     provider, to_checksum_address(maker), order_hash)
->>> maker_signature
+>>> maker_signature  # doctest: +SKIP
 '0x1cc4303e1dde455ebcef9b126579de444e8a3b9f855f957459afbb937c16bc30fc133cfe63f2f2be2c3892e4b86265e9c90b992a7e81b5acb9dfeece9286b1b2a403'
 
 Now our maker can either deliver his signature and example order
@@ -267,7 +267,7 @@ order to demonstrate.
 ... 'takerAssetData': bytes.fromhex(
 ...     'f47261b0000000000000000000000000'
 ...     'e41d2489571d322189246dafa5ebde1f4699f498'),
-... 'salt': 777603998,
+... 'salt': random.randint(1, 100000000000000000),
 ... 'makerFee': 0,
 ... 'takerFee': 0,
 ... 'makerAssetAmount': 1000000000000000000,
@@ -281,7 +281,7 @@ our cancellation through the exchange wrapper.
 
 >>> cancel_event = zero_ex_exchange.get_cancel_event(tx_hash);
 >>> cancelled_order_hash = cancel_event[0].args.orderHash.hex()
->>> cancelled_order_hash
+>>> cancelled_order_hash  # doctest: +SKIP
 '18528c0bf30ab024e4524d2696646db998379e796500712be80aee2b2b44483a'
 
 **Batching orders**
@@ -301,7 +301,7 @@ two orders in one transaction.
 ... 'takerAssetData': bytes.fromhex(
 ...     'f47261b0000000000000000000000000'
 ...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'salt': 9349293492,
+... 'salt': random.randint(1, 100000000000000000),
 ... 'makerFee': 0,
 ... 'takerFee': 0,
 ... 'makerAssetAmount': 100,
@@ -322,7 +322,7 @@ two orders in one transaction.
 ... 'takerAssetData': bytes.fromhex(
 ...     'f47261b0000000000000000000000000'
 ...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'salt': 345348485858848584,
+... 'salt': random.randint(1, 100000000000000000),
 ... 'makerFee': 0,
 ... 'takerFee': 0,
 ... 'makerAssetAmount': 200,
