@@ -58,7 +58,7 @@ contract MixinCoordinatorApprovalVerifier is
         view
     {
         // Get the orders from the the Exchange calldata in the 0x transaction
-        LibOrder.Order[] memory orders = decodeFillDataOrders(transaction.data);
+        LibOrder.Order[] memory orders = decodeOrdersFromFillData(transaction.data);
 
         // No approval is required for non-fill methods
         if (orders.length > 0) {
@@ -72,6 +72,57 @@ contract MixinCoordinatorApprovalVerifier is
                 approvalSignatures
             );
         }
+    }
+
+    /// @dev Decodes the orders from Exchange calldata representing any fill method.
+    /// @param data Exchange calldata representing a fill method.
+    /// @return The orders from the Exchange calldata.
+    function decodeOrdersFromFillData(bytes memory data)
+        public
+        pure
+        returns (LibOrder.Order[] memory orders)
+    {
+        bytes4 selector = data.readBytes4(0);
+        if (
+            selector == FILL_ORDER_SELECTOR ||
+            selector == FILL_ORDER_NO_THROW_SELECTOR ||
+            selector == FILL_OR_KILL_ORDER_SELECTOR
+        ) {
+            // Decode single order
+            (LibOrder.Order memory order) = abi.decode(
+                data.slice(4, data.length),
+                (LibOrder.Order)
+            );
+            orders = new LibOrder.Order[](1);
+            orders[0] = order;
+        } else if (
+            selector == BATCH_FILL_ORDERS_SELECTOR ||
+            selector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
+            selector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR ||
+            selector == MARKET_BUY_ORDERS_SELECTOR ||
+            selector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
+            selector == MARKET_SELL_ORDERS_SELECTOR ||
+            selector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
+        ) {
+            // Decode all orders
+            // solhint-disable indent
+            (orders) = abi.decode(
+                data.slice(4, data.length),
+                (LibOrder.Order[])
+            );
+        } else if (selector == MATCH_ORDERS_SELECTOR) {
+            // Decode left and right orders
+            (LibOrder.Order memory leftOrder, LibOrder.Order memory rightOrder) = abi.decode(
+                data.slice(4, data.length),
+                (LibOrder.Order, LibOrder.Order)
+            );
+
+            // Create array of orders
+            orders = new LibOrder.Order[](2);
+            orders[0] = leftOrder;
+            orders[1] = rightOrder;
+        }
+        return orders;
     }
 
     /// @dev Validates that the feeRecipients of a batch of order have approved a 0x transaction.
@@ -89,7 +140,7 @@ contract MixinCoordinatorApprovalVerifier is
         uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
-        public
+        internal
         view
     {
         // Verify that Ethereum tx signer is the same as the approved txOrigin
@@ -148,56 +199,5 @@ contract MixinCoordinatorApprovalVerifier is
                 "INVALID_APPROVAL_SIGNATURE"
             );
         }
-    }
-
-    /// @dev Decodes the orders from Exchange calldata representing any fill method.
-    /// @param data Exchange calldata representing a fill method.
-    /// @return The orders from the Exchange calldata.
-    function decodeFillDataOrders(bytes memory data)
-        internal
-        pure
-        returns (LibOrder.Order[] memory orders)
-    {
-        bytes4 selector = data.readBytes4(0);
-        if (
-            selector == FILL_ORDER_SELECTOR ||
-            selector == FILL_ORDER_NO_THROW_SELECTOR ||
-            selector == FILL_OR_KILL_ORDER_SELECTOR
-        ) {
-            // Decode single order
-            (LibOrder.Order memory order) = abi.decode(
-                data.slice(4, data.length),
-                (LibOrder.Order)
-            );
-            orders = new LibOrder.Order[](1);
-            orders[0] = order;
-        } else if (
-            selector == BATCH_FILL_ORDERS_SELECTOR ||
-            selector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
-            selector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR ||
-            selector == MARKET_BUY_ORDERS_SELECTOR ||
-            selector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
-            selector == MARKET_SELL_ORDERS_SELECTOR ||
-            selector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
-        ) {
-            // Decode all orders
-            // solhint-disable indent
-            (orders) = abi.decode(
-                data.slice(4, data.length),
-                (LibOrder.Order[])
-            );
-        } else if (selector == MATCH_ORDERS_SELECTOR) {
-            // Decode left and right orders
-            (LibOrder.Order memory leftOrder, LibOrder.Order memory rightOrder) = abi.decode(
-                data.slice(4, data.length),
-                (LibOrder.Order, LibOrder.Order)
-            );
-
-            // Create array of orders
-            orders = new LibOrder.Order[](2);
-            orders[0] = leftOrder;
-            orders[1] = rightOrder;
-        }
-        return orders;
     }
 }

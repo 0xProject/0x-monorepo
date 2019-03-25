@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental "ABIEncoderV2";
 
 import "./LibEIP712Domain.sol";
 
@@ -40,11 +41,11 @@ contract LibZeroExTransaction is
         bytes data;             // AbiV2 encoded calldata.
     }
 
-    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of this contract.
+    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @return EIP712 hash of the transaction with the domain separator of this contract.
     function getTransactionHash(ZeroExTransaction memory transaction)
-        internal
+        public
         view
         returns (bytes32 transactionHash)
     {

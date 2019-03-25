@@ -21,10 +21,5 @@
             }
         }
     },
-    "contracts": [
-        "src/Coordinator.sol",
-        "src/registry/CoordinatorRegistry.sol",
-        "test/TestLibs.sol",
-        "test/TestMixins.sol"
-    ]
+    "contracts": ["src/Coordinator.sol", "src/registry/CoordinatorRegistry.sol"]
 }

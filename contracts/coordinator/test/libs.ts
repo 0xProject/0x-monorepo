@@ -4,14 +4,14 @@ import { transactionHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { artifacts, hashUtils, TestLibsContract } from '../src';
+import { artifacts, CoordinatorContract, hashUtils } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Libs tests', () => {
-    let testLibs: TestLibsContract;
+    let coordinatorContract: CoordinatorContract;
     const exchangeAddress = addressUtils.generatePseudoRandomAddress();
 
     before(async () => {
@@ -21,8 +21,8 @@ describe('Libs tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        testLibs = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
+        coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
+            artifacts.Coordinator,
             provider,
             txDefaults,
             exchangeAddress,
@@ -44,7 +44,7 @@ describe('Libs tests', () => {
                 data: '0x1234',
             };
             const expectedTxHash = transactionHashUtils.getTransactionHashHex(tx);
-            const txHash = await testLibs.publicGetTransactionHash.callAsync(tx);
+            const txHash = await coordinatorContract.getTransactionHash.callAsync(tx);
             expect(expectedTxHash).to.eq(txHash);
         });
     });
@@ -68,11 +68,11 @@ describe('Libs tests', () => {
             };
             const expectedApprovalHash = hashUtils.getApprovalHashHex(
                 signedTx,
-                testLibs.address,
+                coordinatorContract.address,
                 txOrigin,
                 approvalExpirationTimeSeconds,
             );
-            const approvalHash = await testLibs.publicGetCoordinatorApprovalHash.callAsync(approval);
+            const approvalHash = await coordinatorContract.getCoordinatorApprovalHash.callAsync(approval);
             expect(expectedApprovalHash).to.eq(approvalHash);
         });
     });

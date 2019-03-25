@@ -37,7 +37,7 @@ export const exchangeDataEncoder = {
                 orders[0].signature,
                 orders[1].signature,
             );
-        } else if (fnName === constants.CANCEL_ORDERS) {
+        } else if (fnName === constants.CANCEL_ORDER) {
             data = exchangeInstance.cancelOrder.getABIEncodedTransactionData(orders[0]);
         } else if (fnName === constants.BATCH_CANCEL_ORDERS) {
             data = exchangeInstance.batchCancelOrders.getABIEncodedTransactionData(orders);
