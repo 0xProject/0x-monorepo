@@ -1,4 +1,5 @@
 from typing import Any, Callable, Dict, List, Optional, Union
+
 from hexbytes import HexBytes
 from eth_account.local import LocalAccount
 from web3 import datastructures

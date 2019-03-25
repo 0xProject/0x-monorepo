@@ -1,5 +1,6 @@
 """Test 0x Exchnage wrapper."""
 import random
+
 import pytest
 from eth_utils import remove_0x_prefix
 

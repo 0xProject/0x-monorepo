@@ -1,11 +1,12 @@
-"""Transaction Parameters class."""
+"""Transaction parameters for use with contract wrappers."""
 from typing import Optional
+
 import attr
 
 
 @attr.s(kw_only=True)
 class TxParams:
-    """Transaction Parameters Structure.
+    """Transaction parameters for use with contract wrappers.
 
     :param from_: default None, string of account address to initiate tx from
     :param value: default None, integer of amount of ETH in Wei for transfer

@@ -1,5 +1,6 @@
 """Tests for ERC20Token wrapper."""
 from decimal import Decimal
+
 import pytest
 
 from zero_ex.contract_wrappers import ERC20Token, TxParams

@@ -1,5 +1,6 @@
 """Base wrapper class for accessing ethereum smart contracts."""
 from typing import Optional, Union
+
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider

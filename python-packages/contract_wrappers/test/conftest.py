@@ -3,6 +3,7 @@
 import pytest
 from eth_utils import remove_0x_prefix, to_checksum_address
 from web3 import Web3
+
 from zero_ex.order_utils import asset_data_utils
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
