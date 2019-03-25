@@ -16,7 +16,6 @@ PACKAGE_DEPENDENCY_LIST = [
     "sra_client",
     "order_utils",
     "middlewares",
-    "sra_demos",
 ]
 
 for package in PACKAGE_DEPENDENCY_LIST:
