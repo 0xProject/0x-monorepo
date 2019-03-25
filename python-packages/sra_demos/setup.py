@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""setuptools module for 0x-demos package."""
+"""setuptools module for 0x-sra-demos package."""
 
 import distutils.command.build_py
 from distutils.command.clean import clean
@@ -86,7 +86,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
     description = (
         "Publish docs to "
-        + "http://0x-demos-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-sra-demos-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
@@ -95,15 +95,15 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
 
 setup(
-    name="0x-demos",
+    name="0x-sra-demos",
     version="1.0.0",
     description="Demonstration of calling 0x contracts",
     url=(
         "https://github.com/0xProject/0x-monorepo/tree/development"
         + "/python-packages/demos"
     ),
-    author="F. Eugene Aumson",
-    author_email="feuGeneA@users.noreply.github.com",
+    author="Michael Huang",
+    author_email="michaelhly@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
         "launch_kit": LaunchKitCommand,

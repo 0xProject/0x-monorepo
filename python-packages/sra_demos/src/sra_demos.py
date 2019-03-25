@@ -132,6 +132,6 @@ Get the orderbook for an asset pair from a SRA compliant 0x-relayer.
                                  'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
                                  'taker_fee': '0'}}]},
  'bids': {'records': []}}
-"""  # noqa: E501
+"""  # noqa: E501 (line too long)
 
 # NOTE: sra_client not deserialzing order from server properly, need fix!

@@ -1,6 +1,6 @@
-## 0x-demos
+## 0x-sra-demos
 
-Demonstrations of using the 0x python packages.
+Demonstrations of using the python 0x Standard Relayer API client.
 
 Read the [documentation](http://0x-demos-py.s3-website-us-east-1.amazonaws.com/)
 
@@ -20,7 +20,7 @@ pip install -e .[dev]
 
 ### Test
 
-`./setup.py test`
+Tests depend on a running relayer instance that implements the 0x Standard Relayer API. For convenience, a docker container is provided that has the 0x-launch-kit server. A shortcut is provided to run that docker container: `./setup.py launch_kit`. With that running, the tests can be run with `./setup.py test`.
 
 ### Clean
 
