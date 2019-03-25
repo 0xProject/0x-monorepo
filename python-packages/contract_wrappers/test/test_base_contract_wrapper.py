@@ -17,20 +17,6 @@ def contract_wrapper(ganache_provider):
     return BaseContractWrapper(provider=ganache_provider)
 
 
-def test_contract_wrapper__get_accounts(
-    accounts, contract_wrapper
-):  # pylint: disable=redefined-outer-name
-    """Test getting list of accounts from BaseContractWrapper instance."""
-    assert contract_wrapper.get_accounts() == accounts
-
-
-def test_contract_wrapper__get_default_account(
-    accounts, contract_wrapper
-):  # pylint: disable=redefined-outer-name
-    """Test getting default account from BaseContractWrapper instance."""
-    assert contract_wrapper.get_default_account() == accounts[0]
-
-
 def test_contract_wrapper__execute_method(
     accounts,
     contract_wrapper,  # pylint: disable=redefined-outer-name
