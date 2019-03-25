@@ -32,7 +32,7 @@ the following relevant packages:
 
 We need a web3 provider to allow us to talk to the blockchain. You can
 read more about provders
-`here <https://web3py.readthedocs.io/en/stable/providers.htm>`_.  In our
+`here <https://web3py.readthedocs.io/en/stable/providers.htm>`__.  In our
 case, we are using our local node (ganache), we will connect to our provider
 at http://localhost:8545.
 
@@ -59,9 +59,9 @@ To trade on 0x, the participants (maker and taker) require a small
 amount of initial set up. They need to approve the 0x smart contracts
 to move funds on their behalf. In order to give 0x protocol smart contract
 access to funds, we need to set allowances (you can read about allowances
-`here <https://tokenallowance.io/>`_).
+`here <https://tokenallowance.io/>`__).
 In our demo the taker asset is WETH (or Wrapped ETH, you can read about WETH
-`here <https://weth.io/>`_).,
+`here <https://weth.io/>`__).,
 as ETH is not an ERC20 token it must first be converted into WETH to be
 used by 0x. Concretely, "converting" ETH to WETH means that we will deposit
 some ETH in a smart contract acting as a ERC20 wrapper. In exchange of
@@ -199,7 +199,7 @@ creating a signature with the given order data.
 ... 'expirationTimeSeconds': 999999999999999999999}
 
 Please checkout our demo `here
-<http://0x-demos-py.s3-website-us-east-1.amazonaws.com/>`_
+<http://0x-demos-py.s3-website-us-east-1.amazonaws.com/>`__
 if you would like to see how you can create an 0x order
 with our python packages.
 
