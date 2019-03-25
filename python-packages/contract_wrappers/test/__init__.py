@@ -1,1 +1,1 @@
-"""Tests of zero_x.contract_wrappers."""
+"""Tests of zero_ex.contract_wrappers."""

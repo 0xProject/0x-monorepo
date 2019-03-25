@@ -1,5 +1,7 @@
 """Wrapper for Ethereum ERC20 Token smart contract."""
+
 from typing import Optional, Tuple, Union
+
 from hexbytes import HexBytes
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider

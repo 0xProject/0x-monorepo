@@ -1,4 +1,5 @@
 """Base wrapper class for accessing ethereum smart contracts."""
+
 from typing import Optional, Union
 
 from eth_utils import to_checksum_address
@@ -99,7 +100,7 @@ class BaseContractWrapper:
         address: str,
         abi: dict,
         method: str,
-        args: Optional[Union[list, tuple]] = (),
+        args: Optional[Union[list, tuple]] = None,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> str:
@@ -116,6 +117,8 @@ class BaseContractWrapper:
         :returns: str of transaction hash
         """
         contract_instance = self._contract_instance(address=address, abi=abi)
+        if args is None:
+            args = []
         if hasattr(contract_instance.functions, method):
             func = getattr(contract_instance.functions, method)(*args)
             return self._invoke_function_call(

@@ -35,7 +35,7 @@ def accounts(web3_eth):  # pylint: disable=redefined-outer-name
 
 @pytest.fixture(scope="module")
 def erc20_proxy_address():
-    """Get the 0x V2 ERC20 Proxy address."""
+    """Get the 0x ERC20 Proxy address."""
     return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
 

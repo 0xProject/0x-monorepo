@@ -3,6 +3,7 @@
 # Reference: http://www.sphinx-doc.org/en/master/config
 
 from typing import List
+
 import pkg_resources
 
 

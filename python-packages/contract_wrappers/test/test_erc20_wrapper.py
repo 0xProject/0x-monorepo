@@ -1,4 +1,5 @@
 """Tests for ERC20Token wrapper."""
+
 from decimal import Decimal
 
 import pytest

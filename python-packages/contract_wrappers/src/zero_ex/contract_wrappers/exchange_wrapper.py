@@ -1,6 +1,8 @@
 """Wrapper for 0x Exchange smart contract."""
+
 from typing import List, Optional, Tuple, Union
 from itertools import repeat
+
 from eth_utils import remove_0x_prefix
 from hexbytes import HexBytes
 from web3.providers.base import BaseProvider
@@ -38,7 +40,7 @@ class Exchange(BaseContractWrapper):
         account_address: str = None,
         private_key: str = None,
     ):
-        """Get an instance of the 0x V2 Exchange smart contract wrapper."""
+        """Get an instance of the 0x Exchange smart contract wrapper."""
         super(Exchange, self).__init__(
             provider=provider,
             account_address=account_address,

@@ -1,4 +1,5 @@
 """Transaction parameters for use with contract wrappers."""
+
 from typing import Optional
 
 import attr

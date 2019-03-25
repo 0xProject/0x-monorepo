@@ -1,6 +1,4 @@
-"""
-Tests for :class:`BaseContractWrapper`.
-"""
+"""Tests for :class:`BaseContractWrapper`."""
 
 import pytest
 from eth_utils import to_checksum_address
