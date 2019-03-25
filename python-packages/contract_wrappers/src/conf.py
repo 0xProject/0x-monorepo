@@ -12,7 +12,7 @@ import pkg_resources
 project = "0x-contract-wrappers"
 # pylint: disable=redefined-builtin
 copyright = "2019, ZeroEx, Intl."
-author = "Michael Hwang"
+author = "Michael Huang"
 version = pkg_resources.get_distribution("0x-contract-wrappers").version
 release = ""  # The full version, including alpha/beta/rc tags
 
