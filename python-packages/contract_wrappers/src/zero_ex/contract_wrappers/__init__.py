@@ -23,7 +23,7 @@ the following relevant packages:
 >>> from eth_utils import to_checksum_address
 >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 >>> from zero_ex.contract_wrappers import (
-...     ERC20Token, Exchange
+...     ERC20Token, Exchange, TxParams
 ... )
 >>> from zero_ex.order_utils import(
 ...     sign_hash, generate_order_hash_hex)
@@ -31,24 +31,27 @@ the following relevant packages:
 **Provider**
 
 We need a web3 provider to allow us to talk to the blockchain. You can
-read more about provders
+read more about providers
 `here <https://web3py.readthedocs.io/en/stable/providers.htm>`__.  In our
 case, we are using our local node (ganache), we will connect to our provider
 at http://localhost:8545.
 
->>> from web3 import HTTPProvider
+>>> from web3 import HTTPProvider, Web3
 >>> provider = HTTPProvider("http://localhost:8545")
+>>> # Create a web3 instance from the provider
+>>> web3_instance = Web3(provider)
 
 **Declaring Decimals and Addresses**
 
 Since we are dealing with a few contracts, we will specify them now to
 reduce the syntax load. Fortunately for us, the 0x python packages comes
-with a couple of contract addresses that can be useful to have at hand.
+with a couple of contract addresses that can be useful to have on hand.
 One thing that is important to remember is that there are no decimals in
 the Ethereum virtual machine (EVM), which means you always need to keep
 track of how many "decimals" each token possesses. Since we will sell some
 ZRX for some ETH and since they both have 18 decimals, we can use a shared
-constant.
+constant. Let us first get the addresses of the WETH and ZRX tokens on
+the test network Ganache:
 
 >>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
 >>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
@@ -69,12 +72,15 @@ depositing ETH, we will get some ERC20 compliant tokens called WETH at a
 1:1 conversion rate. For example, depositing 10 ETH will give us back 10 WETH
 and we can revert the process at any time.
 
+In this demo, we will use test accounts on Ganache, which are accessible
+through the Web3 instance. The first account will be the maker, and the second
+account will be the taker.
+
 >>> import pprint
 >>> # Instantiate an instance of the erc20_wrapper with the provider
 >>> erc20_wrapper = ERC20Token(provider)
->>> # For convience we can retrieve the accounts we can use directly
->>> # from our contract wrapper
->>> accounts = erc20_wrapper.get_accounts()
+>>> # Get accounts from the web 3 instance
+>>> accounts = web3_instance.eth.accounts
 >>> pprint.pprint(accounts)
 ['0x5409ED021D9299bf6814279A6A1411A7e866A631',
  '0x6Ecbe1DB9EF729CBe972C83Fb886247691Fb6beb',
@@ -86,9 +92,6 @@ and we can revert the process at any time.
  '0x4404ac8bd8F9618D27Ad2f1485AA1B2cFD82482D',
  '0x7457d5E02197480Db681D3fdF256c7acA21bDc12',
  '0x91c987bf62D25945dB517BDAa840A6c661374402']
-
-The first account will be the maker, and the second account will be the taker
-for the purposes of this demo.
 
 >>> maker = accounts[0]
 >>> taker = accounts[1]
@@ -327,7 +330,7 @@ two orders in one transaction.
 >>> signature_2 = sign_hash(
 ...     provider, to_checksum_address(maker), order_hash_2)
 
-Fill order_1 and order_2 together.
+Fill order_1 and order_2 together:
 
 >>> tx_hash = zero_ex_exchange.batch_fill_orders(
 ...     orders=[order_1, order_2],
