@@ -35,7 +35,7 @@ contract MWeth {
         uint256 wethSoldExcludingFeeOrders,
         uint256 wethSoldForZrx,
         uint256 feePercentage,
-        address feeRecipient
+        address payable feeRecipient
     )
         internal;
 }

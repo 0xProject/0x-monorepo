@@ -40,6 +40,7 @@ contract Forwarder is
         bytes memory _wethAssetData
     )
         public
+        Ownable()
         LibConstants(
             _exchange,
             _zrxAssetData,
