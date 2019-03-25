@@ -1,4 +1,4 @@
-"""Wrapper for 0x Exchange Contract (Version 2)."""
+"""Wrapper for 0x Exchange smart contract."""
 from typing import List, Optional, Tuple, Union
 from itertools import repeat
 from eth_utils import remove_0x_prefix
@@ -16,15 +16,16 @@ from zero_ex.order_utils import (
     order_to_jsdict,
 )
 
-from .generic_wrapper import ContractWrapper, TxParams
+from ._base_contract_wrapper import BaseContractWrapper
+from .tx_params import TxParams
 
 
 class CancelDisallowedError(Exception):
     """Exception for when Cancel is not allowed."""
 
 
-class Exchange(ContractWrapper):
-    """Wrapper class for 0x V2 Exchange smart contract.
+class Exchange(BaseContractWrapper):
+    """Wrapper class for 0x Exchange smart contract.
 
     :param provider: instance of :class:`web3.providers.base.BaseProvider`
     :param account_address: default None, str of account address
@@ -88,6 +89,7 @@ class Exchange(ContractWrapper):
             signature,
             order["makerAddress"],
         )
+        # safeguard against fractional inputs
         taker_fill_amount = int(taker_amount)
         normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrder(
@@ -120,6 +122,7 @@ class Exchange(ContractWrapper):
             order_to_jsdict(order, self.address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
+        # safeguard against fractional inputs
         normalized_fill_amounts = [
             int(taker_fill_amount) for taker_fill_amount in taker_amounts
         ]
@@ -160,6 +163,7 @@ class Exchange(ContractWrapper):
             signature,
             order["makerAddress"],
         )
+        # safeguard against fractional inputs
         taker_fill_amount = int(taker_amount)
         normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrKillOrder(
@@ -192,6 +196,7 @@ class Exchange(ContractWrapper):
             order_to_jsdict(order, self.address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
+        # safeguard against fractional inputs
         normalized_fill_amounts = [
             int(taker_fill_amount) for taker_fill_amount in taker_amounts
         ]

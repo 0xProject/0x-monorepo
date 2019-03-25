@@ -12,6 +12,7 @@ PACKAGE_DEPENDENCY_LIST = [
     # independent first) in order for them to resolve properly.
     "contract_addresses",
     "contract_artifacts",
+    "contract_wrappers",
     "json_schemas",
     "sra_client",
     "order_utils",

@@ -6,10 +6,11 @@ from web3.providers.base import BaseProvider
 
 from zero_ex.contract_artifacts import abi_by_name
 
-from .generic_wrapper import ContractWrapper, TxParams
+from ._base_contract_wrapper import BaseContractWrapper
+from .tx_params import TxParams
 
 
-class ERC20Token(ContractWrapper):
+class ERC20Token(BaseContractWrapper):
     """Wrapper class for Ethereum ERC20 smart contract.
 
     :param provider: instance of :class:`web3.providers.base.BaseProvider`
@@ -62,6 +63,7 @@ class ERC20Token(ContractWrapper):
         """
         token_address = self._validate_and_checksum_address(token_address)
         to_address = self._validate_and_checksum_address(to_address)
+        # safeguard against fractional inputs
         value = int(value)
         func = self._erc20(token_address).functions.transfer(to_address, value)
         return self._invoke_function_call(
@@ -76,7 +78,7 @@ class ERC20Token(ContractWrapper):
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """Approve a `sender_address` to spend up to `value` your account.
+        """Approve a `spender_address` to spend up to `value` your account.
 
         :param token_address: string address of token smart contract
         :param spender_address: string address of receiver
@@ -89,6 +91,7 @@ class ERC20Token(ContractWrapper):
         """
         token_address = self._validate_and_checksum_address(token_address)
         spender_address = self._validate_and_checksum_address(spender_address)
+        # safeguard against fractional inputs
         value = int(value)
         func = self._erc20(token_address).functions.approve(
             spender_address, value
@@ -127,6 +130,7 @@ class ERC20Token(ContractWrapper):
             authorized_address
         )
         to_address = self._validate_and_checksum_address(to_address)
+        # safeguard against fractional inputs
         value = int(value)
         func = self._erc20(token_address).functions.transferFrom(
             authorized_address, to_address, value
