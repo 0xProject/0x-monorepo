@@ -49,7 +49,7 @@ class Exchange(BaseContractWrapper):
             NetworkId(int(self._web3_net.version))
         ].exchange
         self._exchange = self._contract_instance(
-            address=self.address, abi=abi_by_name("exchange")
+            address=self.address, abi=abi_by_name("Exchange")
         )
 
     def fill_order(
