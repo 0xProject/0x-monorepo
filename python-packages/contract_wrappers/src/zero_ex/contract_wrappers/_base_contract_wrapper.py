@@ -1,5 +1,5 @@
 """Base wrapper class for accessing ethereum smart contracts."""
-from typing import List, Optional, Union
+from typing import Optional, Union
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
@@ -32,22 +32,13 @@ class BaseContractWrapper:
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member
 
+        self._can_send_tx = False
         if self._web3_eth.defaultAccount or self._web3_eth.accounts:
             self._can_send_tx = True
         else:
             middleware_stack = getattr(self._web3, "middleware_stack")
             if middleware_stack.get("sign_and_send_raw_middleware"):
-                if account_address:
-                    self._web3_eth.defaultAccount = to_checksum_address(
-                        account_address
-                    )
-                    self._can_send_tx = True
-                else:
-                    raise Exception(
-                        "Please provide the wallet address associated"
-                        " with your private key to use the"
-                        " sign_and_send_raw_middleware"
-                    )
+                self._can_send_tx = True
             elif private_key:
                 self._private_key = private_key
                 self._web3_eth.defaultAccount = to_checksum_address(
@@ -56,8 +47,6 @@ class BaseContractWrapper:
                     ).address
                 )
                 self._can_send_tx = True
-            else:
-                self._can_send_tx = False
 
     def _contract_instance(self, address: str, abi: dict):
         """Get a contract instance.
@@ -77,12 +66,19 @@ class BaseContractWrapper:
         return to_checksum_address(address)
 
     def _invoke_function_call(self, func, tx_params, view_only):
-        if view_only or not self._can_send_tx:
+        if view_only:
             return func.call()
+        if not self._can_send_tx:
+            raise Exception(
+                "Cannot send transaction because no local private_key"
+                " or account found."
+            )
         if not tx_params:
             tx_params = TxParams()
         if not tx_params.from_:
-            tx_params.from_ = self.get_default_account()
+            tx_params.from_ = (
+                self._web3_eth.defaultAccount or self._web3_eth.accounts[0]
+            )
         tx_params.from_ = self._validate_and_checksum_address(tx_params.from_)
         if self._private_key:
             res = self._sign_and_send_raw_direct(func, tx_params)
@@ -127,11 +123,3 @@ class BaseContractWrapper:
         raise Exception(
             "No method {} found on contract {}.".format(address, method)
         )
-
-    def get_accounts(self) -> List[str]:
-        """Get a list of all accounts associated with the Web3 instance."""
-        return self._web3_eth.accounts
-
-    def get_default_account(self) -> str:
-        """Get the default account associated with the Web3 instance."""
-        return self._web3_eth.defaultAccount or self.get_accounts()[0]
