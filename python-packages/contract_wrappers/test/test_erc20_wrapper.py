@@ -28,7 +28,7 @@ def test_erc20_wrapper__balance_of(
         weth_address, accounts[1]
     )
 
-    expected_difference = 2 * 10 ** 18
+    expected_difference = 1 * 10 ** 18
 
     weth_instance.functions.deposit().transact(
         {"from": accounts[0], "value": expected_difference}
