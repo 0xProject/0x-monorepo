@@ -32,7 +32,7 @@ the following relevant packages:
 
 We need a web3 provider to allow us to talk to the blockchain. You can
 read more about provders
-`here <https://web3py.readthedocs.io/en/stable/providers.htm>`_.  In our
+`here <https://web3py.readthedocs.io/en/stable/providers.htm>`__.  In our
 case, we are using our local node (ganache), we will connect to our provider
 at http://localhost:8545.
 
@@ -59,9 +59,9 @@ To trade on 0x, the participants (maker and taker) require a small
 amount of initial set up. They need to approve the 0x smart contracts
 to move funds on their behalf. In order to give 0x protocol smart contract
 access to funds, we need to set allowances (you can read about allowances
-`here <https://tokenallowance.io/>`_).
+`here <https://tokenallowance.io/>`__).
 In our demo the taker asset is WETH (or Wrapped ETH, you can read about WETH
-`here <https://weth.io/>`_).,
+`here <https://weth.io/>`__).,
 as ETH is not an ERC20 token it must first be converted into WETH to be
 used by 0x. Concretely, "converting" ETH to WETH means that we will deposit
 some ETH in a smart contract acting as a ERC20 wrapper. In exchange of
@@ -106,7 +106,7 @@ the 0x ERC20 Proxy an allowance of 100 WETH.
 ...     weth_address,
 ...     erc20_proxy,
 ...     ALLOWANCE,
-...     tx_opts={"from_": maker},
+...     tx_params=TxParams(from_=maker),
 ... )
 >>> # Check the allowance given to the 0x ERC20 Proxy
 >>> maker_allowance = erc20_wrapper.allowance(
@@ -122,7 +122,7 @@ the 0x ERC20 Proxy an allowance of 100 WETH.
 ...     weth_address,
 ...     erc20_proxy,
 ...     ALLOWANCE,
-...     tx_opts={"from_": taker},
+...     tx_params=TxParams(from_=taker),
 ... )
 >>> # Check the allowance given to the 0x ERC20 Proxy
 >>> taker_allowance = erc20_wrapper.allowance(
@@ -148,7 +148,7 @@ and call the deposit method to wrap our ETH. Here is how we do so.
 ... address=weth_address,
 ... abi=abi_by_name("WETH9"),
 ... method="deposit",
-... tx_opts = {"from_": maker, "value": deposit_amount})
+... tx_params=TxParams(from_=maker, value=deposit_amount))
 >>> # Checking our maker's WETH balance
 >>> maker_balance = erc20_wrapper.balance_of(
 ...     token_address=weth_address, owner_address=maker)
@@ -160,7 +160,7 @@ and call the deposit method to wrap our ETH. Here is how we do so.
 ... address=weth_address,
 ... abi=abi_by_name("WETH9"),
 ... method="deposit",
-... tx_opts = {"from_": taker, "value": deposit_amount})
+... tx_params=TxParams(from_=taker, value=deposit_amount))
 >>> # Checking our taker's WETH balance
 >>> taker_balance = erc20_wrapper.balance_of(
 ...     token_address=weth_address, owner_address=taker)
@@ -199,7 +199,7 @@ creating a signature with the given order data.
 ... 'expirationTimeSeconds': 999999999999999999999}
 
 Please checkout our demo `here
-<http://0x-demos-py.s3-website-us-east-1.amazonaws.com/>`_
+<http://0x-demos-py.s3-website-us-east-1.amazonaws.com/>`__
 if you would like to see how you can create an 0x order
 with our python packages.
 
@@ -236,10 +236,10 @@ Now let's fill the example order:
 >>> # the provider
 >>> zero_ex_exchange = Exchange(provider)
 >>> tx_hash = zero_ex_exchange.fill_order(
-...     order = example_order,
-...     taker_amount = example_order["takerAssetAmount"],
-...     signature = maker_signature,
-...     tx_opts = {"from_": taker})
+...     order=example_order,
+...     taker_amount=example_order["takerAssetAmount"],
+...     signature=maker_signature,
+...     tx_params=TxParams(from_=taker))
 
 Once the transaction is mined, we can get the details of
 our exchange through the exchange wrapper.
@@ -274,7 +274,7 @@ order to demonstrate.
 ... 'takerAssetAmount': 500000000000000000000,
 ... 'expirationTimeSeconds': 999999999999999999999}
 >>> tx_hash = zero_ex_exchange.cancel_order(
-...     order=example_order_2, tx_opts={"from_": maker})
+...     order=example_order_2, tx_params=TxParams(from_=maker))
 
 Once the transaction is mined, we can get the details of
 our cancellation through the exchange wrapper.
@@ -339,11 +339,11 @@ Fill order_1 and order_2 together.
 ...     orders=[order_1, order_2],
 ...     taker_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
-...     tx_opts={"from_": taker})
+...     tx_params=TxParams(from_=taker))
 >>> tx_hash  # doctest: +SKIP
 HexBytes('0xb28b2c9d276175d76a08230636a994731e288709577936453754396a991ac95f')
 """
 
-from .generic_wrapper import ContractWrapper
+from .generic_wrapper import ContractWrapper, TxParams
 from .erc20_wrapper import ERC20Token
 from .exchange_wrapper import Exchange

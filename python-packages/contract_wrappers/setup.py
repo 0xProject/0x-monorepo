@@ -165,6 +165,7 @@ setup(
         "0x-json-schemas",
         "0x-order-utils",
         "0x-web3",
+        "attrs",
         "eth_utils",
         "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
         # above works around https://github.com/ethereum/web3.py/issues/1179

@@ -3,7 +3,7 @@ import random
 import pytest
 from eth_utils import remove_0x_prefix
 
-from zero_ex.contract_wrappers import Exchange
+from zero_ex.contract_wrappers import Exchange, TxParams
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
 
@@ -74,7 +74,7 @@ def test_exchange_wrapper__fill_order(
         order=order,
         taker_amount=order["takerAssetAmount"],
         signature=order_signature,
-        tx_opts={"from_": taker},
+        tx_params=TxParams(from_=taker),
     )
     assert_valid(tx_hash.hex(), "/hexSchema")
 
@@ -111,7 +111,7 @@ def test_exchange_wrapper__batch_fill_orders(
         orders=orders,
         taker_amounts=taker_amounts,
         signatures=order_signatures,
-        tx_opts={"from_": taker},
+        tx_params=TxParams(from_=taker),
     )
     assert_valid(tx_hash.hex(), "/hexSchema")
 

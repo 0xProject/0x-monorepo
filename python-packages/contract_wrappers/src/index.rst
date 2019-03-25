@@ -29,6 +29,11 @@ zero_ex.contract_wrappers.ContractWrapper
 .. autoclass:: zero_ex.contract_wrappers.ContractWrapper
    :members:
 
+zero_ex.contract_wrappers.TxParams
+----------------------------------
+
+.. autoclass:: zero_ex.contract_wrappers.TxParams
+   :members:
 
 Indices and tables
 ==================

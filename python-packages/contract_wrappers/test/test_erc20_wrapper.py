@@ -2,7 +2,7 @@
 from decimal import Decimal
 import pytest
 
-from zero_ex.contract_wrappers import ERC20Token
+from zero_ex.contract_wrappers import ERC20Token, TxParams
 
 
 MAX_ALLOWANCE = "{:.0f}".format(Decimal(2) ** 256 - 1)
@@ -58,13 +58,13 @@ def test_erc20_wrapper__approve(
         weth_address,
         erc20_proxy_address,
         MAX_ALLOWANCE,
-        tx_opts={"from_": accounts[0]},
+        tx_params=TxParams(from_=accounts[0]),
     )
     erc20_wrapper.approve(
         weth_address,
         erc20_proxy_address,
         MAX_ALLOWANCE,
-        tx_opts={"from_": accounts[1]},
+        tx_params=TxParams(from_=accounts[1]),
     )
 
     acc_1_weth_allowance = erc20_wrapper.allowance(
