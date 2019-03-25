@@ -1,0 +1,11 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Initial publish",
+                "pr": 1713
+            }
+        ]
+    }
+]

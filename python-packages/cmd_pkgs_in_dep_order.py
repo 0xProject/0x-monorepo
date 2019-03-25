@@ -15,6 +15,7 @@ PACKAGE_DEPENDENCY_LIST = [
     "json_schemas",
     "sra_client",
     "order_utils",
+    "middlewares",
     "contract_demo"
 ]
 
