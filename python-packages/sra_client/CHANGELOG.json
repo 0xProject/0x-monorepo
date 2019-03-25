@@ -10,7 +10,7 @@
         "timestamp": 1553491629
     },
     {
-        "version": "1.0.2",
+        "version": "1.0.1",
         "changes": [
             {
                 "note": "Added new devdependencies, and linting commands to `setup.py`. Added sphinx docs to demonstrate how to use sra_client.",

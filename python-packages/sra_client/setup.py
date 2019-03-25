@@ -10,7 +10,7 @@ from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
 
 NAME = "0x-sra-client"
-VERSION = "1.0.2"
+VERSION = "1.0.1"
 # To install the library, run the following
 #
 # python setup.py install
