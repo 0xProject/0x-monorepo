@@ -207,16 +207,12 @@ To sign this order, we first need to generate the order hash.
 
 >>> order_hash = generate_order_hash_hex(
 ...     example_order, example_order["exchangeAddress"])
->>> order_hash  # doctest: +SKIP
-'b168e17b66d14a1eb9709acadf7d64c707dc648b322a05f8e7490db6c2e16ccc'
 
 Now our maker can sign this order hash with our web3 provider and
 the `sign_hash` function from the order utils package.
 
 >>> maker_signature = sign_hash(
 ...     provider, to_checksum_address(maker), order_hash)
->>> maker_signature  # doctest: +SKIP
-'0x1cc4303e1dde455ebcef9b126579de444e8a3b9f855f957459afbb937c16bc30fc133cfe63f2f2be2c3892e4b86265e9c90b992a7e81b5acb9dfeece9286b1b2a403'
 
 Now our maker can either deliver his signature and example order
 directly to the taker, or he can choose to broadcast the order
@@ -281,8 +277,6 @@ our cancellation through the exchange wrapper.
 
 >>> cancel_event = zero_ex_exchange.get_cancel_event(tx_hash);
 >>> cancelled_order_hash = cancel_event[0].args.orderHash.hex()
->>> cancelled_order_hash  # doctest: +SKIP
-'18528c0bf30ab024e4524d2696646db998379e796500712be80aee2b2b44483a'
 
 **Batching orders**
 
@@ -340,10 +334,8 @@ Fill order_1 and order_2 together.
 ...     taker_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
 ...     tx_params=TxParams(from_=taker))
->>> tx_hash  # doctest: +SKIP
-HexBytes('0xb28b2c9d276175d76a08230636a994731e288709577936453754396a991ac95f')
 """
 
-from .generic_wrapper import ContractWrapper, TxParams
+from .tx_params import TxParams
 from .erc20_wrapper import ERC20Token
 from .exchange_wrapper import Exchange

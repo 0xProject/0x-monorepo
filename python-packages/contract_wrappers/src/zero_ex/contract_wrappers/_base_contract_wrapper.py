@@ -1,46 +1,13 @@
 """Base wrapper class for accessing ethereum smart contracts."""
 from typing import List, Optional, Union
-import attr
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
 
-
-@attr.s(kw_only=True)
-class TxParams:
-    """Transaction Params Structure.
-
-    :param from_: default None, string of account address to initiate tx from
-    :param value: default None, integer of amount of ETH in Wei for transfer
-    :param gas: default None, integer maximum amount of ETH in Wei for gas
-    :param grasPrice: default None, integer price of unit of gas
-    :param nonce: default None, integer nonce for account
-    """
-
-    from_: Optional[str] = attr.ib(default=None)
-    value: Optional[int] = attr.ib(
-        default=None, converter=attr.converters.optional(int)
-    )
-    gas: Optional[int] = attr.ib(
-        default=None, converter=attr.converters.optional(int)
-    )
-    gasPrice: Optional[int] = attr.ib(
-        default=None, converter=attr.converters.optional(int)
-    )
-    nonce: Optional[int] = attr.ib(
-        default=None, converter=attr.converters.optional(int)
-    )
-
-    def as_dict(self):
-        """Get transaction params as dict appropriate for web3."""
-        res = {k: v for k, v in attr.asdict(self).items() if v is not None}
-        if "from_" in res:
-            res["from"] = res["from_"]
-            del res["from_"]
-        return res
+from .tx_params import TxParams
 
 
-class ContractWrapper:
+class BaseContractWrapper:
     """Base class for wrapping ethereum smart contracts.
 
     It provides functionality for instantiating a contract instance,
@@ -58,7 +25,7 @@ class ContractWrapper:
         account_address: str = None,
         private_key: str = None,
     ):
-        """Create an instance of ContractWrapper."""
+        """Create an instance of BaseContractWrapper."""
         self._provider = provider
         self._account_address = account_address
         self._private_key = private_key

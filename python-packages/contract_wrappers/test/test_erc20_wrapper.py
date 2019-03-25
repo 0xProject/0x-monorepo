@@ -5,7 +5,7 @@ import pytest
 from zero_ex.contract_wrappers import ERC20Token, TxParams
 
 
-MAX_ALLOWANCE = "{:.0f}".format(Decimal(2) ** 256 - 1)
+MAX_ALLOWANCE = int("{:.0f}".format(Decimal(2) ** 256 - 1))
 
 
 @pytest.fixture(scope="module")
@@ -74,5 +74,5 @@ def test_erc20_wrapper__approve(
         weth_address, accounts[1], erc20_proxy_address
     )
 
-    assert acc_1_weth_allowance == int(MAX_ALLOWANCE)
-    assert acc_2_weth_allowance == int(MAX_ALLOWANCE)
+    assert acc_1_weth_allowance == MAX_ALLOWANCE
+    assert acc_2_weth_allowance == MAX_ALLOWANCE

@@ -7,6 +7,7 @@ Python zero_ex.contract_wrappers
 
 .. automodule:: zero_ex.contract_wrappers
    :members:
+   :inherited-members:
 
 
 zero_ex.contract_wrappers.Exchange
@@ -14,6 +15,7 @@ zero_ex.contract_wrappers.Exchange
 
 .. autoclass:: zero_ex.contract_wrappers.Exchange
    :members:
+   :inherited-members:
 
 
 zero_ex.contract_wrappers.ERC20Token
@@ -21,13 +23,8 @@ zero_ex.contract_wrappers.ERC20Token
 
 .. autoclass:: zero_ex.contract_wrappers.ERC20Token
    :members:
+   :inherited-members:
 
-
-zero_ex.contract_wrappers.ContractWrapper
------------------------------------------
-
-.. autoclass:: zero_ex.contract_wrappers.ContractWrapper
-   :members:
 
 zero_ex.contract_wrappers.TxParams
 ----------------------------------
