@@ -1,0 +1,11 @@
+[
+    {
+        "timestamp": 1553491629,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Fix regex validation on numeric values"
+            }
+        ]
+    }
+]
