@@ -29,8 +29,8 @@ class DefaultApi(object):
         Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_asset_pairs(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_asset_pairs(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str asset_data_a: The assetData value for the first asset in the pair.
@@ -57,8 +57,8 @@ class DefaultApi(object):
         Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_asset_pairs_with_http_info(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_asset_pairs_with_http_info(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str asset_data_a: The assetData value for the first asset in the pair.
@@ -160,8 +160,8 @@ class DefaultApi(object):
         Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_fee_recipients(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_fee_recipients(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param float network_id: The id of the Ethereum network
@@ -188,8 +188,8 @@ class DefaultApi(object):
         Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_fee_recipients_with_http_info(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_fee_recipients_with_http_info(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param float network_id: The id of the Ethereum network
@@ -275,8 +275,8 @@ class DefaultApi(object):
         Retrieves the 0x order with meta info that is associated with the hash.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order(order_hash, async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_order(order_hash, async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str order_hash: The hash of the desired 0x order. (required)
@@ -302,8 +302,8 @@ class DefaultApi(object):
         Retrieves the 0x order with meta info that is associated with the hash.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order_with_http_info(order_hash, async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_order_with_http_info(order_hash, async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str order_hash: The hash of the desired 0x order. (required)
@@ -392,8 +392,8 @@ class DefaultApi(object):
         Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: `senderAddress`, `feeRecipientAddress`, `makerFee`, `takerFee`.   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order_config(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_order_config(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param float network_id: The id of the Ethereum network
@@ -417,8 +417,8 @@ class DefaultApi(object):
         Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: `senderAddress`, `feeRecipientAddress`, `makerFee`, `takerFee`.   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order_config_with_http_info(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_order_config_with_http_info(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param float network_id: The id of the Ethereum network
@@ -511,8 +511,8 @@ class DefaultApi(object):
         Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both `bids` and `asks` collections, and if `page` * `perPage` > `total` for a certain collection, the `records` for that collection should just be empty.   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orderbook(base_asset_data, quote_asset_data, async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_orderbook(base_asset_data, quote_asset_data, async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str base_asset_data: assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price. (required)
@@ -543,8 +543,8 @@ class DefaultApi(object):
         Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both `bids` and `asks` collections, and if `page` * `perPage` > `total` for a certain collection, the `records` for that collection should just be empty.   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orderbook_with_http_info(base_asset_data, quote_asset_data, async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_orderbook_with_http_info(base_asset_data, quote_asset_data, async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str base_asset_data: assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price. (required)
@@ -662,8 +662,8 @@ class DefaultApi(object):
         Retrieves a list of orders given query parameters. This endpoint should be [paginated](#section/Pagination). For querying an entire orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook) is recommended. If both makerAssetData and takerAssetData are specified, returned orders will be sorted by price determined by (takerTokenAmount/makerTokenAmount) in ascending order. By default, orders returned by this endpoint are unsorted.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orders(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_orders(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()   # doctest: +SKIP
 
         :param async_req bool
         :param str maker_asset_proxy_id: The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721).
@@ -699,8 +699,8 @@ class DefaultApi(object):
         Retrieves a list of orders given query parameters. This endpoint should be [paginated](#section/Pagination). For querying an entire orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook) is recommended. If both makerAssetData and takerAssetData are specified, returned orders will be sorted by price determined by (takerTokenAmount/makerTokenAmount) in ascending order. By default, orders returned by this endpoint are unsorted.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orders_with_http_info(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.get_orders_with_http_info(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()  # doctest: +SKIP
 
         :param async_req bool
         :param str maker_asset_proxy_id: The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721).
@@ -871,8 +871,8 @@ class DefaultApi(object):
         Submit a signed order to the relayer.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.post_order(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.post_order(async_req=True)  # doctest: +SKIP
+        >>> result = thread.get()    # doctest: +SKIP
 
         :param async_req bool
         :param float network_id: The id of the Ethereum network
@@ -894,8 +894,8 @@ class DefaultApi(object):
         Submit a signed order to the relayer.  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.post_order_with_http_info(async_req=True)
-        >>> result = thread.get()
+        >>> thread = api.post_order_with_http_info(async_req=True)   # doctest: +SKIP
+        >>> result = thread.get()  # doctest: +SKIP
 
         :param async_req bool
         :param float network_id: The id of the Ethereum network
