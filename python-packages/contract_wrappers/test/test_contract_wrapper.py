@@ -6,7 +6,7 @@ import pytest
 from eth_utils import to_checksum_address
 
 from zero_ex.contract_artifacts import abi_by_name
-from zero_ex.contract_wrappers.contract_wrapper import ContractWrapper
+from zero_ex.contract_wrappers import ContractWrapper
 
 
 @pytest.fixture(scope="module")
