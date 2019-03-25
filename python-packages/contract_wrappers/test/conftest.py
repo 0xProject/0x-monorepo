@@ -3,7 +3,7 @@
 import pytest
 from eth_utils import remove_0x_prefix, to_checksum_address
 from web3 import Web3
-from zero_ex.order_utils import asset_data_utils as adu
+from zero_ex.order_utils import asset_data_utils
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 
@@ -48,7 +48,9 @@ def weth_address():
 def weth_asset_data(weth_address):  # pylint: disable=redefined-outer-name
     """Get 0x asset data for Wrapped Ether (WETH) token."""
     return bytes.fromhex(
-        remove_0x_prefix(adu.encode_erc20_asset_data(weth_address))
+        remove_0x_prefix(
+            asset_data_utils.encode_erc20_asset_data(weth_address)
+        )
     )
 
 
@@ -72,5 +74,5 @@ def zrx_address():
 def zrx_asset_data(zrx_address):  # pylint: disable=redefined-outer-name
     """Get 0x asset data for ZRX token."""
     return bytes.fromhex(
-        remove_0x_prefix(adu.encode_erc20_asset_data(zrx_address))
+        remove_0x_prefix(asset_data_utils.encode_erc20_asset_data(zrx_address))
     )
