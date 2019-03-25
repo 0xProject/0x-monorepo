@@ -1,4 +1,30 @@
-"""JSON schemas and associated utilities."""
+"""JSON schemas and associated utilities.
+
+**Validating a 0x order**
+
+Here is an example on how to validate a 0x order.
+
+>>> from zero_ex.json_schemas import assert_valid
+>>> example_order = {
+...     'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
+...     'takerAddress': '0x0000000000000000000000000000000000000000',
+...     'senderAddress': '0x0000000000000000000000000000000000000000',
+...     'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
+...     'feeRecipientAddress':
+...         '0x0000000000000000000000000000000000000000',
+...     'makerAssetData': '0xf47261b0000000000000000000000000'
+...         'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+...     'takerAssetData': '0xf47261b0000000000000000000000000'
+...         'e41d2489571d322189246dafa5ebde1f4699f498',
+...     'salt': 123456789,
+...     'makerFee': 0,
+...     'takerFee': 0,
+...     'makerAssetAmount': 1000000000000000000,
+...     'takerAssetAmount': 500000000000000000000,
+...     'expirationTimeSeconds': 1553553429
+... }
+>>> assert_valid(example_order, "/orderSchema")
+"""
 
 from os import path
 import json

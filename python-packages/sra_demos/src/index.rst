@@ -1,31 +1,5 @@
 .. source for the sphinx-generated build/docs/web/index.html
 
-Create and Validate Orders
-=================================
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-In this demo, we will show you how you can use our `python packages
-<https://github.com/0xProject/0x-monorepo#python-packages/>`_
-to create, and validate orders via the 0x protocol.
-
-Installing
-----------
-Install the 0x-order-utils and the 0x-json-schemas packages with pip:
-
-`pip install 0x-order-utils`:code:
-
-`pip install 0x-json-schemas`:code:
-
-
-Usage
------
-
-.. automodule:: demo_zero_ex_orders
-   :members:
-
 Using the Python SRA_Client
 =================================
 
@@ -54,10 +28,9 @@ for just this purpose. To start it:
 
 and then connect to the http server running at http://localhost:3000.
 
-Usage
------
+------------
 
-.. automodule:: demo_sra_client
+.. automodule:: sra_demos
    :members:
 
 Indices and tables
