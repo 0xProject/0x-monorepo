@@ -207,8 +207,7 @@ class ApiClient(object):
 
         If obj is None, return None.
         If obj is str, int, long, float, bool, return directly.
-        If obj is datetime.datetime, datetime.date
-            convert to string in iso8601 format.
+        If obj is datetime.datetime, datetime.date convert to string in iso8601 format.
         If obj is list, sanitize each element in the list.
         If obj is dict, return the dict.
         If obj is OpenAPI model, return the properties dict.

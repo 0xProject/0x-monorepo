@@ -74,4 +74,10 @@ setup(
         "publish": PublishCommand,
         "lint": LintCommand,
     },
+    command_options={
+        "build_sphinx": {
+            "source_dir": ("setup.py", "."),
+            "build_dir": ("setup.py", "build/docs"),
+        }
+    },
 )
