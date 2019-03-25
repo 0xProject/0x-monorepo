@@ -1,5 +1,5 @@
 """Wrapper for 0x Exchange Contract (Version 2)."""
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from itertools import repeat
 from eth_utils import remove_0x_prefix
 from hexbytes import HexBytes
@@ -16,7 +16,7 @@ from zero_ex.order_utils import (
     order_to_jsdict,
 )
 
-from .generic_wrapper import ContractWrapper
+from .generic_wrapper import ContractWrapper, TxParams
 
 
 class CancelDisallowedError(Exception):
@@ -56,7 +56,7 @@ class Exchange(ContractWrapper):
         order: Order,
         taker_amount: int,
         signature: str,
-        tx_opts: Optional[dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Fill a signed order with given amount of taker asset.
@@ -75,7 +75,7 @@ class Exchange(ContractWrapper):
         :param order: instance of :class:`zero_ex.order_utils.Order`
         :param taker_amount: integer taker amount in Wei (1 Wei is 10e-18 ETH)
         :param signature: str or hexstr or bytes of order hash signature
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -94,7 +94,7 @@ class Exchange(ContractWrapper):
             order, taker_fill_amount, normalized_signature
         )
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def batch_fill_orders(
@@ -102,7 +102,7 @@ class Exchange(ContractWrapper):
         orders: List[Order],
         taker_amounts: List[int],
         signatures: List[str],
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Call `fillOrder` sequentially for orders, amounts and signatures.
@@ -110,7 +110,7 @@ class Exchange(ContractWrapper):
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
         :param taker_amounts: list of integer taker amounts in Wei
         :param signatures: list of str|hexstr|bytes of order hash signature
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -131,7 +131,7 @@ class Exchange(ContractWrapper):
             orders, normalized_fill_amounts, normalized_signatures
         )
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def fill_or_kill_order(
@@ -139,7 +139,7 @@ class Exchange(ContractWrapper):
         order: Order,
         taker_amount: int,
         signature: str,
-        tx_opts: Optional[dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Attemp to `fillOrder`, revert if fill is not exact amount.
@@ -147,7 +147,7 @@ class Exchange(ContractWrapper):
         :param order: instance of :class:`zero_ex.order_utils.Order`
         :param taker_amount: integer taker amount in Wei (1 Wei is 10e-18 ETH)
         :param signature: str or hexstr or bytes of order hash signature
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -166,7 +166,7 @@ class Exchange(ContractWrapper):
             order, taker_fill_amount, normalized_signature
         )
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def batch_fill_or_kill_orders(
@@ -174,7 +174,7 @@ class Exchange(ContractWrapper):
         orders: List[Order],
         taker_amounts: List[int],
         signatures: List[str],
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Call `fillOrKillOrder` sequentially for orders.
@@ -182,7 +182,7 @@ class Exchange(ContractWrapper):
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
         :param taker_amounts: list of integer taker amounts in Wei
         :param signatures: list of str|hexstr|bytes of order hash signature
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -203,13 +203,13 @@ class Exchange(ContractWrapper):
             orders, normalized_fill_amounts, normalized_signatures
         )
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def cancel_order(
         self,
         order: Order,
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Cancel an order.
@@ -219,7 +219,7 @@ class Exchange(ContractWrapper):
         /v2/v2-specification.md#cancelorder>`_.
 
         :param order: instance of :class:`zero_ex.order_utils.Order`
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -230,10 +230,10 @@ class Exchange(ContractWrapper):
             order["makerAddress"]
         )
 
-        if tx_opts and tx_opts.get("from_"):
+        if tx_params and tx_params.from_:
             self._raise_if_maker_not_canceller(
                 maker_address,
-                self._validate_and_checksum_address(tx_opts["from_"]),
+                self._validate_and_checksum_address(tx_params.from_),
             )
         elif self._web3_eth.defaultAccount:
             self._raise_if_maker_not_canceller(
@@ -241,19 +241,19 @@ class Exchange(ContractWrapper):
             )
         func = self._exchange.functions.cancelOrder(order)
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def batch_cancel_orders(
         self,
         orders: List[Order],
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Call `cancelOrder` sequentially for provided orders.
 
         :param orders: list of instance of :class:`zero_ex.order_utils.Order`
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -267,11 +267,11 @@ class Exchange(ContractWrapper):
             self._validate_and_checksum_address(order["makerAddress"])
             for order in orders
         ]
-        if tx_opts and tx_opts.get("from_"):
+        if tx_params and tx_params.from_:
             map(
                 self._raise_if_maker_not_canceller,
                 maker_addresses,
-                repeat(tx_opts["from_"]),
+                repeat(tx_params.from_),
             )
         elif self._web3_eth.defaultAccount:
             map(
@@ -281,7 +281,7 @@ class Exchange(ContractWrapper):
             )
         func = self._exchange.functions.batchCancelOrders(orders)
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def get_fill_event(

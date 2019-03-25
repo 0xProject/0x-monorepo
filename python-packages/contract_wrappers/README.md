@@ -1,4 +1,4 @@
-## 0x-order-utils
+## 0x-contract-wrappers
 
 0x contract wrappers for those developing on top of 0x protocol.
 

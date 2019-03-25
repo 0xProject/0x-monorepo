@@ -106,7 +106,7 @@ the 0x ERC20 Proxy an allowance of 100 WETH.
 ...     weth_address,
 ...     erc20_proxy,
 ...     ALLOWANCE,
-...     tx_opts={"from_": maker},
+...     tx_params=TxParams(from_=maker),
 ... )
 >>> # Check the allowance given to the 0x ERC20 Proxy
 >>> maker_allowance = erc20_wrapper.allowance(
@@ -122,7 +122,7 @@ the 0x ERC20 Proxy an allowance of 100 WETH.
 ...     weth_address,
 ...     erc20_proxy,
 ...     ALLOWANCE,
-...     tx_opts={"from_": taker},
+...     tx_params=TxParams(from_=taker),
 ... )
 >>> # Check the allowance given to the 0x ERC20 Proxy
 >>> taker_allowance = erc20_wrapper.allowance(
@@ -148,7 +148,7 @@ and call the deposit method to wrap our ETH. Here is how we do so.
 ... address=weth_address,
 ... abi=abi_by_name("WETH9"),
 ... method="deposit",
-... tx_opts = {"from_": maker, "value": deposit_amount})
+... tx_params=TxParams(from_=maker, value=deposit_amount))
 >>> # Checking our maker's WETH balance
 >>> maker_balance = erc20_wrapper.balance_of(
 ...     token_address=weth_address, owner_address=maker)
@@ -160,7 +160,7 @@ and call the deposit method to wrap our ETH. Here is how we do so.
 ... address=weth_address,
 ... abi=abi_by_name("WETH9"),
 ... method="deposit",
-... tx_opts = {"from_": taker, "value": deposit_amount})
+... tx_params=TxParams(from_=taker, value=deposit_amount))
 >>> # Checking our taker's WETH balance
 >>> taker_balance = erc20_wrapper.balance_of(
 ...     token_address=weth_address, owner_address=taker)
@@ -236,10 +236,10 @@ Now let's fill the example order:
 >>> # the provider
 >>> zero_ex_exchange = Exchange(provider)
 >>> tx_hash = zero_ex_exchange.fill_order(
-...     order = example_order,
-...     taker_amount = example_order["takerAssetAmount"],
-...     signature = maker_signature,
-...     tx_opts = {"from_": taker})
+...     order=example_order,
+...     taker_amount=example_order["takerAssetAmount"],
+...     signature=maker_signature,
+...     tx_params=TxParams(from_=taker))
 
 Once the transaction is mined, we can get the details of
 our exchange through the exchange wrapper.
@@ -274,7 +274,7 @@ order to demonstrate.
 ... 'takerAssetAmount': 500000000000000000000,
 ... 'expirationTimeSeconds': 999999999999999999999}
 >>> tx_hash = zero_ex_exchange.cancel_order(
-...     order=example_order_2, tx_opts={"from_": maker})
+...     order=example_order_2, tx_params=TxParams(from_=maker))
 
 Once the transaction is mined, we can get the details of
 our cancellation through the exchange wrapper.
@@ -339,11 +339,11 @@ Fill order_1 and order_2 together.
 ...     orders=[order_1, order_2],
 ...     taker_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
-...     tx_opts={"from_": taker})
+...     tx_params=TxParams(from_=taker))
 >>> tx_hash  # doctest: +SKIP
 HexBytes('0xb28b2c9d276175d76a08230636a994731e288709577936453754396a991ac95f')
 """
 
-from .generic_wrapper import ContractWrapper
+from .generic_wrapper import ContractWrapper, TxParams
 from .erc20_wrapper import ERC20Token
 from .exchange_wrapper import Exchange

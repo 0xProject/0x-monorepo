@@ -1,12 +1,12 @@
 """Wrapper for Ethereum ERC20 Token smart contract."""
-from typing import Dict, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 from hexbytes import HexBytes
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
 from zero_ex.contract_artifacts import abi_by_name
 
-from .generic_wrapper import ContractWrapper
+from .generic_wrapper import ContractWrapper, TxParams
 
 
 class ERC20Token(ContractWrapper):
@@ -46,7 +46,7 @@ class ERC20Token(ContractWrapper):
         token_address: str,
         to_address: str,
         value: int,
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Transfer the balance from owner's account to another account.
@@ -54,7 +54,7 @@ class ERC20Token(ContractWrapper):
         :param token_address: string address of token smart contract
         :param to_address: string address of receiver
         :param value: integer amount to send in Wei base unit
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, dict of transaction options
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -65,7 +65,7 @@ class ERC20Token(ContractWrapper):
         value = int(value)
         func = self._erc20(token_address).functions.transfer(to_address, value)
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def approve(
@@ -73,7 +73,7 @@ class ERC20Token(ContractWrapper):
         token_address: str,
         spender_address: str,
         value: int,
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Approve a `sender_address` to spend up to `value` your account.
@@ -81,7 +81,7 @@ class ERC20Token(ContractWrapper):
         :param token_address: string address of token smart contract
         :param spender_address: string address of receiver
         :param value: integer amount of allowance in Wei base unit
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, dict of transaction options
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -94,7 +94,7 @@ class ERC20Token(ContractWrapper):
             spender_address, value
         )
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def transfer_from(
@@ -103,7 +103,7 @@ class ERC20Token(ContractWrapper):
         authorized_address: str,
         to_address: str,
         value: int,
-        tx_opts: Optional[Dict] = None,
+        tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Transfer tokens from `authorized_address` to another address.
@@ -116,7 +116,7 @@ class ERC20Token(ContractWrapper):
             to transfer tokens from
         :param to_address: string address of receiver
         :param value: integer amount to send in Wei base unit
-        :param tx_opts: default None, dict of transaction options
+        :param tx_params: default None, dict of transaction options
         :param view_only: default False, boolean of whether to transact or
             view only
 
@@ -132,7 +132,7 @@ class ERC20Token(ContractWrapper):
             authorized_address, to_address, value
         )
         return self._invoke_function_call(
-            func=func, tx_opts=tx_opts, view_only=view_only
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def total_supply(self, token_address: str) -> int:
@@ -145,7 +145,7 @@ class ERC20Token(ContractWrapper):
         token_address = self._validate_and_checksum_address(token_address)
         func = self._erc20(token_address).functions.totalSupply()
         return self._invoke_function_call(
-            func=func, tx_opts=None, view_only=True
+            func=func, tx_params=None, view_only=True
         )
 
     def balance_of(self, token_address: str, owner_address: str) -> int:
@@ -160,7 +160,7 @@ class ERC20Token(ContractWrapper):
         owner_address = self._validate_and_checksum_address(owner_address)
         func = self._erc20(token_address).functions.balanceOf(owner_address)
         return self._invoke_function_call(
-            func=func, tx_opts=None, view_only=True
+            func=func, tx_params=None, view_only=True
         )
 
     def allowance(
@@ -182,7 +182,7 @@ class ERC20Token(ContractWrapper):
             owner_address, spender_address
         )
         return self._invoke_function_call(
-            func=func, tx_opts=None, view_only=True
+            func=func, tx_params=None, view_only=True
         )
 
     def get_transfer_event(
