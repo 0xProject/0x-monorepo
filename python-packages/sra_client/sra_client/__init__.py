@@ -42,9 +42,8 @@ Post an order to an SRA-compliant Relayer.
 ...         "002379d576b1ddffee6adcfc080ff7118d20beae723d3708ce4e04e49dd92694003")
 ... }
 >>> relayer_api = sra_client.api.default_api.DefaultApi()
->>> response = relayer_api.post_order_with_http_info(
-...     network_id=42, signed_order_schema=example_signed_order)
->>> response[1]
+>>> relayer_api.post_order_with_http_info(
+...     network_id=42, signed_order_schema=example_signed_order)[1]
 200
 
 Get Orders
@@ -52,8 +51,7 @@ Get Orders
 
 Get orders from an SRA-compliant Relayer.
 
->>> response = relayer_api.get_orders()
->>> response
+>>> relayer_api.get_orders()
 {'records': [{'meta_data': {},
               'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
                         'expiration_time_seconds': '1000000000000000000000',
@@ -78,8 +76,7 @@ Get an order by hash from an SRA-compliant Relayer.
 >>> example_order_hash = (
 ...     "0xc1c4e9a983755b4a2ff048b0c591a27"
 ...     "0f437972e1ec440986770ac943a577404")
->>> response = relayer_api.get_order(order_hash=example_order_hash)  # doctest: +SKIP
->>> response  # doctest: +SKIP
+>>> relayer_api.get_order(order_hash=example_order_hash)  # doctest: +SKIP
 {'meta_data': {},
 'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
             'expiration_time_seconds': '1000000000000000000000',
@@ -100,8 +97,7 @@ Get Asset Pair
 
 Get available asset pairs from an SRA-compliant Relayer.
 
->>> response = relayer_api.get_asset_pairs()
->>> response
+>>> relayer_api.get_asset_pairs()
 {'records': [{'assetDataA': {'assetData': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
                              'maxAmount': '115792089237316195423570985008687907853269984665640564039457584007913129639936',
                              'minAmount': '0',
@@ -122,10 +118,9 @@ Get the orderbook for an asset pair from an SRA-compliant Relayer.
 >>> example_quote_asset_data = (
 ...     "0xf47261b0000000000000000000000000"
 ...     "2002d3812f58e35f0ea1ffbf80a75a38c32175fa")
->>> response = relayer_api.get_orderbook(
+>>> relayer_api.get_orderbook(
 ...     base_asset_data=example_base_asset_data,
 ...     quote_asset_data=example_quote_asset_data)
->>> response
 {'asks': {'records': [{'meta_data': {},
                        'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
                                  'expiration_time_seconds': '1000000000000000000000',
@@ -143,7 +138,8 @@ Get the orderbook for an asset pair from an SRA-compliant Relayer.
  'bids': {'records': []}}
 """  # noqa: E501 (line too long)
 
-# NOTE: sra_client not deserialzing order from server properly, need fix!
+# NOTE: Bug in get_order method.
+# Sra_client not deserialzing order from server properly, need fix!
 
 
 from __future__ import absolute_import
