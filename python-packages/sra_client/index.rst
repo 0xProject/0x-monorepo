@@ -15,7 +15,7 @@ Install the sra-client package with pip:
 
 `pip install 0x-sra-client`:code:
 
-To interact with a 0x-relayer, you need the HTTP endpoint of the relayer you'd like to
+To interact with a 0x Relayer, you need the HTTP endpoint of the Relayer you'd like to
 connect to (i.e. https://api.radarrelay.com/0x/v2).
 
 For local testing one can use the `0x-launch-kit
