@@ -314,7 +314,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _dismissBanner(): void {
-        this.setState({dismissBanner: true});
+        this.setState({ dismissBanner: true });
     }
 
     // tslint:disable-next-line:no-unused-variable

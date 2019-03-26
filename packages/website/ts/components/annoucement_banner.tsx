@@ -134,7 +134,7 @@ const CustomSection = styled(Section)<CustomSectionProps>`
     max-width: 100%;
     width: inherit;
     transition: 300ms transform ease-in-out;
-    transform: translateY(-${props => props.dismissed ? '100%' : '0'});
+    transform: translateY(-${props => (props.dismissed ? '100%' : '0')});
     font-family: Formular, sans-serif;
     @media (max-width: 900px) {
         align-items: center;

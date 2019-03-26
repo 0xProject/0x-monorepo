@@ -122,6 +122,7 @@ export class Explore extends React.Component<ExploreProps> {
         }
     };
 
+    // tslint:disable-next-line:no-unused-variable
     private _generateEditorialContent(): void {
         this.setState({ tiles: _.concat([], EDITORIAL, this.state.tiles) });
     }
@@ -281,7 +282,7 @@ export class Explore extends React.Component<ExploreProps> {
             tilesOrdering: this.state.tilesOrdering,
         });
         this.setState({ tiles: orderedTiles, isEntriesLoading: false }, () => {
-           // this._generateEditorialContent();
+            // this._generateEditorialContent();
         });
     };
 }
