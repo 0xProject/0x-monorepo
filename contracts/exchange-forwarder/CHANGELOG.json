@@ -24,7 +24,7 @@
             {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
-            },
+            }
         ],
         "timestamp": 1553091633
     },
