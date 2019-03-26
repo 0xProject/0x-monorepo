@@ -243,7 +243,6 @@ jobs:
             - run: yarn wsrun test:circleci @0x/abi-gen
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
-            - run: yarn wsrun test:circleci @0x/connect
             - run: yarn wsrun test:circleci @0x/contract-wrappers
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
@@ -266,10 +265,6 @@ jobs:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/base-contract/coverage/lcov.info
-            - save_cache:
-                  key: coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/connect/coverage/lcov.info
             - save_cache:
                   key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
