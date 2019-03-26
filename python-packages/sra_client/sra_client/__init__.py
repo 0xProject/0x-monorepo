@@ -114,7 +114,7 @@ Get available asset pairs from an SRA-compliant Relayer.
 Get Orderbook
 -------------
 
-Get the orderbook for an asset pair from a SRA compliant 0x-relayer.
+Get the orderbook for an asset pair from an SRA-compliant Relayer.
 
 >>> example_base_asset_data = (
 ...     "0xf47261b0000000000000000000000000"
