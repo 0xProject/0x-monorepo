@@ -19,7 +19,7 @@ const expect = chai.expect;
 describe('Signature utils', () => {
     let makerAddress: string;
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
-    const CHAIN_ID = 1337;
+    const fakeChainId = 1337;
     let order: Order;
     before(async () => {
         const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
@@ -32,7 +32,7 @@ describe('Signature utils', () => {
             makerAssetData: constants.NULL_ADDRESS,
             takerAssetData: constants.NULL_ADDRESS,
             exchangeAddress: fakeExchangeContractAddress,
-            chainId: CHAIN_ID,
+            chainId: fakeChainId,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
