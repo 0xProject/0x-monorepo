@@ -98,7 +98,7 @@ Get an order by hash from a SRA compliant 0x-relayer.
 Get Asset Pair
 ---------------
 
-Get available asset pairs from a SRA compliant relayers.
+Get available asset pairs from an SRA-compliant Relayer.
 
 >>> response = relayer_api.get_asset_pairs()
 >>> response
