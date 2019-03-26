@@ -26,12 +26,7 @@ export const hashUtils = {
         approvalExpirationTimeSeconds: BigNumber,
     ): string {
         const hashHex = `0x${hashUtils
-            .getApprovalHashBuffer(
-                transaction,
-                verifyingContractAddress,
-                txOrigin,
-                approvalExpirationTimeSeconds,
-            )
+            .getApprovalHashBuffer(transaction, verifyingContractAddress, txOrigin, approvalExpirationTimeSeconds)
             .toString('hex')}`;
         return hashHex;
     },
