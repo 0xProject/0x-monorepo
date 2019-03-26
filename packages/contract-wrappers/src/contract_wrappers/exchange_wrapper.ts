@@ -1169,8 +1169,7 @@ export class ExchangeWrapper extends ContractWrapper {
             // If the caller has specified a taker fill amount, we use this for all validation
             fillableTakerAssetAmount = opts.expectedFillTakerTokenAmount;
         } else if (shouldValidateRemainingOrderAmountIsFillable) {
-            // Historically if a fill amount was not specified we would default to the amount
-            // left on the order.
+            // Default behaviour is to validate the amount left on the order.
             const filledTakerTokenAmount = await this.getFilledTakerAssetAmountAsync(
                 orderHashUtils.getOrderHashHex(signedOrder),
             );
@@ -1190,7 +1189,11 @@ export class ExchangeWrapper extends ContractWrapper {
             fillableTakerAssetAmount,
         );
         const makerTransferAmount = orderCalculationUtils.getMakerFillAmount(signedOrder, fillableTakerAssetAmount);
-        await this.validateMakerTransferThrowIfInvalidAsync(signedOrder, makerTransferAmount);
+        await this.validateMakerTransferThrowIfInvalidAsync(
+            signedOrder,
+            makerTransferAmount,
+            opts.simulationTakerAddress,
+        );
     }
     /**
      * Validate the transfer from the maker to the taker. This is simulated on-chain

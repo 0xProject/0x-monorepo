@@ -120,16 +120,19 @@ export interface ContractWrappersConfig {
 }
 
 /**
- * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the
- * supplied order maker has a sufficient allowance/balance to fill this amount of the order's
- * takerTokenAmount.
- * validateRemainingOrderAmountIsFillable: The validation method ensures that the maker has a sufficient
- * allowance/balance to fill the entire remaining order amount. This is the default. If neither options are
- * specified, the balances and allowances are checked to determine the order is fillable for a non-zero amount. We call such orders "partially fillable orders".
+ * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the supplied order maker has a sufficient
+ *                               allowance/balance to fill this amount of the order's takerTokenAmount.
+ * validateRemainingOrderAmountIsFillable: The validation method ensures that the maker has a sufficient allowance/balance to fill
+ *                                         the entire remaining order amount. This is the default. If neither options are specified,
+ *                                         the balances and allowances are checked to determine the order is fillable for a
+ *                                         non-zero amount. We call such orders "partially fillable orders".
+ * simulationTakerAddress: During the maker transfer simulation validation, tokens are sent from the maker to the simulationTakerAddress. This defaults
+ *                         to the takerAddress specified in the order. Some tokens prevent transfer to the NULL address so this address can be specified.
  */
 export interface ValidateOrderFillableOpts {
     expectedFillTakerTokenAmount?: BigNumber;
     validateRemainingOrderAmountIsFillable?: boolean;
+    simulationTakerAddress?: string;
 }
 
 /**
