@@ -71,11 +71,12 @@ export const signTypedDataUtils = {
         return ethers.utils.defaultAbiCoder.encode(encodedTypes, encodedValues);
     },
     _normalizeValue(type: string, value: any): EIP712ObjectValue {
-        if (type == 'uint256') {
+        const STRING_BASE = 10;
+        if (type === 'uint256') {
             if (BigNumber.isBigNumber(value)) {
-                return value.toString(10);
+                return value.toString(STRING_BASE);
             }
-            return new BigNumber(value).toString(10);
+            return new BigNumber(value).toString(STRING_BASE);
         }
         return value;
     },
