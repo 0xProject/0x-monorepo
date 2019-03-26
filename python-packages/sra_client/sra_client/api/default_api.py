@@ -9,6 +9,9 @@ import re  # noqa: F401
 import six
 
 from sra_client.api_client import ApiClient
+from sra_client.models.relayer_api_order_config_payload_schema import (
+    RelayerApiOrderConfigPayloadSchema
+)
 
 
 class DefaultApi(object):
@@ -23,52 +26,52 @@ class DefaultApi(object):
             api_client = ApiClient()
         self.api_client = api_client
 
-    def get_asset_pairs(self, **kwargs):  # noqa: E501
-        """get_asset_pairs  # noqa: E501
+    def get_asset_pairs(self, **kwargs):
+        """get_asset_pairs
 
-        Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.  # noqa: E501
+        Retrieves a list of available asset pairs and the information
+        required to trade them (in any order). Setting only `assetDataA` or
+        `assetDataB` returns pairs filtered by that asset only.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_asset_pairs(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiAssetDataPairsResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiAssetDataPairsResponseSchema`.
+            If the method is called asynchronously returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
-            return self.get_asset_pairs_with_http_info(**kwargs)  # noqa: E501
+            return self.get_asset_pairs_with_http_info(**kwargs)
         else:
             (data) = self.get_asset_pairs_with_http_info(
                 **kwargs
-            )  # noqa: E501
+            )
             return data
 
-    def get_asset_pairs_with_http_info(self, **kwargs):  # noqa: E501
-        """get_asset_pairs  # noqa: E501
+    def get_asset_pairs_with_http_info(self, **kwargs):
+        """get_asset_pairs
 
-        Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.  # noqa: E501
+        Retrieves a list of available asset pairs and the information
+        required to trade them (in any order). Setting only `assetDataA` or
+        `assetDataB` returns pairs filtered by that asset only.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_asset_pairs_with_http_info(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiAssetDataPairsResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiAssetDataPairsResponseSchema`.
+            If the method is called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -79,7 +82,7 @@ class DefaultApi(object):
             "network_id",
             "page",
             "per_page",
-        ]  # noqa: E501
+        ]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -102,23 +105,23 @@ class DefaultApi(object):
         if "asset_data_a" in local_var_params:
             query_params.append(
                 ("assetDataA", local_var_params["asset_data_a"])
-            )  # noqa: E501
+            )
         if "asset_data_b" in local_var_params:
             query_params.append(
                 ("assetDataB", local_var_params["asset_data_b"])
-            )  # noqa: E501
+            )
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
         if "page" in local_var_params:
             query_params.append(
                 ("page", local_var_params["page"])
-            )  # noqa: E501
+            )
         if "per_page" in local_var_params:
             query_params.append(
                 ("perPage", local_var_params["per_page"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -129,10 +132,10 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/asset_pairs",
@@ -143,66 +146,64 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type="RelayerApiAssetDataPairsResponseSchema",  # noqa: E501
+            response_type="RelayerApiAssetDataPairsResponseSchema",
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,
         )
 
-    def get_fee_recipients(self, **kwargs):  # noqa: E501
-        """get_fee_recipients  # noqa: E501
+    def get_fee_recipients(self, **kwargs):
+        """get_fee_recipients
 
-        Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).  # noqa: E501
+        Retrieves a collection of all fee recipient addresses for a relayer.
+        This endpoint should be [paginated](#section/Pagination).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_fee_recipients(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiFeeRecipientsResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiFeeRecipientsResponseSchema`.
+            If the method is called asynchronously, returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
             return self.get_fee_recipients_with_http_info(
                 **kwargs
-            )  # noqa: E501
+            )
         else:
             (data) = self.get_fee_recipients_with_http_info(
                 **kwargs
-            )  # noqa: E501
+            )
             return data
 
-    def get_fee_recipients_with_http_info(self, **kwargs):  # noqa: E501
-        """get_fee_recipients  # noqa: E501
+    def get_fee_recipients_with_http_info(self, **kwargs):
+        """get_fee_recipients
 
-        Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).  # noqa: E501
+        Retrieves a collection of all fee recipient addresses for a relayer.
+        This endpoint should be [paginated](#section/Pagination).
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_fee_recipients_with_http_info(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiFeeRecipientsResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiFeeRecipientsResponseSchema`.
+            If the method is called asynchronously, returns the request thread.
         """
 
         local_var_params = locals()
 
-        all_params = ["network_id", "page", "per_page"]  # noqa: E501
+        all_params = ["network_id", "page", "per_page"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -225,15 +226,15 @@ class DefaultApi(object):
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
         if "page" in local_var_params:
             query_params.append(
                 ("page", local_var_params["page"])
-            )  # noqa: E501
+            )
         if "per_page" in local_var_params:
             query_params.append(
                 ("perPage", local_var_params["per_page"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -244,10 +245,10 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/fee_recipients",
@@ -258,64 +259,60 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type="RelayerApiFeeRecipientsResponseSchema",  # noqa: E501
+            response_type="RelayerApiFeeRecipientsResponseSchema",
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,
         )
 
-    def get_order(self, order_hash, **kwargs):  # noqa: E501
-        """get_order  # noqa: E501
+    def get_order(self, order_hash, **kwargs):
+        """get_order
 
-        Retrieves the 0x order with meta info that is associated with the hash.  # noqa: E501
+        Retrieves the 0x order with meta info that is associated with the hash.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order(order_hash, async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
         :param float network_id: The id of the Ethereum network
-        :return: RelayerApiOrderSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiOrderSchema`.
+            If the method is called asynchronously, returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
             return self.get_order_with_http_info(
                 order_hash, **kwargs
-            )  # noqa: E501
+            )
         else:
             (data) = self.get_order_with_http_info(
                 order_hash, **kwargs
-            )  # noqa: E501
+            )
             return data
 
-    def get_order_with_http_info(self, order_hash, **kwargs):  # noqa: E501
-        """get_order  # noqa: E501
+    def get_order_with_http_info(self, order_hash, **kwargs):
+        """get_order
 
-        Retrieves the 0x order with meta info that is associated with the hash.  # noqa: E501
+        Retrieves the 0x order with meta info that is associated with the hash.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order_with_http_info(order_hash, async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
         :param float network_id: The id of the Ethereum network
-        :return: RelayerApiOrderSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiOrderSchema`.
+            If the method is called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
 
-        all_params = ["order_hash", "network_id"]  # noqa: E501
+        all_params = ["order_hash", "network_id"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -336,7 +333,7 @@ class DefaultApi(object):
         ):
             raise ValueError(
                 "Missing the required parameter `order_hash` when calling `get_order`"
-            )  # noqa: E501
+            )
 
         collection_formats = {}
 
@@ -344,13 +341,13 @@ class DefaultApi(object):
         if "order_hash" in local_var_params:
             path_params["orderHash"] = local_var_params[
                 "order_hash"
-            ]  # noqa: E501
+            ]
 
         query_params = []
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -361,10 +358,10 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/order/{orderHash}",
@@ -375,57 +372,75 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type="RelayerApiOrderSchema",  # noqa: E501
+            response_type="RelayerApiOrderSchema",
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,
         )
 
-    def get_order_config(self, **kwargs):  # noqa: E501
-        """get_order_config  # noqa: E501
+    def get_order_config(self, **kwargs):
+        """get_order_config
 
-        Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: `senderAddress`, `feeRecipientAddress`, `makerFee`, `takerFee`.   # noqa: E501
+        Relayers have full discretion over the orders that they are willing
+        to host on their orderbooks (e.g what fees they charge, etc...). In
+        order for traders to discover their requirements programmatically,
+        they can send an incomplete order to this endpoint and receive the
+        missing fields, specifc to that order. This gives relayers a large
+        amount of flexibility to tailor fees to unique traders, trading pairs
+        and volume amounts. Submit a partial order and receive information
+        required to complete the order: `senderAddress`,
+        `feeRecipientAddress`, `makerFee`, `takerFee`.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order_config(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
-        :param RelayerApiOrderConfigPayloadSchema relayer_api_order_config_payload_schema: The fields of a 0x order the relayer may want to decide what configuration to send back.
-        :return: RelayerApiOrderConfigResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+        :param relayer_api_order_config_payload_schema: instance of
+            :class:`RelayerApiOrderConfigPayloadSchema`. The fields of a 0x
+            order the relayer may want to decide what configuration to send
+            back.
+
+        :return: :class:`RelayerApiOrderConfigResponseSchema`.
+            If the method is called asynchronously returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
-            return self.get_order_config_with_http_info(**kwargs)  # noqa: E501
+            return self.get_order_config_with_http_info(**kwargs)
         else:
             (data) = self.get_order_config_with_http_info(
                 **kwargs
-            )  # noqa: E501
+            )
             return data
 
-    def get_order_config_with_http_info(self, **kwargs):  # noqa: E501
-        """get_order_config  # noqa: E501
+    def get_order_config_with_http_info(self, **kwargs):
+        """get_order_config
 
-        Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: `senderAddress`, `feeRecipientAddress`, `makerFee`, `takerFee`.   # noqa: E501
+        Relayers have full discretion over the orders that they are willing
+        to host on their orderbooks (e.g what fees they charge, etc...). In
+        order for traders to discover their requirements programmatically,
+        they can send an incomplete order to this endpoint and receive the
+        missing fields, specifc to that order. This gives relayers a large
+        amount of flexibility to tailor fees to unique traders, trading pairs
+        and volume amounts. Submit a partial order and receive information
+        required to complete the order: `senderAddress`,
+        `feeRecipientAddress`, `makerFee`, `takerFee`.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_order_config_with_http_info(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
-        :param RelayerApiOrderConfigPayloadSchema relayer_api_order_config_payload_schema: The fields of a 0x order the relayer may want to decide what configuration to send back.
-        :return: RelayerApiOrderConfigResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+        :param relayer_api_order_config_payload_schema: instance of
+            :class: `RelayerApiOrderConfigPayloadSchema`. The fields of a 0x
+            order the relayer may want to decide what configuration to send
+            back.
+
+        :return: :class:`RelayerApiOrderConfigResponseSchema`.
+            If the method is called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -433,7 +448,7 @@ class DefaultApi(object):
         all_params = [
             "network_id",
             "relayer_api_order_config_payload_schema",
-        ]  # noqa: E501
+        ]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -456,7 +471,7 @@ class DefaultApi(object):
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -471,17 +486,17 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # HTTP header `Content-Type`
         header_params[
             "Content-Type"
-        ] = self.api_client.select_header_content_type(  # noqa: E501
+        ] = self.api_client.select_header_content_type(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/order_config",
@@ -492,12 +507,12 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type="RelayerApiOrderConfigResponseSchema",  # noqa: E501
+            response_type="RelayerApiOrderConfigResponseSchema",
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,
@@ -505,56 +520,84 @@ class DefaultApi(object):
 
     def get_orderbook(
         self, base_asset_data, quote_asset_data, **kwargs
-    ):  # noqa: E501
-        """get_orderbook  # noqa: E501
+    ):
+        """get_orderbook
 
-        Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both `bids` and `asks` collections, and if `page` * `perPage` > `total` for a certain collection, the `records` for that collection should just be empty.   # noqa: E501
+        Retrieves the orderbook for a given asset pair. This endpoint should
+        be paginated. Bids will be sorted in
+        descending order by price, and asks will be sorted in ascending order
+        by price. Within the price sorted orders, the orders are further
+        sorted by **taker fee price** which is defined as the **takerFee**
+        divided by **takerTokenAmount**. After **taker fee price**, orders are
+        to be sorted by expiration in ascending order. The way pagination
+        works for this endpoint is that the **page** and **perPage** query
+        params apply to both `bids` and `asks` collections, and if `page` *
+        `perPage` > `total` for a certain collection, the `records` for that
+        collection should just be empty.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orderbook(base_asset_data, quote_asset_data, async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
-        :param str base_asset_data: assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price. (required)
-        :param str quote_asset_data: assetData (makerAssetData or takerAssetData) designated as the quote currency in the currency pair calculation of price (required). (required)
+        :param bool async_req: Whether request should be asynchronous.
+        :param str base_asset_data: assetData (makerAssetData or
+            takerAssetData) designated as the base currency in the
+            `currency pair calculation
+            <https://en.wikipedia.org/wiki/Currency_pair>`__
+            of price. (required)
+        :param str quote_asset_data: assetData (makerAssetData or
+            takerAssetData) designated as the quote currency in the currency
+            pair calculation of price. (required)
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiOrderbookResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiOrderbookResponseSchema`.
+            If the method is called asynchronously, returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
             return self.get_orderbook_with_http_info(
                 base_asset_data, quote_asset_data, **kwargs
-            )  # noqa: E501
+            )
         else:
             (data) = self.get_orderbook_with_http_info(
                 base_asset_data, quote_asset_data, **kwargs
-            )  # noqa: E501
+            )
             return data
 
     def get_orderbook_with_http_info(
         self, base_asset_data, quote_asset_data, **kwargs
-    ):  # noqa: E501
-        """get_orderbook  # noqa: E501
+    ):
+        """get_orderbook
 
-        Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both `bids` and `asks` collections, and if `page` * `perPage` > `total` for a certain collection, the `records` for that collection should just be empty.   # noqa: E501
+        Retrieves the orderbook for a given asset pair. This endpoint should
+        be [paginated](#section/Pagination). Bids will be sorted in
+        descending order by price, and asks will be sorted in ascending order
+        by price. Within the price sorted orders, the orders are further
+        sorted by _taker fee price_ which is defined as the **takerFee**
+        divided by **takerTokenAmount**. After _taker fee price_, orders are
+        to be sorted by expiration in ascending order. The way pagination
+        works for this endpoint is that the **page** and **perPage** query
+        params apply to both `bids` and `asks` collections, and if `page` *
+        `perPage` > `total` for a certain collection, the `records` for that
+        collection should just be empty.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orderbook_with_http_info(base_asset_data, quote_asset_data, async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
-        :param str base_asset_data: assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price. (required)
-        :param str quote_asset_data: assetData (makerAssetData or takerAssetData) designated as the quote currency in the currency pair calculation of price (required). (required)
+        :param bool async_req: Whether request should be asynchronous.
+        :param str base_asset_data: assetData (makerAssetData or
+            takerAssetData) designated as the base currency in the
+            `currency pair calculation
+            <https://en.wikipedia.org/wiki/Currency_pair>`__
+            of price. (required)
+        :param str quote_asset_data: assetData (makerAssetData or
+            takerAssetData) designated as the quote currency in the currency
+            pair calculation of price. (required)
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiOrderbookResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiOrderbookResponseSchema`.
+            If the method is called asynchronously, returns the request thread.
         """
 
         local_var_params = locals()
@@ -565,7 +608,7 @@ class DefaultApi(object):
             "network_id",
             "page",
             "per_page",
-        ]  # noqa: E501
+        ]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -585,16 +628,18 @@ class DefaultApi(object):
             or local_var_params["base_asset_data"] is None
         ):
             raise ValueError(
-                "Missing the required parameter `base_asset_data` when calling `get_orderbook`"
-            )  # noqa: E501
+                "Missing the required parameter `base_asset_data`"
+                "when calling `get_orderbook`"
+            )
         # verify the required parameter 'quote_asset_data' is set
         if (
             "quote_asset_data" not in local_var_params
             or local_var_params["quote_asset_data"] is None
         ):
             raise ValueError(
-                "Missing the required parameter `quote_asset_data` when calling `get_orderbook`"
-            )  # noqa: E501
+                "Missing the required parameter `quote_asset_data`"
+                " when calling `get_orderbook`"
+            )
 
         collection_formats = {}
 
@@ -604,23 +649,23 @@ class DefaultApi(object):
         if "base_asset_data" in local_var_params:
             query_params.append(
                 ("baseAssetData", local_var_params["base_asset_data"])
-            )  # noqa: E501
+            )
         if "quote_asset_data" in local_var_params:
             query_params.append(
                 ("quoteAssetData", local_var_params["quote_asset_data"])
-            )  # noqa: E501
+            )
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
         if "page" in local_var_params:
             query_params.append(
                 ("page", local_var_params["page"])
-            )  # noqa: E501
+            )
         if "per_page" in local_var_params:
             query_params.append(
                 ("perPage", local_var_params["per_page"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -631,10 +676,10 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/orderbook",
@@ -645,83 +690,157 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type="RelayerApiOrderbookResponseSchema",  # noqa: E501
+            response_type="RelayerApiOrderbookResponseSchema",
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,
         )
 
-    def get_orders(self, **kwargs):  # noqa: E501
-        """get_orders  # noqa: E501
+    def get_orders(self, **kwargs):
+        """get_orders
 
-        Retrieves a list of orders given query parameters. This endpoint should be [paginated](#section/Pagination). For querying an entire orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook) is recommended. If both makerAssetData and takerAssetData are specified, returned orders will be sorted by price determined by (takerTokenAmount/makerTokenAmount) in ascending order. By default, orders returned by this endpoint are unsorted.  # noqa: E501
+        Retrieves a list of orders given query parameters. This endpoint
+        should be [paginated](#section/Pagination). For querying an entire
+        orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook)
+        is recommended. If both makerAssetData and takerAssetData are
+        specified, returned orders will be sorted by price determined by
+        (takerTokenAmount/makerTokenAmount) in ascending order. By default,
+        orders returned by this endpoint are unsorted.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orders(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()   # doctest: +SKIP
 
-        :param async_req bool
-        :param str maker_asset_proxy_id: The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721).
-        :param str taker_asset_proxy_id: The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721).
+        :param bool async_req: Whether request should be asynchronous.
+        :param str maker_asset_proxy_id: The maker
+            `asset proxy id
+            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
+        :param str taker_asset_proxy_id: The taker asset
+            `asset proxy id
+            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str maker_asset_address: The contract address for the maker asset.
         :param str taker_asset_address: The contract address for the taker asset.
-        :param str exchange_address: Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str sender_address: Same as senderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str maker_asset_data: Same as makerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str taker_asset_data: Same as takerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str trader_asset_data: Same as traderAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str maker_address: Same as makerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str taker_address: Same as takerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str trader_address: Same as traderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str fee_recipient_address: Same as feeRecipientAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
+        :param str exchange_address: Same as exchangeAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str sender_address: Same as senderAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str maker_asset_data: Same as makerAssetData in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str taker_asset_data: Same as takerAssetData in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str trader_asset_data: Same as traderAssetData in the [0x
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str maker_address: Same as makerAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str taker_address: Same as takerAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str trader_address: Same as traderAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str fee_recipient_address: Same as feeRecipientAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiOrdersResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: :class:`RelayerApiOrdersResponseSchema`.
+            If the method is called asynchronously, returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
-            return self.get_orders_with_http_info(**kwargs)  # noqa: E501
+            return self.get_orders_with_http_info(**kwargs)
         else:
-            (data) = self.get_orders_with_http_info(**kwargs)  # noqa: E501
+            (data) = self.get_orders_with_http_info(**kwargs)
             return data
 
-    def get_orders_with_http_info(self, **kwargs):  # noqa: E501
-        """get_orders  # noqa: E501
+    def get_orders_with_http_info(self, **kwargs):
+        """get_orders
 
-        Retrieves a list of orders given query parameters. This endpoint should be [paginated](#section/Pagination). For querying an entire orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook) is recommended. If both makerAssetData and takerAssetData are specified, returned orders will be sorted by price determined by (takerTokenAmount/makerTokenAmount) in ascending order. By default, orders returned by this endpoint are unsorted.  # noqa: E501
+        Retrieves a list of orders given query parameters. This endpoint
+        should be [paginated](#section/Pagination). For querying an entire
+        orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook)
+        is recommended. If both makerAssetData and takerAssetData are
+        specified, returned orders will be sorted by price determined by
+        (takerTokenAmount/makerTokenAmount) in ascending order. By default,
+        orders returned by this endpoint are unsorted.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_orders_with_http_info(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()  # doctest: +SKIP
 
-        :param async_req bool
-        :param str maker_asset_proxy_id: The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721).
-        :param str taker_asset_proxy_id: The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721).
+        :param bool async_req: Whether request should be asynchronous.
+        :param str maker_asset_proxy_id: The maker
+            `asset proxy id
+            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
+        :param str taker_asset_proxy_id: The taker asset
+            `asset proxy id
+            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str maker_asset_address: The contract address for the maker asset.
         :param str taker_asset_address: The contract address for the taker asset.
-        :param str exchange_address: Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str sender_address: Same as senderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str maker_asset_data: Same as makerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str taker_asset_data: Same as takerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str trader_asset_data: Same as traderAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str maker_address: Same as makerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str taker_address: Same as takerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str trader_address: Same as traderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
-        :param str fee_recipient_address: Same as feeRecipientAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)
+        :param str exchange_address: Same as exchangeAddress in the [0x
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str sender_address: Same as senderAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str maker_asset_data: Same as makerAssetData in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str taker_asset_data: Same as takerAssetData in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str trader_asset_data: Same as traderAssetData in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str maker_address: Same as makerAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str taker_address: Same as takerAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str trader_address: Same as traderAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
+        :param str fee_recipient_address: Same as feeRecipientAddress in the
+            `0x Protocol v2 Specification
+            <https://github.com/0xProject/0x-protocol-specification/blob/
+            master/v2/v2-specification.md#order-message-format>`__
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
-        :return: RelayerApiOrdersResponseSchema
-                 If the method is called asynchronously,
-                 returns the request thread.
+
+        :return: RelayerApiOrdersResponseSchema.
+            If the method is called asynchronously, returns the request thread.
         """
 
         local_var_params = locals()
@@ -743,7 +862,7 @@ class DefaultApi(object):
             "network_id",
             "page",
             "per_page",
-        ]  # noqa: E501
+        ]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -766,70 +885,70 @@ class DefaultApi(object):
         if "maker_asset_proxy_id" in local_var_params:
             query_params.append(
                 ("makerAssetProxyId", local_var_params["maker_asset_proxy_id"])
-            )  # noqa: E501
+            )
         if "taker_asset_proxy_id" in local_var_params:
             query_params.append(
                 ("takerAssetProxyId", local_var_params["taker_asset_proxy_id"])
-            )  # noqa: E501
+            )
         if "maker_asset_address" in local_var_params:
             query_params.append(
                 ("makerAssetAddress", local_var_params["maker_asset_address"])
-            )  # noqa: E501
+            )
         if "taker_asset_address" in local_var_params:
             query_params.append(
                 ("takerAssetAddress", local_var_params["taker_asset_address"])
-            )  # noqa: E501
+            )
         if "exchange_address" in local_var_params:
             query_params.append(
                 ("exchangeAddress", local_var_params["exchange_address"])
-            )  # noqa: E501
+            )
         if "sender_address" in local_var_params:
             query_params.append(
                 ("senderAddress", local_var_params["sender_address"])
-            )  # noqa: E501
+            )
         if "maker_asset_data" in local_var_params:
             query_params.append(
                 ("makerAssetData", local_var_params["maker_asset_data"])
-            )  # noqa: E501
+            )
         if "taker_asset_data" in local_var_params:
             query_params.append(
                 ("takerAssetData", local_var_params["taker_asset_data"])
-            )  # noqa: E501
+            )
         if "trader_asset_data" in local_var_params:
             query_params.append(
                 ("traderAssetData", local_var_params["trader_asset_data"])
-            )  # noqa: E501
+            )
         if "maker_address" in local_var_params:
             query_params.append(
                 ("makerAddress", local_var_params["maker_address"])
-            )  # noqa: E501
+            )
         if "taker_address" in local_var_params:
             query_params.append(
                 ("takerAddress", local_var_params["taker_address"])
-            )  # noqa: E501
+            )
         if "trader_address" in local_var_params:
             query_params.append(
                 ("traderAddress", local_var_params["trader_address"])
-            )  # noqa: E501
+            )
         if "fee_recipient_address" in local_var_params:
             query_params.append(
                 (
                     "feeRecipientAddress",
                     local_var_params["fee_recipient_address"],
                 )
-            )  # noqa: E501
+            )
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
         if "page" in local_var_params:
             query_params.append(
                 ("page", local_var_params["page"])
-            )  # noqa: E501
+            )
         if "per_page" in local_var_params:
             query_params.append(
                 ("perPage", local_var_params["per_page"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -840,10 +959,10 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/orders",
@@ -854,60 +973,58 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type="RelayerApiOrdersResponseSchema",  # noqa: E501
+            response_type="RelayerApiOrdersResponseSchema",
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,
         )
 
-    def post_order(self, **kwargs):  # noqa: E501
-        """post_order  # noqa: E501
+    def post_order(self, **kwargs):
+        """post_order
 
-        Submit a signed order to the relayer.  # noqa: E501
+        Submit a signed order to the relayer.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.post_order(async_req=True)  # doctest: +SKIP
-        >>> result = thread.get()    # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
-        :param SignedOrderSchema signed_order_schema: A valid signed 0x order based on the schema.
-        :return: None
-                 If the method is called asynchronously,
-                 returns the request thread.
+        :param signed_order_schema: Instance of :class:`SignedOrderSchema`.
+            A valid signed 0x order based on the schema.
+
+        :return: None.
+            If the method is called asynchronously, returns the request thread.
         """
         kwargs["_return_http_data_only"] = True
         if kwargs.get("async_req"):
-            return self.post_order_with_http_info(**kwargs)  # noqa: E501
+            return self.post_order_with_http_info(**kwargs)
         else:
-            (data) = self.post_order_with_http_info(**kwargs)  # noqa: E501
+            (data) = self.post_order_with_http_info(**kwargs)
             return data
 
-    def post_order_with_http_info(self, **kwargs):  # noqa: E501
-        """post_order  # noqa: E501
+    def post_order_with_http_info(self, **kwargs):
+        """post_order
 
-        Submit a signed order to the relayer.  # noqa: E501
+        Submit a signed order to the relayer.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.post_order_with_http_info(async_req=True)   # doctest: +SKIP
-        >>> result = thread.get()  # doctest: +SKIP
 
-        :param async_req bool
+        :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
-        :param SignedOrderSchema signed_order_schema: A valid signed 0x order based on the schema.
-        :return: None
-                 If the method is called asynchronously,
-                 returns the request thread.
+        :param signed_order_schema: Instance of :class:`SignedOrderSchema`
+            A valid signed 0x order based on the schema.
+
+        :return: None.
+            If the method is called asynchronously, returns the request thread.
         """
 
         local_var_params = locals()
 
-        all_params = ["network_id", "signed_order_schema"]  # noqa: E501
+        all_params = ["network_id", "signed_order_schema"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -930,7 +1047,7 @@ class DefaultApi(object):
         if "network_id" in local_var_params:
             query_params.append(
                 ("networkId", local_var_params["network_id"])
-            )  # noqa: E501
+            )
 
         header_params = {}
 
@@ -943,17 +1060,17 @@ class DefaultApi(object):
         # HTTP header `Accept`
         header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # HTTP header `Content-Type`
         header_params[
             "Content-Type"
-        ] = self.api_client.select_header_content_type(  # noqa: E501
+        ] = self.api_client.select_header_content_type(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = []
 
         return self.api_client.call_api(
             "/v2/order",
@@ -964,12 +1081,12 @@ class DefaultApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type=None,  # noqa: E501
+            response_type=None,
             auth_settings=auth_settings,
             async_req=local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
-            ),  # noqa: E501
+            ),
             _preload_content=local_var_params.get("_preload_content", True),
             _request_timeout=local_var_params.get("_request_timeout"),
             collection_formats=collection_formats,

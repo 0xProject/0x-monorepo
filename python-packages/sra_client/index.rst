@@ -1,4 +1,5 @@
 .. source for the sphinx-generated build/docs/web/index.html
+
 Python zero_ex.sra_client.api_client
 ====================================
 0x Protocol is an open standard.  Many relayers opt-in to implementing a set of
@@ -38,7 +39,7 @@ Demo
 API
 ---
 
-.. automodule:: sra_client.api_client
+.. automodule:: sra_client.api.default_api
    :members:
 
 Indices and tables
