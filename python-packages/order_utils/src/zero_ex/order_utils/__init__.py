@@ -35,8 +35,8 @@ Here is a short demonstration on how to create a 0x order.
 ...     "salt": 123456789,
 ...     "makerFee": 0,
 ...     "takerFee": 0,
-...     "makerAssetAmount": 1 * 10 ** 18,
-...     "takerAssetAmount": 500 * 10 ** 18,
+...     "makerAssetAmount": 1 * 10 ** 18,  # Converting token amount to base unit with 18 decimals
+...     "takerAssetAmount": 500 * 10 ** 18,  # Converting token amount to base unit with 18 decimals
 ...     "expirationTimeSeconds": 1553553429,
 ... }
 >>> pprint.pprint(example_order)
