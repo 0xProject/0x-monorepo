@@ -51,6 +51,19 @@ class TestPublishCommand(distutils.command.build_py.build_py):
         )
 
 
+class GanacheCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to pypi.org."""
+
+    description = "Run ganache daemon to support tests."
+
+    def run(self):
+        """Run ganache."""
+        cmd_line = (
+            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
+        ).split()
+        subprocess.call(cmd_line)  # nosec
+
+
 class LaunchKitCommand(distutils.command.build_py.build_py):
     """Custom command to boot up a local 0x-launch-kit in docker."""
 
@@ -133,10 +146,13 @@ setup(
         "lint": LintCommand,
         "publish_docs": PublishDocsCommand,
         "test": TestCommandExtension,
+        "ganache": GanacheCommand,
     },
     extras_require={
         "dev": [
+            "0x-contract-addresses",
             "0x-order-utils",
+            "0x-web3",
             "bandit",
             "black",
             "coverage",
