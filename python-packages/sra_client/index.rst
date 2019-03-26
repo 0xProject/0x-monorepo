@@ -7,7 +7,7 @@ Python zero_ex.sra_client.api_client
 to make it easier for anyone to source liquidity that conforms to the 0x order format.
 Here, we will show you how you can use our `python sra_client
 <https://github.com/0xProject/0x-monorepo/tree/development/python-packages/sra_client#0x-sra-client>`_
-module to interact with 0x relayers that implements the standard relayer API.
+module to interact with 0x relayers that implements the Standard Relayer API.
 
 Setup
 -----
