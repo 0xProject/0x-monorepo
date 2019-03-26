@@ -6,14 +6,17 @@ from __future__ import absolute_import
 
 import unittest
 
-import sra_client
+from sra_client import ApiClient, Configuration
+from sra_client.api import DefaultApi
 
 
 class TestDefaultApi(unittest.TestCase):
     """DefaultApi unit test stubs"""
 
     def setUp(self):
-        self.api = sra_client.api.default_api.DefaultApi()  # noqa: E501
+        config = Configuration()
+        config.host = "http://localhost:3000"
+        self.api = DefaultApi(ApiClient(config))
 
     def tearDown(self):
         pass

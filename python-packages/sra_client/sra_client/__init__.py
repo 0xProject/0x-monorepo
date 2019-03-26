@@ -4,7 +4,17 @@
 
 """Demonstration of using the python sra_client.
 
-**Post Order**
+Configure and create an API client instance
+--------------------------------------------
+
+>>> from sra_client import ApiClient, Configuration
+>>> from sra_client.api import DefaultApi
+>>> config = Configuration()
+>>> config.host = "http://localhost:3000"
+>>> relayer_api = DefaultApi(ApiClient(config))
+
+Post Order
+-----------
 
 Post an order to a SRA compliant 0x-relayer.
 
@@ -37,12 +47,11 @@ Post an order to a SRA compliant 0x-relayer.
 >>> response[1]
 200
 
-**Get Orders**
+Get Orders
+-----------
 
 Get orders from a SRA compliant 0x-relayer.
 
->>> import sra_client
->>> relayer_api = sra_client.api.default_api.DefaultApi()
 >>> response = relayer_api.get_orders()
 >>> response
 {'records': [{'meta_data': {},
@@ -61,15 +70,14 @@ Get orders from a SRA compliant 0x-relayer.
                         'taker_fee': '0'}}]}
 
 
-**Get Order**
+Get Order
+---------
 
 Get an order by hash from a SRA compliant 0x-relayer.
 
->>> import sra_client
 >>> example_order_hash = (
 ...     "0xc1c4e9a983755b4a2ff048b0c591a27"
 ...     "0f437972e1ec440986770ac943a577404")
->>> relayer_api = sra_client.api.default_api.DefaultApi()
 >>> response = relayer_api.get_order(order_hash=example_order_hash)  # doctest: +SKIP
 >>> response  # doctest: +SKIP
 {'meta_data': {},
@@ -87,12 +95,11 @@ Get an order by hash from a SRA compliant 0x-relayer.
             'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
             'taker_fee': '0'}},
 
-**Get Asset Pair**
+Get Asset Pair
+---------------
 
 Get available asset pairs from a SRA compliant relayers.
 
->>> import sra_client
->>> relayer_api = sra_client.api.default_api.DefaultApi()
 >>> response = relayer_api.get_asset_pairs()
 >>> response
 {'records': [{'assetDataA': {'assetData': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
@@ -104,18 +111,17 @@ Get available asset pairs from a SRA compliant relayers.
                              'minAmount': '0',
                              'precision': 18}}]}
 
-**Get Orderbook**
+Get Orderbook
+-------------
 
 Get the orderbook for an asset pair from a SRA compliant 0x-relayer.
 
->>> import sra_client
 >>> example_base_asset_data = (
 ...     "0xf47261b0000000000000000000000000"
 ...     "d0a1e359811322d97991e03f863a0c30c2cf029c")
 >>> example_quote_asset_data = (
 ...     "0xf47261b0000000000000000000000000"
 ...     "2002d3812f58e35f0ea1ffbf80a75a38c32175fa")
->>> relayer_api = sra_client.api.default_api.DefaultApi()
 >>> response = relayer_api.get_orderbook(
 ...     base_asset_data=example_base_asset_data,
 ...     quote_asset_data=example_quote_asset_data)
