@@ -1,4 +1,5 @@
 .. source for the sphinx-generated build/docs/web/index.html
+
 Python zero_ex.sra_client.api_client
 ====================================
 0x Protocol is an open standard.  Many relayers opt-in to implementing a set of
@@ -12,7 +13,7 @@ Setup
 -----
 Install the sra-client package with pip:
 
-`pip install https://github.com/0xproject/0x-monorepo/python-packages/sra_client`:code:
+`pip install 0x-sra-client`:code:
 
 To interact with a 0x-relayer, you need the HTTP endpoint of the relayer you'd like to
 connect to (i.e. https://api.radarrelay.com/0x/v2).
@@ -38,7 +39,7 @@ Demo
 API
 ---
 
-.. automodule:: sra_client.api_client
+.. automodule:: sra_client.api.default_api
    :members:
 
 Indices and tables
