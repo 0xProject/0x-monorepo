@@ -62,8 +62,7 @@ contract MixinTransactions is
                 salt,
                 signerAddress,
                 data
-           )
-        );
+        ));
 
         // Validate transaction has not been executed
         require(

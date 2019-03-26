@@ -30,7 +30,8 @@ export const hashUtils = {
                 transaction,
                 verifyingContractAddress,
                 txOrigin,
-                approvalExpirationTimeSeconds)
+                approvalExpirationTimeSeconds,
+            )
             .toString('hex')}`;
         return hashHex;
     },

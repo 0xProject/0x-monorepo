@@ -113,21 +113,9 @@ describe('Coordinator tests', () => {
         const takerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         const feeRecipientPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(feeRecipientAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        makerTransactionFactory = new TransactionFactory(
-            makerPrivateKey,
-            exchange.address,
-            chainId,
-        );
-        takerTransactionFactory = new TransactionFactory(
-            takerPrivateKey,
-            exchange.address,
-            chainId,
-        );
-        approvalFactory = new ApprovalFactory(
-            feeRecipientPrivateKey,
-            coordinatorContract.address,
-            chainId,
-        );
+        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
+        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
+        approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address, chainId);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

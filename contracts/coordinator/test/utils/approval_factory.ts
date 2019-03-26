@@ -10,11 +10,7 @@ export class ApprovalFactory {
     private readonly _verifyingContractAddress: string;
     private readonly _chainId: number;
 
-    constructor(
-        privateKey: Buffer,
-        verifyingContractAddress: string,
-        chainId: number,
-    ) {
+    constructor(privateKey: Buffer, verifyingContractAddress: string, chainId: number) {
         this._privateKey = privateKey;
         this._verifyingContractAddress = verifyingContractAddress;
         this._chainId = chainId;
