@@ -102,23 +102,28 @@ export const providerUtils = {
      * @return A promise thar resolves to the chain ID of the network the provider
      * is connected to.
      */
-     async getChainIdAsync(supportedProvider: SupportedProvider): Promise<number> {
-         const provider = this.standardizeOrThrow(supportedProvider);
-         return new Promise<number>((accept, reject) => {
-             provider.sendAsync({
-                     jsonrpc: '2.0',
-                     id: _.random(0, 2**64),
-                     method: 'net_version',
-                     params: []
-                 },
-                 (err : Error | null, result?: JSONRPCResponsePayload) => {
-                     if (!_.isNil(err))
+    async getChainIdAsync(supportedProvider: SupportedProvider): Promise<number> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        // tslint:disable-next-line:custom-no-magic-numbers
+        const RPC_ID_MAX = 2 ** 64;
+        return new Promise<number>((accept, reject) => {
+            provider.sendAsync(
+                {
+                    jsonrpc: '2.0',
+                    id: _.random(1, RPC_ID_MAX),
+                    method: 'net_version',
+                    params: [],
+                },
+                (err: Error | null, result?: JSONRPCResponsePayload) => {
+                    if (!_.isNil(err)) {
                         reject(err);
-                     if (!result)
-                        throw new Error('Invalid \'net_version\' response');
-                     accept(_.toNumber(result.result));
-                 }
+                    }
+                    if (!result) {
+                        throw new Error("Invalid 'net_version' response");
+                    }
+                    accept(_.toNumber(result.result));
+                },
             );
         });
-     },
+    },
 };
