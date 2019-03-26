@@ -33,7 +33,7 @@ class DefaultApi(object):
         required to trade them (in any order). Setting only `assetDataA` or
         `assetDataB` returns pairs filtered by that asset only.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
@@ -61,7 +61,7 @@ class DefaultApi(object):
         required to trade them (in any order). Setting only `assetDataA` or
         `assetDataB` returns pairs filtered by that asset only.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
@@ -148,7 +148,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type="RelayerApiAssetDataPairsResponseSchema",
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
@@ -163,7 +163,7 @@ class DefaultApi(object):
         Retrieves a collection of all fee recipient addresses for a relayer.
         This endpoint should be paginated.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -190,7 +190,7 @@ class DefaultApi(object):
         Retrieves a collection of all fee recipient addresses for a relayer.
         This endpoint should be paginated.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -261,7 +261,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type="RelayerApiFeeRecipientsResponseSchema",
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
@@ -275,7 +275,7 @@ class DefaultApi(object):
 
         Retrieves the 0x order with meta info that is associated with the hash.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
@@ -300,7 +300,7 @@ class DefaultApi(object):
 
         Retrieves the 0x order with meta info that is associated with the hash.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
@@ -374,7 +374,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type="RelayerApiOrderSchema",
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
@@ -396,7 +396,7 @@ class DefaultApi(object):
         required to complete the order: `senderAddress`,
         `feeRecipientAddress`, `makerFee`, `takerFee`.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -430,7 +430,7 @@ class DefaultApi(object):
         required to complete the order: `senderAddress`,
         `feeRecipientAddress`, `makerFee`, `takerFee`.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -509,7 +509,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type="RelayerApiOrderConfigResponseSchema",
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
@@ -532,10 +532,10 @@ class DefaultApi(object):
         to be sorted by expiration in ascending order. The way pagination
         works for this endpoint is that the **page** and **perPage** query
         params apply to both `bids` and `asks` collections, and if `page` *
-        `perPage` > `total` for a certain collection, the `records` for that
+        `perPage` = `total` for a certain collection, the `records` for that
         collection should just be empty.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str base_asset_data: assetData (makerAssetData or
@@ -573,15 +573,15 @@ class DefaultApi(object):
         be paginated. Bids will be sorted in
         descending order by price, and asks will be sorted in ascending order
         by price. Within the price sorted orders, the orders are further
-        sorted by _taker fee price_ which is defined as the **takerFee**
-        divided by **takerTokenAmount**. After _taker fee price_, orders are
+        sorted by **taker fee price** which is defined as the **takerFee**
+        divided by **takerTokenAmount**. After **taker fee price**, orders are
         to be sorted by expiration in ascending order. The way pagination
         works for this endpoint is that the **page** and **perPage** query
         params apply to both `bids` and `asks` collections, and if `page` *
-        `perPage` > `total` for a certain collection, the `records` for that
+        `perPage` = `total` for a certain collection, the `records` for that
         collection should just be empty.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str base_asset_data: assetData (makerAssetData or
@@ -692,7 +692,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type="RelayerApiOrderbookResponseSchema",
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
@@ -712,7 +712,7 @@ class DefaultApi(object):
         (takerTokenAmount/makerTokenAmount) in ascending order. By default,
         orders returned by this endpoint are unsorted.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
@@ -786,7 +786,7 @@ class DefaultApi(object):
         (takerTokenAmount/makerTokenAmount) in ascending order. By default,
         orders returned by this endpoint are unsorted.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
@@ -975,7 +975,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type="RelayerApiOrdersResponseSchema",
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
@@ -989,7 +989,7 @@ class DefaultApi(object):
 
         Submit a signed order to the relayer.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -1011,7 +1011,7 @@ class DefaultApi(object):
 
         Submit a signed order to the relayer.
         This method makes a synchronous HTTP request by default. To make an
-        asynchronous HTTP request, please pass async_req=True
+        asynchronous HTTP request, please pass `async_req` = **True**
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -1083,7 +1083,7 @@ class DefaultApi(object):
             files=local_var_files,
             response_type=None,
             auth_settings=auth_settings,
-            async_req=local_var_params.get("async_req"),
+            async_req = local_var_params.get("async_req"),
             _return_http_data_only=local_var_params.get(
                 "_return_http_data_only"
             ),
