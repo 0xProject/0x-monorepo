@@ -5,7 +5,7 @@ Python zero_ex.sra_client.api_client
 0x Protocol is an open standard.  Many relayers opt-in to implementing a set of
 `standard relayer API endpoints <http://sra-spec.s3-website-us-east-1.amazonaws.com/>`_
 to make it easier for anyone to source liquidity that conforms to the 0x order format.
-Here, we will show you how you can use our `python sra_client
+Here, we will show you how you can use our `Python sra_client
 <https://github.com/0xProject/0x-monorepo/tree/development/python-packages/sra_client#0x-sra-client>`_
 module to interact with 0x relayers that implements the Standard Relayer API.
 
