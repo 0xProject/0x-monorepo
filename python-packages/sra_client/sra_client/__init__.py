@@ -16,7 +16,7 @@ Configure and create an API client instance
 Post Order
 -----------
 
-Post an order to a SRA compliant 0x-relayer.
+Post an order to an SRA-compliant Relayer.
 
 
 >>> import sra_client
