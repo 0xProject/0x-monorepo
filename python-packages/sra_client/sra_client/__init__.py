@@ -54,6 +54,7 @@ Post an order to an SRA-compliant Relayer.
 ...     sign_hash)
 >>> provider = HTTPProvider("http://localhost:8545")
 >>> maker_address = "0x5409ed021d9299bf6814279a6a1411a7e866a631"
+>>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].exchange
 >>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].ether_token
 >>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].zrx_token
 >>> weth_asset_data = asset_data_utils.encode_erc20_asset_data(weth_address)
@@ -62,7 +63,7 @@ Post an order to an SRA-compliant Relayer.
 ...     "makerAddress": maker_address,
 ...     "takerAddress": "0x0000000000000000000000000000000000000000",
 ...     "senderAddress": "0x0000000000000000000000000000000000000000",
-...     "exchangeAddress": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
+...     "exchangeAddress": exchange_address,
 ...     "feeRecipientAddress":
 ...         "0x0000000000000000000000000000000000000000",
 ...     "makerAssetData": weth_asset_data,
@@ -74,8 +75,7 @@ Post an order to an SRA-compliant Relayer.
 ...     "takerAssetAmount": "500000000000000000000",
 ...     "expirationTimeSeconds": "999999999999999999999"}
 >>> order_hash = generate_order_hash_hex(
-...     jsdict_order_to_struct(example_order),
-...     example_order["exchangeAddress"])
+...     jsdict_order_to_struct(example_order), exchange_address)
 >>> example_order["signature"] = sign_hash(
 ...     provider, Web3.toChecksumAddress(maker_address), order_hash)
 >>> relayer_api.post_order_with_http_info(
