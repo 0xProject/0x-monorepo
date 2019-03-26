@@ -102,7 +102,6 @@ Get orders from an SRA-compliant Relayer.
                         'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
                         'taker_fee': '0'}}]}
 
-
 Get Order
 ---------
 Get an order by hash from an SRA-compliant Relayer.
