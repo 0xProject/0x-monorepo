@@ -50,7 +50,7 @@ Post an order to an SRA-compliant Relayer.
 Get Orders
 -----------
 
-Get orders from a SRA compliant 0x-relayer.
+Get orders from an SRA-compliant Relayer.
 
 >>> response = relayer_api.get_orders()
 >>> response
