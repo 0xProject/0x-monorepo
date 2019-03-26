@@ -7,7 +7,8 @@ contracts deployed on it.  For convenience, a docker container is provided for
 just this purpose.  To start it:
 `docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2`:code:.
 
-**Creating a 0x order**
+Creating a 0x Order
+--------------------
 
 Here is a short demonstration on how to create a 0x order.
 

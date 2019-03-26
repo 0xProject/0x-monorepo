@@ -1,6 +1,7 @@
 """JSON schemas and associated utilities.
 
-**Validating a 0x order**
+Validating a 0x Order
+---------------------
 
 Here is an example on how to validate a 0x order.
 
