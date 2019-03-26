@@ -22,6 +22,7 @@ describe('ABI Decoding Calldata', () => {
     const defaultERC20MakerAssetAddress = addressUtils.generatePseudoRandomAddress();
     const matchOrdersSignature =
         'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)';
+    const chainId: number = constants.TESTRPC_NETWORK_ID;
     let signedOrderLeft: SignedOrder;
     let signedOrderRight: SignedOrder;
     let orderLeft = {};
@@ -68,9 +69,9 @@ describe('ABI Decoding Calldata', () => {
             salt: new BigNumber(50010),
         };
         const orderFactoryLeft = new OrderFactory(privateKeyLeft, orderLeft);
-        signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({ exchangeAddress });
+        signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({ exchangeAddress, chainId });
         const orderFactoryRight = new OrderFactory(privateKeyRight, orderRight);
-        signedOrderRight = await orderFactoryRight.newSignedOrderAsync({ exchangeAddress });
+        signedOrderRight = await orderFactoryRight.newSignedOrderAsync({ exchangeAddress, chainId });
         // Encode match orders transaction
         contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
