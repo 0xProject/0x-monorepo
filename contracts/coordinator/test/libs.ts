@@ -74,7 +74,6 @@ describe('Libs tests', () => {
             const expectedApprovalHash = hashUtils.getApprovalHashHex(
                 signedTx,
                 coordinatorContract.address,
-                chainId,
                 txOrigin,
                 approvalExpirationTimeSeconds,
             );
