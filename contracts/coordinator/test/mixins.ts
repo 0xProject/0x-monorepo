@@ -72,21 +72,9 @@ describe('Mixins tests', () => {
             devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(transactionSignerAddress)];
         const approvalSignerPrivateKey1 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress1)];
         const approvalSignerPrivateKey2 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress2)];
-        transactionFactory = new TransactionFactory(
-            transactionSignerPrivateKey,
-            exchangeAddress,
-            chainId,
-        );
-        approvalFactory1 = new ApprovalFactory(
-            approvalSignerPrivateKey1,
-            mixins.address,
-            chainId,
-        );
-        approvalFactory2 = new ApprovalFactory(
-            approvalSignerPrivateKey2,
-            mixins.address,
-            chainId,
-        );
+        transactionFactory = new TransactionFactory(transactionSignerPrivateKey, exchangeAddress, chainId);
+        approvalFactory1 = new ApprovalFactory(approvalSignerPrivateKey1, mixins.address, chainId);
+        approvalFactory2 = new ApprovalFactory(approvalSignerPrivateKey2, mixins.address, chainId);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

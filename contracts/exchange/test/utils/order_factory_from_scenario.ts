@@ -42,7 +42,7 @@ export class OrderFactoryFromScenario {
         erc721Token: DummyERC721TokenContract,
         erc721Balances: ERC721TokenIdsByOwner,
         exchangeAddress: string,
-        chainId: number
+        chainId: number,
     ) {
         this._userAddresses = userAddresses;
         this._zrxAddress = zrxAddress;
