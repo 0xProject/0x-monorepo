@@ -36,6 +36,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.get_asset_pairs(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
@@ -61,6 +64,9 @@ class DefaultApi(object):
         `assetDataB` returns pairs filtered by that asset only.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.get_asset_pairs_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
@@ -158,6 +164,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.get_fee_recipients(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
         :param float page: The number of the page to request in the collection.
@@ -180,6 +189,9 @@ class DefaultApi(object):
         This endpoint should be paginated.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.get_fee_recipients_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -260,6 +272,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.get_order(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
         :param float network_id: The id of the Ethereum network
@@ -280,6 +295,9 @@ class DefaultApi(object):
         Retrieves the 0x order with meta info that is associated with the hash.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.get_order_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
@@ -373,6 +391,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.get_order_config(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
         :param relayer_api_order_config_payload_schema: instance of
@@ -404,6 +425,9 @@ class DefaultApi(object):
         `feeRecipientAddress`, `makerFee`, `takerFee`.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.get_order_config_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
@@ -501,6 +525,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.get_orderbook(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param str base_asset_data: assetData (makerAssetData or
             takerAssetData) designated as the base currency in the
@@ -546,6 +573,9 @@ class DefaultApi(object):
         collection should just be empty.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.get_orderbook_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param str base_asset_data: assetData (makerAssetData or
@@ -672,6 +702,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.get_orders(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
             `asset proxy id
@@ -745,6 +778,9 @@ class DefaultApi(object):
         orders returned by this endpoint are unsorted.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.get_orders_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
@@ -943,6 +979,9 @@ class DefaultApi(object):
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
 
+        >>> thread = api.post_order(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
+
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
         :param signed_order_schema: Instance of :class:`SignedOrderSchema`.
@@ -964,6 +1003,9 @@ class DefaultApi(object):
         Submit a signed order to the relayer.
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass `async_req` = **True**
+
+        >>> thread = api.post_order_with_http_info(async_req=True) # doctest: +SKIP
+        >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
         :param float network_id: The id of the Ethereum network
