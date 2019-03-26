@@ -633,7 +633,6 @@ export class FillOrderCombinatorialUtils {
         const orderStateUtils = new OrderStateUtils(
             balanceAndProxyAllowanceFetcher,
             orderFilledCancelledFetcher,
-            signedOrder.chainId,
         );
         const fillableTakerAssetAmount = await orderStateUtils.getMaxFillableTakerAssetAmountAsync(
             signedOrder,
