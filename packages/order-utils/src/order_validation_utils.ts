@@ -123,8 +123,7 @@ export class OrderValidationUtils {
         supportedProvider: SupportedProvider,
     ) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
-        const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        this._provider = provider;
+        this._provider = providerUtils.standardizeOrThrow(supportedProvider);
     }
     // TODO(fabio): remove this method once the smart contracts have been refactored
     // to return helpful revert reasons instead of ORDER_UNFILLABLE. Instruct devs
