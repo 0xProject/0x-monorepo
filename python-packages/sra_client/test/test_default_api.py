@@ -30,8 +30,8 @@ class TestDefaultApi(unittest.TestCase):
             "records": [
                 {
                     "assetDataA": {
-                        "assetData": "0xf47261b0000000000000000000000000"
-                        "d0a1e359811322d97991e03f863a0c30c2cf029c",
+                        "assetData": "0xf47261b00000000000000000000000000"
+                        "b1ba0af832d7c05fd64161e0db78e85978e8082",
                         "maxAmount": "115792089237316195423570985008687907853"
                         "269984665640564039457584007913129639936",
                         "minAmount": "0",
@@ -39,7 +39,7 @@ class TestDefaultApi(unittest.TestCase):
                     },
                     "assetDataB": {
                         "assetData": "0xf47261b0000000000000000000000000"
-                        "2002d3812f58e35f0ea1ffbf80a75a38c32175fa",
+                        "871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c",
                         "maxAmount": "115792089237316195423570985008687907853"
                         "269984665640564039457584007913129639936",
                         "minAmount": "0",
