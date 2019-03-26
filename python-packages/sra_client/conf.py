@@ -9,11 +9,11 @@ import pkg_resources
 # pylint: disable=invalid-name
 # because these variables are not named in upper case, as globals should be.
 
-project = "0x-contract-demo"
+project = "0x-sra-client"
 # pylint: disable=redefined-builtin
 copyright = "2018, ZeroEx, Intl."
 author = "F. Eugene Aumson"
-version = pkg_resources.get_distribution("0x-contract-demo").version
+version = pkg_resources.get_distribution("0x-sra-client").version
 release = ""  # The full version, including alpha/beta/rc tags
 
 extensions = [
@@ -22,6 +22,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
 ]
 
 templates_path = ["doc_templates"]
@@ -46,7 +47,7 @@ html_static_path = ["doc_static"]
 # so a file named "default.css" will overwrite the builtin "default.css".
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "contract_demopydoc"
+htmlhelp_basename = "sraclientpydoc"
 
 # -- Extension configuration:
 

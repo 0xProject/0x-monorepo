@@ -1,13 +1,20 @@
 .. source for the sphinx-generated build/docs/web/index.html
 
-Python demo of 0x Smart Contracts
-=================================
+Python zero_ex.sra_client.api_client
+====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: test.test_exchange
+.. automodule:: sra_client
+
+----
+
+API
+---
+
+.. automodule:: sra_client.api.default_api
    :members:
 
 Indices and tables
