@@ -10,8 +10,9 @@ import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
 export const orderFactory = {
     createOrderFromPartial(partialOrder: Partial<Order>): Order {
-        if (_.isNil(partialOrder.chainId))
+        if (_.isNil(partialOrder.chainId)) {
             throw new Error('chainId must be valid');
+        }
         const defaultOrder = generateEmptyOrder(partialOrder.chainId);
         return {
             ...defaultOrder,
@@ -19,8 +20,9 @@ export const orderFactory = {
         };
     },
     createSignedOrderFromPartial(partialSignedOrder: Partial<SignedOrder>): SignedOrder {
-        if (_.isNil(partialSignedOrder.chainId))
+        if (_.isNil(partialSignedOrder.chainId)) {
             throw new Error('chainId must be valid');
+        }
         const defaultOrder = generateEmptySignedOrder(partialSignedOrder.chainId);
         return {
             ...defaultOrder,
@@ -53,7 +55,7 @@ export const orderFactory = {
             salt: createOrderOpts.salt || defaultCreateOrderOpts.salt,
             expirationTimeSeconds:
                 createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
-            chainId: chainId,
+            chainId,
         };
         return order;
     },
@@ -103,7 +105,7 @@ function generateEmptyOrder(chainId: number): Order {
         takerAssetData: constants.NULL_BYTES,
         salt: generatePseudoRandomSalt(),
         exchangeAddress: constants.NULL_ADDRESS,
-        chainId: chainId,
+        chainId,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
     };

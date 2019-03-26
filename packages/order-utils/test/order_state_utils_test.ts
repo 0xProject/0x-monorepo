@@ -60,11 +60,7 @@ describe('OrderStateUtils', () => {
                 1,
             );
 
-            const orderStateUtils = new OrderStateUtils(
-                mockBalanceFetcher,
-                mockOrderFilledFetcher,
-                CHAIN_ID,
-            );
+            const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher, CHAIN_ID);
             const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder);
             expect(orderState.isValid).to.eq(true);
         });
@@ -83,11 +79,7 @@ describe('OrderStateUtils', () => {
                 1,
             );
 
-            const orderStateUtils = new OrderStateUtils(
-                mockBalanceFetcher,
-                mockOrderFilledFetcher,
-                CHAIN_ID,
-            );
+            const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher, CHAIN_ID);
             const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder);
             expect(orderState.isValid).to.eq(false);
         });
@@ -107,11 +99,7 @@ describe('OrderStateUtils', () => {
                 1,
             );
 
-            const orderStateUtils = new OrderStateUtils(
-                mockBalanceFetcher,
-                mockOrderFilledFetcher,
-                CHAIN_ID,
-            );
+            const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher, CHAIN_ID);
             const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder);
             expect(orderState.isValid).to.eq(false);
         });
@@ -131,11 +119,7 @@ describe('OrderStateUtils', () => {
                 1,
             );
 
-            const orderStateUtils = new OrderStateUtils(
-                mockBalanceFetcher,
-                mockOrderFilledFetcher,
-                CHAIN_ID,
-            );
+            const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher, CHAIN_ID);
             const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder);
             expect(orderState.isValid).to.eq(false);
         });
@@ -154,11 +138,7 @@ describe('OrderStateUtils', () => {
                 1,
             );
 
-            const orderStateUtils = new OrderStateUtils(
-                mockBalanceFetcher,
-                mockOrderFilledFetcher,
-                CHAIN_ID,
-            );
+            const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher, CHAIN_ID);
             const transactionHash = '0xdeadbeef';
             const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder, transactionHash);
             expect(orderState.transactionHash).to.eq(transactionHash);
