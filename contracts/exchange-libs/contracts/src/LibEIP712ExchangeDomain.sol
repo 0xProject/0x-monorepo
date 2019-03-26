@@ -40,7 +40,6 @@ contract LibEIP712ExchangeDomain is
         );
     }
 
-
     /// @dev Calculates EIP712 encoding for a hash struct in the EIP712 domain
     ///      of the Exchange contract.
     /// @param hashStruct The EIP712 hash struct.

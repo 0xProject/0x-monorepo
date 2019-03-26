@@ -90,7 +90,7 @@ describe('Exchange transactions', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
-            new BigNumber(chainId)
+            new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -116,16 +116,8 @@ describe('Exchange transactions', () => {
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        makerTransactionFactory = new TransactionFactory(
-            makerPrivateKey,
-            exchange.address,
-            chainId,
-        );
-        takerTransactionFactory = new TransactionFactory(
-            takerPrivateKey,
-            exchange.address,
-            chainId,
-        );
+        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
+        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
     });
     describe('executeTransaction', () => {
         describe('fillOrder', () => {
