@@ -40,23 +40,38 @@ Configure and create an API client instance
 >>> config.host = "http://localhost:3000"
 >>> relayer_api = DefaultApi(ApiClient(config))
 
-Post Order
------------
-Post an order to an SRA-compliant Relayer.
+Wrapping ETH
+------------
 
 >>> from web3 import HTTPProvider, Web3
 >>> from zero_ex.contract_addresses import (
 ...     NETWORK_TO_ADDRESSES, NetworkId)
+>>> from zero_ex.contract_artifacts import abi_by_name
+>>> provider = HTTPProvider("http://localhost:8545")
+>>> maker_address = "0x5409ed021d9299bf6814279a6a1411a7e866a631"
+>>> erc20_proxy = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
+>>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+>>> weth_instance = Web3(provider).eth.contract(
+...    address=Web3.toChecksumAddress(weth_address),
+...    abi=abi_by_name("WETH9"))
+>>> tx = weth_instance.functions.deposit().transact(
+...     {"from": Web3.toChecksumAddress(maker_address), "value": 1000000000000000000})
+>>> tx = weth_instance.functions.approve(
+...     Web3.toChecksumAddress(erc20_proxy),
+...     1000000000000000000).transact(
+...     {"from": Web3.toChecksumAddress(maker_address)})
+
+Post Order
+-----------
+Post an order to an SRA-compliant Relayer.
+
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
 ...     generate_order_hash_hex,
 ...     jsdict_order_to_struct,
 ...     sign_hash)
->>> provider = HTTPProvider("http://localhost:8545")
->>> maker_address = "0x5409ed021d9299bf6814279a6a1411a7e866a631"
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].exchange
->>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].ether_token
->>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].zrx_token
+>>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+>>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
 >>> weth_asset_data = asset_data_utils.encode_erc20_asset_data(weth_address)
 >>> zrx_asset_data = asset_data_utils.encode_erc20_asset_data(zrx_address)
 >>> example_order = {
@@ -79,7 +94,7 @@ Post an order to an SRA-compliant Relayer.
 >>> example_order["signature"] = sign_hash(
 ...     provider, Web3.toChecksumAddress(maker_address), order_hash)
 >>> relayer_api.post_order_with_http_info(
-...     network_id=42, signed_order_schema=example_order)[1]
+...     network_id=50, signed_order_schema=example_order)[1]
 200
 
 Get Orders
@@ -88,50 +103,50 @@ Get orders from an SRA-compliant Relayer.
 
 >>> relayer_api.get_orders()
 {'records': [{'meta_data': {},
-              'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
+              'order': {'exchange_address': '0x48bacb9266a570d521063ef5dd96e61686dbe788',
                         'expiration_time_seconds': '1000000000000000000000',
                         'fee_recipient_address': '0x0000000000000000000000000000000000000000',
                         'maker_address': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
                         'maker_asset_amount': '1000000000000000000',
-                        'maker_asset_data': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                        'maker_asset_data': '0xf47261b00000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082',
                         'maker_fee': '0',
                         'salt': '2362734632784682376287462',
                         'sender_address': '0x0000000000000000000000000000000000000000',
                         'taker_address': '0x0000000000000000000000000000000000000000',
                         'taker_asset_amount': '500000000000000000000',
-                        'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+                        'taker_asset_data': '0xf47261b0000000000000000000000000871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
                         'taker_fee': '0'}}]}
 
 Get Order
 ---------
 Get an order by hash from an SRA-compliant Relayer.
 
->>> relayer_api.get_order(order_hash)  # doctest: +SKIP
+>>> relayer_api.get_order("0x" + order_hash)
 {'meta_data': {},
-'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
-            'expiration_time_seconds': '1000000000000000000000',
-            'fee_recipient_address': '0x0000000000000000000000000000000000000000',
-            'maker_address': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
-            'maker_asset_amount': '1000000000000000000',
-            'maker_asset_data': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
-            'maker_fee': '0',
-            'salt': '2362734632784682376287462',
-            'sender_address': '0x0000000000000000000000000000000000000000',
-            'taker_address': '0x0000000000000000000000000000000000000000',
-            'taker_asset_amount': '500000000000000000000',
-            'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
-            'taker_fee': '0'}},
+ 'order': {'exchange_address': '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+           'expiration_time_seconds': '1000000000000000000000',
+           'fee_recipient_address': '0x0000000000000000000000000000000000000000',
+           'maker_address': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
+           'maker_asset_amount': '1000000000000000000',
+           'maker_asset_data': '0xf47261b00000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082',
+           'maker_fee': '0',
+           'salt': '2362734632784682376287462',
+           'sender_address': '0x0000000000000000000000000000000000000000',
+           'taker_address': '0x0000000000000000000000000000000000000000',
+           'taker_asset_amount': '500000000000000000000',
+           'taker_asset_data': '0xf47261b0000000000000000000000000871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
+           'taker_fee': '0'}}
 
 Get Asset Pair
 ---------------
 Get available asset pairs from an SRA-compliant Relayer.
 
 >>> relayer_api.get_asset_pairs()
-{'records': [{'assetDataA': {'assetData': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+{'records': [{'assetDataA': {'assetData': '0xf47261b00000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082',
                              'maxAmount': '115792089237316195423570985008687907853269984665640564039457584007913129639936',
                              'minAmount': '0',
                              'precision': 18},
-              'assetDataB': {'assetData': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+              'assetDataB': {'assetData': '0xf47261b0000000000000000000000000871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
                              'maxAmount': '115792089237316195423570985008687907853269984665640564039457584007913129639936',
                              'minAmount': '0',
                              'precision': 18}}]}
@@ -144,21 +159,22 @@ Get the orderbook for the WETH/ZRX asset pair from an SRA-compliant Relayer.
 ...     base_asset_data=weth_asset_data,
 ...     quote_asset_data=zrx_asset_data)
 {'asks': {'records': [{'meta_data': {},
-                       'order': {'exchange_address': '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
+                       'order': {'exchange_address': '0x48bacb9266a570d521063ef5dd96e61686dbe788',
                                  'expiration_time_seconds': '1000000000000000000000',
                                  'fee_recipient_address': '0x0000000000000000000000000000000000000000',
                                  'maker_address': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
                                  'maker_asset_amount': '1000000000000000000',
-                                 'maker_asset_data': '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                                 'maker_asset_data': '0xf47261b00000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082',
                                  'maker_fee': '0',
                                  'salt': '2362734632784682376287462',
                                  'sender_address': '0x0000000000000000000000000000000000000000',
                                  'taker_address': '0x0000000000000000000000000000000000000000',
                                  'taker_asset_amount': '500000000000000000000',
-                                 'taker_asset_data': '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+                                 'taker_asset_data': '0xf47261b0000000000000000000000000871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
                                  'taker_fee': '0'}}]},
  'bids': {'records': []}}
 """  # noqa: E501 (line too long)
+
 
 # NOTE: Bug in get_order method.
 # Sra_client not deserialzing order from server properly, need fix!
