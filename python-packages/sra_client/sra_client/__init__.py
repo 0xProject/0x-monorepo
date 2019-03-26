@@ -73,7 +73,7 @@ Get orders from an SRA-compliant Relayer.
 Get Order
 ---------
 
-Get an order by hash from a SRA compliant 0x-relayer.
+Get an order by hash from an SRA-compliant Relayer.
 
 >>> example_order_hash = (
 ...     "0xc1c4e9a983755b4a2ff048b0c591a27"
