@@ -50,6 +50,7 @@ jobs:
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - setup_remote_docker
             - run: yarn build:contracts
+            - run: PKG='@0x/monorepo-scripts' yarn build
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -244,7 +245,6 @@ jobs:
             - run: yarn wsrun test:circleci @0x/order-utils
             - run: yarn wsrun test:circleci @0x/sol-compiler
             - run: yarn wsrun test:circleci @0x/sol-tracing-utils
-            - run: yarn wsrun test:circleci @0x/sol-doc
             - run: yarn wsrun test:circleci @0x/subproviders
             - run: yarn wsrun test:circleci @0x/web3-wrapper
             - run: yarn wsrun test:circleci @0x/utils
@@ -284,10 +284,6 @@ jobs:
                   key: coverage-sol-tracing-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/sol-tracing-utils/coverage/lcov.info
-            - save_cache:
-                  key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/sol-doc/coverage/lcov.info
             - save_cache:
                   key: coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -532,9 +528,6 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-sol-tracing-utils-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
