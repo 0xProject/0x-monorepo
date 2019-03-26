@@ -286,6 +286,10 @@
 					{
 						"name": "_exchange",
 						"type": "address"
+					},
+					{
+						"name": "_chainId",
+						"type": "uint256"
 					}
 				],
 				"payable": false,
