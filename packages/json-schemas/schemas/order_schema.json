@@ -12,6 +12,7 @@
         "takerAssetData": { "$ref": "/hexSchema" },
         "salt": { "$ref": "/wholeNumberSchema" },
         "exchangeAddress": { "$ref": "/addressSchema" },
+        "chainId": { "type": "number" },
         "feeRecipientAddress": { "$ref": "/addressSchema" },
         "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" }
     },
@@ -27,6 +28,7 @@
         "takerAssetData",
         "salt",
         "exchangeAddress",
+        "chainId",
         "feeRecipientAddress",
         "expirationTimeSeconds"
     ],
