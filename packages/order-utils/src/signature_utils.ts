@@ -232,7 +232,6 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const chainId = await providerUtils.getChainIdAsync(supportedProvider);
             const orderHash = orderHashUtils.getOrderHashHex(order);
             const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
@@ -256,7 +255,6 @@ export const signatureUtils = {
         signerAddress: string,
     ): Promise<SignedOrder> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        const chainId = await providerUtils.getChainIdAsync(provider);
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         const web3Wrapper = new Web3Wrapper(provider);
