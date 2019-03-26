@@ -5,6 +5,7 @@
 
 import subprocess  # nosec
 import distutils.command.build_py
+from time import sleep
 
 from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
@@ -28,10 +29,50 @@ class TestCommandExtension(TestCommand):
     """Run pytest tests."""
 
     def run_tests(self):
-        """Invoke pytest."""
+        """Run launch kit, invoke pytest, show logs and tear down launch kit."""
+        launch_kit_docker_image_name = "launch_kit_python_sra_client_test"
+
+        docker_run_cmdline = (
+            "docker run -d --network host"
+            " -e RPC_URL=http://localhost:8545"
+            " -e NETWORK_ID=50"
+            f" --name {launch_kit_docker_image_name}"
+            " 0xorg/launch-kit-ci:0.0.2-whitelist-all-0x-contracts"
+        )
+        docker_logs_cmdline = f"docker logs {launch_kit_docker_image_name}"
+        docker_kill_cmdline = f"docker kill {launch_kit_docker_image_name}"
+        docker_rm_cmdline = f"docker rm {launch_kit_docker_image_name}"
+
+        print(docker_kill_cmdline + "  # failure not unexpected")
+        subprocess.call(docker_kill_cmdline.split())  # nosec
+        print(docker_rm_cmdline + "  # failure not unexpected")
+        subprocess.call(docker_rm_cmdline.split())  # nosec
+
+        print(docker_run_cmdline)
+        return_code = subprocess.call(docker_run_cmdline.split())  # nosec
+        if return_code != 0:
+            exit(return_code)
+        sleep(3)  # takes launch kit a moment to come up
+
         import pytest
 
-        exit(pytest.main(["--doctest-modules"]))
+        pytest_rc = pytest.main(["--doctest-modules"])
+
+        if pytest_rc != 0:
+            print(docker_logs_cmdline)
+            subprocess.call(docker_logs_cmdline.split())  # nosec
+
+        print(docker_kill_cmdline)
+        return_code = subprocess.call(docker_kill_cmdline.split())  # nosec
+        if return_code != 0:
+            exit(return_code)
+
+        print(docker_rm_cmdline)
+        return_code = subprocess.call(docker_rm_cmdline.split())  # nosec
+        if return_code != 0:
+            exit(return_code)
+
+        exit(pytest_rc)
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
