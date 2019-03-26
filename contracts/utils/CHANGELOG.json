@@ -43,17 +43,12 @@
                 "pr": 1657
             },
             {
-<<<<<<< HEAD
                 "note": "Add unit tests for `LibAddressArray`",
                 "pr": 1712
             },
             {
                 "note": "Fix `LibAddressArray.indexOf` returning incorrect index.",
                 "pr": 1712
-=======
-                "note": "Change ReentrancyGuard implementation to cheaper one",
-                "pr": 1699
->>>>>>> Update PRs in changelogs.
             }
         ],
         "timestamp": 1553091633
