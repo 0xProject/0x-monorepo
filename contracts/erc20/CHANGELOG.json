@@ -1,14 +1,19 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added UntransferrableDummyERC20Token",
+                "pr": 1714
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
                 "note": "Run Web3ProviderEngine without excess block polling",
                 "pr": 1695
-            },
-            {
-                "note": "Added UntransferrableDummyERC20Token",
-                "pr": 1714
             }
         ],
         "timestamp": 1553183790
