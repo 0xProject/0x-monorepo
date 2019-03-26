@@ -35,6 +35,7 @@ export const HOST_DOMAINS_EXTERNAL = [
     '0x-instant-staging.s3-website-us-east-1.amazonaws.com',
     '0x-instant-dogfood.s3-website-us-east-1.amazonaws.com',
     'instant.0xproject.com',
+    'instant.0x.org',
 ];
 export const HOST_DOMAINS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'];
 export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
