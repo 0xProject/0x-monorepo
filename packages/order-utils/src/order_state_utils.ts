@@ -42,7 +42,6 @@ type OrderValidationResult = OrderValidResult | OrderInvalidResult;
 export class OrderStateUtils {
     private readonly _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
-    private readonly _chainId: number;
     private static _validateIfOrderIsValid(
         signedOrder: SignedOrder,
         sidedOrderRelevantState: SidedOrderRelevantState,
@@ -103,17 +102,14 @@ export class OrderStateUtils {
      * and proxyAllowances for Ethereum addresses. It must implement AbstractBalanceAndProxyAllowanceFetcher
      * @param orderFilledCancelledFetcher A class that is capable of fetching whether an order
      * is cancelled and how much of it has been filled. It must implement AbstractOrderFilledCancelledFetcher
-     * @param chainId The chain ID of the network being used.
      * @return Instance of OrderStateUtils
      */
     constructor(
         balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher,
         orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
-        chainId: number,
     ) {
         this._balanceAndProxyAllowanceFetcher = balanceAndProxyAllowanceFetcher;
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
-        this._chainId = chainId;
     }
     /**
      * Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)

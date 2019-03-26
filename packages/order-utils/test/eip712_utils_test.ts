@@ -20,7 +20,7 @@ describe('EIP712 Utils', () => {
                 primaryType,
                 { Test: [{ name: 'testValue', type: 'uint256' }] },
                 { testValue: '1' },
-                { chainId: CHAIN_ID, verifyingContractAddress: constants.NULL_ADDRESS, },
+                { chainId: CHAIN_ID, verifyingContractAddress: constants.NULL_ADDRESS },
             );
             expect(typedData.domain).to.not.be.undefined();
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
