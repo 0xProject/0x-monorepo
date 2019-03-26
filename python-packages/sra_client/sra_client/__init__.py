@@ -54,9 +54,9 @@ Post an order to an SRA-compliant Relayer.
 ...     sign_hash)
 >>> provider = HTTPProvider("http://localhost:8545")
 >>> maker_address = "0x5409ed021d9299bf6814279a6a1411a7e866a631"
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].exchange
->>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].ether_token
->>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.KOVAN].zrx_token
+>>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+>>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+>>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
 >>> weth_asset_data = asset_data_utils.encode_erc20_asset_data(weth_address)
 >>> zrx_asset_data = asset_data_utils.encode_erc20_asset_data(zrx_address)
 >>> example_order = {
@@ -79,7 +79,7 @@ Post an order to an SRA-compliant Relayer.
 >>> example_order["signature"] = sign_hash(
 ...     provider, Web3.toChecksumAddress(maker_address), order_hash)
 >>> relayer_api.post_order_with_http_info(
-...     network_id=42, signed_order_schema=example_order)[1]
+...     network_id=NetworkId.GANACHE.value, signed_order_schema=example_order)[1]
 200
 
 Get Orders
