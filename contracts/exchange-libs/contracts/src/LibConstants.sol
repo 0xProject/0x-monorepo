@@ -38,7 +38,6 @@ contract LibConstants {
 
     bytes public ZRX_ASSET_DATA;
 
-
     /// @param zrxAssetData Asset data for ZRX token. Used for fee transfers.
     constructor (bytes memory zrxAssetData)
         public
