@@ -316,6 +316,9 @@
 		"src/Coordinator.sol": {
 			"id": 0
 		},
+		"@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol": {
+			"id": 17
+		},
 		"src/libs/LibConstants.sol": {
 			"id": 8
 		},
