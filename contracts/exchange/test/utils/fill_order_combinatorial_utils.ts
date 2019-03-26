@@ -630,10 +630,7 @@ export class FillOrderCombinatorialUtils {
         balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher,
         orderFilledCancelledFetcher: SimpleOrderFilledCancelledFetcher,
     ): Promise<BigNumber> {
-        const orderStateUtils = new OrderStateUtils(
-            balanceAndProxyAllowanceFetcher,
-            orderFilledCancelledFetcher,
-        );
+        const orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);
         const fillableTakerAssetAmount = await orderStateUtils.getMaxFillableTakerAssetAmountAsync(
             signedOrder,
             this.takerAddress,
