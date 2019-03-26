@@ -322,7 +322,7 @@ contract ReentrantERC20Token is
             // ERC20 asset proxy: 0xf47261b.
             mstore(add(assetData, 32), 0xf47261b000000000000000000000000000000000000000000000000000000000)
             // Then we encode parameter 1, the token address.
-            mstore(add(assetData, 36), address)
+            mstore(add(assetData, 36), and(address, 0x000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF))
         }
         return assetData;
     }
