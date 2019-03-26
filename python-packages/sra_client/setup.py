@@ -136,6 +136,7 @@ setup(
     },
     extras_require={
         "dev": [
+            "0x-order-utils",
             "bandit",
             "black",
             "coverage",

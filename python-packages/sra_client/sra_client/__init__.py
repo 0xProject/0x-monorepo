@@ -112,12 +112,12 @@ Get Orderbook
 
 Get the orderbook for an asset pair from an SRA-compliant Relayer.
 
->>> example_base_asset_data = (
-...     "0xf47261b0000000000000000000000000"
-...     "d0a1e359811322d97991e03f863a0c30c2cf029c")
->>> example_quote_asset_data = (
-...     "0xf47261b0000000000000000000000000"
-...     "2002d3812f58e35f0ea1ffbf80a75a38c32175fa")
+
+>>> from zero_ex.order_utils import asset_data_utils
+>>> example_base_asset_data = asset_data_utils.encode_erc20_asset_data(
+...     "0xd0a1e359811322d97991e03f863a0c30c2cf029c")
+>>> example_quote_asset_data = asset_data_utils.encode_erc20_asset_data(
+...     "0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa")
 >>> relayer_api.get_orderbook(
 ...     base_asset_data=example_base_asset_data,
 ...     quote_asset_data=example_quote_asset_data)
