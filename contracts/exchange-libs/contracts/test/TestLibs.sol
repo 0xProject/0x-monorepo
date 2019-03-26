@@ -26,6 +26,7 @@ import "../src/LibFillResults.sol";
 import "../src/LibAbiEncoder.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestLibs is
     LibEIP712,
     LibMath,

@@ -103,7 +103,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         provider,
         txDefaults,
         zrxAssetData,
-        new BigNumber(chainId)
+        new BigNumber(chainId),
     );
     const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
     await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
@@ -131,7 +131,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         erc721Token,
         erc721Balances,
         exchangeContract.address,
-        chainId
+        chainId,
     );
 
     const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
