@@ -53,8 +53,8 @@ export const META_MASK_CHROME_STORE_URL =
 export const META_MASK_OPERA_STORE_URL = 'https://addons.opera.com/en/extensions/details/metamask/';
 export const META_MASK_SITE_URL = 'https://metamask.io/';
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
-    [Network.Mainnet]: 'https://mainnet.infura.io/',
-    [Network.Kovan]: 'https://kovan.infura.io/',
+    [Network.Mainnet]: `https://mainnet.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
+    [Network.Kovan]: `https://kovan.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
 };
 export const ZERO_EX_SITE_URL = 'https://www.0xproject.com/';
 export const BLOCK_POLLING_INTERVAL_MS = 10000; // 10s
