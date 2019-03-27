@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
@@ -144,6 +144,7 @@ contract MixinExchangeWrapper is
         bytes memory wethAssetData = WETH_ASSET_DATA;
 
         uint256 ordersLength = orders.length;
+        uint256 makerAssetFilledAmount = 0;
         for (uint256 i = 0; i != ordersLength; i++) {
 
             // We assume that asset being bought by taker is the same for each order.
@@ -175,7 +176,7 @@ contract MixinExchangeWrapper is
             addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            uint256 makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount;
+            makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount;
             if (makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
@@ -192,7 +193,7 @@ contract MixinExchangeWrapper is
     ///      that at least zrxBuyAmount of ZRX is purchased (sometimes slightly over due to rounding issues).
     ///      It is possible that a request to buy 200 ZRX will require purchasing 202 ZRX
     ///      as 2 ZRX is required to purchase the 200 ZRX fee tokens. This guarantees at least 200 ZRX for future purchases.
-    ///      The asset being sold by taker must always be WETH. 
+    ///      The asset being sold by taker must always be WETH.
     /// @param orders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset.
     /// @param zrxBuyAmount Desired amount of ZRX to buy.
     /// @param signatures Proofs that orders have been created by makers.
@@ -230,7 +231,7 @@ contract MixinExchangeWrapper is
             // of the Maker. In this case we want to overestimate the amount of takerAsset.
             uint256 remainingWethSellAmount = getPartialAmountCeil(
                 orders[i].takerAssetAmount,
-                safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees 
+                safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees
                 remainingZrxBuyAmount
             );
 
