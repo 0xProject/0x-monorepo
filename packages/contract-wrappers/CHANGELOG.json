@@ -1,5 +1,18 @@
 [
     {
+        "version": "9.2.0",
+        "changes": [
+            {
+                "note": "Add `chainId` to transactions",
+                "pr": 1742
+            },
+            {
+                "note": "Update exchange wrapper",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "version": "9.1.8",
         "changes": [
             {

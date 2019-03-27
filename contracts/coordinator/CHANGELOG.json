@@ -72,6 +72,14 @@
             {
                 "note": "Make `assertValidTransactionOrdersApproval` internal",
                 "pr": 1729
+            },
+            {
+                "note": "Add chainId to domain separator",
+                "pr": 1742
+            },
+            {
+                "note": "Inherit Exchange domain constants from `exchange-libs` to reduce code duplication",
+                "pr": 1742
             }
         ],
         "timestamp": 1554997931
