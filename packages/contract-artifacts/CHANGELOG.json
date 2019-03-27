@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.6.0",
+        "changes": [
+            {
+                "note": "Update Coordinator and Exchange artifacts",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "version": "1.5.0",
         "changes": [
             {

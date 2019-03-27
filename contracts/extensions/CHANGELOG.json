@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Remove unused `LibOrder` inheritance",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "version": "3.1.1",
         "changes": [
             {
