@@ -9,6 +9,10 @@
             {
                 "note": "Create `DevUtils` contract",
                 "pr": 1835
+            },
+            {
+                "note": "Remove unused `LibOrder` inheritance",
+                "pr": 1742
             }
         ]
     },
