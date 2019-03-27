@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v3.1.0 - _March 20, 2019_
+
+    * Added ERC1155Proxy test constants and interfaces (#1661)
+
+## v3.0.9 - _Invalid date_
+
+    * Set evmVersion to byzantium (#1678)
+    * Remove Coordinator EIP712 constants. They're now in the `order-utils` package. (#1705)
+
 ## v3.0.8 - _March 1, 2019_
 
     * Dependencies updated

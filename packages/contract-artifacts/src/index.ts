@@ -1,4 +1,6 @@
 import * as AssetProxyOwner from '../artifacts/AssetProxyOwner.json';
+import * as Coordinator from '../artifacts/Coordinator.json';
+import * as CoordinatorRegistry from '../artifacts/CoordinatorRegistry.json';
 import * as DummyERC20Token from '../artifacts/DummyERC20Token.json';
 import * as DummyERC721Token from '../artifacts/DummyERC721Token.json';
 import * as DutchAuction from '../artifacts/DutchAuction.json';
@@ -32,4 +34,6 @@ export {
     OrderValidator,
     WETH9,
     ZRXToken,
+    Coordinator,
+    CoordinatorRegistry,
 };

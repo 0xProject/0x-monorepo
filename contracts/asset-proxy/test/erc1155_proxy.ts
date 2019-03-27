@@ -15,7 +15,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -123,8 +123,7 @@ describe('ERC1155Proxy', () => {
         });
         it('should have an id of 0x9645780d', async () => {
             const proxyId = await erc1155Proxy.getProxyId.callAsync();
-            // proxy computed using -- bytes4(keccak256("erc1155Token(address,uint256[],uint256[],bytes)"));
-            const expectedProxyId = '0x9645780d';
+            const expectedProxyId = AssetProxyId.ERC1155;
             expect(proxyId).to.equal(expectedProxyId);
         });
     });
@@ -426,6 +425,50 @@ describe('ERC1155Proxy', () => {
             expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(totalValuesTransferred[0]);
             // note - if the `extraData` is ignored then the receiver log should ignore it as well.
             expect(receiverLog.args.data).to.be.deep.equal(receiverCallbackData);
+            // check balances after transfer
+            const expectedFinalBalances = [
+                expectedInitialBalances[0].minus(totalValuesTransferred[0]),
+                expectedInitialBalances[1].plus(totalValuesTransferred[0]),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should successfully transfer value to a smart contract and trigger its callback, when callback `data` is NULL', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiverContract];
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
+                return value.times(valueMultiplier);
+            });
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // execute transfer
+            const nullReceiverCallbackData = '0x';
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                nullReceiverCallbackData,
+                authorized,
+            );
+            // check receiver log ignored extra asset data
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<
+                DummyERC1155ReceiverBatchTokenReceivedEventArgs
+            >;
+            expect(receiverLog.args.operator).to.be.equal(erc1155Proxy.address);
+            expect(receiverLog.args.from).to.be.equal(spender);
+            expect(receiverLog.args.tokenIds.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokensToTransfer[0]);
+            expect(receiverLog.args.tokenValues.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(totalValuesTransferred[0]);
+            // note - if the `extraData` is ignored then the receiver log should ignore it as well.
+            expect(receiverLog.args.data).to.be.deep.equal(nullReceiverCallbackData);
             // check balances after transfer
             const expectedFinalBalances = [
                 expectedInitialBalances[0].minus(totalValuesTransferred[0]),

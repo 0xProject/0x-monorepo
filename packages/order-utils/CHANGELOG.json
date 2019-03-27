@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1553183790,
+        "version": "7.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "7.1.0",
         "changes": [
             {
@@ -7,10 +16,11 @@
                 "pr": 1705
             },
             {
-                "note": "Added encoding/decoding fdor ERC1155 asset data",
+                "note": "Added encoding/decoding for ERC1155 asset data",
                 "pr": 1661
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.1 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v4.2.0 - _March 20, 2019_
+
+    * Add optional types to optimizer settings (#1682)
+
 ## v4.1.0 - _February 25, 2019_
 
     * Add back custom web3-provider-engine type definitions (#1627)

@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1553183790,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {
@@ -17,8 +26,13 @@
             {
                 "note": "Add `RevertReason.SignatureInvalid` thrown by Coordinator",
                 "pr": 1705
+            },
+            {
+                "note": "Add `RevertReason.InvalidFreeMemoryPtr` thrown by LibAddressArray",
+                "pr": 1712
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551220833,

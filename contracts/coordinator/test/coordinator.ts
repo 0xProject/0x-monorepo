@@ -435,7 +435,7 @@ describe('Coordinator tests', () => {
     describe('cancels', () => {
         it('cancelOrder call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync()];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDER, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(

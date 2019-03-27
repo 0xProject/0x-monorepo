@@ -6,6 +6,7 @@ export const constants = {
     LATEST_ARTIFACT_VERSION: '2.0.0',
     SOLC_BIN_DIR: path.join(__dirname, '..', '..', 'solc_bin'),
     SOLC_BIN_PATHS: {
+        '0.5.6': 'soljson-v0.5.6+commit.b259423e.js',
         '0.5.5': 'soljson-v0.5.5+commit.47a71e8f.js',
         '0.5.4': 'soljson-v0.5.4+commit.9549d8ff.js',
         '0.5.3': 'soljson-v0.5.3+commit.10d17f24.js',

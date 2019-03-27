@@ -9,6 +9,21 @@ import * as _ from 'lodash';
 
 export const providerUtils = {
     /**
+     * Starts the Web3ProviderEngine without excess block polling
+     * @param providerEngine The Web3ProviderEngine
+     */
+    startProviderEngine(providerEngine: any): void {
+        if (providerEngine.start === undefined) {
+            throw new Error(`Invalid Web3ProviderEngine`);
+        }
+        // HACK: When calling start() Web3ProviderEngine starts a block polling service
+        // this continuously pulls data from the network and can result in high data usage
+        // for long running services. If used in a front end application this can cause
+        // a high amount of load on a node (one request per user per block).
+        providerEngine._ready.go();
+        providerEngine._running = true;
+    },
+    /**
      * Standardize the supported provider types into our internal provider interface
      * or throw if unsupported provider supplied.
      * @param supportedProvider Potentially supported provider instance

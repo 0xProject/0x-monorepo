@@ -3,7 +3,7 @@
     "contractsDir": "contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
-        "evmVersion": "byzantium",
+        "evmVersion": "constantinople",
         "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {

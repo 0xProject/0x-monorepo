@@ -1,6 +1,29 @@
 [
     {
-        "version": "0.0.1",
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Make `decodeOrdersFromFillData`, `getCoordinatorApprovalHash`, and `getTransactionHash` public",
+                "pr": 1729
+            },
+            {
+                "note": "Make `assertValidTransactionOrdersApproval` internal",
+                "pr": 1729
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Created Coordinator package"
@@ -12,7 +35,12 @@
             {
                 "note": "Add `SignatureType.Invalid`",
                 "pr": 1705
+            },
+            {
+                "note": "Set `evmVersion` to `constantinople`",
+                "pr": 1707
             }
-        ]
+        ],
+        "timestamp": 1553091633
     }
 ]

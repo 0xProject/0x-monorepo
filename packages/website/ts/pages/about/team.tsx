@@ -168,7 +168,6 @@ const team: TeamMember[] = [
         name: 'Lawrence Forman',
         title: 'engineer',
     },
-
 ];
 
 const advisors: TeamMember[] = [

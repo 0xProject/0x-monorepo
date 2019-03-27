@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1553183790,
+        "version": "4.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {
                 "note": "Add optional types to optimizer settings",
                 "pr": 1682
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "version": "4.1.0",

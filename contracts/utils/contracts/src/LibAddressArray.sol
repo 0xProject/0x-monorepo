@@ -30,7 +30,7 @@ library LibAddressArray {
     /// @param addressArray Array of addresses.
     /// @param addressToAppend  Address to append.
     /// @return Array of addresses: [... addressArray, addressToAppend]
-    function append(address[] memory addressArray, address addressToAppend) 
+    function append(address[] memory addressArray, address addressToAppend)
         internal
         pure
         returns (address[] memory)
@@ -148,7 +148,7 @@ library LibAddressArray {
                 if eq(target, arrayElement) {
                     // Set success and index
                     success := 1
-                    index := div(i, 32)
+                    index := div(sub(i, arrayContentsStart), 32)
                     // Break loop
                     i := arrayContentsEnd
                 }

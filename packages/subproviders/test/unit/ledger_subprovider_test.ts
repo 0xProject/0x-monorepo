@@ -1,3 +1,4 @@
+import { providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
@@ -105,7 +106,7 @@ describe('LedgerSubprovider', () => {
             provider = new Web3ProviderEngine();
             provider.addProvider(ledgerSubprovider);
             provider.addProvider(ganacheSubprovider);
-            provider.start();
+            providerUtils.startProviderEngine(provider);
         });
         describe('success cases', () => {
             it('returns a list of accounts', (done: DoneCallback) => {

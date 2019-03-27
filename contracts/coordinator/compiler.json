@@ -3,7 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": true,
     "compilerSettings": {
-        "evmVersion": "byzantium",
+        "evmVersion": "constantinople",
         "optimizer": {
             "enabled": true,
             "runs": 1000000,
@@ -21,10 +21,5 @@
             }
         }
     },
-    "contracts": [
-        "src/Coordinator.sol",
-        "src/registry/CoordinatorRegistry.sol",
-        "test/TestLibs.sol",
-        "test/TestMixins.sol"
-    ]
+    "contracts": ["src/Coordinator.sol", "src/registry/CoordinatorRegistry.sol"]
 }

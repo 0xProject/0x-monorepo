@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _March 21, 2019_
+
+    * Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script (#1689)
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v4.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v4.0.3 - _March 1, 2019_
 
     * Dependencies updated

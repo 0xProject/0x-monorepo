@@ -1,4 +1,5 @@
 import { LedgerEthereumClient, LedgerSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { providerUtils } from '@0x/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // tslint:disable:no-implicit-dependencies
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
@@ -21,7 +22,7 @@ export const providerFactory = {
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(ledgerSubprovider);
         provider.addProvider(new RPCSubprovider(constants.KOVAN_RPC_URL));
-        provider.start();
+        providerUtils.startProviderEngine(provider);
         return provider;
     },
     async getMainnetLedgerProviderAsync(): Promise<Provider> {
@@ -33,7 +34,7 @@ export const providerFactory = {
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(ledgerSubprovider);
         provider.addProvider(new RPCSubprovider(constants.MAINNET_RPC_URL));
-        provider.start();
+        providerUtils.startProviderEngine(provider);
         return provider;
     },
 };

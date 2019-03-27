@@ -16,7 +16,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
-import { ApprovalFactory, artifacts, constants, exchangeDataEncoder, TestMixinsContract } from '../src';
+import { ApprovalFactory, artifacts, constants, CoordinatorContract, exchangeDataEncoder } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -26,7 +26,7 @@ describe('Mixins tests', () => {
     let transactionSignerAddress: string;
     let approvalSignerAddress1: string;
     let approvalSignerAddress2: string;
-    let mixins: TestMixinsContract;
+    let mixins: CoordinatorContract;
     let transactionFactory: TransactionFactory;
     let approvalFactory1: ApprovalFactory;
     let approvalFactory2: ApprovalFactory;
@@ -40,8 +40,8 @@ describe('Mixins tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        mixins = await TestMixinsContract.deployFrom0xArtifactAsync(
-            artifacts.TestMixins,
+        mixins = await CoordinatorContract.deployFrom0xArtifactAsync(
+            artifacts.Coordinator,
             provider,
             txDefaults,
             exchangeAddress,
@@ -135,6 +135,70 @@ describe('Mixins tests', () => {
         });
     });
 
+    describe('decodeOrdersFromFillData', () => {
+        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    exchangeAddress: devConstants.NULL_ADDRESS,
+                    signature: devConstants.NULL_BYTES,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of constants.BATCH_FILL_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    exchangeAddress: devConstants.NULL_ADDRESS,
+                    signature: devConstants.NULL_BYTES,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of constants.MARKET_FILL_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    exchangeAddress: devConstants.NULL_ADDRESS,
+                    signature: devConstants.NULL_BYTES,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of [constants.CANCEL_ORDER, constants.BATCH_CANCEL_ORDERS, constants.CANCEL_ORDERS_UP_TO]) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const emptyArray: any[] = [];
+                expect(emptyArray).to.deep.eq(decodedOrders);
+            });
+        }
+        it('should decode an empty array for invalid data', async () => {
+            const data = '0x0123456789';
+            const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+            const emptyArray: any[] = [];
+            expect(emptyArray).to.deep.eq(decodedOrders);
+        });
+        it('should revert if data is less than 4 bytes long', async () => {
+            const data = '0x010203';
+            await expectContractCallFailedAsync(
+                mixins.decodeOrdersFromFillData.callAsync(data),
+                RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
+            );
+        });
+    });
+
     describe('Single order approvals', () => {
         for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
             it(`Should be successful: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1], expiration=[valid]`, async () => {
@@ -147,15 +211,6 @@ describe('Mixins tests', () => {
                     transaction,
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
-                );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: transactionSignerAddress },
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
@@ -181,15 +236,6 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: transactionSignerAddress },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     transactionSignerAddress,
@@ -203,15 +249,6 @@ describe('Mixins tests', () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTransaction(data);
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    approvalSignerAddress1,
-                    transaction.signature,
-                    [],
-                    [],
-                    { from: approvalSignerAddress1 },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -234,15 +271,6 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    approvalSignerAddress1,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: approvalSignerAddress1 },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -256,15 +284,6 @@ describe('Mixins tests', () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTransaction(data);
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    approvalSignerAddress1,
-                    transaction.signature,
-                    [],
-                    [],
-                    { from: approvalSignerAddress1 },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -289,18 +308,6 @@ describe('Mixins tests', () => {
                 );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
-                expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
                         transactionSignerAddress,
@@ -324,18 +331,6 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.ApprovalExpired,
-                );
-                expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
                         transactionSignerAddress,
@@ -357,18 +352,6 @@ describe('Mixins tests', () => {
                     transaction,
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
-                );
-                expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: approvalSignerAddress2 },
-                    ),
-                    RevertReason.InvalidOrigin,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
@@ -401,15 +384,6 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: transactionSignerAddress },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     transactionSignerAddress,
@@ -433,15 +407,6 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: transactionSignerAddress },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     transactionSignerAddress,
@@ -458,15 +423,6 @@ describe('Mixins tests', () => {
                 }));
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTransaction(data);
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [],
-                    [],
-                    { from: transactionSignerAddress },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     transactionSignerAddress,
@@ -486,15 +442,6 @@ describe('Mixins tests', () => {
                     transaction,
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
-                );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: transactionSignerAddress },
                 );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
@@ -521,15 +468,6 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    transactionSignerAddress,
-                    transaction.signature,
-                    [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                    [approval1.signature, approval2.signature],
-                    { from: transactionSignerAddress },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     transactionSignerAddress,
@@ -543,15 +481,6 @@ describe('Mixins tests', () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTransaction(data);
-                await mixins.assertValidTransactionOrdersApproval.callAsync(
-                    transaction,
-                    orders,
-                    approvalSignerAddress1,
-                    transaction.signature,
-                    [],
-                    [],
-                    { from: approvalSignerAddress1 },
-                );
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -573,18 +502,6 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval2.signature],
-                        { from: approvalSignerAddress1 },
-                    ),
-                    RevertReason.InvalidOrigin,
-                );
-                expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
                         transactionSignerAddress,
@@ -600,18 +517,6 @@ describe('Mixins tests', () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = transactionFactory.newSignedTransaction(data);
-                expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [],
-                        [],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
@@ -636,18 +541,6 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
@@ -678,18 +571,6 @@ describe('Mixins tests', () => {
                 );
                 const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
                 expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                        [approval1.signature, approvalSignature2],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
-                expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
                         transactionSignerAddress,
@@ -713,18 +594,6 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
-                expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        approvalSignerAddress1,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approvalSignature2],
-                        { from: approvalSignerAddress1 },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
@@ -755,18 +624,6 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds2,
                 );
                 expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
-                        [approval1.signature, approval2.signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.ApprovalExpired,
-                );
-                expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
                         transactionSignerAddress,
@@ -788,18 +645,6 @@ describe('Mixins tests', () => {
                     transaction,
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
-                );
-                expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        approvalSignerAddress1,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval2.signature],
-                        { from: approvalSignerAddress1 },
-                    ),
-                    RevertReason.ApprovalExpired,
                 );
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
@@ -825,18 +670,6 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 expectContractCallFailedAsync(
-                    mixins.assertValidTransactionOrdersApproval.callAsync(
-                        transaction,
-                        orders,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval1.signature],
-                        { from: approvalSignerAddress2 },
-                    ),
-                    RevertReason.InvalidOrigin,
-                );
-                expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
                         transactionSignerAddress,
@@ -851,9 +684,9 @@ describe('Mixins tests', () => {
         }
     });
     describe('cancels', () => {
-        it('should allow the tx signer to call `cancelOrders` without approval', async () => {
+        it('should allow the tx signer to call `cancelOrder` without approval', async () => {
             const orders = [defaultOrder];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDER, orders);
             const transaction = transactionFactory.newSignedTransaction(data);
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,

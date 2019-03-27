@@ -1,6 +1,6 @@
 {
     "name": "@0x/web3-wrapper",
-    "version": "6.0.2",
+    "version": "6.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,7 +42,7 @@
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
-        "ganache-core": "^2.3.3",
+        "ganache-core": "^2.5.3",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
@@ -53,11 +53,11 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/assert": "^2.0.6",
-        "@0x/json-schemas": "^3.0.6",
-        "@0x/typescript-typings": "^4.1.0",
-        "@0x/utils": "^4.2.2",
-        "ethereum-types": "^2.1.0",
+        "@0x/assert": "^2.0.8",
+        "@0x/json-schemas": "^3.0.8",
+        "@0x/typescript-typings": "^4.2.1",
+        "@0x/utils": "^4.3.0",
+        "ethereum-types": "^2.1.1",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"

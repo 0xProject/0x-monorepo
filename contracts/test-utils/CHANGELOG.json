@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1553183790,
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {
                 "note": "Added ERC1155Proxy test constants and interfaces",
                 "pr": 1661
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "version": "3.0.9",
