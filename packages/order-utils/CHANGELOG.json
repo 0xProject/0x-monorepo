@@ -5,6 +5,14 @@
             {
                 "note": "Add support for encoding/decoding StaticCallProxy assetData",
                 "pr": 1863
+            },
+            {
+                "note": "Add `chainId` `OrderValidationUtils`, `OrderFactory`",
+                "pr": 1742
+            },
+            {
+                "note": "Update domain version for Exchange and Coordinator",
+                "pr": 1742
             }
         ]
     },

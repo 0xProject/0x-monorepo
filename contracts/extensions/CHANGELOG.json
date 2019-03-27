@@ -5,6 +5,10 @@
             {
                 "note": "Move `OrderValidator` to contracts/dev-utils package as `OrderValidationUtils`",
                 "pr": 1848
+            },
+            {
+                "note": "Remove unused `LibOrder` inheritance",
+                "pr": 1742
             }
         ]
     },

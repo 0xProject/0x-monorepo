@@ -9,6 +9,10 @@
             {
                 "note": "Add `InvalidStaticCallDataOffset`, `TargetNotEven`, `UnexpectedStaticCallResult`, and `InvalidAssetDataEnd` to `RevertReason` enum",
                 "pr": 1863
+            },
+            {
+                "note": "Add `chainId` field to `Order`, `ZeroExTransaction`, and `EIP712DomainWithDefaultSchema`",
+                "pr": 1742
             }
         ]
     },
