@@ -148,6 +148,7 @@ describe('Mixins tests', () => {
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
                     exchangeAddress: devConstants.NULL_ADDRESS,
+                    chainId,
                     signature: devConstants.NULL_BYTES,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
@@ -161,6 +162,7 @@ describe('Mixins tests', () => {
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
                     exchangeAddress: devConstants.NULL_ADDRESS,
+                    chainId,
                     signature: devConstants.NULL_BYTES,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
@@ -174,6 +176,7 @@ describe('Mixins tests', () => {
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
                     exchangeAddress: devConstants.NULL_ADDRESS,
+                    chainId,
                     signature: devConstants.NULL_BYTES,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
