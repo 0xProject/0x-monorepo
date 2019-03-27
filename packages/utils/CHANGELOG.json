@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Add `getChainIdAsync()` to `providerUtils`",
+                "pr": 1742
+            },
+            {
+                "note": "More robust normalization of `uint256` types in `sign_typed_data_utils`",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "version": "4.3.3",
         "changes": [
             {

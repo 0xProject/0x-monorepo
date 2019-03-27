@@ -5,6 +5,10 @@
             {
                 "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
                 "pr": 1848
+            },
+            {
+                "note": "Break up `LibEIP712` into reusable components",
+                "pr": 1742
             }
         ]
     },

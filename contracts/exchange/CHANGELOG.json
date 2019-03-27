@@ -5,6 +5,10 @@
             {
                 "note": "Use new/cheaper reentrancy guard/mutex",
                 "pr": 1699
+            },
+            {
+                "note": "Add chainId to domain separator",
+                "pr": 1742
             }
         ]
     },

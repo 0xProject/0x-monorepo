@@ -12,6 +12,10 @@
         "version": "4.3.0",
         "changes": [
             {
+                "note": "Update Coordinator and Exchange wrappers",
+                "pr": 1742
+            },
+            {
                 "note": "Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods",
                 "pr": 1797
             }
