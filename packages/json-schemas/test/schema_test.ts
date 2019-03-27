@@ -10,6 +10,7 @@ chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const CHAIN_ID = 1337;
 const {
     numberSchema,
     addressSchema,
@@ -216,6 +217,7 @@ describe('Schema', () => {
             salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
             feeRecipientAddress: NULL_ADDRESS,
             exchangeAddress: NULL_ADDRESS,
+            chainId: CHAIN_ID,
             expirationTimeSeconds: '42',
         };
         const relayerApiOrder = {
