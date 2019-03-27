@@ -1,5 +1,6 @@
 from typing import Any
 
+
 class ContractFunction:
     def call() -> Any:
         ...
