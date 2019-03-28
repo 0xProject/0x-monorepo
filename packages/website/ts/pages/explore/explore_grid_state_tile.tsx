@@ -20,7 +20,7 @@ export const EXPLORE_STATE_DIALOGS: { [s: string]: ExploreGridDialogTileProps } 
     },
     EMPTY: {
         title: 'No projects found.',
-        description: 'Try deselecting a few tags or changing your search.',
+        description: 'Try changing your search.',
     },
 };
 

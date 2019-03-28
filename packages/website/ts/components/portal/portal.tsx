@@ -240,10 +240,10 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     onDismiss={this._dismissBanner.bind(this)}
                     heading="Check out the new 0x Explore page"
                     subline="Need more advanced functionality? Try our code sandbox."
-                    mainCta={{ text: 'Explore 0x', href: '/explore' }}
+                    mainCta={{ text: 'Explore 0x', href: WebsitePaths.Explore }}
                     secondaryCta={{
                         text: 'Code Sandbox',
-                        href: 'https://codesandbox.io/s/1qmjyp7p5j',
+                        href: constants.URL_SANDBOX,
                         shouldOpenInNewTab: true,
                     }}
                 />

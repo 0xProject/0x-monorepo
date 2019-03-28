@@ -243,7 +243,7 @@ export type ContractInstance = any; // TODO: add type definition for Contract
 
 export interface ExploreProjectInstantMetadata {
     orderSource: string;
-    availableAssetDatas?: string;
+    availableAssetDatas?: string[];
 }
 
 export interface ExploreProject {
@@ -262,6 +262,8 @@ export interface ExploreProject {
 export enum ExploreAnalyticAction {
     InstantClick = 'INSTANT_CLICK',
     LinkClick = 'LINK_CLICK',
+    FilterClick = 'FILTER_CLICK',
+    QuerySearched = 'QUERY_SEARCHED',
 }
 
 export enum ExploreTilesOrdering {
@@ -273,12 +275,15 @@ export enum ExploreTilesOrdering {
 export enum ExploreTilesOrderingType {
     HardCodedByName = 'HARDCODED_BY_NAME',
     // for other ordering logics in the future
+    DynamicBySortFunction = 'DYNAMIC_BY_SORT',
 }
 
 export interface ExploreTilesOrderingMetadata {
     label: string;
     ordering: ExploreTilesOrdering;
     type: ExploreTilesOrderingType;
+    hardCoded?: string[];
+    sort?(tiles: ExploreTile[]): ExploreTile[];
 }
 
 export enum ExploreTilesModifiers {

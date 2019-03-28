@@ -50,7 +50,7 @@ const SettingsIconWrapper = styled.div`
 
 export const SettingsWrapper = styled.div`
     position: relative;
-    @media (max-width: 36rem) {
+    @media (max-width: 64rem) {
         display: none;
     }
     &:hover > div {
@@ -106,15 +106,9 @@ export const DropdownWrap = styled.div<DropdownWrapInterface>`
         border-width: 11px;
         margin-left: -11px;
     }
-
     @media (max-width: 768px) {
         display: none;
     }
-    // display: block;
-    // visibility: visible;
-    // opacity: 1;
-    // transform: translate3d(0, 0, 0);
-    // transition: opacity 0.35s, transform 0.35s, visibility 0s;
 `;
 
 export interface ExploreSettingsDropdownProps {
@@ -183,22 +177,26 @@ export const OrderingWrapper = styled.div`
 
 const MobileSettingsWrapper = styled(SettingsWrapper)`
     display: none;
-    @media (max-width: 36rem) {
+    @media (max-width: 64rem) {
         display: block;
+        padding-bottom: 1rem;
+    }
+    @media (max-width: 36rem) {
         & > button {
             width: 100%;
         }
-        padding-bottom: 1rem;
     }
 `;
 
 const MobileDropdownWrap = styled(DropdownWrap)`
-    width: 100%;
     margin-top: 0;
-    left: 0;
-    &:after,
-    &:before {
-        left: 50%;
+    @media (max-width: 36rem) {
+        width: 100%;
+        left: 0;
+        &:after,
+        &:before {
+            left: 50%;
+        }
     }
 `;
 

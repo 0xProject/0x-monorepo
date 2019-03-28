@@ -8,14 +8,7 @@ import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { Input as SearchInput } from 'ts/components/ui/search_textfield';
-import {
-    AVAILABLE_ASSET_DATAS,
-    BY_NAME_ORDERINGS,
-    EDITORIAL,
-    FILTERS,
-    ORDERINGS,
-    PROJECTS,
-} from 'ts/pages/explore/explore_content';
+import { EDITORIAL, FILTERS, ORDERINGS, PROJECTS } from 'ts/pages/explore/explore_content';
 import { ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
 import { ExploreGrid } from 'ts/pages/explore/explore_grid';
 import { EXPLORE_STATE_DIALOGS, ExploreGridDialogTile } from 'ts/pages/explore/explore_grid_state_tile';
@@ -31,6 +24,7 @@ import {
     ExploreTilesModifiers,
     ExploreTilesOrdering,
     ExploreTilesOrderingMetadata,
+    ExploreTilesOrderingType,
     ExploreTileVisibility,
     ExploreTileWidth,
 } from 'ts/types';
@@ -77,9 +71,7 @@ export class Explore extends React.Component<ExploreProps> {
                     <ExploreToolBar
                         onFilterClick={this._setFilter}
                         filters={this.state.filters}
-                        // editorial={this.state.isEditorialShown}
-                        // onEditorial={this._onEditorial}
-                        orderings={ORDERINGS}
+                        orderings={_.values(ORDERINGS)}
                         activeOrdering={this.state.tilesOrdering}
                         onOrdering={this._onOrdering}
                     />
@@ -109,13 +101,19 @@ export class Explore extends React.Component<ExploreProps> {
         zeroExInstant.render(params, 'body');
     };
 
-    private readonly _onAnalytics = (project: ExploreProject, action: ExploreAnalyticAction): void => {
+    private readonly _onAnalytics = (metadata: any, action: ExploreAnalyticAction): void => {
         switch (action) {
             case ExploreAnalyticAction.InstantClick:
-                analytics.track('Explore - Instant - Clicked', { name: project.name });
+                analytics.track('Explore - Instant - Clicked', { name: metadata.name });
                 break;
             case ExploreAnalyticAction.LinkClick:
-                analytics.track('Explore - Link - Clicked', { name: project.name });
+                analytics.track('Explore - Link - Clicked', { name: metadata.name });
+                break;
+            case ExploreAnalyticAction.FilterClick:
+                analytics.track('Explore - Filter - Clicked', { filterName: metadata.filterName });
+                break;
+            case ExploreAnalyticAction.QuerySearched:
+                analytics.track('Explore - Query - Searched', { query: metadata.query });
                 break;
             default:
                 break;
@@ -157,17 +155,18 @@ export class Explore extends React.Component<ExploreProps> {
     };
 
     private readonly _changeSearchResults = async (query: string): Promise<void> => {
+        this._onAnalytics({ query }, ExploreAnalyticAction.QuerySearched);
         const searchedTiles = await this._generateTilesWithModifier(this.state.tiles, ExploreTilesModifiers.Search, {
             query,
             filter: this.state.filters.find(f => f.active),
         });
-        // const newTiles = this._generateTilesWithModifier(searchedTiles, ExploreTilesModifiers.Editorial, {
-        //     isEditorialShown: _.isEmpty(query) ? this.state.isEditorialShown : false,
-        // })
         this.setState({ tiles: searchedTiles });
     };
 
     private readonly _setFilter = async (filterName: string, active: boolean = true): Promise<void> => {
+        if (active) {
+            this._onAnalytics({ filterName }, ExploreAnalyticAction.FilterClick);
+        }
         let updatedFilters: ExploreFilterMetadata[];
         updatedFilters = this.state.filters.map(f => {
             const newFilter = _.assign({}, f);
@@ -219,10 +218,13 @@ export class Explore extends React.Component<ExploreProps> {
             return tiles;
         }
         if (modifier === ExploreTilesModifiers.Ordering) {
-            if (!!BY_NAME_ORDERINGS[options.tilesOrdering]) {
-                return _.sortBy(tiles, t => _.indexOf(BY_NAME_ORDERINGS[options.tilesOrdering], t.name));
-            } else {
-                return tiles;
+            switch (ORDERINGS[options.tilesOrdering].type) {
+                case ExploreTilesOrderingType.HardCodedByName:
+                    return _.sortBy(tiles, t => _.indexOf(ORDERINGS[options.tilesOrdering].hardCoded, t.name));
+                case ExploreTilesOrderingType.DynamicBySortFunction:
+                    return ORDERINGS[options.tilesOrdering].sort(tiles);
+                default:
+                    return tiles;
             }
         }
         return _.concat([], tiles).map(t => {
@@ -243,7 +245,11 @@ export class Explore extends React.Component<ExploreProps> {
                 newTile.visibility === ExploreTileVisibility.Visible
             ) {
                 newTile.visibility =
-                    (_.startsWith(newTile.exploreProject.label.toLowerCase(), trimmedQuery) &&
+                    (_.chain(newTile.exploreProject.label.toLowerCase())
+                        .split(' ')
+                        .concat([newTile.exploreProject.label.toLowerCase()])
+                        .reduce((a: boolean, s: string) => a || _.startsWith(s, trimmedQuery), false)
+                        .value() &&
                         ExploreTileVisibility.Visible) ||
                     ExploreTileVisibility.Hidden;
             }
@@ -265,9 +271,7 @@ export class Explore extends React.Component<ExploreProps> {
         const tiles = rawProjects.map((e: ExploreProject) => {
             const exploreProject = _.assign({}, e);
             if (!!exploreProject.instant) {
-                exploreProject.instant = _.assign({}, exploreProject.instant, {
-                    availableAssetDatas: AVAILABLE_ASSET_DATAS,
-                });
+                exploreProject.instant = _.assign({}, exploreProject.instant);
                 exploreProject.onInstantClick = this._launchInstantAsync.bind(this, exploreProject.instant);
             }
             exploreProject.onAnalytics = this._onAnalytics.bind(this, exploreProject);
@@ -281,9 +285,7 @@ export class Explore extends React.Component<ExploreProps> {
         const orderedTiles = await this._generateTilesWithModifier(tiles, ExploreTilesModifiers.Ordering, {
             tilesOrdering: this.state.tilesOrdering,
         });
-        this.setState({ tiles: orderedTiles, isEntriesLoading: false }, () => {
-            // this._generateEditorialContent();
-        });
+        this.setState({ tiles: orderedTiles, isEntriesLoading: false });
     };
 }
 
@@ -342,10 +344,15 @@ const ExploreToolBarWrapper = styled.div`
 `;
 
 const ExploreToolBarContentWrapper = styled.div`
-    display: flex;
-    padding-bottom: 2rem;
-    @media (max-width: 36rem) {
-        display: none;
+    display: inline-block;
+    white-space: nowrap;
+    padding-bottom: 0.4rem
+    margin-bottom: 1.6rem;
+    overflow-x: auto;
+    @media (max-width: 64rem) {
+       & > * {
+            display: none;
+       }
     }
     & > * {
         margin: 0 0.3rem;
