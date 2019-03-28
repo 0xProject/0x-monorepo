@@ -1,6 +1,6 @@
 [
     {
-        "version": "8.1.0",
+        "version": "9.0.0",
         "changes": [
             {
                 "note": "Added a simulation for `exchange.validateOrderFillableOrThrowAsync` that simulates maker transfer",
