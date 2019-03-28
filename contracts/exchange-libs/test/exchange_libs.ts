@@ -128,6 +128,20 @@ describe('Exchange libs', () => {
                 const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);
                 expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
             });
+            it('orderHash should differ if chainId is different', async () => {
+                // Deploy a version of the contract with a different chain ID.
+                const newChainId = chainId + 1;
+                const _libs = await TestLibsContract.deployFrom0xArtifactAsync(
+                    artifacts.TestLibs,
+                    provider,
+                    txDefaults,
+                    new BigNumber(newChainId),
+                );
+                signedOrder = await orderFactory.newSignedOrderAsync();
+                const orderHashHex1 = await _libs.publicGetOrderHash.callAsync(signedOrder);
+                const orderHashHex2 = await libs.publicGetOrderHash.callAsync(signedOrder);
+                expect(orderHashHex1).to.be.not.equal(orderHashHex2);
+            });
         });
     });
 });
