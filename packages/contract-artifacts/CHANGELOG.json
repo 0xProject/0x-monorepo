@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.5.0",
+        "changes": [
+            {
+                "note": "Added artifact for  `IAssetProxy`",
+                "pr": 1714
+            }
+        ]
+    },
+    {
         "version": "1.4.0",
         "changes": [
             {
