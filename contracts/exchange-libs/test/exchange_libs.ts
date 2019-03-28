@@ -177,7 +177,7 @@ describe('Exchange libs', () => {
             const actualDomain = await libs.getDomainSeparator.callAsync();
             expect(actualDomain).to.be.equal(expectedDomain);
         });
-        it('should return the a different domain separator if chainId is different', async () => {
+        it('should return a different domain separator if chainId is different', async () => {
             const domain1 = await libsAlternateChain.getDomainSeparator.callAsync();
             const domain2 = await libs.getDomainSeparator.callAsync();
             expect(domain1).to.be.not.equal(domain2);
