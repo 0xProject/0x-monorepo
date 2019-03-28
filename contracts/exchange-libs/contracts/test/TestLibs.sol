@@ -149,6 +149,14 @@ contract TestLibs is
         return EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
     }
 
+    function getDomainSeparator()
+        public
+        view
+        returns (bytes32)
+    {
+        return EIP712_EXCHANGE_DOMAIN_HASH;
+    }
+
     function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         public
         pure
