@@ -120,14 +120,17 @@ export interface ContractWrappersConfig {
 }
 
 /**
- * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the supplied order maker has a sufficient
+ * `expectedFillTakerTokenAmount`: If specified, the validation method will ensure that the supplied order maker has a sufficient
  *                               allowance/balance to fill this amount of the order's takerTokenAmount.
- * validateRemainingOrderAmountIsFillable: The validation method ensures that the maker has a sufficient allowance/balance to fill
- *                                         the entire remaining order amount. This is the default. If neither options are specified,
- *                                         the balances and allowances are checked to determine the order is fillable for a
- *                                         non-zero amount. We call such orders "partially fillable orders".
- * simulationTakerAddress: During the maker transfer simulation validation, tokens are sent from the maker to the simulationTakerAddress. This defaults
- *                         to the takerAddress specified in the order. Some tokens prevent transfer to the NULL address so this address can be specified.
+ *
+ * `validateRemainingOrderAmountIsFillable`: The validation method ensures that the maker has sufficient allowance/balance to fill
+ *                                         the entire remaining order amount. If this option is set to false, the balances
+ *                                         and allowances are calculated to determine the order is fillable for a
+ *                                         non-zero amount (some value less than or equal to the order remaining amount).
+ *                                         We call such orders "partially fillable orders". Default is `true`.
+ *
+ * `simulationTakerAddress`: During the maker transfer simulation, tokens are sent from the maker to the `simulationTakerAddress`. This defaults
+ *                           to the `takerAddress` specified in the order. Some tokens prevent transfer to the NULL address so this address can be specified.
  */
 export interface ValidateOrderFillableOpts {
     expectedFillTakerTokenAmount?: BigNumber;
