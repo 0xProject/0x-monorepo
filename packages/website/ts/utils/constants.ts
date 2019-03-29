@@ -97,7 +97,7 @@ export const constants = {
     URL_PARITY_CHROME_STORE:
         'https://chrome.google.com/webstore/detail/parity-ethereum-integrati/himekenlppkgeaoeddcliojfddemadig',
     URL_REDDIT: 'https://reddit.com/r/0xproject',
-    URL_SANDBOX: 'https://codesandbox.io/s/1qmjyp7p5j',
+    URL_SANDBOX: 'https://codesandbox.io/s/github/0xproject/0x-codesandbox',
     URL_STANDARD_RELAYER_API_GITHUB: 'https://github.com/0xProject/standard-relayer-api/blob/master/README.md',
     URL_TWITTER: 'https://twitter.com/0xproject',
     URL_FACEBOOK: 'https://www.facebook.com/0xProject/',
