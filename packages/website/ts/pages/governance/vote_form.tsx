@@ -1,5 +1,5 @@
-import { signatureUtils } from '0x.js';
 import { ContractWrappers } from '@0x/contract-wrappers';
+import { signatureUtils } from '@0x/order-utils';
 import { LedgerSubprovider } from '@0x/subproviders';
 import { ECSignature, SignatureType } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
