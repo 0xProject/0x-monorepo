@@ -200,9 +200,10 @@ jobs:
         docker:
             - image: circleci/python
             - image: 0xorg/ganache-cli:2.2.2
-            - image: 0xorg/launch-kit-ci
-              command: |
-                  yarn start:ts -p 3000:3000
+            - image: 0xorg/launch-kit-ci:0.0.2-whitelist-all-0x-contracts
+              environment:
+                  RPC_URL: http://localhost:8545
+                  NETWORK_ID: 50
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
