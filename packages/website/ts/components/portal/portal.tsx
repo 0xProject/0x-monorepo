@@ -2,9 +2,10 @@ import { colors, Link } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
+import { ANNOUNCEMENT_BANNER_HEIGHT, AnnouncementBanner } from 'ts/components/annoucement_banner';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
@@ -12,7 +13,6 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { MetaTags } from 'ts/components/meta_tags';
-import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
 import { Menu, MenuTheme } from 'ts/components/portal/menu';
 import { Section } from 'ts/components/portal/section';
@@ -88,6 +88,7 @@ interface PortalState {
     isLedgerDialogOpen: boolean;
     tokenManagementState: TokenManagementState;
     trackedTokenStateByAddress: TokenStateByAddress;
+    dismissBanner: boolean;
 }
 
 interface AccountManagementItem {
@@ -133,6 +134,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
             tokenManagementState: TokenManagementState.None,
             isLedgerDialogOpen: false,
+            dismissBanner: false,
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
@@ -233,6 +235,18 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Container>
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
+                <AnnouncementBanner
+                    dismissed={this.state.dismissBanner}
+                    onDismiss={this._dismissBanner.bind(this)}
+                    heading="Check out the new 0x Explore page"
+                    subline="Need more advanced functionality? Try our code sandbox."
+                    mainCta={{ text: 'Explore 0x', href: WebsitePaths.Explore }}
+                    secondaryCta={{
+                        text: 'Code Sandbox',
+                        href: constants.URL_SANDBOX,
+                        shouldOpenInNewTab: true,
+                    }}
+                />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -248,18 +262,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{
                         backgroundColor: colors.lightestGrey,
                         position: 'fixed',
+                        transition: '300ms top ease-in-out',
+                        top: this.state.dismissBanner ? '0' : ANNOUNCEMENT_BANNER_HEIGHT,
                         zIndex: zIndex.topBar,
                     }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
-                <Container marginTop={TOP_BAR_HEIGHT} minHeight="100vh" backgroundColor={colors.lightestGrey}>
+                <Container
+                    marginTop={`calc(${TOP_BAR_HEIGHT}px + ${
+                        this.state.dismissBanner ? '0px' : ANNOUNCEMENT_BANNER_HEIGHT
+                    })`}
+                    minHeight="100vh"
+                    backgroundColor={colors.lightestGrey}
+                >
                     <Switch>
                         <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
-                        <Route
-                            exact={true}
-                            path={`${WebsitePaths.Portal}/`}
-                            render={this._renderMainRoute.bind(this)}
-                        />
+                        <Redirect from={WebsitePaths.Portal} to={`/portal/account`} />
                     </Switch>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}
@@ -295,6 +313,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </Container>
         );
     }
+    private _dismissBanner(): void {
+        this.setState({ dismissBanner: true });
+    }
+
+    // tslint:disable-next-line:no-unused-variable
     private _renderMainRoute(): React.ReactNode {
         if (this._isSmallScreen()) {
             return <SmallLayout content={this._renderRelayerIndexSection()} />;
@@ -317,12 +340,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             selectedIconColor: colors.yellow800,
             selectedBackgroundColor: 'transparent',
         };
-        return (
-            <Section
-                header={<BackButton to={WebsitePaths.Portal} labelText="Back to Relayers" />}
-                body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
-            />
-        );
+        return <Section body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />} />;
     }
     private _renderWallet(): React.ReactNode {
         const isMobile = utils.isMobileWidth(this.props.screenWidth);
