@@ -63,7 +63,7 @@ const DEFAULT_MENU_THEME: MenuTheme = {
 
 export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
     return (
-        <div>
+        <div style={{ paddingTop: 25 }}>
             {_.map(props.menuItemEntries, entry => {
                 const isSelected = entry.to === props.selectedPath;
                 return (

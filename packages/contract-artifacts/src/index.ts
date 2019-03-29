@@ -10,6 +10,7 @@ import * as ERC721Proxy from '../artifacts/ERC721Proxy.json';
 import * as ERC721Token from '../artifacts/ERC721Token.json';
 import * as Exchange from '../artifacts/Exchange.json';
 import * as Forwarder from '../artifacts/Forwarder.json';
+import * as IAssetProxy from '../artifacts/IAssetProxy.json';
 import * as IValidator from '../artifacts/IValidator.json';
 import * as IWallet from '../artifacts/IWallet.json';
 import * as MultiAssetProxy from '../artifacts/MultiAssetProxy.json';
@@ -28,6 +29,7 @@ export {
     ERC721Token,
     Exchange,
     Forwarder,
+    IAssetProxy,
     IValidator,
     IWallet,
     MultiAssetProxy,

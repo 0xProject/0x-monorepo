@@ -21,6 +21,7 @@ export interface ButtonInterface {
     isAccentColor?: boolean;
     hasIcon?: boolean | string;
     isInline?: boolean;
+    padding?: string;
     href?: string;
     type?: string;
     target?: string;
@@ -71,7 +72,8 @@ const ButtonBase = styled.button<ButtonInterface>`
     background-color: ${props => (props.isTransparent || props.isWithArrow) && 'transparent'};
     border-color: ${props => props.isTransparent && !props.isWithArrow && props.borderColor};
     color: ${props => (props.isAccentColor ? props.theme.linkColor : props.color || props.theme.textColor)};
-    padding: ${props => !props.isNoPadding && !props.isWithArrow && '18px 30px'};
+    padding: ${props =>
+        !props.isNoPadding && !props.isWithArrow && ((!!props.padding && props.padding) || '18px 30px')};
     white-space: ${props => props.isWithArrow && 'nowrap'};
     text-align: center;
     font-size: ${props => (props.isWithArrow ? '20px' : '18px')};

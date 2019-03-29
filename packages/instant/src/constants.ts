@@ -35,6 +35,7 @@ export const HOST_DOMAINS_EXTERNAL = [
     '0x-instant-staging.s3-website-us-east-1.amazonaws.com',
     '0x-instant-dogfood.s3-website-us-east-1.amazonaws.com',
     'instant.0xproject.com',
+    'instant.0x.org',
 ];
 export const HOST_DOMAINS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'];
 export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
@@ -53,8 +54,8 @@ export const META_MASK_CHROME_STORE_URL =
 export const META_MASK_OPERA_STORE_URL = 'https://addons.opera.com/en/extensions/details/metamask/';
 export const META_MASK_SITE_URL = 'https://metamask.io/';
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
-    [Network.Mainnet]: 'https://mainnet.infura.io/',
-    [Network.Kovan]: 'https://kovan.infura.io/',
+    [Network.Mainnet]: `https://mainnet.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
+    [Network.Kovan]: `https://kovan.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
 };
 export const ZERO_EX_SITE_URL = 'https://www.0xproject.com/';
 export const BLOCK_POLLING_INTERVAL_MS = 10000; // 10s

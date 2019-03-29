@@ -1,5 +1,5 @@
 import { OrderAndTraderInfo, OrderStatus, OrderValidatorWrapper } from '@0x/contract-wrappers';
-import { sortingUtils } from '@0x/order-utils';
+import { orderCalculationUtils, sortingUtils } from '@0x/order-utils';
 import { RemainingFillableCalculator } from '@0x/order-utils/lib/src/remaining_fillable_calculator';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -13,8 +13,6 @@ import {
     OrdersAndFillableAmounts,
     SignedOrderWithRemainingFillableMakerAssetAmount,
 } from '../types';
-
-import { orderUtils } from './order_utils';
 
 export const orderProviderResponseProcessor = {
     throwIfInvalidResponse(response: OrderProviderResponse, request: OrderProviderRequest): void {
@@ -83,7 +81,10 @@ function filterOutExpiredAndNonOpenOrders(
     expiryBufferSeconds: number,
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     const result = _.filter(orders, order => {
-        return orderUtils.isOpenOrder(order) && !orderUtils.willOrderExpire(order, expiryBufferSeconds);
+        return (
+            orderCalculationUtils.isOpenOrder(order) &&
+            !orderCalculationUtils.willOrderExpire(order, expiryBufferSeconds)
+        );
     });
     return result;
 }
@@ -112,7 +113,10 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
             const transferrableAssetAmount = BigNumber.min(traderInfo.makerAllowance, traderInfo.makerBalance);
             const transferrableFeeAssetAmount = BigNumber.min(traderInfo.makerZrxAllowance, traderInfo.makerZrxBalance);
             const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
-            const remainingMakerAssetAmount = orderUtils.getRemainingMakerAmount(order, remainingTakerAssetAmount);
+            const remainingMakerAssetAmount = orderCalculationUtils.getMakerFillAmount(
+                order,
+                remainingTakerAssetAmount,
+            );
             const remainingFillableCalculator = new RemainingFillableCalculator(
                 order.makerFee,
                 order.makerAssetAmount,

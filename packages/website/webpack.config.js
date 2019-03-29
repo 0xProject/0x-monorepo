@@ -18,6 +18,9 @@ const config = {
         chunkFilename: 'bundle-[name].js',
         publicPath: '/',
     },
+    externals: {
+        zeroExInstant: 'zeroExInstant'
+    },
     devtool: 'source-map',
     resolve: {
         modules: [path.join(__dirname, '/ts'), 'node_modules'],
