@@ -27,7 +27,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     veil: {
         name: 'veil',
         label: 'Veil',
-        description: 'Platform for creating and trading in prediction markets on everything, built jointly on Augur and 0x.',
+        description:
+            'Platform for creating and trading in prediction markets on everything, built jointly on Augur and 0x.',
         logo_url: '/images/explore/veil.svg',
         theme_color: '#0204EB',
         url: 'https://veil.co/',
@@ -36,7 +37,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     radar_relay: {
         name: 'radar_relay',
         label: 'Radar Relay',
-        description: 'Popular open order book relayer for trading ERC-20 tokens wallet to wallet, headquartered in Denver.',
+        description:
+            'Popular open order book relayer for trading ERC-20 tokens wallet to wallet, headquartered in Denver.',
         logo_url: '/images/explore/radar_relay.svg',
         theme_color: '#262626',
         url: 'https://radarrelay.com/',
@@ -222,7 +224,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     pixura: {
         name: 'pixura',
         label: 'Pixura',
-        description: 'NFT marketplace as a service, powering the exchange SuperRare, a place to collect scarce digital art.',
+        description:
+            'NFT marketplace as a service, powering the exchange SuperRare, a place to collect scarce digital art.',
         logo_url: '/images/explore/pixura.svg',
         theme_color: '#1F5FF1',
         url: 'https://pixura.io/#about',
