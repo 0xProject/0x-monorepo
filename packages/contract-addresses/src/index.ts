@@ -10,6 +10,8 @@ export interface ContractAddresses {
     forwarder: string;
     orderValidator: string;
     dutchAuction: string;
+    coordinatorRegistry: string;
+    coordinator: string;
 }
 
 export enum NetworkId {
@@ -32,8 +34,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
-        // @todo hysz/dekz: Add mainnet address once deployed.
-        dutchAuction: NULL_ADDRESS,
+        dutchAuction: '0x07b32a653754945666cfca91168bb207323dfe67',
+        coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
+        coordinator: '0x24675738816c87ad37e712cc24f309a0c906187f',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -45,6 +48,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
         dutchAuction: '0x2df6b59309f35ada230ec7d61d7d97355017a1df',
+        coordinatorRegistry: '0x403cc23e88c17c4652fb904784d1af640a6722d9',
+        coordinator: '0xc442300dcb4df1ff1db0173e77556dc559de6006',
     },
     4: {
         exchange: '0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e',
@@ -56,6 +61,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         forwarder: '0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4',
         orderValidator: '0x0c5173a51e26b29d6126c686756fb9fbef71f762',
         dutchAuction: '0xdd7bd6437e67c422879364740ab5855fe3dc41f7',
+        coordinatorRegistry: '0x1084b6a398e47907bae43fec3ff4b677db6e4fee',
+        coordinator: '0xc05e6c01b83eeedecac2f7bab9367da4d4c108df',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -67,6 +74,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         forwarder: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
         dutchAuction: '0xe11667fb51f34c5367f40d7e379327ce32ee7150',
+        coordinatorRegistry: '0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5',
+        coordinator: '0x04b2b090bad68b254881d7eb645a258ce66cc998',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
@@ -79,6 +88,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         forwarder: '0x6000eca38b8b5bba64986182fe2a69c57f6b5414',
         orderValidator: '0x32eecaf51dfea9618e9bc94e9fbfddb1bbdcba15',
         dutchAuction: '0x7e3f4e1deb8d3a05d9d2da87d9521268d0ec3239',
+        coordinatorRegistry: '0xaa86dda78e9434aca114b6676fc742a18d15a1cc',
+        coordinator: '0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29',
     },
 };
 

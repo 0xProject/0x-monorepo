@@ -1,3 +1,4 @@
+import { DummyERC20TokenContract } from '@0x/abi-gen-wrappers';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
@@ -10,6 +11,7 @@ import 'mocha';
 import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
 import { DecodedLogEvent } from '../src/types';
 
+import { UntransferrableDummyERC20Token } from './artifacts/UntransferrableDummyERC20Token';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
@@ -290,9 +292,93 @@ describe('ExchangeWrapper', () => {
                     '0x1b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403',
             };
 
-            expect(
+            return expect(
                 contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
             ).to.eventually.to.be.rejectedWith(RevertReason.InvalidOrderSignature);
+        });
+        it('should validate the order with the current balances and allowances for the maker', async () => {
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                validateRemainingOrderAmountIsFillable: false,
+            });
+        });
+        it('should validate the order with remaining fillable amount for the order', async () => {
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
+        });
+        it('should validate the order with specified amount', async () => {
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                expectedFillTakerTokenAmount: signedOrder.takerAssetAmount,
+            });
+        });
+        it('should throw if the amount is greater than the allowance/balance', async () => {
+            return expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                    // tslint:disable-next-line:custom-no-magic-numbers
+                    expectedFillTakerTokenAmount: new BigNumber(2).pow(256).minus(1),
+                }),
+            ).to.eventually.to.be.rejected();
+        });
+        it('should throw when the maker does not have enough balance for the remaining order amount', async () => {
+            const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
+            // Change maker balance to have less than the order amount
+            const remainingBalance = makerBalance.minus(signedOrder.makerAssetAmount.minus(1));
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await contractWrappers.erc20Token.transferAsync(
+                    makerTokenAddress,
+                    makerAddress,
+                    constants.NULL_ADDRESS,
+                    remainingBalance,
+                ),
+            );
+            return expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder),
+            ).to.eventually.to.be.rejected();
+        });
+        it('should validate the order when remaining order amount has some fillable amount', async () => {
+            const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
+            // Change maker balance to have less than the order amount
+            const remainingBalance = makerBalance.minus(signedOrder.makerAssetAmount.minus(1));
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await contractWrappers.erc20Token.transferAsync(
+                    makerTokenAddress,
+                    makerAddress,
+                    constants.NULL_ADDRESS,
+                    remainingBalance,
+                ),
+            );
+            // An amount is still transferrable
+            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
+                validateRemainingOrderAmountIsFillable: false,
+            });
+        });
+        it('should throw when the ERC20 token has transfer restrictions', async () => {
+            const untransferrableToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+                UntransferrableDummyERC20Token,
+                provider,
+                { from: userAddresses[0] },
+                'UntransferrableToken',
+                'UTT',
+                new BigNumber(constants.ZRX_DECIMALS),
+                // tslint:disable-next-line:custom-no-magic-numbers
+                new BigNumber(2).pow(20).minus(1),
+            );
+            const untransferrableMakerAssetData = assetDataUtils.encodeERC20AssetData(untransferrableToken.address);
+            const invalidSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                untransferrableMakerAssetData,
+                takerAssetData,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await contractWrappers.erc20Token.setProxyAllowanceAsync(
+                    untransferrableToken.address,
+                    makerAddress,
+                    signedOrder.makerAssetAmount,
+                ),
+            );
+            return expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(invalidSignedOrder),
+            ).to.eventually.to.be.rejectedWith('TRANSFER_FAILED');
         });
     });
     describe('#isValidSignature', () => {

@@ -34,6 +34,8 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 
 ### Solidity Packages
 
+These packages are all under development. See [/contracts/README.md](/contracts/README.md) for a list of deployed packages.
+
 | Package                                                             | Version                                                                                                                                     | Description                                                                                                                                                                                                                                           |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`@0x/contracts-asset-proxy`](/contracts/asset-proxy)               | [![npm](https://img.shields.io/npm/v/@0x/contracts-asset-proxy.svg)](https://www.npmjs.com/package/@0x/contracts-asset-proxy)               | [`AssetProxy`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy) contracts used within the protocol                                                                                               |

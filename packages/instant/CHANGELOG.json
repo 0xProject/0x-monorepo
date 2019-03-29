@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {

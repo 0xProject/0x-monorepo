@@ -9,5 +9,6 @@ export const chaiSetup = {
         chai.use(ChaiBigNumber());
         chai.use(dirtyChai);
         chai.use(chaiAsPromised);
+        chai.config.truncateThreshold = 0;
     },
 };

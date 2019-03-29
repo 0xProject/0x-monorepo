@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v8.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v8.0.3 - _March 1, 2019_
 
     * Move contracts-test-utils and fill-scenarios to dev dependency (#1657)

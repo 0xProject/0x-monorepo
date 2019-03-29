@@ -1,12 +1,10 @@
-import { marketUtils, SignedOrder } from '@0x/order-utils';
+import { marketUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
 import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
-
-import { orderUtils } from './order_utils';
 
 // Calculates a buy quote for orders that have WETH as the takerAsset
 export const buyQuoteCalculator = {
@@ -166,7 +164,7 @@ function findEthAmountNeededToBuyZrx(
             const { totalEthAmount, remainingZrxBuyAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
             const makerFillAmount = BigNumber.min(remainingZrxBuyAmount, remainingFillableMakerAssetAmount);
-            const [takerFillAmount, adjustedMakerFillAmount] = orderUtils.getTakerFillAmountForFeeOrder(
+            const [takerFillAmount, adjustedMakerFillAmount] = orderCalculationUtils.getTakerFillAmountForFeeOrder(
                 order,
                 makerFillAmount,
             );
@@ -200,8 +198,8 @@ function findEthAndZrxAmountNeededToBuyAsset(
             const { totalEthAmount, totalZrxAmount, remainingAssetBuyAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
             const makerFillAmount = BigNumber.min(acc.remainingAssetBuyAmount, remainingFillableMakerAssetAmount);
-            const takerFillAmount = orderUtils.getTakerFillAmount(order, makerFillAmount);
-            const takerFeeAmount = orderUtils.getTakerFeeAmount(order, takerFillAmount);
+            const takerFillAmount = orderCalculationUtils.getTakerFillAmount(order, makerFillAmount);
+            const takerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmount);
             return {
                 totalEthAmount: totalEthAmount.plus(takerFillAmount),
                 totalZrxAmount: totalZrxAmount.plus(takerFeeAmount),

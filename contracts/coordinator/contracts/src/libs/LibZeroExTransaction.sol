@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental "ABIEncoderV2";
 
 import "./LibEIP712Domain.sol";
 
@@ -40,16 +41,16 @@ contract LibZeroExTransaction is
         bytes data;             // AbiV2 encoded calldata.
     }
 
-    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of this contract.
+    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @return EIP712 hash of the transaction with the domain separator of this contract.
     function getTransactionHash(ZeroExTransaction memory transaction)
-        internal
+        public
         view
         returns (bytes32 transactionHash)
     {
-        // Note: this transaction hash will differ from the hash produced by the Exchange contract because it utilizes a different domain hash.
-        transactionHash = hashEIP712Message(hashZeroExTransaction(transaction));
+        // Hash the transaction with the domain separator of the Exchange contract.
+        transactionHash = hashEIP712ExchangeMessage(hashZeroExTransaction(transaction));
         return transactionHash;
     }
 
@@ -77,7 +78,7 @@ contract LibZeroExTransaction is
         assembly {
             // Compute hash of data
             let dataHash := keccak256(add(data, 32), mload(data))
-    
+
             // Load free memory pointer
             let memPtr := mload(64)
 

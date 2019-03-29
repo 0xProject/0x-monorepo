@@ -1,11 +1,17 @@
 [
     {
-        "version": "3.0.0",
+        "version": "3.1.0",
         "changes": [
             {
-                "note": "Set evmVersion to byzantium",
-                "pr": 1678
-            },
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
             {
                 "note": "Optimize loops in LibAddressArray",
                 "pr": 1668
@@ -17,8 +23,17 @@
             {
                 "note": "Added Address.sol with test for whether or not an address is a contract",
                 "pr": 1657
+            },
+            {
+                "note": "Add unit tests for `LibAddressArray`",
+                "pr": 1712
+            },
+            {
+                "note": "Fix `LibAddressArray.indexOf` returning incorrect index.",
+                "pr": 1712
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

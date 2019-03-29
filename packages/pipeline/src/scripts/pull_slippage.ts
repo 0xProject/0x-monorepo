@@ -13,7 +13,7 @@ import { handleError } from '../utils';
 const BATCH_SAVE_SIZE = 1000;
 
 // Max requests to make to API per second;
-const EDPS_MAX_REQUESTS_PER_SECOND = 1;
+const EDPS_MAX_REQUESTS_PER_SECOND = 0.5;
 
 // Maximum requests per second to CryptoCompare
 const CRYPTO_COMPARE_MAX_REQS_PER_SECOND = 60;

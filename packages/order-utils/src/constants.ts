@@ -103,6 +103,17 @@ export const constants = {
             { name: 'data', type: 'bytes' },
         ],
     },
+    COORDINATOR_DOMAIN_NAME: '0x Protocol Coordinator',
+    COORDINATOR_DOMAIN_VERSION: '1.0.0',
+    COORDINATOR_APPROVAL_SCHEMA: {
+        name: 'CoordinatorApproval',
+        parameters: [
+            { name: 'txOrigin', type: 'address' },
+            { name: 'transactionHash', type: 'bytes32' },
+            { name: 'transactionSignature', type: 'bytes' },
+            { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
+        ],
+    },
     ERC20_METHOD_ABI,
     ERC721_METHOD_ABI,
     MULTI_ASSET_METHOD_ABI,

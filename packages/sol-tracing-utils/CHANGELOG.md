@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.9 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v6.0.8 - _March 20, 2019_
+
+    * Update solidity-parser-antlr to 0.4.2 (#1719)
+
 ## v6.0.7 - _March 1, 2019_
 
     * Fix a bug when `TruffleArtifactAdapter` wasn't correctly parsing solc config in pre-5.0 versions of Truffle (#1663)

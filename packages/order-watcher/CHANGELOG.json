@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1553183790,
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.4",
         "changes": [
             {
@@ -9,8 +18,17 @@
             {
                 "note": "Fix issue where ERC721 Approval events could cause a lookup on undefined object",
                 "pr": 1692
+            },
+            {
+                "note": "Fix race-condition bugs due to async event callbacks modifying shared state",
+                "pr": 1718
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

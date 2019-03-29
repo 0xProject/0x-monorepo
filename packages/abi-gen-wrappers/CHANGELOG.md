@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _March 21, 2019_
+
+    * Add Coordinator and CoordinatorRegistry contract wrappers (#1689)
+
+## v4.0.3 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v4.0.2 - _March 1, 2019_
 
     * Dependencies updated

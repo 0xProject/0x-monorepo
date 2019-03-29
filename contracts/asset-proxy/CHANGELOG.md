@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _March 21, 2019_
+
+    * Run Web3ProviderEngine without excess block polling (#1695)
+
+## v2.0.0 - _March 20, 2019_
+
+    * Do not reexport external dependencies (#1682)
+    * Add ERC1155Proxy (#1661)
+    * Bumped solidity version to ^0.5.5 (#1701)
+    * Integration testing for ERC1155Proxy (#1673)
+
 ## v1.0.9 - _March 1, 2019_
 
     * Dependencies updated

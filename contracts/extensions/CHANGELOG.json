@@ -1,11 +1,17 @@
 [
     {
-        "version": "3.0.0",
+        "version": "3.1.0",
         "changes": [
             {
-                "note": "Set evmVersion to byzantium",
-                "pr": 1678
-            },
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
             {
                 "note": "Do not reexport external dependencies",
                 "pr": 1682
@@ -14,7 +20,8 @@
                 "note": "Upgrade contracts to Solidity 0.5.5",
                 "pr": 1682
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

@@ -4,7 +4,7 @@
     "useDockerisedSolc": true,
     "isOfflineMode": false,
     "compilerSettings": {
-        "evmVersion": "byzantium",
+        "evmVersion": "constantinople",
         "optimizer": {
             "enabled": true,
             "runs": 1000000,
@@ -23,6 +23,7 @@
         }
     },
     "contracts": [
+        "src/ERC1155Proxy.sol",
         "src/ERC20Proxy.sol",
         "src/ERC721Proxy.sol",
         "src/MixinAuthorizable.sol",

@@ -1,6 +1,6 @@
 {
     "name": "@0x/abi-gen-wrappers",
-    "version": "4.0.2",
+    "version": "4.1.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -18,7 +18,7 @@
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken).json"
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry).json"
     },
     "repository": {
         "type": "git",
@@ -30,19 +30,19 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^2.0.6",
+        "@0x/abi-gen": "^2.0.8",
         "@0x/abi-gen-templates": "^2.0.1",
         "@0x/tslint-config": "^3.0.0",
-        "@0x/types": "^2.1.1",
-        "@0x/utils": "^4.2.2",
-        "@0x/web3-wrapper": "^6.0.2",
-        "ethereum-types": "^2.1.0",
+        "@0x/types": "^2.2.1",
+        "@0x/utils": "^4.3.0",
+        "@0x/web3-wrapper": "^6.0.4",
+        "ethereum-types": "^2.1.1",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11",
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.0.2"
+        "@0x/base-contract": "^5.0.4"
     },
     "publishConfig": {
         "access": "public"
