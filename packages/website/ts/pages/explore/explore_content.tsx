@@ -18,7 +18,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     paradex: {
         name: 'paradex',
         label: 'Paradex',
-        description: 'Matching order book relayer acquired by Coinbase in May of 2018, with a focus on stablecoins.',
+        description: 'Matching order book relayer acquired by Coinbase, with a focus on stablecoins like DAI and USDC.',
         logo_url: '/images/explore/paradex.svg',
         theme_color: '#151628',
         url: 'https://paradex.io/',
@@ -27,7 +27,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     veil: {
         name: 'veil',
         label: 'Veil',
-        description: 'Platform for creating and trading in prediction markets on everything.',
+        description:
+            'Platform for creating and trading in prediction markets on everything, built jointly on Augur and 0x.',
         logo_url: '/images/explore/veil.svg',
         theme_color: '#0204EB',
         url: 'https://veil.co/',
@@ -36,7 +37,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     radar_relay: {
         name: 'radar_relay',
         label: 'Radar Relay',
-        description: 'Open order book relayer for wallet-to-wallet ERC-20 tokens headquartered in Denver, Colorado.',
+        description:
+            'Popular open order book relayer for trading ERC-20 tokens wallet to wallet, headquartered in Denver.',
         logo_url: '/images/explore/radar_relay.svg',
         theme_color: '#262626',
         url: 'https://radarrelay.com/',
@@ -57,7 +59,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     emoon: {
         name: 'emoon',
         label: 'Emoon',
-        description: 'A user-friendly marketplace to trade ERC-20 and ERC-721 crypto gaming assets.',
+        description: 'A marketplace for the buying and selling of ERC-20 game tokens and ERC-721 crypto collectibles.',
         logo_url: '/images/explore/emoon.svg',
         theme_color: '#3F89E7',
         url: 'https://www.emoon.io/',
@@ -74,8 +76,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     },
     boxswap: {
         name: 'boxswap',
-        label: 'Boxswap',
-        description: 'OTC relayer made for swapping ERC-20 and ERC-721 assets in a marketplace communities.',
+        label: 'BoxSwap',
+        description: 'NFT relayer and wallet made for ERC-20 and ERC-721 assets in video game communities.',
         logo_url: '/images/explore/boxswap.svg',
         theme_color: '#FF99DF',
         url: 'https://boxswap.io/',
@@ -111,7 +113,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     },
     tokenmom: {
         name: 'tokenmom',
-        label: 'Tokenmom',
+        label: 'TokenMom',
         description: 'Matching order book relayer based in Korea with a highly developed referral system.',
         logo_url: '/images/explore/tokenmom.svg',
         theme_color: '#000000',
@@ -121,7 +123,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     lake_project: {
         name: 'lake_project',
         label: 'Lake Project',
-        description: 'Open order book relayer headquartered in Toronto with a focus on AI driven wealth management.',
+        description: 'Open order book relayer headquartered in Toronto with a focus on AI wealth management.',
         logo_url: '/images/explore/lake_project.svg',
         theme_color: '#232428',
         url: 'https://trade.lakeproject.co/',
@@ -131,7 +133,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
         name: 'ledgerdex',
         label: 'LedgerDex',
         description:
-            'Open order book relayer that allows wallet-to-wallet trading and next generation token management.',
+            'Open order book relayer that allows wallet to wallet trading and next generation token management.',
         logo_url: '/images/explore/ledgerdex.svg',
         theme_color: '#51A362',
         url: 'https://app.ledgerdex.com/',
@@ -146,7 +148,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     },
     fordex: {
         name: 'fordex',
-        label: 'Fordex',
+        label: 'ForDex',
         description: 'Open order book relayer that enables stablecoin arbitrage, supporting tokens like DAI and PAX.',
         logo_url: '/images/explore/fordex.svg',
         theme_color: '#080424',
@@ -175,7 +177,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     },
     fabrx: {
         name: 'fabrx',
-        label: 'Fabrx',
+        label: 'FabrX',
         description:
             'Platform as a service for developers, enabling them to easily integrate features from NFTs and DeFi.',
         logo_url: '/images/explore/fabrx.svg',
@@ -195,7 +197,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     mobidex: {
         name: 'mobidex',
         label: 'Mobidex',
-        description: 'Mobile first open order book relayer based in San Francisco with an integrated wallet.',
+        description: 'Mobile application and open order book relayer based in San Francisco with an integrated wallet.',
         logo_url: '/images/explore/mobidex.svg',
         theme_color: '#F4B44C',
         url: 'https://mobidex.io/',
@@ -203,8 +205,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     },
     imtoken: {
         name: 'imtoken',
-        label: 'ImToken',
-        description: 'Popular Chinese wallet and mobile application with a one-click trade interface for 0x orders.',
+        label: 'imToken',
+        description: 'Chinese wallet and mobile application with a one-click trade interface for 0x orders.',
         logo_url: '/images/explore/imtoken.svg',
         theme_color: '#0791C0',
         url: 'https://token.im/',
@@ -222,7 +224,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     pixura: {
         name: 'pixura',
         label: 'Pixura',
-        description: 'NFT marketplace as a service, powering the exchange SuperRare, a place to collect digital art.',
+        description:
+            'NFT marketplace as a service, powering the exchange SuperRare, a place to collect scarce digital art.',
         logo_url: '/images/explore/pixura.svg',
         theme_color: '#1F5FF1',
         url: 'https://pixura.io/#about',
@@ -231,7 +234,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     zeroex_tracker: {
         name: 'zeroex_tracker',
         label: '0x Tracker',
-        description: 'Data analytics for the 0x ecosystem, showing network volume, trades and news from top relayers.',
+        description: 'Data analytics for the 0x ecosystem, showing network volume, trades and news from key relayers.',
         logo_url: '/images/explore/zero_ex_tracker.svg',
         theme_color: '#0A0830',
         url: 'https://0xtracker.com/',
