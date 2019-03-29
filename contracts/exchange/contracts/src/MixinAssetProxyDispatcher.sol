@@ -40,10 +40,9 @@ contract MixinAssetProxyDispatcher is
         // Ensure that no asset proxy exists with current id.
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
-        require(
-            currentAssetProxy == address(0),
-            "ASSET_PROXY_ALREADY_EXISTS"
-        );
+        if (currentAssetProxy != address(0)) {
+            rrevert(AssetProxyExistsError(currentAssetProxy));
+        }
 
         // Add asset proxy and log registration.
         assetProxies[assetProxyId] = assetProxy;
@@ -69,22 +68,28 @@ contract MixinAssetProxyDispatcher is
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
+    /// @param orderHash Order hash, used for rich reverts.
     function dispatchTransferFrom(
         bytes memory assetData,
         address from,
         address to,
-        uint256 amount
+        uint256 amount,
+        bytes32 orderHash
     )
         internal
     {
         // Do nothing if no amount should be transferred.
         if (amount > 0 && from != to) {
             // Ensure assetData length is valid
+            if (assetData.length <= 3) {
+                rrevert(AssetProxyDispatchError(AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH));
+            }
+
             require(
                 assetData.length > 3,
                 "LENGTH_GREATER_THAN_3_REQUIRED"
             );
-            
+
             // Lookup assetProxy. We do not use `LibBytes.readBytes4` for gas efficiency reasons.
             bytes4 assetProxyId;
             assembly {
@@ -96,14 +101,18 @@ contract MixinAssetProxyDispatcher is
             address assetProxy = assetProxies[assetProxyId];
 
             // Ensure that assetProxy exists
-            require(
-                assetProxy != address(0),
-                "ASSET_PROXY_DOES_NOT_EXIST"
-            );
-            
+            if (assetProxy == address(0)) {
+                rrevert(AssetProxyDispatchError(AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY));
+            }
+
+            // Whether the AssetProxy transfer succeeded.
+            bool didSucceed;
+            // On failure, the revert message returned by the asset proxy.
+            bytes revertMessage = new bytes(0);
+
             // We construct calldata for the `assetProxy.transferFrom` ABI.
             // The layout of this calldata is in the table below.
-            // 
+            //
             // | Area     | Offset | Length  | Contents                                    |
             // | -------- |--------|---------|-------------------------------------------- |
             // | Header   | 0      | 4       | function selector                           |
@@ -120,6 +129,8 @@ contract MixinAssetProxyDispatcher is
                 /////// Setup State ///////
                 // `cdStart` is the start of the calldata for `assetProxy.transferFrom` (equal to free memory ptr).
                 let cdStart := mload(64)
+                // We reserve 256 bytes from `cdStart` because we'll reuse it later for return data.
+                mstore(64, add(cdStart, 256))
                 // `dataAreaLength` is the total number of words needed to store `assetData`
                 //  As-per the ABI spec, this value is padded up to the nearest multiple of 32,
                 //  and includes 32-bytes for length.
@@ -127,12 +138,12 @@ contract MixinAssetProxyDispatcher is
                 // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.
                 let cdEnd := add(cdStart, add(132, dataAreaLength))
 
-                
+
                 /////// Setup Header Area ///////
                 // This area holds the 4-byte `transferFromSelector`.
                 // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
                 mstore(cdStart, 0xa85e59e400000000000000000000000000000000000000000000000000000000)
-                
+
                 /////// Setup Params Area ///////
                 // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.
                 // Notes:
@@ -142,7 +153,7 @@ contract MixinAssetProxyDispatcher is
                 mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 100), amount)
-                
+
                 /////// Setup Data Area ///////
                 // This area holds `assetData`.
                 let dataArea := add(cdStart, 132)
@@ -154,18 +165,55 @@ contract MixinAssetProxyDispatcher is
                 }
 
                 /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
-                let success := call(
+                didSucceed := call(
                     gas,                    // forward all gas
                     assetProxy,             // call address of asset proxy
                     0,                      // don't send any ETH
                     cdStart,                // pointer to start of input
-                    sub(cdEnd, cdStart),    // length of input  
+                    sub(cdEnd, cdStart),    // length of input
                     cdStart,                // write output over input
-                    512                     // reserve 512 bytes for output
+                    256                     // reserve 256 bytes for output
                 )
-                if iszero(success) {
-                    revert(cdStart, returndatasize())
+
+                if iszero(didSucceed) { // Call reverted.
+                    // Attempt to to decode standard error messages with the
+                    // signature `Error(string)` so we can upgrade them to
+                    // a rich revert.
+
+                    // Standard revert errors have the following memory layout:
+                    // | Area            | Offset  | Length   | Contents                              |
+                    // --------------------------------------------------------------------------------
+                    // | Selector        | 0       | 4        | bytes4 function selector (0x08c379a0) |
+                    // | Params          |         |          |                                       |
+                    // |                 | 4       | 32       | uint256 offset to data (o)            |
+                    // | Data            |         |          |                                       |
+                    // |                 | 4 + o   | 32       | uint256 length of data (n             |
+                    // |                 | 32 + o  | n        | Left-aligned message bytes            |
+
+                    // Make sure the return value is long enough.
+                    if gt(returndatasize(), 67) {
+                        // Check that the selector matches for a standard error.
+                        let selector := and(mload(sub(cdStart, 28), 0xffffffff)
+                        cdStart := add(cdStart, 4)
+                        if eq(selector, 0x08c379a) {
+                            let dataLength := mload(cdStart);
+                            revertMessage := add(cdStart, mload(cdStart))
+                            // Truncate the data length if it's larger than our buffer
+                            // size (256 - 32 = 224)
+                            if gt(dataLength, 224) {
+                                mstore(revertMessage, 224)
+                            }
+                        }
+                    }
                 }
+            }
+
+            if (!didSucceed) {
+                rrevert(AssetProxyDispatchError(
+                    orderHash,
+                    assetData,
+                    string(revertMessage)
+                ));
             }
         }
     }
