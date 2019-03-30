@@ -32,7 +32,7 @@ contract TestSignatureValidator is
     // solhint-disable no-empty-blocks
     constructor (uint256 chainId)
         public
-        LibEIP712(chainId)
+        LibEIP712ExchangeDomain(chainId)
     {}
 
     function publicIsValidSignature(
