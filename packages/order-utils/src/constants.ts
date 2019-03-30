@@ -76,7 +76,7 @@ export const constants = {
             { name: 'name', type: 'string' },
             { name: 'version', type: 'string' },
             { name: 'chainId', type: 'uint256' },
-            { name: 'verifyingContract', type: 'address' },
+            { name: 'verifyingContractAddress', type: 'address' },
         ],
     },
     EXCHANGE_ORDER_SCHEMA: {
