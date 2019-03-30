@@ -27,10 +27,10 @@ contract LibConstants {
     // The 0x Exchange contract.
     ITransactions internal EXCHANGE;
 
-    /// @param _exchange Address of the 0x Exchange contract.
-    constructor (address _exchange)
+    /// @param exchange Address of the 0x Exchange contract.
+    constructor (address exchange)
         public
     {
-        EXCHANGE = ITransactions(_exchange);
+        EXCHANGE = ITransactions(exchange);
     }
 }

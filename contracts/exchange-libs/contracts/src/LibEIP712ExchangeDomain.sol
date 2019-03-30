@@ -30,12 +30,14 @@ contract LibEIP712ExchangeDomain is
     // solhint-disable-next-line var-name-mixedcase
     bytes32 internal EIP712_EXCHANGE_DOMAIN_HASH;
 
-    constructor ()
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (uint256 chainId)
         public
     {
         EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
             EIP712_EXCHANGE_DOMAIN_NAME,
             EIP712_EXCHANGE_DOMAIN_VERSION,
+            chainId,
             address(this)
         );
     }
