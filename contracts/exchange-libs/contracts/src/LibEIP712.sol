@@ -27,30 +27,20 @@ contract LibEIP712 {
         "string name,",
         "string version,",
         "uint256 chainId,",
-        "address verifyingContract",
+        "address verifyingContractAddress",
         ")"
     ));
-
-    // Chain ID of the network this contract is deployed on.
-    // solhint-disable-next-line var-name-mixedcase
-    uint256 internal CHAIN_ID;
-
-    /// @param chainId Chain ID of the network this contract is deployed on.
-    constructor (uint256 chainId)
-        public
-    {
-        CHAIN_ID = chainId;
-    }
 
     /// @dev Calculates a EIP712 domain separator.
     /// @param name The EIP712 domain name.
     /// @param version The EIP712 domain version.
-    /// @param verifyingContract The EIP712 verifying contract.
+    /// @param verifyingContractAddress The EIP712 verifying contract.
     /// @return EIP712 domain separator.
     function hashEIP712Domain(
         string memory name,
         string memory version,
-        address verifyingContract
+        uint256 chainId,
+        address verifyingContractAddress
     )
         internal
         view
@@ -60,8 +50,8 @@ contract LibEIP712 {
             EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
             keccak256(bytes(name)),
             keccak256(bytes(version)),
-            CHAIN_ID,
-            uint256(verifyingContract)
+            chainId,
+            uint256(verifyingContractAddress)
         ));
     }
 

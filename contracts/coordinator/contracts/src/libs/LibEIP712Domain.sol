@@ -42,17 +42,20 @@ contract LibEIP712Domain is
     // Hash of the EIP712 Domain Separator data for the Exchange
     bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
 
-    constructor ()
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (uint256 chainId)
         public
     {
         EIP712_COORDINATOR_DOMAIN_HASH = hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
+            chainId,
             address(this)
         );
         EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
             EIP712_EXCHANGE_DOMAIN_NAME,
             EIP712_EXCHANGE_DOMAIN_VERSION,
+            chainId,
             address(EXCHANGE)
         );
     }
