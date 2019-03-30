@@ -18,27 +18,18 @@
 
 pragma solidity ^0.5.5;
 
-import "./mixins/MLibRichErrors.sol";
-
-
-contract LibRichErrors is
-    MLibRichErrors
-{
+contract MRichErrors {
     // solhint-disable func-name-mixedcase
+
+    bytes4 internal constant STANDARD_ERROR_SELECTOR =
+        bytes4(keccak256("Error(string)"));
+
     function StandardError(
         string memory message
     )
         internal
         pure
-        returns (bytes memory)
-    {
-        return abi.encodePacked(
-            STANDARD_ERROR_SELECTOR,
-            uint256(0x20),
-            bytes(message).length,
-            bytes(message)
-        );
-    }
+        returns (bytes memory);
 
     // solhint-enable func-name-mixedcase
 
@@ -46,10 +37,5 @@ contract LibRichErrors is
     /// @param errorData ABI encoded error data.
     function rrevert(bytes memory errorData)
         internal
-        pure
-    {
-        assembly {
-            revert(add(errorData, 0x20), mload(errorData))
-        }
-    }
+        pure;
 }
