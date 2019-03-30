@@ -135,7 +135,7 @@ contract MixinRichErrors is
     }
 
     function AssetProxyExistsError(
-        address proxy
+        address proxyAddress
     )
         internal
         pure
@@ -143,11 +143,12 @@ contract MixinRichErrors is
     {
         return abi.encodeWithSelector(
             ASSET_PROXY_EXISTS_ERROR_SELECTOR,
-            proxy
+            proxyAddress
         );
     }
 
     function AssetProxyDispatchError(
+        bytes32 orderHash,
         bytes memory assetData,
         AssetProxyDispatchErrorCodes error
     )
@@ -157,6 +158,7 @@ contract MixinRichErrors is
     {
         return abi.encodeWithSelector(
             ASSET_PROXY_DISPATCH_ERROR_SELECTOR,
+            orderHash,
             assetData,
             uint8(error)
         );
