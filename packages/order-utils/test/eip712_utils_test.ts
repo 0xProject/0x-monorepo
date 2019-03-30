@@ -27,7 +27,7 @@ describe('EIP712 Utils', () => {
             const domainObject = typedData.domain;
             expect(domainObject.name).to.eq(constants.EXCHANGE_DOMAIN_NAME);
             expect(domainObject.version).to.eq(constants.EXCHANGE_DOMAIN_VERSION);
-            expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
+            expect(domainObject.verifyingContractAddress).to.eq(constants.NULL_ADDRESS);
             expect(typedData.primaryType).to.eq(primaryType);
         });
         it('adds in the EIP712DomainSeparator without default values', () => {
@@ -50,7 +50,7 @@ describe('EIP712 Utils', () => {
             const domainObject = typedData.domain;
             expect(domainObject.name).to.eq(domainName);
             expect(domainObject.version).to.eq(domainVersion);
-            expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
+            expect(domainObject.verifyingContractAddress).to.eq(constants.NULL_ADDRESS);
             expect(typedData.primaryType).to.eq(primaryType);
         });
     });
@@ -68,7 +68,7 @@ describe('EIP712 Utils', () => {
             const domainObject = typedData.domain;
             expect(domainObject.name).to.eq(constants.EXCHANGE_DOMAIN_NAME);
             expect(domainObject.version).to.eq(constants.EXCHANGE_DOMAIN_VERSION);
-            expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
+            expect(domainObject.verifyingContractAddress).to.eq(constants.NULL_ADDRESS);
         });
     });
 });
