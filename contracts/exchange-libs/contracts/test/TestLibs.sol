@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/LibEIP712.sol";
+import "../src/LibEIP712ExchangeDomain.sol";
 import "../src/LibMath.sol";
 import "../src/LibOrder.sol";
 import "../src/LibFillResults.sol";
@@ -28,7 +28,7 @@ import "../src/LibAbiEncoder.sol";
 
 // solhint-disable no-empty-blocks
 contract TestLibs is
-    LibEIP712,
+    LibEIP712ExchangeDomain,
     LibMath,
     LibOrder,
     LibFillResults,
