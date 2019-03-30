@@ -18,9 +18,12 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-utils/contracs/src/mixins/MLibRichErrors.sol";
 
-contract MRichErrors {
 
+contract MRichErrors is
+    MLibRichErrors
+{
     enum FillErrorCodes {
         INVALID_TAKER_AMOUNT,
         TAKER_OVERPAY,
@@ -139,9 +142,10 @@ contract MRichErrors {
         returns (bytes memory);
 
     bytes4 internal constant ASSET_PROXY_DISPATCH_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyDispatchError(bytes,uint8)"));
+        bytes4(keccak256("AssetProxyDispatchError(bytes32,bytes,uint8)"));
 
     function AssetProxyDispatchError(
+        bytes32 orderHash,
         bytes memory assetData,
         AssetProxyDispatchErrorCodes error
     )
