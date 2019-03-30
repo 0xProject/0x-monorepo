@@ -53,7 +53,7 @@ describe('signTypedDataUtils', () => {
                         type: 'uint256',
                     },
                     {
-                        name: 'verifyingContract',
+                        name: 'verifyingContractAddress',
                         type: 'address',
                     },
                 ],
@@ -112,7 +112,7 @@ describe('signTypedDataUtils', () => {
                 name: '0x Protocol',
                 version: '2',
                 chainId: 1337,
-                verifyingContract: '0x0000000000000000000000000000000000000000',
+                verifyingContractAddress: '0x0000000000000000000000000000000000000000',
             },
             message: {
                 makerAddress: '0x0000000000000000000000000000000000000000',
