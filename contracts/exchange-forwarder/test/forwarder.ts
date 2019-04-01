@@ -119,8 +119,6 @@ describe(ContractName.Forwarder, () => {
         defaultMakerAssetAddress = erc20TokenA.address;
         const defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
-            exchangeAddress: exchangeInstance.address,
-            chainId,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
@@ -129,6 +127,10 @@ describe(ContractName.Forwarder, () => {
             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
             makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            domain: {
+                verifyingContractAddress: exchangeInstance.address,
+                chainId,
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
