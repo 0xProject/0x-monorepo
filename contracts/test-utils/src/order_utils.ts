@@ -1,9 +1,9 @@
 import { OrderWithoutDomain, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';
-import * as _ from 'lodash';
 
 export const orderUtils = {
     getPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
