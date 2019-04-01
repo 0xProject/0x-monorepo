@@ -26,6 +26,7 @@ import "./MixinWrapperFunctions.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinTransactions.sol";
 import "./MixinMatchOrders.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 // solhint-disable no-empty-blocks
@@ -35,7 +36,8 @@ contract Exchange is
     MixinSignatureValidator,
     MixinTransactions,
     MixinAssetProxyDispatcher,
-    MixinWrapperFunctions
+    MixinWrapperFunctions,
+    MixinExchangeRichErrors
 {
     string constant public VERSION = "3.0.0";
 

@@ -20,13 +20,14 @@ pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "./mixins/MExchangeRichErrors.sol";
 import "./interfaces/IAssetProxy.sol";
 
 
 contract MixinAssetProxyDispatcher is
     Ownable,
     MAssetProxyDispatcher,
-    MRichErrors
+    MExchangeRichErrors
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => address) public assetProxies;
@@ -112,7 +113,7 @@ contract MixinAssetProxyDispatcher is
             // Whether the AssetProxy transfer succeeded.
             bool didSucceed;
             // On failure, the revert message returned by the asset proxy.
-            bytes revertMessage;
+            bytes memory revertMessage;
 
             // We construct calldata for the `assetProxy.transferFrom` ABI.
             // The layout of this calldata is in the table below.
@@ -197,7 +198,7 @@ contract MixinAssetProxyDispatcher is
                     // Make sure the return value is long enough.
                     if gt(returndatasize(), 67) {
                         // Check that the selector matches for a standard error.
-                        let selector := and(mload(sub(cdStart, 28), 0xffffffff)
+                        let selector := and(mload(sub(cdStart, 28)), 0xffffffff)
                         cdStart := add(cdStart, 4)
                         if eq(selector, 0x08c379a) {
                             // Set revertMessage to the start of Data.
@@ -213,7 +214,7 @@ contract MixinAssetProxyDispatcher is
             }
 
             if (!didSucceed) {
-                rrevert(AssetProxyDispatchError(
+                rrevert(AssetProxyTransferError(
                     orderHash,
                     assetData,
                     string(revertMessage)
