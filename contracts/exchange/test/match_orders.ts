@@ -152,24 +152,26 @@ describe('matchOrders', () => {
         defaultERC20MakerAssetAddress = erc20TokenA.address;
         defaultERC20TakerAssetAddress = erc20TokenB.address;
         defaultERC721AssetAddress = erc721Token.address;
+        const domain = {
+            verifyingContractAddress: exchange.address,
+            chainId,
+        };
         // Create default order parameters
         const defaultOrderParamsLeft = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressLeft,
-            exchangeAddress: exchange.address,
-            chainId,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
             feeRecipientAddress: feeRecipientAddressLeft,
+            domain,
         };
         const defaultOrderParamsRight = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressRight,
-            exchangeAddress: exchange.address,
-            chainId,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
             feeRecipientAddress: feeRecipientAddressRight,
+            domain,
         };
         const privateKeyLeft = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressLeft)];
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParamsLeft);
