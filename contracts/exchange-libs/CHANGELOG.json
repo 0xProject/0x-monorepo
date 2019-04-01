@@ -27,6 +27,14 @@
             {
                 "note": "Break up `LibEIP712` into reusable components",
                 "pr": 1742
+            },
+            {
+                "note": "Add `chainId` to EIP712 domain schema",
+                "pr": 1742
+            },
+            {
+                "note": "Rename `verifyingContract` to `verifyingContractAddress` in domain schema",
+                "pr": 1742
             }
         ],
         "timestamp": 1563006338

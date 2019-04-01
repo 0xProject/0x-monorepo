@@ -21,7 +21,15 @@
                 "pr": 1863
             },
             {
-                "note": "Add `chainId` field to `Order`, `ZeroExTransaction`, and `EIP712DomainWithDefaultSchema`",
+                "note": "Add `domain` field to `Order`, `ZeroExTransaction`",
+                "pr": 1742
+            },
+            {
+                "note": "Rename OrderWithoutExchangeAddress to OrderWithoutDomain",
+                "pr": 1742
+            },
+            {
+                "note": "Add `chainId` field to `EIP712DomainWithDefaultSchema`",
                 "pr": 1742
             }
         ]

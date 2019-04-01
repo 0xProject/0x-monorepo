@@ -3,7 +3,11 @@
         "version": "3.2.0",
         "changes": [
             {
-                "note": "Add `chainId` to order schema",
+                "note": "Add `eip712DomainSchema` schema",
+                "pr": 1742
+            },
+            {
+                "note": "Add required field `domain` to `order` and `zeroExTransaction` schemas",
                 "pr": 1742
             }
         ]
