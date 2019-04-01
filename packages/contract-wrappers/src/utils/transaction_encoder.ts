@@ -31,11 +31,13 @@ export class TransactionEncoder {
     public getTransactionHashHex(data: string, salt: BigNumber, signerAddress: string): string {
         const exchangeAddress = this._getExchangeContract().address;
         const transaction = {
-            verifyingContractAddress: exchangeAddress,
-            chainId: this._chainId,
             salt,
             signerAddress,
             data,
+            domain: {
+                verifyingContractAddress: exchangeAddress,
+                chainId: this._chainId,
+            },
         };
         const hashHex = transactionHashUtils.getTransactionHashHex(transaction);
         return hashHex;
