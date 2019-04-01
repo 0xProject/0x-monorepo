@@ -2,6 +2,10 @@
 yarn-error.log
 /scripts/
 /generated_docs/
-/src/
 tsconfig.json
 /lib/monorepo_scripts/
+/coverage/
+/src/
+/lib/test/
+test/
+ganache.log

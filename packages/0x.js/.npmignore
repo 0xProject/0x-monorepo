@@ -8,3 +8,4 @@ test/
 /generated_docs/
 /scripts/
 /lib/src/monorepo_scripts/
+ganache.log

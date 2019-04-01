@@ -5,3 +5,4 @@ yarn-error.log
 test/
 tsconfig.json
 /lib/src/monorepo_scripts/
+/coverage/
