@@ -41,11 +41,13 @@ describe('Libs tests', () => {
     describe('getTransactionHash', () => {
         it('should return the correct transaction hash', async () => {
             const tx = {
-                verifyingContractAddress: exchangeAddress,
-                chainId,
                 salt: new BigNumber(0),
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
+                domain: {
+                    verifyingContractAddress: exchangeAddress,
+                    chainId,
+                },
             };
             const expectedTxHash = transactionHashUtils.getTransactionHashHex(tx);
             const txHash = await coordinatorContract.getTransactionHash.callAsync(tx);
@@ -56,12 +58,14 @@ describe('Libs tests', () => {
     describe('getApprovalHash', () => {
         it('should return the correct approval hash', async () => {
             const signedTx = {
-                verifyingContractAddress: exchangeAddress,
-                chainId,
                 salt: new BigNumber(0),
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
                 signature: '0x5678',
+                domain: {
+                    verifyingContractAddress: exchangeAddress,
+                    chainId,
+                },
             };
             const approvalExpirationTimeSeconds = new BigNumber(0);
             const txOrigin = constants.NULL_ADDRESS;

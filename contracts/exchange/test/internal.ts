@@ -36,10 +36,12 @@ const emptyOrder: Order = {
     makerAssetData: '0x',
     takerAssetData: '0x',
     salt: new BigNumber(0),
-    exchangeAddress: constants.NULL_ADDRESS,
-    chainId: 0, // To be filled in later.
     feeRecipientAddress: constants.NULL_ADDRESS,
     expirationTimeSeconds: new BigNumber(0),
+    domain: {
+        verifyingContractAddress: constants.NULL_ADDRESS,
+        chainId: 0, // To be filled in later.
+    },
 };
 
 const emptySignedOrder: SignedOrder = {
@@ -64,8 +66,8 @@ describe('Exchange core internal functions', () => {
     });
     before(async () => {
         chainId = await providerUtils.getChainIdAsync(provider);
-        emptyOrder.chainId = chainId;
-        emptySignedOrder.chainId = chainId;
+        emptyOrder.domain.chainId = chainId;
+        emptySignedOrder.domain.chainId = chainId;
 
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
