@@ -163,28 +163,32 @@ describe('OrderMatcher', () => {
             ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
+
+        const domain = {
+            verifyingContractAddress: exchange.address,
+            chainId,
+        };
+
         // Create default order parameters
         const defaultOrderParamsLeft = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressLeft,
-            exchangeAddress: exchange.address,
-            chainId,
             makerAssetData: leftMakerAssetData,
             takerAssetData: leftTakerAssetData,
             feeRecipientAddress: feeRecipientAddressLeft,
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
+            domain,
         };
         const defaultOrderParamsRight = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressRight,
-            exchangeAddress: exchange.address,
-            chainId,
             makerAssetData: leftTakerAssetData,
             takerAssetData: leftMakerAssetData,
             feeRecipientAddress: feeRecipientAddressRight,
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
+            domain,
         };
         const privateKeyLeft = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressLeft)];
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParamsLeft);

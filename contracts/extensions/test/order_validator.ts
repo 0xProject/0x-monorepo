@@ -99,12 +99,14 @@ describe('OrderValidator', () => {
         erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, tokenId);
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: exchange.address,
-            chainId,
             makerAddress,
             feeRecipientAddress: constants.NULL_ADDRESS,
             makerAssetData: erc20AssetData,
             takerAssetData: erc721AssetData,
+            domain: {
+                verifyingContractAddress: exchange.address,
+                chainId,
+            }
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

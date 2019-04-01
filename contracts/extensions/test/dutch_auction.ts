@@ -152,8 +152,6 @@ describe(ContractName.DutchAuction, () => {
         // Default sell order and buy order are exact mirrors
         const sellerDefaultOrderParams = {
             salt: generatePseudoRandomSalt(),
-            exchangeAddress: exchangeInstance.address,
-            chainId,
             makerAddress,
             feeRecipientAddress,
             // taker address or sender address should be set to the ducth auction contract
@@ -169,6 +167,10 @@ describe(ContractName.DutchAuction, () => {
             expirationTimeSeconds: auctionEndTimeSeconds,
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
+            domain: {
+                verifyingContractAddress: exchangeInstance.address,
+                chainId,
+            },
         };
         // Default buy order is for the auction begin price
         const buyerDefaultOrderParams = {

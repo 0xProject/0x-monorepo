@@ -101,13 +101,15 @@ describe('Coordinator tests', () => {
         // Configure order defaults
         const defaultOrderParams = {
             ...devConstants.STATIC_ORDER_PARAMS,
-            exchangeAddress: exchange.address,
-            chainId,
             senderAddress: coordinatorContract.address,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
             takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
+            domain: {
+                verifyingContractAddress: exchange.address,
+                chainId,
+            },
         };
         const makerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         const takerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
@@ -115,7 +117,7 @@ describe('Coordinator tests', () => {
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
-        approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address, chainId);
+        approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
