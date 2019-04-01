@@ -49,7 +49,7 @@ describe('Exchange transactions', () => {
     let domain: EIP712DomainWithDefaultSchema;
     let signedOrder: SignedOrder;
     let signedTx: SignedZeroExTransaction;
-    let orderWithoutExchangeAddress: OrderWithoutDomain;
+    let orderWithoutDomain: OrderWithoutDomain;
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;
     let takerTransactionFactory: TransactionFactory;
@@ -136,11 +136,11 @@ describe('Exchange transactions', () => {
             beforeEach(async () => {
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
                 signedOrder = await orderFactory.newSignedOrderAsync();
-                orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
+                orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
 
                 takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
                 const data = exchange.fillOrder.getABIEncodedTransactionData(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     signedOrder.signature,
                 );
@@ -206,7 +206,7 @@ describe('Exchange transactions', () => {
 
         describe('cancelOrder', () => {
             beforeEach(async () => {
-                const data = exchange.cancelOrder.getABIEncodedTransactionData(orderWithoutExchangeAddress);
+                const data = exchange.cancelOrder.getABIEncodedTransactionData(orderWithoutDomain);
                 signedTx = makerTransactionFactory.newSignedTransaction(data);
             });
 
@@ -257,16 +257,16 @@ describe('Exchange transactions', () => {
                 );
 
                 const takerAssetFillAmount = signedOrder.takerAssetAmount;
-                orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
+                orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
                 const fillData = exchange.fillOrder.getABIEncodedTransactionData(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     signedOrder.signature,
                 );
                 const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
                 return expectTransactionFailedAsync(
                     exchangeWrapperContract.fillOrder.sendTransactionAsync(
-                        orderWithoutExchangeAddress,
+                        orderWithoutDomain,
                         takerAssetFillAmount,
                         signedFillTx.salt,
                         signedOrder.signature,
@@ -288,15 +288,15 @@ describe('Exchange transactions', () => {
 
                 erc20Balances = await erc20Wrapper.getBalancesAsync();
                 const takerAssetFillAmount = signedOrder.takerAssetAmount;
-                orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
+                orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
                 const data = exchange.fillOrder.getABIEncodedTransactionData(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     signedOrder.signature,
                 );
                 signedTx = takerTransactionFactory.newSignedTransaction(data);
                 await exchangeWrapperContract.fillOrder.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     signedTx.salt,
                     signedOrder.signature,
@@ -381,12 +381,12 @@ describe('Exchange transactions', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
+            orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
             return expectTransactionFailedAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     salt,
                     signedOrder.signature,
@@ -403,12 +403,12 @@ describe('Exchange transactions', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
+            orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
             return expectTransactionFailedAsync(
                 whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     salt,
                     signedOrder.signature,
@@ -430,12 +430,12 @@ describe('Exchange transactions', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
+            orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
+                    orderWithoutDomain,
                     takerAssetFillAmount,
                     salt,
                     signedOrder.signature,
