@@ -17,6 +17,10 @@
             {
                 "note": "Inherit Exchange domain constants from `exchange-libs` to reduce code duplication",
                 "pr": 1742
+            },
+            {
+                "note": "Update domain separator",
+                "pr": 1742
             }
         ]
     },

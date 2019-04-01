@@ -3,7 +3,7 @@
         "version": "8.1.0",
         "changes": [
             {
-                "note": "Add `chainId` to transactions",
+                "note": "Use new `Order` and `ZeroExTransaction` structures with `domain` field",
                 "pr": 1742
             },
             {
