@@ -116,7 +116,7 @@ function generateEmptyOrder(chainId: number): Order {
         domain: {
             verifyingContractAddress: constants.NULL_ADDRESS,
             chainId,
-        }
+        },
     };
 }
 
