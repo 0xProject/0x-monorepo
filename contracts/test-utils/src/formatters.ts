@@ -14,7 +14,7 @@ export const formatters = {
             takerAssetFillAmounts,
         };
         _.forEach(signedOrders, signedOrder => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
             batchFill.orders.push(orderWithoutExchangeAddress);
             batchFill.signatures.push(signedOrder.signature);
             if (takerAssetFillAmounts.length < signedOrders.length) {
@@ -30,7 +30,7 @@ export const formatters = {
             takerAssetFillAmount,
         };
         _.forEach(signedOrders, (signedOrder, i) => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
             if (i !== 0) {
                 orderWithoutExchangeAddress.takerAssetData = constants.NULL_BYTES;
             }
@@ -46,7 +46,7 @@ export const formatters = {
             makerAssetFillAmount,
         };
         _.forEach(signedOrders, (signedOrder, i) => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
             if (i !== 0) {
                 orderWithoutExchangeAddress.makerAssetData = constants.NULL_BYTES;
             }
@@ -60,7 +60,7 @@ export const formatters = {
             orders: [],
         };
         _.forEach(signedOrders, signedOrder => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutDomain(signedOrder);
             batchCancel.orders.push(orderWithoutExchangeAddress);
         });
         return batchCancel;
