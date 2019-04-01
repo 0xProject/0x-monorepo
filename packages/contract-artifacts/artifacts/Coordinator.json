@@ -284,11 +284,11 @@
 			{
 				"inputs": [
 					{
-						"name": "_exchange",
+						"name": "exchange",
 						"type": "address"
 					},
 					{
-						"name": "_chainId",
+						"name": "chainId",
 						"type": "uint256"
 					}
 				],

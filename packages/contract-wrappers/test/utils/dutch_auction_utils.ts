@@ -90,7 +90,7 @@ export class DutchAuctionUtils {
             sellOrder.takerAssetData,
             sellOrder.makerAssetAmount,
             sellOrder.makerAssetData,
-            sellOrder.exchangeAddress,
+            sellOrder.domain.verifyingContractAddress,
             {
                 senderAddress,
                 makerFee,

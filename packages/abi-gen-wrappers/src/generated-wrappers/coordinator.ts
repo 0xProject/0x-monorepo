@@ -556,7 +556,8 @@ export class CoordinatorContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        _exchange: string,
+            exchange: string,
+            chainId: BigNumber,
     ): Promise<CoordinatorContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -569,14 +570,17 @@ export class CoordinatorContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return CoordinatorContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange);
+        return CoordinatorContract.deployAsync(bytecode, abi, provider, txDefaults, exchange,
+chainId
+);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        _exchange: string,
+            exchange: string,
+            chainId: BigNumber,
     ): Promise<CoordinatorContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -586,14 +590,20 @@ export class CoordinatorContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_exchange] = BaseContract._formatABIDataItemList(
+        [exchange,
+chainId
+] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_exchange],
+            [exchange,
+chainId
+],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange]);
+        const txData = deployInfo.encode(bytecode, [exchange,
+chainId
+]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             { data: txData },
@@ -604,13 +614,10 @@ export class CoordinatorContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Coordinator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new CoordinatorContract(
-            abi,
-            txReceipt.contractAddress as string,
-            provider,
-            txDefaults,
-        );
-        contractInstance.constructorArgs = [_exchange];
+        const contractInstance = new CoordinatorContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        contractInstance.constructorArgs = [exchange,
+chainId
+];
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
