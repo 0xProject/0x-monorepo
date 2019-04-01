@@ -1,10 +1,14 @@
 [
     {
-        "version": "2.1.1",
+        "version": "2.2.0",
         "changes": [
             {
                 "note": "Use new/cheaper reentrancy guard/mutex",
                 "pr": 1699
+            },
+            {
+                "note": "Update domain separator",
+                "pr": 1742
             }
         ]
     },

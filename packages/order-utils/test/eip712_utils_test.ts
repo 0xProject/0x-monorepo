@@ -11,6 +11,8 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('EIP712 Utils', () => {
+    const CHAIN_ID = 1337;
+
     describe('createTypedData', () => {
         it('adds in the EIP712DomainSeparator with default values', () => {
             const primaryType = 'Test';
@@ -18,14 +20,14 @@ describe('EIP712 Utils', () => {
                 primaryType,
                 { Test: [{ name: 'testValue', type: 'uint256' }] },
                 { testValue: '1' },
-                { verifyingContractAddress: constants.NULL_ADDRESS },
+                { chainId: CHAIN_ID, verifyingContractAddress: constants.NULL_ADDRESS },
             );
             expect(typedData.domain).to.not.be.undefined();
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
             const domainObject = typedData.domain;
             expect(domainObject.name).to.eq(constants.EXCHANGE_DOMAIN_NAME);
             expect(domainObject.version).to.eq(constants.EXCHANGE_DOMAIN_VERSION);
-            expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
+            expect(domainObject.verifyingContractAddress).to.eq(constants.NULL_ADDRESS);
             expect(typedData.primaryType).to.eq(primaryType);
         });
         it('adds in the EIP712DomainSeparator without default values', () => {
@@ -36,14 +38,19 @@ describe('EIP712 Utils', () => {
                 primaryType,
                 { Test: [{ name: 'testValue', type: 'uint256' }] },
                 { testValue: '1' },
-                { name: domainName, version: domainVersion, verifyingContractAddress: constants.NULL_ADDRESS },
+                {
+                    name: domainName,
+                    version: domainVersion,
+                    chainId: CHAIN_ID,
+                    verifyingContractAddress: constants.NULL_ADDRESS,
+                },
             );
             expect(typedData.domain).to.not.be.undefined();
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
             const domainObject = typedData.domain;
             expect(domainObject.name).to.eq(domainName);
             expect(domainObject.version).to.eq(domainVersion);
-            expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
+            expect(domainObject.verifyingContractAddress).to.eq(constants.NULL_ADDRESS);
             expect(typedData.primaryType).to.eq(primaryType);
         });
     });
@@ -53,14 +60,17 @@ describe('EIP712 Utils', () => {
                 salt: new BigNumber('0'),
                 data: constants.NULL_BYTES,
                 signerAddress: constants.NULL_ADDRESS,
-                verifyingContractAddress: constants.NULL_ADDRESS,
+                domain: {
+                    verifyingContractAddress: constants.NULL_ADDRESS,
+                    chainId: CHAIN_ID,
+                },
             });
             expect(typedData.primaryType).to.eq(constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name);
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
             const domainObject = typedData.domain;
             expect(domainObject.name).to.eq(constants.EXCHANGE_DOMAIN_NAME);
             expect(domainObject.version).to.eq(constants.EXCHANGE_DOMAIN_VERSION);
-            expect(domainObject.verifyingContract).to.eq(constants.NULL_ADDRESS);
+            expect(domainObject.verifyingContractAddress).to.eq(constants.NULL_ADDRESS);
         });
     });
 });

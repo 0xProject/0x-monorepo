@@ -31,7 +31,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -53,6 +53,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Exchange core', () => {
+    let chainId: number;
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -98,6 +99,7 @@ describe('Exchange core', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
@@ -127,6 +129,7 @@ describe('Exchange core', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            new BigNumber(chainId),
         );
         maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
             artifacts.TestStaticCallReceiver,
@@ -239,11 +242,14 @@ describe('Exchange core', () => {
         defaultTakerAssetAddress = erc20TokenB.address;
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            domain: {
+                verifyingContractAddress: exchange.address,
+                chainId,
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

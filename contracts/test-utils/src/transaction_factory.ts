@@ -8,9 +8,12 @@ export class TransactionFactory {
     private readonly _signerBuff: Buffer;
     private readonly _exchangeAddress: string;
     private readonly _privateKey: Buffer;
-    constructor(privateKey: Buffer, exchangeAddress: string) {
+    private readonly _chainId: number;
+
+    constructor(privateKey: Buffer, exchangeAddress: string, chainId: number) {
         this._privateKey = privateKey;
         this._exchangeAddress = exchangeAddress;
+        this._chainId = chainId;
         this._signerBuff = ethUtil.privateToAddress(this._privateKey);
     }
     public newSignedTransaction(
@@ -23,7 +26,10 @@ export class TransactionFactory {
             salt,
             signerAddress,
             data,
-            verifyingContractAddress: this._exchangeAddress,
+            domain: {
+                verifyingContractAddress: this._exchangeAddress,
+                chainId: this._chainId,
+            },
         };
 
         const transactionHashBuffer = transactionHashUtils.getTransactionHashBuffer(transaction);

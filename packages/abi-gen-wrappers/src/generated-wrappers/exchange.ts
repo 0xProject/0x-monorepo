@@ -1975,32 +1975,6 @@ export class ExchangeContract extends BaseContract {
             return result;
         },
     };
-    public EIP712_DOMAIN_HASH = {
-        async callAsync(
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string
-        > {
-            const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string
-        >(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
     public marketBuyOrders = {
         async sendTransactionAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -2227,7 +2201,8 @@ export class ExchangeContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-            _zrxAssetData: string,
+            zrxAssetData: string,
+            chainId: BigNumber,
     ): Promise<ExchangeContract> {
         if (_.isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
@@ -2235,7 +2210,8 @@ export class ExchangeContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, _zrxAssetData
+        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, zrxAssetData,
+chainId
 );
     }
     public static async deployAsync(
@@ -2243,20 +2219,24 @@ export class ExchangeContract extends BaseContract {
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-            _zrxAssetData: string,
+            zrxAssetData: string,
+            chainId: BigNumber,
     ): Promise<ExchangeContract> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_zrxAssetData
+        [zrxAssetData,
+chainId
 ] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_zrxAssetData
+            [zrxAssetData,
+chainId
 ],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_zrxAssetData
+        const txData = deployInfo.encode(bytecode, [zrxAssetData,
+chainId
 ]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2269,12 +2249,13 @@ export class ExchangeContract extends BaseContract {
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Exchange successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new ExchangeContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_zrxAssetData
+        contractInstance.constructorArgs = [zrxAssetData,
+chainId
 ];
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('Exchange', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('Exchange', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

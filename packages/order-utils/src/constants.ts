@@ -69,13 +69,14 @@ export const constants = {
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
     ZERO_AMOUNT: new BigNumber(0),
     EXCHANGE_DOMAIN_NAME: '0x Protocol',
-    EXCHANGE_DOMAIN_VERSION: '2',
+    EXCHANGE_DOMAIN_VERSION: '3.0.0',
     DEFAULT_DOMAIN_SCHEMA: {
         name: 'EIP712Domain',
         parameters: [
             { name: 'name', type: 'string' },
             { name: 'version', type: 'string' },
-            { name: 'verifyingContract', type: 'address' },
+            { name: 'chainId', type: 'uint256' },
+            { name: 'verifyingContractAddress', type: 'address' },
         ],
     },
     EXCHANGE_ORDER_SCHEMA: {
@@ -104,7 +105,7 @@ export const constants = {
         ],
     },
     COORDINATOR_DOMAIN_NAME: '0x Protocol Coordinator',
-    COORDINATOR_DOMAIN_VERSION: '1.0.0',
+    COORDINATOR_DOMAIN_VERSION: '2.0.0',
     COORDINATOR_APPROVAL_SCHEMA: {
         name: 'CoordinatorApproval',
         parameters: [

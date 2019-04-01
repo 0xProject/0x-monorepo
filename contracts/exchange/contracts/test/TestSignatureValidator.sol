@@ -18,14 +18,23 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
 import "../src/MixinSignatureValidator.sol";
 import "../src/MixinTransactions.sol";
 
 
 contract TestSignatureValidator is
+    LibEIP712,
     MixinSignatureValidator,
     MixinTransactions
 {
+
+    // solhint-disable no-empty-blocks
+    constructor (uint256 chainId)
+        public
+        LibEIP712ExchangeDomain(chainId)
+    {}
+
     function publicIsValidSignature(
         bytes32 hash,
         address signer,

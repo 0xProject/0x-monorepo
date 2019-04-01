@@ -18,17 +18,18 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeErrors.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
 
 
 contract MixinTransactions is
-    LibEIP712,
+    LibEIP712ExchangeDomain,
     MSignatureValidator,
     MTransactions
 {
+
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
     mapping (bytes32 => bool) public transactions;
@@ -55,10 +56,12 @@ contract MixinTransactions is
             "REENTRANCY_ILLEGAL"
         );
 
-        bytes32 transactionHash = hashEIP712Message(hashZeroExTransaction(
-            salt,
-            signerAddress,
-            data
+        bytes32 transactionHash = hashEIP712Message(
+            EIP712_EXCHANGE_DOMAIN_HASH,
+            hashZeroExTransaction(
+                salt,
+                signerAddress,
+                data
         ));
 
         // Validate transaction has not been executed

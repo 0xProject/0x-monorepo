@@ -32,8 +32,11 @@ contract Coordinator is
     MixinCoordinatorApprovalVerifier,
     MixinCoordinatorCore
 {
-    constructor (address _exchange)
+    /// @param exchange Address of the 0x Exchange contract.
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (address exchange, uint256 chainId)
         public
-        LibConstants(_exchange)
+        LibConstants(exchange)
+        LibEIP712Domain(chainId)
     {}
 }

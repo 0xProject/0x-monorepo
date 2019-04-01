@@ -63,6 +63,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
 
     const supportedProvider = web3Wrapper.getProvider();
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
+    const chainId = await providerUtils.getChainIdAsync(provider);
     const erc20Wrapper = new ERC20Wrapper(provider, userAddresses, ownerAddress);
     const erc721Wrapper = new ERC721Wrapper(provider, userAddresses, ownerAddress);
 
@@ -102,6 +103,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         provider,
         txDefaults,
         zrxAssetData,
+        new BigNumber(chainId),
     );
     const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
     await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
@@ -129,12 +131,14 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         erc721Token,
         erc721Balances,
         exchangeContract.address,
+        chainId,
     );
 
     const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
         libsArtifacts.TestLibs,
         provider,
         txDefaults,
+        new BigNumber(chainId),
     );
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
@@ -404,7 +408,6 @@ export class FillOrderCombinatorialUtils {
         try {
             await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
                 exchangeTransferSimulator,
-                provider,
                 signedOrder,
                 takerAssetFillAmount,
                 this.takerAddress,

@@ -19,18 +19,26 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "../src/LibEIP712ExchangeDomain.sol";
 import "../src/LibMath.sol";
 import "../src/LibOrder.sol";
 import "../src/LibFillResults.sol";
 import "../src/LibAbiEncoder.sol";
 
 
-contract TestLibs is 
+// solhint-disable no-empty-blocks
+contract TestLibs is
+    LibEIP712ExchangeDomain,
     LibMath,
     LibOrder,
     LibFillResults,
     LibAbiEncoder
 {
+    constructor (uint256 chainId)
+        public
+        LibEIP712ExchangeDomain(chainId)
+    {}
+
     function publicAbiEncodeFillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
@@ -139,6 +147,14 @@ contract TestLibs is
         returns (bytes32)
     {
         return EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
+    }
+
+    function getDomainSeparator()
+        public
+        view
+        returns (bytes32)
+    {
+        return EIP712_EXCHANGE_DOMAIN_HASH;
     }
 
     function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)

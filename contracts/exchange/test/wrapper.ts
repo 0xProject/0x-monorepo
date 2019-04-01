@@ -17,7 +17,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -29,6 +29,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange wrappers', () => {
+    let chainId: number;
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -62,6 +63,7 @@ describe('Exchange wrappers', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
@@ -88,6 +90,7 @@ describe('Exchange wrappers', () => {
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -118,11 +121,14 @@ describe('Exchange wrappers', () => {
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            domain: {
+                verifyingContractAddress: exchange.address,
+                chainId,
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `eip712DomainSchema` schema",
+                "pr": 1742
+            },
+            {
+                "note": "Add required field `domain` to `order` and `zeroExTransaction` schemas",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "timestamp": 1553183790,
         "version": "3.0.8",
         "changes": [

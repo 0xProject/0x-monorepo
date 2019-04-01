@@ -39,10 +39,13 @@ contract Exchange is
 {
     string constant public VERSION = "3.0.0";
 
-    // Mixins are instantiated in the order they are inherited
-    constructor (bytes memory _zrxAssetData)
+    /// @dev Mixins are instantiated in the order they are inherited
+    /// @param zrxAssetData Asset data for ZRX token. Used for fee transfers.
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (bytes memory zrxAssetData, uint256 chainId)
         public
-        LibConstants(_zrxAssetData) // @TODO: Remove when we deploy.
+        LibConstants(zrxAssetData) // @TODO: Remove zrxAssetData when we deploy.
+        LibEIP712ExchangeDomain(chainId)
         MixinExchangeCore()
         MixinMatchOrders()
         MixinSignatureValidator()

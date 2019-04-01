@@ -36,7 +36,7 @@ describe('signTypedDataUtils', () => {
             },
             primaryType: 'Test',
         };
-        const orderSignTypedDataHashHex = '0x55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692';
+        const orderSignTypedDataHashHex = '0xc59d01479d63bda79d1c7fefc883a81ff247f9a1f9168c748922cd7e0dcd5eca';
         const orderSignTypedData = {
             types: {
                 EIP712Domain: [
@@ -49,7 +49,11 @@ describe('signTypedDataUtils', () => {
                         type: 'string',
                     },
                     {
-                        name: 'verifyingContract',
+                        name: 'chainId',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'verifyingContractAddress',
                         type: 'address',
                     },
                 ],
@@ -107,7 +111,8 @@ describe('signTypedDataUtils', () => {
             domain: {
                 name: '0x Protocol',
                 version: '2',
-                verifyingContract: '0x0000000000000000000000000000000000000000',
+                chainId: 1337,
+                verifyingContractAddress: '0x0000000000000000000000000000000000000000',
             },
             message: {
                 makerAddress: '0x0000000000000000000000000000000000000000',
@@ -122,7 +127,6 @@ describe('signTypedDataUtils', () => {
                 salt: '12345',
                 makerAssetData: '0x0000000000000000000000000000000000000000',
                 takerAssetData: '0x0000000000000000000000000000000000000000',
-                exchangeAddress: '0x0000000000000000000000000000000000000000',
             },
             primaryType: 'Order',
         };
@@ -152,12 +156,11 @@ describe('signTypedDataUtils', () => {
                     salt: 0,
                     makerAssetData: '0x0000000000000000000000000000000000000000',
                     takerAssetData: '0x0000000000000000000000000000000000000000',
-                    exchangeAddress: '0x0000000000000000000000000000000000000000',
                 },
             };
             const hash = signTypedDataUtils.generateTypedDataHash(uninitializedOrder).toString('hex');
             const hashHex = `0x${hash}`;
-            expect(hashHex).to.be.eq('0xfaa49b35faeb9197e9c3ba7a52075e6dad19739549f153b77dfcf59408a4b422');
+            expect(hashHex).to.be.eq('0x7624dcf06a5ba0e2799a87adba76a13c7d6418214d6b3c9bc239fdf2422f2027');
         });
     });
 });

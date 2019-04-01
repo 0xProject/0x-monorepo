@@ -18,7 +18,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -31,6 +31,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
 describe(ContractName.DutchAuction, () => {
+    let chainId: number;
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -62,6 +63,8 @@ describe(ContractName.DutchAuction, () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
+
+        chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
@@ -91,6 +94,7 @@ describe(ContractName.DutchAuction, () => {
             provider,
             txDefaults,
             zrxAssetData,
+            new BigNumber(chainId),
         );
         const exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -148,7 +152,6 @@ describe(ContractName.DutchAuction, () => {
         // Default sell order and buy order are exact mirrors
         const sellerDefaultOrderParams = {
             salt: generatePseudoRandomSalt(),
-            exchangeAddress: exchangeInstance.address,
             makerAddress,
             feeRecipientAddress,
             // taker address or sender address should be set to the ducth auction contract
@@ -164,6 +167,10 @@ describe(ContractName.DutchAuction, () => {
             expirationTimeSeconds: auctionEndTimeSeconds,
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
+            domain: {
+                verifyingContractAddress: exchangeInstance.address,
+                chainId,
+            },
         };
         // Default buy order is for the auction begin price
         const buyerDefaultOrderParams = {

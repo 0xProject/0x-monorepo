@@ -14,8 +14,8 @@ export const formatters = {
             takerAssetFillAmounts,
         };
         _.forEach(signedOrders, signedOrder => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-            batchFill.orders.push(orderWithoutExchangeAddress);
+            const orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
+            batchFill.orders.push(orderWithoutDomain);
             batchFill.signatures.push(signedOrder.signature);
             if (takerAssetFillAmounts.length < signedOrders.length) {
                 batchFill.takerAssetFillAmounts.push(signedOrder.takerAssetAmount);
@@ -30,11 +30,11 @@ export const formatters = {
             takerAssetFillAmount,
         };
         _.forEach(signedOrders, (signedOrder, i) => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            const orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             if (i !== 0) {
-                orderWithoutExchangeAddress.takerAssetData = constants.NULL_BYTES;
+                orderWithoutDomain.takerAssetData = constants.NULL_BYTES;
             }
-            marketSellOrders.orders.push(orderWithoutExchangeAddress);
+            marketSellOrders.orders.push(orderWithoutDomain);
             marketSellOrders.signatures.push(signedOrder.signature);
         });
         return marketSellOrders;
@@ -46,11 +46,11 @@ export const formatters = {
             makerAssetFillAmount,
         };
         _.forEach(signedOrders, (signedOrder, i) => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
+            const orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             if (i !== 0) {
-                orderWithoutExchangeAddress.makerAssetData = constants.NULL_BYTES;
+                orderWithoutDomain.makerAssetData = constants.NULL_BYTES;
             }
-            marketBuyOrders.orders.push(orderWithoutExchangeAddress);
+            marketBuyOrders.orders.push(orderWithoutDomain);
             marketBuyOrders.signatures.push(signedOrder.signature);
         });
         return marketBuyOrders;
@@ -60,8 +60,8 @@ export const formatters = {
             orders: [],
         };
         _.forEach(signedOrders, signedOrder => {
-            const orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-            batchCancel.orders.push(orderWithoutExchangeAddress);
+            const orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
+            batchCancel.orders.push(orderWithoutDomain);
         });
         return batchCancel;
     },

@@ -26,9 +26,9 @@ import "../src/Exchange.sol";
 contract TestExchangeInternals is
     Exchange
 {
-    constructor ()
+    constructor (uint256 chainId)
         public
-        Exchange("")
+        Exchange("", chainId)
     {}
 
     /// @dev Adds properties of both FillResults instances.
@@ -165,7 +165,7 @@ contract TestExchangeInternals is
     {
         return isRoundingErrorCeil(numerator, denominator, target);
     }
- 
+
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.

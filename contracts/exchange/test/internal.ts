@@ -12,7 +12,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -36,9 +36,12 @@ const emptyOrder: Order = {
     makerAssetData: '0x',
     takerAssetData: '0x',
     salt: new BigNumber(0),
-    exchangeAddress: constants.NULL_ADDRESS,
     feeRecipientAddress: constants.NULL_ADDRESS,
     expirationTimeSeconds: new BigNumber(0),
+    domain: {
+        verifyingContractAddress: constants.NULL_ADDRESS,
+        chainId: 0, // To be filled in later.
+    },
 };
 
 const emptySignedOrder: SignedOrder = {
@@ -49,6 +52,7 @@ const emptySignedOrder: SignedOrder = {
 const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
 describe('Exchange core internal functions', () => {
+    let chainId: number;
     let testExchange: TestExchangeInternalsContract;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
@@ -61,10 +65,15 @@ describe('Exchange core internal functions', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
+        emptyOrder.domain.chainId = chainId;
+        emptySignedOrder.domain.chainId = chainId;
+
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
             provider,
             txDefaults,
+            new BigNumber(chainId),
         );
         overflowErrorForSendTransaction = new Error(
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),

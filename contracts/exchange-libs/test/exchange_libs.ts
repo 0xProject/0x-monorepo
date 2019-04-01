@@ -9,12 +9,16 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { constants as orderConstants } from '@0x/order-utils/lib/src/constants';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
+import * as ethUtil from 'ethereumjs-util';
 
 import { TestLibsContract } from '../generated-wrappers/test_libs';
 import { artifacts } from '../src/artifacts';
+
+import { stringifySchema } from './utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -22,9 +26,11 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange libs', () => {
+    let chainId: number;
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let libs: TestLibsContract;
+    let libsAlternateChain: TestLibsContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -35,15 +41,32 @@ describe('Exchange libs', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
-        libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
+        chainId = await providerUtils.getChainIdAsync(provider);
+        libs = await TestLibsContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibs,
+            provider,
+            txDefaults,
+            new BigNumber(chainId),
+        );
+        // Deploy a version with a different chain ID.
+        const alternateChainId = chainId + 1;
+        libsAlternateChain = await TestLibsContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibs,
+            provider,
+            txDefaults,
+            new BigNumber(alternateChainId),
+        );
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: libs.address,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            domain: {
+                verifyingContractAddress: libs.address,
+                chainId,
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -120,6 +143,46 @@ describe('Exchange libs', () => {
                 const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);
                 expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
             });
+            it('orderHash should differ if chainId is different', async () => {
+                signedOrder = await orderFactory.newSignedOrderAsync();
+                const orderHashHex1 = await libsAlternateChain.publicGetOrderHash.callAsync(signedOrder);
+                const orderHashHex2 = await libs.publicGetOrderHash.callAsync(signedOrder);
+                expect(orderHashHex1).to.be.not.equal(orderHashHex2);
+            });
+        });
+    });
+
+    describe('LibEIP712', () => {
+        it('should return the correct domain separator schema hash', async () => {
+            const schema = stringifySchema(orderConstants.DEFAULT_DOMAIN_SCHEMA);
+            const expectedSchemaHash = ethUtil.bufferToHex(ethUtil.sha3(Buffer.from(schema)));
+            const actualSchemaHash = await libs.getDomainSeparatorSchemaHash.callAsync();
+            expect(actualSchemaHash).to.be.equal(expectedSchemaHash);
+        });
+        it('should return the correct order schema hash', async () => {
+            const schema = stringifySchema(orderConstants.EXCHANGE_ORDER_SCHEMA);
+            const expectedSchemaHash = ethUtil.bufferToHex(ethUtil.sha3(Buffer.from(schema)));
+            const actualSchemaHash = await libs.getOrderSchemaHash.callAsync();
+            expect(actualSchemaHash).to.be.equal(expectedSchemaHash);
+        });
+        it('should return the correct domain separator', async () => {
+            const schema = stringifySchema(orderConstants.DEFAULT_DOMAIN_SCHEMA);
+            const schemaHash = ethUtil.sha3(Buffer.from(schema));
+            const payload = Buffer.concat([
+                schemaHash,
+                ethUtil.sha3(Buffer.from(orderConstants.EXCHANGE_DOMAIN_NAME)),
+                ethUtil.sha3(Buffer.from(orderConstants.EXCHANGE_DOMAIN_VERSION)),
+                ethUtil.setLengthLeft(ethUtil.toBuffer(chainId), 32),
+                ethUtil.setLengthLeft(ethUtil.toBuffer(libs.address), 32),
+            ]);
+            const expectedDomain = ethUtil.bufferToHex(ethUtil.sha3(payload));
+            const actualDomain = await libs.getDomainSeparator.callAsync();
+            expect(actualDomain).to.be.equal(expectedDomain);
+        });
+        it('should return a different domain separator if chainId is different', async () => {
+            const domain1 = await libsAlternateChain.getDomainSeparator.callAsync();
+            const domain2 = await libs.getDomainSeparator.callAsync();
+            expect(domain1).to.be.not.equal(domain2);
         });
     });
 });

@@ -11,8 +11,8 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { transactionHashUtils } from '@0x/order-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { EIP712DomainWithDefaultSchema, RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -23,6 +23,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Mixins tests', () => {
+    let chainId: number;
     let transactionSignerAddress: string;
     let approvalSignerAddress1: string;
     let approvalSignerAddress2: string;
@@ -32,6 +33,7 @@ describe('Mixins tests', () => {
     let approvalFactory2: ApprovalFactory;
     let defaultOrder: SignedOrder;
     const exchangeAddress = addressUtils.generatePseudoRandomAddress();
+    let exchangeDomain: EIP712DomainWithDefaultSchema;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -40,16 +42,21 @@ describe('Mixins tests', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
         mixins = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
             provider,
             txDefaults,
             exchangeAddress,
+            new BigNumber(chainId),
         );
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [transactionSignerAddress, approvalSignerAddress1, approvalSignerAddress2] = accounts.slice(0, 3);
+        exchangeDomain = {
+            verifyingContractAddress: devConstants.NULL_ADDRESS,
+            chainId,
+        };
         defaultOrder = {
-            exchangeAddress: devConstants.NULL_ADDRESS,
             makerAddress: devConstants.NULL_ADDRESS,
             takerAddress: devConstants.NULL_ADDRESS,
             senderAddress: mixins.address,
@@ -63,12 +70,13 @@ describe('Mixins tests', () => {
             expirationTimeSeconds: devConstants.ZERO_AMOUNT,
             salt: devConstants.ZERO_AMOUNT,
             signature: devConstants.NULL_BYTES,
+            domain: exchangeDomain,
         };
         const transactionSignerPrivateKey =
             devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(transactionSignerAddress)];
         const approvalSignerPrivateKey1 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress1)];
         const approvalSignerPrivateKey2 = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress2)];
-        transactionFactory = new TransactionFactory(transactionSignerPrivateKey, exchangeAddress);
+        transactionFactory = new TransactionFactory(transactionSignerPrivateKey, exchangeAddress, chainId);
         approvalFactory1 = new ApprovalFactory(approvalSignerPrivateKey1, mixins.address);
         approvalFactory2 = new ApprovalFactory(approvalSignerPrivateKey2, mixins.address);
     });
@@ -143,8 +151,8 @@ describe('Mixins tests', () => {
                 const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
-                    exchangeAddress: devConstants.NULL_ADDRESS,
                     signature: devConstants.NULL_BYTES,
+                    domain: exchangeDomain,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
@@ -156,8 +164,8 @@ describe('Mixins tests', () => {
                 const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
-                    exchangeAddress: devConstants.NULL_ADDRESS,
                     signature: devConstants.NULL_BYTES,
+                    domain: exchangeDomain,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
@@ -169,8 +177,8 @@ describe('Mixins tests', () => {
                 const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
-                    exchangeAddress: devConstants.NULL_ADDRESS,
                     signature: devConstants.NULL_BYTES,
+                    domain: exchangeDomain,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });

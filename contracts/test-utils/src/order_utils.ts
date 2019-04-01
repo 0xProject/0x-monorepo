@@ -1,5 +1,6 @@
-import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import { OrderWithoutDomain, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';
@@ -14,7 +15,7 @@ export const orderUtils = {
     },
     createFill: (signedOrder: SignedOrder, takerAssetFillAmount?: BigNumber) => {
         const fill = {
-            order: orderUtils.getOrderWithoutExchangeAddress(signedOrder),
+            order: orderUtils.getOrderWithoutDomain(signedOrder),
             takerAssetFillAmount: takerAssetFillAmount || signedOrder.takerAssetAmount,
             signature: signedOrder.signature,
         };
@@ -22,32 +23,18 @@ export const orderUtils = {
     },
     createCancel(signedOrder: SignedOrder, takerAssetCancelAmount?: BigNumber): CancelOrder {
         const cancel = {
-            order: orderUtils.getOrderWithoutExchangeAddress(signedOrder),
+            order: orderUtils.getOrderWithoutDomain(signedOrder),
             takerAssetCancelAmount: takerAssetCancelAmount || signedOrder.takerAssetAmount,
         };
         return cancel;
     },
-    getOrderWithoutExchangeAddress(signedOrder: SignedOrder): OrderWithoutExchangeAddress {
-        const orderStruct = {
-            senderAddress: signedOrder.senderAddress,
-            makerAddress: signedOrder.makerAddress,
-            takerAddress: signedOrder.takerAddress,
-            feeRecipientAddress: signedOrder.feeRecipientAddress,
-            makerAssetAmount: signedOrder.makerAssetAmount,
-            takerAssetAmount: signedOrder.takerAssetAmount,
-            makerFee: signedOrder.makerFee,
-            takerFee: signedOrder.takerFee,
-            expirationTimeSeconds: signedOrder.expirationTimeSeconds,
-            salt: signedOrder.salt,
-            makerAssetData: signedOrder.makerAssetData,
-            takerAssetData: signedOrder.takerAssetData,
-        };
-        return orderStruct;
+    getOrderWithoutDomain(signedOrder: SignedOrder): OrderWithoutDomain {
+        return _.omit(signedOrder, ['signature', 'domain']) as OrderWithoutDomain;
     },
     createMatchOrders(signedOrderLeft: SignedOrder, signedOrderRight: SignedOrder): MatchOrder {
         const fill = {
-            left: orderUtils.getOrderWithoutExchangeAddress(signedOrderLeft),
-            right: orderUtils.getOrderWithoutExchangeAddress(signedOrderRight),
+            left: orderUtils.getOrderWithoutDomain(signedOrderLeft),
+            right: orderUtils.getOrderWithoutDomain(signedOrderRight),
             leftSignature: signedOrderLeft.signature,
             rightSignature: signedOrderRight.signature,
         };

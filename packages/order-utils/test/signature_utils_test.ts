@@ -19,6 +19,7 @@ const expect = chai.expect;
 describe('Signature utils', () => {
     let makerAddress: string;
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
+    const fakeChainId = 1337;
     let order: Order;
     before(async () => {
         const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
@@ -30,13 +31,16 @@ describe('Signature utils', () => {
             feeRecipientAddress: constants.NULL_ADDRESS,
             makerAssetData: constants.NULL_ADDRESS,
             takerAssetData: constants.NULL_ADDRESS,
-            exchangeAddress: fakeExchangeContractAddress,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
+            domain: {
+                verifyingContractAddress: fakeExchangeContractAddress,
+                chainId: fakeChainId,
+            },
         };
     });
     describe('#isValidSignatureAsync', () => {
@@ -152,7 +156,7 @@ describe('Signature utils', () => {
     describe('#ecSignOrderAsync', () => {
         it('should default to eth_sign if eth_signTypedData is unavailable', async () => {
             const expectedSignature =
-                '0x1c3582f06356a1314dbf1c0e534c4d8e92e59b056ee607a7ff5a825f5f2cc5e6151c5cc7fdd420f5608e4d5bef108e42ad90c7a4b408caef32e24374cf387b0d7603';
+                '0x1c8bb89df0d0b537eced265159e75082086fa6f2c1422e743b36a095711edabf890531b8c37f0060bbd7d282a1a8a98b1497c85ac85a2eefc05854f090831fd9be03';
 
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
@@ -299,7 +303,7 @@ describe('Signature utils', () => {
         });
         it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
             const expectedSignature =
-                '0x1cd472c439833774b55d248c31b6585f21aea1b9363ebb4ec58549e46b62eb5a6f696f5781f62de008ee7f77650ef940d99c97ec1dee67b3f5cea1bbfdfeb2eba602';
+                '0x1cdf371e6e60c9f2a0a3a1adcc1b27411e1d88bdb9c7dbae8c6faa38d37c5e330e2b467e08bbde8285d627cc5fc680746b9f97ec9d5e5be3b9fdf7abe37ed3279502';
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_signTypedData') {

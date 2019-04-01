@@ -25,6 +25,7 @@ describe('RemainingFillableCalculator', () => {
     const takerAssetData: string = '0x2';
     const decimals: number = 4;
     const zero: BigNumber = new BigNumber(0);
+    const chainId: number = 1337;
     const zeroAddress = '0x0';
     const signature: string =
         '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
@@ -42,7 +43,6 @@ describe('RemainingFillableCalculator', () => {
     function buildSignedOrder(): SignedOrder {
         return {
             signature,
-            exchangeAddress: zeroAddress,
             feeRecipientAddress: zeroAddress,
             senderAddress: zeroAddress,
             makerAddress: zeroAddress,
@@ -55,6 +55,10 @@ describe('RemainingFillableCalculator', () => {
             takerAssetData,
             salt: zero,
             expirationTimeSeconds: zero,
+            domain: {
+                verifyingContractAddress: zeroAddress,
+                chainId,
+            },
         };
     }
     describe('Maker token is NOT ZRX', () => {

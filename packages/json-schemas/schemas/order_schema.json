@@ -11,9 +11,9 @@
         "makerAssetData": { "$ref": "/hexSchema" },
         "takerAssetData": { "$ref": "/hexSchema" },
         "salt": { "$ref": "/wholeNumberSchema" },
-        "exchangeAddress": { "$ref": "/addressSchema" },
         "feeRecipientAddress": { "$ref": "/addressSchema" },
-        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" }
+        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" },
+        "domain": { "$ref": "/eip712DomainSchema" }
     },
     "required": [
         "makerAddress",
@@ -26,9 +26,9 @@
         "makerAssetData",
         "takerAssetData",
         "salt",
-        "exchangeAddress",
         "feeRecipientAddress",
-        "expirationTimeSeconds"
+        "expirationTimeSeconds",
+        "domain"
     ],
     "type": "object"
 }

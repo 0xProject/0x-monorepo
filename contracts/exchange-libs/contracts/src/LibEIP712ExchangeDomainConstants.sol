@@ -18,19 +18,12 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/ITransactions.sol";
 
+contract LibEIP712ExchangeDomainConstants {
 
-// solhint-disable var-name-mixedcase
-contract LibConstants {
+    // EIP712 Exchange Domain Name value
+    string constant internal EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
 
-    // The 0x Exchange contract.
-    ITransactions internal EXCHANGE;
-
-    /// @param exchange Address of the 0x Exchange contract.
-    constructor (address exchange)
-        public
-    {
-        EXCHANGE = ITransactions(exchange);
-    }
+    // EIP712 Exchange Domain Version value
+    string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
 }

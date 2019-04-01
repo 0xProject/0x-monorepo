@@ -40,7 +40,8 @@ export const eip712Utils = {
             domain: {
                 name: _.isUndefined(domain.name) ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
                 version: _.isUndefined(domain.version) ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
-                verifyingContract: domain.verifyingContractAddress,
+                chainId: domain.chainId,
+                verifyingContractAddress: domain.verifyingContractAddress,
             },
             message,
             primaryType,
@@ -58,14 +59,11 @@ export const eip712Utils = {
         const normalizedOrder = _.mapValues(order, value => {
             return !_.isString(value) ? value.toString() : value;
         });
-        const domain = {
-            verifyingContractAddress: order.exchangeAddress,
-        };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ORDER_SCHEMA.name,
             { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
             normalizedOrder,
-            domain,
+            order.domain,
         );
         return typedData;
     },
@@ -76,19 +74,17 @@ export const eip712Utils = {
      * @return  A typed data object
      */
     createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
-        assert.isETHAddressHex('verifyingContractAddress', zeroExTransaction.verifyingContractAddress);
+        assert.isNumber('domain.chainId', zeroExTransaction.domain.chainId);
+        assert.isETHAddressHex('domain.verifyingContractAddress', zeroExTransaction.domain.verifyingContractAddress);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
         });
-        const domain = {
-            verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
-        };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
             { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
-            domain,
+            zeroExTransaction.domain,
         );
         return typedData;
     },
@@ -107,6 +103,7 @@ export const eip712Utils = {
         approvalExpirationTimeSeconds: BigNumber,
     ): EIP712TypedData => {
         const domain = {
+            ...transaction.domain,
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
             verifyingContractAddress,
