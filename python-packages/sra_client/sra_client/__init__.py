@@ -93,7 +93,7 @@ Post an order to an SRA-compliant Relayer.
 ...     jsdict_order_to_struct(example_order), exchange_address)
 >>> example_order["signature"] = sign_hash(
 ...     provider, Web3.toChecksumAddress(maker_address), order_hash)
->>> relayer_api.post_order_with_http_info(
+>>> relayer_api.post_order_with_http_info(  # doctest: +SKIP
 ...     network_id=50, signed_order_schema=example_order)[1]
 200
 
@@ -101,7 +101,7 @@ Get Orders
 -----------
 Get orders from an SRA-compliant Relayer.
 
->>> relayer_api.get_orders()
+>>> relayer_api.get_orders()  # doctest: +SKIP
 {'records': [{'meta_data': {},
               'order': {'exchange_address': '0x48bacb9266a570d521063ef5dd96e61686dbe788',
                         'expiration_time_seconds': '1000000000000000000000',
@@ -121,7 +121,7 @@ Get Order
 ---------
 Get an order by hash from an SRA-compliant Relayer.
 
->>> relayer_api.get_order("0x" + order_hash)
+>>> relayer_api.get_order("0x" + order_hash)  # doctest: +SKIP
 {'meta_data': {},
  'order': {'exchange_address': '0x48bacb9266a570d521063ef5dd96e61686dbe788',
            'expiration_time_seconds': '1000000000000000000000',
@@ -141,7 +141,7 @@ Get Asset Pair
 ---------------
 Get available asset pairs from an SRA-compliant Relayer.
 
->>> relayer_api.get_asset_pairs()
+>>> relayer_api.get_asset_pairs()  # doctest: +SKIP
 {'records': [{'assetDataA': {'assetData': '0xf47261b00000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082',
                              'maxAmount': '115792089237316195423570985008687907853269984665640564039457584007913129639936',
                              'minAmount': '0',
@@ -155,7 +155,7 @@ Get Orderbook
 -------------
 Get the orderbook for the WETH/ZRX asset pair from an SRA-compliant Relayer.
 
->>> relayer_api.get_orderbook(
+>>> relayer_api.get_orderbook(  # doctest: +SKIP
 ...     base_asset_data=weth_asset_data,
 ...     quote_asset_data=zrx_asset_data)
 {'asks': {'records': [{'meta_data': {},

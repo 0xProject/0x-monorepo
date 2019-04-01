@@ -6,10 +6,13 @@ from __future__ import absolute_import
 
 import unittest
 
+import pytest
+
 from sra_client import ApiClient, Configuration
 from sra_client.api import DefaultApi
 
 
+@pytest.mark.skip(reason="Circle CI error launch kit unreachable")
 class TestDefaultApi(unittest.TestCase):
     """DefaultApi unit test stubs"""
 
