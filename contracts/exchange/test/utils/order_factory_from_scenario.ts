@@ -287,10 +287,12 @@ export class OrderFactoryFromScenario {
             makerAssetData,
             takerAssetData,
             salt: generatePseudoRandomSalt(),
-            exchangeAddress: this._exchangeAddress,
-            chainId: this._chainId,
             feeRecipientAddress,
             expirationTimeSeconds,
+            domain: {
+                verifyingContractAddress: this._exchangeAddress,
+                chainId: this._chainId,
+            },
         };
 
         return order;

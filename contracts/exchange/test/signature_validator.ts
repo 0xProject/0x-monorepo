@@ -101,12 +101,14 @@ describe('MixinSignatureValidator', () => {
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: signatureValidator.address,
-            chainId,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            domain: {
+                verifyingContractAddress: signatureValidator.address,
+                chainId,
+            },
         };
         signerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         notSignerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(notSignerAddress)];

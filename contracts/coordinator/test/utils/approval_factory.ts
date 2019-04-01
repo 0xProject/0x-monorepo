@@ -9,7 +9,7 @@ export class ApprovalFactory {
     private readonly _privateKey: Buffer;
     private readonly _verifyingContractAddress: string;
 
-    constructor(privateKey: Buffer, verifyingContractAddress: string, chainId: number) {
+    constructor(privateKey: Buffer, verifyingContractAddress: string) {
         this._privateKey = privateKey;
         this._verifyingContractAddress = verifyingContractAddress;
     }
