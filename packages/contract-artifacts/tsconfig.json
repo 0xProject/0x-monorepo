@@ -5,7 +5,7 @@
         "rootDir": ".",
         "resolveJsonModule": true
     },
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "./test/**/*"],
     "files": [
         "./artifacts/AssetProxyOwner.json",
         "./artifacts/DutchAuction.json",
