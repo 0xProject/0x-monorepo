@@ -10,20 +10,16 @@ import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
 export const orderFactory = {
     createOrderFromPartial(partialOrder: Partial<Order>): Order {
-        if (_.isNil(partialOrder.chainId)) {
-            throw new Error('chainId must be valid');
-        }
-        const defaultOrder = generateEmptyOrder(partialOrder.chainId);
+        const chainId: number = getChainIdFromPartial(partialOrder);
+        const defaultOrder = generateEmptyOrder(chainId);
         return {
             ...defaultOrder,
             ...partialOrder,
         };
     },
     createSignedOrderFromPartial(partialSignedOrder: Partial<SignedOrder>): SignedOrder {
-        if (_.isNil(partialSignedOrder.chainId)) {
-            throw new Error('chainId must be valid');
-        }
-        const defaultOrder = generateEmptySignedOrder(partialSignedOrder.chainId);
+        const chainId: number = getChainIdFromPartial(partialSignedOrder);
+        const defaultOrder = generateEmptySignedOrder(chainId);
         return {
             ...defaultOrder,
             ...partialSignedOrder,
@@ -46,7 +42,6 @@ export const orderFactory = {
             takerAssetAmount,
             makerAssetData,
             takerAssetData,
-            exchangeAddress,
             takerAddress: createOrderOpts.takerAddress || defaultCreateOrderOpts.takerAddress,
             senderAddress: createOrderOpts.senderAddress || defaultCreateOrderOpts.senderAddress,
             makerFee: createOrderOpts.makerFee || defaultCreateOrderOpts.makerFee,
@@ -55,7 +50,10 @@ export const orderFactory = {
             salt: createOrderOpts.salt || defaultCreateOrderOpts.salt,
             expirationTimeSeconds:
                 createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
-            chainId,
+            domain: {
+                verifyingContractAddress: exchangeAddress,
+                chainId,
+            },
         };
         return order;
     },
@@ -86,12 +84,21 @@ export const orderFactory = {
     },
 };
 
+function getChainIdFromPartial(partialOrder: Partial<Order> | Partial<SignedOrder>): number {
+    const chainId: number = _.get(partialOrder, ['domain', 'chainId']);
+    if (!_.isNumber(chainId)) {
+        throw new Error('chainId must be valid');
+    }
+    return chainId;
+}
+
 function generateEmptySignedOrder(chainId: number): SignedOrder {
     return {
         ...generateEmptyOrder(chainId),
         signature: constants.NULL_BYTES,
     };
 }
+
 function generateEmptyOrder(chainId: number): Order {
     return {
         senderAddress: constants.NULL_ADDRESS,
@@ -104,10 +111,12 @@ function generateEmptyOrder(chainId: number): Order {
         makerAssetData: constants.NULL_BYTES,
         takerAssetData: constants.NULL_BYTES,
         salt: generatePseudoRandomSalt(),
-        exchangeAddress: constants.NULL_ADDRESS,
-        chainId,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
+        domain: {
+            verifyingContractAddress: constants.NULL_ADDRESS,
+            chainId,
+        }
     };
 }
 

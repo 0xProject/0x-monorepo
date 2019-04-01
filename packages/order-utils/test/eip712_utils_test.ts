@@ -60,8 +60,10 @@ describe('EIP712 Utils', () => {
                 salt: new BigNumber('0'),
                 data: constants.NULL_BYTES,
                 signerAddress: constants.NULL_ADDRESS,
-                verifyingContractAddress: constants.NULL_ADDRESS,
-                chainId: CHAIN_ID,
+                domain: {
+                    verifyingContractAddress: constants.NULL_ADDRESS,
+                    chainId: CHAIN_ID,
+                },
             });
             expect(typedData.primaryType).to.eq(constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name);
             expect(typedData.types.EIP712Domain).to.not.be.undefined();

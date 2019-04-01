@@ -43,8 +43,6 @@ describe('RemainingFillableCalculator', () => {
     function buildSignedOrder(): SignedOrder {
         return {
             signature,
-            exchangeAddress: zeroAddress,
-            chainId,
             feeRecipientAddress: zeroAddress,
             senderAddress: zeroAddress,
             makerAddress: zeroAddress,
@@ -57,6 +55,10 @@ describe('RemainingFillableCalculator', () => {
             takerAssetData,
             salt: zero,
             expirationTimeSeconds: zero,
+            domain: {
+                verifyingContractAddress: zeroAddress,
+                chainId,
+            },
         };
     }
     describe('Maker token is NOT ZRX', () => {
