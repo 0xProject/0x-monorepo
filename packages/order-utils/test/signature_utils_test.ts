@@ -31,14 +31,16 @@ describe('Signature utils', () => {
             feeRecipientAddress: constants.NULL_ADDRESS,
             makerAssetData: constants.NULL_ADDRESS,
             takerAssetData: constants.NULL_ADDRESS,
-            exchangeAddress: fakeExchangeContractAddress,
-            chainId: fakeChainId,
             salt: new BigNumber(0),
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
+            domain: {
+                verifyingContractAddress: fakeExchangeContractAddress,
+                chainId: fakeChainId,
+            },
         };
     });
     describe('#isValidSignatureAsync', () => {
@@ -154,7 +156,7 @@ describe('Signature utils', () => {
     describe('#ecSignOrderAsync', () => {
         it('should default to eth_sign if eth_signTypedData is unavailable', async () => {
             const expectedSignature =
-                '0x1bcbeb571648db1b7e0454175a6a4b4da1ac07cfc5fb5e4c8e4e10aa4aad368a11050ac85be1ca543eb4e1c07b852cbe6619cbab0cbbf05df364d80e126ffe731403';
+                '0x1c8bb89df0d0b537eced265159e75082086fa6f2c1422e743b36a095711edabf890531b8c37f0060bbd7d282a1a8a98b1497c85ac85a2eefc05854f090831fd9be03';
 
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
@@ -301,7 +303,7 @@ describe('Signature utils', () => {
         });
         it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
             const expectedSignature =
-                '0x1baf6c2d23afb5389e29e4274e3dc419939641e94f56a62260a004f2f79b9501c725a1d740c75d1f6e0bdc7b158c62e1ec36b7e9a16086f249fd821fa00d5652db02';
+                '0x1cdf371e6e60c9f2a0a3a1adcc1b27411e1d88bdb9c7dbae8c6faa38d37c5e330e2b467e08bbde8285d627cc5fc680746b9f97ec9d5e5be3b9fdf7abe37ed3279502';
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_signTypedData') {
