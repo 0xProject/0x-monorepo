@@ -30,6 +30,6 @@ describe('Contract Artifacts', () => {
                 }
             }
         }
-        expect(forbiddenPropertiesByArtifact).to.be.eq({});
+        expect(forbiddenPropertiesByArtifact).to.eql({});
     });
 });

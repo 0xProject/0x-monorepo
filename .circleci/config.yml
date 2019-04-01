@@ -119,6 +119,7 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
+            - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
             - run: yarn wsrun test:circleci @0x/connect
