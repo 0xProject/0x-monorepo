@@ -104,7 +104,7 @@ describe('DevUtils', () => {
             domain: {
                 verifyingContractAddress: exchange.address,
                 chainId,
-            }
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
