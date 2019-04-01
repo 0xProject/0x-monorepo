@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.5;
 
-import "./mixins/MLibRichErrors.sol";
+import "./mixins/MRichErrors.sol";
 
 
-contract LibRichErrors is
-    MLibRichErrors
+contract RichErrors is
+    MRichErrors
 {
     // solhint-disable func-name-mixedcase
     function StandardError(
