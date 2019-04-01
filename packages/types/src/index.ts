@@ -3,9 +3,9 @@
 import { BigNumber } from 'bignumber.js';
 import { ContractAbi, ContractNetworks, DevdocOutput } from 'ethereum-types';
 
-// HACK: Rather then extending from OrderWithoutExchangeAddress
+// HACK: Rather then extending from OrderWithoutDomain
 // we don't, because our docs don't expand inherited types, and it's unnecessarily
-// confusing to introduce the user to the OrderWithoutExchangeAddress type.
+// confusing to introduce the user to the OrderWithoutDomain type.
 export interface Order {
     senderAddress: string;
     makerAddress: string;
@@ -17,13 +17,12 @@ export interface Order {
     makerAssetData: string;
     takerAssetData: string;
     salt: BigNumber;
-    exchangeAddress: string;
-    chainId: number;
     feeRecipientAddress: string;
     expirationTimeSeconds: BigNumber;
+    domain: EIP712DomainWithDefaultSchema;
 }
 
-export interface OrderWithoutExchangeAddress {
+export interface OrderWithoutDomain {
     senderAddress: string;
     makerAddress: string;
     takerAddress: string;
@@ -46,11 +45,10 @@ export interface SignedOrder extends Order {
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */
 export interface ZeroExTransaction {
-    verifyingContractAddress: string;
-    chainId: number;
     salt: BigNumber;
     signerAddress: string;
     data: string;
+    domain: EIP712DomainWithDefaultSchema;
 }
 
 export interface SignedZeroExTransaction extends ZeroExTransaction {
