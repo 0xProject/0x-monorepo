@@ -26,8 +26,10 @@ export class TransactionFactory {
             salt,
             signerAddress,
             data,
-            verifyingContractAddress: this._exchangeAddress,
-            chainId: this._chainId,
+            domain: {
+                verifyingContractAddress: this._exchangeAddress,
+                chainId: this._chainId,
+            },
         };
 
         const transactionHashBuffer = transactionHashUtils.getTransactionHashBuffer(transaction);
