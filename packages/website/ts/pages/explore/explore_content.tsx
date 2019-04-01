@@ -228,7 +228,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
             'NFT marketplace as a service, powering the exchange SuperRare, a place to collect scarce digital art.',
         logo_url: '/images/explore/pixura.svg',
         theme_color: '#1F5FF1',
-        url: 'https://pixura.io/#about',
+        url: 'https://pixura.io/',
         keywords: ['infrastructure'],
     },
     zeroex_tracker: {
