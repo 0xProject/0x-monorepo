@@ -18,11 +18,12 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracs/src/mixins/MLibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/mixins/MRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
-contract MRichErrors is
-    MLibRichErrors
+contract MExchangeRichErrors is
+    MRichErrors
 {
     enum FillErrorCodes {
         INVALID_TAKER_AMOUNT,
