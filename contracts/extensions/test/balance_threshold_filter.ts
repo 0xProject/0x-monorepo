@@ -167,8 +167,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
         );
         // Default order parameters
         defaultOrderParams = {
-            exchangeAddress: exchangeInstance.address,
-            chainId,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
@@ -177,6 +175,10 @@ describe(ContractName.BalanceThresholdFilter, () => {
             makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(150), DECIMALS_DEFAULT),
             senderAddress: erc721BalanceThresholdFilterInstance.address,
+            domain: {
+                verifyingContractAddress: exchangeInstance.address,
+                chainId,
+            },
         };
         // Create two order factories with valid makers (who meet the threshold balance), and
         // one factory for an invalid address (that does not meet the threshold balance)

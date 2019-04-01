@@ -59,12 +59,14 @@ describe('Exchange libs', () => {
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: libs.address,
-            chainId,
             makerAddress,
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            domain: {
+                verifyingContractAddress: libs.address,
+                chainId,
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
