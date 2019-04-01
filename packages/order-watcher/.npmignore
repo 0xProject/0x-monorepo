@@ -1,12 +1,9 @@
+# Blacklist all files
 .*
-tsconfig.json
-webpack.config.js
-yarn-error.log
-/_bundles/
-/generated_docs/
-/scripts/
-/coverage/
-/src/
-/lib/test
-test/
-ganache.log
+*
+# Whitelist lib
+!lib/**/*
+# Blacklist tests and publish scripts
+/lib/test/*
+/lib/monorepo_scripts/
+# Package specific ignore

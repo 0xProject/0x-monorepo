@@ -1,10 +1,9 @@
+# Blacklist all files
 .*
-yarn-error.log
-/scripts/
-tsconfig.json
+*
+# Whitelist lib
+!lib/**/*
+# Blacklist tests and publish scripts
+/lib/test/*
 /lib/monorepo_scripts/
-/coverage/
-/src/
-/lib/test
-test/
-ganache.log
+# Package specific ignore
