@@ -7,7 +7,7 @@
                 "pr": 1699
             },
             {
-                "note": "Add chainId to domain separator",
+                "note": "Update domain separator",
                 "pr": 1742
             }
         ]
