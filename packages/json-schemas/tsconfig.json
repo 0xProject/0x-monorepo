@@ -15,6 +15,7 @@
         "./schemas/call_data_schema.json",
         "./schemas/ec_signature_parameter_schema.json",
         "./schemas/ec_signature_schema.json",
+        "./schemas/eip712_domain_schema.json",
         "./schemas/eip712_typed_data_schema.json",
         "./schemas/order_cancel_schema.json",
         "./schemas/order_fill_or_kill_requests_schema.json",
