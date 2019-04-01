@@ -1,0 +1,14 @@
+{
+    "id": "/eip712DomainSchema",
+    "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "version" },
+        "chainId": { "type": "number" },
+        "verifyingContractAddress": { "$ref": "/addressSchema" }
+    },
+    "required": [
+        "chainId",
+        "verifyingContractAddress"
+    ],
+    "type": "object"
+}
