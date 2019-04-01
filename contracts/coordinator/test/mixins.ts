@@ -11,12 +11,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { transactionHashUtils } from '@0x/order-utils';
-import {
-    EIP712DomainWithDefaultSchema,
-    RevertReason,
-    SignatureType,
-    SignedOrder
-} from '@0x/types';
+import { EIP712DomainWithDefaultSchema, RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
