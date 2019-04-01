@@ -19,7 +19,7 @@ import {
     OrderWithoutDomain,
     RevertReason,
     SignedOrder,
-    SignedZeroExTransaction
+    SignedZeroExTransaction,
 } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
