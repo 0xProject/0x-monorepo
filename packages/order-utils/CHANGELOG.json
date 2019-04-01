@@ -11,7 +11,11 @@
                 "pr": 1742
             },
             {
-                "note": "Update domain version for Exchange and Coordinator",
+                "note": "Update tools to use new `Order` and `ZeroExTransaction` structure",
+                "pr": 1742
+            },
+            {
+                "note": "Update domain schema for Exchange and Coordinator",
                 "pr": 1742
             }
         ]
