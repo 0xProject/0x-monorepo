@@ -1,7 +1,7 @@
 import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import { OrderWithoutDomain, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
@@ -119,15 +119,12 @@ export class FillScenarios {
             fillableAmount,
         );
         const exchangeInstance = new ExchangeContract(
-            signedOrder.exchangeAddress,
+            signedOrder.domain.verifyingContractAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
 
-        const orderWithoutExchangeAddress = _.omit(signedOrder, [
-            'signature',
-            'exchangeAddress',
-        ]) as OrderWithoutExchangeAddress;
+        const orderWithoutExchangeAddress = _.omit(signedOrder, ['signature', 'exchangeAddress']) as OrderWithoutDomain;
 
         const txHash = await exchangeInstance.fillOrder.sendTransactionAsync(
             orderWithoutExchangeAddress,

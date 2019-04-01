@@ -4559,8 +4559,8 @@ export class ExchangeContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-            _zrxAssetData: string,
-            _chainId: BigNumber,
+            zrxAssetData: string,
+            chainId: BigNumber,
     ): Promise<ExchangeContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -4573,8 +4573,8 @@ export class ExchangeContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, _zrxAssetData,
-_chainId
+        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, zrxAssetData,
+chainId
 );
     }
     public static async deployAsync(
@@ -4582,8 +4582,8 @@ _chainId
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-            _zrxAssetData: string,
-            _chainId: BigNumber,
+            zrxAssetData: string,
+            chainId: BigNumber,
     ): Promise<ExchangeContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -4593,19 +4593,19 @@ _chainId
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_zrxAssetData,
-_chainId
+        [zrxAssetData,
+chainId
 ] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_zrxAssetData,
-_chainId
+            [zrxAssetData,
+chainId
 ],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_zrxAssetData,
-_chainId
+        const txData = deployInfo.encode(bytecode, [zrxAssetData,
+chainId
 ]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -4618,8 +4618,8 @@ _chainId
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Exchange successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new ExchangeContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_zrxAssetData,
-_chainId
+        contractInstance.constructorArgs = [zrxAssetData,
+chainId
 ];
         return contractInstance;
     }
