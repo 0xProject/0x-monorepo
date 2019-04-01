@@ -59,15 +59,11 @@ export const eip712Utils = {
         const normalizedOrder = _.mapValues(order, value => {
             return !_.isString(value) ? value.toString() : value;
         });
-        const domain = {
-            verifyingContractAddress: order.exchangeAddress,
-            chainId: order.chainId,
-        };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ORDER_SCHEMA.name,
             { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
             normalizedOrder,
-            domain,
+            order.domain,
         );
         return typedData;
     },
@@ -78,20 +74,17 @@ export const eip712Utils = {
      * @return  A typed data object
      */
     createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
-        assert.isETHAddressHex('verifyingContractAddress', zeroExTransaction.verifyingContractAddress);
+        assert.isNumber('domain.chainId', zeroExTransaction.domain.chainId);
+        assert.isETHAddressHex('domain.verifyingContractAddress', zeroExTransaction.domain.verifyingContractAddress);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
         });
-        const domain = {
-            verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
-            chainId: zeroExTransaction.chainId,
-        };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
             { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
-            domain,
+            zeroExTransaction.domain,
         );
         return typedData;
     },
@@ -110,10 +103,10 @@ export const eip712Utils = {
         approvalExpirationTimeSeconds: BigNumber,
     ): EIP712TypedData => {
         const domain = {
+            ...transaction.domain,
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
             verifyingContractAddress,
-            chainId: transaction.chainId,
         };
         const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
         const approval = {
