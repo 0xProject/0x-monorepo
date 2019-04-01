@@ -36,7 +36,7 @@ describe('signTypedDataUtils', () => {
             },
             primaryType: 'Test',
         };
-        const orderSignTypedDataHashHex = '0x78772b297e1b0b31089589a6608930cceba855af9d3ccf7b92cf47fa881e21f7';
+        const orderSignTypedDataHashHex = '0xc59d01479d63bda79d1c7fefc883a81ff247f9a1f9168c748922cd7e0dcd5eca';
         const orderSignTypedData = {
             types: {
                 EIP712Domain: [
@@ -127,7 +127,6 @@ describe('signTypedDataUtils', () => {
                 salt: '12345',
                 makerAssetData: '0x0000000000000000000000000000000000000000',
                 takerAssetData: '0x0000000000000000000000000000000000000000',
-                exchangeAddress: '0x0000000000000000000000000000000000000000',
             },
             primaryType: 'Order',
         };
@@ -157,12 +156,11 @@ describe('signTypedDataUtils', () => {
                     salt: 0,
                     makerAssetData: '0x0000000000000000000000000000000000000000',
                     takerAssetData: '0x0000000000000000000000000000000000000000',
-                    exchangeAddress: '0x0000000000000000000000000000000000000000',
                 },
             };
             const hash = signTypedDataUtils.generateTypedDataHash(uninitializedOrder).toString('hex');
             const hashHex = `0x${hash}`;
-            expect(hashHex).to.be.eq('0x510449a190415c4770080d857a1c654b653a0c054c94a7a8e9f08f623f9e824f');
+            expect(hashHex).to.be.eq('0x7624dcf06a5ba0e2799a87adba76a13c7d6418214d6b3c9bc239fdf2422f2027');
         });
     });
 });
