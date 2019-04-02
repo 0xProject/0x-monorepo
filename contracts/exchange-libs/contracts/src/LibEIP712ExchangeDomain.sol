@@ -18,27 +18,32 @@
 
 pragma solidity ^0.5.5;
 
-import "./LibEIP712.sol";
-import "./LibEIP712ExchangeDomainConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
 contract LibEIP712ExchangeDomain is
-    LibEIP712,
-    LibEIP712ExchangeDomainConstants
+    LibEIP712
 {
+    // EIP712 Exchange Domain Name value
+    string constant internal EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
+
+    // EIP712 Exchange Domain Version value
+    string constant internal EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
+
     // Hash of the EIP712 Domain Separator data
     // solhint-disable-next-line var-name-mixedcase
     bytes32 internal EIP712_EXCHANGE_DOMAIN_HASH;
 
     /// @param chainId Chain ID of the network this contract is deployed on.
-    constructor (uint256 chainId)
+    /// @param verifyingContractAddress Address of the verifying contract (null if the address of this contract)
+    constructor (uint256 chainId, address verifyingContractAddress)
         public
     {
         EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
             EIP712_EXCHANGE_DOMAIN_NAME,
             EIP712_EXCHANGE_DOMAIN_VERSION,
             chainId,
-            address(this)
+            verifyingContractAddress == address(0) ? address(this) : verifyingContractAddress
         );
     }
 
