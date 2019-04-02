@@ -120,10 +120,10 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant EPOCH_ORDER_ERROR_SELECTOR =
-        bytes4(keccak256("EpochOrderError(address,address,uint256)"));
+    bytes4 internal constant ORDER_EPOCH_ERROR_SELECTOR =
+        bytes4(keccak256("OrderEpochError(address,address,uint256)"));
 
-    function EpochOrderError(
+    function OrderEpochError(
         address maker,
         address sender,
         uint256 currentEpoch
