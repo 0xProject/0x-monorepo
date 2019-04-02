@@ -21,10 +21,10 @@ pragma experimental "ABIEncoderV2";
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
 import "./libs/LibCoordinatorApproval.sol";
-import "./libs/LibZeroExTransaction.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MCoordinatorApprovalVerifier.sol";
 
