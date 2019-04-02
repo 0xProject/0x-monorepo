@@ -5,6 +5,8 @@
 
 import subprocess  # nosec
 import distutils.command.build_py
+from urllib.request import urlopen
+from urllib.error import URLError
 
 from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
@@ -51,28 +53,41 @@ class TestPublishCommand(distutils.command.build_py.build_py):
         )
 
 
-class GanacheCommand(distutils.command.build_py.build_py):
-    """Custom command to publish to pypi.org."""
-
-    description = "Run ganache daemon to support tests."
-
-    def run(self):
-        """Run ganache."""
-        cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
-        ).split()
-        subprocess.call(cmd_line)  # nosec
-
-
-class LaunchKitCommand(distutils.command.build_py.build_py):
+class StartTestRelayerCommand(distutils.command.build_py.build_py):
     """Custom command to boot up a local 0x-launch-kit in docker."""
 
-    description = "Run launch-kit daemon to support sra_client demos."
+    description = "Run launch-kit daemon to support tests."
 
     def run(self):
-        """Run 0x-launch-kit."""
-        cmd_line = ("docker run -d -p 3000:3000 0xorg/launch-kit-ci").split()
-        subprocess.call(cmd_line)  # nosec
+        """Run `docker-compose up`."""
+        subprocess.call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml up -d").split()
+        )
+        launch_kit_ready = False
+        print("Waiting for relayer to start accepting connections...", end="")
+        while not launch_kit_ready:
+            try:
+                launch_kit_ready = (
+                    urlopen(  # nosec
+                        "http://localhost:3000/v2/asset_pairs"
+                    ).getcode()
+                    == 200
+                )
+            except URLError:
+                continue
+        print("done")
+
+
+class StopTestRelayerCommand(distutils.command.build_py.build_py):
+    """Custom command to tear down the local 0x-launch-kit test relayer."""
+
+    description = "Tear down launch-kit daemon."
+
+    def run(self):
+        """Run `docker-compose down`."""
+        subprocess.call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml down").split()
+        )
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -142,11 +157,11 @@ setup(
     cmdclass={
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
-        "launch_kit": LaunchKitCommand,
+        "start_test_relayer": StartTestRelayerCommand,
+        "stop_test_relayer": StopTestRelayerCommand,
         "lint": LintCommand,
         "publish_docs": PublishDocsCommand,
         "test": TestCommandExtension,
-        "ganache": GanacheCommand,
     },
     extras_require={
         "dev": [
