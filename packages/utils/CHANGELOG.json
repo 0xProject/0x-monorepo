@@ -13,6 +13,10 @@
             {
                 "note": "More robust normalization of `uint256` types in `sign_typed_data_utils`",
                 "pr": 1742
+            },
+            {
+                "note": "Add `RichRevertReason` type and associated utilities",
+                "pr": TODO
             }
         ]
     },
