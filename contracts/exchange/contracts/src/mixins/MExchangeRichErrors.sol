@@ -46,11 +46,10 @@ contract MExchangeRichErrors is
         UNKNOWN_ASSET_PROXY
     }
 
-    enum TransactionExecutionErrorCodes {
+    enum TransactionErrorCodes {
         NO_REENTRANCY,
         ALREADY_EXECUTED,
-        BAD_SIGNATURE,
-        FAILED_EXECUTION
+        BAD_SIGNATURE
     }
 
     // solhint-disable func-name-mixedcase
@@ -177,11 +176,23 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
+    bytes4 internal constant TRANSACTION_ERROR_SELECTOR =
+        bytes4(keccak256("TransactionError(bytes32,uint8)"));
+
+    function TransactionError(
+        bytes32 transactionHash,
+        TransactionErrorCodes error
+    )
+        internal
+        pure
+        returns (bytes memory);
+
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionExecutionError(uint8)"));
+        bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"));
 
     function TransactionExecutionError(
-        TransactionExecutionErrorCodes error
+        bytes32 transactionHash,
+        bytes memory errorData
     )
         internal
         pure
