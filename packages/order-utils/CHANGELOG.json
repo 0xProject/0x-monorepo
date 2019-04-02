@@ -9,6 +9,10 @@
             {
                 "note": "Update domain schema for Exchange and Coordinator",
                 "pr": 1742
+            },
+            {
+                "note": "Add Exchange rich revert reason types",
+                "pr": TODO
             }
         ]
     },
