@@ -1,3 +1,5 @@
+import * as ExchangeErrors from './exchange_rich_reverts';
+
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
@@ -82,3 +84,4 @@ export {
 } from './types';
 
 export { ExchangeContract, NetworkId } from '@0x/abi-gen-wrappers';
+export { ExchangeErrors };
