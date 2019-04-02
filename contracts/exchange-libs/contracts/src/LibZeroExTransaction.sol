@@ -19,11 +19,11 @@
 pragma solidity ^0.5.5;
 pragma experimental "ABIEncoderV2";
 
-import "./LibEIP712Domain.sol";
+import "./LibEIP712ExchangeDomain.sol";
 
 
 contract LibZeroExTransaction is
-    LibEIP712Domain
+    LibEIP712ExchangeDomain
 {
     // Hash for the EIP712 0x transaction schema
     // keccak256(abi.encodePacked(

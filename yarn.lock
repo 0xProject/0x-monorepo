@@ -489,124 +489,6 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@0x/contracts-asset-proxy@^1.0.2":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@0x/contracts-asset-proxy/-/contracts-asset-proxy-1.0.9.tgz#3a48e64b93ddc642834bde1bd09cdd84ca688a2b"
-  dependencies:
-    "@0x/base-contract" "^5.0.2"
-    "@0x/contracts-erc20" "^1.0.9"
-    "@0x/contracts-erc721" "^1.0.9"
-    "@0x/contracts-utils" "2.0.1"
-    "@0x/order-utils" "^7.0.2"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.2"
-    "@0x/web3-wrapper" "^6.0.2"
-    ethereum-types "^2.1.0"
-    lodash "^4.17.11"
-
-"@0x/contracts-erc20@1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/@0x/contracts-erc20/-/contracts-erc20-1.0.8.tgz#882f3acf1a44148800d9bef692aa377627df9ace"
-  dependencies:
-    "@0x/base-contract" "^5.0.1"
-    "@0x/contracts-exchange-libs" "1.0.2"
-    "@0x/contracts-utils" "2.0.1"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.1"
-    "@0x/web3-wrapper" "^6.0.1"
-    ethereum-types "^2.1.0"
-    lodash "^4.17.11"
-
-"@0x/contracts-erc20@^1.0.2", "@0x/contracts-erc20@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@0x/contracts-erc20/-/contracts-erc20-1.0.9.tgz#366ce8222dcae5ade0ea7ca95332416a080f6abf"
-  dependencies:
-    "@0x/base-contract" "^5.0.2"
-    "@0x/contracts-exchange-libs" "1.0.2"
-    "@0x/contracts-utils" "2.0.1"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.2"
-    "@0x/web3-wrapper" "^6.0.2"
-    ethereum-types "^2.1.0"
-    lodash "^4.17.11"
-
-"@0x/contracts-erc721@1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/@0x/contracts-erc721/-/contracts-erc721-1.0.8.tgz#d3746c26eec57662654557121601b5bb81085637"
-  dependencies:
-    "@0x/base-contract" "^5.0.1"
-    "@0x/contracts-utils" "2.0.1"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.1"
-    "@0x/web3-wrapper" "^6.0.1"
-    ethereum-types "^2.1.0"
-    lodash "^4.17.11"
-
-"@0x/contracts-erc721@^1.0.2", "@0x/contracts-erc721@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@0x/contracts-erc721/-/contracts-erc721-1.0.9.tgz#3991858a3bf5a80dcd6e5fd65e938f8adc3b347c"
-  dependencies:
-    "@0x/base-contract" "^5.0.2"
-    "@0x/contracts-utils" "2.0.1"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.2"
-    "@0x/web3-wrapper" "^6.0.2"
-    ethereum-types "^2.1.0"
-    lodash "^4.17.11"
-
-"@0x/contracts-exchange-libs@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/contracts-exchange-libs/-/contracts-exchange-libs-1.0.2.tgz#0682c01cdb3e36100bda0ffbdf9badb5b8a01fc4"
-  dependencies:
-    "@0x/base-contract" "^4.0.1"
-    "@0x/contracts-utils" "^2.0.1"
-    "@0x/order-utils" "^5.0.0"
-    "@0x/types" "^2.0.1"
-    "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.2"
-    "@0x/web3-wrapper" "^4.0.1"
-    ethereum-types "^2.0.0"
-    lodash "^4.17.5"
-
-"@0x/contracts-exchange-libs@^1.0.2":
-  version "1.1.3"
-  resolved "https://registry.npmjs.org/@0x/contracts-exchange-libs/-/contracts-exchange-libs-1.1.3.tgz#dc9429e9c5fc750e9f5006e5ad53ebd7aa577c28"
-  dependencies:
-    "@0x/base-contract" "^5.0.2"
-    "@0x/contracts-utils" "^2.0.8"
-    "@0x/order-utils" "^7.0.2"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.2"
-    "@0x/web3-wrapper" "^6.0.2"
-    ethereum-types "^2.1.0"
-    lodash "^4.17.11"
-
-"@0x/contracts-exchange@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@0x/contracts-exchange/-/contracts-exchange-1.0.2.tgz#4c02378b26a7bf6324e16a41f2851c43fed82c63"
-  dependencies:
-    "@0x/base-contract" "^4.0.1"
-    "@0x/contracts-asset-proxy" "^1.0.2"
-    "@0x/contracts-erc20" "^1.0.2"
-    "@0x/contracts-erc721" "^1.0.2"
-    "@0x/contracts-exchange-libs" "^1.0.2"
-    "@0x/contracts-test-utils" "^3.0.1"
-    "@0x/contracts-utils" "^2.0.1"
-    "@0x/order-utils" "^5.0.0"
-    "@0x/types" "^2.0.1"
-    "@0x/typescript-typings" "^4.0.0"
-    "@0x/utils" "^4.0.2"
-    "@0x/web3-wrapper" "^4.0.1"
-    ethereum-types "^2.0.0"
-    ethereumjs-util "^5.1.1"
-    lodash "^4.17.5"
-
 "@0x/contracts-utils@2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@0x/contracts-utils/-/contracts-utils-2.0.1.tgz#32e298ab5e6edb045c37294063ff928b629db0a4"
@@ -621,21 +503,6 @@
     ethereum-types "^2.0.0"
     ethereumjs-util "^5.1.1"
     lodash "^4.17.5"
-
-"@0x/contracts-utils@^2.0.1", "@0x/contracts-utils@^2.0.8":
-  version "2.0.8"
-  resolved "https://registry.npmjs.org/@0x/contracts-utils/-/contracts-utils-2.0.8.tgz#b6a3775296e04c7ca9ebea7eae56fda48a43239d"
-  dependencies:
-    "@0x/base-contract" "^5.0.2"
-    "@0x/order-utils" "^7.0.2"
-    "@0x/types" "^2.1.1"
-    "@0x/typescript-typings" "^4.1.0"
-    "@0x/utils" "^4.2.2"
-    "@0x/web3-wrapper" "^6.0.2"
-    bn.js "^4.11.8"
-    ethereum-types "^2.1.0"
-    ethereumjs-util "^5.1.1"
-    lodash "^4.17.11"
 
 "@0x/order-utils@^5.0.0":
   version "5.0.0"
@@ -13620,6 +13487,16 @@ react-dom@^16.3.2:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
+react-dom@^16.4.2:
+  version "16.8.6"
+  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
+  integrity sha512-1nL7PIq9LTL3fthPqwkvr2zY7phIPjYrT0jp4HjyEQrEROnw4dG41VVwi/wfoCneoleqrNX7iAD+pXebJZwrwA==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.6"
+
 react-dom@^16.5.2:
   version "16.5.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.5.2.tgz#b69ee47aa20bab5327b2b9d7c1fe2a30f2cfa9d7"
@@ -13922,6 +13799,16 @@ react@^16.3.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+react@^16.4.2:
+  version "16.8.6"
+  resolved "https://registry.npmjs.org/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
+  integrity sha512-pC0uMkhLaHm11ZSJULfOBqV4tIZkx87ZLvbbQYunNixAAvjnC+snJCg0XQXn9VIsttVsbZP/H/ewzgsd5fxKXw==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.6"
 
 react@^16.5.2:
   version "16.5.2"
@@ -14792,6 +14679,14 @@ schedule@^0.5.0:
   version "0.5.0"
   resolved "https://registry.npmjs.org/schedule/-/schedule-0.5.0.tgz#c128fffa0b402488b08b55ae74bb9df55cc29cc8"
   dependencies:
+    object-assign "^4.1.1"
+
+scheduler@^0.13.6:
+  version "0.13.6"
+  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.13.6.tgz#466a4ec332467b31a91b9bf74e5347072e4cd889"
+  integrity sha512-IWnObHt413ucAYKsD9J1QShUKkbKLQQHdxRyw73sw4FN26iWr3DY/H34xGPe4nmL1DwXyWmSWmMrA9TfQbE/XQ==
+  dependencies:
+    loose-envify "^1.1.0"
     object-assign "^4.1.1"
 
 schema-utils@^0.4.4:
