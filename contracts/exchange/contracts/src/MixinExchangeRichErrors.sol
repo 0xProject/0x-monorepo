@@ -117,7 +117,7 @@ contract MixinExchangeRichErrors is
         );
     }
 
-    function EpochOrderError(
+    function OrderEpochError(
         address maker,
         address sender,
         uint256 currentEpoch
@@ -127,7 +127,7 @@ contract MixinExchangeRichErrors is
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            EPOCH_ORDER_ERROR_SELECTOR,
+            ORDER_EPOCH_ERROR_SELECTOR,
             maker,
             sender,
             currentEpoch
