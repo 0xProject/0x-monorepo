@@ -1,11 +1,8 @@
 import * as chai from 'chai';
-import * as dirtyChai from 'dirty-chai';
 import { get } from 'lodash';
 import 'mocha';
 
 import * as artifacts from '../src/index';
-
-chai.use(dirtyChai);
 
 const expect = chai.expect;
 

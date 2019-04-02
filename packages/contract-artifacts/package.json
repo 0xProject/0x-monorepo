@@ -30,8 +30,6 @@
         "shx": "^0.2.2",
         "typescript": "3.0.1",
         "chai": "^4.0.1",
-        "dirty-chai": "^2.0.1",
-        "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
         "lodash": "^4.17.11"
     },
