@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add `RichRevertAbi` interface as part of `AbiDefinition` types",
+                "pr": 1761
+            }
+        ]
+    },
+    {
         "version": "2.1.4",
         "changes": [
             {
