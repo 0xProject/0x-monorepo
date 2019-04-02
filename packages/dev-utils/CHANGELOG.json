@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Add `chaiSetup` function with rich revert support",
+                "pr": 1761
+            }
+        ]
+    },
+    {
         "version": "2.2.1",
         "changes": [
             {
