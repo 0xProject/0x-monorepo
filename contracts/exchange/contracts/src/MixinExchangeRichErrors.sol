@@ -196,8 +196,24 @@ contract MixinExchangeRichErrors is
         );
     }
 
+    function TransactionError(
+        bytes32 transactionHash,
+        TransactionErrorCodes error
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            TRANSACTION_ERROR_SELECTOR,
+            transactionHash,
+            error
+        );
+    }
+
     function TransactionExecutionError(
-        TransactionExecutionErrorCodes error
+        bytes32 transactionHash,
+        bytes memory errorData
     )
         internal
         pure
@@ -205,7 +221,8 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             TRANSACTION_EXECUTION_ERROR_SELECTOR,
-            error
+            transactionHash,
+            errorData
         );
     }
 
