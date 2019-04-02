@@ -18,16 +18,14 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomainConstants.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "./LibConstants.sol";
 
 
 // solhint-disable var-name-mixedcase
-contract LibEIP712Domain is
+contract LibEIP712CoordinatorDomain is
     LibConstants,
-    LibEIP712,
-    LibEIP712ExchangeDomainConstants
+    LibEIP712ExchangeDomain
 {
 
     // EIP712 Domain Name value for the Coordinator
@@ -43,20 +41,15 @@ contract LibEIP712Domain is
     bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
 
     /// @param chainId Chain ID of the network this contract is deployed on.
-    constructor (uint256 chainId)
+    /// @param verifyingContractAddress Address of the verifying contract (null if the address of this contract)
+    constructor (uint256 chainId, address verifyingContractAddress)
         public
     {
         EIP712_COORDINATOR_DOMAIN_HASH = hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
             chainId,
-            address(this)
-        );
-        EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
-            EIP712_EXCHANGE_DOMAIN_NAME,
-            EIP712_EXCHANGE_DOMAIN_VERSION,
-            chainId,
-            address(EXCHANGE)
+            verifyingContractAddress == address(0) ? address(this) : verifyingContractAddress
         );
     }
 
@@ -70,17 +63,5 @@ contract LibEIP712Domain is
         returns (bytes32 result)
     {
         return hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
-    }
-
-    /// @dev Calculates EIP712 encoding for a hash struct in the EIP712 domain
-    ///      of the Exchange contract.
-    /// @param hashStruct The EIP712 hash struct.
-    /// @return EIP712 hash applied to the Exchange EIP712 Domain.
-    function hashEIP712ExchangeMessage(bytes32 hashStruct)
-        internal
-        view
-        returns (bytes32 result)
-    {
-        return hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashStruct);
     }
 }
