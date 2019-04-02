@@ -1,3 +1,5 @@
+import * as ExchangeErrors from './exchange_rich_reverts';
+
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
@@ -76,3 +78,5 @@ export {
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
 } from './types';
+
+export { ExchangeErrors };
