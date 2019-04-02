@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.4.1",
+        "changes": [
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": TODO
+            }
+        ]
+    },
+    {
         "version": "2.4.0",
         "changes": [
             {
