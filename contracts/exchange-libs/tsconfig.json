@@ -6,10 +6,11 @@
         "generated-artifacts/LibAbiEncoder.json",
         "generated-artifacts/LibAssetProxyErrors.json",
         "generated-artifacts/LibConstants.json",
-        "generated-artifacts/LibEIP712.json",
+        "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
         "generated-artifacts/LibOrder.json",
+        "generated-artifacts/LibZeroExTransaction.json",
         "generated-artifacts/TestLibs.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

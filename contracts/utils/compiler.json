@@ -26,6 +26,7 @@
     "contracts": [
         "src/Address.sol",
         "src/LibBytes.sol",
+        "src/LibEIP712.sol",
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",
         "src/SafeMath.sol",
