@@ -45,7 +45,7 @@ contract Exchange is
     constructor (bytes memory zrxAssetData, uint256 chainId)
         public
         LibConstants(zrxAssetData) // @TODO: Remove zrxAssetData when we deploy.
-        LibEIP712ExchangeDomain(chainId)
+        LibEIP712ExchangeDomain(chainId, address(0))
         MixinExchangeCore()
         MixinMatchOrders()
         MixinSignatureValidator()

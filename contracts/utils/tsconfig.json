@@ -6,6 +6,7 @@
         "generated-artifacts/Address.json",
         "generated-artifacts/IOwnable.json",
         "generated-artifacts/LibBytes.json",
+        "generated-artifacts/LibEIP712.json",
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
         "generated-artifacts/SafeMath.json",
