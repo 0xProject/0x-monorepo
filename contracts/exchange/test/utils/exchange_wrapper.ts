@@ -215,13 +215,9 @@ export class ExchangeWrapper {
         signedTx: SignedZeroExTransaction,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.executeTransaction.sendTransactionAsync(
-            signedTx.salt,
-            signedTx.signerAddress,
-            signedTx.data,
-            signedTx.signature,
-            { from },
-        );
+        const txHash = await this._exchange.executeTransaction.sendTransactionAsync(signedTx, signedTx.signature, {
+            from,
+        });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
