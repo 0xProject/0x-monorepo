@@ -75,8 +75,10 @@ class DefaultApi(object):
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
 
-        :return: :class:`RelayerApiAssetDataPairsResponseSchema`.
-            If the method is called asynchronously returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiAssetDataPairsResponseSchema`, an HTTP status
+            code integer, and a collection of HTTP headers).  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -198,8 +200,10 @@ class DefaultApi(object):
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
 
-        :return: :class:`RelayerApiFeeRecipientsResponseSchema`.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiFeeRecipientsResponseSchema`, an HTTP status
+            code integer, and a collection of HTTP headers).  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -303,8 +307,10 @@ class DefaultApi(object):
         :param str order_hash: The hash of the desired 0x order. (required)
         :param float network_id: The id of the Ethereum network
 
-        :return: :class:`RelayerApiOrderSchema`.
-            If the method is called asynchronously returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrderSchema`, an HTTP status code integer, and a
+            collection of HTTP headers).  If the method is called
+            asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -436,8 +442,10 @@ class DefaultApi(object):
             order the relayer may want to decide what configuration to send
             back.
 
-        :return: :class:`RelayerApiOrderConfigResponseSchema`.
-            If the method is called asynchronously returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrderConfigResponseSchema`, an HTTP status code
+            integer, and a collection of HTTP headers).  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -590,8 +598,10 @@ class DefaultApi(object):
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
 
-        :return: :class:`RelayerApiOrderbookResponseSchema`.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrderbookResponseSchema`, an HTTP status code
+            integer, and a collection of HTTP headers).  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -833,8 +843,10 @@ class DefaultApi(object):
         :param float page: The number of the page to request in the collection.
         :param float per_page: The number of records to return per page.
 
-        :return: RelayerApiOrdersResponseSchema.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrdersResponseSchema`, an HTTP status code
+            integer, and a collection of HTTP headers).  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -1012,8 +1024,10 @@ class DefaultApi(object):
         :param signed_order_schema: Instance of :class:`SignedOrderSchema`
             A valid signed 0x order based on the schema.
 
-        :return: None.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of the response data (always empty for this
+            method), an HTTP status code integer, and a collection of HTTP
+            headers).  If the method is called asynchronously returns the
+            request thread.
         """
 
         local_var_params = locals()

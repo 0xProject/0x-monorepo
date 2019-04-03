@@ -1,31 +1,4 @@
-"""JSON schemas and associated utilities.
-
-Validating a 0x Order
----------------------
-
-Here is an example on how to validate a 0x order.
-
->>> from zero_ex.json_schemas import assert_valid
->>> example_order = {
-...     'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
-...     'takerAddress': '0x0000000000000000000000000000000000000000',
-...     'senderAddress': '0x0000000000000000000000000000000000000000',
-...     'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
-...     'feeRecipientAddress':
-...         '0x0000000000000000000000000000000000000000',
-...     'makerAssetData': '0xf47261b0000000000000000000000000'
-...         'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-...     'takerAssetData': '0xf47261b0000000000000000000000000'
-...         'e41d2489571d322189246dafa5ebde1f4699f498',
-...     'salt': 123456789,
-...     'makerFee': 0,
-...     'takerFee': 0,
-...     'makerAssetAmount': 1000000000000000000,
-...     'takerAssetAmount': 500000000000000000000,
-...     'expirationTimeSeconds': 1553553429
-... }
->>> assert_valid(example_order, "/orderSchema")
-"""
+"""JSON schemas and associated utilities."""
 
 from os import path
 import json
@@ -77,10 +50,45 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
 
     Raises an exception if validation fails.
 
-    >>> assert_valid(
-    ...     {'v': 27, 'r': '0x'+'f'*64, 's': '0x'+'f'*64},
-    ...     '/ecSignatureSchema',
+    >>> from zero_ex.json_schemas import assert_valid
+    >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+    >>> from zero_ex.order_utils import Order, order_to_jsdict
+    >>> from zero_ex.order_utils.asset_data_utils import (
+    ...     encode_erc20_asset_data
     ... )
+    >>> from eth_utils import remove_0x_prefix
+    >>> import random
+    >>> from datetime import datetime, timedelta
+    >>> example_order = Order(
+    ...     makerAddress='0x5409ed021d9299bf6814279a6a1411a7e866a631',
+    ...     takerAddress='0x0000000000000000000000000000000000000000',
+    ...     senderAddress='0x0000000000000000000000000000000000000000',
+    ...     exchangeAddress='0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
+    ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
+    ...     makerAssetData=bytes.fromhex(
+    ...         remove_0x_prefix(
+    ...             encode_erc20_asset_data(
+    ...                 NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
+    ...             )
+    ...         )
+    ...     ),
+    ...     takerAssetData=bytes.fromhex(
+    ...         remove_0x_prefix(
+    ...             encode_erc20_asset_data(
+    ...                 NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
+    ...             )
+    ...         )
+    ...     ),
+    ...     salt=random.randint(1, 100000000000000000),
+    ...     makerFee=0,
+    ...     takerFee=0,
+    ...     makerAssetAmount=1000000000000000000,
+    ...     takerAssetAmount=500000000000000000000,
+    ...     expirationTimeSeconds=round(
+    ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+    ...     )
+    ... )
+    >>> assert_valid(order_to_jsdict(example_order), "/orderSchema")
     """
     _, schema = _LOCAL_RESOLVER.resolve(schema_id)
     jsonschema.validate(data, schema, resolver=_LOCAL_RESOLVER)
@@ -97,7 +105,7 @@ def assert_valid_json(data: str, schema_id: str) -> None:
     Raises an exception if validation fails.
 
     >>> assert_valid_json(
-    ...     r'''{
+    ...     '''{
     ...         "v": 27,
     ...         "r": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     ...         "s": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"

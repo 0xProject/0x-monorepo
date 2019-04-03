@@ -27,12 +27,7 @@ class CancelDisallowedError(Exception):
 
 
 class Exchange(BaseContractWrapper):
-    """Wrapper class for 0x Exchange smart contract.
-
-    :param provider: instance of :class:`web3.providers.base.BaseProvider`
-    :param account_address: default None, str of account address
-    :param private_key: default None, str of private_key
-    """
+    """Wrapper class for 0x Exchange smart contract."""
 
     def __init__(
         self,
@@ -40,7 +35,12 @@ class Exchange(BaseContractWrapper):
         account_address: str = None,
         private_key: str = None,
     ):
-        """Get an instance of the 0x Exchange smart contract wrapper."""
+        """Get an instance of the 0x Exchange smart contract wrapper.
+
+        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param account_address: str of account address
+        :param private_key: str of private_key
+        """
         super(Exchange, self).__init__(
             provider=provider,
             account_address=account_address,
@@ -83,7 +83,7 @@ class Exchange(BaseContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: `HexBytes` transaction hash
+        :returns: transaction hash
         """
         assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         is_valid_signature(
@@ -120,7 +120,7 @@ class Exchange(BaseContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: `HexBytes` transaction hash
+        :returns: transaction hash
         """
         order_jsdicts = [
             order_to_jsdict(order, self.address) for order in orders
@@ -159,7 +159,7 @@ class Exchange(BaseContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: `HexBytes` transaction hash
+        :returns: transaction hash
         """
         assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         is_valid_signature(
@@ -196,7 +196,7 @@ class Exchange(BaseContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: `HexBytes` transaction hash
+        :returns: transaction hash
         """
         order_jsdicts = [
             order_to_jsdict(order, self.address) for order in orders
@@ -234,7 +234,7 @@ class Exchange(BaseContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: `HexBytes` transaction hash
+        :returns: transaction hash
         """
         assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
         maker_address = self._validate_and_checksum_address(
@@ -268,7 +268,7 @@ class Exchange(BaseContractWrapper):
         :param view_only: default False, boolean of whether to transact or
             view only
 
-        :returns: `HexBytes` transaction hash
+        :returns: transaction hash
         """
         order_jsdicts = [
             order_to_jsdict(order, self.address) for order in orders
@@ -302,7 +302,7 @@ class Exchange(BaseContractWrapper):
 
         :param tx_hash: `HexBytes` hash of fill transaction
 
-        :returns: tuple of `FillResults`.
+        :returns: fill event
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         return self._exchange.events.Fill().processReceipt(tx_receipt)

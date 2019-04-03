@@ -13,12 +13,7 @@ from .tx_params import TxParams
 
 
 class ERC20Token(BaseContractWrapper):
-    """Wrapper class for Ethereum ERC20 smart contract.
-
-    :param provider: instance of :class:`web3.providers.base.BaseProvider`
-    :param account_address: default None, str of account address
-    :param private_key: default None, str of private_key
-    """
+    """Wrapper class for Ethereum ERC20 smart contract."""
 
     def __init__(
         self,
@@ -26,7 +21,10 @@ class ERC20Token(BaseContractWrapper):
         account_address: str = None,
         private_key: str = None,
     ):
-        """Get an instance of wrapper for ERC20 smart contract."""
+        """Get an instance of wrapper for ERC20 smart contract.
+
+        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        """
         super(ERC20Token, self).__init__(
             provider=provider,
             account_address=account_address,
@@ -35,8 +33,6 @@ class ERC20Token(BaseContractWrapper):
 
     def _erc20(self, token_address):
         """Get an instance of the ERC20 smart contract at a specific address.
-
-        :param token_address: string address of token smart contract
 
         :returns: ERC20 contract object
         """
@@ -55,12 +51,9 @@ class ERC20Token(BaseContractWrapper):
     ) -> Union[HexBytes, bytes]:
         """Transfer the balance from owner's account to another account.
 
-        :param token_address: string address of token smart contract
-        :param to_address: string address of receiver
-        :param value: integer amount to send in Wei base unit
-        :param tx_params: default None, dict of transaction options
-        :param view_only: default False, boolean of whether to transact or
-            view only
+        :param value: integer amount to send
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
         """
@@ -82,14 +75,11 @@ class ERC20Token(BaseContractWrapper):
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """Approve a `spender_address` to spend up to `value` your account.
+        """Approve an address to spend up to `value`:code: of your tokens.
 
-        :param token_address: string address of token smart contract
-        :param spender_address: string address of receiver
-        :param value: integer amount of allowance in Wei base unit
-        :param tx_params: default None, dict of transaction options
-        :param view_only: default False, boolean of whether to transact or
-            view only
+        :param value: amount of allowance
+        :param tx_params: transaction options
+        :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
         """
@@ -114,19 +104,16 @@ class ERC20Token(BaseContractWrapper):
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """Transfer tokens from `authorized_address` to another address.
+        """Transfer tokens from `authorized_address`:code: to another address.
 
-        Note that the `authorized_address` must have called with `approve`
-        with your address as the `spender_address`.
+        Note that the `authorized_address`:code: must have already called
+        `approve`:code: for the `spender_address`:code:.
 
-        :param token_address: string address of token smart contract
-        :param authorized_address: string address you have been authorized to
-            to transfer tokens from
-        :param to_address: string address of receiver
-        :param value: integer amount to send in Wei base unit
-        :param tx_params: default None, dict of transaction options
-        :param view_only: default False, boolean of whether to transact or
-            view only
+        :param authorized_address: address you have been authorized to transfer
+            tokens from
+        :param value: amount to send
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
         """
@@ -147,9 +134,7 @@ class ERC20Token(BaseContractWrapper):
     def total_supply(self, token_address: str) -> int:
         """Get total supply of a given ERC20 Token.
 
-        :param token_address: string address of token smart contract
-
-        :returns: integer amount of tokens in Wei
+        :returns: amount of tokens
         """
         token_address = self._validate_and_checksum_address(token_address)
         func = self._erc20(token_address).functions.totalSupply()
@@ -160,10 +145,7 @@ class ERC20Token(BaseContractWrapper):
     def balance_of(self, token_address: str, owner_address: str) -> int:
         """Get token balance of a given owner address.
 
-        :param token_address: string address of token smart contract
-        :param owner_address: string address of owner to check balance for
-
-        :returns: integer amount of tokens in Wei the owner has
+        :returns: amount of tokens
         """
         token_address = self._validate_and_checksum_address(token_address)
         owner_address = self._validate_and_checksum_address(owner_address)
@@ -177,12 +159,7 @@ class ERC20Token(BaseContractWrapper):
     ) -> Union[HexBytes, bytes]:
         """Get the amount of tokens approved for a spender.
 
-        :param token_address: string address of token smart contract
-        :param owner_address: string address of owner of the tokens
-        :param spender_address: string address of spender to be checked
-
-        :returns: integer amount of tokens in Wei spender is authorized
-            to spend
+        :returns: amount of tokens
         """
         token_address = self._validate_and_checksum_address(token_address)
         owner_address = self._validate_and_checksum_address(owner_address)
@@ -199,8 +176,7 @@ class ERC20Token(BaseContractWrapper):
     ) -> Tuple[AttributeDict]:
         """Get the result of a transfer from its transaction hash.
 
-        :param token_address: string address of token smart contract
-        :param tx_hash: `HexBytes` hash of transfer transaction
+        :param tx_hash: hash of transfer transaction
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         token_address = self._validate_and_checksum_address(token_address)
@@ -215,8 +191,7 @@ class ERC20Token(BaseContractWrapper):
     ) -> Tuple[AttributeDict]:
         """Get the result of an approval event from its transaction hash.
 
-        :param token_address: string address of token smart contract
-        :param tx_hash: `HexBytes` hash of approval transaction
+        :param tx_hash: hash of approval transaction
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         token_address = self._validate_and_checksum_address(token_address)

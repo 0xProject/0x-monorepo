@@ -60,12 +60,10 @@ def construct_local_message_signer(
         list, or set of private keys. Keys can be any of the following
         formats:
 
-            - An `eth_account.LocalAccount` object
-            - An `eth_keys.PrivateKey` object
-            - A raw private key as a hex `string` or `bytes`
+            - An `eth_account.LocalAccount`:code: object
+            - An `eth_keys.PrivateKey`:code: object
+            - A raw private key as a hex `string`:code: or as `bytes`:code:
     :returns: callable local_message_signer_middleware
-
-    :Example:
 
     >>> private_key=(
     ...     "f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d"
