@@ -17,8 +17,10 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "./mixins/MBalanceThresholdFilterCore.sol";
 import "./MixinExchangeCalldata.sol";
 
@@ -75,13 +77,14 @@ contract MixinBalanceThresholdFilterCore is
         }
         emit ValidatedAddresses(addressesToValidate);
 
+        LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
+            salt: salt,
+            data: signedExchangeTransaction,
+            signerAddress: signerAddress
+        });
+
         // All addresses are valid. Execute exchange function.
-        EXCHANGE.executeTransaction(
-            salt,
-            signerAddress,
-            signedExchangeTransaction,
-            signature
-        );
+        EXCHANGE.executeTransaction(transaction, signature);
     }
 
     /// @dev Constructs an array of addresses to be validated.
