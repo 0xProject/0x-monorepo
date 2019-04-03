@@ -121,64 +121,8 @@
 		"evm": {
 			"bytecode": {
 				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			},
-			"deployedBytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
+				"object": "0x"
 			}
-		}
-	},
-	"sources": {
-		"src/interfaces/IAssetProxy.sol": {
-			"id": 2
-		},
-		"src/interfaces/IAuthorizable.sol": {
-			"id": 3
-		},
-		"@0x/contracts-utils/contracts/src/interfaces/IOwnable.sol": {
-			"id": 6
-		}
-	},
-	"sourceCodes": {
-		"src/interfaces/IAssetProxy.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.4.24;\n\nimport \"./IAuthorizable.sol\";\n\n\ncontract IAssetProxy is\n    IAuthorizable\n{\n    /// @dev Transfers assets. Either succeeds or throws.\n    /// @param assetData Byte array encoded for the respective asset proxy.\n    /// @param from Address to transfer asset from.\n    /// @param to Address to transfer asset to.\n    /// @param amount Amount of asset to transfer.\n    function transferFrom(\n        bytes assetData,\n        address from,\n        address to,\n        uint256 amount\n    )\n        external;\n    \n    /// @dev Gets the proxy id associated with the proxy address.\n    /// @return Proxy id.\n    function getProxyId()\n        external\n        pure\n        returns (bytes4);\n}\n",
-		"src/interfaces/IAuthorizable.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.4.24;\n\nimport \"@0x/contracts-utils/contracts/src/interfaces/IOwnable.sol\";\n\n\ncontract IAuthorizable is\n    IOwnable\n{\n    /// @dev Authorizes an address.\n    /// @param target Address to authorize.\n    function addAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    function removeAuthorizedAddress(address target)\n        external;\n\n    /// @dev Removes authorizion of an address.\n    /// @param target Address to remove authorization from.\n    /// @param index Index of target in authorities array.\n    function removeAuthorizedAddressAtIndex(\n        address target,\n        uint256 index\n    )\n        external;\n    \n    /// @dev Gets all authorized addresses.\n    /// @return Array of authorized addresses.\n    function getAuthorizedAddresses()\n        external\n        view\n        returns (address[] memory);\n}\n",
-		"@0x/contracts-utils/contracts/src/interfaces/IOwnable.sol": "pragma solidity ^0.4.24;\n\n\ncontract IOwnable {\n\n    function transferOwnership(address newOwner)\n        public;\n}\n"
-	},
-	"sourceTreeHashHex": "0x4fe33d3b00ae85e5c1d5478eeb1bf17fdc637fa0501dc1ff6fd1f871f87c83ca",
-	"compiler": {
-		"name": "solc",
-		"version": "0.4.25+commit.59dbf8f1.Linux.g++",
-		"settings": {
-			"optimizer": {
-				"enabled": true,
-				"runs": 1000000,
-				"details": {
-					"yul": true,
-					"deduplicate": true,
-					"cse": true,
-					"constantOptimizer": true
-				}
-			},
-			"outputSelection": {
-				"*": {
-					"*": [
-						"abi",
-						"evm.bytecode.object",
-						"evm.bytecode.sourceMap",
-						"evm.deployedBytecode.object",
-						"evm.deployedBytecode.sourceMap"
-					]
-				}
-			},
-			"evmVersion": "byzantium",
-			"remappings": [
-				"@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/0x.js/contracts/asset-proxy/node_modules/@0x/contracts-utils"
-			]
 		}
 	},
 	"networks": {}
