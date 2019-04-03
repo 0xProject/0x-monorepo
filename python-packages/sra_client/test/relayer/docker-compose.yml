@@ -1,0 +1,19 @@
+# Run Launch Kit with Ganache as the backing node
+version: '3'
+services:
+    ganache:
+        image: "0xorg/ganache-cli:2.2.2"
+        ports:
+            - "8545:8545"
+    launchkit:
+        image: "0xorg/launch-kit-ci"
+        depends_on:
+            - ganache
+        ports:
+            - "3000:3000"
+        network_mode: "host" # to connect to ganache
+        environment:
+            - NETWORK_ID=50
+            - RPC_URL=http://localhost:8545
+            - WHITELIST_ALL_TOKENS=True
+        command: bash -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; forever ts/lib/index.js"
