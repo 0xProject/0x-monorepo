@@ -18,38 +18,37 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
-import "./LibConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
-// solhint-disable var-name-mixedcase
 contract LibEIP712CoordinatorDomain is
-    LibConstants,
-    LibEIP712ExchangeDomain
+    LibEIP712
 {
 
     // EIP712 Domain Name value for the Coordinator
-    string constant internal EIP712_COORDINATOR_DOMAIN_NAME = "0x Protocol Coordinator";
+    string constant public EIP712_COORDINATOR_DOMAIN_NAME = "0x Protocol Coordinator";
 
     // EIP712 Domain Version value for the Coordinator
-    string constant internal EIP712_COORDINATOR_DOMAIN_VERSION = "2.0.0";
+    string constant public EIP712_COORDINATOR_DOMAIN_VERSION = "2.0.0";
 
     // Hash of the EIP712 Domain Separator data for the Coordinator
+    // solhint-disable-next-line var-name-mixedcase
     bytes32 public EIP712_COORDINATOR_DOMAIN_HASH;
 
-    // Hash of the EIP712 Domain Separator data for the Exchange
-    bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
-
     /// @param chainId Chain ID of the network this contract is deployed on.
-    /// @param verifyingContractAddress Address of the verifying contract (null if the address of this contract)
-    constructor (uint256 chainId, address verifyingContractAddress)
+    /// @param verifyingContractAddressIfExists Address of the verifying contract (null if the address of this contract)
+    constructor(
+        uint256 chainId,
+        address verifyingContractAddressIfExists
+    )
         public
     {
+        address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
         EIP712_COORDINATOR_DOMAIN_HASH = hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
             chainId,
-            verifyingContractAddress == address(0) ? address(this) : verifyingContractAddress
+            verifyingContractAddress
         );
     }
 
