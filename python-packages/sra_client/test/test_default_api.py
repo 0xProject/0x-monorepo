@@ -6,8 +6,8 @@ from __future__ import absolute_import
 
 import unittest
 
-from sra_client import ApiClient, Configuration
-from sra_client.api import DefaultApi
+from zero_ex.sra_client import ApiClient, Configuration
+from zero_ex.sra_client.api import DefaultApi
 
 
 class TestDefaultApi(unittest.TestCase):

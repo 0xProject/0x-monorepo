@@ -7,12 +7,12 @@ Python zero_ex.sra_client
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: sra_client
+.. automodule:: zero_ex.sra_client
 
-sra_client.DefaultApi
-=====================
+zero_ex.sra_client.DefaultApi
+=============================
 
-.. autoclass:: sra_client.DefaultApi
+.. autoclass:: zero_ex.sra_client.DefaultApi
    :members:
 
 Indices and tables

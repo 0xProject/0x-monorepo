@@ -8,8 +8,8 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from sra_client.api_client import ApiClient
-from sra_client.models.relayer_api_order_config_payload_schema import (
+from zero_ex.sra_client.api_client import ApiClient
+from zero_ex.sra_client.models.relayer_api_order_config_payload_schema import (
     RelayerApiOrderConfigPayloadSchema,
 )
 
