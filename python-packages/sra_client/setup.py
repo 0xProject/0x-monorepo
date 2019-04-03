@@ -137,7 +137,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
     description = (
         "Publish docs to "
-        + "http://0x-sra-demos-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-sra-client-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
