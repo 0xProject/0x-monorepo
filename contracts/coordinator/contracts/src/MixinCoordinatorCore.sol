@@ -55,11 +55,6 @@ contract MixinCoordinatorCore is
         );
 
         // Execute the transaction
-        EXCHANGE.executeTransaction(
-            transaction.salt,
-            transaction.signerAddress,
-            transaction.data,
-            transactionSignature
-        );
+        EXCHANGE.executeTransaction(transaction, transactionSignature);
     }
 }
