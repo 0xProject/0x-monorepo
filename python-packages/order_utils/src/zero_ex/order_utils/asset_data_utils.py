@@ -1,6 +1,6 @@
 """Asset data encoding and decoding utilities."""
 
-from mypy_extensions import TypedDict
+from typing import NamedTuple
 
 import eth_abi
 
@@ -13,21 +13,27 @@ ERC721_ASSET_DATA_MINIMUM_BYTE_LENGTH = 53
 SELECTOR_LENGTH = 10
 
 
-class ERC20AssetData(TypedDict):
+class ERC20AssetData(NamedTuple):
     """Object interface to ERC20 asset data."""
 
     asset_proxy_id: str
-    """asset proxy id"""
+    """Asset proxy identifier."""
 
     token_address: str
+    """Token address"""
 
 
-class ERC721AssetData(TypedDict):
+class ERC721AssetData(NamedTuple):
     """Object interface to ERC721 asset data."""
 
     asset_proxy_id: str
+    """Asset proxy identifier."""
+
     token_address: str
+    """Token address"""
+
     token_id: int
+    """Token identifier."""
 
 
 def encode_erc20_asset_data(token_address: str) -> str:
@@ -54,7 +60,7 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     :param asset_data: String produced by prior call to encode_erc20_asset_data()
 
     >>> decode_erc20_asset_data("0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48")
-    {'asset_proxy_id': '0xf47261b0', 'token_address': '0x1dc4c1cefef38a777b15aa20260a54e584b16c48'}
+    ERC20AssetData(asset_proxy_id='0xf47261b0', token_address='0x1dc4c1cefef38a777b15aa20260a54e584b16c48')
     """  # noqa: E501 (line too long)
     assert_is_string(asset_data, "asset_data")
 
@@ -79,7 +85,9 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
         ["address"], bytes.fromhex(asset_data[SELECTOR_LENGTH:])
     )[0]
 
-    return {"asset_proxy_id": asset_proxy_id, "token_address": token_address}
+    return ERC20AssetData(
+        asset_proxy_id=asset_proxy_id, token_address=token_address
+    )
 
 
 def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
@@ -108,7 +116,7 @@ def decode_erc721_asset_data(asset_data: str) -> ERC721AssetData:
     """Decode an ERC721 asset data hex string.
 
     >>> decode_erc721_asset_data('0x025717920000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c480000000000000000000000000000000000000000000000000000000000000001')
-    {'asset_proxy_id': '0x02571792', 'token_address': '0x1dc4c1cefef38a777b15aa20260a54e584b16c48', 'token_id': 1}
+    ERC721AssetData(asset_proxy_id='0x02571792', token_address='0x1dc4c1cefef38a777b15aa20260a54e584b16c48', token_id=1)
     """  # noqa: E501 (line too long)
     assert_is_string(asset_data, "asset_data")
 
@@ -134,8 +142,8 @@ def decode_erc721_asset_data(asset_data: str) -> ERC721AssetData:
         ["address", "uint256"], bytes.fromhex(asset_data[SELECTOR_LENGTH:])
     )
 
-    return {
-        "asset_proxy_id": asset_proxy_id,
-        "token_address": token_address,
-        "token_id": token_id,
-    }
+    return ERC721AssetData(
+        asset_proxy_id=asset_proxy_id,
+        token_address=token_address,
+        token_id=token_id,
+    )
