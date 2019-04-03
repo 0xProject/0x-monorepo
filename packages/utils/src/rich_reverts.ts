@@ -7,14 +7,19 @@ import { inspect } from 'util';
 import * as AbiEncoder from './abi_encoder';
 import { BigNumber } from './configured_bignumber';
 
+// tslint:disable: max-classes-per-file
+
 type ArgTypes = string | BigNumber | number | boolean;
 type ValueMap = ObjectMap<ArgTypes | undefined>;
-type RichRevertReasonType = { new(): RichRevertReason };
 type RichRevertReasonDecoder = (hex: string) => ValueMap;
 
+interface RichRevertReasonType {
+    new (): RichRevertReason;
+}
+
 interface RichRevertReasonRegistryItem {
-    type: RichRevertReasonType,
-    decoder: RichRevertReasonDecoder
+    type: RichRevertReasonType;
+    decoder: RichRevertReasonDecoder;
 }
 
 /**
@@ -22,9 +27,9 @@ interface RichRevertReasonRegistryItem {
  * `decodeRevertReason`.
  * @param richRevertClass A class that inherits from RichRevertReason.
  */
- export function registerRichRevertReason(richRevertClass: RichRevertReasonType) {
-     RichRevertReason.registerType(richRevertClass);
- }
+export function registerRichRevertReason(richRevertClass: RichRevertReasonType): void {
+    RichRevertReason.registerType(richRevertClass);
+}
 
 /**
  * Decode an ABI encoded rich revert reason.
@@ -40,9 +45,10 @@ export function decodeRichRevertReason(bytes: string | Buffer): RichRevertReason
  * Base type for rich revert reasons.
  */
 export abstract class RichRevertReason {
-
     // Map of types registered via `registerType`.
-    static _typeRegistry: ObjectMap<RichRevertReasonRegistryItem> = {};
+    private static _typeRegistry: ObjectMap<RichRevertReasonRegistryItem> = {};
+    public abi: RichRevertAbi;
+    public values: ValueMap = {};
 
     /**
      * Decode an ABI encoded rich revert reason.
@@ -51,13 +57,8 @@ export abstract class RichRevertReason {
      * @return A RichRevertReason object.
      */
     public static decode(bytes: string | Buffer): RichRevertReason {
-        let _bytes: string;
-        if (bytes instanceof Buffer) {
-            _bytes = ethUtil.bufferToHex(bytes);
-        } else {
-            _bytes = bytes;
-        }
-        _bytes = ethUtil.addHexPrefix(_bytes);
+        const _bytes = bytes instanceof Buffer ? ethUtil.bufferToHex(bytes) : ethUtil.addHexPrefix(bytes);
+        // tslint:disable-next-line: custom-no-magic-numbers
         const selector = _bytes.slice(2, 10);
         const { decoder, type } = this._lookupType(selector);
         const instance = new type();
@@ -76,11 +77,11 @@ export abstract class RichRevertReason {
      * `decodeRevertReason`.
      * @param richRevertClass A class that inherits from RichRevertReason.
      */
-    public static registerType(richRevertClass: RichRevertReasonType) {
+    public static registerType(richRevertClass: RichRevertReasonType): void {
         const instance = new richRevertClass();
         RichRevertReason._typeRegistry[instance.selector] = {
-          type: richRevertClass,
-          decoder: createDecoder(instance.abi)
+            type: richRevertClass,
+            decoder: createDecoder(instance.abi),
         };
     }
 
@@ -89,18 +90,13 @@ export abstract class RichRevertReason {
         if (selector in RichRevertReason._typeRegistry) {
             return RichRevertReason._typeRegistry[selector];
         }
-        throw new Error(
-            `Unknown rich revert reason selector "${selector}"`
-        );
+        throw new Error(`Unknown rich revert reason selector "${selector}"`);
     }
-
-    public abi: RichRevertAbi;
-    public values: ValueMap = {};
 
     /**
      * Create a RichRevertReason instance with optional parameter values.
      * Parameters that are left undefined will not be tested in equality checks.
-     * @param declaration Function-style declaration of the rich revert (e.g., StandardError(string message))
+     * @param declaration Function-style declaration of the rich revert (e.g., Error(string message))
      * @param values Optional mapping of parameters to values.
      */
     protected constructor(declaration: string, values?: ValueMap) {
@@ -136,14 +132,6 @@ export abstract class RichRevertReason {
      */
     get arguments(): DataItem[] {
         return this.abi.arguments || [];
-    }
-
-    private _getArgumentByName(name: string): DataItem {
-        const arg = _.find(this.arguments, (a: DataItem) => a.name === name);
-        if (_.isNil(arg)) {
-            throw new Error(`RichRevertReason ${this.signature} has no argument named ${name}`);
-        }
-        return arg;
     }
 
     /**
@@ -184,6 +172,20 @@ export abstract class RichRevertReason {
         const values = _.omitBy(this.values, (v: any) => _.isNil(v));
         const inner = _.isEmpty(values) ? '' : inspect(values);
         return `${this.constructor.name}(${inner})`;
+    }
+
+    private _getArgumentByName(name: string): DataItem {
+        const arg = _.find(this.arguments, (a: DataItem) => a.name === name);
+        if (_.isNil(arg)) {
+            throw new Error(`RichRevertReason ${this.signature} has no argument named ${name}`);
+        }
+        return arg;
+    }
+}
+
+export class StandardError extends RichRevertReason {
+    constructor(message?: string) {
+        super('Error(string message)', { message });
     }
 }
 
@@ -231,11 +233,7 @@ function checkArgEquality(type: string, lhs: ArgTypes, rhs: ArgTypes): boolean {
 
 function normalizeAddress(addr: string): string {
     const ADDRESS_SIZE = 20;
-    return ethUtil.bufferToHex(
-        ethUtil.setLengthLeft(
-            ethUtil.toBuffer(ethUtil.addHexPrefix(addr)),
-            ADDRESS_SIZE
-    ));
+    return ethUtil.bufferToHex(ethUtil.setLengthLeft(ethUtil.toBuffer(ethUtil.addHexPrefix(addr)), ADDRESS_SIZE));
 }
 
 function normalizeBytes(bytes: string): string {
@@ -266,17 +264,14 @@ function toSignature(abi: RichRevertAbi): string {
 }
 
 function toSelector(abi: RichRevertAbi): string {
-    return ethUtil
-        .sha3(Buffer.from(toSignature(abi)))
-        .slice(0, 4)
-        .toString('hex');
+    return (
+        ethUtil
+            .sha3(Buffer.from(toSignature(abi)))
+            // tslint:disable-next-line: custom-no-magic-numbers
+            .slice(0, 4)
+            .toString('hex')
+    );
 }
 
-export class StandardError extends RichRevertReason {
-    constructor(message?: string) {
-        super(
-            'Error(string message)',
-            { message }
-        );
-    }
-}
+// Register StandardError
+RichRevertReason.registerType(StandardError);
