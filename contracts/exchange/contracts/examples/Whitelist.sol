@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 
 
@@ -125,12 +126,13 @@ contract Whitelist is
             orderSignature
         );
 
+        LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
+            salt: salt,
+            data: data,
+            signerAddress: takerAddress
+        });
+
         // Call `fillOrder` via `executeTransaction`.
-        EXCHANGE.executeTransaction(
-            salt,
-            takerAddress,
-            data,
-            TX_ORIGIN_SIGNATURE
-        );
+        EXCHANGE.executeTransaction(transaction, TX_ORIGIN_SIGNATURE);
     }
 }

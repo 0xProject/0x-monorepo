@@ -17,15 +17,15 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental "ABIEncoderV2";
 
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 
 
 contract MixinTransactions is
-    LibEIP712ExchangeDomain,
+    LibZeroExTransaction,
     MSignatureValidator,
     MTransactions
 {
@@ -38,17 +38,13 @@ contract MixinTransactions is
     address public currentContextAddress;
 
     /// @dev Executes an exchange method call in the context of signer.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
+    /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param signature Proof of signer transaction by signer.
     function executeTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes calldata data,
-        bytes calldata signature
+        ZeroExTransaction memory transaction,
+        bytes memory signature
     )
-        external
+        public
     {
         // Prevent reentrancy
         require(
@@ -56,13 +52,7 @@ contract MixinTransactions is
             "REENTRANCY_ILLEGAL"
         );
 
-        bytes32 transactionHash = hashEIP712Message(
-            EIP712_EXCHANGE_DOMAIN_HASH,
-            hashZeroExTransaction(
-                salt,
-                signerAddress,
-                data
-        ));
+        bytes32 transactionHash = getTransactionHash(transaction);
 
         // Validate transaction has not been executed
         require(
@@ -71,6 +61,7 @@ contract MixinTransactions is
         );
 
         // Transaction always valid if signer is sender of transaction
+        address signerAddress = transaction.signerAddress;
         if (signerAddress != msg.sender) {
             // Validate signature
             require(
@@ -88,7 +79,7 @@ contract MixinTransactions is
 
         // Execute transaction
         transactions[transactionHash] = true;
-        (bool success,) = address(this).delegatecall(data);
+        (bool success,) = address(this).delegatecall(transaction.data);
         require(
             success,
             "FAILED_EXECUTION"
@@ -98,46 +89,6 @@ contract MixinTransactions is
         if (signerAddress != msg.sender) {
             currentContextAddress = address(0);
         }
-    }
-
-    /// @dev Calculates EIP712 hash of the Transaction.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @return EIP712 hash of the Transaction.
-    function hashZeroExTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes memory data
-    )
-        internal
-        pure
-        returns (bytes32 result)
-    {
-        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
-        bytes32 dataHash = keccak256(data);
-
-        // Assembly for more efficiently computing:
-        // keccak256(abi.encodePacked(
-        //     EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-        //     salt,
-        //     bytes32(signerAddress),
-        //     keccak256(data)
-        // ));
-
-        assembly {
-            // Load free memory pointer
-            let memPtr := mload(64)
-
-            mstore(memPtr, schemaHash)                                                               // hash of schema
-            mstore(add(memPtr, 32), salt)                                                            // salt
-            mstore(add(memPtr, 64), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))  // signerAddress
-            mstore(add(memPtr, 96), dataHash)                                                        // hash of data
-
-            // Compute hash
-            result := keccak256(memPtr, 128)
-        }
-        return result;
     }
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
