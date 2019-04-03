@@ -99,7 +99,10 @@ class LintCommand(distutils.command.build_py.build_py):
         """Run linter shell commands."""
         lint_commands = [
             # formatter:
-            "black --line-length 79 --check --diff test sra_client/__init__.py setup.py".split(),  # noqa: E501 (line too long)
+            (
+                "black --line-length 79 --check --diff test"
+                " sra_client/__init__.py setup.py"
+            ).split(),
             # style guide checker (formerly pep8):
             "pycodestyle test sra_client/__init__.py setup.py".split(),
             # docstring style checker:

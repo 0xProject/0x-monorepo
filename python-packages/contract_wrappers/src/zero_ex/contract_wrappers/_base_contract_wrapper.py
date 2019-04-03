@@ -95,6 +95,7 @@ class BaseContractWrapper:
         )
         return self._web3_eth.sendRawTransaction(signed_tx.rawTransaction)
 
+    # pylint: disable=too-many-arguments
     def execute_method(
         self,
         address: str,

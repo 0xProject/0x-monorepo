@@ -54,6 +54,7 @@ class Exchange(BaseContractWrapper):
             address=self.address, abi=abi_by_name("Exchange")
         )
 
+    # pylint: disable=too-many-arguments
     def fill_order(
         self,
         order: Order,
@@ -101,6 +102,7 @@ class Exchange(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
+    # pylint: disable=too-many-arguments
     def batch_fill_orders(
         self,
         orders: List[Order],
@@ -139,6 +141,7 @@ class Exchange(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
+    # pylint: disable=too-many-arguments
     def fill_or_kill_order(
         self,
         order: Order,
@@ -175,6 +178,7 @@ class Exchange(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
+    # pylint: disable=too-many-arguments
     def batch_fill_or_kill_orders(
         self,
         orders: List[Order],

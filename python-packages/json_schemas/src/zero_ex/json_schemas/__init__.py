@@ -82,8 +82,6 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     ...     '/ecSignatureSchema',
     ... )
     """
-    # noqa
-
     _, schema = _LOCAL_RESOLVER.resolve(schema_id)
     jsonschema.validate(data, schema, resolver=_LOCAL_RESOLVER)
 

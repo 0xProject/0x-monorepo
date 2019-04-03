@@ -44,6 +44,7 @@ class ERC20Token(BaseContractWrapper):
             address=token_address, abi=abi_by_name("ERC20Token")
         )
 
+    # pylint: disable=too-many-arguments
     def transfer(
         self,
         token_address: str,
@@ -72,6 +73,7 @@ class ERC20Token(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
+    # pylint: disable=too-many-arguments
     def approve(
         self,
         token_address: str,
@@ -102,6 +104,7 @@ class ERC20Token(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
+    # pylint: disable=too-many-arguments
     def transfer_from(
         self,
         token_address: str,

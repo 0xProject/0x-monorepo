@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Dict, NamedTuple
 
 
-class ContractAddresses(NamedTuple):  # noqa
+class ContractAddresses(NamedTuple):
     """An abstract record listing all the contracts that have addresses."""
 
     erc20_proxy: str
