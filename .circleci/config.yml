@@ -12,8 +12,13 @@ jobs:
             - checkout
             - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
             - run:
+                  # HACK(albrow): Without this, yarn commands will sometimes
+                  # fail with a "permission denied" error.
+                  name: Set npm path
+                  command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+            - run:
                   name: install-yarn
-                  command: sudo npm install --global yarn@1.9.4
+                  command: npm install --global yarn@1.9.4
             - run:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
