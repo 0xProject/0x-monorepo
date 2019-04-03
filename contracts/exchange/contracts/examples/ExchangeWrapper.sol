@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
 contract ExchangeWrapper {
@@ -55,13 +56,14 @@ contract ExchangeWrapper {
             targetOrderEpoch
         );
 
+        LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
+            salt: salt,
+            data: data,
+            signerAddress: makerAddress
+        });
+
         // Call `cancelOrdersUpTo` via `executeTransaction`.
-        EXCHANGE.executeTransaction(
-            salt,
-            makerAddress,
-            data,
-            makerSignature
-        );
+        EXCHANGE.executeTransaction(transaction, makerSignature);
     }
 
     /// @dev Fills an order using `msg.sender` as the taker.
@@ -89,12 +91,13 @@ contract ExchangeWrapper {
             orderSignature
         );
 
+        LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
+            salt: salt,
+            data: data,
+            signerAddress: takerAddress
+        });
+
         // Call `fillOrder` via `executeTransaction`.
-        EXCHANGE.executeTransaction(
-            salt,
-            takerAddress,
-            data,
-            takerSignature
-        );
+        EXCHANGE.executeTransaction(transaction, takerSignature);
     }
 }
