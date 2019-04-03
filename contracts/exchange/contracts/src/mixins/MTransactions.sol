@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental "ABIEncoderV2";
 
 import "../interfaces/ITransactions.sol";
 
@@ -24,28 +25,6 @@ import "../interfaces/ITransactions.sol";
 contract MTransactions is
     ITransactions
 {
-    // Hash for the EIP712 ZeroEx Transaction Schema
-    bytes32 constant internal EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "ZeroExTransaction(",
-        "uint256 salt,",
-        "address signerAddress,",
-        "bytes data",
-        ")"
-    ));
-
-    /// @dev Calculates EIP712 hash of the Transaction.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @return EIP712 hash of the Transaction.
-    function hashZeroExTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes memory data
-    )
-        internal
-        pure
-        returns (bytes32 result);
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
     ///      If calling a fill function, this address will represent the taker.
