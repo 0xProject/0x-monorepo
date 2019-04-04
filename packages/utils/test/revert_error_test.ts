@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 
-import { RevertError, StringRevertError } from '../src/revert_error';
+import { AnyRevertError, RevertError, StringRevertError } from '../src/revert_error';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -33,6 +33,11 @@ describe('RevertError', () => {
         it('should equate two RevertErrors with missing fields', () => {
             const revert1 = new StringRevertError(message);
             const revert2 = new StringRevertError();
+            expect(revert1.equals(revert2)).to.be.true();
+        });
+        it('should equate AnyRevertError with a real RevertError', () => {
+            const revert1 = new StringRevertError(message);
+            const revert2 = new AnyRevertError();
             expect(revert1.equals(revert2)).to.be.true();
         });
         it('should not equate a the same RevertError type with different values', () => {

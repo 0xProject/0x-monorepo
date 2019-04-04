@@ -15,7 +15,7 @@
                 "pr": 1742
             },
             {
-                "note": "Add `RevertError` and `StringRevertError` types and associated utilities",
+                "note": "Add `RevertError`, `StringRevertError`, `AnyRevertError` types and associated utilities",
                 "pr": TODO
             }
         ]
