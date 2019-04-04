@@ -47,7 +47,7 @@ export function decodeRevertError(bytes: string | Buffer): RevertError {
 export abstract class RevertError extends Error {
     // Map of types registered via `registerType`.
     private static readonly _typeRegistry: ObjectMap<RevertErrorRegistryItem> = {};
-    public abi: RevertErrorAbi;
+    public abi?: RevertErrorAbi;
     public values: ValueMap = {};
 
     /**
@@ -82,6 +82,9 @@ export abstract class RevertError extends Error {
         if (instance.selector in RevertError._typeRegistry) {
             throw new Error(`RevertError type with signature "${instance.signature}" is already registered`);
         }
+        if (_.isNil(instance.abi)) {
+            throw new Error(`Attempting to register a RevertError class with no ABI`);
+        }
         RevertError._typeRegistry[instance.selector] = {
             type: revertClass,
             decoder: createDecoder(instance.abi),
@@ -102,11 +105,13 @@ export abstract class RevertError extends Error {
      * @param declaration Function-style declaration of the revert (e.g., Error(string message))
      * @param values Optional mapping of parameters to values.
      */
-    protected constructor(declaration: string, values?: ValueMap) {
+    protected constructor(declaration?: string, values?: ValueMap) {
         super();
-        this.abi = declarationToAbi(declaration);
-        if (values !== undefined) {
-            _.assign(this.values, _.cloneDeep(values));
+        if (declaration !== undefined) {
+            this.abi = declarationToAbi(declaration);
+            if (values !== undefined) {
+                _.assign(this.values, _.cloneDeep(values));
+            }
         }
         // Extending Error is tricky; we need to explicitly set the prototype.
         Object.setPrototypeOf(this, new.target.prototype);
@@ -117,28 +122,40 @@ export abstract class RevertError extends Error {
      * Get the ABI name for this revert.
      */
     get name(): string {
-        return this.abi.name;
+        if (!_.isNil(this.abi)) {
+            return this.abi.name;
+        }
+        return '<AnyRevertError>';
     }
 
     /**
      * Get the hex selector for this revert (without leading '0x').
      */
     get selector(): string {
-        return toSelector(this.abi);
+        if (!_.isNil(this.abi)) {
+            return toSelector(this.abi);
+        }
+        return '';
     }
 
     /**
      * Get the signature for this revert: e.g., 'Error(string)'.
      */
     get signature(): string {
-        return toSignature(this.abi);
+        if (!_.isNil(this.abi)) {
+            return toSignature(this.abi);
+        }
+        return '';
     }
 
     /**
      * Get the ABI arguments for this revert.
      */
     get arguments(): DataItem[] {
-        return this.abi.arguments || [];
+        if (!_.isNil(this.abi)) {
+            return this.abi.arguments || [];
+        }
+        return [];
     }
 
     /**
@@ -156,9 +173,18 @@ export abstract class RevertError extends Error {
         if (typeof _other === 'string') {
             _other = RevertError.decode(_other);
         }
+        if (!(_other instanceof RevertError)) {
+            return false;
+        }
+        // If either is of the `AnyRevertError` type, always succeed.
+        if (this._isAnyType || _other._isAnyType) {
+            return true;
+        }
+        // Must be of same type.
         if (this.constructor !== _other.constructor) {
             return false;
         }
+        // Must share the same parameter values if defined in both instances.
         for (const name of Object.keys(this.values)) {
             const a = this.values[name];
             const b = _other.values[name];
@@ -188,11 +214,27 @@ export abstract class RevertError extends Error {
         }
         return arg;
     }
+
+    private get _isAnyType(): boolean {
+        return _.isNil(this.abi);
+    }
 }
 
+/**
+ * RevertError type for standard string reverts.
+ */
 export class StringRevertError extends RevertError {
     constructor(message?: string) {
         super('Error(string message)', { message });
+    }
+}
+
+/**
+ * Special RevertError type that matches with any other RevertError instance.
+ */
+export class AnyRevertError extends RevertError {
+    constructor() {
+        super();
     }
 }
 
