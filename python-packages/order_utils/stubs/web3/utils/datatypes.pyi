@@ -2,6 +2,7 @@ from typing import Any
 
 
 class ContractFunction:
+    @staticmethod
     def call() -> Any: ...
     ...
 
