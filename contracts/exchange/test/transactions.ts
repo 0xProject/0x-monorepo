@@ -13,7 +13,12 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
+import {
+    assetDataUtils,
+    ExchangeRevertErrors,
+    generatePseudoRandomSalt,
+    transactionHashUtils,
+} from '@0x/order-utils';
 import {
     EIP712DomainWithDefaultSchema,
     OrderWithoutDomain,
@@ -31,7 +36,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('Exchange transactions', () => {
+describe.only('Exchange transactions', () => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;
@@ -148,10 +153,12 @@ describe('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
-                    RevertReason.FailedExecution,
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTx);
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashHex,
                 );
+                const tx = exchangeWrapper.executeTransactionAsync(signedTx, takerAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
 
             it('should transfer the correct amounts when signed by taker and called by sender', async () => {
