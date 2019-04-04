@@ -67,15 +67,15 @@ describe('Chai tests', () => {
                 expect(error).is.not.equal(revert);
             });
         });
-        describe('#rejectedWith', () => {
-            it('should equate a promise that rejects to an identical RevertErrors', async () => {
+        describe('#revertWith', () => {
+            it('should equate a promise that rejects to identical RevertErrors', async () => {
                 const message = 'foo';
                 const revert1 = new StringRevertError(message);
                 const revert2 = new StringRevertError(message);
                 const promise = (async () => {
                     throw revert1;
                 })();
-                return expect(promise).to.be.rejectedWith(revert2);
+                return expect(promise).to.revertWith(revert2);
             });
             it('should not equate a promise that rejects to a StringRevertError with a different messages', async () => {
                 const revert1 = new StringRevertError('foo1');
@@ -83,7 +83,7 @@ describe('Chai tests', () => {
                 const promise = (async () => {
                     throw revert1;
                 })();
-                return expect(promise).to.not.be.rejectedWith(revert2);
+                return expect(promise).to.not.revertWith(revert2);
             });
             it('should not equate a promise that rejects to different RevertError types', async () => {
                 const message = 'foo';
@@ -92,7 +92,7 @@ describe('Chai tests', () => {
                 const promise = (async () => {
                     throw revert1;
                 })();
-                return expect(promise).to.not.be.rejectedWith(revert2);
+                return expect(promise).to.not.revertWith(revert2);
             });
         });
         describe('#become', () => {
@@ -115,6 +115,33 @@ describe('Chai tests', () => {
                 const revert2 = new DescendantRevertError(message);
                 const promise = (async () => revert1)();
                 return expect(promise).to.not.become(revert2);
+            });
+        });
+        // TODO: Remove these tests when we no longer coerce `Error` types to `StringRevertError` types
+        // for backwards compatibility.
+        describe('#rejectedWith (backwards compatibility)', () => {
+            it('should equate a promise that rejects with an Error to a string of the same message', async () => {
+                const message = 'foo';
+                const revert1 = new Error(message);
+                const promise = (async () => {
+                    throw revert1;
+                })();
+                return expect(promise).to.rejectedWith(message);
+            });
+            it('should equate a promise that rejects with an StringRevertErrors to a string of the same message', async () => {
+                const message = 'foo';
+                const revert = new StringRevertError(message);
+                const promise = (async () => {
+                    throw revert;
+                })();
+                return expect(promise).to.rejectedWith(message);
+            });
+            it('should not equate a promise that rejects with an StringRevertErrors to a string with different messages', async () => {
+                const revert = new StringRevertError('foo1');
+                const promise = (async () => {
+                    throw revert;
+                })();
+                return expect(promise).to.not.be.rejectedWith('foo2');
             });
         });
     });
