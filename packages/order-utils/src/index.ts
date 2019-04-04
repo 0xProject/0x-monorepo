@@ -1,4 +1,4 @@
-import * as ExchangeErrors from './exchange_revert_errors';
+import * as ExchangeRevertErrors from './exchange_revert_errors';
 
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
@@ -84,4 +84,4 @@ export {
 } from './types';
 
 export { ExchangeContract, NetworkId } from '@0x/abi-gen-wrappers';
-export { ExchangeErrors };
+export { ExchangeRevertErrors };
