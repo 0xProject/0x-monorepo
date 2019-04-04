@@ -1,4 +1,4 @@
-import * as ExchangeErrors from './exchange_rich_reverts';
+import * as ExchangeErrors from './exchange_revert_errors';
 
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
