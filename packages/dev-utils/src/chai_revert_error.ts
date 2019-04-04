@@ -127,8 +127,8 @@ function compareRevertErrors(
             actual.equals(expected),
             `${actual.toString()} != ${expected.toString()}`,
             `${actual.toString()} == ${expected.toString()}`,
-            expected,
-            actual,
+            expected.toString(),
+            actual.toString(),
         );
         // Return true to signal we handled it.
         return true;
