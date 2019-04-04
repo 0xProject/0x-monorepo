@@ -1,5 +1,5 @@
 import { ObjectMap } from '@0x/types';
-import { DataItem, RichRevertAbi } from 'ethereum-types';
+import { DataItem, RevertErrorAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import { inspect } from 'util';
@@ -11,52 +11,52 @@ import { BigNumber } from './configured_bignumber';
 
 type ArgTypes = string | BigNumber | number | boolean;
 type ValueMap = ObjectMap<ArgTypes | undefined>;
-type RichRevertReasonDecoder = (hex: string) => ValueMap;
+type RevertErrorDecoder = (hex: string) => ValueMap;
 
-interface RichRevertReasonType {
-    new (): RichRevertReason;
+interface RevertErrorType {
+    new (): RevertError;
 }
 
-interface RichRevertReasonRegistryItem {
-    type: RichRevertReasonType;
-    decoder: RichRevertReasonDecoder;
-}
-
-/**
- * Register a RichRevertReason type so that it can be decoded by
- * `decodeRevertReason`.
- * @param richRevertClass A class that inherits from RichRevertReason.
- */
-export function registerRichRevertReason(richRevertClass: RichRevertReasonType): void {
-    RichRevertReason.registerType(richRevertClass);
+interface RevertErrorRegistryItem {
+    type: RevertErrorType;
+    decoder: RevertErrorDecoder;
 }
 
 /**
- * Decode an ABI encoded rich revert reason.
- * Throws if the data cannot be decoded as a known RichRevertReason type.
- * @param bytes The ABI encoded rich revert reason. Either a hex string or a Buffer.
- * @return A RichRevertReason object.
+ * Register a RevertError type so that it can be decoded by
+ * `decodeRevertError`.
+ * @param revertClass A class that inherits from RevertError.
  */
-export function decodeRichRevertReason(bytes: string | Buffer): RichRevertReason {
-    return RichRevertReason.decode(bytes);
+export function registerRevertErrorType(revertClass: RevertErrorType): void {
+    RevertError.registerType(revertClass);
 }
 
 /**
- * Base type for rich revert reasons.
+ * Decode an ABI encoded revert error.
+ * Throws if the data cannot be decoded as a known RevertError type.
+ * @param bytes The ABI encoded revert error. Either a hex string or a Buffer.
+ * @return A RevertError object.
  */
-export abstract class RichRevertReason {
+export function decodeRevertError(bytes: string | Buffer): RevertError {
+    return RevertError.decode(bytes);
+}
+
+/**
+ * Base type for revert errors.
+ */
+export abstract class RevertError extends Error {
     // Map of types registered via `registerType`.
-    private static readonly _typeRegistry: ObjectMap<RichRevertReasonRegistryItem> = {};
-    public abi: RichRevertAbi;
+    private static readonly _typeRegistry: ObjectMap<RevertErrorRegistryItem> = {};
+    public abi: RevertErrorAbi;
     public values: ValueMap = {};
 
     /**
-     * Decode an ABI encoded rich revert reason.
-     * Throws if the data cannot be decoded as a known RichRevertReason type.
-     * @param bytes The ABI encoded rich revert reason. Either a hex string or a Buffer.
-     * @return A RichRevertReason object.
+     * Decode an ABI encoded revert error.
+     * Throws if the data cannot be decoded as a known RevertError type.
+     * @param bytes The ABI encoded revert error. Either a hex string or a Buffer.
+     * @return A RevertError object.
      */
-    public static decode(bytes: string | Buffer): RichRevertReason {
+    public static decode(bytes: string | Buffer): RevertError {
         const _bytes = bytes instanceof Buffer ? ethUtil.bufferToHex(bytes) : ethUtil.addHexPrefix(bytes);
         // tslint:disable-next-line: custom-no-magic-numbers
         const selector = _bytes.slice(2, 10);
@@ -67,68 +67,75 @@ export abstract class RichRevertReason {
             return _.assign(instance, { values });
         } catch (err) {
             throw new Error(
-                `Bytes ${shortenHex(_bytes)} cannot be decoded as rich revert ${instance.signature}: ${err.message}`,
+                `Bytes ${_bytes} cannot be decoded as a revert error of type ${instance.signature}: ${err.message}`,
             );
         }
     }
 
     /**
-     * Register a RichRevertReason type so that it can be decoded by
-     * `decodeRevertReason`.
-     * @param richRevertClass A class that inherits from RichRevertReason.
+     * Register a RevertError type so that it can be decoded by
+     * `RevertError.decode`.
+     * @param revertClass A class that inherits from RevertError.
      */
-    public static registerType(richRevertClass: RichRevertReasonType): void {
-        const instance = new richRevertClass();
-        RichRevertReason._typeRegistry[instance.selector] = {
-            type: richRevertClass,
+    public static registerType(revertClass: RevertErrorType): void {
+        const instance = new revertClass();
+        if (instance.selector in RevertError._typeRegistry) {
+            throw new Error(`RevertError type with signature "${instance.signature}" is already registered`);
+        }
+        RevertError._typeRegistry[instance.selector] = {
+            type: revertClass,
             decoder: createDecoder(instance.abi),
         };
     }
 
     // Ge tthe registry info given a selector.
-    private static _lookupType(selector: string): RichRevertReasonRegistryItem {
-        if (selector in RichRevertReason._typeRegistry) {
-            return RichRevertReason._typeRegistry[selector];
+    private static _lookupType(selector: string): RevertErrorRegistryItem {
+        if (selector in RevertError._typeRegistry) {
+            return RevertError._typeRegistry[selector];
         }
-        throw new Error(`Unknown rich revert reason selector "${selector}"`);
+        throw new Error(`Unknown revert error selector "${selector}"`);
     }
 
     /**
-     * Create a RichRevertReason instance with optional parameter values.
+     * Create a RevertError instance with optional parameter values.
      * Parameters that are left undefined will not be tested in equality checks.
-     * @param declaration Function-style declaration of the rich revert (e.g., Error(string message))
+     * @param declaration Function-style declaration of the revert (e.g., Error(string message))
      * @param values Optional mapping of parameters to values.
      */
     protected constructor(declaration: string, values?: ValueMap) {
+        super();
         this.abi = declarationToAbi(declaration);
         if (values !== undefined) {
             _.assign(this.values, _.cloneDeep(values));
         }
+        // Extending Error is tricky; we need to explicitly set the prototype.
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.message = this.toString();
     }
 
     /**
-     * Get the ABI name for this reason.
+     * Get the ABI name for this revert.
      */
     get name(): string {
         return this.abi.name;
     }
 
     /**
-     * Get the hex selector for this reason (without leading '0x').
+     * Get the hex selector for this revert (without leading '0x').
      */
     get selector(): string {
         return toSelector(this.abi);
     }
 
     /**
-     * Get the signature for this reason: e.g., 'Error(string)'.
+     * Get the signature for this revert: e.g., 'Error(string)'.
      */
     get signature(): string {
         return toSignature(this.abi);
     }
 
     /**
-     * Get the ABI arguments for this reason.
+     * Get the ABI arguments for this revert.
      */
     get arguments(): DataItem[] {
         return this.abi.arguments || [];
@@ -138,16 +145,16 @@ export abstract class RichRevertReason {
      * Compares this instance with another.
      * Fails if instances are not of the same type.
      * Only fields/values defined in both instances are compared.
-     * @param other Either another RichRevertReason instance, hex-encoded bytes, or a Buffer of the ABI encoded reason.
+     * @param other Either another RevertError instance, hex-encoded bytes, or a Buffer of the ABI encoded revert.
      * @return True if both instances match.
      */
-    public equals(other: RichRevertReason | Buffer | string): boolean {
+    public equals(other: RevertError | Buffer | string): boolean {
         let _other = other;
         if (_other instanceof Buffer) {
             _other = ethUtil.bufferToHex(_other);
         }
         if (typeof _other === 'string') {
-            _other = RichRevertReason.decode(_other);
+            _other = RevertError.decode(_other);
         }
         if (this.constructor !== _other.constructor) {
             return false;
@@ -177,24 +184,24 @@ export abstract class RichRevertReason {
     private _getArgumentByName(name: string): DataItem {
         const arg = _.find(this.arguments, (a: DataItem) => a.name === name);
         if (_.isNil(arg)) {
-            throw new Error(`RichRevertReason ${this.signature} has no argument named ${name}`);
+            throw new Error(`RevertError ${this.signature} has no argument named ${name}`);
         }
         return arg;
     }
 }
 
-export class StandardError extends RichRevertReason {
+export class StringRevertError extends RevertError {
     constructor(message?: string) {
         super('Error(string message)', { message });
     }
 }
 
 /**
- * Parse a solidity function declaration into a RichRevertAbi object.
+ * Parse a solidity function declaration into a RevertErrorAbi object.
  * @param declaration Function declaration (e.g., 'foo(uint256 bar)').
- * @return A RichRevertAbi object.
+ * @return A RevertErrorAbi object.
  */
-function declarationToAbi(declaration: string): RichRevertAbi {
+function declarationToAbi(declaration: string): RevertErrorAbi {
     let m = /^\s*([_a-z][a-z0-9_]*)\((.*)\)\s*$/i.exec(declaration);
     if (!m) {
         throw new Error(`Invalid Revert Error signature: "${declaration}"`);
@@ -211,7 +218,7 @@ function declarationToAbi(declaration: string): RichRevertAbi {
             type: m[1],
         };
     });
-    const r: RichRevertAbi = {
+    const r: RevertErrorAbi = {
         type: 'error',
         name,
         arguments: _.isEmpty(argData) ? [] : argData,
@@ -240,16 +247,7 @@ function normalizeBytes(bytes: string): string {
     return ethUtil.addHexPrefix(bytes).toLowerCase();
 }
 
-function shortenHex(hex: string, maxBytes: number = 4): string {
-    const _hex = ethUtil.addHexPrefix(hex);
-    if (_hex.length > maxBytes * 2 + 2) {
-        const shortened = _hex.slice(0, maxBytes * 2 + 2);
-        return `${shortened}...`;
-    }
-    return _hex;
-}
-
-function createDecoder(abi: RichRevertAbi): (hex: string) => ValueMap {
+function createDecoder(abi: RevertErrorAbi): (hex: string) => ValueMap {
     const encoder = AbiEncoder.createMethod(abi.name, abi.arguments || []);
     return (hex: string): ValueMap => {
         // tslint:disable-next-line
@@ -257,13 +255,13 @@ function createDecoder(abi: RichRevertAbi): (hex: string) => ValueMap {
     };
 }
 
-function toSignature(abi: RichRevertAbi): string {
+function toSignature(abi: RevertErrorAbi): string {
     const argTypes = _.map(abi.arguments, (a: DataItem) => a.type);
     const args = argTypes.join(',');
     return `${abi.name}(${args})`;
 }
 
-function toSelector(abi: RichRevertAbi): string {
+function toSelector(abi: RevertErrorAbi): string {
     return (
         ethUtil
             .sha3(Buffer.from(toSignature(abi)))
@@ -273,5 +271,5 @@ function toSelector(abi: RichRevertAbi): string {
     );
 }
 
-// Register StandardError
-RichRevertReason.registerType(StandardError);
+// Register StringRevertError
+RevertError.registerType(StringRevertError);
