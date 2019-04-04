@@ -11,7 +11,7 @@
                 "pr": 1742
             },
             {
-                "note": "Add Exchange rich revert reason types",
+                "note": "Add Exchange `RevertError` types",
                 "pr": TODO
             }
         ]
