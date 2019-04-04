@@ -14,4 +14,10 @@ export { signTypedDataUtils } from './sign_typed_data_utils';
 export import AbiEncoder = require('./abi_encoder');
 export * from './types';
 export { generatePseudoRandom256BitNumber } from './random';
-export { decodeRevertError, registerRevertErrorType, RevertError, StringRevertError } from './revert_error';
+export {
+    decodeRevertError,
+    registerRevertErrorType,
+    RevertError,
+    StringRevertError,
+    AnyRevertError,
+} from './revert_error';
