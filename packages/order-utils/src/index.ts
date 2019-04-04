@@ -1,4 +1,4 @@
-import * as ExchangeErrors from './exchange_revert_errors';
+import * as ExchangeRevertErrors from './exchange_revert_errors';
 
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
@@ -79,4 +79,4 @@ export {
     OrdersAndRemainingFillAmount,
 } from './types';
 
-export { ExchangeErrors };
+export { ExchangeRevertErrors };
