@@ -1,6 +1,6 @@
 [
     {
-        "version": "2.1.9",
+        "version": "3.0.0",
         "changes": [
             {
                 "note": "Use new/cheaper reentrancy guard/mutex",
@@ -9,6 +9,14 @@
             {
                 "note": "Update domain separator",
                 "pr": 1742
+            },
+            {
+                "note": "Refactor `executeTransaction` to take `ZeroExTransaction` struct as input",
+                "pr": 1753
+            },
+            {
+                "note": "Refactor example contracts that use `executeTransaction`",
+                "pr": 1753
             }
         ]
     },

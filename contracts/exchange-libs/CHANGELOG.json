@@ -35,6 +35,18 @@
             {
                 "note": "Rename `verifyingContract` to `verifyingContractAddress` in domain schema",
                 "pr": 1742
+            },
+            {
+                "note": "Add LibZeroExTransaction contract",
+                "pr": 1753
+            },
+            {
+                "note": "Add verifyingContractIfExists arg to LibEIP712ExchangeDomain constructor",
+                "pr": 1753
+            },
+            {
+                "note": "Remove LibEIP712ExchangeDomainConstants and LibEIP712 contracts",
+                "pr": 1753
             }
         ],
         "timestamp": 1563006338
