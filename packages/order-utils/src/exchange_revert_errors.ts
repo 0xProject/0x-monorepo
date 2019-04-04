@@ -80,8 +80,18 @@ export class AssetProxyExistsError extends RevertError {
 }
 
 export class AssetProxyDispatchError extends RevertError {
+    constructor(orderHash?: string, assetData?: string, error?: AssetProxyDispatchErrorCodes) {
+        super('AssetProxyDispatchError(bytes32 orderHash, bytes assetData, uint8 error)', {
+            orderHash,
+            assetData,
+            error,
+        });
+    }
+}
+
+export class AssetProxyTransferError extends RevertError {
     constructor(orderHash?: string, assetData?: string, errorMessage?: string) {
-        super('AssetProxyDispatchError(bytes32 orderHash, bytes assetData, string errorMessage)', {
+        super('AssetProxyTransferError(bytes32 orderHash, bytes assetData, string errorMessage)', {
             orderHash,
             assetData,
             errorMessage,
@@ -123,6 +133,7 @@ const types = [
     OrderEpochError,
     AssetProxyExistsError,
     AssetProxyDispatchError,
+    AssetProxyTransferError,
     NegativeSpreadError,
     TransactionError,
     TransactionExecutionError,
