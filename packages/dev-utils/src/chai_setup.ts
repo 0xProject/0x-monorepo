@@ -1,4 +1,4 @@
-import { RichRevertReason, StandardError } from '@0x/utils';
+import { RevertError, StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
 import chaiAsPromised = require('chai-as-promised');
 import ChaiBigNumber = require('chai-bignumber');
@@ -98,24 +98,32 @@ function compareRichRevertReasons(
 ): void {
     let actual = _actual;
     let expected = _expected;
-    // If either subject is a StandardError, try to coerce the other into the same.
-    if (expected instanceof StandardError || actual instanceof StandardError) {
-        // `actual` can be a RichRevertReason, string, or an Error type.
-        if (typeof actual === 'string') {
-            actual = new StandardError(actual);
-        } else if (actual instanceof Error) {
-            actual = new StandardError(actual.message);
-        } else if (!(actual instanceof RichRevertReason)) {
-            new _chai.Assertion().assert(false, `Result is not of type RichRevertReason: ${actual}`);
+    // If either subject is a RevertError, try to coerce the other into the same.
+    if (expected instanceof RevertError || actual instanceof RevertError) {
+        // `actual` can be a RevertError, string, or an Error type.
+        if (!(actual instanceof RevertError)) {
+            if (typeof actual === 'string') {
+                actual = new StringRevertError(actual);
+            } else if (actual instanceof Error) {
+                actual = new StringRevertError(actual.message);
+            } else {
+                new _chai.Assertion().assert(false, `Result is not of type RevertError: ${actual}`);
+            }
         }
-        // `expected` can be a RichRevertReason or string.
+        // `expected` can be a RevertError or string.
         if (typeof expected === 'string') {
-            expected = new StandardError(expected);
+            expected = new StringRevertError(expected);
         }
     }
-    if (expected instanceof RichRevertReason && actual instanceof RichRevertReason) {
+    if (expected instanceof RevertError && actual instanceof RevertError) {
         // Check for equality.
-        this.assert(actual.equals(expected), `${actual} != ${expected}`, `${actual} == ${expected}`, expected, actual);
+        this.assert(
+            actual.equals(expected),
+            `${actual.toString()} != ${expected.toString()}`,
+            `${actual.toString()} == ${expected.toString()}`,
+            expected,
+            actual,
+        );
         return;
     }
     _super.call(this, _expected);
