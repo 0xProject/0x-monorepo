@@ -57,6 +57,18 @@
             {
                 "note": "Update domain separator",
                 "pr": 1742
+            },
+            {
+                "note": "Refactor contract to use new ITransactions interface",
+                "pr": 1753
+            },
+            {
+                "note": "Add verifyingContractIfExists arg to LibEIP712CoordinatorDomain constructor",
+                "pr": 1753
+            },
+            {
+                "note": "Remove LibZeroExTransaction contract",
+                "pr": 1753
             }
         ],
         "timestamp": 1554997931
