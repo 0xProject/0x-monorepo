@@ -1,10 +1,14 @@
 [
     {
-        "version": "3.1.2",
+        "version": "3.2.0",
         "changes": [
             {
                 "note": "Change ReentrancyGuard implementation to cheaper one",
                 "pr": 1699
+            },
+            {
+                "note": "Add LibEIP712 contract",
+                "pr": 1753
             }
         ]
     },
