@@ -48,6 +48,58 @@ describe('Chai tests', () => {
                 const error = new Error(message);
                 expect(error).is.equal(revert);
             });
+            it('should equate a ganache transaction revert error with reason to a StringRevertError with an equal message', () => {
+                const message = 'foo';
+                const error: any = new Error(`VM Exception while processing transaction: revert ${message}`);
+                error.hashes = ['0x1'];
+                error.results = { '0x1': { error: 'revert', program_counter: 1, return: '0x', reason: message } };
+                const revert = new StringRevertError(message);
+                expect(error).is.equal(revert);
+            });
+            it('should equate a ganache transaction revert error with return data to a StringRevertError with an equal message', () => {
+                const error: any = new Error(`VM Exception while processing transaction: revert`);
+                error.hashes = ['0x1'];
+                // Encoding for `Error(string message='foo')`
+                const returnData =
+                    '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003666f6f0000000000000000000000000000000000000000000000000000000000';
+                error.results = {
+                    '0x1': { error: 'revert', program_counter: 1, return: returnData, reason: undefined },
+                };
+                const revert = new StringRevertError('foo');
+                expect(error).is.equal(revert);
+            });
+            it('should equate an empty ganache transaction revert error to any RevertError', () => {
+                const error: any = new Error(`VM Exception while processing transaction: revert`);
+                error.hashes = ['0x1'];
+                error.results = { '0x1': { error: 'revert', program_counter: 1, return: '0x', reason: undefined } };
+                const revert = new StringRevertError('foo');
+                expect(error).is.equal(revert);
+            });
+            it('should not equate a ganache transaction revert error with reason to a StringRevertError with a different message', () => {
+                const message = 'foo';
+                const error: any = new Error(`VM Exception while processing transaction: revert ${message}`);
+                error.hashes = ['0x1'];
+                error.results = { '0x1': { error: 'revert', program_counter: 1, return: '0x', reason: message } };
+                const revert = new StringRevertError('boo');
+                expect(error).is.not.equal(revert);
+            });
+            it('should not equate a ganache transaction revert error with return data to a StringRevertError with a different message', () => {
+                const error: any = new Error(`VM Exception while processing transaction: revert`);
+                error.hashes = ['0x1'];
+                // Encoding for `Error(string message='foo')`
+                const returnData =
+                    '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003666f6f0000000000000000000000000000000000000000000000000000000000';
+                error.results = {
+                    '0x1': { error: 'revert', program_counter: 1, return: returnData, reason: undefined },
+                };
+                const revert = new StringRevertError('boo');
+                expect(error).is.not.equal(revert);
+            });
+            it('should equate an opaque geth transaction revert error to any RevertError', () => {
+                const error = new Error(`always failing transaction`);
+                const revert = new StringRevertError('foo');
+                expect(error).is.equal(revert);
+            });
             it('should equate a string to a StringRevertError with the same message', () => {
                 const message = 'foo';
                 const revert = new StringRevertError(message);
