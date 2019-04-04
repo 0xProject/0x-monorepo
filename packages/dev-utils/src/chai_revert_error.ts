@@ -1,13 +1,6 @@
 import { AnyRevertError, RevertError, StringRevertError } from '@0x/utils';
 
-// tslint:disable no-namespace only-arrow-functions prefer-conditional-expression
-declare global {
-    export namespace Chai {
-        export interface Assertion {
-            revertWith: (expected: string | RevertError) => Promise<void>;
-        }
-    }
-}
+// tslint:disable only-arrow-functions prefer-conditional-expression
 
 type ChaiPromiseHandler = (x: any, ...rest: any[]) => Promise<void>;
 type ChaiAssertHandler = (x: any, ...rest: any[]) => void;
