@@ -40,8 +40,6 @@ contract RichErrors is
         );
     }
 
-    // solhint-enable func-name-mixedcase
-
     /// @dev Reverts an encoded rich revert reason `errorData`.
     /// @param errorData ABI encoded error data.
     function rrevert(bytes memory errorData)

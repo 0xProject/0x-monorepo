@@ -46,7 +46,7 @@ export function decodeRichRevertReason(bytes: string | Buffer): RichRevertReason
  */
 export abstract class RichRevertReason {
     // Map of types registered via `registerType`.
-    private static _typeRegistry: ObjectMap<RichRevertReasonRegistryItem> = {};
+    private static readonly _typeRegistry: ObjectMap<RichRevertReasonRegistryItem> = {};
     public abi: RichRevertAbi;
     public values: ValueMap = {};
 
