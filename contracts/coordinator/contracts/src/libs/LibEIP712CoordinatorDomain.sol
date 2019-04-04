@@ -37,7 +37,7 @@ contract LibEIP712CoordinatorDomain is
 
     /// @param chainId Chain ID of the network this contract is deployed on.
     /// @param verifyingContractAddressIfExists Address of the verifying contract (null if the address of this contract)
-    constructor(
+    constructor (
         uint256 chainId,
         address verifyingContractAddressIfExists
     )
