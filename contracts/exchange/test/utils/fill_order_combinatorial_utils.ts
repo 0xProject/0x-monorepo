@@ -21,13 +21,21 @@ import {
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
+    ExchangeRevertErrors,
     ExchangeTransferSimulator,
     orderHashUtils,
     OrderStateUtils,
     OrderValidationUtils,
 } from '@0x/order-utils';
-import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, errorUtils, logUtils, providerUtils } from '@0x/utils';
+import { AssetProxyId, Order, RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import {
+    BigNumber,
+    errorUtils,
+    logUtils,
+    providerUtils,
+    RevertError,
+    StringRevertError,
+} from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, TxData } from 'ethereum-types';
@@ -417,7 +425,7 @@ export class FillOrderCombinatorialUtils {
                 logUtils.log(`Expecting fillOrder to succeed.`);
             }
         } catch (err) {
-            fillRevertReasonIfExists = err.message;
+            fillRevertReasonIfExists = validationErrorToRevertError(order, err.message);
             if (isVerbose) {
                 logUtils.log(`Expecting fillOrder to fail with:`);
                 logUtils.log(err);
@@ -438,13 +446,15 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
-        fillRevertReasonIfExists: RevertReason | undefined,
+        fillRevertReasonIfExists: RevertReason | RevertError | undefined,
     ): Promise<void> {
         if (!_.isUndefined(fillRevertReasonIfExists)) {
-            return expectTransactionFailedAsync(
-                this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
-                fillRevertReasonIfExists,
+            const tx = this.exchangeWrapper.fillOrderAsync(
+                signedOrder,
+                this.takerAddress,
+                { takerAssetFillAmount },
             );
+            return expect(tx).to.revertWith(fillRevertReasonIfExists);
         }
 
         const makerAddress = signedOrder.makerAddress;
@@ -928,4 +938,34 @@ export class FillOrderCombinatorialUtils {
                 );
         }
     }
-} // tslint:disable:max-file-line-count
+}
+
+// HACK(dorothy-zbnornak): OrderValidationUtils errors do not map perfectly to rich revert errors.
+// This only covers the errors that are raised by these combinatorial tests.
+// At some point it may be worthwhile to update OrderValidationUtils to throw
+// rich revert errors.
+function validationErrorToRevertError(order: Order, reason: RevertReason): RevertError {
+    const orderHash = orderHashUtils.getOrderHashHex(order);
+    switch (reason) {
+        case RevertReason.InvalidMaker:
+            return new ExchangeRevertErrors.InvalidMakerError(orderHash);
+        case RevertReason.InvalidTaker:
+            return new ExchangeRevertErrors.InvalidTakerError(orderHash);
+        case RevertReason.OrderUnfillable:
+            return new ExchangeRevertErrors.OrderStatusError(orderHash);
+        case RevertReason.InvalidTakerAmount:
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.InvalidTakerAmount);
+        case RevertReason.TakerOverpay:
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.TakerOverpay);
+        case RevertReason.OrderOverfill:
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.Overfill);
+        case RevertReason.InvalidFillPrice:
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.InvalidFillPrice);
+        case RevertReason.TransferFailed:
+            return new ExchangeRevertErrors.AssetProxyTransferError(orderHash, undefined, 'TRANSFER_FAILED');
+        default:
+            return new StringRevertError(reason);
+    }
+}
+
+// tslint:disable:max-file-line-count
