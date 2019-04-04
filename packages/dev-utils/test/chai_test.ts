@@ -1,4 +1,4 @@
-import { StandardError } from '@0x/utils';
+import { StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
 
 import { chaiSetup } from '../src';
@@ -6,115 +6,115 @@ import { chaiSetup } from '../src';
 chaiSetup.configure();
 const expect = chai.expect;
 
-class CustomError extends StandardError {
+class DescendantRevertError extends StringRevertError {
     constructor(msg: string) {
         super(msg);
     }
 }
 
 describe('Chai tests', () => {
-    describe('RichRevertReasons', () => {
+    describe('RevertErrors', () => {
         describe('#equal', () => {
-            it('should equate two identical RichRevertReasons', () => {
+            it('should equate two identical RevertErrors', () => {
                 const message = 'foo';
-                const reason1 = new StandardError(message);
-                const reason2 = new StandardError(message);
-                expect(reason1).is.equal(reason2);
+                const revert1 = new StringRevertError(message);
+                const revert2 = new StringRevertError(message);
+                expect(revert1).is.equal(revert2);
             });
-            it('should equate two RichRevertReasons where one has missing fields', () => {
-                const reason1 = new StandardError('foo');
-                const reason2 = new StandardError();
-                expect(reason1).is.equal(reason2);
+            it('should equate two RevertErrors where one has missing fields', () => {
+                const revert1 = new StringRevertError('foo');
+                const revert2 = new StringRevertError();
+                expect(revert1).is.equal(revert2);
             });
-            it('should not equate two RichRevertReasons with diferent fields', () => {
-                const reason1 = new StandardError('foo1');
-                const reason2 = new StandardError('foo2');
-                expect(reason1).is.not.equal(reason2);
+            it('should not equate two RevertErrors with diferent fields', () => {
+                const revert1 = new StringRevertError('foo1');
+                const revert2 = new StringRevertError('foo2');
+                expect(revert1).is.not.equal(revert2);
             });
-            it('should not equate two RichRevertReasons with diferent types', () => {
+            it('should not equate two RevertErrors with diferent types', () => {
                 const message = 'foo';
-                const reason1 = new StandardError(message);
-                const reason2 = new CustomError(message);
-                expect(reason1).is.not.equal(reason2);
+                const revert1 = new StringRevertError(message);
+                const revert2 = new DescendantRevertError(message);
+                expect(revert1).is.not.equal(revert2);
             });
-            it('should equate a StandardError to a string equal to message', () => {
+            it('should equate a StringRevertError to a string equal to message', () => {
                 const message = 'foo';
-                const reason = new StandardError(message);
-                expect(message).is.equal(reason);
+                const revert = new StringRevertError(message);
+                expect(message).is.equal(revert);
             });
-            it('should equate an Error to a StandardError with an equal message', () => {
+            it('should equate an Error to a StringRevertError with an equal message', () => {
                 const message = 'foo';
-                const reason = new StandardError(message);
+                const revert = new StringRevertError(message);
                 const error = new Error(message);
-                expect(error).is.equal(reason);
+                expect(error).is.equal(revert);
             });
-            it('should equate a string to a StandardError with the same message', () => {
+            it('should equate a string to a StringRevertError with the same message', () => {
                 const message = 'foo';
-                const reason = new StandardError(message);
-                expect(reason).is.equal(message);
+                const revert = new StringRevertError(message);
+                expect(revert).is.equal(message);
             });
-            it('should not equate a StandardError to a string not equal to message', () => {
-                const reason = new StandardError('foo1');
-                expect('foo2').is.not.equal(reason);
+            it('should not equate a StringRevertError to a string not equal to message', () => {
+                const revert = new StringRevertError('foo1');
+                expect('foo2').is.not.equal(revert);
             });
-            it('should not equate a string to a StandardError with a different message', () => {
-                const reason = new StandardError('foo1');
-                expect(reason).is.not.equal('foo2');
+            it('should not equate a string to a StringRevertError with a different message', () => {
+                const revert = new StringRevertError('foo1');
+                expect(revert).is.not.equal('foo2');
             });
-            it('should not equate an Error to a StandardError with a different message', () => {
-                const reason = new StandardError('foo1');
+            it('should not equate an Error to a StringRevertError with a different message', () => {
+                const revert = new StringRevertError('foo1');
                 const error = new Error('foo2');
-                expect(error).is.not.equal(reason);
+                expect(error).is.not.equal(revert);
             });
         });
         describe('#rejectedWith', () => {
-            it('should equate a promise that rejects to an identical RichRevertReasons', async () => {
+            it('should equate a promise that rejects to an identical RevertErrors', async () => {
                 const message = 'foo';
-                const reason1 = new StandardError(message);
-                const reason2 = new StandardError(message);
+                const revert1 = new StringRevertError(message);
+                const revert2 = new StringRevertError(message);
                 const promise = (async () => {
-                    throw reason1;
+                    throw revert1;
                 })();
-                return expect(promise).to.be.rejectedWith(reason2);
+                return expect(promise).to.be.rejectedWith(revert2);
             });
-            it('should not equate a promise that rejects to a StandardError with a different messages', async () => {
-                const reason1 = new StandardError('foo1');
-                const reason2 = new StandardError('foo2');
+            it('should not equate a promise that rejects to a StringRevertError with a different messages', async () => {
+                const revert1 = new StringRevertError('foo1');
+                const revert2 = new StringRevertError('foo2');
                 const promise = (async () => {
-                    throw reason1;
+                    throw revert1;
                 })();
-                return expect(promise).to.not.be.rejectedWith(reason2);
+                return expect(promise).to.not.be.rejectedWith(revert2);
             });
-            it('should not equate a promise that rejects to different RichRevertReason types', async () => {
+            it('should not equate a promise that rejects to different RevertError types', async () => {
                 const message = 'foo';
-                const reason1 = new StandardError(message);
-                const reason2 = new CustomError(message);
+                const revert1 = new StringRevertError(message);
+                const revert2 = new DescendantRevertError(message);
                 const promise = (async () => {
-                    throw reason1;
+                    throw revert1;
                 })();
-                return expect(promise).to.not.be.rejectedWith(reason2);
+                return expect(promise).to.not.be.rejectedWith(revert2);
             });
         });
         describe('#become', () => {
-            it('should equate a promise that resolves to an identical RichRevertReasons', async () => {
+            it('should equate a promise that resolves to an identical RevertErrors', async () => {
                 const message = 'foo';
-                const reason1 = new StandardError(message);
-                const reason2 = new StandardError(message);
-                const promise = (async () => reason1)();
-                return expect(promise).to.become(reason2);
+                const revert1 = new StringRevertError(message);
+                const revert2 = new StringRevertError(message);
+                const promise = (async () => revert1)();
+                return expect(promise).to.become(revert2);
             });
-            it('should not equate a promise that resolves to a StandardError with a different messages', async () => {
-                const reason1 = new StandardError('foo1');
-                const reason2 = new StandardError('foo2');
-                const promise = (async () => reason1)();
-                return expect(promise).to.not.become(reason2);
+            it('should not equate a promise that resolves to a StringRevertError with a different messages', async () => {
+                const revert1 = new StringRevertError('foo1');
+                const revert2 = new StringRevertError('foo2');
+                const promise = (async () => revert1)();
+                return expect(promise).to.not.become(revert2);
             });
-            it('should not equate a promise that resolves to different RichRevertReason types', async () => {
+            it('should not equate a promise that resolves to different RevertError types', async () => {
                 const message = 'foo';
-                const reason1 = new StandardError(message);
-                const reason2 = new CustomError(message);
-                const promise = (async () => reason1)();
-                return expect(promise).to.not.become(reason2);
+                const revert1 = new StringRevertError(message);
+                const revert2 = new DescendantRevertError(message);
+                const promise = (async () => revert1)();
+                return expect(promise).to.not.become(revert2);
             });
         });
     });
