@@ -1,3 +1,5 @@
+import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { crypto } from '@0x/order-utils/lib/src/crypto';
 import { OrderWithoutDomain, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -41,5 +43,11 @@ export const orderUtils = {
         fill.right.makerAssetData = constants.NULL_BYTES;
         fill.right.takerAssetData = constants.NULL_BYTES;
         return fill;
+    },
+    generatePseudoRandomOrderHash(): string {
+        const randomBigNum = generatePseudoRandomSalt();
+        const randomBuff = crypto.solSHA3([randomBigNum]);
+        const randomHash = `0x${randomBuff.toString('hex')}`;
+        return randomHash;
     },
 };
