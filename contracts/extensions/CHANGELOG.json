@@ -13,6 +13,10 @@
             {
                 "note": "Remove unused `LibOrder` inheritance",
                 "pr": 1742
+            },
+            {
+                "note": "Refactor BalanceThresholdFilter to use new ITransactions interface",
+                "pr": 1753
             }
         ]
     },
