@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.5;
 
+
 contract MRichErrors {
     // solhint-disable func-name-mixedcase
 
@@ -30,8 +31,6 @@ contract MRichErrors {
         internal
         pure
         returns (bytes memory);
-
-    // solhint-enable func-name-mixedcase
 
     /// @dev Reverts an encoded rich revert reason `errorData`.
     /// @param errorData ABI encoded error data.
