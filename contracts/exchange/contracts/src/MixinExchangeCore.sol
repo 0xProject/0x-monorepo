@@ -230,6 +230,7 @@ contract MixinExchangeCore is
 
         // Settle order
         settleOrder(
+            orderInfo.orderHash,
             order,
             takerAddress,
             fillResults
@@ -486,10 +487,12 @@ contract MixinExchangeCore is
     }
 
     /// @dev Settles an order by transferring assets between counterparties.
+    /// @param orderHash The order hash.
     /// @param order Order struct containing order specifications.
     /// @param takerAddress Address selling takerAsset and buying makerAsset.
     /// @param fillResults Amounts to be filled and fees paid by maker and taker.
     function settleOrder(
+        bytes32 orderHash,
         LibOrder.Order memory order,
         address takerAddress,
         LibFillResults.FillResults memory fillResults
@@ -498,24 +501,28 @@ contract MixinExchangeCore is
     {
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         dispatchTransferFrom(
+            orderHash,
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
             fillResults.makerAssetFilledAmount
         );
         dispatchTransferFrom(
+            orderHash,
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
         dispatchTransferFrom(
+            orderHash,
             zrxAssetData,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         dispatchTransferFrom(
+            orderHash,
             zrxAssetData,
             takerAddress,
             order.feeRecipientAddress,
