@@ -2,6 +2,8 @@ import { OrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { AbiDefinition } from 'ethereum-types';
 
+export { OrderStatus } from '@0x/types';
+
 export interface ERC20BalancesByOwner {
     [ownerAddress: string]: {
         [tokenAddress: string]: BigNumber;
@@ -88,16 +90,6 @@ export interface Token {
     decimals: number;
     ipfsHash: string;
     swarmHash: string;
-}
-
-export enum OrderStatus {
-    Invalid,
-    InvalidMakerAssetAmount,
-    InvalidTakerAssetAmount,
-    Fillable,
-    Expired,
-    FullyFilled,
-    Cancelled,
 }
 
 export enum ContractName {
