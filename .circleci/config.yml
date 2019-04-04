@@ -393,9 +393,11 @@ workflows:
             - test-contracts-ganache:
                   requires:
                       - build
-            - test-contracts-geth:
-                  requires:
-                      - build
+            # TODO(albrow): Tests always fail on Geth right now because our fork
+            # is outdated. Uncomment once we have updated our Geth fork.
+            # - test-contracts-geth:
+            #       requires:
+            #           - build
             - test-pipeline:
                   requires:
                       - build
