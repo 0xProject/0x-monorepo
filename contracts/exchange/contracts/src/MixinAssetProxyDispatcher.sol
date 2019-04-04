@@ -162,11 +162,12 @@ contract MixinAssetProxyDispatcher is
                 /////// Setup Data Area ///////
                 // This area holds `assetData`.
                 let dataArea := add(cdStart, 132)
+                let assetDataArea := assetData
                 // solhint-disable-next-line no-empty-blocks
                 for {} lt(dataArea, cdEnd) {} {
-                    mstore(dataArea, mload(assetData))
+                    mstore(dataArea, mload(assetDataArea))
                     dataArea := add(dataArea, 32)
-                    assetData := add(assetData, 32)
+                    assetDataArea := add(assetDataArea, 32)
                 }
 
                 /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
@@ -181,7 +182,7 @@ contract MixinAssetProxyDispatcher is
                 )
 
                 if iszero(didSucceed) { // Call reverted.
-                    // Attempt to to decode standard error messages with the
+                    // Attempt to to decode standard revert messages with the
                     // signature `Error(string)` so we can upgrade them to
                     // a rich revert.
 
@@ -197,11 +198,11 @@ contract MixinAssetProxyDispatcher is
 
                     // Make sure the return value is long enough.
                     if gt(returndatasize(), 67) {
-                        // Check that the selector matches for a standard error.
+                        // Check that the selector matches for a standard revert error.
                         let selector := and(mload(sub(cdStart, 28)), 0xffffffff)
                         cdStart := add(cdStart, 4)
-                        if eq(selector, 0x08c379a) {
-                            // Set revertMessage to the start of Data.
+                        if eq(selector, 0x08c379a0) {
+                            // Set revertMessage to the start of the reason string.
                             revertMessage := add(cdStart, mload(cdStart))
                             // Truncate the data length if it's larger than our buffer
                             // size (288 - 32 = 256)
