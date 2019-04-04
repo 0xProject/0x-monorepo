@@ -44,7 +44,6 @@
         "@0x/utils": "^4.3.0",
         "@0x/web3-wrapper": "^6.0.4",
         "ethereum-types": "^2.1.1",
-        "ethers": "~4.0.4",
         "lodash": "^4.17.11"
     },
     "publishConfig": {
