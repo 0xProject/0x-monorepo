@@ -1,5 +1,18 @@
 [
     {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult`",
+                "pr": TODO
+            },
+            {
+                "note": "Remove dependency on ethers.js",
+                "pr": TODO
+            }
+        ]
+    },
+    {
         "version": "5.1.0",
         "changes": [
             {

@@ -1,6 +1,6 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { AbiEncoder, abiUtils, BigNumber, providerUtils } from '@0x/utils';
+import { AbiEncoder, abiUtils, BigNumber, providerUtils, RevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -14,7 +14,6 @@ import {
     TxData,
     TxDataPayable,
 } from 'ethereum-types';
-import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
@@ -111,18 +110,15 @@ export class BaseContract {
         return txDataWithDefaults;
     }
     protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
-        if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
-            const revertReasonArray = AbiEncoder.create('(string)').decodeAsArray(
-                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
-            );
-            if (revertReasonArray.length !== 1) {
-                throw new Error(
-                    `Cannot safely decode revert reason: Expected an array with one element, got ${revertReasonArray}`,
-                );
-            }
-            const revertReason = revertReasonArray[0];
-            throw new Error(revertReason);
+        // Try to decode the call result as a revert error.
+        let revert: RevertError;
+        try {
+            revert = RevertError.decode(rawCallResult);
+        } catch (err) {
+            // Can't decode it as a revert error, so assume it didn't revert.
+            return;
         }
+        throw revert;
     }
     // Throws if the given arguments cannot be safely/correctly encoded based on
     // the given inputAbi. An argument may not be considered safely encodeable

@@ -47,7 +47,6 @@
         "@0x/json-schemas": "^3.0.10",
         "@0x/web3-wrapper": "^6.0.6",
         "ethereum-types": "^2.1.2",
-        "ethers": "~4.0.4",
         "lodash": "^4.17.11"
     },
     "publishConfig": {
