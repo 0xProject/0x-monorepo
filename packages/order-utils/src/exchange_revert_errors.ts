@@ -1,5 +1,5 @@
 import { OrderStatus } from '@0x/types';
-import { BigNumber, RichRevertReason } from '@0x/utils';
+import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
@@ -31,55 +31,55 @@ export enum TransactionErrorCodes {
     BadSignature,
 }
 
-export class SignatureError extends RichRevertReason {
+export class SignatureError extends RevertError {
     constructor(orderHash?: string, error?: SignatureErrorCodes) {
         super('SignatureError(bytes32 orderHash, uint8 error)', { orderHash, error });
     }
 }
 
-export class OrderStatusError extends RichRevertReason {
+export class OrderStatusError extends RevertError {
     constructor(orderHash?: string, status?: OrderStatus) {
         super('OrderStatusError(bytes32 orderHash, uint8 status)', { orderHash, status });
     }
 }
 
-export class InvalidSenderError extends RichRevertReason {
+export class InvalidSenderError extends RevertError {
     constructor(orderHash?: string, sender?: string) {
         super('InvalidSenderError(bytes32 orderHash, address sender)', { orderHash, sender });
     }
 }
 
-export class InvalidTakerError extends RichRevertReason {
+export class InvalidTakerError extends RevertError {
     constructor(orderHash?: string, taker?: string) {
         super('InvalidTakerError(bytes32 orderHash, address taker)', { orderHash, taker });
     }
 }
 
-export class InvalidMakerError extends RichRevertReason {
+export class InvalidMakerError extends RevertError {
     constructor(orderHash?: string, maker?: string) {
         super('InvalidMakerError(bytes32 orderHash, address maker)', { orderHash, maker });
     }
 }
 
-export class FillError extends RichRevertReason {
+export class FillError extends RevertError {
     constructor(orderHash?: string, error?: FillErrorCodes) {
         super('FillError(bytes32 orderHash, uint8 error)', { orderHash, error });
     }
 }
 
-export class OrderEpochError extends RichRevertReason {
+export class OrderEpochError extends RevertError {
     constructor(maker?: string, sender?: string, currentEpoch?: BigNumber | number | string) {
         super('OrderEpochError(address maker, address sender, uint256 currentEpoch)', { maker, sender, currentEpoch });
     }
 }
 
-export class AssetProxyExistsError extends RichRevertReason {
+export class AssetProxyExistsError extends RevertError {
     constructor(proxy?: string) {
         super('AssetProxyExistsError(address proxy)', { proxy });
     }
 }
 
-export class AssetProxyDispatchError extends RichRevertReason {
+export class AssetProxyDispatchError extends RevertError {
     constructor(orderHash?: string, assetData?: string, errorMessage?: string) {
         super('AssetProxyDispatchError(bytes32 orderHash, bytes assetData, string errorMessage)', {
             orderHash,
@@ -89,25 +89,25 @@ export class AssetProxyDispatchError extends RichRevertReason {
     }
 }
 
-export class NegativeSpreadError extends RichRevertReason {
+export class NegativeSpreadError extends RevertError {
     constructor(leftOrderHash?: string, rightOrderHash?: string) {
         super('NegativeSpreadError(bytes32 leftOrderHash, bytes32 rightOrderHash)', { leftOrderHash, rightOrderHash });
     }
 }
 
-export class TransactionError extends RichRevertReason {
+export class TransactionError extends RevertError {
     constructor(transactionHash?: string, error?: TransactionErrorCodes) {
         super('TransactionError(bytes32 transactionHash, uint8 error)', { transactionHash, error });
     }
 }
 
-export class TransactionExecutionError extends RichRevertReason {
+export class TransactionExecutionError extends RevertError {
     constructor(transactionHash?: string, errorData?: string) {
         super('TransactionExecutionError(bytes32 transactionHash, bytes errorData)', { transactionHash, errorData });
     }
 }
 
-export class IncompleteFillError extends RichRevertReason {
+export class IncompleteFillError extends RevertError {
     constructor(orderHash?: string) {
         super('IncompleteFillError(bytes32 orderHash)', { orderHash });
     }
@@ -131,5 +131,5 @@ const types = [
 
 // Register the types we've defined.
 for (const type of types) {
-    RichRevertReason.registerType(type);
+    RevertError.registerType(type);
 }
