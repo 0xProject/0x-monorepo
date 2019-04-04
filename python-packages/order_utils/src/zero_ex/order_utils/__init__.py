@@ -23,19 +23,11 @@ Here is a short demonstration on how to create a 0x order.
 ...     exchangeAddress=NETWORK_TO_ADDRESSES[NetworkId.MAINNET].exchange,
 ...     senderAddress="0x0000000000000000000000000000000000000000",
 ...     feeRecipientAddress="0x0000000000000000000000000000000000000000",
-...     makerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(
-...                 NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
-...             )
-...         )
+...     makerAssetData=asset_data_utils.encode_erc20(
+...        NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
 ...     ),
-...     takerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(
-...                 NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
-...             )
-...         )
+...     takerAssetData=asset_data_utils.encode_erc20(
+...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
 ...     ),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
@@ -146,16 +138,8 @@ class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
     ...     takerAddress='0x0000000000000000000000000000000000000000',
     ...     senderAddress='0x0000000000000000000000000000000000000000',
     ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-    ...     makerAssetData=bytes.fromhex(
-    ...         remove_0x_prefix(
-    ...             asset_data_utils.encode_erc20_asset_data(zrx_address)
-    ...         )
-    ...     ),
-    ...     takerAssetData=bytes.fromhex(
-    ...         remove_0x_prefix(
-    ...             asset_data_utils.encode_erc20_asset_data(weth_address)
-    ...         )
-    ...     ),
+    ...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+    ...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
     ...     salt=random.randint(1, 100000000000000000),
     ...     makerFee=0,
     ...     takerFee=0,

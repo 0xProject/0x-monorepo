@@ -3,6 +3,7 @@
 from typing import NamedTuple
 
 import eth_abi
+from deprecated.sphinx import deprecated
 
 from zero_ex.dev_utils import abi_utils
 from zero_ex.dev_utils.type_assertions import assert_is_string, assert_is_int
@@ -36,6 +37,7 @@ class ERC721AssetData(NamedTuple):
     """Token identifier."""
 
 
+@deprecated(reason='use `"0x"+encode_erc20().hex()` instead')
 def encode_erc20_asset_data(token_address: str) -> str:
     """Encode an ERC20 token address into an asset data string.
 
@@ -52,6 +54,21 @@ def encode_erc20_asset_data(token_address: str) -> str:
         "0x"
         + abi_utils.simple_encode("ERC20Token(address)", token_address).hex()
     )
+
+
+def encode_erc20(token_address: str) -> bytes:
+    """Encode an ERC20 token address into asset data bytes.
+
+    :param token_address: the ERC20 token's contract address.
+    :returns: hex encoded asset data string, usable in the makerAssetData or
+        takerAssetData fields in a 0x order.
+
+    >>> encode_erc20('0x1dc4c1cefef38a777b15aa20260a54e584b16c48').hex()
+    'f47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48'
+    """
+    assert_is_string(token_address, "token_address")
+
+    return abi_utils.simple_encode("ERC20Token(address)", token_address)
 
 
 def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
@@ -90,6 +107,7 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     )
 
 
+@deprecated(reason='use `"0x"+encode_erc721().hex()` instead')
 def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
     """Encode an ERC721 asset data hex string.
 
@@ -109,6 +127,25 @@ def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
         + abi_utils.simple_encode(
             "ERC721Token(address,uint256)", token_address, token_id
         ).hex()
+    )
+
+
+def encode_erc721(token_address: str, token_id: int) -> bytes:
+    """Encode an ERC721 token address into asset data bytes.
+
+    :param token_address: the ERC721 token's contract address.
+    :param token_id: the identifier of the asset's instance of the token.
+    :returns: hex encoded asset data string, usable in the makerAssetData or
+        takerAssetData fields in a 0x order.
+
+    >>> encode_erc721('0x1dc4c1cefef38a777b15aa20260a54e584b16c48', 1).hex()
+    '025717920000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c480000000000000000000000000000000000000000000000000000000000000001'
+    """  # noqa: E501 (line too long)
+    assert_is_string(token_address, "token_address")
+    assert_is_int(token_id, "token_id")
+
+    return abi_utils.simple_encode(
+        "ERC721Token(address,uint256)", token_address, token_id
     )
 
 

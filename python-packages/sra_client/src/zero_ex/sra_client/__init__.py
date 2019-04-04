@@ -80,10 +80,6 @@ Finally, import some modules and declare some constants that we'll use later:
 >>> weth_address     = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
 >>> zrx_address      = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
 
->>> from zero_ex.order_utils import asset_data_utils
->>> weth_asset_data = asset_data_utils.encode_erc20_asset_data(weth_address)
->>> zrx_asset_data  = asset_data_utils.encode_erc20_asset_data(zrx_address)
-
 Wrapping ETH
 ^^^^^^^^^^^^
 
@@ -117,6 +113,7 @@ Post Order
 Post an order for our Maker to trade WETH for ZRX:
 
 >>> from zero_ex.order_utils import (
+...     asset_data_utils,
 ...     generate_order_hash_hex,
 ...     jsdict_order_to_struct,
 ...     sign_hash)
@@ -127,8 +124,8 @@ Post an order for our Maker to trade WETH for ZRX:
 ...     "senderAddress": "0x0000000000000000000000000000000000000000",
 ...     "exchangeAddress": exchange_address,
 ...     "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-...     "makerAssetData": weth_asset_data,
-...     "takerAssetData": zrx_asset_data,
+...     "makerAssetData": "0x"+asset_data_utils.encode_erc20(weth_address).hex(),
+...     "takerAssetData": "0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
 ...     "salt": str(random.randint(1, 100000000000000000)),
 ...     "makerFee": "0",
 ...     "takerFee": "0",
@@ -209,8 +206,8 @@ Get the Relayer's order book for the WETH/ZRX asset pair (which, again,
 consists just of our order):
 
 >>> relayer_api.get_orderbook(
-...     base_asset_data=weth_asset_data,
-...     quote_asset_data=zrx_asset_data)
+...     base_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
+...     quote_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex())
 {'asks': {'records': [{'meta_data': {},
                        'order': {'exchange_address': '0x...',
                                  'expiration_time_seconds': '1000000000000000000000',

@@ -124,16 +124,8 @@ Constructing an order
 ...     takerAddress='0x0000000000000000000000000000000000000000',
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-...     makerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(zrx_address)
-...         )
-...     ),
-...     takerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(weth_address)
-...         )
-...     ),
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -208,16 +200,8 @@ A Maker can cancel an order that has yet to be filled.
 ...     exchangeAddress=exchange_address,
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-...     makerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(weth_address)
-...         )
-...     ),
-...     takerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(weth_address)
-...         )
-...     ),
+...     makerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -258,16 +242,8 @@ is an example where the taker fills two orders in one transaction:
 ...     takerAddress='0x0000000000000000000000000000000000000000',
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-...     makerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(zrx_address)
-...         )
-...     ),
-...     takerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(weth_address)
-...         )
-...     ),
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -287,16 +263,8 @@ is an example where the taker fills two orders in one transaction:
 ...     takerAddress='0x0000000000000000000000000000000000000000',
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-...     makerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(zrx_address)
-...         )
-...     ),
-...     takerAssetData=bytes.fromhex(
-...         remove_0x_prefix(
-...             asset_data_utils.encode_erc20_asset_data(weth_address)
-...         )
-...     ),
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,

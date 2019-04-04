@@ -52,9 +52,8 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
 
     >>> from zero_ex.json_schemas import assert_valid
     >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-    >>> from zero_ex.order_utils import Order, order_to_jsdict
-    >>> from zero_ex.order_utils.asset_data_utils import (
-    ...     encode_erc20_asset_data
+    >>> from zero_ex.order_utils import (
+    ...     asset_data_utils, Order, order_to_jsdict
     ... )
     >>> from eth_utils import remove_0x_prefix
     >>> import random
@@ -65,19 +64,11 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     ...     senderAddress='0x0000000000000000000000000000000000000000',
     ...     exchangeAddress='0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
     ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-    ...     makerAssetData=bytes.fromhex(
-    ...         remove_0x_prefix(
-    ...             encode_erc20_asset_data(
-    ...                 NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
-    ...             )
-    ...         )
+    ...     makerAssetData=asset_data_utils.encode_erc20(
+    ...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
     ...     ),
-    ...     takerAssetData=bytes.fromhex(
-    ...         remove_0x_prefix(
-    ...             encode_erc20_asset_data(
-    ...                 NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
-    ...             )
-    ...         )
+    ...     takerAssetData=asset_data_utils.encode_erc20(
+    ...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
     ...     ),
     ...     salt=random.randint(1, 100000000000000000),
     ...     makerFee=0,
