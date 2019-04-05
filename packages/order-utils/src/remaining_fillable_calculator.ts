@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 export class RemainingFillableCalculator {
-    private readonly _isTraderAssetZRX: boolean;
+    private readonly _isPercentageFee: boolean;
     // Transferrable Amount is the minimum of Approval and Balance
     private readonly _transferrableAssetAmount: BigNumber;
     private readonly _transferrableFeeAmount: BigNumber;
@@ -12,14 +12,14 @@ export class RemainingFillableCalculator {
     constructor(
         orderFee: BigNumber,
         orderAssetAmount: BigNumber,
-        isTraderAssetZRX: boolean,
+        isPercentageFee: boolean,
         transferrableAssetAmount: BigNumber,
         transferrableFeeAmount: BigNumber,
         remainingOrderAssetAmount: BigNumber,
     ) {
         this._orderFee = orderFee;
         this._orderAssetAmount = orderAssetAmount;
-        this._isTraderAssetZRX = isTraderAssetZRX;
+        this._isPercentageFee = isPercentageFee;
         this._transferrableAssetAmount = transferrableAssetAmount;
         this._transferrableFeeAmount = transferrableFeeAmount;
         this._remainingOrderAssetAmount = remainingOrderAssetAmount;
@@ -37,10 +37,10 @@ export class RemainingFillableCalculator {
         return this._calculatePartiallyFillableAssetAmount();
     }
     private _hasSufficientFundsForFeeAndTransferAmount(): boolean {
-        if (this._isTraderAssetZRX) {
-            const totalZRXTransferAmountRequired = this._remainingOrderAssetAmount.plus(this._remainingOrderFeeAmount);
+        if (this._isPercentageFee) {
+            const totalTransferAmountRequired = this._remainingOrderAssetAmount.plus(this._remainingOrderFeeAmount);
             const hasSufficientFunds = this._transferrableAssetAmount.isGreaterThanOrEqualTo(
-                totalZRXTransferAmountRequired,
+                totalTransferAmountRequired,
             );
             return hasSufficientFunds;
         } else {
@@ -64,13 +64,13 @@ export class RemainingFillableCalculator {
         // The number of times the trader can fill the order, given the traders asset Balance
         // Assuming a balance of 150 wei, and an orderToFeeRatio of 100:1, trader can fill this order 1 time.
         let fillableTimesInAssetUnits = this._transferrableAssetAmount.dividedBy(orderToFeeRatio);
-        if (this._isTraderAssetZRX) {
+        if (this._isPercentageFee) {
             // If ZRX is the trader asset, the Fee and the trader fill amount need to be removed from the same pool;
             // 200 ZRXwei for 2ZRXwei fee can only be filled once (need 202 ZRXwei)
-            const totalZRXTokenPooled = this._transferrableAssetAmount;
+            const totalAssetPooled = this._transferrableAssetAmount;
             // The purchasing power here is less as the tokens are taken from the same Pool
             // For every one number of fills, we have to take an extra ZRX out of the pool
-            fillableTimesInAssetUnits = totalZRXTokenPooled.dividedBy(orderToFeeRatio.plus(new BigNumber(1)));
+            fillableTimesInAssetUnits = totalAssetPooled.dividedBy(orderToFeeRatio.plus(new BigNumber(1)));
         }
         // When Ratio is not fully divisible there can be remainders which cannot be represented, so they are floored.
         // This can result in a RoundingError being thrown by the Exchange Contract.
