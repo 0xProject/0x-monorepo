@@ -93,7 +93,7 @@ export class ZeroExInstantContainer extends React.PureComponent<
                 tokenSelectionPanelAnimationState: 'slidIn',
             });
         } else if (asset.metaData.assetProxyId === AssetProxyId.ERC721) {
-            // TODO: Link open sea.
+            // TODO: Link open sea or allow to choose another ERC721?
         }
     };
     private readonly _handlePanelCloseClickedX = (): void => {
