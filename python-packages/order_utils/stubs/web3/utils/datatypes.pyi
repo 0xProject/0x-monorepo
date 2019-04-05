@@ -1,13 +1,12 @@
-from typing import Any
+from typing import Any, Callable
 
 
-class ContractFunction:
-    @staticmethod
-    def call() -> Any: ...
+class ContractFunctions:
+    def __getattr__(self, function_name) -> Callable:
+        ...
     ...
 
 
 class Contract:
-    class functions:
-        def __getattr__(self, function_name) -> ContractFunction: ...
+    class functions: ContractFunctions:
     ...
