@@ -207,10 +207,7 @@ describe('Exchange wrappers', () => {
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHashHex,
-                OrderStatus.Expired,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Expired);
             const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -223,9 +220,7 @@ describe('Exchange wrappers', () => {
             });
 
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
-                orderHashHex,
-            );
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(orderHashHex);
             const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -592,15 +587,10 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrders[0]);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                    orderHashHex,
-                    OrderStatus.FullyFilled,
-                );
-                const tx = exchangeWrapper.batchFillOrKillOrdersAsync(
-                    signedOrders,
-                    takerAddress,
-                    { takerAssetFillAmounts },
-                );
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.FullyFilled);
+                const tx = exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmounts,
+                });
                 return expect(tx).to.revertWith(expectedError);
             });
         });
@@ -749,11 +739,9 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        const tx = exchangeWrapper.marketSellOrdersAsync(
-                            [signedOrder],
-                            takerAddress,
-                            { takerAssetFillAmount: signedOrder.takerAssetAmount},
-                        );
+                        const tx = exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
+                            takerAssetFillAmount: signedOrder.takerAssetAmount,
+                        });
                         return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                     });
                 });
@@ -848,11 +836,9 @@ describe('Exchange wrappers', () => {
                     orderHashHex,
                     ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                 );
-                const tx = exchangeWrapper.marketSellOrdersAsync(
-                    signedOrders,
-                    takerAddress,
-                    { takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18) },
-                );
+                const tx = exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                });
                 return expect(tx).to.revertWith(expectedError);
             });
         });
@@ -1016,11 +1002,9 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        const tx = exchangeWrapper.marketBuyOrdersAsync(
-                            [signedOrder],
-                            takerAddress,
-                            { makerAssetFillAmount: signedOrder.makerAssetAmount },
-                        );
+                        const tx = exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
+                            makerAssetFillAmount: signedOrder.makerAssetAmount,
+                        });
                         return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                     });
                 });
@@ -1115,11 +1099,9 @@ describe('Exchange wrappers', () => {
                     orderHashHex,
                     ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                 );
-                const tx = exchangeWrapper.marketBuyOrdersAsync(
-                    signedOrders,
-                    takerAddress,
-                    { makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18) },
-                );
+                const tx = exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
+                    makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                });
                 return expect(tx).to.revertWith(expectedError);
             });
         });
