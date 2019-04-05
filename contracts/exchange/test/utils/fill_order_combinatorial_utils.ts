@@ -942,10 +942,7 @@ function validationErrorToRevertError(order: Order, reason: RevertReason): Rever
         case RevertReason.OrderUnfillable:
             return new ExchangeRevertErrors.OrderStatusError(orderHash);
         case RevertReason.InvalidTakerAmount:
-            return new ExchangeRevertErrors.FillError(
-                orderHash,
-                ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount,
-            );
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount);
         case RevertReason.TakerOverpay:
             return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.TakerOverpay);
         case RevertReason.OrderOverfill:
