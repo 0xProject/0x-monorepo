@@ -20,7 +20,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.addAuthorizedAddress.functionSignature, [target
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
             const gasEstimateFunction = self.addAuthorizedAddress.estimateGasAsync.bind(self, target
     );
@@ -32,7 +32,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.addAuthorizedAddress.functionSignature, [target
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -41,11 +41,10 @@ export class IAssetProxyContract extends BaseContract {
             target: string,
         ): string {
             const self = this as any as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.addAuthorizedAddress.functionSignature, [target
+            const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'addAuthorizedAddress(address)',
         async callAsync(
             target: string,
             callData: Partial<CallData> = {},
@@ -53,10 +52,10 @@ export class IAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.addAuthorizedAddress.functionSignature, [target
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.addAuthorizedAddress.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -70,7 +69,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.removeAuthorizedAddress.functionSignature, [target
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
             const gasEstimateFunction = self.removeAuthorizedAddress.estimateGasAsync.bind(self, target
     );
@@ -82,7 +81,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.removeAuthorizedAddress.functionSignature, [target
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -91,11 +90,10 @@ export class IAssetProxyContract extends BaseContract {
             target: string,
         ): string {
             const self = this as any as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.removeAuthorizedAddress.functionSignature, [target
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'removeAuthorizedAddress(address)',
         async callAsync(
             target: string,
             callData: Partial<CallData> = {},
@@ -103,10 +101,10 @@ export class IAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.removeAuthorizedAddress.functionSignature, [target
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.removeAuthorizedAddress.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -121,7 +119,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.removeAuthorizedAddressAtIndex.functionSignature, [target,
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
             const gasEstimateFunction = self.removeAuthorizedAddressAtIndex.estimateGasAsync.bind(self, target,
@@ -136,7 +134,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.removeAuthorizedAddressAtIndex.functionSignature, [target,
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -147,12 +145,11 @@ export class IAssetProxyContract extends BaseContract {
             index: BigNumber,
         ): string {
             const self = this as any as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.removeAuthorizedAddressAtIndex.functionSignature, [target,
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'removeAuthorizedAddressAtIndex(address,uint256)',
         async callAsync(
             target: string,
             index: BigNumber,
@@ -161,11 +158,11 @@ export class IAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.removeAuthorizedAddressAtIndex.functionSignature, [target,
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
         index
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.removeAuthorizedAddressAtIndex.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -182,7 +179,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [assetData,
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [assetData,
     from,
     to,
     amount
@@ -203,7 +200,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [assetData,
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [assetData,
     from,
     to,
     amount
@@ -218,14 +215,13 @@ export class IAssetProxyContract extends BaseContract {
             amount: BigNumber,
         ): string {
             const self = this as any as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferFrom.functionSignature, [assetData,
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [assetData,
     from,
     to,
     amount
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transferFrom(bytes,address,address,uint256)',
         async callAsync(
             assetData: string,
             from: string,
@@ -236,13 +232,13 @@ export class IAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [assetData,
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [assetData,
         from,
         to,
         amount
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transferFrom.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -251,16 +247,15 @@ export class IAssetProxyContract extends BaseContract {
         },
     };
     public getProxyId = {
-        functionSignature: 'getProxyId()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.getProxyId.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('getProxyId()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getProxyId.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -269,16 +264,15 @@ export class IAssetProxyContract extends BaseContract {
         },
     };
     public getAuthorizedAddresses = {
-        functionSignature: 'getAuthorizedAddresses()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string[]
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.getAuthorizedAddresses.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getAuthorizedAddresses.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string[]
         >(rawCallResult);
@@ -292,7 +286,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const gasEstimateFunction = self.transferOwnership.estimateGasAsync.bind(self, newOwner
     );
@@ -304,7 +298,7 @@ export class IAssetProxyContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -313,11 +307,10 @@ export class IAssetProxyContract extends BaseContract {
             newOwner: string,
         ): string {
             const self = this as any as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transferOwnership(address)',
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -325,10 +318,10 @@ export class IAssetProxyContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transferOwnership.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);

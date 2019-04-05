@@ -70,7 +70,6 @@ export interface ExchangeAssetProxyRegisteredEventArgs extends DecodedLogArgs {
 // tslint:disable-next-line:class-name
 export class ExchangeContract extends BaseContract {
     public filled = {
-        functionSignature: 'filled(bytes32)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -78,10 +77,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.filled.functionSignature, [index_0
+            const encodedData = self._strictEncodeArguments('filled(bytes32)', [index_0
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.filled.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('filled(bytes32)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -97,7 +96,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
@@ -115,7 +114,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
@@ -128,13 +127,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.batchFillOrders.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
@@ -144,12 +142,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
         takerAssetFillAmounts,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.batchFillOrders.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -158,7 +156,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public cancelled = {
-        functionSignature: 'cancelled(bytes32)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -166,10 +163,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelled.functionSignature, [index_0
+            const encodedData = self._strictEncodeArguments('cancelled(bytes32)', [index_0
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.cancelled.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('cancelled(bytes32)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -185,7 +182,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.preSign.functionSignature, [hash,
+            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
     signerAddress,
     signature
     ]);
@@ -203,7 +200,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.preSign.functionSignature, [hash,
+            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
     signerAddress,
     signature
     ]);
@@ -216,13 +213,12 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.preSign.functionSignature, [hash,
+            const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
     signerAddress,
     signature
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'preSign(bytes32,address,bytes)',
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -232,12 +228,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.preSign.functionSignature, [hash,
+            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
         signerAddress,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.preSign.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('preSign(bytes32,address,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -254,7 +250,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.matchOrders.functionSignature, [leftOrder,
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
     rightOrder,
     leftSignature,
     rightSignature
@@ -275,7 +271,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.matchOrders.functionSignature, [leftOrder,
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
     rightOrder,
     leftSignature,
     rightSignature
@@ -290,14 +286,13 @@ export class ExchangeContract extends BaseContract {
             rightSignature: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.matchOrders.functionSignature, [leftOrder,
+            const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
     rightOrder,
     leftSignature,
     rightSignature
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
         async callAsync(
             leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -308,13 +303,13 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.matchOrders.functionSignature, [leftOrder,
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
         rightOrder,
         leftSignature,
         rightSignature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.matchOrders.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         >(rawCallResult);
@@ -330,7 +325,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrderNoThrow.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
@@ -348,7 +343,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrderNoThrow.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
@@ -361,13 +356,12 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.fillOrderNoThrow.functionSignature, [order,
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
@@ -377,12 +371,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrderNoThrow.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
         takerAssetFillAmount,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.fillOrderNoThrow.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -391,7 +385,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public assetProxies = {
-        functionSignature: 'assetProxies(bytes4)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -399,10 +392,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.assetProxies.functionSignature, [index_0
+            const encodedData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.assetProxies.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -416,7 +409,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchCancelOrders.functionSignature, [orders
+            const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
     ]);
             const gasEstimateFunction = self.batchCancelOrders.estimateGasAsync.bind(self, orders
     );
@@ -428,7 +421,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchCancelOrders.functionSignature, [orders
+            const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -437,11 +430,10 @@ export class ExchangeContract extends BaseContract {
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.batchCancelOrders.functionSignature, [orders
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             callData: Partial<CallData> = {},
@@ -449,10 +441,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchCancelOrders.functionSignature, [orders
+            const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.batchCancelOrders.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -468,7 +460,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrKillOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
@@ -486,7 +478,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrKillOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
@@ -499,13 +491,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.batchFillOrKillOrders.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
@@ -515,12 +506,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrKillOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
         takerAssetFillAmounts,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.batchFillOrKillOrders.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -534,7 +525,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelOrdersUpTo.functionSignature, [targetOrderEpoch
+            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
     ]);
             const gasEstimateFunction = self.cancelOrdersUpTo.estimateGasAsync.bind(self, targetOrderEpoch
     );
@@ -546,7 +537,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelOrdersUpTo.functionSignature, [targetOrderEpoch
+            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -555,11 +546,10 @@ export class ExchangeContract extends BaseContract {
             targetOrderEpoch: BigNumber,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.cancelOrdersUpTo.functionSignature, [targetOrderEpoch
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'cancelOrdersUpTo(uint256)',
         async callAsync(
             targetOrderEpoch: BigNumber,
             callData: Partial<CallData> = {},
@@ -567,10 +557,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelOrdersUpTo.functionSignature, [targetOrderEpoch
+            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.cancelOrdersUpTo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('cancelOrdersUpTo(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -586,7 +576,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
@@ -604,7 +594,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
@@ -617,13 +607,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.batchFillOrdersNoThrow.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
@@ -633,12 +622,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.batchFillOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
         takerAssetFillAmounts,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.batchFillOrdersNoThrow.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -647,7 +636,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public getAssetProxy = {
-        functionSignature: 'getAssetProxy(bytes4)',
         async callAsync(
             assetProxyId: string,
             callData: Partial<CallData> = {},
@@ -655,10 +643,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.getAssetProxy.functionSignature, [assetProxyId
+            const encodedData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getAssetProxy.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -667,7 +655,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public transactions = {
-        functionSignature: 'transactions(bytes32)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -675,10 +662,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.transactions.functionSignature, [index_0
+            const encodedData = self._strictEncodeArguments('transactions(bytes32)', [index_0
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transactions.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transactions(bytes32)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -694,7 +681,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrKillOrder.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
@@ -712,7 +699,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrKillOrder.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
@@ -725,13 +712,12 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.fillOrKillOrder.functionSignature, [order,
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
@@ -741,12 +727,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrKillOrder.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
         takerAssetFillAmount,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.fillOrKillOrder.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -761,7 +747,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.setSignatureValidatorApproval.functionSignature, [validatorAddress,
+            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
     approval
     ]);
             const gasEstimateFunction = self.setSignatureValidatorApproval.estimateGasAsync.bind(self, validatorAddress,
@@ -776,7 +762,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.setSignatureValidatorApproval.functionSignature, [validatorAddress,
+            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
     approval
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -787,12 +773,11 @@ export class ExchangeContract extends BaseContract {
             approval: boolean,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.setSignatureValidatorApproval.functionSignature, [validatorAddress,
+            const abiEncodedTransactionData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
     approval
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'setSignatureValidatorApproval(address,bool)',
         async callAsync(
             validatorAddress: string,
             approval: boolean,
@@ -801,11 +786,11 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.setSignatureValidatorApproval.functionSignature, [validatorAddress,
+            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
         approval
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.setSignatureValidatorApproval.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('setSignatureValidatorApproval(address,bool)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -814,7 +799,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public allowedValidators = {
-        functionSignature: 'allowedValidators(address,address)',
         async callAsync(
             index_0: string,
             index_1: string,
@@ -823,11 +807,11 @@ export class ExchangeContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.allowedValidators.functionSignature, [index_0,
+            const encodedData = self._strictEncodeArguments('allowedValidators(address,address)', [index_0,
         index_1
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.allowedValidators.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('allowedValidators(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -843,7 +827,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketSellOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
@@ -861,7 +845,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketSellOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
@@ -874,13 +858,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.marketSellOrders.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
@@ -890,12 +873,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketSellOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
         takerAssetFillAmount,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.marketSellOrders.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -904,7 +887,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public getOrdersInfo = {
-        functionSignature: 'getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             callData: Partial<CallData> = {},
@@ -912,10 +894,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.getOrdersInfo.functionSignature, [orders
+            const encodedData = self._strictEncodeArguments('getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getOrdersInfo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>
         >(rawCallResult);
@@ -924,7 +906,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public preSigned = {
-        functionSignature: 'preSigned(bytes32,address)',
         async callAsync(
             index_0: string,
             index_1: string,
@@ -933,11 +914,11 @@ export class ExchangeContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.preSigned.functionSignature, [index_0,
+            const encodedData = self._strictEncodeArguments('preSigned(bytes32,address)', [index_0,
         index_1
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.preSigned.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('preSigned(bytes32,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -946,16 +927,15 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public owner = {
-        functionSignature: 'owner()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.owner.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('owner()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.owner.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -964,7 +944,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public isValidSignature = {
-        functionSignature: 'isValidSignature(bytes32,address,bytes)',
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -974,12 +953,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.isValidSignature.functionSignature, [hash,
+            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
         signerAddress,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.isValidSignature.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -995,7 +974,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketBuyOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
@@ -1013,7 +992,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketBuyOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
@@ -1026,13 +1005,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.marketBuyOrdersNoThrow.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
@@ -1042,12 +1020,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketBuyOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
         makerAssetFillAmount,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.marketBuyOrdersNoThrow.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -1063,7 +1041,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrder.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
@@ -1081,7 +1059,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrder.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
@@ -1094,13 +1072,12 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.fillOrder.functionSignature, [order,
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
@@ -1110,12 +1087,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.fillOrder.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
         takerAssetFillAmount,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.fillOrder.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -1132,7 +1109,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [salt,
+            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
     signerAddress,
     data,
     signature
@@ -1153,7 +1130,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [salt,
+            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
     signerAddress,
     data,
     signature
@@ -1168,14 +1145,13 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [salt,
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
     signerAddress,
     data,
     signature
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'executeTransaction(uint256,address,bytes,bytes)',
         async callAsync(
             salt: BigNumber,
             signerAddress: string,
@@ -1186,13 +1162,13 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [salt,
+            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
         signerAddress,
         data,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.executeTransaction.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256,address,bytes,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1206,7 +1182,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxy
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
             const gasEstimateFunction = self.registerAssetProxy.estimateGasAsync.bind(self, assetProxy
     );
@@ -1218,7 +1194,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxy
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -1227,11 +1203,10 @@ export class ExchangeContract extends BaseContract {
             assetProxy: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxy
+            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'registerAssetProxy(address)',
         async callAsync(
             assetProxy: string,
             callData: Partial<CallData> = {},
@@ -1239,10 +1214,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxy
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.registerAssetProxy.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1251,7 +1226,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public getOrderInfo = {
-        functionSignature: 'getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
@@ -1259,10 +1233,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.getOrderInfo.functionSignature, [order
+            const encodedData = self._strictEncodeArguments('getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getOrderInfo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}
         >(rawCallResult);
@@ -1276,7 +1250,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelOrder.functionSignature, [order
+            const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
             const gasEstimateFunction = self.cancelOrder.estimateGasAsync.bind(self, order
     );
@@ -1288,7 +1262,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelOrder.functionSignature, [order
+            const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -1297,11 +1271,10 @@ export class ExchangeContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.cancelOrder.functionSignature, [order
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
@@ -1309,10 +1282,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.cancelOrder.functionSignature, [order
+            const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.cancelOrder.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1321,7 +1294,6 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public orderEpoch = {
-        functionSignature: 'orderEpoch(address,address)',
         async callAsync(
             index_0: string,
             index_1: string,
@@ -1330,11 +1302,11 @@ export class ExchangeContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.orderEpoch.functionSignature, [index_0,
+            const encodedData = self._strictEncodeArguments('orderEpoch(address,address)', [index_0,
         index_1
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.orderEpoch.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('orderEpoch(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -1343,16 +1315,15 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public ZRX_ASSET_DATA = {
-        functionSignature: 'ZRX_ASSET_DATA()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.ZRX_ASSET_DATA.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('ZRX_ASSET_DATA()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.ZRX_ASSET_DATA.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('ZRX_ASSET_DATA()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -1368,7 +1339,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketSellOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
@@ -1386,7 +1357,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketSellOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
@@ -1399,13 +1370,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.marketSellOrdersNoThrow.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
@@ -1415,12 +1385,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketSellOrdersNoThrow.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
         takerAssetFillAmount,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.marketSellOrdersNoThrow.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -1429,16 +1399,15 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public EIP712_DOMAIN_HASH = {
-        functionSignature: 'EIP712_DOMAIN_HASH()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.EIP712_DOMAIN_HASH.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.EIP712_DOMAIN_HASH.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -1454,7 +1423,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketBuyOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
@@ -1472,7 +1441,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketBuyOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
@@ -1485,13 +1454,12 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.marketBuyOrders.functionSignature, [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
@@ -1501,12 +1469,12 @@ export class ExchangeContract extends BaseContract {
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.marketBuyOrders.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
         makerAssetFillAmount,
         signatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.marketBuyOrders.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         >(rawCallResult);
@@ -1515,16 +1483,15 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public currentContextAddress = {
-        functionSignature: 'currentContextAddress()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.currentContextAddress.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('currentContextAddress()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.currentContextAddress.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('currentContextAddress()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -1538,7 +1505,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const gasEstimateFunction = self.transferOwnership.estimateGasAsync.bind(self, newOwner
     );
@@ -1550,7 +1517,7 @@ export class ExchangeContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -1559,11 +1526,10 @@ export class ExchangeContract extends BaseContract {
             newOwner: string,
         ): string {
             const self = this as any as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transferOwnership(address)',
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -1571,10 +1537,10 @@ export class ExchangeContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transferOwnership.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1583,16 +1549,15 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public VERSION = {
-        functionSignature: 'VERSION()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(self.VERSION.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('VERSION()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.VERSION.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('VERSION()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);

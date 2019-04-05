@@ -15,7 +15,6 @@ import { isUndefined } from 'lodash';
 // tslint:disable-next-line:class-name
 export class CoordinatorContract extends BaseContract {
     public getSignerAddress = {
-        functionSignature: 'getSignerAddress(bytes32,bytes)',
         async callAsync(
             hash: string,
             signature: string,
@@ -24,11 +23,11 @@ export class CoordinatorContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.getSignerAddress.functionSignature, [hash,
+            const encodedData = self._strictEncodeArguments('getSignerAddress(bytes32,bytes)', [hash,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getSignerAddress.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getSignerAddress(bytes32,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -46,7 +45,7 @@ export class CoordinatorContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transaction,
+            const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
     txOrigin,
     transactionSignature,
     approvalExpirationTimeSeconds,
@@ -70,7 +69,7 @@ export class CoordinatorContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transaction,
+            const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
     txOrigin,
     transactionSignature,
     approvalExpirationTimeSeconds,
@@ -87,7 +86,7 @@ export class CoordinatorContract extends BaseContract {
             approvalSignatures: string[],
         ): string {
             const self = this as any as CoordinatorContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transaction,
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
     txOrigin,
     transactionSignature,
     approvalExpirationTimeSeconds,
@@ -95,7 +94,6 @@ export class CoordinatorContract extends BaseContract {
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
         async callAsync(
             transaction: {salt: BigNumber;signerAddress: string;data: string},
             txOrigin: string,
@@ -107,14 +105,14 @@ export class CoordinatorContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transaction,
+            const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
         txOrigin,
         transactionSignature,
         approvalExpirationTimeSeconds,
         approvalSignatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.executeTransaction.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -123,7 +121,6 @@ export class CoordinatorContract extends BaseContract {
         },
     };
     public assertValidCoordinatorApprovals = {
-        functionSignature: 'assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])',
         async callAsync(
             transaction: {salt: BigNumber;signerAddress: string;data: string},
             txOrigin: string,
@@ -135,14 +132,14 @@ export class CoordinatorContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.assertValidCoordinatorApprovals.functionSignature, [transaction,
+            const encodedData = self._strictEncodeArguments('assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
         txOrigin,
         transactionSignature,
         approvalExpirationTimeSeconds,
         approvalSignatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.assertValidCoordinatorApprovals.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -151,16 +148,15 @@ export class CoordinatorContract extends BaseContract {
         },
     };
     public EIP712_DOMAIN_HASH = {
-        functionSignature: 'EIP712_DOMAIN_HASH()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.EIP712_DOMAIN_HASH.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.EIP712_DOMAIN_HASH.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -169,7 +165,6 @@ export class CoordinatorContract extends BaseContract {
         },
     };
     public assertValidTransactionOrdersApproval = {
-        functionSignature: 'assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address,bytes,uint256[],bytes[])',
         async callAsync(
             transaction: {salt: BigNumber;signerAddress: string;data: string},
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -182,7 +177,7 @@ export class CoordinatorContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(self.assertValidTransactionOrdersApproval.functionSignature, [transaction,
+            const encodedData = self._strictEncodeArguments('assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address,bytes,uint256[],bytes[])', [transaction,
         orders,
         txOrigin,
         transactionSignature,
@@ -190,7 +185,7 @@ export class CoordinatorContract extends BaseContract {
         approvalSignatures
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.assertValidTransactionOrdersApproval.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('assertValidTransactionOrdersApproval((uint256,address,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address,bytes,uint256[],bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);

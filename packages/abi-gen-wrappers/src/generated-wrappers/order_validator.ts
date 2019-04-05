@@ -15,7 +15,6 @@ import { isUndefined } from 'lodash';
 // tslint:disable-next-line:class-name
 export class OrderValidatorContract extends BaseContract {
     public getOrderAndTraderInfo = {
-        functionSignature: 'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAddress: string,
@@ -24,11 +23,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getOrderAndTraderInfo.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)', [order,
         takerAddress
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getOrderAndTraderInfo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         >(rawCallResult);
@@ -37,7 +36,6 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getBalanceAndAllowance = {
-        functionSignature: 'getBalanceAndAllowance(address,bytes)',
         async callAsync(
             target: string,
             assetData: string,
@@ -46,11 +44,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<[BigNumber, BigNumber]
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getBalanceAndAllowance.functionSignature, [target,
+            const encodedData = self._strictEncodeArguments('getBalanceAndAllowance(address,bytes)', [target,
         assetData
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getBalanceAndAllowance.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]
         >(rawCallResult);
@@ -59,7 +57,6 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getOrdersAndTradersInfo = {
-        functionSignature: 'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAddresses: string[],
@@ -68,11 +65,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<[Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getOrdersAndTradersInfo.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])', [orders,
         takerAddresses
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getOrdersAndTradersInfo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
         >(rawCallResult);
@@ -81,7 +78,6 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getTradersInfo = {
-        functionSignature: 'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAddresses: string[],
@@ -90,11 +86,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getTradersInfo.functionSignature, [orders,
+            const encodedData = self._strictEncodeArguments('getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])', [orders,
         takerAddresses
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getTradersInfo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
         >(rawCallResult);
@@ -103,7 +99,6 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getERC721TokenOwner = {
-        functionSignature: 'getERC721TokenOwner(address,uint256)',
         async callAsync(
             token: string,
             tokenId: BigNumber,
@@ -112,11 +107,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getERC721TokenOwner.functionSignature, [token,
+            const encodedData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [token,
         tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getERC721TokenOwner.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -125,7 +120,6 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getBalancesAndAllowances = {
-        functionSignature: 'getBalancesAndAllowances(address,bytes[])',
         async callAsync(
             target: string,
             assetData: string[],
@@ -134,11 +128,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<[BigNumber[], BigNumber[]]
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getBalancesAndAllowances.functionSignature, [target,
+            const encodedData = self._strictEncodeArguments('getBalancesAndAllowances(address,bytes[])', [target,
         assetData
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getBalancesAndAllowances.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]
         >(rawCallResult);
@@ -147,7 +141,6 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getTraderInfo = {
-        functionSignature: 'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAddress: string,
@@ -156,11 +149,11 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         > {
             const self = this as any as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.getTraderInfo.functionSignature, [order,
+            const encodedData = self._strictEncodeArguments('getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)', [order,
         takerAddress
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getTraderInfo.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         >(rawCallResult);

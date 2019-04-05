@@ -50,16 +50,15 @@ export interface WETH9WithdrawalEventArgs extends DecodedLogArgs {
 // tslint:disable-next-line:class-name
 export class WETH9Contract extends BaseContract {
     public name = {
-        functionSignature: 'name()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.name.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('name()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.name.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -74,7 +73,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [guy,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy,
     wad
     ]);
             const gasEstimateFunction = self.approve.estimateGasAsync.bind(self, guy,
@@ -89,7 +88,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [guy,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy,
     wad
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -100,12 +99,11 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.approve.functionSignature, [guy,
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [guy,
     wad
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'approve(address,uint256)',
         async callAsync(
             guy: string,
             wad: BigNumber,
@@ -114,11 +112,11 @@ export class WETH9Contract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [guy,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy,
         wad
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.approve.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -127,16 +125,15 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public totalSupply = {
-        functionSignature: 'totalSupply()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.totalSupply.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('totalSupply()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.totalSupply.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -152,7 +149,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [src,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
     dst,
     wad
     ]);
@@ -170,7 +167,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [src,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
     dst,
     wad
     ]);
@@ -183,13 +180,12 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferFrom.functionSignature, [src,
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
     dst,
     wad
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transferFrom(address,address,uint256)',
         async callAsync(
             src: string,
             dst: string,
@@ -199,12 +195,12 @@ export class WETH9Contract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [src,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
         dst,
         wad
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transferFrom.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -218,7 +214,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.withdraw.functionSignature, [wad
+            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad
     ]);
             const gasEstimateFunction = self.withdraw.estimateGasAsync.bind(self, wad
     );
@@ -230,7 +226,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.withdraw.functionSignature, [wad
+            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -239,11 +235,10 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.withdraw.functionSignature, [wad
+            const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'withdraw(uint256)',
         async callAsync(
             wad: BigNumber,
             callData: Partial<CallData> = {},
@@ -251,10 +246,10 @@ export class WETH9Contract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.withdraw.functionSignature, [wad
+            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.withdraw.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -263,16 +258,15 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public decimals = {
-        functionSignature: 'decimals()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<number
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.decimals.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('decimals()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.decimals.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('decimals()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<number
         >(rawCallResult);
@@ -281,7 +275,6 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public balanceOf = {
-        functionSignature: 'balanceOf(address)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -289,10 +282,10 @@ export class WETH9Contract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.balanceOf.functionSignature, [index_0
+            const encodedData = self._strictEncodeArguments('balanceOf(address)', [index_0
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.balanceOf.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -301,16 +294,15 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public symbol = {
-        functionSignature: 'symbol()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.symbol.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('symbol()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.symbol.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -325,7 +317,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.transfer.functionSignature, [dst,
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
     wad
     ]);
             const gasEstimateFunction = self.transfer.estimateGasAsync.bind(self, dst,
@@ -340,7 +332,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.transfer.functionSignature, [dst,
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
     wad
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -351,12 +343,11 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
         ): string {
             const self = this as any as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transfer.functionSignature, [dst,
+            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
     wad
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transfer(address,uint256)',
         async callAsync(
             dst: string,
             wad: BigNumber,
@@ -365,11 +356,11 @@ export class WETH9Contract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.transfer.functionSignature, [dst,
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
         wad
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transfer.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -382,7 +373,7 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.deposit.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('deposit()', []);
             const gasEstimateFunction = self.deposit.estimateGasAsync.bind(self, );
             const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
@@ -391,26 +382,25 @@ export class WETH9Contract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.deposit.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('deposit()', []);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
         ): string {
             const self = this as any as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.deposit.functionSignature, []);
+            const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'deposit()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.deposit.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('deposit()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.deposit.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -419,7 +409,6 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public allowance = {
-        functionSignature: 'allowance(address,address)',
         async callAsync(
             index_0: string,
             index_1: string,
@@ -428,11 +417,11 @@ export class WETH9Contract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as WETH9Contract;
-            const encodedData = self._strictEncodeArguments(self.allowance.functionSignature, [index_0,
+            const encodedData = self._strictEncodeArguments('allowance(address,address)', [index_0,
         index_1
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.allowance.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);

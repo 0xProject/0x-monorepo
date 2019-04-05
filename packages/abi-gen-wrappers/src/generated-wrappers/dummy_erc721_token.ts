@@ -44,16 +44,15 @@ export interface DummyERC721TokenApprovalForAllEventArgs extends DecodedLogArgs 
 // tslint:disable-next-line:class-name
 export class DummyERC721TokenContract extends BaseContract {
     public name = {
-        functionSignature: 'name()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.name.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('name()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.name.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -62,7 +61,6 @@ export class DummyERC721TokenContract extends BaseContract {
         },
     };
     public getApproved = {
-        functionSignature: 'getApproved(uint256)',
         async callAsync(
             _tokenId: BigNumber,
             callData: Partial<CallData> = {},
@@ -70,10 +68,10 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.getApproved.functionSignature, [_tokenId
+            const encodedData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getApproved.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -88,7 +86,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [_approved,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
             const gasEstimateFunction = self.approve.estimateGasAsync.bind(self, _approved,
@@ -103,7 +101,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [_approved,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -114,12 +112,11 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.approve.functionSignature, [_approved,
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'approve(address,uint256)',
         async callAsync(
             _approved: string,
             _tokenId: BigNumber,
@@ -128,11 +125,11 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [_approved,
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
         _tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.approve.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -148,7 +145,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -166,7 +163,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -179,13 +176,12 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transferFrom(address,address,uint256)',
         async callAsync(
             _from: string,
             _to: string,
@@ -195,12 +191,12 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
         _to,
         _tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transferFrom.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -215,7 +211,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.mint.functionSignature, [_to,
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
             const gasEstimateFunction = self.mint.estimateGasAsync.bind(self, _to,
@@ -230,7 +226,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.mint.functionSignature, [_to,
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -241,12 +237,11 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.mint.functionSignature, [_to,
+            const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'mint(address,uint256)',
         async callAsync(
             _to: string,
             _tokenId: BigNumber,
@@ -255,11 +250,11 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.mint.functionSignature, [_to,
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
         _tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.mint.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -275,7 +270,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.safeTransferFrom1.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -293,7 +288,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.safeTransferFrom1.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
@@ -306,13 +301,12 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.safeTransferFrom1.functionSignature, [_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'safeTransferFrom(address,address,uint256)',
         async callAsync(
             _from: string,
             _to: string,
@@ -322,12 +316,12 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.safeTransferFrom1.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
         _to,
         _tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.safeTransferFrom1.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -336,7 +330,6 @@ export class DummyERC721TokenContract extends BaseContract {
         },
     };
     public ownerOf = {
-        functionSignature: 'ownerOf(uint256)',
         async callAsync(
             _tokenId: BigNumber,
             callData: Partial<CallData> = {},
@@ -344,10 +337,10 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.ownerOf.functionSignature, [_tokenId
+            const encodedData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.ownerOf.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -356,7 +349,6 @@ export class DummyERC721TokenContract extends BaseContract {
         },
     };
     public balanceOf = {
-        functionSignature: 'balanceOf(address)',
         async callAsync(
             _owner: string,
             callData: Partial<CallData> = {},
@@ -364,10 +356,10 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.balanceOf.functionSignature, [_owner
+            const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.balanceOf.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -376,16 +368,15 @@ export class DummyERC721TokenContract extends BaseContract {
         },
     };
     public owner = {
-        functionSignature: 'owner()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.owner.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('owner()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.owner.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -394,16 +385,15 @@ export class DummyERC721TokenContract extends BaseContract {
         },
     };
     public symbol = {
-        functionSignature: 'symbol()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.symbol.functionSignature, []);
+            const encodedData = self._strictEncodeArguments('symbol()', []);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.symbol.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -418,7 +408,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.burn.functionSignature, [_owner,
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
             const gasEstimateFunction = self.burn.estimateGasAsync.bind(self, _owner,
@@ -433,7 +423,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.burn.functionSignature, [_owner,
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -444,12 +434,11 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.burn.functionSignature, [_owner,
+            const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'burn(address,uint256)',
         async callAsync(
             _owner: string,
             _tokenId: BigNumber,
@@ -458,11 +447,11 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.burn.functionSignature, [_owner,
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
         _tokenId
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.burn.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -477,7 +466,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.setApprovalForAll.functionSignature, [_operator,
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
             const gasEstimateFunction = self.setApprovalForAll.estimateGasAsync.bind(self, _operator,
@@ -492,7 +481,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.setApprovalForAll.functionSignature, [_operator,
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
@@ -503,12 +492,11 @@ export class DummyERC721TokenContract extends BaseContract {
             _approved: boolean,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.setApprovalForAll.functionSignature, [_operator,
+            const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'setApprovalForAll(address,bool)',
         async callAsync(
             _operator: string,
             _approved: boolean,
@@ -517,11 +505,11 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.setApprovalForAll.functionSignature, [_operator,
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
         _approved
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.setApprovalForAll.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -538,7 +526,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.safeTransferFrom2.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
@@ -559,7 +547,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.safeTransferFrom2.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
@@ -574,14 +562,13 @@ export class DummyERC721TokenContract extends BaseContract {
             _data: string,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.safeTransferFrom2.functionSignature, [_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'safeTransferFrom(address,address,uint256,bytes)',
         async callAsync(
             _from: string,
             _to: string,
@@ -592,13 +579,13 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.safeTransferFrom2.functionSignature, [_from,
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
         _to,
         _tokenId,
         _data
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.safeTransferFrom2.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -607,7 +594,6 @@ export class DummyERC721TokenContract extends BaseContract {
         },
     };
     public isApprovedForAll = {
-        functionSignature: 'isApprovedForAll(address,address)',
         async callAsync(
             _owner: string,
             _operator: string,
@@ -616,11 +602,11 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.isApprovedForAll.functionSignature, [_owner,
+            const encodedData = self._strictEncodeArguments('isApprovedForAll(address,address)', [_owner,
         _operator
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.isApprovedForAll.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -634,7 +620,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const gasEstimateFunction = self.transferOwnership.estimateGasAsync.bind(self, newOwner
     );
@@ -646,7 +632,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -655,11 +641,10 @@ export class DummyERC721TokenContract extends BaseContract {
             newOwner: string,
         ): string {
             const self = this as any as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'transferOwnership(address)',
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -667,10 +652,10 @@ export class DummyERC721TokenContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.transferOwnership.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);

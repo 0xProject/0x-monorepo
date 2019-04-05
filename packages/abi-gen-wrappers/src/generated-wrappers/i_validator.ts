@@ -15,7 +15,6 @@ import { isUndefined } from 'lodash';
 // tslint:disable-next-line:class-name
 export class IValidatorContract extends BaseContract {
     public isValidSignature = {
-        functionSignature: 'isValidSignature(bytes32,address,bytes)',
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -25,12 +24,12 @@ export class IValidatorContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as IValidatorContract;
-            const encodedData = self._strictEncodeArguments(self.isValidSignature.functionSignature, [hash,
+            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
         signerAddress,
         signature
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.isValidSignature.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);

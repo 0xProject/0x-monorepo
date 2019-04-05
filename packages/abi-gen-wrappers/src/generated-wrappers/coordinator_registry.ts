@@ -32,7 +32,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
+            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
             const gasEstimateFunction = self.setCoordinatorEndpoint.estimateGasAsync.bind(self, coordinatorEndpoint
     );
@@ -44,7 +44,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
+            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
             const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
@@ -53,11 +53,10 @@ export class CoordinatorRegistryContract extends BaseContract {
             coordinatorEndpoint: string,
         ): string {
             const self = this as any as CoordinatorRegistryContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
+            const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
             return abiEncodedTransactionData;
         },
-        functionSignature: 'setCoordinatorEndpoint(string)',
         async callAsync(
             coordinatorEndpoint: string,
             callData: Partial<CallData> = {},
@@ -65,10 +64,10 @@ export class CoordinatorRegistryContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
+            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.setCoordinatorEndpoint.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -77,7 +76,6 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
     };
     public getCoordinatorEndpoint = {
-        functionSignature: 'getCoordinatorEndpoint(address)',
         async callAsync(
             coordinatorOperator: string,
             callData: Partial<CallData> = {},
@@ -85,10 +83,10 @@ export class CoordinatorRegistryContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments(self.getCoordinatorEndpoint.functionSignature, [coordinatorOperator
+            const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [coordinatorOperator
         ]);
             const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
-            const abiEncoder = self._lookupAbiEncoder(self.getCoordinatorEndpoint.functionSignature);
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
