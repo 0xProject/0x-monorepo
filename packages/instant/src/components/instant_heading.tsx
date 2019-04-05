@@ -12,6 +12,7 @@ import { AmountPlaceholder } from './amount_placeholder';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Icon } from './ui/icon';
+import { Image } from './ui/image';
 import { Spinner } from './ui/spinner';
 import { Text } from './ui/text';
 
@@ -33,11 +34,7 @@ const ICON_COLOR = ColorOption.white;
 export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
         const { selectedAsset } = this.props;
-        return (
-            <Container backgroundColor={ColorOption.primaryColor} width="100%" padding="20px">
-                {this._renderAssetHeadingContent()}
-            </Container>
-        );
+        return this._renderAssetHeadingContent();
     }
 
     private _renderAssetHeadingContent(): React.ReactNode {
@@ -55,13 +52,29 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
     }
 
     private _renderERC721AssetHeading(asset: ERC721Asset): React.ReactNode {
-        return <Container><img src={asset.metaData.imageUrl}/> </Container>;
+        return (
+            <Container width="100%" padding="30px 0px 0px">
+                <Flex>
+                    <Text
+                        textTransform="uppercase"
+                        fontColor={ColorOption.primaryColor}
+                        fontWeight={700}
+                        fontSize="20px"
+                    >
+                        {asset.metaData.name}
+                    </Text>
+                </Flex>
+                <Flex>
+                    <Image src={asset.metaData.imageUrl} rounded={true} width="200px" height="200px" />
+                </Flex>
+            </Container>
+        );
     }
 
     private _renderERC20AssetHeading(): React.ReactNode {
         const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
-            <React.Fragment>
+            <Container backgroundColor={ColorOption.primaryColor} width="100%" padding="20px">
                 <Container marginBottom="5px">
                     <Text
                         letterSpacing="1px"
@@ -85,7 +98,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
                         {iconOrAmounts}
                     </Flex>
                 </Flex>
-            </React.Fragment>
+            </Container>
         );
     }
 
