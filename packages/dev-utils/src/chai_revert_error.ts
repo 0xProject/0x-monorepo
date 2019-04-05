@@ -124,7 +124,7 @@ function compareRevertErrors(
     if (expected instanceof RevertError && actual instanceof RevertError) {
         // Check for equality.
         this.assert(
-            actual.equals(expected),
+            expected.equals(actual),
             `${actual.toString()} != ${expected.toString()}`,
             `${actual.toString()} == ${expected.toString()}`,
             expected.toString(),
