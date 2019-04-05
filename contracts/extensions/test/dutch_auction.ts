@@ -8,7 +8,6 @@ import {
     constants,
     ContractName,
     ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     OrderFactory,
     provider,
@@ -287,28 +286,22 @@ describe(ContractName.DutchAuction, () => {
                 expirationTimeSeconds: auctionEndTimeSeconds,
                 makerAssetData,
             });
-            return expectTransactionFailedAsync(
-                dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress),
-                RevertReason.AuctionExpired,
-            );
+            const tx = dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress);
+            return expect(tx).to.revertWith(RevertReason.AuctionExpired);
         });
         it('cannot be filled for less than the current price', async () => {
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                 makerAssetAmount: sellOrder.takerAssetAmount,
             });
-            return expectTransactionFailedAsync(
-                dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress),
-                RevertReason.AuctionInvalidAmount,
-            );
+            const tx = dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress);
+            return expect(tx).to.revertWith(RevertReason.AuctionInvalidAmount);
         });
         it('auction begin amount must be higher than final amount ', async () => {
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 takerAssetAmount: auctionBeginAmount.plus(1),
             });
-            return expectTransactionFailedAsync(
-                dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress),
-                RevertReason.AuctionInvalidAmount,
-            );
+            const tx = dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress);
+            return expect(tx).to.revertWith(RevertReason.AuctionInvalidAmount);
         });
         it('begin time is less than end time', async () => {
             auctionBeginTimeSeconds = new BigNumber(auctionEndTimeSeconds).plus(tenMinutesInSeconds);
@@ -321,19 +314,15 @@ describe(ContractName.DutchAuction, () => {
                 expirationTimeSeconds: auctionEndTimeSeconds,
                 makerAssetData,
             });
-            return expectTransactionFailedAsync(
-                dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress),
-                RevertReason.AuctionInvalidBeginTime,
-            );
+            const tx = dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress);
+            return expect(tx).to.revertWith(RevertReason.AuctionInvalidBeginTime);
         });
         it('asset data contains auction parameters', async () => {
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             });
-            return expectTransactionFailedAsync(
-                dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress),
-                RevertReason.InvalidAssetData,
-            );
+            const tx = dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress);
+            return expect(tx).to.revertWith(RevertReason.InvalidAssetData);
         });
 
         describe('ERC721', () => {

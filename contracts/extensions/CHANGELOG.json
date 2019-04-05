@@ -31,6 +31,10 @@
             {
                 "note": "Refactor BalanceThresholdFilter to use new ITransactions interface",
                 "pr": 1753
+            },
+            {
+                "note": "Update tests for rich reverts",
+                "pr": TODO
             }
         ],
         "timestamp": 1563006338
