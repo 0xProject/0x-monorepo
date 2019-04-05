@@ -5,15 +5,16 @@ import { connect } from 'react-redux';
 import { oc } from 'ts-optchain';
 
 import { State } from '../redux/reducer';
-import { AsyncProcessState, ERC20Asset, OrderState } from '../types';
+import { Asset, AsyncProcessState, OrderState } from '../types';
 
 import { InstantHeading } from '../components/instant_heading';
 
 export interface InstantHeadingProps {
-    onSelectAssetClick?: (asset?: ERC20Asset) => void;
+    onSelectAssetClick?: (asset?: Asset) => void;
 }
 
 interface ConnectedState {
+    selectedAsset?: Asset;
     selectedAssetUnitAmount?: BigNumber;
     totalEthBaseUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
@@ -22,6 +23,7 @@ interface ConnectedState {
 }
 
 const mapStateToProps = (state: State, _ownProps: InstantHeadingProps): ConnectedState => ({
+    selectedAsset: state.selectedAsset,
     selectedAssetUnitAmount: state.selectedAssetUnitAmount,
     totalEthBaseUnitAmount: oc(state).latestBuyQuote.worstCaseQuoteInfo.totalEthAmount(),
     ethUsdPrice: state.ethUsdPrice,

@@ -18,6 +18,7 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
+import { AssetProxyId } from '@0x/types';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
@@ -46,22 +47,30 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             ..._.mapKeys(props.additionalAssetMetaDataMap || {}, (value, key) => key.toLowerCase()),
             ...defaultState.assetMetaDataMap,
         };
+
+        const selectedAsset = _.isUndefined(props.defaultSelectedAssetData)
+            ? undefined
+            : assetUtils.createAssetFromAssetDataOrThrow(
+                  props.defaultSelectedAssetData,
+                  completeAssetMetaDataMap,
+                  networkId,
+              );
+
+        let selectedAssetUnitAmount: BigNumber | undefined = new BigNumber(1);
+        if (!_.isUndefined(selectedAsset) && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+            selectedAssetUnitAmount = _.isUndefined(props.defaultAssetBuyAmount)
+                ? undefined
+                : new BigNumber(props.defaultAssetBuyAmount);
+        }
+
         // construct the final state
         const storeStateFromProps: State = {
             ...defaultState,
             providerState,
             network: networkId,
             walletDisplayName: props.walletDisplayName,
-            selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
-                ? undefined
-                : assetUtils.createAssetFromAssetDataOrThrow(
-                      props.defaultSelectedAssetData,
-                      completeAssetMetaDataMap,
-                      networkId,
-                  ),
-            selectedAssetUnitAmount: _.isUndefined(props.defaultAssetBuyAmount)
-                ? undefined
-                : new BigNumber(props.defaultAssetBuyAmount),
+            selectedAsset,
+            selectedAssetUnitAmount,
             availableAssets: _.isUndefined(props.availableAssetDatas)
                 ? undefined
                 : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),

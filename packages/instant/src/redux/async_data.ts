@@ -100,13 +100,12 @@ export const asyncData = {
             !_.isUndefined(selectedAssetUnitAmount) &&
             !_.isUndefined(selectedAsset) &&
             selectedAssetUnitAmount.isGreaterThan(BIG_NUMBER_ZERO) &&
-            buyOrderState.processState === OrderProcessState.None &&
-            selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+            buyOrderState.processState === OrderProcessState.None
         ) {
             await buyQuoteUpdater.updateBuyQuoteAsync(
                 assetBuyer,
                 dispatch,
-                selectedAsset as ERC20Asset,
+                selectedAsset,
                 selectedAssetUnitAmount,
                 fetchOrigin,
                 {

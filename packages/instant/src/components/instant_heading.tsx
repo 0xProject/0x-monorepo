@@ -1,10 +1,11 @@
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { SelectedERC20AssetAmountInput } from '../containers/selected_erc20_asset_amount_input';
 import { ColorOption } from '../style/theme';
-import { AsyncProcessState, ERC20Asset, OrderProcessState, OrderState } from '../types';
+import { Asset, AsyncProcessState, ERC20Asset, ERC721Asset, OrderProcessState, OrderState } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
@@ -15,6 +16,7 @@ import { Spinner } from './ui/spinner';
 import { Text } from './ui/text';
 
 export interface InstantHeadingProps {
+    selectedAsset?: Asset;
     selectedAssetUnitAmount?: BigNumber;
     totalEthBaseUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
@@ -30,9 +32,36 @@ const ICON_COLOR = ColorOption.white;
 
 export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
-        const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
+        const { selectedAsset } = this.props;
         return (
             <Container backgroundColor={ColorOption.primaryColor} width="100%" padding="20px">
+                {this._renderAssetHeadingContent()}
+            </Container>
+        );
+    }
+
+    private _renderAssetHeadingContent(): React.ReactNode {
+        const { selectedAsset } = this.props;
+        if (_.isUndefined(selectedAsset)) {
+            // TODO: Only the ERC20 flow supports selecting assets.
+            return this._renderERC20AssetHeading();
+        }
+        if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+            return this._renderERC20AssetHeading();
+        } else if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC721) {
+            return this._renderERC721AssetHeading(selectedAsset as ERC721Asset);
+        }
+        return null;
+    }
+
+    private _renderERC721AssetHeading(asset: ERC721Asset): React.ReactNode {
+        return <Container><img src={asset.metaData.imageUrl}/> </Container>;
+    }
+
+    private _renderERC20AssetHeading(): React.ReactNode {
+        const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
+        return (
+            <React.Fragment>
                 <Container marginBottom="5px">
                     <Text
                         letterSpacing="1px"
@@ -56,7 +85,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
                         {iconOrAmounts}
                     </Flex>
                 </Flex>
-            </Container>
+            </React.Fragment>
         );
     }
 

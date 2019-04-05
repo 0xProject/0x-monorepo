@@ -74,6 +74,26 @@
                 EXPONENTIAL_AT: 1000,
                 DECIMAL_PLACES: 78,
             });
+            const nftOrders = [
+                {
+                    makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                    takerAddress: '0x0000000000000000000000000000000000000000',
+                    makerFee: '0',
+                    takerFee: '0',
+                    senderAddress: '0x0000000000000000000000000000000000000000',
+                    makerAssetAmount: '1',
+                    takerAssetAmount: '25000000000000000',
+                    makerAssetData:
+                        '0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849',
+                    takerAssetData: '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+                    exchangeAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
+                    feeRecipientAddress: '0x66a836664adc7c525c0cc4527dee8619d4faf669',
+                    salt: '73683692897280689979350475364949461624706477613931387930893215569576520901319',
+                    expirationTimeSeconds: '1557096652',
+                    signature:
+                        '0x1bf37ac01ba863c08f2ddba776b263af4f960326ed8d8a0a651acb4c7bce54592e5bd9826fb117ccd0d40392d26339de6e3377721fabbb3107043e4de444b24ae602',
+                },
+            ];
             const providedOrders = [
                 // Order selling REP
                 {
@@ -168,7 +188,8 @@
                     };
                 }
                 const renderOptionsOverrides = {
-                    orderSource: orderSourceOverride === 'provided' ? providedOrders : orderSourceOverride,
+                    // orderSource: orderSourceOverride === 'provided' ? providedOrders : orderSourceOverride,
+                    orderSource: nftOrders,
                     networkId: +queryParams.getQueryParamValue('networkId') || undefined,
                     defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
                     availableAssetDatas: availableAssetDatasString ? JSON.parse(availableAssetDatasString) : undefined,
@@ -176,6 +197,15 @@
                     affiliateInfo: affiliateInfoOverride,
                     shouldDisablePushToHistory: !!queryParams.getQueryParamValue('shouldDisablePushToHistory'),
                     walletDisplayName: queryParams.getQueryParamValue('walletDisplayName') || undefined,
+                    additionalAssetMetaDataMap: {
+                        '0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849': {
+                            assetProxyId: '0x02571792',
+                            name: 'Axie #34889',
+                            imageUrl:
+                                'https://storage.opensea.io/0xf5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d/34889-1549990035.png',
+                            primaryColor: '#b5d868',
+                        },
+                    },
                 };
                 return renderOptionsOverrides;
             };
