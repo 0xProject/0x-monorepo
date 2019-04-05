@@ -7,34 +7,38 @@ import { ContractAbi, ContractNetworks, DevdocOutput } from 'ethereum-types';
 // we don't, because our docs don't expand inherited types, and it's unnecessarily
 // confusing to introduce the user to the OrderWithoutDomain type.
 export interface Order {
-    senderAddress: string;
+    domain: EIP712DomainWithDefaultSchema;
     makerAddress: string;
     takerAddress: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
+    feeRecipientAddress: string;
+    senderAddress: string;
     makerAssetAmount: BigNumber;
     takerAssetAmount: BigNumber;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    salt: BigNumber;
     makerAssetData: string;
     takerAssetData: string;
-    salt: BigNumber;
-    feeRecipientAddress: string;
-    expirationTimeSeconds: BigNumber;
-    domain: EIP712DomainWithDefaultSchema;
+    makerFeeAssetData: string;
+    takerFeeAssetData: string;
 }
 
 export interface OrderWithoutDomain {
-    senderAddress: string;
     makerAddress: string;
     takerAddress: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
+    feeRecipientAddress: string;
+    senderAddress: string;
     makerAssetAmount: BigNumber;
     takerAssetAmount: BigNumber;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    salt: BigNumber;
     makerAssetData: string;
     takerAssetData: string;
-    salt: BigNumber;
-    feeRecipientAddress: string;
-    expirationTimeSeconds: BigNumber;
+    makerFeeAssetData: string;
+    takerFeeAssetData: string;
 }
 
 export interface SignedOrder extends Order {
