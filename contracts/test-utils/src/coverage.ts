@@ -1,12 +1,10 @@
 import { devConstants } from '@0x/dev-utils';
 import { CoverageSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-coverage';
-import * as _ from 'lodash';
-
 let coverageSubprovider: CoverageSubprovider;
 
 export const coverage = {
     getCoverageSubproviderSingleton(): CoverageSubprovider {
-        if (_.isUndefined(coverageSubprovider)) {
+        if (coverageSubprovider === undefined) {
             coverageSubprovider = coverage._getCoverageSubprovider();
         }
         return coverageSubprovider;

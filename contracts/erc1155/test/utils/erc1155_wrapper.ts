@@ -36,8 +36,8 @@ export class Erc1155Wrapper {
         callbackData?: string,
         delegatedSpender?: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const spender = _.isUndefined(delegatedSpender) ? from : delegatedSpender;
-        const callbackDataHex = _.isUndefined(callbackData) ? '0x' : callbackData;
+        const spender = delegatedSpender === undefined ? from : delegatedSpender;
+        const callbackDataHex = callbackData === undefined ? '0x' : callbackData;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this._erc1155Contract.safeTransferFrom.sendTransactionAsync(from, to, token, value, callbackDataHex, {
                 from: spender,
@@ -53,8 +53,8 @@ export class Erc1155Wrapper {
         callbackData?: string,
         delegatedSpender?: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const spender = _.isUndefined(delegatedSpender) ? from : delegatedSpender;
-        const callbackDataHex = _.isUndefined(callbackData) ? '0x' : callbackData;
+        const spender = delegatedSpender === undefined ? from : delegatedSpender;
+        const callbackDataHex = callbackData === undefined ? '0x' : callbackData;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this._erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
                 from,

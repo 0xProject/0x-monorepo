@@ -38,8 +38,8 @@ export class DependentOrderHashesTracker {
     }
     public getDependentOrderHashesByERC721ByMaker(makerAddress: string, tokenAddress: string): string[] {
         if (
-            _.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress]) ||
-            _.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress])
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress] === undefined ||
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress] === undefined
         ) {
             return [];
         }
@@ -87,8 +87,8 @@ export class DependentOrderHashesTracker {
         const tokenAddress = assetDataUtils.decodeERC20AssetData(erc20AssetData).tokenAddress;
         let dependentOrderHashes: string[] = [];
         if (
-            !_.isUndefined(this._orderHashesByERC20ByMakerAddress[makerAddress]) &&
-            !_.isUndefined(this._orderHashesByERC20ByMakerAddress[makerAddress][tokenAddress])
+            this._orderHashesByERC20ByMakerAddress[makerAddress] !== undefined &&
+            this._orderHashesByERC20ByMakerAddress[makerAddress][tokenAddress] !== undefined
         ) {
             dependentOrderHashes = Array.from(this._orderHashesByERC20ByMakerAddress[makerAddress][tokenAddress]);
         }
@@ -99,11 +99,10 @@ export class DependentOrderHashesTracker {
         const tokenId = assetDataUtils.decodeERC721AssetData(erc721AssetData).tokenId;
         let dependentOrderHashes: string[] = [];
         if (
-            !_.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress]) &&
-            !_.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress]) &&
-            !_.isUndefined(
-                this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress][tokenId.toString()],
-            )
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress] !== undefined &&
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress] !== undefined &&
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress][tokenId.toString()] !==
+                undefined
         ) {
             dependentOrderHashes = Array.from(
                 this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress][tokenId.toString()],
@@ -113,10 +112,10 @@ export class DependentOrderHashesTracker {
     }
     private _addToERC20DependentOrderHashes(signedOrder: SignedOrder, erc20TokenAddress: string): void {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress])) {
+        if (this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress] === undefined) {
             this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress] = {};
         }
-        if (_.isUndefined(this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress])) {
+        if (this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress] === undefined) {
             this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress] = new Set();
         }
         this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress].add(orderHash);
@@ -127,24 +126,21 @@ export class DependentOrderHashesTracker {
         tokenId: BigNumber,
     ): void {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress])) {
+        if (this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress] === undefined) {
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress] = {};
         }
 
         if (
-            _.isUndefined(
-                this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress],
-            )
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress] ===
+            undefined
         ) {
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress] = {};
         }
 
         if (
-            _.isUndefined(
-                this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress][
-                    tokenId.toString()
-                ],
-            )
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress][
+                tokenId.toString()
+            ] === undefined
         ) {
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress][
                 tokenId.toString()
@@ -169,7 +165,7 @@ export class DependentOrderHashesTracker {
     }
     private _addToMakerDependentOrderHashes(signedOrder: SignedOrder): void {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._orderHashesByMakerAddress[signedOrder.makerAddress])) {
+        if (this._orderHashesByMakerAddress[signedOrder.makerAddress] === undefined) {
             this._orderHashesByMakerAddress[signedOrder.makerAddress] = new Set();
         }
         this._orderHashesByMakerAddress[signedOrder.makerAddress].add(orderHash);

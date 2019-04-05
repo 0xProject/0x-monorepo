@@ -3,7 +3,6 @@ import { LogDecoder, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { AssetProxyOwnerContract } from '../../generated-wrappers/asset_proxy_owner';
 import { artifacts } from '../../src/artifacts';
@@ -23,7 +22,7 @@ export class AssetProxyOwnerWrapper {
         from: string,
         opts: { value?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const value = _.isUndefined(opts.value) ? new BigNumber(0) : opts.value;
+        const value = opts.value === undefined ? new BigNumber(0) : opts.value;
         const txHash = await this._assetProxyOwner.submitTransaction.sendTransactionAsync(destination, value, data, {
             from,
         });

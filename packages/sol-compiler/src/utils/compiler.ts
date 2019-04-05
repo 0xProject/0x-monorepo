@@ -126,7 +126,7 @@ export async function getSolcJSReleasesAsync(isOfflineMode: boolean): Promise<Bi
     if (isOfflineMode) {
         return constants.SOLC_BIN_PATHS;
     }
-    if (_.isUndefined(solcJSReleasesCache)) {
+    if (solcJSReleasesCache === undefined) {
         const versionList = await fetch('https://ethereum.github.io/solc-bin/bin/list.json');
         const versionListJSON = await versionList.json();
         solcJSReleasesCache = versionListJSON.releases;
@@ -314,7 +314,7 @@ function recursivelyGatherDependencySources(
             importPath = path.resolve(`/${contractFolder}`, importPath).replace('/', '');
         }
 
-        if (_.isUndefined(sourcesToAppendTo[importPath])) {
+        if (sourcesToAppendTo[importPath] === undefined) {
             sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
             sourceCodesToAppendTo[importPath] = resolver.resolve(importPath).source;
 
@@ -339,7 +339,7 @@ function recursivelyGatherDependencySources(
 export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean): Promise<solc.SolcInstance> {
     const solcJSReleases = await getSolcJSReleasesAsync(isOfflineMode);
     const fullSolcVersion = solcJSReleases[solcVersion];
-    if (_.isUndefined(fullSolcVersion)) {
+    if (fullSolcVersion === undefined) {
         throw new Error(`${solcVersion} is not a known compiler version`);
     }
     const compilerBinFilename = path.join(constants.SOLC_BIN_DIR, fullSolcVersion);
@@ -369,13 +369,13 @@ export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean
  * @param compiledContract The standard JSON output section for a contract. Geth modified in place.
  */
 export function addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
-    if (!_.isUndefined(compiledContract.evm)) {
-        if (!_.isUndefined(compiledContract.evm.bytecode) && !_.isUndefined(compiledContract.evm.bytecode.object)) {
+    if (compiledContract.evm === undefined) {
+        if (compiledContract.evm.bytecode !== undefined && compiledContract.evm.bytecode.object !== undefined) {
             compiledContract.evm.bytecode.object = ethUtil.addHexPrefix(compiledContract.evm.bytecode.object);
         }
         if (
-            !_.isUndefined(compiledContract.evm.deployedBytecode) &&
-            !_.isUndefined(compiledContract.evm.deployedBytecode.object)
+            compiledContract.evm.deployedBytecode !== undefined &&
+            compiledContract.evm.deployedBytecode.object !== undefined
         ) {
             compiledContract.evm.deployedBytecode.object = ethUtil.addHexPrefix(
                 compiledContract.evm.deployedBytecode.object,

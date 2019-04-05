@@ -43,18 +43,15 @@ export class SolDoc {
         devdocIfExists: DevdocOutput | undefined,
     ): string | undefined {
         let details;
-        if (!_.isUndefined(devdocIfExists)) {
-            const devdocMethodsIfExist = devdocIfExists.methods;
-            if (!_.isUndefined(devdocMethodsIfExist)) {
-                const devdocMethodIfExists = devdocMethodsIfExist[methodSignature];
-                if (!_.isUndefined(devdocMethodIfExists)) {
-                    const devdocMethodDetailsIfExist = devdocMethodIfExists.details;
-                    if (!_.isUndefined(devdocMethodDetailsIfExist)) {
-                        details = devdocMethodDetailsIfExist;
-                    }
-                }
-            }
+        if (
+            devdocIfExists !== undefined &&
+            devdocIfExists.methods !== undefined &&
+            devdocIfExists.methods.methodSignature !== undefined &&
+            devdocIfExists.methods.methodSignature.details !== undefined
+        ) {
+            details = devdocIfExists.methods.methodSignature.details;
         }
+
         return details;
     }
     private static _genFallbackDoc(
@@ -65,7 +62,7 @@ export class SolDoc {
         const comment = SolDoc._devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
 
         const returnComment =
-            _.isUndefined(devdocIfExists) || _.isUndefined(devdocIfExists.methods[methodSignature])
+            devdocIfExists === undefined || devdocIfExists.methods[methodSignature] === undefined
                 ? undefined
                 : devdocIfExists.methods[methodSignature].return;
 
@@ -141,8 +138,7 @@ export class SolDoc {
             },
         };
 
-        const shouldOverrideCatchAllContractsConfig =
-            !_.isUndefined(contractsToCompile) && contractsToCompile.length > 0;
+        const shouldOverrideCatchAllContractsConfig = contractsToCompile !== undefined && contractsToCompile.length > 0;
         if (shouldOverrideCatchAllContractsConfig) {
             compilerOptions.contracts = contractsToCompile;
         }
@@ -175,7 +171,7 @@ export class SolDoc {
                 const contractNames = _.keys(contractNameToOutput);
                 for (const contractName of contractNames) {
                     const compiledContract = contractNameToOutput[contractName];
-                    if (_.isUndefined(compiledContract.abi)) {
+                    if (compiledContract.abi === undefined) {
                         throw new Error('compiled contract did not contain ABI output');
                     }
                     docWithDependencies[contractName] = this._genDocSection(compiledContract, contractName);
@@ -187,7 +183,7 @@ export class SolDoc {
         structs = this._overwriteStructNames(structs);
 
         let doc: DocAgnosticFormat = {};
-        if (_.isUndefined(contractsToDocument) || contractsToDocument.length === 0) {
+        if (contractsToDocument === undefined || contractsToDocument.length === 0) {
             doc = docWithDependencies;
         } else {
             for (const contractToDocument of contractsToDocument) {
@@ -235,22 +231,22 @@ export class SolDoc {
         return customType;
     }
     private _getNameFromDataItemIfExists(dataItem: DataItem): string | undefined {
-        if (_.isUndefined(dataItem.components)) {
+        if (dataItem.components === undefined) {
             return undefined;
         }
         const customType = this._getCustomTypeFromDataItem(dataItem);
         const hash = SolDoc._generateCustomTypeHash(customType);
-        if (_.isUndefined(this._customTypeHashToName) || _.isUndefined(this._customTypeHashToName[hash])) {
+        if (this._customTypeHashToName === undefined || this._customTypeHashToName[hash] === undefined) {
             return undefined;
         }
         return this._customTypeHashToName[hash];
     }
     private _getTypeFromDataItem(dataItem: DataItem): Type {
-        const typeDocType = !_.isUndefined(dataItem.components) ? TypeDocTypes.Reference : TypeDocTypes.Intrinsic;
+        const typeDocType = dataItem.components !== undefined ? TypeDocTypes.Reference : TypeDocTypes.Intrinsic;
         let typeName: string;
         if (typeDocType === TypeDocTypes.Reference) {
             const nameIfExists = this._getNameFromDataItemIfExists(dataItem);
-            typeName = _.isUndefined(nameIfExists) ? SolDoc._capitalize(dataItem.name) : nameIfExists;
+            typeName = nameIfExists === undefined ? SolDoc._capitalize(dataItem.name) : nameIfExists;
         } else {
             typeName = dataItem.type;
         }
@@ -271,13 +267,13 @@ export class SolDoc {
         return type;
     }
     private _overwriteStructNames(customTypes: CustomType[]): CustomType[] {
-        if (_.isUndefined(this._customTypeHashToName)) {
+        if (this._customTypeHashToName === undefined) {
             return customTypes;
         }
         const localCustomTypes = _.cloneDeep(customTypes);
         _.each(localCustomTypes, (customType, i) => {
             const hash = SolDoc._generateCustomTypeHash(customType);
-            if (!_.isUndefined(this._customTypeHashToName) && !_.isUndefined(this._customTypeHashToName[hash])) {
+            if (this._customTypeHashToName !== undefined && this._customTypeHashToName[hash] !== undefined) {
                 localCustomTypes[i].name = this._customTypeHashToName[hash];
             }
         });
@@ -311,7 +307,7 @@ export class SolDoc {
     }
     private _genDocSection(compiledContract: StandardContractOutput, contractName: string): DocSection {
         const docSection: DocSection = {
-            comment: _.isUndefined(compiledContract.devdoc) ? '' : compiledContract.devdoc.title,
+            comment: compiledContract.devdoc === undefined ? '' : compiledContract.devdoc.title,
             constructors: [],
             methods: [],
             properties: [],
@@ -381,11 +377,11 @@ export class SolDoc {
         const devDocComment = SolDoc._devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
         const returnType = this._genMethodReturnTypeDoc(abiDefinition.outputs);
         const returnComment =
-            _.isUndefined(devdocIfExists) || _.isUndefined(devdocIfExists.methods[methodSignature])
+            devdocIfExists === undefined || devdocIfExists.methods[methodSignature] === undefined
                 ? undefined
                 : devdocIfExists.methods[methodSignature].return;
 
-        const hasNoNamedParameters = _.isUndefined(_.find(parameters, p => !_.isEmpty(p.name)));
+        const hasNoNamedParameters = _.find(parameters, p => !_.isEmpty(p.name)) === undefined;
         const isGeneratedGetter = hasNoNamedParameters;
         const comment =
             _.isEmpty(devDocComment) && isGeneratedGetter
@@ -440,11 +436,11 @@ export class SolDoc {
             })
             .join(',')})`;
 
-        if (!_.isUndefined(devdocIfExists)) {
+        if (devdocIfExists !== undefined) {
             const devdocMethodIfExists = devdocIfExists.methods[methodSignature];
-            if (!_.isUndefined(devdocMethodIfExists)) {
+            if (devdocMethodIfExists !== undefined) {
                 const devdocParamsIfExist = devdocMethodIfExists.params;
-                if (!_.isUndefined(devdocParamsIfExist)) {
+                if (devdocParamsIfExist !== undefined) {
                     for (const parameter of parameters) {
                         parameter.comment = devdocParamsIfExist[parameter.name];
                     }
@@ -482,19 +478,19 @@ export class SolDoc {
         const customTypes: CustomType[] = [];
         // We cast to `any` here because we do not know yet if this type of abiDefinition contains
         // an `input` key
-        if (!_.isUndefined((abiDefinition as any).inputs)) {
+        if ((abiDefinition as any).inputs !== undefined) {
             const methodOrConstructorAbi = abiDefinition as MethodAbi | ConstructorAbi;
             _.each(methodOrConstructorAbi.inputs, input => {
-                if (!_.isUndefined(input.components)) {
+                if (!input.components === undefined) {
                     const customType = this._getCustomTypeFromDataItem(input);
                     customTypes.push(customType);
                 }
             });
         }
-        if (!_.isUndefined((abiDefinition as any).outputs)) {
+        if ((abiDefinition as any).outputs !== undefined) {
             const methodAbi = abiDefinition as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
             _.each(methodAbi.outputs, output => {
-                if (!_.isUndefined(output.components)) {
+                if (output.components !== undefined) {
                     const customType = this._getCustomTypeFromDataItem(output);
                     customTypes.push(customType);
                 }

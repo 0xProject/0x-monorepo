@@ -38,8 +38,8 @@ export const eip712Utils = {
                 ...types,
             },
             domain: {
-                name: _.isUndefined(domain.name) ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
-                version: _.isUndefined(domain.version) ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
+                name: domain.name === undefined ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
+                version: domain.version === undefined ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
                 verifyingContract: domain.verifyingContractAddress,
             },
             message,

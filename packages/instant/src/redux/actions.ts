@@ -1,6 +1,5 @@
 import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
 
 import { ActionsUnion, AddressAndEthBalanceInWei, Asset, BaseCurrency, StandardSlidingPanelContent } from '../types';
 
@@ -17,7 +16,7 @@ export type Action = ActionsUnion<typeof actions>;
 function createAction<T extends string>(type: T): PlainAction<T>;
 function createAction<T extends string, P>(type: T, data: P): ActionWithPayload<T, P>;
 function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | ActionWithPayload<T, P> {
-    return _.isUndefined(data) ? { type } : { type, data };
+    return data === undefined ? { type } : { type, data };
 }
 
 export enum ActionTypes {

@@ -14,7 +14,7 @@ const G_COPY = 3;
 
 export const costUtils = {
     reportCallDataCost(traceInfo: TraceInfo): number {
-        if (_.isUndefined(traceInfo.dataIfExists)) {
+        if (traceInfo.dataIfExists === undefined) {
             // No call data to report
             return 0;
         }
@@ -81,7 +81,7 @@ export const costUtils = {
         return gasCost;
     },
     _printMemoryCost(highestMemoryLocationAccessed?: number): number {
-        if (_.isUndefined(highestMemoryLocationAccessed)) {
+        if (highestMemoryLocationAccessed === undefined) {
             return 0;
         }
         const memoryWordsUsed = Math.ceil((highestMemoryLocationAccessed + WORD_SIZE) / WORD_SIZE);
