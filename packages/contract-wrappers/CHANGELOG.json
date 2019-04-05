@@ -1,5 +1,22 @@
 [
     {
+        "version": "9.2.0",
+        "changes": [
+            {
+                "note": "Use new `Order` and `ZeroExTransaction` structures with `domain` field",
+                "pr": 1742
+            },
+            {
+                "note": "Update exchange wrapper",
+                "pr": 1742
+            },
+            {
+                "note": "Update tests",
+                "pr": TODO
+            }
+        ]
+    },
+    {
         "version": "9.1.0",
         "changes": [
             {
