@@ -23,6 +23,8 @@ export interface CreateOrderOpts {
     feeRecipientAddress?: string;
     salt?: BigNumber;
     expirationTimeSeconds?: BigNumber;
+    makerFeeAssetData?: string;
+    takerFeeAssetData?: string;
 }
 
 /**
