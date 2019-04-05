@@ -105,12 +105,9 @@ describe('Revert Validation ExchangeWrapper', () => {
                 makerTokenBalance,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-            const tx = contractWrappers.exchange.fillOrderAsync(
-                signedOrder,
-                takerTokenFillAmount,
-                takerAddress,
-                { shouldValidate: true },
-            );
+            const tx = contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress, {
+                shouldValidate: true,
+            });
             return expect(tx).to.revertWith(RevertReason.TransferFailed);
         });
     });

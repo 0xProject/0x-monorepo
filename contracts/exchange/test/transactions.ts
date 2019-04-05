@@ -237,10 +237,7 @@ describe('Exchange transactions', () => {
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                    orderHashHex,
-                    OrderStatus.Cancelled,
-                );
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Cancelled);
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, senderAddress);
                 return expect(tx).to.revertWith(expectedError);
             });

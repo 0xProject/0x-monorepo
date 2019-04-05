@@ -286,7 +286,7 @@ describe('AssetProxyDispatcher', () => {
                 amount,
                 { from: owner },
             );
-            expect(tx).to.revertWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 });
