@@ -8,6 +8,7 @@ import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { Input as SearchInput } from 'ts/components/ui/search_textfield';
+import { addFadeInAnimation } from 'ts/constants/animations';
 import { EDITORIAL, FILTERS, ORDERINGS, PROJECTS } from 'ts/pages/explore/explore_content';
 import { ExploreSettingsDropdown } from 'ts/pages/explore/explore_dropdown';
 import { ExploreGrid } from 'ts/pages/explore/explore_grid';
@@ -294,6 +295,7 @@ const ExploreHeroContentWrapper = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 100px 0;
+    ${addFadeInAnimation('0.5s')}
     @media (max-width: 36rem) {
         display: block;
         padding: 50px 0;
@@ -338,6 +340,7 @@ const ExploreHero = (props: ExploreHeroProps) => {
 const ExploreToolBarWrapper = styled.div`
     display: flex;
     justify-content: space-between;
+    ${addFadeInAnimation('0.5s', '0.15s')}
     @media (max-width: 36rem) {
         display: block;
     }
