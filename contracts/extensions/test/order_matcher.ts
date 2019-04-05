@@ -12,7 +12,6 @@ import {
     constants,
     ERC20BalancesByOwner,
     expectContractCreationFailedAsync,
-    expectTransactionFailedAsync,
     LogDecoder,
     OrderFactory,
     provider,
