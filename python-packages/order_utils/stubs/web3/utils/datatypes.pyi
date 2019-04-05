@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Callable
 
 
 class ContractFunctions:
@@ -8,5 +8,5 @@ class ContractFunctions:
 
 
 class Contract:
-    class functions: ContractFunctions:
+    class functions: ContractFunctions
     ...
