@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.1.1",
+        "changes": [
+            {
+                "note": "Update tests",
+                "pr": TODO
+            }
+        ]
+    },
+    {
         "version": "8.1.0",
         "changes": [
             {
