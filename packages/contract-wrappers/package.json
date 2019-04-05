@@ -14,6 +14,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project . --exclude **/lib/**/*",
+        "fix": "tslint --fix --format stylish --project . --exclude **/lib/**/*",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",

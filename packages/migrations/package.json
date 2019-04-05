@@ -12,6 +12,7 @@
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib ${npm_package_config_snapshot_name} ${npm_package_config_snapshot_name}-*.zip",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "migrate:v2": "run-s build script:migrate:v2",
         "migrate:v2:snapshot": "run-s build script:migrate:v2:snapshot",
         "script:migrate:v2": "node ./lib/migrate.js",

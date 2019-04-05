@@ -8,6 +8,7 @@
     "description": "Example solidity project using 0x dev tools",
     "scripts": {
         "lint": "tslint --format stylish --project . --exclude **/src/contract_wrappers/**/*",
+        "fix": "tslint --fix --format stylish --project . --exclude **/src/contract_wrappers/**/*",
         "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
         "pre_build": "run-s compile generate_contract_wrappers copy_artifacts",

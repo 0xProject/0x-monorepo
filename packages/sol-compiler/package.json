@@ -20,6 +20,7 @@
         "clean": "shx rm -rf lib generated_docs",
         "migrate": "npm run build; node lib/src/cli.js migrate",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "test:circleci": "yarn test:coverage",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },

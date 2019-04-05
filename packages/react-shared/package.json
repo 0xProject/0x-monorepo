@@ -9,6 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "build": "tsc",
         "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",

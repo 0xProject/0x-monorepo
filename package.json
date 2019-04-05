@@ -10,6 +10,7 @@
     ],
     "scripts": {
         "deps_versions:ci": "node ./packages/monorepo-scripts/lib/deps_versions.js",
+        "fix": "wsrun fix $PKG --fast-exit --parallel --exclude-missing",
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
