@@ -6,7 +6,6 @@ import {
     BalanceAmountScenario,
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     FillScenario,
@@ -441,7 +440,11 @@ export class FillOrderCombinatorialUtils {
         lazyStore: BalanceAndProxyAllowanceLazyStore,
         fillRevertReasonIfExists: RevertReason | RevertError | undefined,
     ): Promise<void> {
+<<<<<<< HEAD
         if (fillRevertReasonIfExists !== undefined) {
+=======
+        if (!_.isUndefined(fillRevertReasonIfExists)) {
+>>>>>>> In `@0x/contracts-exchange`: Update tests for rich reverts
             const tx = this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(fillRevertReasonIfExists);
         }
@@ -945,14 +948,14 @@ function validationErrorToRevertError(order: Order, reason: RevertReason): Rever
         case RevertReason.InvalidTakerAmount:
             return new ExchangeRevertErrors.FillError(
                 orderHash,
-                ExchangeRevertErrors.FillErrorCodes.InvalidTakerAmount,
+                ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount,
             );
         case RevertReason.TakerOverpay:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.TakerOverpay);
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.TakerOverpay);
         case RevertReason.OrderOverfill:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.Overfill);
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.Overfill);
         case RevertReason.InvalidFillPrice:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.InvalidFillPrice);
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.InvalidFillPrice);
         case RevertReason.TransferFailed:
             return new ExchangeRevertErrors.AssetProxyTransferError(orderHash, undefined, 'TRANSFER_FAILED');
         default:

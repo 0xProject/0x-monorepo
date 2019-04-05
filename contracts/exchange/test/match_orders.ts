@@ -6,7 +6,6 @@ import {
     constants,
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
-    expectTransactionFailedAsync,
     OrderFactory,
     provider,
     txDefaults,
@@ -588,10 +587,12 @@ describe('matchOrders', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
-                    await expectTransactionFailedAsync(
-                        exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                        RevertReason.ReentrancyIllegal,
+                    const tx = exchangeWrapper.matchOrdersAsync(
+                        signedOrderLeft,
+                        signedOrderRight,
+                        takerAddress,
                     );
+                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                 });
             });
         };
@@ -1129,10 +1130,7 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHashHexLeft,
-                OrderStatus.Cancelled,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexLeft, OrderStatus.Cancelled);
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -1151,10 +1149,7 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHashHexRight,
-                OrderStatus.Cancelled,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexRight, OrderStatus.Cancelled);
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -1172,10 +1167,7 @@ describe('matchOrders', () => {
             const orderHashHexLeft = orderHashUtils.getOrderHashHex(signedOrderLeft);
             const orderHashHexRight = orderHashUtils.getOrderHashHex(signedOrderRight);
             // Match orders
-            const expectedError = new ExchangeRevertErrors.NegativeSpreadError(
-                orderHashHexLeft,
-                orderHashHexRight,
-            );
+            const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -1202,7 +1194,7 @@ describe('matchOrders', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 orderHashHex,
-                ExchangeRevertErrors.SignatureErrorCodes.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
             );
             // Match orders
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
@@ -1227,7 +1219,7 @@ describe('matchOrders', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 orderHashHex,
-                ExchangeRevertErrors.SignatureErrorCodes.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
             );
             // Match orders
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
