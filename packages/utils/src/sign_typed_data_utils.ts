@@ -1,8 +1,8 @@
 import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
-import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
+import { AbiEncoder } from '.';
 import { BigNumber } from './configured_bignumber';
 
 export const signTypedDataUtils = {
@@ -69,7 +69,12 @@ export const signTypedDataUtils = {
             }
         }
         // TODO(FFF): Replace with return data encoding
-        return ethers.utils.defaultAbiCoder.encode(encodedTypes, encodedValues);
+        const dataItem = {
+            type: 'tuple',
+            name: '',
+            components: _.map(encodedTypes, t => ({ type: t, name: '' })),
+        };
+        return AbiEncoder.create(dataItem).encode(encodedValues);
     },
     _normalizeValue(type: string, value: any): EIP712ObjectValue {
         const normalizedValue = type === 'uint256' && BigNumber.isBigNumber(value) ? value.toString() : value;

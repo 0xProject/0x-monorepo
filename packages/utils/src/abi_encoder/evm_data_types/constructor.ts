@@ -1,4 +1,4 @@
-import { ConstructorAbi, DataItem, MethodAbi } from 'ethereum-types';
+import { ConstructorAbi, DataItem } from 'ethereum-types';
 
 import { DataType } from '../abstract_data_types/data_type';
 import { DataTypeFactory } from '../abstract_data_types/interfaces';

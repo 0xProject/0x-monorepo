@@ -9,7 +9,7 @@ import * as AbiSamples from './abi_samples/constructor_abis';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe.only('ABI Encoder: Constructor Encoding', () => {
+describe('ABI Encoder: Constructor Encoding', () => {
     const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
     it('Encodes the constructor arguments with the bytecode', async () => {
         const method = new AbiEncoder.Constructor(AbiSamples.simpleAbi);
@@ -20,7 +20,7 @@ describe.only('ABI Encoder: Constructor Encoding', () => {
             '0x00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000046162636400000000000000000000000000000000000000000000000000000000';
         expect(calldata).to.eql(expectedCallData);
     });
-    it('Encodes the constructor arguments with the bytecode', async () => {
+    it('Encodes the bytecode with no constructor arguments', async () => {
         const method = new AbiEncoder.Constructor(AbiSamples.noArgumentConstructor);
         const bytecode = '0x1234';
         const calldata = method.encode(bytecode, [], encodingRules);
