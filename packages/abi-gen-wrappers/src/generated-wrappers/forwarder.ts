@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 
@@ -27,7 +26,7 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const encodedData = self._strictEncodeArguments(self.marketBuyOrdersWithEth.functionSignature, [orders,
     makerAssetFillAmount,
     signatures,
     feeOrders,
@@ -35,25 +34,15 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.marketBuyOrdersWithEth.estimateGasAsync.bind(
-                    self,
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                    feeOrders,
-                    feeSignatures,
-                    feePercentage,
-                    feeRecipient
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.marketBuyOrdersWithEth.estimateGasAsync.bind(self, orders,
+    makerAssetFillAmount,
+    signatures,
+    feeOrders,
+    feeSignatures,
+    feePercentage,
+    feeRecipient
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -67,7 +56,7 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const encodedData = self._strictEncodeArguments(self.marketBuyOrdersWithEth.functionSignature, [orders,
     makerAssetFillAmount,
     signatures,
     feeOrders,
@@ -75,15 +64,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -96,7 +77,7 @@ export class ForwarderContract extends BaseContract {
             feeRecipient: string,
         ): string {
             const self = this as any as ForwarderContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.marketBuyOrdersWithEth.functionSignature, [orders,
     makerAssetFillAmount,
     signatures,
     feeOrders,
@@ -106,6 +87,7 @@ export class ForwarderContract extends BaseContract {
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
@@ -119,7 +101,7 @@ export class ForwarderContract extends BaseContract {
         ): Promise<[{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
         > {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const encodedData = self._strictEncodeArguments(self.marketBuyOrdersWithEth.functionSignature, [orders,
         makerAssetFillAmount,
         signatures,
         feeOrders,
@@ -127,17 +109,8 @@ export class ForwarderContract extends BaseContract {
         feePercentage,
         feeRecipient
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.marketBuyOrdersWithEth.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
         >(rawCallResult);
@@ -152,23 +125,13 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('withdrawAsset(bytes,uint256)', [assetData,
+            const encodedData = self._strictEncodeArguments(self.withdrawAsset.functionSignature, [assetData,
     amount
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.withdrawAsset.estimateGasAsync.bind(
-                    self,
-                    assetData,
-                    amount
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.withdrawAsset.estimateGasAsync.bind(self, assetData,
+    amount
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -177,18 +140,10 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('withdrawAsset(bytes,uint256)', [assetData,
+            const encodedData = self._strictEncodeArguments(self.withdrawAsset.functionSignature, [assetData,
     amount
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -196,11 +151,12 @@ export class ForwarderContract extends BaseContract {
             amount: BigNumber,
         ): string {
             const self = this as any as ForwarderContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('withdrawAsset(bytes,uint256)', [assetData,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.withdrawAsset.functionSignature, [assetData,
     amount
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'withdrawAsset(bytes,uint256)',
         async callAsync(
             assetData: string,
             amount: BigNumber,
@@ -209,20 +165,11 @@ export class ForwarderContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('withdrawAsset(bytes,uint256)', [assetData,
+            const encodedData = self._strictEncodeArguments(self.withdrawAsset.functionSignature, [assetData,
         amount
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.withdrawAsset.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -231,24 +178,16 @@ export class ForwarderContract extends BaseContract {
         },
     };
     public owner = {
+        functionSignature: 'owner()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('owner()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('owner()');
+            const encodedData = self._strictEncodeArguments(self.owner.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.owner.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -267,31 +206,21 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const encodedData = self._strictEncodeArguments(self.marketSellOrdersWithEth.functionSignature, [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feePercentage,
     feeRecipient
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.marketSellOrdersWithEth.estimateGasAsync.bind(
-                    self,
-                    orders,
-                    signatures,
-                    feeOrders,
-                    feeSignatures,
-                    feePercentage,
-                    feeRecipient
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.marketSellOrdersWithEth.estimateGasAsync.bind(self, orders,
+    signatures,
+    feeOrders,
+    feeSignatures,
+    feePercentage,
+    feeRecipient
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -304,22 +233,14 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const encodedData = self._strictEncodeArguments(self.marketSellOrdersWithEth.functionSignature, [orders,
     signatures,
     feeOrders,
     feeSignatures,
     feePercentage,
     feeRecipient
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -331,7 +252,7 @@ export class ForwarderContract extends BaseContract {
             feeRecipient: string,
         ): string {
             const self = this as any as ForwarderContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.marketSellOrdersWithEth.functionSignature, [orders,
     signatures,
     feeOrders,
     feeSignatures,
@@ -340,6 +261,7 @@ export class ForwarderContract extends BaseContract {
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             signatures: string[],
@@ -352,24 +274,15 @@ export class ForwarderContract extends BaseContract {
         ): Promise<[{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
         > {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+            const encodedData = self._strictEncodeArguments(self.marketSellOrdersWithEth.functionSignature, [orders,
         signatures,
         feeOrders,
         feeSignatures,
         feePercentage,
         feeRecipient
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.marketSellOrdersWithEth.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
         >(rawCallResult);
@@ -383,21 +296,11 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(
-                    self,
-                    newOwner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.transferOwnership.estimateGasAsync.bind(self, newOwner
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -405,27 +308,20 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             newOwner: string,
         ): string {
             const self = this as any as ForwarderContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'transferOwnership(address)',
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -433,19 +329,10 @@ export class ForwarderContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+            const encodedData = self._strictEncodeArguments(self.transferOwnership.functionSignature, [newOwner
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.transferOwnership.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -461,7 +348,7 @@ export class ForwarderContract extends BaseContract {
             _zrxAssetData: string,
             _wethAssetData: string,
     ): Promise<ForwarderContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -494,31 +381,10 @@ _wethAssetData
 ],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange,
-_zrxAssetData,
-_wethAssetData
-]);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`Forwarder successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ForwarderContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_exchange,
-_zrxAssetData,
-_wethAssetData
-];
-        return contractInstance;
+        return {} as any;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('Forwarder', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('Forwarder', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

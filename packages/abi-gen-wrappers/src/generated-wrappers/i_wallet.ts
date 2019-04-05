@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 
@@ -16,6 +15,7 @@ import * as _ from 'lodash';
 // tslint:disable-next-line:class-name
 export class IWalletContract extends BaseContract {
     public isValidSignature = {
+        functionSignature: 'isValidSignature(bytes32,bytes)',
         async callAsync(
             hash: string,
             signature: string,
@@ -24,20 +24,11 @@ export class IWalletContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as IWalletContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,bytes)', [hash,
+            const encodedData = self._strictEncodeArguments(self.isValidSignature.functionSignature, [hash,
         signature
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.isValidSignature.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -50,7 +41,7 @@ export class IWalletContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<IWalletContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -71,25 +62,10 @@ export class IWalletContract extends BaseContract {
             [],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, []);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`IWallet successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IWalletContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [];
-        return contractInstance;
+        return {} as any;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('IWallet', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('IWallet', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 {{#if events}}
@@ -46,7 +45,7 @@ export class {{contractName}}Contract extends BaseContract {
         txDefaults: Partial<TxData>,
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -68,7 +67,8 @@ export class {{contractName}}Contract extends BaseContract {
             [{{> params inputs=ctor.inputs}}],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
+        return {} as any;
+        {{!-- const iface = new ethersUtils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
@@ -82,8 +82,8 @@ export class {{contractName}}Contract extends BaseContract {
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
-        return contractInstance;
+        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}]; --}}
+        {{!-- return contractInstance; --}}
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('{{contractName}}', abi, address, supportedProvider, txDefaults);

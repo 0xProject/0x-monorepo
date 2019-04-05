@@ -9,20 +9,9 @@ public {{this.tsName}} = {
     {{/this.payable}}
     ): Promise<string> {
         const self = this as any as {{contractName}}Contract;
-        const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.{{this.tsName}}.estimateGasAsync.bind(
-                self,
-                {{> params inputs=inputs}}
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        const encodedData = self._strictEncodeArguments(self.{{this.tsName}}.functionSignature, [{{> params inputs=inputs}}]);
+        const gasEstimateFunction = self.{{this.tsName}}.estimateGasAsync.bind(self, {{> params inputs=inputs}});
+        const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
         return txHash;
     },
     async estimateGasAsync(
@@ -30,23 +19,15 @@ public {{this.tsName}} = {
         txData: Partial<TxData> = {},
     ): Promise<number> {
         const self = this as any as {{contractName}}Contract;
-        const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        const encodedData = self._strictEncodeArguments(self.{{this.tsName}}.functionSignature, [{{> params inputs=inputs}}]);
+        const gas = await self._estimateGasAsync(self.address, encodedData, txData);
         return gas;
     },
     getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
     ): string {
         const self = this as any as {{contractName}}Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+        const abiEncodedTransactionData = self._strictEncodeArguments(self.{{this.tsName}}.functionSignature, [{{> params inputs=inputs}}]);
         return abiEncodedTransactionData;
     },
     {{> callAsync}}

@@ -3,6 +3,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
     AbiType,
+    BlockParam,
     ConstructorAbi,
     ContractAbi,
     DataItem,
@@ -11,7 +12,6 @@ import {
     TxData,
     TxDataPayable,
 } from 'ethereum-types';
-import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
@@ -24,6 +24,30 @@ const REVERT_ERROR_SELECTOR = '08c379a0';
 const REVERT_ERROR_SELECTOR_OFFSET = 2;
 const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
 const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SELECTOR_BYTES_LENGTH * 2;
+function isHexString(value: any, length?: number): boolean {
+    if (typeof value !== 'string' || !value.match(/^0x[0-9A-Fa-f]*$/)) {
+        return false;
+    }
+    if (length && value.length !== length * 2 + 2) {
+        return false;
+    }
+    return true;
+}
+function hexDataSlice(data: string, offset: number, endOffset?: number): string {
+    if (!isHexString(data)) {
+        throw new Error(`Invalid Hex Data ${data}`);
+    }
+    if (data.length % 2 !== 0) {
+        throw new Error(`Hex Data length must be even ${data}`);
+    }
+    const localOffset = offset * 2 + 2;
+
+    if (endOffset != null) {
+        return `0x${data.substring(localOffset, endOffset * 2 + 2)}`;
+    }
+
+    return `0x${data.substring(localOffset)}`;
+}
 
 export class BaseContract {
     protected _abiEncoderByFunctionSignature: AbiEncoderByFunctionSignature;
@@ -39,6 +63,7 @@ export class BaseContract {
     ): any {
         return _.map(values, (value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
     }
+
     protected static _lowercaseAddress(type: string, value: string): string {
         return type === 'address' ? value.toLowerCase() : value;
     }
@@ -87,7 +112,7 @@ export class BaseContract {
     protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
         if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
             const revertReasonArray = AbiEncoder.create('(string)').decodeAsArray(
-                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
+                hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
             );
             if (revertReasonArray.length !== 1) {
                 throw new Error(
@@ -119,6 +144,54 @@ export class BaseContract {
             }
         }
         return rawEncoded;
+    }
+    protected async _callAsync(
+        to: string,
+        data: string,
+        txData: Partial<TxData> = {},
+        defaultBlock?: BlockParam,
+    ): Promise<string> {
+        const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to,
+                ...txData,
+                data,
+            },
+            this._web3Wrapper.getContractDefaults(),
+        );
+        const rawCallResult = await this._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+        BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+        return rawCallResult;
+    }
+    protected async _sendTransactionAsync(
+        to: string,
+        data: string,
+        txData: Partial<TxData> = {},
+        estimateGasAsync?: (txData: Partial<TxData>) => Promise<number>,
+    ): Promise<string> {
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to,
+                ...txData,
+                data,
+            },
+            this._web3Wrapper.getContractDefaults(),
+            estimateGasAsync,
+        );
+        const txHash = await this._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
+    }
+    protected async _estimateGasAsync(to: string, data: string, txData: Partial<TxData> = {}): Promise<number> {
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to,
+                ...txData,
+                data,
+            },
+            this._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await this._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];

@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 
@@ -21,21 +20,11 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+            const encodedData = self._strictEncodeArguments(self.getAuctionDetails.functionSignature, [order
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.getAuctionDetails.estimateGasAsync.bind(
-                    self,
-                    order
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.getAuctionDetails.estimateGasAsync.bind(self, order
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -43,27 +32,20 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+            const encodedData = self._strictEncodeArguments(self.getAuctionDetails.functionSignature, [order
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         ): string {
             const self = this as any as DutchAuctionContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.getAuctionDetails.functionSignature, [order
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
@@ -71,19 +53,10 @@ export class DutchAuctionContract extends BaseContract {
         ): Promise<{beginTimeSeconds: BigNumber;endTimeSeconds: BigNumber;beginAmount: BigNumber;endAmount: BigNumber;currentAmount: BigNumber;currentTimeSeconds: BigNumber}
         > {
             const self = this as any as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+            const encodedData = self._strictEncodeArguments(self.getAuctionDetails.functionSignature, [order
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getAuctionDetails.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{beginTimeSeconds: BigNumber;endTimeSeconds: BigNumber;beginAmount: BigNumber;endAmount: BigNumber;currentAmount: BigNumber;currentTimeSeconds: BigNumber}
         >(rawCallResult);
@@ -100,27 +73,17 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+            const encodedData = self._strictEncodeArguments(self.matchOrders.functionSignature, [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.matchOrders.estimateGasAsync.bind(
-                    self,
-                    buyOrder,
-                    sellOrder,
-                    buySignature,
-                    sellSignature
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.matchOrders.estimateGasAsync.bind(self, buyOrder,
+    sellOrder,
+    buySignature,
+    sellSignature
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -131,20 +94,12 @@ export class DutchAuctionContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+            const encodedData = self._strictEncodeArguments(self.matchOrders.functionSignature, [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -154,13 +109,14 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
         ): string {
             const self = this as any as DutchAuctionContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.matchOrders.functionSignature, [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
         async callAsync(
             buyOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             sellOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -171,22 +127,13 @@ export class DutchAuctionContract extends BaseContract {
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
             const self = this as any as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+            const encodedData = self._strictEncodeArguments(self.matchOrders.functionSignature, [buyOrder,
         sellOrder,
         buySignature,
         sellSignature
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.matchOrders.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         >(rawCallResult);
@@ -200,7 +147,7 @@ export class DutchAuctionContract extends BaseContract {
         txDefaults: Partial<TxData>,
             _exchange: string,
     ): Promise<DutchAuctionContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -225,27 +172,10 @@ export class DutchAuctionContract extends BaseContract {
 ],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange
-]);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`DutchAuction successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new DutchAuctionContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_exchange
-];
-        return contractInstance;
+        return {} as any;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('DutchAuction', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('DutchAuction', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

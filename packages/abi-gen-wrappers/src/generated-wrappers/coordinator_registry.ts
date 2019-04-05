@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type CoordinatorRegistryEventArgs =
@@ -33,21 +32,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+            const encodedData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.setCoordinatorEndpoint.estimateGasAsync.bind(
-                    self,
-                    coordinatorEndpoint
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.setCoordinatorEndpoint.estimateGasAsync.bind(self, coordinatorEndpoint
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -55,27 +44,20 @@ export class CoordinatorRegistryContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+            const encodedData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             coordinatorEndpoint: string,
         ): string {
             const self = this as any as CoordinatorRegistryContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'setCoordinatorEndpoint(string)',
         async callAsync(
             coordinatorEndpoint: string,
             callData: Partial<CallData> = {},
@@ -83,19 +65,10 @@ export class CoordinatorRegistryContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+            const encodedData = self._strictEncodeArguments(self.setCoordinatorEndpoint.functionSignature, [coordinatorEndpoint
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.setCoordinatorEndpoint.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -104,6 +77,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
     };
     public getCoordinatorEndpoint = {
+        functionSignature: 'getCoordinatorEndpoint(address)',
         async callAsync(
             coordinatorOperator: string,
             callData: Partial<CallData> = {},
@@ -111,19 +85,10 @@ export class CoordinatorRegistryContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [coordinatorOperator
+            const encodedData = self._strictEncodeArguments(self.getCoordinatorEndpoint.functionSignature, [coordinatorOperator
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getCoordinatorEndpoint.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -136,7 +101,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<CoordinatorRegistryContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -157,22 +122,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             [],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, []);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`CoordinatorRegistry successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new CoordinatorRegistryContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [];
-        return contractInstance;
+        return {} as any;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('CoordinatorRegistry', abi, address, supportedProvider, txDefaults);

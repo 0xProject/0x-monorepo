@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type AssetProxyOwnerEventArgs =
@@ -98,6 +97,7 @@ export interface AssetProxyOwnerRequirementChangeEventArgs extends DecodedLogArg
 // tslint:disable-next-line:class-name
 export class AssetProxyOwnerContract extends BaseContract {
     public owners = {
+        functionSignature: 'owners(uint256)',
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -105,19 +105,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<string
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('owners(uint256)', [index_0
+            const encodedData = self._strictEncodeArguments(self.owners.functionSignature, [index_0
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('owners(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.owners.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
         >(rawCallResult);
@@ -131,21 +122,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
+            const encodedData = self._strictEncodeArguments(self.removeOwner.functionSignature, [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.removeOwner.estimateGasAsync.bind(
-                    self,
-                    owner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.removeOwner.estimateGasAsync.bind(self, owner
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -153,27 +134,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
+            const encodedData = self._strictEncodeArguments(self.removeOwner.functionSignature, [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             owner: string,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [owner
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.removeOwner.functionSignature, [owner
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'removeOwner(address)',
         async callAsync(
             owner: string,
             callData: Partial<CallData> = {},
@@ -181,19 +155,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
+            const encodedData = self._strictEncodeArguments(self.removeOwner.functionSignature, [owner
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('removeOwner(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.removeOwner.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -207,21 +172,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.revokeConfirmation.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.revokeConfirmation.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.revokeConfirmation.estimateGasAsync.bind(self, transactionId
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -229,27 +184,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.revokeConfirmation.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.revokeConfirmation.functionSignature, [transactionId
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'revokeConfirmation(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -257,19 +205,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.revokeConfirmation.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('revokeConfirmation(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.revokeConfirmation.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -278,6 +217,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public isOwner = {
+        functionSignature: 'isOwner(address)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -285,19 +225,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isOwner(address)', [index_0
+            const encodedData = self._strictEncodeArguments(self.isOwner.functionSignature, [index_0
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isOwner(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.isOwner.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -306,6 +237,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public confirmations = {
+        functionSignature: 'confirmations(uint256,address)',
         async callAsync(
             index_0: BigNumber,
             index_1: string,
@@ -314,20 +246,11 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmations(uint256,address)', [index_0,
+            const encodedData = self._strictEncodeArguments(self.confirmations.functionSignature, [index_0,
         index_1
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('confirmations(uint256,address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.confirmations.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -341,21 +264,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.executeRemoveAuthorizedAddressAtIndex.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(self, transactionId
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -363,27 +276,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.executeRemoveAuthorizedAddressAtIndex.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.executeRemoveAuthorizedAddressAtIndex.functionSignature, [transactionId
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'executeRemoveAuthorizedAddressAtIndex(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -391,19 +297,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.executeRemoveAuthorizedAddressAtIndex.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.executeRemoveAuthorizedAddressAtIndex.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -412,24 +309,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public secondsTimeLocked = {
+        functionSignature: 'secondsTimeLocked()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('secondsTimeLocked()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('secondsTimeLocked()');
+            const encodedData = self._strictEncodeArguments(self.secondsTimeLocked.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.secondsTimeLocked.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -438,6 +327,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public getTransactionCount = {
+        functionSignature: 'getTransactionCount(bool,bool)',
         async callAsync(
             pending: boolean,
             executed: boolean,
@@ -446,20 +336,11 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getTransactionCount(bool,bool)', [pending,
+            const encodedData = self._strictEncodeArguments(self.getTransactionCount.functionSignature, [pending,
         executed
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getTransactionCount(bool,bool)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getTransactionCount.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -474,23 +355,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+            const encodedData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxyContract,
     isRegistered
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(
-                    self,
-                    assetProxyContract,
-                    isRegistered
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract,
+    isRegistered
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -499,18 +370,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+            const encodedData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxyContract,
     isRegistered
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -518,11 +381,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             isRegistered: boolean,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxyContract,
     isRegistered
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'registerAssetProxy(address,bool)',
         async callAsync(
             assetProxyContract: string,
             isRegistered: boolean,
@@ -531,20 +395,11 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+            const encodedData = self._strictEncodeArguments(self.registerAssetProxy.functionSignature, [assetProxyContract,
         isRegistered
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.registerAssetProxy.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -558,21 +413,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
+            const encodedData = self._strictEncodeArguments(self.addOwner.functionSignature, [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.addOwner.estimateGasAsync.bind(
-                    self,
-                    owner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.addOwner.estimateGasAsync.bind(self, owner
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -580,27 +425,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
+            const encodedData = self._strictEncodeArguments(self.addOwner.functionSignature, [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             owner: string,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.addOwner.functionSignature, [owner
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'addOwner(address)',
         async callAsync(
             owner: string,
             callData: Partial<CallData> = {},
@@ -608,19 +446,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
+            const encodedData = self._strictEncodeArguments(self.addOwner.functionSignature, [owner
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.addOwner.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -629,6 +458,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public isConfirmed = {
+        functionSignature: 'isConfirmed(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -636,19 +466,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isConfirmed(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.isConfirmed.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isConfirmed(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.isConfirmed.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -662,21 +483,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+            const encodedData = self._strictEncodeArguments(self.changeTimeLock.functionSignature, [_secondsTimeLocked
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.changeTimeLock.estimateGasAsync.bind(
-                    self,
-                    _secondsTimeLocked
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.changeTimeLock.estimateGasAsync.bind(self, _secondsTimeLocked
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -684,27 +495,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+            const encodedData = self._strictEncodeArguments(self.changeTimeLock.functionSignature, [_secondsTimeLocked
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             _secondsTimeLocked: BigNumber,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.changeTimeLock.functionSignature, [_secondsTimeLocked
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'changeTimeLock(uint256)',
         async callAsync(
             _secondsTimeLocked: BigNumber,
             callData: Partial<CallData> = {},
@@ -712,19 +516,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+            const encodedData = self._strictEncodeArguments(self.changeTimeLock.functionSignature, [_secondsTimeLocked
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('changeTimeLock(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.changeTimeLock.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -733,6 +528,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public isAssetProxyRegistered = {
+        functionSignature: 'isAssetProxyRegistered(address)',
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -740,19 +536,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0
+            const encodedData = self._strictEncodeArguments(self.isAssetProxyRegistered.functionSignature, [index_0
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.isAssetProxyRegistered.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -761,6 +548,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public getConfirmationCount = {
+        functionSignature: 'getConfirmationCount(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -768,19 +556,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getConfirmationCount(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.getConfirmationCount.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getConfirmationCount(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getConfirmationCount.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -789,6 +568,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public transactions = {
+        functionSignature: 'transactions(uint256)',
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -796,19 +576,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<[string, BigNumber, string, boolean]
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('transactions(uint256)', [index_0
+            const encodedData = self._strictEncodeArguments(self.transactions.functionSignature, [index_0
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transactions(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.transactions.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[string, BigNumber, string, boolean]
         >(rawCallResult);
@@ -817,24 +588,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public getOwners = {
+        functionSignature: 'getOwners()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<string[]
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getOwners()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getOwners()');
+            const encodedData = self._strictEncodeArguments(self.getOwners.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getOwners.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string[]
         >(rawCallResult);
@@ -843,6 +606,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public getTransactionIds = {
+        functionSignature: 'getTransactionIds(uint256,uint256,bool,bool)',
         async callAsync(
             from: BigNumber,
             to: BigNumber,
@@ -853,22 +617,13 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<BigNumber[]
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getTransactionIds(uint256,uint256,bool,bool)', [from,
+            const encodedData = self._strictEncodeArguments(self.getTransactionIds.functionSignature, [from,
         to,
         pending,
         executed
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getTransactionIds(uint256,uint256,bool,bool)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getTransactionIds.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber[]
         >(rawCallResult);
@@ -877,6 +632,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public getConfirmations = {
+        functionSignature: 'getConfirmations(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -884,19 +640,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<string[]
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getConfirmations(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.getConfirmations.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getConfirmations(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.getConfirmations.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string[]
         >(rawCallResult);
@@ -905,24 +652,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public transactionCount = {
+        functionSignature: 'transactionCount()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('transactionCount()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transactionCount()');
+            const encodedData = self._strictEncodeArguments(self.transactionCount.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.transactionCount.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -936,21 +675,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+            const encodedData = self._strictEncodeArguments(self.changeRequirement.functionSignature, [_required
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.changeRequirement.estimateGasAsync.bind(
-                    self,
-                    _required
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.changeRequirement.estimateGasAsync.bind(self, _required
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -958,27 +687,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+            const encodedData = self._strictEncodeArguments(self.changeRequirement.functionSignature, [_required
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             _required: BigNumber,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.changeRequirement.functionSignature, [_required
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'changeRequirement(uint256)',
         async callAsync(
             _required: BigNumber,
             callData: Partial<CallData> = {},
@@ -986,19 +708,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+            const encodedData = self._strictEncodeArguments(self.changeRequirement.functionSignature, [_required
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('changeRequirement(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.changeRequirement.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1012,21 +725,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.confirmTransaction.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.confirmTransaction.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.confirmTransaction.estimateGasAsync.bind(self, transactionId
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -1034,27 +737,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.confirmTransaction.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.confirmTransaction.functionSignature, [transactionId
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'confirmTransaction(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -1062,19 +758,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.confirmTransaction.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('confirmTransaction(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.confirmTransaction.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1090,25 +777,15 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+            const encodedData = self._strictEncodeArguments(self.submitTransaction.functionSignature, [destination,
     value,
     data
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.submitTransaction.estimateGasAsync.bind(
-                    self,
-                    destination,
-                    value,
-                    data
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.submitTransaction.estimateGasAsync.bind(self, destination,
+    value,
+    data
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -1118,19 +795,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+            const encodedData = self._strictEncodeArguments(self.submitTransaction.functionSignature, [destination,
     value,
     data
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1139,12 +808,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.submitTransaction.functionSignature, [destination,
     value,
     data
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'submitTransaction(address,uint256,bytes)',
         async callAsync(
             destination: string,
             value: BigNumber,
@@ -1154,21 +824,12 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+            const encodedData = self._strictEncodeArguments(self.submitTransaction.functionSignature, [destination,
         value,
         data
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('submitTransaction(address,uint256,bytes)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.submitTransaction.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -1177,6 +838,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public confirmationTimes = {
+        functionSignature: 'confirmationTimes(uint256)',
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -1184,19 +846,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmationTimes(uint256)', [index_0
+            const encodedData = self._strictEncodeArguments(self.confirmationTimes.functionSignature, [index_0
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('confirmationTimes(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.confirmationTimes.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -1205,24 +858,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public MAX_OWNER_COUNT = {
+        functionSignature: 'MAX_OWNER_COUNT()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('MAX_OWNER_COUNT()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('MAX_OWNER_COUNT()');
+            const encodedData = self._strictEncodeArguments(self.MAX_OWNER_COUNT.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.MAX_OWNER_COUNT.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -1231,24 +876,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public required = {
+        functionSignature: 'required()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('required()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('required()');
+            const encodedData = self._strictEncodeArguments(self.required.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.required.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -1263,23 +900,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+            const encodedData = self._strictEncodeArguments(self.replaceOwner.functionSignature, [owner,
     newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.replaceOwner.estimateGasAsync.bind(
-                    self,
-                    owner,
-                    newOwner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.replaceOwner.estimateGasAsync.bind(self, owner,
+    newOwner
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -1288,18 +915,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+            const encodedData = self._strictEncodeArguments(self.replaceOwner.functionSignature, [owner,
     newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1307,11 +926,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             newOwner: string,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.replaceOwner.functionSignature, [owner,
     newOwner
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'replaceOwner(address,address)',
         async callAsync(
             owner: string,
             newOwner: string,
@@ -1320,20 +940,11 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+            const encodedData = self._strictEncodeArguments(self.replaceOwner.functionSignature, [owner,
         newOwner
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('replaceOwner(address,address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.replaceOwner.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1347,21 +958,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.executeTransaction.estimateGasAsync.bind(self, transactionId
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -1369,27 +970,20 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
             const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transactionId
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'executeTransaction(uint256)',
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -1397,19 +991,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): Promise<void
         > {
             const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+            const encodedData = self._strictEncodeArguments(self.executeTransaction.functionSignature, [transactionId
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.executeTransaction.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
         >(rawCallResult);
@@ -1426,7 +1011,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             _required: BigNumber,
             _secondsTimeLocked: BigNumber,
     ): Promise<AssetProxyOwnerContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -1463,33 +1048,10 @@ _secondsTimeLocked
 ],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_owners,
-_assetProxyContracts,
-_required,
-_secondsTimeLocked
-]);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`AssetProxyOwner successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new AssetProxyOwnerContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_owners,
-_assetProxyContracts,
-_required,
-_secondsTimeLocked
-];
-        return contractInstance;
+        return {} as any;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('AssetProxyOwner', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('AssetProxyOwner', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

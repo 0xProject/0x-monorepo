@@ -101,6 +101,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                     if (!this._config.shouldCollectTransactionTraces) {
                         next();
                     } else {
+                        // TODO(FFF): Replace with ethereumjs-utils parse transaction
                         const txData = utils.parseTransaction(payload.params[0]);
                         if (txData.to === null) {
                             txData.to = constants.NEW_CONTRACT;

@@ -68,6 +68,7 @@ export const signTypedDataUtils = {
                 encodedValues.push(normalizedValue);
             }
         }
+        // TODO(FFF): Replace with return data encoding
         return ethers.utils.defaultAbiCoder.encode(encodedTypes, encodedValues);
     },
     _normalizeValue(type: string, value: any): EIP712ObjectValue {

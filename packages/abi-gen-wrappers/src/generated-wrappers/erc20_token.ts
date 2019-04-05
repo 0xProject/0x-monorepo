@@ -6,8 +6,7 @@ import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact,
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethers from 'ethers';
-import * as _ from 'lodash';
+import { isUndefined } from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type ERC20TokenEventArgs =
@@ -43,23 +42,13 @@ export class ERC20TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [_spender,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(
-                    self,
-                    _spender,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.approve.estimateGasAsync.bind(self, _spender,
+    _value
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -68,18 +57,10 @@ export class ERC20TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [_spender,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -87,11 +68,12 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
         ): string {
             const self = this as any as ERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.approve.functionSignature, [_spender,
     _value
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'approve(address,uint256)',
         async callAsync(
             _spender: string,
             _value: BigNumber,
@@ -100,20 +82,11 @@ export class ERC20TokenContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+            const encodedData = self._strictEncodeArguments(self.approve.functionSignature, [_spender,
         _value
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.approve.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -122,24 +95,16 @@ export class ERC20TokenContract extends BaseContract {
         },
     };
     public totalSupply = {
+        functionSignature: 'totalSupply()',
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('totalSupply()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+            const encodedData = self._strictEncodeArguments(self.totalSupply.functionSignature, []);
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.totalSupply.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -155,25 +120,15 @@ export class ERC20TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
     _to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(
-                    self,
-                    _from,
-                    _to,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.transferFrom.estimateGasAsync.bind(self, _from,
+    _to,
+    _value
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -183,19 +138,11 @@ export class ERC20TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
     _to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -204,12 +151,13 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
         ): string {
             const self = this as any as ERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
     _to,
     _value
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'transferFrom(address,address,uint256)',
         async callAsync(
             _from: string,
             _to: string,
@@ -219,21 +167,12 @@ export class ERC20TokenContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const encodedData = self._strictEncodeArguments(self.transferFrom.functionSignature, [_from,
         _to,
         _value
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.transferFrom.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -242,6 +181,7 @@ export class ERC20TokenContract extends BaseContract {
         },
     };
     public balanceOf = {
+        functionSignature: 'balanceOf(address)',
         async callAsync(
             _owner: string,
             callData: Partial<CallData> = {},
@@ -249,19 +189,10 @@ export class ERC20TokenContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner
+            const encodedData = self._strictEncodeArguments(self.balanceOf.functionSignature, [_owner
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.balanceOf.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -276,23 +207,13 @@ export class ERC20TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<string> {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+            const encodedData = self._strictEncodeArguments(self.transfer.functionSignature, [_to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(
-                    self,
-                    _to,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const gasEstimateFunction = self.transfer.estimateGasAsync.bind(self, _to,
+    _value
+    );
+            const txHash = await self._sendTransactionAsync(self.address, encodedData, txData, gasEstimateFunction);
             return txHash;
         },
         async estimateGasAsync(
@@ -301,18 +222,10 @@ export class ERC20TokenContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+            const encodedData = self._strictEncodeArguments(self.transfer.functionSignature, [_to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._estimateGasAsync(self.address, encodedData, txData);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -320,11 +233,12 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
         ): string {
             const self = this as any as ERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+            const abiEncodedTransactionData = self._strictEncodeArguments(self.transfer.functionSignature, [_to,
     _value
     ]);
             return abiEncodedTransactionData;
         },
+        functionSignature: 'transfer(address,uint256)',
         async callAsync(
             _to: string,
             _value: BigNumber,
@@ -333,20 +247,11 @@ export class ERC20TokenContract extends BaseContract {
         ): Promise<boolean
         > {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+            const encodedData = self._strictEncodeArguments(self.transfer.functionSignature, [_to,
         _value
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.transfer.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
         >(rawCallResult);
@@ -355,6 +260,7 @@ export class ERC20TokenContract extends BaseContract {
         },
     };
     public allowance = {
+        functionSignature: 'allowance(address,address)',
         async callAsync(
             _owner: string,
             _spender: string,
@@ -363,20 +269,11 @@ export class ERC20TokenContract extends BaseContract {
         ): Promise<BigNumber
         > {
             const self = this as any as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('allowance(address,address)', [_owner,
+            const encodedData = self._strictEncodeArguments(self.allowance.functionSignature, [_owner,
         _spender
         ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+            const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+            const abiEncoder = self._lookupAbiEncoder(self.allowance.functionSignature);
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
         >(rawCallResult);
@@ -389,7 +286,7 @@ export class ERC20TokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<ERC20TokenContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -410,25 +307,10 @@ export class ERC20TokenContract extends BaseContract {
             [],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, []);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`ERC20Token successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ERC20TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [];
-        return contractInstance;
+        return {} as any;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('ERC20Token', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('ERC20Token', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

@@ -179,6 +179,7 @@ export class AbiDecoder {
         });
     }
     private _addEventABI(eventAbi: EventAbi, ethersInterface: ethers.utils.Interface): void {
+        // TODO(FFF): Replace with events decoder
         const topic = ethersInterface.events[eventAbi.name].topic;
         const numIndexedArgs = _.reduce(eventAbi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
         this._eventIds[topic] = {

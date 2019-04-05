@@ -1,21 +1,13 @@
+functionSignature: '{{this.functionSignature}}',
 async callAsync(
 {{> typed_params inputs=inputs}}
     callData: Partial<CallData> = {},
     defaultBlock?: BlockParam,
 ): Promise<{{> return_type outputs=outputs}}> {
     const self = this as any as {{contractName}}Contract;
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-    const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-        {
-            to: self.address,
-            ...callData,
-            data: encodedData,
-        },
-        self._web3Wrapper.getContractDefaults(),
-    );
-    const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-    BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
+    const encodedData = self._strictEncodeArguments(self.{{this.tsName}}.functionSignature, [{{> params inputs=inputs}}]);
+    const rawCallResult = await self._callAsync(self.address, encodedData, callData, defaultBlock);
+    const abiEncoder = self._lookupAbiEncoder(self.{{this.tsName}}.functionSignature);
     // tslint:disable boolean-naming
     const result = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
     // tslint:enable boolean-naming
