@@ -17,6 +17,10 @@
             {
                 "note": "Add `generatePseudoRandomOrderHash()` to `orderUtils`",
                 "pr": TODO
+            },
+            {
+                "note": "Inherit `OrderStatus` from `@0x/types`",
+                "pr": TODO
             }
         ]
     },
