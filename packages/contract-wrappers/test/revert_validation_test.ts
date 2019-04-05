@@ -2,7 +2,7 @@ import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { runMigrationsAsync } from '@0x/migrations';
 import { assetDataUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -105,11 +105,13 @@ describe('Revert Validation ExchangeWrapper', () => {
                 makerTokenBalance,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-            return expect(
-                contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress, {
-                    shouldValidate: true,
-                }),
-            ).to.be.rejectedWith('TRANSFER_FAILED');
+            const tx = contractWrappers.exchange.fillOrderAsync(
+                signedOrder,
+                takerTokenFillAmount,
+                takerAddress,
+                { shouldValidate: true },
+            );
+            return expect(tx).to.revertWith(RevertReason.TransferFailed);
         });
     });
 });
