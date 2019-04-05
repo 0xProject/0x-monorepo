@@ -2,7 +2,6 @@ import {
     addressUtils,
     chaiSetup,
     constants,
-    expectContractCallFailedAsync,
     LogDecoder,
     OrderFactory,
     provider,
@@ -10,7 +9,12 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import {
+    assetDataUtils,
+    ExchangeRevertErrors,
+    orderHashUtils,
+    signatureUtils
+} from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
@@ -130,41 +134,47 @@ describe('MixinSignatureValidator', () => {
         it('should revert when signature is empty', async () => {
             const emptySignature = '0x';
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectContractCallFailedAsync(
-                signatureValidator.publicIsValidSignature.callAsync(
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    emptySignature,
-                ),
-                RevertReason.LengthGreaterThan0Required,
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                orderHashHex,
+                ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
             );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                signedOrder.makerAddress,
+                emptySignature,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert when signature type is unsupported', async () => {
             const unsupportedSignatureType = SignatureType.NSignatureTypes;
             const unsupportedSignatureHex = `0x${Buffer.from([unsupportedSignatureType]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectContractCallFailedAsync(
-                signatureValidator.publicIsValidSignature.callAsync(
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    unsupportedSignatureHex,
-                ),
-                RevertReason.SignatureUnsupported,
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                orderHashHex,
+                ExchangeRevertErrors.SignatureErrorCode.Unsupported,
             );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                signedOrder.makerAddress,
+                unsupportedSignatureHex,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert when SignatureType=Illegal', async () => {
             const unsupportedSignatureHex = `0x${Buffer.from([SignatureType.Illegal]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectContractCallFailedAsync(
-                signatureValidator.publicIsValidSignature.callAsync(
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    unsupportedSignatureHex,
-                ),
-                RevertReason.SignatureIllegal,
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                orderHashHex,
+                ExchangeRevertErrors.SignatureErrorCode.Illegal,
             );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                signedOrder.makerAddress,
+                unsupportedSignatureHex,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should return false when SignatureType=Invalid and signature has a length of zero', async () => {
@@ -184,14 +194,16 @@ describe('MixinSignatureValidator', () => {
             const signatureBuffer = Buffer.concat([fillerData, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signatureBuffer);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            return expectContractCallFailedAsync(
-                signatureValidator.publicIsValidSignature.callAsync(
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    signatureHex,
-                ),
-                RevertReason.Length0Required,
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                orderHashHex,
+                ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
             );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                signedOrder.makerAddress,
+                signatureHex,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should return true when SignatureType=EIP712 and signature is valid', async () => {
@@ -344,14 +356,16 @@ describe('MixinSignatureValidator', () => {
                 ethUtil.toBuffer(`0x${SignatureType.Wallet}`),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            await expectContractCallFailedAsync(
-                signatureValidator.publicIsValidSignature.callAsync(
-                    orderHashHex,
-                    maliciousWallet.address,
-                    signatureHex,
-                ),
-                RevertReason.WalletError,
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                orderHashHex,
+                ExchangeRevertErrors.SignatureErrorCode.WalletError,
             );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                maliciousWallet.address,
+                signatureHex,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
@@ -390,10 +404,16 @@ describe('MixinSignatureValidator', () => {
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            await expectContractCallFailedAsync(
-                signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex),
-                RevertReason.ValidatorError,
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                orderHashHex,
+                ExchangeRevertErrors.SignatureErrorCode.ValidatorError,
             );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                signerAddress,
+                signatureHex,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false

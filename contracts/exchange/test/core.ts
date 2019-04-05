@@ -21,7 +21,6 @@ import {
     chaiSetup,
     constants,
     ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
@@ -56,7 +55,6 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:no-unnecessary-type-assertion
 describe('Exchange core', () => {
-    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -266,7 +264,7 @@ describe('Exchange core', () => {
             signedOrder.signature = invalidSigHex;
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 orderHashHex,
-                ExchangeRevertErrors.SignatureErrorCodes.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -276,10 +274,7 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHashHex,
-                OrderStatus.FullyFilled,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.FullyFilled);
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -303,7 +298,7 @@ describe('Exchange core', () => {
             signedOrder.signature = `0x0${SignatureType.Wallet}`;
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 orderHashHex,
-                ExchangeRevertErrors.SignatureErrorCodes.WalletError,
+                ExchangeRevertErrors.SignatureErrorCode.WalletError,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -320,7 +315,7 @@ describe('Exchange core', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 orderHashHex,
-                ExchangeRevertErrors.SignatureErrorCodes.ValidatorError,
+                ExchangeRevertErrors.SignatureErrorCode.ValidatorError,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -497,10 +492,7 @@ describe('Exchange core', () => {
 
         it('should throw if not sent by maker', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.InvalidMakerError(
-                orderHash,
-                takerAddress,
-            );
+            const expectedError = new ExchangeRevertErrors.InvalidMakerError(orderHash, takerAddress);
             const tx = exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -534,10 +526,7 @@ describe('Exchange core', () => {
         it('should be able to cancel an order', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHash,
-                OrderStatus.Cancelled,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
@@ -562,10 +551,7 @@ describe('Exchange core', () => {
         it('should throw if already cancelled', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHash,
-                OrderStatus.Cancelled,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
             const tx = exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -576,10 +562,7 @@ describe('Exchange core', () => {
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHash,
-                OrderStatus.Expired,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Expired);
             const tx = exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -610,7 +593,7 @@ describe('Exchange core', () => {
             const lesserOrderEpoch = new BigNumber(0);
             const expectedError = new ExchangeRevertErrors.OrderEpochError(
                 makerAddress,
-                ZERO_ADDRESS,
+                constants.NULL_ADDRESS,
                 orderEpoch.plus(1),
             );
             const tx = exchangeWrapper.cancelOrdersUpToAsync(lesserOrderEpoch, makerAddress);
@@ -622,7 +605,7 @@ describe('Exchange core', () => {
             await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
             const expectedError = new ExchangeRevertErrors.OrderEpochError(
                 makerAddress,
-                ZERO_ADDRESS,
+                constants.NULL_ADDRESS,
                 orderEpoch.plus(1),
             );
             const tx = exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
