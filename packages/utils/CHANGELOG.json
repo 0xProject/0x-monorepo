@@ -16,7 +16,7 @@
             },
             {
                 "note": "Add `RevertError`, `StringRevertError`, `AnyRevertError` types and associated utilities",
-                "pr": TODO
+                "pr": 1761
             }
         ],
         "timestamp": 1563006338

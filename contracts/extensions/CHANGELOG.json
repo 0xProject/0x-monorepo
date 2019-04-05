@@ -34,7 +34,7 @@
             },
             {
                 "note": "Update tests for rich reverts",
-                "pr": TODO
+                "pr": 1761
             }
         ],
         "timestamp": 1563006338

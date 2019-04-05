@@ -17,6 +17,10 @@
             {
                 "note": "Refactor example contracts that use `executeTransaction`",
                 "pr": 1753
+            },
+            {
+                "note": "Upgrade all string reverts to rich reverts",
+                "pr": 1761
             }
         ]
     },
