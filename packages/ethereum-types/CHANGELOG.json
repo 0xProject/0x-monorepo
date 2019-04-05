@@ -3,7 +3,7 @@
         "version": "2.2.0",
         "changes": [
             {
-                "note": "Add `RichRevertAbi` interface as part of `AbiDefinition` types",
+                "note": "Add `RevertErrorAbi` interface as part of `AbiDefinition` types",
                 "pr": 1761
             }
         ]

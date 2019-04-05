@@ -19,8 +19,8 @@
                 "pr": 1742
             },
             {
-                "note": "Add Exchange `RevertError` types",
-                "pr": TODO
+                "note": "Add Exchange `RevertError` types to `ExchangeRevertErrors`",
+                "pr": 1761
             }
         ]
     },
