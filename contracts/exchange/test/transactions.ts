@@ -4,7 +4,6 @@ import {
     chaiSetup,
     constants,
     ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
     OrderFactory,
     orderUtils,
     provider,
@@ -17,10 +16,12 @@ import {
     assetDataUtils,
     ExchangeRevertErrors,
     generatePseudoRandomSalt,
+    orderHashUtils,
     transactionHashUtils,
 } from '@0x/order-utils';
 import {
     EIP712DomainWithDefaultSchema,
+    OrderStatus,
     OrderWithoutDomain,
     RevertReason,
     SignedOrder,
@@ -36,7 +37,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('Exchange transactions', () => {
+describe('Exchange transactions', () => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;
@@ -153,9 +154,11 @@ describe.only('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
+                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTx);
                 const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                     transactionHashHex,
+                    new ExchangeRevertErrors.InvalidSenderError(orderHashHex, takerAddress).encode(),
                 );
                 const tx = exchangeWrapper.executeTransactionAsync(signedTx, takerAddress);
                 return expect(tx).to.revertWith(expectedError);
@@ -198,10 +201,13 @@ describe.only('Exchange transactions', () => {
 
             it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
-                    RevertReason.InvalidTxHash,
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTx);
+                const expectedError = new ExchangeRevertErrors.TransactionError(
+                    transactionHashHex,
+                    ExchangeRevertErrors.TransactionErrorCode.AlreadyExecuted,
                 );
+                const tx = exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
 
             it('should reset the currentContextAddress', async () => {
@@ -218,18 +224,25 @@ describe.only('Exchange transactions', () => {
             });
 
             it('should throw if not called by specified sender', async () => {
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
-                    RevertReason.FailedExecution,
+                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTx);
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashHex,
+                    new ExchangeRevertErrors.InvalidSenderError(orderHashHex, makerAddress).encode(),
                 );
+                const tx = exchangeWrapper.executeTransactionAsync(signedTx, makerAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
 
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
-                    RevertReason.OrderUnfillable,
+                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(
+                    orderHashHex,
+                    OrderStatus.Cancelled,
                 );
+                const tx = exchangeWrapper.fillOrderAsync(signedOrder, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
         });
 
@@ -271,17 +284,21 @@ describe.only('Exchange transactions', () => {
                     signedOrder.signature,
                 );
                 const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
-                return expectTransactionFailedAsync(
-                    exchangeWrapperContract.fillOrder.sendTransactionAsync(
-                        orderWithoutDomain,
-                        takerAssetFillAmount,
-                        signedFillTx.salt,
-                        signedOrder.signature,
-                        signedFillTx.signature,
-                        { from: takerAddress },
-                    ),
-                    RevertReason.FailedExecution,
+                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedFillTx);
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashHex,
+                    new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Cancelled).encode(),
                 );
+                const tx = exchangeWrapperContract.fillOrder.sendTransactionAsync(
+                    orderWithoutDomain,
+                    takerAssetFillAmount,
+                    signedFillTx.salt,
+                    signedOrder.signature,
+                    signedFillTx.signature,
+                    { from: takerAddress },
+                );
+                return expect(tx).to.revertWith(expectedError);
             });
 
             it("should not cancel an order if not called from the order's sender", async () => {
@@ -391,16 +408,14 @@ describe.only('Exchange transactions', () => {
             orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectTransactionFailedAsync(
-                whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutDomain,
-                    takerAssetFillAmount,
-                    salt,
-                    signedOrder.signature,
-                    { from: takerAddress },
-                ),
-                RevertReason.MakerNotWhitelisted,
+            const tx = whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
+                orderWithoutDomain,
+                takerAssetFillAmount,
+                salt,
+                signedOrder.signature,
+                { from: takerAddress },
             );
+            return expect(tx).to.revertWith(RevertReason.MakerNotWhitelisted);
         });
 
         it('should revert if taker has not been whitelisted', async () => {
@@ -413,16 +428,14 @@ describe.only('Exchange transactions', () => {
             orderWithoutDomain = orderUtils.getOrderWithoutDomain(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            return expectTransactionFailedAsync(
-                whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutDomain,
-                    takerAssetFillAmount,
-                    salt,
-                    signedOrder.signature,
-                    { from: takerAddress },
-                ),
-                RevertReason.TakerNotWhitelisted,
+            const tx = whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
+                orderWithoutDomain,
+                takerAssetFillAmount,
+                salt,
+                signedOrder.signature,
+                { from: takerAddress },
             );
+            return expect(tx).to.revertWith(RevertReason.TakerNotWhitelisted);
         });
 
         it('should fill the order if maker and taker have been whitelisted', async () => {
