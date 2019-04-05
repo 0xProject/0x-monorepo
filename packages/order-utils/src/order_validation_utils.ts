@@ -168,7 +168,7 @@ export class OrderValidationUtils {
             throw new Error('EXPIRED');
         }
         let fillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
-        if (!_.isUndefined(expectedFillTakerTokenAmount)) {
+        if (expectedFillTakerTokenAmount !== undefined) {
             fillTakerAssetAmount = expectedFillTakerTokenAmount;
         }
         await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(

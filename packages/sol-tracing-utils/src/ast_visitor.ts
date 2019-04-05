@@ -83,7 +83,7 @@ export class ASTVisitor {
         this._visitStatement(ast);
     }
     public ExpressionStatement(ast: Parser.ExpressionStatement): void {
-        if (!_.isNull(ast.expression)) {
+        if (ast.expression !== null) {
             this._visitStatement(ast.expression);
         }
     }

@@ -59,7 +59,7 @@ export async function createDirIfDoesNotExistAsync(dirPath: string): Promise<voi
 export function parseSolidityVersionRange(source: string): string {
     const SOLIDITY_VERSION_RANGE_REGEX = /pragma\s+solidity\s+(.*);/;
     const solcVersionRangeMatch = source.match(SOLIDITY_VERSION_RANGE_REGEX);
-    if (_.isNull(solcVersionRangeMatch)) {
+    if (solcVersionRangeMatch === null) {
         throw new Error('Could not find Solidity version range in source');
     }
     const solcVersionRange = solcVersionRangeMatch[1];
@@ -78,7 +78,7 @@ export function parseSolidityVersionRange(source: string): string {
 export function getNormalizedErrMsg(errMsg: string): string {
     const SOLIDITY_FILE_EXTENSION_REGEX = /(.*\.sol):/;
     const errPathMatch = errMsg.match(SOLIDITY_FILE_EXTENSION_REGEX);
-    if (_.isNull(errPathMatch)) {
+    if (errPathMatch === null) {
         // This can occur if solidity outputs a general warning, e.g
         // Warning: This is a pre-release compiler version, please do not use it in production.
         return errMsg;
@@ -102,9 +102,9 @@ export function parseDependencies(contractSource: ContractSource): string[] {
     const dependencies: string[] = [];
     const lines = source.split('\n');
     _.forEach(lines, line => {
-        if (!_.isNull(line.match(IMPORT_REGEX))) {
+        if (line.match(IMPORT_REGEX) !== null) {
             const dependencyMatch = line.match(DEPENDENCY_PATH_REGEX);
-            if (!_.isNull(dependencyMatch)) {
+            if (dependencyMatch !== null) {
                 let dependencyPath = dependencyMatch[1];
                 if (dependencyPath.startsWith('.')) {
                     dependencyPath = path.join(path.dirname(contractSource.path), dependencyPath);

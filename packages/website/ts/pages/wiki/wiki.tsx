@@ -58,11 +58,11 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         clearTimeout(this._wikiBackoffTimeoutId);
     }
     public render(): React.ReactNode {
-        const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
+        const sectionNameToLinks = this.state.articlesBySection === undefined
             ? {}
             : this._getSectionNameToLinks(this.state.articlesBySection);
 
-        const mainContent = _.isUndefined(this.state.articlesBySection) ? (
+        const mainContent = this.state.articlesBySection === undefined ? (
             <div className="flex justify-center">{this._renderLoading()}</div>
         ) : (
             <div id="wiki" style={{ paddingRight: 2 }}>
@@ -70,7 +70,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             </div>
         );
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
-        const sidebar = _.isUndefined(this.state.articlesBySection) ? (
+        const sidebar = this.state.articlesBySection === undefined ? (
             <div />
         ) : (
             <NestedSidebarMenu

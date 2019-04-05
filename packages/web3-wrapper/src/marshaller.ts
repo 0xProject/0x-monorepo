@@ -45,7 +45,7 @@ export const marshaller = {
             gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
             size: utils.convertHexToNumber(blockWithHexValues.size),
             timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
+            number: blockWithHexValues.number === null ? null : utils.convertHexToNumber(blockWithHexValues.number),
             difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
             totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
         };
@@ -63,7 +63,7 @@ export const marshaller = {
             gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
             size: utils.convertHexToNumber(blockWithHexValues.size),
             timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
+            number: blockWithHexValues.number === null ? null : utils.convertHexToNumber(blockWithHexValues.number),
             difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
             totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
             transactions: [] as Transaction[],
@@ -82,8 +82,8 @@ export const marshaller = {
     unmarshalTransaction(txRpc: TransactionRPC): Transaction {
         const tx = {
             ...txRpc,
-            blockNumber: !_.isNull(txRpc.blockNumber) ? utils.convertHexToNumber(txRpc.blockNumber) : null,
-            transactionIndex: !_.isNull(txRpc.transactionIndex)
+            blockNumber: txRpc.blockNumber !== null ? utils.convertHexToNumber(txRpc.blockNumber) : null,
+            transactionIndex: txRpc.transactionIndex !== null
                 ? utils.convertHexToNumber(txRpc.transactionIndex)
                 : null,
             nonce: utils.convertHexToNumber(txRpc.nonce),

@@ -41,7 +41,7 @@ export const orderProviderResponseProcessor = {
         // set the orders to be sorted equal to the filtered orders
         let unsortedOrders = filteredOrders;
         // if an orderValidator is provided, use on chain information to calculate remaining fillable makerAsset amounts
-        if (!_.isUndefined(orderValidator)) {
+        if (orderValidator !== undefined) {
             const takerAddresses = _.map(filteredOrders, () => constants.NULL_ADDRESS);
             try {
                 const ordersAndTradersInfo = await orderValidator.getOrdersAndTradersInfoAsync(

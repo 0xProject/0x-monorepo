@@ -19,10 +19,10 @@ export const trackedTokenStorage = {
     addTrackedTokenToUser(userAddress: string, networkId: number, token: Token): void {
         const trackedTokensByUserAddress = trackedTokenStorage.getTrackedTokensByUserAddress();
         let trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
-        if (_.isUndefined(trackedTokensByNetworkId)) {
+        if (trackedTokensByNetworkId === undefined) {
             trackedTokensByNetworkId = {};
         }
-        const trackedTokens = !_.isUndefined(trackedTokensByNetworkId[networkId])
+        const trackedTokens = trackedTokensByNetworkId[networkId] !== undefined
             ? trackedTokensByNetworkId[networkId]
             : [];
         trackedTokens.push(token);
@@ -47,7 +47,7 @@ export const trackedTokenStorage = {
         }
         const trackedTokensByUserAddress = JSON.parse(trackedTokensJSONString);
         const trackedTokensByNetworkId = trackedTokensByUserAddress[userAddress];
-        if (_.isUndefined(trackedTokensByNetworkId)) {
+        if (trackedTokensByNetworkId === undefined) {
             return trackedTokensByAddress;
         }
         const trackedTokens = trackedTokensByNetworkId[networkId];

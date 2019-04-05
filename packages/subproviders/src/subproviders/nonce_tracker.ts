@@ -20,7 +20,7 @@ export class NonceTrackerSubprovider extends Subprovider {
     private readonly _nonceCache: { [address: string]: string } = {};
     private static _reconstructTransaction(payload: JSONRPCRequestPayload): EthereumTx {
         const raw = payload.params[0];
-        if (_.isUndefined(raw)) {
+        if (raw === undefined) {
             throw new Error(NonceSubproviderErrors.EmptyParametersFound);
         }
         const rawData = ethUtil.toBuffer(raw);
@@ -61,11 +61,11 @@ export class NonceTrackerSubprovider extends Subprovider {
                 if (requestDefaultBlock === BlockParamLiteral.Pending) {
                     const address = NonceTrackerSubprovider._determineAddress(payload);
                     const cachedResult = this._nonceCache[address];
-                    if (!_.isUndefined(cachedResult)) {
+                    if (cachedResult !== undefined) {
                         return end(null, cachedResult);
                     } else {
                         return next((requestError: Error | null, requestResult: any, cb: Callback) => {
-                            if (_.isNull(requestError)) {
+                            if (requestError === null) {
                                 this._nonceCache[address] = requestResult as string;
                             }
                             cb();
@@ -76,7 +76,7 @@ export class NonceTrackerSubprovider extends Subprovider {
                 }
             case 'eth_sendRawTransaction':
                 return next((sendTransactionError: Error | null, _txResult: any, cb: Callback) => {
-                    if (_.isNull(sendTransactionError)) {
+                    if (sendTransactionError === null) {
                         this._handleSuccessfulTransaction(payload);
                     } else {
                         this._handleSendTransactionError(payload, sendTransactionError);

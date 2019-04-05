@@ -43,7 +43,7 @@ export const dispenseAssetTasks = {
             logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);
             const tokenIfExists = _.get(TOKENS_BY_NETWORK, [networkId, tokenSymbol]);
-            if (_.isUndefined(tokenIfExists)) {
+            if (tokenIfExists === undefined) {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
             const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);

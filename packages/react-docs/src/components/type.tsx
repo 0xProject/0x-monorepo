@@ -104,7 +104,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             break;
 
         case TypeDocTypes.Reflection:
-            if (!_.isUndefined(type.method)) {
+            if (type.method !== undefined) {
                 typeName = (
                     <Signature
                         name={type.method.name}
@@ -119,7 +119,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                         isInPopover={props.isInPopover}
                     />
                 );
-            } else if (!_.isUndefined(type.indexSignature)) {
+            } else if (type.indexSignature !== undefined) {
                 const is = type.indexSignature;
                 const param = (
                     <span key={`indexSigParams-${is.keyName}-${is.keyType}-${type.name}`}>
@@ -204,8 +204,8 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
     });
 
     const isExportedClassReference = !!props.type.isExportedClassReference;
-    const typeNameUrlIfExists = !_.isUndefined(props.type.externalLink) ? props.type.externalLink : undefined;
-    if (!_.isUndefined(typeNameUrlIfExists)) {
+    const typeNameUrlIfExists = props.type.externalLink !== undefined ? props.type.externalLink : undefined;
+    if (typeNameUrlIfExists !== undefined) {
         typeName = props.isInPopover ? (
             <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
         ) : (

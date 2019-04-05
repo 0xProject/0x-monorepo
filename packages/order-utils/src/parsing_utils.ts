@@ -6,7 +6,7 @@ export const orderParsingUtils = {
         const result = _.assign({}, obj);
         _.each(fields, field => {
             _.update(result, field, (value: string) => {
-                if (_.isUndefined(value)) {
+                if (value === undefined) {
                     throw new Error(`Could not find field '${field}' while converting string fields to BigNumber.`);
                 }
                 return new BigNumber(value);

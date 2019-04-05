@@ -48,7 +48,7 @@ export function getRevertTrace(structLogs: StructLog[], startAddress: string): E
         } else if (utils.isEndOpcode(structLog.op) && structLog.op !== OpCode.Revert) {
             // Just like with calls, sometimes returns/stops don't change the execution context (current address).
             const nextStructLog = structLogs[i + 1];
-            if (_.isUndefined(nextStructLog) || nextStructLog.depth !== structLog.depth) {
+            if (nextStructLog === undefined || nextStructLog.depth !== structLog.depth) {
                 evmCallStack.pop();
                 addressStack.pop();
             }

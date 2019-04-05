@@ -50,7 +50,7 @@ export const utils = {
     },
     convertToUnixTimestampSeconds(date: moment.Moment, time?: moment.Moment): BigNumber {
         const finalMoment = date;
-        if (!_.isUndefined(time)) {
+        if (time !== undefined) {
             finalMoment.hours(time.hours());
             finalMoment.minutes(time.minutes());
         }
@@ -201,7 +201,7 @@ export const utils = {
         injectedProviderName: string,
         userAddress?: string,
     ): AccountState {
-        const isAddressAvailable = !_.isUndefined(userAddress) && !_.isEmpty(userAddress);
+        const isAddressAvailable = userAddress !== undefined && !_.isEmpty(userAddress);
         const isExternallyInjectedProvider = utils.isExternallyInjected(providerType, injectedProviderName);
         if (!isBlockchainReady) {
             return AccountState.Loading;
@@ -222,11 +222,11 @@ export const utils = {
         const tokenWithSameNameIfExists = _.find(registeredTokens, {
             name: token.name,
         });
-        const isUniqueName = _.isUndefined(tokenWithSameNameIfExists);
+        const isUniqueName = tokenWithSameNameIfExists === undefined;
         const tokenWithSameSymbolIfExists = _.find(registeredTokens, {
             name: token.symbol,
         });
-        const isUniqueSymbol = _.isUndefined(tokenWithSameSymbolIfExists);
+        const isUniqueSymbol = tokenWithSameSymbolIfExists === undefined;
         return isUniqueName && isUniqueSymbol;
     },
     zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
@@ -290,7 +290,7 @@ export const utils = {
     },
     getCurrentBaseUrl(): string {
         const port = window.location.port;
-        const hasPort = !_.isUndefined(port);
+        const hasPort = port !== undefined;
         const baseUrl = `https://${window.location.hostname}${hasPort ? `:${port}` : ''}`;
         return baseUrl;
     },
@@ -318,9 +318,9 @@ export const utils = {
             parsedProviderName = Providers.Parity;
         } else if ((provider as any).isMetaMask) {
             parsedProviderName = Providers.Metamask;
-        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+        } else if (_.get(window, 'SOFA') !== undefined) {
             parsedProviderName = Providers.CoinbaseWallet;
-        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+        } else if (_.get(window, '__CIPHER__') !== undefined) {
             parsedProviderName = Providers.Cipher;
         }
         return parsedProviderName;
@@ -442,7 +442,7 @@ export const utils = {
         }
     },
     isTokenTracked(token: Token): boolean {
-        return !_.isUndefined(token.trackedTimestamp);
+        return token.trackedTimestamp !== undefined;
     },
     // Returns a [downloadLink, isOnMobile] tuple.
     getBestWalletDownloadLinkAndIsMobile(): [string, boolean] {

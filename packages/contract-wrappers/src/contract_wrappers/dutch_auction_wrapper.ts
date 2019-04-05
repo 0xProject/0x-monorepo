@@ -88,7 +88,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
      */
     public constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).dutchAuction : address;
+        this.address = address === undefined ? _getDefaultContractAddresses(networkId).dutchAuction : address;
     }
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
@@ -167,7 +167,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
         return auctionDetails;
     }
     private async _getDutchAuctionContractAsync(): Promise<DutchAuctionContract> {
-        if (!_.isUndefined(this._dutchAuctionContractIfExists)) {
+        if (this._dutchAuctionContractIfExists !== undefined) {
             return this._dutchAuctionContractIfExists;
         }
         const contractInstance = new DutchAuctionContract(

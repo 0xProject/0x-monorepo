@@ -35,7 +35,7 @@ export abstract class AbstractSetDataType extends DataType {
         this._isArray = isArray;
         this._arrayLength = arrayLength;
         this._arrayElementType = arrayElementType;
-        if (isArray && !_.isUndefined(arrayLength)) {
+        if (isArray && arrayLength !== undefined) {
             [this._members, this._memberIndexByName] = this._createMembersWithLength(dataItem, arrayLength);
         } else if (!isArray) {
             [this._members, this._memberIndexByName] = this._createMembersWithKeys(dataItem);
@@ -54,7 +54,7 @@ export abstract class AbstractSetDataType extends DataType {
         let members = this._members;
         // Case 1: This is an array of undefined length, which means that `this._members` was not
         //         populated in the constructor. So we must construct the set of members now.
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             const arrayLengthBuf = calldata.popWord();
             const arrayLengthHex = ethUtil.bufferToHex(arrayLengthBuf);
             const arrayLength = new BigNumber(arrayLengthHex, constants.HEX_BASE);
@@ -86,22 +86,22 @@ export abstract class AbstractSetDataType extends DataType {
 
     public isStatic(): boolean {
         // An array with an undefined length is never static.
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             return false;
         }
         // If any member of the set is a pointer then the set is not static.
         const dependentMember = _.find(this._members, (member: DataType) => {
             return member instanceof AbstractPointerDataType;
         });
-        const isStatic = _.isUndefined(dependentMember);
+        const isStatic = dependentMember === undefined;
         return isStatic;
     }
 
     public getDefaultValue(rules?: DecodingRules): any[] | object {
         let defaultValue: any[] | object;
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             defaultValue = [];
-        } else if (!_.isUndefined(rules) && rules.shouldConvertStructsToObjects && !this._isArray) {
+        } else if (rules !== undefined && rules.shouldConvertStructsToObjects && !this._isArray) {
             defaultValue = {};
             _.each(this._memberIndexByName, (idx: number, key: string) => {
                 const member = this._members[idx];
@@ -120,7 +120,7 @@ export abstract class AbstractSetDataType extends DataType {
 
     protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): SetCalldataBlock {
         // Sanity check: if the set has a defined length then `value` must have the same length.
-        if (!_.isUndefined(this._arrayLength) && value.length !== this._arrayLength) {
+        if (this._arrayLength !== undefined && value.length !== this._arrayLength) {
             throw new Error(
                 `Expected array of ${JSON.stringify(
                     this._arrayLength,
@@ -128,11 +128,11 @@ export abstract class AbstractSetDataType extends DataType {
             );
         }
         // Create a new calldata block for this set.
-        const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // If this set has an undefined length then set its header to be the number of elements.
         let members = this._members;
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             [members] = this._createMembersWithLength(this.getDataItem(), value.length);
             const lenBuf = ethUtil.setLengthLeft(
                 ethUtil.toBuffer(`0x${value.length.toString(constants.HEX_BASE)}`),
@@ -152,7 +152,7 @@ export abstract class AbstractSetDataType extends DataType {
 
     protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): SetCalldataBlock {
         // Create a new calldata block for this set.
-        const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // Create blocks for members of set.
         const memberCalldataBlocks: CalldataBlock[] = [];
@@ -186,7 +186,7 @@ export abstract class AbstractSetDataType extends DataType {
 
     private _createMembersWithKeys(dataItem: DataItem): [DataType[], MemberIndexByName] {
         // Sanity check
-        if (_.isUndefined(dataItem.components)) {
+        if (dataItem.components === undefined) {
             throw new Error(
                 `Tried to create a set using key/value pairs, but no components were defined by the input DataItem '${
                     dataItem.name
@@ -212,7 +212,7 @@ export abstract class AbstractSetDataType extends DataType {
                 name: `${dataItem.name}.${memberName}`,
             };
             const components = memberItem.components;
-            if (!_.isUndefined(components)) {
+            if (components !== undefined) {
                 childDataItem.components = components;
             }
             const child = this.getFactory().create(childDataItem, this);
@@ -229,11 +229,11 @@ export abstract class AbstractSetDataType extends DataType {
         const range = _.range(length);
         _.each(range, (idx: number) => {
             const memberDataItem: DataItem = {
-                type: _.isUndefined(this._arrayElementType) ? '' : this._arrayElementType,
+                type: this._arrayElementType === undefined ? '' : this._arrayElementType,
                 name: `${dataItem.name}[${idx.toString(constants.DEC_BASE)}]`,
             };
             const components = dataItem.components;
-            if (!_.isUndefined(components)) {
+            if (components !== undefined) {
                 memberDataItem.components = components;
             }
             const memberType = this.getFactory().create(memberDataItem, this);

@@ -46,7 +46,7 @@ export abstract class ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
-        this._blockPollingIntervalMs = _.isUndefined(blockPollingIntervalMs)
+        this._blockPollingIntervalMs = blockPollingIntervalMs === undefined
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
             : blockPollingIntervalMs;
         this._filters = {};
@@ -62,10 +62,10 @@ export abstract class ContractWrapper {
         });
     }
     protected _unsubscribe(filterToken: string, err?: Error): void {
-        if (_.isUndefined(this._filters[filterToken])) {
+        if (this._filters[filterToken] === undefined) {
             throw new Error(ContractWrappersError.SubscriptionNotFound);
         }
-        if (!_.isUndefined(err)) {
+        if (err !== undefined) {
             const callback = this._filterCallbacks[filterToken];
             callback(err, undefined);
         }
@@ -84,7 +84,7 @@ export abstract class ContractWrapper {
         isVerbose: boolean = false,
     ): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
-        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists === undefined) {
             this._startBlockAndLogStream(isVerbose);
         }
         const filterToken = filterUtils.generateUUID();
@@ -125,7 +125,7 @@ export abstract class ContractWrapper {
         });
     }
     private _startBlockAndLogStream(isVerbose: boolean): void {
-        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists !== undefined) {
             throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
@@ -176,7 +176,7 @@ export abstract class ContractWrapper {
         return logs as RawLogEntry[];
     }
     private _stopBlockAndLogStream(): void {
-        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists === undefined) {
             throw new Error(ContractWrappersError.SubscriptionNotFound);
         }
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
@@ -186,11 +186,11 @@ export abstract class ContractWrapper {
     }
     private async _reconcileBlockAsync(): Promise<void> {
         const latestBlockOrNull = await this._blockstreamGetLatestBlockOrNullAsync();
-        if (_.isNull(latestBlockOrNull)) {
+        if (latestBlockOrNull === null) {
             return; // noop
         }
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
-        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists !== undefined) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
             await this._blockAndLogStreamerIfExists.reconcileNewBlock(latestBlockOrNull);
         }

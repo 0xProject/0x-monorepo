@@ -10,10 +10,10 @@ const sourceHashToCoverageEntries: { [sourceHash: string]: CoverageEntriesDescri
 
 export const collectCoverageEntries = (contractSource: string, ignoreRegexp?: RegExp) => {
     const sourceHash = ethUtil.sha3(contractSource).toString('hex');
-    if (_.isUndefined(sourceHashToCoverageEntries[sourceHash]) && !_.isUndefined(contractSource)) {
+    if (sourceHashToCoverageEntries[sourceHash] === undefined && contractSource !== undefined) {
         const ast = parser.parse(contractSource, { range: true });
         const offsetToLocation = getOffsetToLocation(contractSource);
-        const ignoreRangesBeginningAt = _.isUndefined(ignoreRegexp)
+        const ignoreRangesBeginningAt = ignoreRegexp === undefined
             ? []
             : gatherRangesToIgnore(contractSource, ignoreRegexp);
         const visitor = new ASTVisitor(offsetToLocation, ignoreRangesBeginningAt);

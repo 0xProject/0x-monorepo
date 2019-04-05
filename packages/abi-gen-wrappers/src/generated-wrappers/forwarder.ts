@@ -461,7 +461,7 @@ export class ForwarderContract extends BaseContract {
             _zrxAssetData: string,
             _wethAssetData: string,
     ): Promise<ForwarderContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);

@@ -36,7 +36,7 @@ export class ScalingAmountInput extends React.PureComponent<ScalingAmountInputPr
     public constructor(props: ScalingAmountInputProps) {
         super(props);
         this.state = {
-            stringValue: _.isUndefined(props.value) ? '' : props.value.toString(),
+            stringValue: props.value === undefined ? '' : props.value.toString(),
         };
     }
     public componentDidUpdate(): void {
@@ -49,7 +49,7 @@ export class ScalingAmountInput extends React.PureComponent<ScalingAmountInputPr
             // we dont expect to ever get into this state, but let's make sure
             // we reset if we do since we're dealing with important numbers
             this.setState({
-                stringValue: _.isUndefined(currentValue) ? '' : currentValue.toString(),
+                stringValue: currentValue === undefined ? '' : currentValue.toString(),
             });
         }
     }

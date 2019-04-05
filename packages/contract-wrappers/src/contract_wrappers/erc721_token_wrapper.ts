@@ -454,7 +454,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
     private async _getTokenContractAsync(tokenAddress: string): Promise<ERC721TokenContract> {
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         let tokenContract = this._tokenContractsByAddress[normalizedTokenAddress];
-        if (!_.isUndefined(tokenContract)) {
+        if (tokenContract !== undefined) {
             return tokenContract;
         }
         const contractInstance = new ERC721TokenContract(

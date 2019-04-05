@@ -488,7 +488,7 @@ export class IAssetProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<IAssetProxyContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);

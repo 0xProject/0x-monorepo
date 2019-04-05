@@ -97,7 +97,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     private _displayAmountOrPlaceholder(weiAmount?: BigNumber): React.ReactNode {
         const { baseCurrency, isLoading } = this.props;
 
-        if (_.isUndefined(weiAmount)) {
+        if (weiAmount === undefined) {
             return (
                 <Container opacity={0.5}>
                     <AmountPlaceholder color={ColorOption.lightGrey} isPulsating={isLoading} />
@@ -123,10 +123,10 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
 
         // Display as 0 if we have a selected asset
         const displayNumTokens =
-            assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(numTokens)
+            assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && numTokens === undefined
                 ? new BigNumber(0)
                 : numTokens;
-        if (!_.isUndefined(displayNumTokens)) {
+        if (displayNumTokens !== undefined) {
             let numTokensWithSymbol: React.ReactNode = displayNumTokens.toString();
             if (assetName) {
                 numTokensWithSymbol += ` ${assetName}`;
@@ -153,8 +153,8 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
         const buyQuoteAccessor = oc(this.props.buyQuoteInfo);
         const assetTotalInWei = buyQuoteAccessor.assetEthAmount();
         const selectedAssetUnitAmount = this.props.selectedAssetUnitAmount;
-        return !_.isUndefined(assetTotalInWei) &&
-            !_.isUndefined(selectedAssetUnitAmount) &&
+        return assetTotalInWei !== undefined &&
+            selectedAssetUnitAmount !== undefined &&
             !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
             ? assetTotalInWei.div(selectedAssetUnitAmount).integerValue(BigNumber.ROUND_CEIL)
             : undefined;

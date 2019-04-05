@@ -30,7 +30,7 @@ const SEPARATOR = ',';
             default: false,
         })
         .help().argv;
-    const contracts = _.isUndefined(argv.contracts)
+    const contracts = argv.contracts === undefined
         ? undefined
         : argv.contracts === DEFAULT_CONTRACTS_LIST
         ? DEFAULT_CONTRACTS_LIST

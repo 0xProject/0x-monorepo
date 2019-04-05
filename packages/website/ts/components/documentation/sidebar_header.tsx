@@ -34,9 +34,9 @@ export const SidebarHeader: React.StatelessComponent<SidebarHeaderProps> = ({
                         {title}
                     </Text>
                 </Container>
-                {!_.isUndefined(docsVersion) &&
-                    !_.isUndefined(availableDocVersions) &&
-                    !_.isUndefined(onVersionSelected) && (
+                {docsVersion !== undefined &&
+                    availableDocVersions !== undefined &&
+                    onVersionSelected !== undefined && (
                         <div className="col col-4 pl1" style={{ alignSelf: 'flex-end', paddingBottom: 4 }}>
                             <Container className="right">
                                 <VersionDropDown
