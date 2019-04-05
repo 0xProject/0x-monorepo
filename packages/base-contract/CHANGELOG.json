@@ -4,11 +4,11 @@
         "changes": [
             {
                 "note": "Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult`",
-                "pr": TODO
+                "pr": 1761
             },
             {
                 "note": "Remove dependency on ether.js",
-                "pr": TODO
+                "pr": 1761
             }
         ]
     },
