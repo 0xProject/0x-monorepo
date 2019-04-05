@@ -111,9 +111,10 @@ export class DocGenerateAndUploadUtils {
                     _.each(exportClause.elements, element => {
                         const exportItem = element.name.escapedText;
                         if (!_.includes(exportsToOmit, exportItem)) {
-                            exportPathToExportedItems[exportPath] = exportPathToExportedItems[exportPath] === undefined
-                                ? [exportItem]
-                                : [...exportPathToExportedItems[exportPath], exportItem];
+                            exportPathToExportedItems[exportPath] =
+                                exportPathToExportedItems[exportPath] === undefined
+                                    ? [exportItem]
+                                    : [...exportPathToExportedItems[exportPath], exportItem];
                         }
                     });
                     if (exportPathToExportedItems[exportPath] !== undefined) {
@@ -127,14 +128,16 @@ export class DocGenerateAndUploadUtils {
                     let exportPath = './index';
                     if (foundNode.parent && foundNode.parent.name) {
                         const exportItem = foundNode.parent.name.escapedText;
-                        const isExportImportRequireStatement = _.get(foundNode, 'parent.moduleReference.expression.text'), !== undefined;
+                        const isExportImportRequireStatement =
+                            _.get(foundNode, 'parent.moduleReference.expression.text') !== undefined;
                         if (isExportImportRequireStatement) {
                             exportPath = foundNode.parent.moduleReference.expression.text;
                         }
                         if (!_.includes(exportsToOmit, exportItem)) {
-                            exportPathToExportedItems[exportPath] = exportPathToExportedItems[exportPath] === undefined
-                                ? [exportItem]
-                                : [...exportPathToExportedItems[exportPath], exportItem];
+                            exportPathToExportedItems[exportPath] =
+                                exportPathToExportedItems[exportPath] === undefined
+                                    ? [exportItem]
+                                    : [...exportPathToExportedItems[exportPath], exportItem];
                         }
                     }
                     if (
@@ -249,9 +252,10 @@ export class DocGenerateAndUploadUtils {
         const exportPathToTypedocNames: ExportNameToTypedocNames = {};
         _.each(modifiedTypedocOutput.children, file => {
             const exportPath = this._findExportPathGivenTypedocName(file.name);
-            exportPathToTypedocNames[exportPath] = exportPathToTypedocNames[exportPath] === undefined
-                ? [file.name]
-                : [...exportPathToTypedocNames[exportPath], file.name];
+            exportPathToTypedocNames[exportPath] =
+                exportPathToTypedocNames[exportPath] === undefined
+                    ? [file.name]
+                    : [...exportPathToTypedocNames[exportPath], file.name];
         });
 
         // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON

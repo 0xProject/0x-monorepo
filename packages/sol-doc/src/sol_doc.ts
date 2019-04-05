@@ -46,10 +46,10 @@ export class SolDoc {
         if (
             devdocIfExists !== undefined &&
             devdocIfExists.methods !== undefined &&
-            devdocIfExists.methods.methodSignature !== undefined &&
-            devdocIfExists.methods.methodSignature.details !== undefined
+            devdocIfExists.methods[methodSignature] !== undefined &&
+            devdocIfExists.methods[methodSignature].details !== undefined
         ) {
-            details = devdocIfExists.methods.methodSignature.details;
+            details = devdocIfExists.methods[methodSignature].details;
         }
 
         return details;

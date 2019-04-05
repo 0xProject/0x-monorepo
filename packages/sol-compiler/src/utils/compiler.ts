@@ -369,7 +369,7 @@ export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean
  * @param compiledContract The standard JSON output section for a contract. Geth modified in place.
  */
 export function addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
-    if (compiledContract.evm === undefined) {
+    if (compiledContract.evm !== undefined) {
         if (compiledContract.evm.bytecode !== undefined && compiledContract.evm.bytecode.object !== undefined) {
             compiledContract.evm.bytecode.object = ethUtil.addHexPrefix(compiledContract.evm.bytecode.object);
         }
