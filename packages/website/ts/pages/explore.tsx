@@ -340,6 +340,8 @@ const ExploreHero = (props: ExploreHeroProps) => {
 const ExploreToolBarWrapper = styled.div`
     display: flex;
     justify-content: space-between;
+    z-index: 1;
+    position: relative;
     ${addFadeInAnimation('0.5s', '0.15s')}
     @media (max-width: 36rem) {
         display: block;
