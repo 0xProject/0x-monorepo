@@ -6,7 +6,6 @@ import {
     BalanceAmountScenario,
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     FillScenario,
@@ -28,14 +27,7 @@ import {
     OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import {
-    BigNumber,
-    errorUtils,
-    logUtils,
-    providerUtils,
-    RevertError,
-    StringRevertError,
-} from '@0x/utils';
+import { BigNumber, errorUtils, logUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, TxData } from 'ethereum-types';
@@ -449,11 +441,7 @@ export class FillOrderCombinatorialUtils {
         fillRevertReasonIfExists: RevertReason | RevertError | undefined,
     ): Promise<void> {
         if (!_.isUndefined(fillRevertReasonIfExists)) {
-            const tx = this.exchangeWrapper.fillOrderAsync(
-                signedOrder,
-                this.takerAddress,
-                { takerAssetFillAmount },
-            );
+            const tx = this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(fillRevertReasonIfExists);
         }
 
@@ -954,13 +942,16 @@ function validationErrorToRevertError(order: Order, reason: RevertReason): Rever
         case RevertReason.OrderUnfillable:
             return new ExchangeRevertErrors.OrderStatusError(orderHash);
         case RevertReason.InvalidTakerAmount:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.InvalidTakerAmount);
+            return new ExchangeRevertErrors.FillError(
+                orderHash,
+                ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount,
+            );
         case RevertReason.TakerOverpay:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.TakerOverpay);
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.TakerOverpay);
         case RevertReason.OrderOverfill:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.Overfill);
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.Overfill);
         case RevertReason.InvalidFillPrice:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCodes.InvalidFillPrice);
+            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.InvalidFillPrice);
         case RevertReason.TransferFailed:
             return new ExchangeRevertErrors.AssetProxyTransferError(orderHash, undefined, 'TRANSFER_FAILED');
         default:
