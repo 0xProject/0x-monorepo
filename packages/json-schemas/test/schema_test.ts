@@ -214,6 +214,8 @@ describe('Schema', () => {
             takerAssetAmount: '2',
             makerAssetData: NULL_ADDRESS,
             takerAssetData: NULL_ADDRESS,
+            makerFeeAssetData: NULL_ADDRESS,
+            takerFeeAssetData: NULL_ADDRESS,
             salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
             feeRecipientAddress: NULL_ADDRESS,
             expirationTimeSeconds: '42',
