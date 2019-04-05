@@ -124,6 +124,8 @@ const ExploreGridList = styled.div<ExploreGridListProps>`
     grid-template-columns: repeat(${ExploreTileGridWidth.ThreeColumn}, 1fr);
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
+    z-index: 0;
+    position: relative;
     ${addFadeInAnimation('0.5s', '0.25s')}
     & > * {
         align-self: stretch;
