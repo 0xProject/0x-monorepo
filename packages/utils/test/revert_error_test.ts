@@ -1,4 +1,5 @@
 import * as chai from 'chai';
+import * as _ from 'lodash';
 
 import { AnyRevertError, RevertError, StringRevertError } from '../src/revert_error';
 
@@ -68,7 +69,8 @@ describe('RevertError', () => {
             '0x08c379a0' +
             '0000000000000000000000000000000000000000000000000000000000000020' +
             '0000000000000000000000000000000000000000000000000000000000000006' +
-            Buffer.from(message).toString('hex');
+            Buffer.from(message).toString('hex') +
+            _.repeat('00', 32 - 6);
 
         it('should decode an ABI encoded revert error', () => {
             const expected = new StringRevertError(message);
@@ -84,6 +86,23 @@ describe('RevertError', () => {
             const _encoded = encoded.substr(0, encoded.substr.length - 1);
             const decode = () => RevertError.decode(_encoded);
             expect(decode).to.be.throw();
+        });
+    });
+    describe('encoding', () => {
+        const message = 'foobar';
+        it('should be able to encode', () => {
+            const expected =
+                '0x08c379a0' +
+                '0000000000000000000000000000000000000000000000000000000000000020' +
+                '0000000000000000000000000000000000000000000000000000000000000006' +
+                Buffer.from(message).toString('hex') +
+                _.repeat('00', 32 - 6);
+            const revert = new StringRevertError(message);
+            expect(revert.encode()).to.equal(expected);
+        });
+        it('should throw if missing parameter values', () => {
+            const revert = new StringRevertError();
+            expect(() => revert.encode()).to.throw();
         });
     });
 });
