@@ -3,8 +3,8 @@
         "version": "2.3.0",
         "changes": [
             {
-                "note": "Add `chaiSetup` function with `RevertError` support",
-                "pr": TODO
+                "note": "Add `chaiSetup` function with `RevertError` testing support",
+                "pr": 1761
             }
         ]
     },
