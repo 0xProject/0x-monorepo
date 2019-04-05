@@ -587,11 +587,7 @@ describe('matchOrders', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
-                    const tx = exchangeWrapper.matchOrdersAsync(
-                        signedOrderLeft,
-                        signedOrderRight,
-                        takerAddress,
-                    );
+                    const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
                     return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                 });
             });
