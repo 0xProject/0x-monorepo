@@ -9,7 +9,6 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     LogDecoder,
     orderUtils,
     provider,
@@ -137,18 +136,16 @@ describe('AssetProxyDispatcher', () => {
                 txDefaults,
             );
             const expectedError = new ExchangeRevertErrors.AssetProxyExistsError(proxyAddress);
-            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                newErc20TransferProxy.address,
-                { from: owner },
-            );
+            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
+                from: owner,
+            });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should throw if requesting address is not owner', async () => {
-            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(
-                erc20Proxy.address,
-                { from: notOwner },
-            );
+            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
+                from: notOwner,
+            });
             return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
 
@@ -279,7 +276,7 @@ describe('AssetProxyDispatcher', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
                 orderHash,
                 encodedAssetData,
-                ExchangeRevertErrors.AssetProxyDispatchErrorCodes.UnknownAssetProxy,
+                ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy,
             );
             const tx = assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                 orderHash,
