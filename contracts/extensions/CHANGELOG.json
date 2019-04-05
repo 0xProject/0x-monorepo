@@ -20,7 +20,7 @@
             },
             {
                 "note": "Update tests for rich reverts",
-                "pr": TODO
+                "pr": 1761
             }
         ]
     },
