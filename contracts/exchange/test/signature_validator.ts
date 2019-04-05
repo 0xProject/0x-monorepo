@@ -9,13 +9,8 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import {
-    assetDataUtils,
-    ExchangeRevertErrors,
-    orderHashUtils,
-    signatureUtils
-} from '@0x/order-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -408,11 +403,7 @@ describe('MixinSignatureValidator', () => {
                 orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.ValidatorError,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signerAddress,
-                signatureHex,
-            );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
