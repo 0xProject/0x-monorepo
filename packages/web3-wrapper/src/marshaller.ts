@@ -83,9 +83,7 @@ export const marshaller = {
         const tx = {
             ...txRpc,
             blockNumber: txRpc.blockNumber !== null ? utils.convertHexToNumber(txRpc.blockNumber) : null,
-            transactionIndex: txRpc.transactionIndex !== null
-                ? utils.convertHexToNumber(txRpc.transactionIndex)
-                : null,
+            transactionIndex: txRpc.transactionIndex !== null ? utils.convertHexToNumber(txRpc.transactionIndex) : null,
             nonce: utils.convertHexToNumber(txRpc.nonce),
             gas: utils.convertHexToNumber(txRpc.gas),
             gasPrice: utils.convertAmountToBigNumber(txRpc.gasPrice),
@@ -120,11 +118,10 @@ export const marshaller = {
         }
         const txData = {
             ...txDataRpc,
-            value: !txDataRpc.value === undefined ? utils.convertAmountToBigNumber(txDataRpc.value) : undefined,
-            gas: !txDataRpc.gas === undefined ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
-            gasPrice:
-                !txDataRpc.gasPrice === undefined ? utils.convertAmountToBigNumber(txDataRpc.gasPrice) : undefined,
-            nonce: !txDataRpc.nonce === undefined ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
+            value: txDataRpc.value !== undefined ? utils.convertAmountToBigNumber(txDataRpc.value) : undefined,
+            gas: txDataRpc.gas !== undefined ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
+            gasPrice: txDataRpc.gasPrice !== undefined ? utils.convertAmountToBigNumber(txDataRpc.gasPrice) : undefined,
+            nonce: txDataRpc.nonce !== undefined ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
         };
         return txData;
     },
