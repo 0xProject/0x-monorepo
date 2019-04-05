@@ -9,6 +9,10 @@
             {
                 "note": "Add LibEIP712 contract",
                 "pr": 1753
+            },
+            {
+                "note": "Add `RichErrors` and `mixins/MRichErrors`",
+                "pr": 1761
             }
         ]
     },
