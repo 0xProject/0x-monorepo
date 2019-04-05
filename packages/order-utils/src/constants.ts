@@ -123,6 +123,8 @@ export const constants = {
             { name: 'salt', type: 'uint256' },
             { name: 'makerAssetData', type: 'bytes' },
             { name: 'takerAssetData', type: 'bytes' },
+            { name: 'makerFeeAssetData', type: 'bytes' },
+            { name: 'takerFeeAssetData', type: 'bytes' },
         ],
     },
     EXCHANGE_ZEROEX_TRANSACTION_SCHEMA: {
