@@ -43,7 +43,7 @@ contract LibEIP712 {
         address verifyingContractAddress
     )
         internal
-        view
+        pure
         returns (bytes32 result)
     {
         return keccak256(abi.encodePacked(

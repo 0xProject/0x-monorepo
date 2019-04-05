@@ -17,20 +17,19 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
 contract ITransactions {
 
     /// @dev Executes an exchange method call in the context of signer.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
+    /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param signature Proof of signer transaction by signer.
     function executeTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes calldata data,
-        bytes calldata signature
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes memory signature
     )
-        external;
+        public;
 }

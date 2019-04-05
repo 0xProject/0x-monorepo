@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
 import "./LibEIP712ExchangeDomain.sol";
 
@@ -81,7 +82,7 @@ contract LibOrder is
     /// @param order The order structure.
     /// @return Keccak-256 EIP712 hash of the order.
     function getOrderHash(Order memory order)
-        internal
+        public
         view
         returns (bytes32 orderHash)
     {

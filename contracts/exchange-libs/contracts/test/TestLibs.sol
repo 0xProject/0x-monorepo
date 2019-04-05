@@ -36,7 +36,7 @@ contract TestLibs is
 {
     constructor (uint256 chainId)
         public
-        LibEIP712ExchangeDomain(chainId)
+        LibEIP712ExchangeDomain(chainId, address(0))
     {}
 
     function publicAbiEncodeFillOrder(

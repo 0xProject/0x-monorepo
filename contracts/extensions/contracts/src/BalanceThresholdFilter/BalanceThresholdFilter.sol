@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "./interfaces/IThresholdAsset.sol";
@@ -31,7 +32,7 @@ contract BalanceThresholdFilter is
     /// @param exchange Address of 0x exchange.
     /// @param thresholdAsset The asset that must be held by makers/takers.
     /// @param balanceThreshold The minimum balance of `thresholdAsset` that must be held by makers/takers.
-    constructor(
+    constructor (
         address exchange,
         address thresholdAsset,
         uint256 balanceThreshold

@@ -18,45 +18,37 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomainConstants.sol";
-import "./LibConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
-// solhint-disable var-name-mixedcase
-contract LibEIP712Domain is
-    LibConstants,
-    LibEIP712,
-    LibEIP712ExchangeDomainConstants
+contract LibEIP712CoordinatorDomain is
+    LibEIP712
 {
 
     // EIP712 Domain Name value for the Coordinator
-    string constant internal EIP712_COORDINATOR_DOMAIN_NAME = "0x Protocol Coordinator";
+    string constant public EIP712_COORDINATOR_DOMAIN_NAME = "0x Protocol Coordinator";
 
     // EIP712 Domain Version value for the Coordinator
-    string constant internal EIP712_COORDINATOR_DOMAIN_VERSION = "2.0.0";
+    string constant public EIP712_COORDINATOR_DOMAIN_VERSION = "2.0.0";
 
     // Hash of the EIP712 Domain Separator data for the Coordinator
+    // solhint-disable-next-line var-name-mixedcase
     bytes32 public EIP712_COORDINATOR_DOMAIN_HASH;
 
-    // Hash of the EIP712 Domain Separator data for the Exchange
-    bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
-
     /// @param chainId Chain ID of the network this contract is deployed on.
-    constructor (uint256 chainId)
+    /// @param verifyingContractAddressIfExists Address of the verifying contract (null if the address of this contract)
+    constructor (
+        uint256 chainId,
+        address verifyingContractAddressIfExists
+    )
         public
     {
+        address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
         EIP712_COORDINATOR_DOMAIN_HASH = hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
             chainId,
-            address(this)
-        );
-        EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
-            EIP712_EXCHANGE_DOMAIN_NAME,
-            EIP712_EXCHANGE_DOMAIN_VERSION,
-            chainId,
-            address(EXCHANGE)
+            verifyingContractAddress
         );
     }
 
@@ -70,17 +62,5 @@ contract LibEIP712Domain is
         returns (bytes32 result)
     {
         return hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
-    }
-
-    /// @dev Calculates EIP712 encoding for a hash struct in the EIP712 domain
-    ///      of the Exchange contract.
-    /// @param hashStruct The EIP712 hash struct.
-    /// @return EIP712 hash applied to the Exchange EIP712 Domain.
-    function hashEIP712ExchangeMessage(bytes32 hashStruct)
-        internal
-        view
-        returns (bytes32 result)
-    {
-        return hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashStruct);
     }
 }

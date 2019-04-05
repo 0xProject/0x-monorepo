@@ -17,13 +17,13 @@
 */
 
 pragma solidity ^0.5.5;
-pragma experimental "ABIEncoderV2";
+pragma experimental ABIEncoderV2;
 
-import "./LibEIP712Domain.sol";
+import "./LibEIP712CoordinatorDomain.sol";
 
 
 contract LibCoordinatorApproval is
-    LibEIP712Domain
+    LibEIP712CoordinatorDomain
 {
     // Hash for the EIP712 Coordinator approval message
     // keccak256(abi.encodePacked(
