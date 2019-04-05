@@ -3,7 +3,7 @@
 // tslint:disable:no-unbound-method
 import { BaseContract } from '@0x/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
-import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
+import { AbiEncoder, BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { isUndefined } from 'lodash';
@@ -67,10 +67,8 @@ export class {{contractName}}Contract extends BaseContract {
             [{{> params inputs=ctor.inputs}}],
             BaseContract._bigNumberToString,
         );
-        return {} as any;
-        {{!-- const iface = new ethersUtils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
+        const encoder = new AbiEncoder.Constructor(constructorAbi);
+        const txData = encoder.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
@@ -82,8 +80,8 @@ export class {{contractName}}Contract extends BaseContract {
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}]; --}}
-        {{!-- return contractInstance; --}}
+        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
+        return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('{{contractName}}', abi, address, supportedProvider, txDefaults);

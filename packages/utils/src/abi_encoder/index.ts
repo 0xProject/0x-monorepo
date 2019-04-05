@@ -3,6 +3,7 @@ export {
     Address,
     Array,
     Bool,
+    Constructor,
     DynamicBytes,
     Int,
     Method,

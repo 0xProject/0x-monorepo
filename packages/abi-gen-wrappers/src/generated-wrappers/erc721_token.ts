@@ -3,7 +3,7 @@
 // tslint:disable:no-unbound-method
 import { BaseContract } from '@0x/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
-import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
+import { AbiEncoder, BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { isUndefined } from 'lodash';
@@ -482,7 +482,21 @@ export class ERC721TokenContract extends BaseContract {
             [],
             BaseContract._bigNumberToString,
         );
-        return {} as any;
+        const encoder = new AbiEncoder.Constructor(constructorAbi);
+        const txData = encoder.encode(bytecode, []);
+        const web3Wrapper = new Web3Wrapper(provider);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {data: txData},
+            txDefaults,
+            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+        );
+        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        logUtils.log(`transactionHash: ${txHash}`);
+        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        logUtils.log(`ERC721Token successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new ERC721TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        contractInstance.constructorArgs = [];
+        return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('ERC721Token', abi, address, supportedProvider, txDefaults);
