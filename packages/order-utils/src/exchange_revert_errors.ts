@@ -4,14 +4,14 @@ import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
 
-export enum FillErrorCodes {
+export enum FillErrorCode {
     InvalidTakerAmount,
     TakerOverpay,
     Overfill,
     InvalidFillPrice,
 }
 
-export enum SignatureErrorCodes {
+export enum SignatureErrorCode {
     BadSignature,
     InvalidLength,
     Unsupported,
@@ -20,19 +20,19 @@ export enum SignatureErrorCodes {
     ValidatorError,
 }
 
-export enum AssetProxyDispatchErrorCodes {
+export enum AssetProxyDispatchErrorCode {
     InvalidAssetDataLength,
     UnknownAssetProxy,
 }
 
-export enum TransactionErrorCodes {
+export enum TransactionErrorCode {
     NoReentrancy,
     AlreadyExecuted,
     BadSignature,
 }
 
 export class SignatureError extends RevertError {
-    constructor(orderHash?: string, error?: SignatureErrorCodes) {
+    constructor(orderHash?: string, error?: SignatureErrorCode) {
         super('SignatureError(bytes32 orderHash, uint8 error)', { orderHash, error });
     }
 }
@@ -62,7 +62,7 @@ export class InvalidMakerError extends RevertError {
 }
 
 export class FillError extends RevertError {
-    constructor(orderHash?: string, error?: FillErrorCodes) {
+    constructor(orderHash?: string, error?: FillErrorCode) {
         super('FillError(bytes32 orderHash, uint8 error)', { orderHash, error });
     }
 }
@@ -80,7 +80,7 @@ export class AssetProxyExistsError extends RevertError {
 }
 
 export class AssetProxyDispatchError extends RevertError {
-    constructor(orderHash?: string, assetData?: string, error?: AssetProxyDispatchErrorCodes) {
+    constructor(orderHash?: string, assetData?: string, error?: AssetProxyDispatchErrorCode) {
         super('AssetProxyDispatchError(bytes32 orderHash, bytes assetData, uint8 error)', {
             orderHash,
             assetData,
@@ -106,7 +106,7 @@ export class NegativeSpreadError extends RevertError {
 }
 
 export class TransactionError extends RevertError {
-    constructor(transactionHash?: string, error?: TransactionErrorCodes) {
+    constructor(transactionHash?: string, error?: TransactionErrorCode) {
         super('TransactionError(bytes32 transactionHash, uint8 error)', { transactionHash, error });
     }
 }
