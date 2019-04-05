@@ -125,7 +125,15 @@ export abstract class RevertError extends Error {
         if (!_.isNil(this.abi)) {
             return this.abi.name;
         }
-        return '<AnyRevertError>';
+        return `<${this.typeName}>`;
+    }
+
+    /**
+     * Get the class name of this type.
+     */
+    get typeName(): string {
+        // tslint:disable-next-line: no-string-literal
+        return this.constructor.name;
     }
 
     /**
@@ -201,6 +209,14 @@ export abstract class RevertError extends Error {
         return true;
     }
 
+    public encode(): string {
+        if (!this._hasAllArgumentValues) {
+            throw new Error(`Instance of ${this.typeName} does not have all its parameter values set.`);
+        }
+        const encoder = createEncoder(this.abi as RevertErrorAbi);
+        return encoder(this.values);
+    }
+
     public toString(): string {
         const values = _.omitBy(this.values, (v: any) => _.isNil(v));
         const inner = _.isEmpty(values) ? '' : inspect(values);
@@ -217,6 +233,18 @@ export abstract class RevertError extends Error {
 
     private get _isAnyType(): boolean {
         return _.isNil(this.abi);
+    }
+
+    private get _hasAllArgumentValues(): boolean {
+        if (_.isNil(this.abi) || _.isNil(this.abi.arguments)) {
+            return false;
+        }
+        for (const arg of this.abi.arguments) {
+            if (_.isNil(this.values[arg.name])) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -289,10 +317,17 @@ function normalizeBytes(bytes: string): string {
     return ethUtil.addHexPrefix(bytes).toLowerCase();
 }
 
+function createEncoder(abi: RevertErrorAbi): (values: ObjectMap<any>) => string {
+    const encoder = AbiEncoder.createMethod(abi.name, abi.arguments || []);
+    return (values: ObjectMap<any>): string => {
+        const valuesArray = _.map(abi.arguments, (arg: DataItem) => values[arg.name]);
+        return encoder.encode(valuesArray);
+    };
+}
+
 function createDecoder(abi: RevertErrorAbi): (hex: string) => ValueMap {
     const encoder = AbiEncoder.createMethod(abi.name, abi.arguments || []);
     return (hex: string): ValueMap => {
-        // tslint:disable-next-line
         return encoder.decode(hex) as ValueMap;
     };
 }
