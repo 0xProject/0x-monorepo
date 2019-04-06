@@ -236,6 +236,71 @@ contract, not by going through a Relayer.  See `the 0x-contract-wrappers
 documentation
 <http://0x-contract-wrappers-py.s3-website-us-east-1.amazonaws.com/>`_ for
 examples.
+
+Filling
+^^^^^^^
+
+>>> taker_address = Web3(ganache).eth.accounts[1].lower()
+
+Our taker will take a ZRX/WETH order, but it doesn't have any WETH yet.  By
+depositing some ether into the WETH contract, it will be given some WETH to
+trade with:
+
+>>> weth_instance = Web3(ganache).eth.contract(
+...    address=Web3.toChecksumAddress(weth_address),
+...    abi=abi_by_name("WETH9")
+... )
+>>> weth_instance.functions.deposit().transact(
+...     {"from": Web3.toChecksumAddress(taker_address),
+...      "value": 1000000000000000000}
+... )
+HexBytes('0x...')
+
+Next the taker needs to give the 0x contracts permission to trade their WETH:
+
+>>> weth_instance.functions.approve(
+...     Web3.toChecksumAddress(
+...         NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
+...     ),
+...     1000000000000000000).transact(
+...     {"from": Web3.toChecksumAddress(taker_address)})
+HexBytes('0x...')
+
+Now the taker is ready to trade.
+
+First the taker will query the Relayer for orders that match the pair they want
+to trade.  Here we'll just assume that the first order is good enough, but in
+real life more filtering and validation would be necessary.
+
+>>> order_to_take = relayer_api.get_orders(
+...     maker_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
+...     taker_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
+... ).records[0].order
+
+Now the taker can fill that order:
+
+>>> from zero_ex.contract_wrappers import Exchange, TxParams
+>>> from zero_ex.order_utils import jsdict_order_to_struct, Order
+>>> Exchange(ganache).fill_order(
+...     order=jsdict_order_to_struct(order_to_take),
+...     taker_amount=int(int(order_to_take["makerAssetAmount"])/2),
+...     signature=order_to_take["signature"],
+...     tx_params=TxParams(from_=taker_address)
+... )
+HexBytes('0x...')
+
+Cancelling
+^^^^^^^^^^
+
+Note that the above fill was partial: it only filled half of the order.  Now
+we'll have our maker cancel the remaining order:
+
+>>> Exchange(ganache).cancel_order(
+...     order=order,
+...     tx_params=TxParams(from_=maker_address)
+... )
+HexBytes('0x...')
+
 """  # noqa: E501 (line too long)
 
 from __future__ import absolute_import
