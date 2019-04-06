@@ -23,7 +23,7 @@ export const erc721TransferEvent: EventAbi = {
     type: 'event',
 };
 
-export const erc721TransferNoIndexOnTokenIdEvent: EventAbi = {
+export const erc721ApprovalNoIndexOnTokenIdEvent: EventAbi = {
     anonymous: false,
     inputs: [
         {
@@ -42,6 +42,6 @@ export const erc721TransferNoIndexOnTokenIdEvent: EventAbi = {
             type: 'uint256',
         },
     ],
-    name: 'Transfer',
+    name: 'Approval',
     type: 'event',
 };

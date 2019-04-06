@@ -8,7 +8,6 @@ import {
     MethodAbi,
     RawLog,
 } from 'ethereum-types';
-import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { AbiEncoder } from '.';
@@ -116,12 +115,11 @@ export class AbiDecoder {
         if (_.isUndefined(abiArray)) {
             return;
         }
-        const ethersInterface = new ethers.utils.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             switch (abi.type) {
                 case AbiType.Event:
                     // tslint:disable-next-line:no-unnecessary-type-assertion
-                    this._addEventABI(abi as EventAbi, ethersInterface);
+                    this._addEventABI(abi as EventAbi);
                     break;
 
                 case AbiType.Function:
@@ -135,9 +133,10 @@ export class AbiDecoder {
             }
         });
     }
-    private _addEventABI(eventAbi: EventAbi, ethersInterface: ethers.utils.Interface): void {
+    private _addEventABI(eventAbi: EventAbi): void {
         // TODO(FFF): Replace with events decoder
-        const topic = ethersInterface.events[eventAbi.name].topic;
+        const encoder = new AbiEncoder.Event(eventAbi);
+        const topic = encoder.getSelector();
         const numIndexedArgs = _.reduce(eventAbi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
         this._eventIds[topic] = {
             ...this._eventIds[topic],
