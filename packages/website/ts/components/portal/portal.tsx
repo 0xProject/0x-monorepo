@@ -122,7 +122,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
-            !_.isUndefined(didAcceptPortalDisclaimer) && !_.isEmpty(didAcceptPortalDisclaimer);
+            didAcceptPortalDisclaimer !== undefined && !_.isEmpty(didAcceptPortalDisclaimer);
         const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(
             this._getCurrentTrackedTokens(),
         );
@@ -477,7 +477,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
         return (
             <Section
-                header={!_.isUndefined(item.headerText) && <TextHeader labelText={item.headerText} />}
+                header={item.headerText !== undefined && <TextHeader labelText={item.headerText} />}
                 body={<Loading isLoading={!this.props.blockchainIsLoaded} content={item.render()} />}
             />
         );
@@ -520,7 +520,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderFillOrder(): React.ReactNode {
-        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
+        const initialFillOrder = this.props.userSuppliedOrderCache !== undefined
             ? this.props.userSuppliedOrderCache
             : this._sharedOrderIfExists;
         return (
@@ -528,7 +528,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                 blockchain={this._blockchain}
                 blockchainErr={this.props.blockchainErr}
                 initialOrder={initialFillOrder}
-                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
+                isOrderInUrl={this._sharedOrderIfExists !== undefined}
                 orderFillAmount={this.props.orderFillAmount}
                 networkId={this.props.networkId}
                 userAddress={this.props.userAddress}
@@ -701,7 +701,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const tokenAddressBySymbol: { [symbol: string]: string } = {};
         _.each(tokenAddresses, address => {
             const tokenIfExists = _.get(this.props.tokenByAddress, address);
-            if (!_.isUndefined(tokenIfExists)) {
+            if (tokenIfExists !== undefined) {
                 const symbol = tokenIfExists.symbol;
                 tokenAddressBySymbol[symbol] = address;
             }

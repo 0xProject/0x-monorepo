@@ -47,7 +47,7 @@ export class ArrayDataType extends AbstractSetDataType {
         const name = this.getDataItem().name;
         const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
         const isScopedName = lastIndexOfScopeDelimiter !== undefined && lastIndexOfScopeDelimiter > 0;
-        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter) + 1) : name;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
         const detailedSignature = `${shortName} ${this._computeSignature(isDetailed)}`;
         return detailedSignature;
     }

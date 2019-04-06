@@ -130,7 +130,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
             globalErrMsg = 'No contract found at supplied address';
         } else if (hasBalanceAllowanceErr) {
             globalErrMsg = 'Unsuccessful call to `balanceOf` and/or `allowance` on supplied contract address';
-        } else if (!isAddressIncomplete && !_.isUndefined(this.props.tokenByAddress[this.state.address])) {
+        } else if (!isAddressIncomplete && this.props.tokenByAddress[this.state.address] !== undefined) {
             globalErrMsg = 'A token already exists with this address';
         }
 
@@ -158,7 +158,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         const maxLength = 30;
         const tokens = _.values(this.props.tokenByAddress);
         const tokenWithNameIfExists = _.find(tokens, { name });
-        const doesTokenWithNameExists = !_.isUndefined(tokenWithNameIfExists);
+        const doesTokenWithNameExists = tokenWithNameIfExists !== undefined;
         if (name === '') {
             nameErrText = 'Name is required';
         } else if (!this._isValidName(name)) {
@@ -178,7 +178,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         let symbolErrText = '';
         const maxLength = 5;
         const tokens = _.values(this.props.tokenByAddress);
-        const doesTokenWithSymbolExists = !_.isUndefined(_.find(tokens, { symbol }));
+        const doesTokenWithSymbolExists = _.find(tokens, { symbol }) !== undefined;
         if (symbol === '') {
             symbolErrText = 'Symbol is required';
         } else if (!this._isAlphanumeric(symbol)) {
@@ -211,7 +211,7 @@ export class NewTokenForm extends React.Component<NewTokenFormProps, NewTokenFor
         });
     }
     private _onTokenAddressChanged(address?: string): void {
-        if (!_.isUndefined(address)) {
+        if (address !== undefined) {
             this.setState({
                 address,
             });

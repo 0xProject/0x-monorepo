@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
@@ -14,9 +13,9 @@ export class AsyncSuffixWalker extends Lint.RuleWalker {
     }
     private _visitFunctionOrMethodDeclaration(node: ts.MethodDeclaration | ts.FunctionDeclaration): void {
         const nameNode = node.name;
-        if (!_.isUndefined(nameNode)) {
+        if (nameNode !== undefined) {
             const name = nameNode.getText();
-            if (!_.isUndefined(node.type)) {
+            if (node.type !== undefined) {
                 if (node.type.kind === ts.SyntaxKind.TypeReference) {
                     // tslint:disable-next-line:no-unnecessary-type-assertion
                     const returnTypeName = (node.type as ts.TypeReferenceNode).typeName.getText();

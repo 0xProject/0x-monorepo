@@ -104,7 +104,7 @@ export class TradeHistory extends React.Component<TradeHistoryProps, TradeHistor
             // tokens the client does not know how to display.
             // TODO: Try to retrieve the name/symbol of an unknown token in order to display it
             // Be sure to remove similar logic in trade_history_item.tsx
-            if (!_.isUndefined(takerToken) && !_.isUndefined(makerToken)) {
+            if (takerToken !== undefined && makerToken !== undefined) {
                 numNonCustomFills += 1;
             }
         });

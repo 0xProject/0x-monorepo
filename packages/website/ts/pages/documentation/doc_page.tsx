@@ -80,10 +80,10 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     public render(): React.ReactNode {
         const sourceUrl = this._getSourceUrl();
-        const sectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
+        const sectionNameToLinks = this.state.docAgnosticFormat === undefined
             ? {}
             : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
-        const mainContent = _.isUndefined(this.state.docAgnosticFormat) ? (
+        const mainContent = this.state.docAgnosticFormat === undefined ? (
             <div className="flex justify-center">{this._renderLoading()}</div>
         ) : (
             <DocReference
@@ -94,7 +94,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                 sourceUrl={sourceUrl}
             />
         );
-        const sidebar = _.isUndefined(this.state.docAgnosticFormat) ? (
+        const sidebar = this.state.docAgnosticFormat === undefined ? (
             <div />
         ) : (
             <NestedSidebarMenu
@@ -149,9 +149,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const latestVersion = sortedVersions[0];
 
         let versionToFetch = latestVersion;
-        if (!_.isUndefined(preferredVersionIfExists)) {
+        if (preferredVersionIfExists !== undefined) {
             const preferredVersionFileNameIfExists = versionToFilePath[preferredVersionIfExists];
-            if (!_.isUndefined(preferredVersionFileNameIfExists)) {
+            if (preferredVersionFileNameIfExists !== undefined) {
                 versionToFetch = preferredVersionIfExists;
             }
         }

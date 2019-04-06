@@ -40,7 +40,7 @@ export const AboutPageLayout = (props: Props) => (
                         <AnimatedLink
                             to={props.to}
                             href={props.href}
-                            target={!_.isUndefined(props.href) ? '_blank' : undefined}
+                            target={props.href !== undefined ? '_blank' : undefined}
                             isWithArrow={true}
                             isAccentColor={true}
                         >

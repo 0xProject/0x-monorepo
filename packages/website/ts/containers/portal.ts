@@ -39,14 +39,14 @@ interface ConnectedDispatch {
 const mapStateToProps = (state: State, _ownProps: PortalComponentProps): ConnectedState => {
     const receiveAssetToken = state.sideToAssetToken[Side.Receive];
     const depositAssetToken = state.sideToAssetToken[Side.Deposit];
-    const receiveAddress = !_.isUndefined(receiveAssetToken.address)
+    const receiveAddress = receiveAssetToken.address !== undefined
         ? receiveAssetToken.address
         : constants.NULL_ADDRESS;
-    const depositAddress = !_.isUndefined(depositAssetToken.address)
+    const depositAddress = depositAssetToken.address !== undefined
         ? depositAssetToken.address
         : constants.NULL_ADDRESS;
-    const receiveAmount = !_.isUndefined(receiveAssetToken.amount) ? receiveAssetToken.amount : new BigNumber(0);
-    const depositAmount = !_.isUndefined(depositAssetToken.amount) ? depositAssetToken.amount : new BigNumber(0);
+    const receiveAmount = receiveAssetToken.amount !== undefined ? receiveAssetToken.amount : new BigNumber(0);
+    const depositAmount = depositAssetToken.amount !== undefined ? depositAssetToken.amount : new BigNumber(0);
     const hashData = {
         depositAmount,
         depositTokenContractAddr: depositAddress,

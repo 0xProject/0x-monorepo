@@ -90,8 +90,8 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                         value={value.affiliateInfo.feePercentage}
                         onChange={this._handleAffiliatePercentageChange}
                         isDisabled={
-                            _.isUndefined(value.affiliateInfo) ||
-                            _.isUndefined(value.affiliateInfo.feeRecipient) ||
+                            value.affiliateInfo === undefined ||
+                            value.affiliateInfo.feeRecipient === undefined ||
                             _.isEmpty(value.affiliateInfo.feeRecipient)
                         }
                     />
@@ -105,7 +105,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                 title: 'What tokens can users buy?',
             };
         }
-        if (_.isUndefined(this.props.value.availableAssetDatas)) {
+        if (this.props.value.availableAssetDatas === undefined) {
             return {
                 title: 'What tokens can users buy?',
                 actionText: 'Unselect All',
@@ -177,7 +177,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         let newAvailableAssetDatas: string[] = [];
         const allKnownAssetDatas = _.keys(this.state.availableTokens);
         const availableAssetDatas = value.availableAssetDatas;
-        if (_.isUndefined(availableAssetDatas)) {
+        if (availableAssetDatas === undefined) {
             // It being undefined means it's all tokens.
             newAvailableAssetDatas = _.pull(allKnownAssetDatas, assetData);
         } else if (!_.includes(availableAssetDatas, assetData)) {
@@ -199,7 +199,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     };
     private readonly _setAvailableAssetsFromOrderProvider = async (): Promise<void> => {
         const { value } = this.props;
-        if (!_.isUndefined(value.orderSource) && _.isString(value.orderSource)) {
+        if (value.orderSource !== undefined && _.isString(value.orderSource)) {
             this.setState({ isLoadingAvailableTokens: true });
             const networkId = constants.NETWORK_ID_MAINNET;
             const sraOrderProvider = new StandardRelayerAPIOrderProvider(value.orderSource, networkId);
