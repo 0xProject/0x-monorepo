@@ -67,22 +67,22 @@ network directly.
 To start, connect to the Ethereum network:
 
 >>> from web3 import HTTPProvider, Web3
->>> ganache = HTTPProvider("http://localhost:8545")
+>>> eth_node = HTTPProvider("http://localhost:8545")
 
 For our Maker role, we'll just use the first address available in the node:
 
->>> maker_address = Web3(ganache).eth.accounts[0].lower()
+>>> maker_address = Web3(eth_node).eth.accounts[0].lower()
 
-The 0x Ganache snapshot has a pre-loaded ZRX balance for this account, so the
-example orders below have the maker trading away ZRX.  Before such an order can
-be valid, though, the maker must give the 0x contracts permission to trade
-their ZRX tokens:
+The 0x Ganache snapshot loaded into our eth_node has a pre-loaded ZRX balance
+for this account, so the example orders below have the maker trading away ZRX.
+Before such an order can be valid, though, the maker must give the 0x contracts
+permission to trade their ZRX tokens:
 
 >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 >>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
 >>>
 >>> from zero_ex.contract_artifacts import abi_by_name
->>> zrx_token_contract = Web3(ganache).eth.contract(
+>>> zrx_token_contract = Web3(eth_node).eth.contract(
 ...    address=Web3.toChecksumAddress(zrx_address),
 ...    abi=abi_by_name("ZRXToken")
 ... )
@@ -137,7 +137,7 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     order=order,
 ...     exchange_address=exchange_address,
 ...     signature=sign_hash(
-...         ganache, Web3.toChecksumAddress(maker_address), order_hash_hex
+...         eth_node, Web3.toChecksumAddress(maker_address), order_hash_hex
 ...     )
 ... )
 >>> relayer_api.post_order_with_http_info(
@@ -274,13 +274,13 @@ examples.
 Filling
 ^^^^^^^
 
->>> taker_address = Web3(ganache).eth.accounts[1].lower()
+>>> taker_address = Web3(eth_node).eth.accounts[1].lower()
 
 Our taker will take a ZRX/WETH order, but it doesn't have any WETH yet.  By
 depositing some ether into the WETH contract, it will be given some WETH to
 trade with:
 
->>> weth_instance = Web3(ganache).eth.contract(
+>>> weth_instance = Web3(eth_node).eth.contract(
 ...    address=Web3.toChecksumAddress(weth_address),
 ...    abi=abi_by_name("WETH9")
 ... )
@@ -307,7 +307,7 @@ book.  Now let's have the taker fill it:
 
 >>> from zero_ex.contract_wrappers import Exchange, TxParams
 >>> from zero_ex.order_utils import jsdict_to_order, Order
->>> Exchange(ganache).fill_order(
+>>> Exchange(eth_node).fill_order(
 ...     order=order,
 ...     taker_amount=order['makerAssetAmount']/2, # note the half fill
 ...     signature=order['signature'],
@@ -321,7 +321,7 @@ Cancelling
 Note that the above fill was partial: it only filled half of the order.  Now
 we'll have our maker cancel the remaining order:
 
->>> Exchange(ganache).cancel_order(
+>>> Exchange(eth_node).cancel_order(
 ...     order=order,
 ...     tx_params=TxParams(from_=maker_address)
 ... )
