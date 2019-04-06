@@ -5,6 +5,7 @@ export {
     Bool,
     Constructor,
     DynamicBytes,
+    Event,
     Int,
     Method,
     Pointer,

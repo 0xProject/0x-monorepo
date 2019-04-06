@@ -3,19 +3,15 @@ import {
     AbiType,
     DecodedLogArgs,
     EventAbi,
-    EventParameter,
     LogEntry,
     LogWithDecodedArgs,
     MethodAbi,
     RawLog,
-    SolidityTypes,
 } from 'ethereum-types';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { AbiEncoder } from '.';
-import { addressUtils } from './address_utils';
-import { BigNumber } from './configured_bignumber';
 import { DecodedCalldata, SelectorToFunctionInfo } from './types';
 
 /**
@@ -62,51 +58,12 @@ export class AbiDecoder {
             return log;
         }
         const event = this._eventIds[eventId][numIndexedArgs];
-        const ethersInterface = new ethers.utils.Interface([event]);
-        const decodedParams: DecodedLogArgs = {};
-        let topicsIndex = 1;
-
-        let decodedData: any[];
+        const encoder = new AbiEncoder.Event(event);
         try {
-            decodedData = ethersInterface.events[event.name].decode(log.data);
-        } catch (error) {
-            if (error.code === ethers.errors.INVALID_ARGUMENT) {
-                // Because we index events by Method ID, and Method IDs are derived from the method
-                // name and the input parameters, it's possible that the return value of the event
-                // does not match our ABI. If that's the case, then ethers will throw an error
-                // when we try to parse the event. We handle that case here by returning the log rather
-                // than throwing an error.
-                return log;
-            }
-            throw error;
-        }
-        let didFailToDecode = false;
-        _.forEach(event.inputs, (param: EventParameter, i: number) => {
-            // Indexed parameters are stored in topics. Non-indexed ones in decodedData
-            let value: BigNumber | string | number = param.indexed ? log.topics[topicsIndex++] : decodedData[i];
-            if (_.isUndefined(value)) {
-                didFailToDecode = true;
-                return;
-            }
-            if (param.type === SolidityTypes.Address) {
-                const baseHex = 16;
-                value = addressUtils.padZeros(new BigNumber((value as string).toLowerCase()).toString(baseHex));
-            } else if (param.type === SolidityTypes.Uint256 || param.type === SolidityTypes.Uint) {
-                value = new BigNumber(value);
-            } else if (param.type === SolidityTypes.Uint8) {
-                value = new BigNumber(value).toNumber();
-            }
-            decodedParams[param.name] = value;
-        });
-
-        if (didFailToDecode) {
+            const decodedLog = encoder.decode(log);
+            return decodedLog;
+        } catch (e) {
             return log;
-        } else {
-            return {
-                ...log,
-                event: event.name,
-                args: decodedParams,
-            };
         }
     }
     /**
