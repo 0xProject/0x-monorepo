@@ -108,28 +108,36 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     asset_data_utils,
 ...     generate_order_hash_hex,
 ...     jsdict_order_to_struct,
+...     Order,
+...     order_to_jsdict,
 ...     sign_hash)
 >>> import random
->>> order = {
-...     "makerAddress": maker_address,
-...     "takerAddress": "0x0000000000000000000000000000000000000000",
-...     "senderAddress": "0x0000000000000000000000000000000000000000",
-...     "exchangeAddress": exchange_address,
-...     "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-...     "makerAssetData": "0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
-...     "takerAssetData": "0x"+asset_data_utils.encode_erc20(weth_address).hex(),
-...     "salt": str(random.randint(1, 100000000000000000)),
-...     "makerFee": "0",
-...     "takerFee": "0",
-...     "makerAssetAmount": "1000000000000000000",
-...     "takerAssetAmount": "500000000000000000000",
-...     "expirationTimeSeconds": "999999999999999999999"}
->>> order_hash_hex = generate_order_hash_hex(
-...     jsdict_order_to_struct(order), exchange_address)
->>> order["signature"] = sign_hash(
+>>> from datetime import datetime, timedelta
+>>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+>>> weth_address     = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+>>> order = Order(
+...     makerAddress=maker_address,
+...     takerAddress="0x0000000000000000000000000000000000000000",
+...     senderAddress="0x0000000000000000000000000000000000000000",
+...     exchangeAddress=exchange_address,
+...     feeRecipientAddress="0x0000000000000000000000000000000000000000",
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     salt=random.randint(1, 100000000000000000),
+...     makerFee=0,
+...     takerFee=0,
+...     makerAssetAmount=1000000000000000000,
+...     takerAssetAmount=500000000000000000000,
+...     expirationTimeSeconds=round(
+...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+...     )
+... )
+>>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
+>>> order_dict = order_to_jsdict(order, exchange_address)
+>>> order_dict["signature"] = sign_hash(
 ...     ganache, Web3.toChecksumAddress(maker_address), order_hash_hex)
 >>> relayer_api.post_order_with_http_info(
-...     network_id=NetworkId.GANACHE.value, signed_order_schema=order)[1]
+...     network_id=NetworkId.GANACHE.value, signed_order_schema=order_dict)[1]
 200
 
 Get Order
@@ -140,7 +148,7 @@ Retrieve the order we just posted:
 >>> relayer_api.get_order("0x" + order_hash_hex)
 {'meta_data': {},
  'order': {'exchangeAddress': '0x...',
-           'expirationTimeSeconds': '1000000000000000000000',
+           'expirationTimeSeconds': '...',
            'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
            'makerAddress': '0x...',
            'makerAssetAmount': '1000000000000000000',
@@ -163,7 +171,7 @@ just posted:
 >>> relayer_api.get_orders()
 {'records': [{'meta_data': {},
               'order': {'exchangeAddress': '0x...',
-                        'expirationTimeSeconds': '1000000000000000000000',
+                        'expirationTimeSeconds': '...',
                         'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
                         'makerAddress': '0x...',
                         'makerAssetAmount': '1000000000000000000',
