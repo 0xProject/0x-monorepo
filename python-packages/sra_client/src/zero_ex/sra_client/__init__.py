@@ -126,8 +126,8 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
-...     makerAssetAmount=1000000000000000000,
-...     takerAssetAmount=500000000000000000000,
+...     makerAssetAmount=2,
+...     takerAssetAmount=2,
 ...     expirationTimeSeconds=round(
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
@@ -151,14 +151,14 @@ Retrieve the order we just posted:
            'expirationTimeSeconds': '...',
            'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
            'makerAddress': '0x...',
-           'makerAssetAmount': '1000000000000000000',
+           'makerAssetAmount': '2',
            'makerAssetData': '0xf47261b0000000000000000000000000...',
            'makerFee': '0',
            'salt': '...',
            'senderAddress': '0x0000000000000000000000000000000000000000',
            'signature': '0x...',
            'takerAddress': '0x0000000000000000000000000000000000000000',
-           'takerAssetAmount': '500000000000000000000',
+           'takerAssetAmount': '2',
            'takerAssetData': '0xf47261b0000000000000000000000000...',
            'takerFee': '0'}}
 
@@ -174,14 +174,14 @@ just posted:
                         'expirationTimeSeconds': '...',
                         'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
                         'makerAddress': '0x...',
-                        'makerAssetAmount': '1000000000000000000',
+                        'makerAssetAmount': '2',
                         'makerAssetData': '0xf47261b000000000000000000000000...',
                         'makerFee': '0',
                         'salt': '...',
                         'senderAddress': '0x0000000000000000000000000000000000000000',
                         'signature': '0x...',
                         'takerAddress': '0x0000000000000000000000000000000000000000',
-                        'takerAssetAmount': '500000000000000000000',
+                        'takerAssetAmount': '2',
                         'takerAssetData': '0xf47261b0000000000000000000000000...',
                         'takerFee': '0'}}]}
 
@@ -217,14 +217,14 @@ consists just of our order):
                                  'expirationTimeSeconds': '...',
                                  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
                                  'makerAddress': '0x...',
-                                 'makerAssetAmount': '1000000000000000000',
+                                 'makerAssetAmount': '2',
                                  'makerAssetData': '0xf47261b0000000000000000000000000...',
                                  'makerFee': '0',
                                  'salt': '...',
                                  'senderAddress': '0x0000000000000000000000000000000000000000',
                                  'signature': '0x...',
                                  'takerAddress': '0x0000000000000000000000000000000000000000',
-                                 'takerAssetAmount': '500000000000000000000',
+                                 'takerAssetAmount': '2',
                                  'takerAssetData': '0xf47261b0000000000000000000000000...',
                                  'takerFee': '0'}}]}}
 
