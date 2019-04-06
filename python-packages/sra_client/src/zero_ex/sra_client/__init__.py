@@ -204,6 +204,14 @@ ZRX, since that's all there is on this Relayer's order book:
                              'maxAmount': '115792089237316195423570985008687907853269984665640564039457584007913129639936',
                              'minAmount': '0',
                              'precision': 18}}]}
+>>> asset_data_utils.decode_erc20_asset_data(
+...     relayer_api.get_asset_pairs().records[0]['assetDataA']['assetData']
+... ).token_address == zrx_address
+True
+>>> asset_data_utils.decode_erc20_asset_data(
+...     relayer_api.get_asset_pairs().records[0]['assetDataB']['assetData']
+... ).token_address == weth_address
+True
 
 Get Orderbook
 -------------
