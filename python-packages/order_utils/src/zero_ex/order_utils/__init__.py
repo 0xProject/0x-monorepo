@@ -230,7 +230,8 @@ def order_to_jsdict(
 ) -> dict:
     """Convert a Web3-compatible order struct to a JSON-schema-compatible dict.
 
-    More specifically, do explicit decoding for the `bytes`:code: fields.
+    More specifically, do explicit decoding for the `bytes`:code: fields, and
+    convert numerics to strings.
 
     >>> import pprint
     >>> pprint.pprint(order_to_jsdict(
@@ -293,7 +294,8 @@ def order_to_jsdict(
 def jsdict_to_order(jsdict: dict) -> Order:
     r"""Convert a JSON-schema-compatible dict order to a Web3-compatible struct.
 
-    More specifically, do explicit encoding of the `bytes`:code: fields.
+    More specifically, do explicit encoding of the `bytes`:code: fields, and
+    parse integers from strings.
 
     >>> import pprint
     >>> pprint.pprint(jsdict_to_order(
