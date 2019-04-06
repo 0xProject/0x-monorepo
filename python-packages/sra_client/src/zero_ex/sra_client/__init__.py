@@ -69,6 +69,11 @@ To start, connect to the Ethereum network:
 >>> from web3 import HTTPProvider, Web3
 >>> eth_node = HTTPProvider("http://localhost:8545")
 
+What network is it?
+
+>>> from zero_ex.contract_addresses import NetworkId
+>>> network_id = NetworkId.GANACHE  # you might use .MAINNET or .KOVAN
+
 For our Maker role, we'll just use the first address available in the node:
 
 >>> maker_address = Web3(eth_node).eth.accounts[0].lower()
@@ -78,19 +83,17 @@ for this account, so the example orders below have the maker trading away ZRX.
 Before such an order can be valid, though, the maker must give the 0x contracts
 permission to trade their ZRX tokens:
 
->>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
->>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
+>>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES
+>>> contract_addresses = NETWORK_TO_ADDRESSES[network_id]
 >>>
 >>> from zero_ex.contract_artifacts import abi_by_name
 >>> zrx_token_contract = Web3(eth_node).eth.contract(
-...    address=Web3.toChecksumAddress(zrx_address),
+...    address=Web3.toChecksumAddress(contract_addresses.zrx_token),
 ...    abi=abi_by_name("ZRXToken")
 ... )
 >>>
 >>> zrx_token_contract.functions.approve(
-...     Web3.toChecksumAddress(
-...         NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
-...     ),
+...     Web3.toChecksumAddress(contract_addresses.erc20_proxy),
 ...     1000000000000000000
 ... ).transact(
 ...     {"from": Web3.toChecksumAddress(maker_address)}
@@ -102,27 +105,25 @@ Post Order
 
 Post an order for our Maker to trade ZRX for WETH:
 
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
->>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
-...     generate_order_hash_hex,
-...     jsdict_to_order,
 ...     Order,
 ...     order_to_jsdict,
 ...     sign_hash)
 >>> import random
 >>> from datetime import datetime, timedelta
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
->>> weth_address     = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
 >>> order = Order(
 ...     makerAddress=maker_address,
 ...     takerAddress="0x0000000000000000000000000000000000000000",
 ...     senderAddress="0x0000000000000000000000000000000000000000",
-...     exchangeAddress=exchange_address,
+...     exchangeAddress=contract_addresses.exchange,
 ...     feeRecipientAddress="0x0000000000000000000000000000000000000000",
-...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
-...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     makerAssetData=asset_data_utils.encode_erc20(
+...         contract_addresses.zrx_token
+...     ),
+...     takerAssetData=asset_data_utils.encode_erc20(
+...         contract_addresses.ether_token
+...     ),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -132,16 +133,20 @@ Post an order for our Maker to trade ZRX for WETH:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
+
+>>> from zero_ex.order_utils import generate_order_hash_hex
+>>> order_hash_hex = generate_order_hash_hex(
+...     order, contract_addresses.exchange
+... )
 >>> order_dict = order_to_jsdict(
 ...     order=order,
-...     exchange_address=exchange_address,
+...     exchange_address=contract_addresses.exchange,
 ...     signature=sign_hash(
 ...         eth_node, Web3.toChecksumAddress(maker_address), order_hash_hex
 ...     )
 ... )
 >>> relayer_api.post_order_with_http_info(
-...     network_id=NetworkId.GANACHE.value, signed_order_schema=order_dict)[1]
+...     network_id=network_id.value, signed_order_schema=order_dict)[1]
 200
 
 Get Order
@@ -206,11 +211,11 @@ ZRX, since that's all there is on this Relayer's order book:
                              'precision': 18}}]}
 >>> asset_data_utils.decode_erc20_asset_data(
 ...     relayer_api.get_asset_pairs().records[0]['assetDataA']['assetData']
-... ).token_address == zrx_address
+... ).token_address == contract_addresses.zrx_token
 True
 >>> asset_data_utils.decode_erc20_asset_data(
 ...     relayer_api.get_asset_pairs().records[0]['assetDataB']['assetData']
-... ).token_address == weth_address
+... ).token_address == contract_addresses.ether_token
 True
 
 Get Orderbook
@@ -220,8 +225,12 @@ Get the Relayer's order book for the WETH/ZRX asset pair (which, again,
 consists just of our order):
 
 >>> orderbook = relayer_api.get_orderbook(
-...     base_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
-...     quote_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
+...     base_asset_data= "0x" + asset_data_utils.encode_erc20(
+...         contract_addresses.ether_token
+...     ).hex(),
+...     quote_asset_data= "0x" + asset_data_utils.encode_erc20(
+...         contract_addresses.zrx_token
+...     ).hex(),
 ... )
 >>> orderbook
 {'asks': {'records': []},
@@ -244,6 +253,7 @@ consists just of our order):
 Select an order from the orderbook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+>>> from zero_ex.order_utils import jsdict_to_order
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)
@@ -281,7 +291,7 @@ depositing some ether into the WETH contract, it will be given some WETH to
 trade with:
 
 >>> weth_instance = Web3(eth_node).eth.contract(
-...    address=Web3.toChecksumAddress(weth_address),
+...    address=Web3.toChecksumAddress(contract_addresses.ether_token),
 ...    abi=abi_by_name("WETH9")
 ... )
 >>> weth_instance.functions.deposit().transact(
@@ -293,9 +303,7 @@ HexBytes('0x...')
 Next the taker needs to give the 0x contracts permission to trade their WETH:
 
 >>> weth_instance.functions.approve(
-...     Web3.toChecksumAddress(
-...         NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
-...     ),
+...     Web3.toChecksumAddress(contract_addresses.erc20_proxy),
 ...     1000000000000000000).transact(
 ...     {"from": Web3.toChecksumAddress(taker_address)})
 HexBytes('0x...')
@@ -306,7 +314,7 @@ Recall that in a previous example we selected a specific order from the order
 book.  Now let's have the taker fill it:
 
 >>> from zero_ex.contract_wrappers import Exchange, TxParams
->>> from zero_ex.order_utils import jsdict_to_order, Order
+>>> from zero_ex.order_utils import Order
 >>> Exchange(eth_node).fill_order(
 ...     order=order,
 ...     taker_amount=order['makerAssetAmount']/2, # note the half fill
