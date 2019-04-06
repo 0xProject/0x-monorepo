@@ -80,29 +80,32 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     public render(): React.ReactNode {
         const sourceUrl = this._getSourceUrl();
-        const sectionNameToLinks = this.state.docAgnosticFormat === undefined
-            ? {}
-            : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
-        const mainContent = this.state.docAgnosticFormat === undefined ? (
-            <div className="flex justify-center">{this._renderLoading()}</div>
-        ) : (
-            <DocReference
-                selectedVersion={this.props.docsVersion}
-                availableVersions={this.props.availableDocVersions}
-                docsInfo={this.props.docsInfo}
-                docAgnosticFormat={this.state.docAgnosticFormat}
-                sourceUrl={sourceUrl}
-            />
-        );
-        const sidebar = this.state.docAgnosticFormat === undefined ? (
-            <div />
-        ) : (
-            <NestedSidebarMenu
-                sidebarHeader={this._renderSidebarHeader()}
-                sectionNameToLinks={sectionNameToLinks}
-                screenWidth={this.props.screenWidth}
-            />
-        );
+        const sectionNameToLinks =
+            this.state.docAgnosticFormat === undefined
+                ? {}
+                : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
+        const mainContent =
+            this.state.docAgnosticFormat === undefined ? (
+                <div className="flex justify-center">{this._renderLoading()}</div>
+            ) : (
+                <DocReference
+                    selectedVersion={this.props.docsVersion}
+                    availableVersions={this.props.availableDocVersions}
+                    docsInfo={this.props.docsInfo}
+                    docAgnosticFormat={this.state.docAgnosticFormat}
+                    sourceUrl={sourceUrl}
+                />
+            );
+        const sidebar =
+            this.state.docAgnosticFormat === undefined ? (
+                <div />
+            ) : (
+                <NestedSidebarMenu
+                    sidebarHeader={this._renderSidebarHeader()}
+                    sectionNameToLinks={sectionNameToLinks}
+                    screenWidth={this.props.screenWidth}
+                />
+            );
         return (
             <DevelopersPage
                 sidebar={sidebar}

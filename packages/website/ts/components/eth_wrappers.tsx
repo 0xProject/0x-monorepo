@@ -101,9 +101,10 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             etherToken.address,
             utils.getTokenIconUrl(etherToken.symbol),
         );
-        const userEtherBalanceInEth = this.props.userEtherBalanceInWei !== undefined
-            ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
-            : undefined;
+        const userEtherBalanceInEth =
+            this.props.userEtherBalanceInWei !== undefined
+                ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
+                : undefined;
         const rootClassName = this.props.isFullWidth ? 'clearfix' : 'clearfix lg-px4 md-px4 sm-px2';
         return (
             <div className={rootClassName} style={{ minHeight: 600 }}>

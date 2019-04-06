@@ -46,9 +46,8 @@ export abstract class ContractWrapper {
     constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
         this._networkId = networkId;
-        this._blockPollingIntervalMs = blockPollingIntervalMs === undefined
-            ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
-            : blockPollingIntervalMs;
+        this._blockPollingIntervalMs =
+            blockPollingIntervalMs === undefined ? constants.DEFAULT_BLOCK_POLLING_INTERVAL : blockPollingIntervalMs;
         this._filters = {};
         this._filterCallbacks = {};
         this._blockAndLogStreamerIfExists = undefined;

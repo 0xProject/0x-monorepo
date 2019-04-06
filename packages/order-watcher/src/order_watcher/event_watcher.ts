@@ -33,9 +33,8 @@ export class EventWatcher {
     ) {
         this._isVerbose = isVerbose;
         this._web3Wrapper = new Web3Wrapper(supportedProvider);
-        this._pollingIntervalMs = pollingIntervalIfExistsMs === undefined
-            ? DEFAULT_EVENT_POLLING_INTERVAL_MS
-            : pollingIntervalIfExistsMs;
+        this._pollingIntervalMs =
+            pollingIntervalIfExistsMs === undefined ? DEFAULT_EVENT_POLLING_INTERVAL_MS : pollingIntervalIfExistsMs;
         this._blockAndLogStreamerIfExists = undefined;
         this._blockAndLogStreamIntervalIfExists = undefined;
         this._onLogAddedSubscriptionToken = undefined;

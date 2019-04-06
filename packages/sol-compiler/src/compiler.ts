@@ -233,9 +233,10 @@ export class Compiler {
                 continue;
             }
             contractPathToData[contractSource.path] = contractData;
-            const solcVersion = this._solcVersionIfExists === undefined
-                ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
-                : this._solcVersionIfExists;
+            const solcVersion =
+                this._solcVersionIfExists === undefined
+                    ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
+                    : this._solcVersionIfExists;
             if (solcVersion === null) {
                 throw new Error(
                     `Couldn't find any solidity version satisfying the constraint ${parseSolidityVersionRange(

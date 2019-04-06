@@ -101,12 +101,14 @@ export class ContractWrappers {
         _.forEach(artifactsArray, artifact => {
             this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
         });
-        const blockPollingIntervalMs = config.blockPollingIntervalMs === undefined
-            ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
-            : config.blockPollingIntervalMs;
-        const contractAddresses = config.contractAddresses === undefined
-            ? _getDefaultContractAddresses(config.networkId)
-            : config.contractAddresses;
+        const blockPollingIntervalMs =
+            config.blockPollingIntervalMs === undefined
+                ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
+                : config.blockPollingIntervalMs;
+        const contractAddresses =
+            config.contractAddresses === undefined
+                ? _getDefaultContractAddresses(config.networkId)
+                : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
         this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
         this.erc20Token = new ERC20TokenWrapper(

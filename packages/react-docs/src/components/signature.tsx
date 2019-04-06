@@ -66,15 +66,16 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
         paramStringArray.pop();
     }
     const methodName = props.shouldHideMethodName ? '' : props.name;
-    const typeParameterIfExists = props.typeParameter === undefined
-        ? undefined
-        : renderTypeParameter(
-              props.typeParameter,
-              props.docsInfo,
-              sectionName,
-              props.isInPopover,
-              props.typeDefinitionByName,
-          );
+    const typeParameterIfExists =
+        props.typeParameter === undefined
+            ? undefined
+            : renderTypeParameter(
+                  props.typeParameter,
+                  props.docsInfo,
+                  sectionName,
+                  props.isInPopover,
+                  props.typeDefinitionByName,
+              );
     return (
         <span style={{ fontSize: 15 }}>
             {props.callPath}

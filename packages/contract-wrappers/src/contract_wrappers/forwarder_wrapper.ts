@@ -51,12 +51,10 @@ export class ForwarderWrapper extends ContractWrapper {
     ) {
         super(web3Wrapper, networkId);
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).exchange : address;
-        this.zrxTokenAddress = zrxTokenAddress === undefined
-            ? _getDefaultContractAddresses(networkId).zrxToken
-            : zrxTokenAddress;
-        this.etherTokenAddress = etherTokenAddress === undefined
-            ? _getDefaultContractAddresses(networkId).etherToken
-            : etherTokenAddress;
+        this.zrxTokenAddress =
+            zrxTokenAddress === undefined ? _getDefaultContractAddresses(networkId).zrxToken : zrxTokenAddress;
+        this.etherTokenAddress =
+            etherTokenAddress === undefined ? _getDefaultContractAddresses(networkId).etherToken : etherTokenAddress;
     }
     /**
      * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.

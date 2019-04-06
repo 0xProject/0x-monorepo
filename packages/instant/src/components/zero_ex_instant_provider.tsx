@@ -52,19 +52,24 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             providerState,
             network: networkId,
             walletDisplayName: props.walletDisplayName,
-            selectedAsset: props.defaultSelectedAssetData === undefined
-                ? undefined
-                : assetUtils.createAssetFromAssetDataOrThrow(
-                      props.defaultSelectedAssetData,
-                      completeAssetMetaDataMap,
-                      networkId,
-                  ),
-            selectedAssetUnitAmount: props.defaultAssetBuyAmount === undefined
-                ? undefined
-                : new BigNumber(props.defaultAssetBuyAmount),
-            availableAssets: props.availableAssetDatas === undefined
-                ? undefined
-                : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
+            selectedAsset:
+                props.defaultSelectedAssetData === undefined
+                    ? undefined
+                    : assetUtils.createAssetFromAssetDataOrThrow(
+                          props.defaultSelectedAssetData,
+                          completeAssetMetaDataMap,
+                          networkId,
+                      ),
+            selectedAssetUnitAmount:
+                props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount),
+            availableAssets:
+                props.availableAssetDatas === undefined
+                    ? undefined
+                    : assetUtils.createAssetsFromAssetDatas(
+                          props.availableAssetDatas,
+                          completeAssetMetaDataMap,
+                          networkId,
+                      ),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
         };

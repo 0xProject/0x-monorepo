@@ -46,9 +46,10 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
 
         const id = utils.getIdFromName(sectionName);
         const formattedSectionName = utils.convertCamelCaseToSpaces(sectionName);
-        const title = this.props.alternativeSectionTitle !== undefined
-            ? this.props.alternativeSectionTitle
-            : _.capitalize(formattedSectionName);
+        const title =
+            this.props.alternativeSectionTitle !== undefined
+                ? this.props.alternativeSectionTitle
+                : _.capitalize(formattedSectionName);
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"

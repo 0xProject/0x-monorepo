@@ -54,9 +54,8 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
         );
     }
     private _onChange(isValid: boolean, amount?: BigNumber): void {
-        const baseUnitAmountIfExists = amount === undefined
-            ? undefined
-            : Web3Wrapper.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
+        const baseUnitAmountIfExists =
+            amount === undefined ? undefined : Web3Wrapper.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
         this.props.onChange(isValid, baseUnitAmountIfExists);
     }
     private _getLabelStyle(): React.CSSProperties {

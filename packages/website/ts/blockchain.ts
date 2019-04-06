@@ -517,9 +517,10 @@ export class Blockchain {
 
         const tokenRegistryTokensByAddress = await this._getTokenRegistryTokensByAddressAsync();
 
-        const trackedTokensByAddress = this._userAddressIfExists === undefined
-            ? {}
-            : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);
+        const trackedTokensByAddress =
+            this._userAddressIfExists === undefined
+                ? {}
+                : trackedTokenStorage.getTrackedTokensByAddress(this._userAddressIfExists, this.networkId);
         const tokenRegistryTokens = _.values(tokenRegistryTokensByAddress);
         const tokenRegistryTokenSymbols = _.map(tokenRegistryTokens, t => t.symbol);
         const defaultTrackedTokensInRegistry = _.intersection(

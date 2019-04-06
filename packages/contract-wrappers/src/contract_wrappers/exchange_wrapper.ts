@@ -78,9 +78,8 @@ export class ExchangeWrapper extends ContractWrapper {
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).exchange : address;
-        this.zrxTokenAddress = zrxTokenAddress === undefined
-            ? _getDefaultContractAddresses(networkId).zrxToken
-            : zrxTokenAddress;
+        this.zrxTokenAddress =
+            zrxTokenAddress === undefined ? _getDefaultContractAddresses(networkId).zrxToken : zrxTokenAddress;
     }
     /**
      * Retrieve the address of an asset proxy by signature.
@@ -1162,9 +1161,10 @@ export class ExchangeWrapper extends ContractWrapper {
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
 
         let fillableTakerAssetAmount;
-        const shouldValidateRemainingOrderAmountIsFillable = opts.validateRemainingOrderAmountIsFillable === undefined
-            ? true
-            : opts.validateRemainingOrderAmountIsFillable;
+        const shouldValidateRemainingOrderAmountIsFillable =
+            opts.validateRemainingOrderAmountIsFillable === undefined
+                ? true
+                : opts.validateRemainingOrderAmountIsFillable;
         if (opts.expectedFillTakerTokenAmount) {
             // If the caller has specified a taker fill amount, we use this for all validation
             fillableTakerAssetAmount = opts.expectedFillTakerTokenAmount;

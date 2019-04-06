@@ -22,9 +22,8 @@ export const trackedTokenStorage = {
         if (trackedTokensByNetworkId === undefined) {
             trackedTokensByNetworkId = {};
         }
-        const trackedTokens = trackedTokensByNetworkId[networkId] !== undefined
-            ? trackedTokensByNetworkId[networkId]
-            : [];
+        const trackedTokens =
+            trackedTokensByNetworkId[networkId] !== undefined ? trackedTokensByNetworkId[networkId] : [];
         trackedTokens.push(token);
         trackedTokensByNetworkId[networkId] = trackedTokens;
         trackedTokensByUserAddress[userAddress] = trackedTokensByNetworkId;

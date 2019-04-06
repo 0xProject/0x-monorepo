@@ -114,9 +114,8 @@ export class ConnectForm extends React.Component<Props, State> {
             errors: {},
             userAddresses: [],
             addressBalances: [],
-            derivationPath: derivationPathIfExists === undefined
-                ? configs.DEFAULT_DERIVATION_PATH
-                : derivationPathIfExists,
+            derivationPath:
+                derivationPathIfExists === undefined ? configs.DEFAULT_DERIVATION_PATH : derivationPathIfExists,
             derivationErrMsg: '',
         };
     }
