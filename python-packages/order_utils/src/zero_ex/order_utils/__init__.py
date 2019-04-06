@@ -249,18 +249,18 @@ def order_to_jsdict(
     ...     },
     ... ))
     {'exchangeAddress': '0x0000000000000000000000000000000000000000',
-     'expirationTimeSeconds': 1,
+     'expirationTimeSeconds': '1',
      'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
      'makerAddress': '0x0000000000000000000000000000000000000000',
-     'makerAssetAmount': 1,
+     'makerAssetAmount': '1',
      'makerAssetData': '0x0000000000000000000000000000000000000000',
-     'makerFee': 0,
-     'salt': 1,
+     'makerFee': '0',
+     'salt': '1',
      'senderAddress': '0x0000000000000000000000000000000000000000',
      'takerAddress': '0x0000000000000000000000000000000000000000',
-     'takerAssetAmount': 1,
+     'takerAssetAmount': '1',
      'takerAssetData': '0x0000000000000000000000000000000000000000',
-     'takerFee': 0}
+     'takerFee': '0'}
     """
     jsdict = cast(Dict, copy(order))
 
@@ -269,6 +269,16 @@ def order_to_jsdict(
     jsdict["takerAssetData"] = "0x" + order["takerAssetData"].hex()
 
     jsdict["exchangeAddress"] = exchange_address
+
+    jsdict["expirationTimeSeconds"] = str(order["expirationTimeSeconds"])
+
+    jsdict["makerAssetAmount"] = str(order["makerAssetAmount"])
+    jsdict["takerAssetAmount"] = str(order["takerAssetAmount"])
+
+    jsdict["makerFee"] = str(order["makerFee"])
+    jsdict["takerFee"] = str(order["takerFee"])
+
+    jsdict["salt"] = str(order["salt"])
 
     assert_valid(jsdict, "/orderSchema")
 
@@ -287,12 +297,12 @@ def jsdict_order_to_struct(jsdict: dict) -> Order:
     ...         'takerAddress': "0x0000000000000000000000000000000000000000",
     ...         'feeRecipientAddress': "0x0000000000000000000000000000000000000000",
     ...         'senderAddress': "0x0000000000000000000000000000000000000000",
-    ...         'makerAssetAmount': 1000000000000000000,
-    ...         'takerAssetAmount': 1000000000000000000,
-    ...         'makerFee': 0,
-    ...         'takerFee': 0,
-    ...         'expirationTimeSeconds': 12345,
-    ...         'salt': 12345,
+    ...         'makerAssetAmount': "1000000000000000000",
+    ...         'takerAssetAmount': "1000000000000000000",
+    ...         'makerFee': "0",
+    ...         'takerFee': "0",
+    ...         'expirationTimeSeconds': "12345",
+    ...         'salt': "12345",
     ...         'makerAssetData': "0x0000000000000000000000000000000000000000",
     ...         'takerAssetData': "0x0000000000000000000000000000000000000000",
     ...         'exchangeAddress': "0x0000000000000000000000000000000000000000",
@@ -323,6 +333,16 @@ def jsdict_order_to_struct(jsdict: dict) -> Order:
     order["takerAssetData"] = bytes.fromhex(
         remove_0x_prefix(jsdict["takerAssetData"])
     )
+
+    order["makerAssetAmount"] = int(jsdict["makerAssetAmount"])
+    order["takerAssetAmount"] = int(jsdict["takerAssetAmount"])
+
+    order["makerFee"] = int(jsdict["makerFee"])
+    order["takerFee"] = int(jsdict["takerFee"])
+
+    order["expirationTimeSeconds"] = int(jsdict["expirationTimeSeconds"])
+
+    order["salt"] = int(jsdict["salt"])
 
     del order["exchangeAddress"]  # type: ignore
     # silence mypy pending release of
