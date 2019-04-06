@@ -224,7 +224,9 @@ def make_empty_order() -> Order:
 
 
 def order_to_jsdict(
-    order: Order, exchange_address="0x0000000000000000000000000000000000000000"
+    order: Order,
+    exchange_address="0x0000000000000000000000000000000000000000",
+    signature: str = None,
 ) -> dict:
     """Convert a Web3-compatible order struct to a JSON-schema-compatible dict.
 
@@ -280,18 +282,21 @@ def order_to_jsdict(
 
     jsdict["salt"] = str(order["salt"])
 
+    if signature is not None:
+        jsdict["signature"] = signature
+
     assert_valid(jsdict, "/orderSchema")
 
     return jsdict
 
 
-def jsdict_order_to_struct(jsdict: dict) -> Order:
+def jsdict_to_order(jsdict: dict) -> Order:
     r"""Convert a JSON-schema-compatible dict order to a Web3-compatible struct.
 
     More specifically, do explicit encoding of the `bytes`:code: fields.
 
     >>> import pprint
-    >>> pprint.pprint(jsdict_order_to_struct(
+    >>> pprint.pprint(jsdict_to_order(
     ...     {
     ...         'makerAddress': "0x0000000000000000000000000000000000000000",
     ...         'takerAddress': "0x0000000000000000000000000000000000000000",

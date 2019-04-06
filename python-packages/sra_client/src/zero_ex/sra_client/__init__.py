@@ -107,7 +107,7 @@ Post an order for our Maker to trade ZRX for WETH:
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
 ...     generate_order_hash_hex,
-...     jsdict_order_to_struct,
+...     jsdict_to_order,
 ...     Order,
 ...     order_to_jsdict,
 ...     sign_hash)
@@ -133,9 +133,13 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     )
 ... )
 >>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
->>> order_dict = order_to_jsdict(order, exchange_address)
->>> order_dict["signature"] = sign_hash(
-...     ganache, Web3.toChecksumAddress(maker_address), order_hash_hex)
+>>> order_dict = order_to_jsdict(
+...     order=order,
+...     exchange_address=exchange_address,
+...     signature=sign_hash(
+...         ganache, Web3.toChecksumAddress(maker_address), order_hash_hex
+...     )
+... )
 >>> relayer_api.post_order_with_http_info(
 ...     network_id=NetworkId.GANACHE.value, signed_order_schema=order_dict)[1]
 200
@@ -281,9 +285,9 @@ real life more filtering and validation would be necessary.
 Now the taker can fill that order:
 
 >>> from zero_ex.contract_wrappers import Exchange, TxParams
->>> from zero_ex.order_utils import jsdict_order_to_struct, Order
+>>> from zero_ex.order_utils import jsdict_to_order, Order
 >>> Exchange(ganache).fill_order(
-...     order=jsdict_order_to_struct(order_to_take),
+...     order=jsdict_to_order(order_to_take),
 ...     taker_amount=int(int(order_to_take["makerAssetAmount"])/2),
 ...     signature=order_to_take["signature"],
 ...     tx_params=TxParams(from_=taker_address)
