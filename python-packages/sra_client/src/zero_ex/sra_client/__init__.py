@@ -147,19 +147,20 @@ Retrieve the order we just posted:
 
 >>> relayer_api.get_order("0x" + order_hash_hex)
 {'meta_data': {},
- 'order': {'exchange_address': '0x...',
-           'expiration_time_seconds': '1000000000000000000000',
-           'fee_recipient_address': '0x0000000000000000000000000000000000000000',
-           'maker_address': '0x...',
-           'maker_asset_amount': '1000000000000000000',
-           'maker_asset_data': '0xf47261b0000000000000000000000000...',
-           'maker_fee': '0',
+ 'order': {'exchangeAddress': '0x...',
+           'expirationTimeSeconds': '1000000000000000000000',
+           'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+           'makerAddress': '0x...',
+           'makerAssetAmount': '1000000000000000000',
+           'makerAssetData': '0xf47261b0000000000000000000000000...',
+           'makerFee': '0',
            'salt': '...',
-           'sender_address': '0x0000000000000000000000000000000000000000',
-           'taker_address': '0x0000000000000000000000000000000000000000',
-           'taker_asset_amount': '500000000000000000000',
-           'taker_asset_data': '0xf47261b0000000000000000000000000...',
-           'taker_fee': '0'}}
+           'senderAddress': '0x0000000000000000000000000000000000000000',
+           'signature': '0x...',
+           'takerAddress': '0x0000000000000000000000000000000000000000',
+           'takerAssetAmount': '500000000000000000000',
+           'takerAssetData': '0xf47261b0000000000000000000000000...',
+           'takerFee': '0'}}
 
 Get Orders
 -----------
@@ -169,19 +170,20 @@ just posted:
 
 >>> relayer_api.get_orders()
 {'records': [{'meta_data': {},
-              'order': {'exchange_address': '0x...',
-                        'expiration_time_seconds': '1000000000000000000000',
-                        'fee_recipient_address': '0x0000000000000000000000000000000000000000',
-                        'maker_address': '0x...',
-                        'maker_asset_amount': '1000000000000000000',
-                        'maker_asset_data': '0xf47261b000000000000000000000000...',
-                        'maker_fee': '0',
+              'order': {'exchangeAddress': '0x...',
+                        'expirationTimeSeconds': '1000000000000000000000',
+                        'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+                        'makerAddress': '0x...',
+                        'makerAssetAmount': '1000000000000000000',
+                        'makerAssetData': '0xf47261b000000000000000000000000...',
+                        'makerFee': '0',
                         'salt': '...',
-                        'sender_address': '0x0000000000000000000000000000000000000000',
-                        'taker_address': '0x0000000000000000000000000000000000000000',
-                        'taker_asset_amount': '500000000000000000000',
-                        'taker_asset_data': '0xf47261b0000000000000000000000000...',
-                        'taker_fee': '0'}}]}
+                        'senderAddress': '0x0000000000000000000000000000000000000000',
+                        'signature': '0x...',
+                        'takerAddress': '0x0000000000000000000000000000000000000000',
+                        'takerAssetAmount': '500000000000000000000',
+                        'takerAssetData': '0xf47261b0000000000000000000000000...',
+                        'takerFee': '0'}}]}
 
 Get Asset Pairs
 ---------------
@@ -209,19 +211,20 @@ consists just of our order):
 ...     base_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
 ...     quote_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex())
 {'asks': {'records': [{'meta_data': {},
-                       'order': {'exchange_address': '0x...',
-                                 'expiration_time_seconds': '1000000000000000000000',
-                                 'fee_recipient_address': '0x0000000000000000000000000000000000000000',
-                                 'maker_address': '0x...',
-                                 'maker_asset_amount': '1000000000000000000',
-                                 'maker_asset_data': '0xf47261b0000000000000000000000000...',
-                                 'maker_fee': '0',
+                       'order': {'exchangeAddress': '0x...',
+                                 'expirationTimeSeconds': '...',
+                                 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+                                 'makerAddress': '0x...',
+                                 'makerAssetAmount': '1000000000000000000',
+                                 'makerAssetData': '0xf47261b0000000000000000000000000...',
+                                 'makerFee': '0',
                                  'salt': '...',
-                                 'sender_address': '0x0000000000000000000000000000000000000000',
-                                 'taker_address': '0x0000000000000000000000000000000000000000',
-                                 'taker_asset_amount': '500000000000000000000',
-                                 'taker_asset_data': '0xf47261b0000000000000000000000000...',
-                                 'taker_fee': '0'}}]},
+                                 'senderAddress': '0x0000000000000000000000000000000000000000',
+                                 'signature': '0x...',
+                                 'takerAddress': '0x0000000000000000000000000000000000000000',
+                                 'takerAssetAmount': '500000000000000000000',
+                                 'takerAssetData': '0xf47261b0000000000000000000000000...',
+                                 'takerFee': '0'}}]},
  'bids': {'records': []}}
 
 Filling or Cancelling an Order
