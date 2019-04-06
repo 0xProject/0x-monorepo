@@ -18,8 +18,8 @@ Install the package with pip::
 
     pip install 0x-sra-client
 
-To interact with a 0x Relayer, you need the HTTP endpoint of the Relayer you'd like to
-connect to (eg https://api.radarrelay.com/0x/v2).
+To interact with a 0x Relayer, you need the HTTP endpoint of the Relayer you'd
+like to connect to (eg https://api.radarrelay.com/0x/v2).
 
 For testing one can use the `0x-launch-kit
 <https://github.com/0xProject/0x-launch-kit#table-of-contents/>`_ to host
@@ -165,8 +165,8 @@ Retrieve the order we just posted:
 Get Orders
 -----------
 
-Retrieve all of the Relayer's orders, a set which consists solely of the one we
-just posted:
+Retrieve all of the Relayer's orders, a set which at this point consists solely
+of the one we just posted:
 
 >>> relayer_api.get_orders()
 {'records': [{'meta_data': {},
@@ -232,9 +232,10 @@ Filling or Cancelling an Order
 ------------------------------
 
 Fills and cancels are triggered by dealing directly with the 0x Exchange
-contract, not by going through a Relayer.  See `the 0x-contract-wrappers
-documentation
-<http://0x-contract-wrappers-py.s3-website-us-east-1.amazonaws.com/>`_ for
+contract, not by going through a Relayer.
+
+See `the 0x-contract-wrappers documentation
+<http://0x-contract-wrappers-py.s3-website-us-east-1.amazonaws.com/>`_ for more
 examples.
 
 Filling
