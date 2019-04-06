@@ -73,45 +73,37 @@ For our Maker role, we'll just use the first address available in the node:
 
 >>> maker_address = Web3(ganache).eth.accounts[0].lower()
 
-Finally, import some modules and declare some constants that we'll use later:
+The 0x Ganache snapshot has a pre-loaded ZRX balance for this account, so the
+example orders below have the maker trading away ZRX.  Before such an order can
+be valid, though, the maker must give the 0x contracts permission to trade
+their ZRX tokens:
 
 >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
->>> weth_address     = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
->>> zrx_address      = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
-
-Wrapping ETH
-^^^^^^^^^^^^
-
-We're going to post an order to trade WETH for ZRX.  In order to do that, we
-first need to wrap some ether as WETH.
-
-First get an instance of the WETH contract on the network:
-
+>>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
+>>>
 >>> from zero_ex.contract_artifacts import abi_by_name
->>> weth_instance = Web3(ganache).eth.contract(
-...    address=Web3.toChecksumAddress(weth_address),
-...    abi=abi_by_name("WETH9"))
-
-Then deposit some ETH into that contract, which will result in receiving WETH:
-
->>> weth_instance.functions.deposit().transact(
-...     {"from": Web3.toChecksumAddress(maker_address), "value": 1000000000000000000})
-HexBytes('0x...')
-
-Finally, permit the 0x contracts to transfer WETH from our Maker:
-
->>> weth_instance.functions.approve(
-...     Web3.toChecksumAddress(NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy),
-...     1000000000000000000).transact(
-...     {"from": Web3.toChecksumAddress(maker_address)})
+>>> zrx_token_contract = Web3(ganache).eth.contract(
+...    address=Web3.toChecksumAddress(zrx_address),
+...    abi=abi_by_name("ZRXToken")
+... )
+>>>
+>>> zrx_token_contract.functions.approve(
+...     Web3.toChecksumAddress(
+...         NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
+...     ),
+...     1000000000000000000
+... ).transact(
+...     {"from": Web3.toChecksumAddress(maker_address)}
+... )
 HexBytes('0x...')
 
 Post Order
 -----------
 
-Post an order for our Maker to trade WETH for ZRX:
+Post an order for our Maker to trade ZRX for WETH:
 
+>>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+>>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
 ...     generate_order_hash_hex,
@@ -124,8 +116,8 @@ Post an order for our Maker to trade WETH for ZRX:
 ...     "senderAddress": "0x0000000000000000000000000000000000000000",
 ...     "exchangeAddress": exchange_address,
 ...     "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-...     "makerAssetData": "0x"+asset_data_utils.encode_erc20(weth_address).hex(),
-...     "takerAssetData": "0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
+...     "makerAssetData": "0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
+...     "takerAssetData": "0x"+asset_data_utils.encode_erc20(weth_address).hex(),
 ...     "salt": str(random.randint(1, 100000000000000000)),
 ...     "makerFee": "0",
 ...     "takerFee": "0",
@@ -209,8 +201,10 @@ consists just of our order):
 
 >>> relayer_api.get_orderbook(
 ...     base_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
-...     quote_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex())
-{'asks': {'records': [{'meta_data': {},
+...     quote_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
+... )
+{'asks': {'records': []},
+ 'bids': {'records': [{'meta_data': {},
                        'order': {'exchangeAddress': '0x...',
                                  'expirationTimeSeconds': '...',
                                  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -224,8 +218,7 @@ consists just of our order):
                                  'takerAddress': '0x0000000000000000000000000000000000000000',
                                  'takerAssetAmount': '500000000000000000000',
                                  'takerAssetData': '0xf47261b0000000000000000000000000...',
-                                 'takerFee': '0'}}]},
- 'bids': {'records': []}}
+                                 'takerFee': '0'}}]}}
 
 Filling or Cancelling an Order
 ------------------------------
