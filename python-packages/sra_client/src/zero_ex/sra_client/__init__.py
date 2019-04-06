@@ -219,10 +219,11 @@ Get Orderbook
 Get the Relayer's order book for the WETH/ZRX asset pair (which, again,
 consists just of our order):
 
->>> relayer_api.get_orderbook(
+>>> orderbook = relayer_api.get_orderbook(
 ...     base_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
 ...     quote_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
 ... )
+>>> orderbook
 {'asks': {'records': []},
  'bids': {'records': [{'meta_data': {},
                        'order': {'exchangeAddress': '0x...',
@@ -239,6 +240,26 @@ consists just of our order):
                                  'takerAssetAmount': '2',
                                  'takerAssetData': '0xf47261b0000000000000000000000000...',
                                  'takerFee': '0'}}]}}
+
+Select an order from the orderbook
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+>>> order = jsdict_to_order(orderbook.bids.records[0].order)
+>>> from pprint import pprint
+>>> pprint(order)
+{'expirationTimeSeconds': ...,
+ 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+ 'makerAddress': '0x...',
+ 'makerAssetAmount': 2,
+ 'makerAssetData': b...
+ 'makerFee': 0,
+ 'salt': ...,
+ 'senderAddress': '0x0000000000000000000000000000000000000000',
+ 'signature': '0x...',
+ 'takerAddress': '0x0000000000000000000000000000000000000000',
+ 'takerAssetAmount': 2,
+ 'takerAssetData': b...
+ 'takerFee': 0}
 
 Filling or Cancelling an Order
 ------------------------------
@@ -281,23 +302,15 @@ HexBytes('0x...')
 
 Now the taker is ready to trade.
 
-First the taker will query the Relayer for orders that match the pair they want
-to trade.  Here we'll just assume that the first order is good enough, but in
-real life more filtering and validation would be necessary.
-
->>> order_to_take = relayer_api.get_orders(
-...     maker_asset_data="0x"+asset_data_utils.encode_erc20(zrx_address).hex(),
-...     taker_asset_data="0x"+asset_data_utils.encode_erc20(weth_address).hex(),
-... ).records[0].order
-
-Now the taker can fill that order:
+Recall that in a previous example we selected a specific order from the order
+book.  Now let's have the taker fill it:
 
 >>> from zero_ex.contract_wrappers import Exchange, TxParams
 >>> from zero_ex.order_utils import jsdict_to_order, Order
 >>> Exchange(ganache).fill_order(
-...     order=jsdict_to_order(order_to_take),
-...     taker_amount=int(int(order_to_take["makerAssetAmount"])/2),
-...     signature=order_to_take["signature"],
+...     order=order,
+...     taker_amount=order['makerAssetAmount']/2, # note the half fill
+...     signature=order['signature'],
 ...     tx_params=TxParams(from_=taker_address)
 ... )
 HexBytes('0x...')
