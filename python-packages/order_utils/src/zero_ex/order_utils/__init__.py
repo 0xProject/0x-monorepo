@@ -1,5 +1,12 @@
 """Order utilities for 0x applications.
 
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-order-utils
+
 Some methods require the caller to pass in a `Web3.BaseProvider`:code: object.
 For local testing one may construct such a provider pointing at an instance of
 `ganache-cli <https://www.npmjs.com/package/ganache-cli>`_ which has the 0x

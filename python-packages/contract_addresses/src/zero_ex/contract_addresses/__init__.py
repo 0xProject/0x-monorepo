@@ -1,4 +1,13 @@
-"""Addresses at which the 0x smart contracts have been deployed."""
+"""Addresses at which the 0x smart contracts have been deployed.
+
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-contract-addresses
+
+"""
 
 from enum import Enum
 from typing import Dict, NamedTuple

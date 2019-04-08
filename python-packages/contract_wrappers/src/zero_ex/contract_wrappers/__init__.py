@@ -3,15 +3,12 @@
 The smart contract wrappers have simplified interfaces, performing client-side
 validation on transactions, and throwing helpful error messages.
 
-Installing
-----------
+Setup
+-----
 
 Install the 0x-contract-wrappers with pip::
 
     pip install 0x-contract-wrappers
-
-Provider
---------
 
 We need a Web3 provider to allow us to talk to the blockchain. You can
 read `more about providers in the Web3.py documentation

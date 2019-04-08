@@ -1,4 +1,13 @@
-"""JSON schemas and associated utilities."""
+"""0x JSON schemas and associated utilities.
+
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-json-schemas
+
+"""
 
 from os import path
 import json

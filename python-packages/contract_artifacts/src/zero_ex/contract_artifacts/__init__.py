@@ -1,4 +1,12 @@
-"""0x smart contract compilation artifacts."""
+"""0x smart contract compilation artifacts.
+
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-contract-artifacts
+"""
 
 import json
 from typing import Dict
