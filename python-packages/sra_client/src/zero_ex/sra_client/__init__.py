@@ -138,15 +138,16 @@ Post an order for our Maker to trade ZRX for WETH:
 >>> order_hash_hex = generate_order_hash_hex(
 ...     order, contract_addresses.exchange
 ... )
->>> order_dict = order_to_jsdict(
-...     order=order,
-...     exchange_address=contract_addresses.exchange,
-...     signature=sign_hash(
-...         eth_node, Web3.toChecksumAddress(maker_address), order_hash_hex
-...     )
-... )
 >>> relayer_api.post_order_with_http_info(
-...     network_id=network_id.value, signed_order_schema=order_dict)[1]
+...     network_id=network_id.value,
+...     signed_order_schema=order_to_jsdict(
+...         order=order,
+...         exchange_address=contract_addresses.exchange,
+...         signature=sign_hash(
+...             eth_node, Web3.toChecksumAddress(maker_address), order_hash_hex
+...         )
+...     )
+... )[1]
 200
 
 Get Order
