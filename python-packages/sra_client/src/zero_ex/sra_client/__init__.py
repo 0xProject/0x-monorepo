@@ -55,7 +55,7 @@ Configure and create an API client instance
 >>> from zero_ex.sra_client import ApiClient, Configuration, DefaultApi
 >>> config = Configuration()
 >>> config.host = "http://localhost:3000"
->>> relayer_api = DefaultApi(ApiClient(config))
+>>> relayer = DefaultApi(ApiClient(config))
 
 Preparing to trade
 ------------------
@@ -138,7 +138,7 @@ Post an order for our Maker to trade ZRX for WETH:
 >>> order_hash_hex = generate_order_hash_hex(
 ...     order, contract_addresses.exchange
 ... )
->>> relayer_api.post_order_with_http_info(
+>>> relayer.post_order_with_http_info(
 ...     network_id=network_id.value,
 ...     signed_order_schema=order_to_jsdict(
 ...         order=order,
@@ -155,7 +155,7 @@ Get Order
 
 Retrieve the order we just posted:
 
->>> relayer_api.get_order("0x" + order_hash_hex)
+>>> relayer.get_order("0x" + order_hash_hex)
 {'meta_data': {},
  'order': {'exchangeAddress': '0x...',
            'expirationTimeSeconds': '...',
@@ -178,7 +178,7 @@ Get Orders
 Retrieve all of the Relayer's orders, a set which at this point consists solely
 of the one we just posted:
 
->>> relayer_api.get_orders()
+>>> relayer.get_orders()
 {'records': [{'meta_data': {},
               'order': {'exchangeAddress': '0x...',
                         'expirationTimeSeconds': '...',
@@ -201,7 +201,7 @@ Get Asset Pairs
 Get all of the Relayer's available asset pairs, which here means just WETH and
 ZRX, since that's all there is on this Relayer's order book:
 
->>> relayer_api.get_asset_pairs()
+>>> relayer.get_asset_pairs()
 {'records': [{'assetDataA': {'assetData': '0xf47261b0000000000000000000000000...',
                              'maxAmount': '115792089237316195423570985008687907853269984665640564039457584007913129639936',
                              'minAmount': '0',
@@ -211,11 +211,11 @@ ZRX, since that's all there is on this Relayer's order book:
                              'minAmount': '0',
                              'precision': 18}}]}
 >>> asset_data_utils.decode_erc20_asset_data(
-...     relayer_api.get_asset_pairs().records[0]['assetDataA']['assetData']
+...     relayer.get_asset_pairs().records[0]['assetDataA']['assetData']
 ... ).token_address == contract_addresses.zrx_token
 True
 >>> asset_data_utils.decode_erc20_asset_data(
-...     relayer_api.get_asset_pairs().records[0]['assetDataB']['assetData']
+...     relayer.get_asset_pairs().records[0]['assetDataB']['assetData']
 ... ).token_address == contract_addresses.ether_token
 True
 
@@ -225,7 +225,7 @@ Get Orderbook
 Get the Relayer's order book for the WETH/ZRX asset pair (which, again,
 consists just of our order):
 
->>> orderbook = relayer_api.get_orderbook(
+>>> orderbook = relayer.get_orderbook(
 ...     base_asset_data= "0x" + asset_data_utils.encode_erc20(
 ...         contract_addresses.ether_token
 ...     ).hex(),
