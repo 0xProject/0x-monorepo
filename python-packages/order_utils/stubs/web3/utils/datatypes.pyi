@@ -8,5 +8,5 @@ class ContractFunctions:
 
 
 class Contract:
-    class functions: ContractFunctions
+    functions: ContractFunctions
     ...
