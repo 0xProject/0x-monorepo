@@ -77,7 +77,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of a
             :class:`RelayerApiAssetDataPairsResponseSchema`, an HTTP status
-            code integer, and a collection of HTTP headers).  If the method is
+            code integer, and a collection of HTTP headers.  If the method is
             called asynchronously returns the request thread.
         """
 
@@ -202,7 +202,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of a
             :class:`RelayerApiFeeRecipientsResponseSchema`, an HTTP status
-            code integer, and a collection of HTTP headers).  If the method is
+            code integer, and a collection of HTTP headers.  If the method is
             called asynchronously returns the request thread.
         """
 
@@ -309,7 +309,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of a
             :class:`RelayerApiOrderSchema`, an HTTP status code integer, and a
-            collection of HTTP headers).  If the method is called
+            collection of HTTP headers.  If the method is called
             asynchronously returns the request thread.
         """
 
@@ -444,7 +444,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of a
             :class:`RelayerApiOrderConfigResponseSchema`, an HTTP status code
-            integer, and a collection of HTTP headers).  If the method is
+            integer, and a collection of HTTP headers.  If the method is
             called asynchronously returns the request thread.
         """
 
@@ -600,7 +600,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of a
             :class:`RelayerApiOrderbookResponseSchema`, an HTTP status code
-            integer, and a collection of HTTP headers).  If the method is
+            integer, and a collection of HTTP headers.  If the method is
             called asynchronously returns the request thread.
         """
 
@@ -845,7 +845,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of a
             :class:`RelayerApiOrdersResponseSchema`, an HTTP status code
-            integer, and a collection of HTTP headers).  If the method is
+            integer, and a collection of HTTP headers.  If the method is
             called asynchronously returns the request thread.
         """
 
@@ -1026,7 +1026,7 @@ class DefaultApi(object):
 
         :return: A tuple consisting of the response data (always empty for this
             method), an HTTP status code integer, and a collection of HTTP
-            headers).  If the method is called asynchronously returns the
+            headers.  If the method is called asynchronously returns the
             request thread.
         """
 
