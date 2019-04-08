@@ -39,9 +39,9 @@ export const artifacts = {
     IValidator: IValidator as ContractArtifact,
     IWallet: IWallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
+    ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestStaticCallReceiver: TestStaticCallReceiver as ContractArtifact,
-    ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
 };

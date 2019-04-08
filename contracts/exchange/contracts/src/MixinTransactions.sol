@@ -65,7 +65,7 @@ contract MixinTransactions is
         if (signerAddress != msg.sender) {
             // Validate signature
             require(
-                isValidSignature(
+                isValidHashSignature(
                     transactionHash,
                     signerAddress,
                     signature

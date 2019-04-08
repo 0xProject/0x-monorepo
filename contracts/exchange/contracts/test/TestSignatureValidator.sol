@@ -35,21 +35,4 @@ contract TestSignatureValidator is
         public
         LibEIP712ExchangeDomain(chainId, address(0))
     {}
-
-    function publicIsValidSignature(
-        bytes32 hash,
-        address signer,
-        bytes memory signature
-    )
-        public
-        view
-        returns (bool isValid)
-    {
-        isValid = isValidSignature(
-            hash,
-            signer,
-            signature
-        );
-        return isValid;
-    }
 }
