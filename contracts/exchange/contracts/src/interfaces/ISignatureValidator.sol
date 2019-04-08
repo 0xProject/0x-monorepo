@@ -17,6 +17,9 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 contract ISignatureValidator {
@@ -31,7 +34,7 @@ contract ISignatureValidator {
         bytes calldata signature
     )
         external;
-    
+
     /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
     /// @param validatorAddress Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
@@ -41,13 +44,27 @@ contract ISignatureValidator {
     )
         external;
 
-    /// @dev Verifies that a signature is valid.
+    /// @dev Verifies that a signature for a hash is valid.
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address of signer.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
-    function isValidSignature(
+    function isValidHashSignature(
         bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        public
+        view
+        returns (bool isValid);
+
+    /// @dev Verifies that a signature for an order is valid.
+    /// @param order The order.
+    /// @param signerAddress Address of signer.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidOrderSignature(
+        LibOrder.Order memory order,
         address signerAddress,
         bytes memory signature
     )

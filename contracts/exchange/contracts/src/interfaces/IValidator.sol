@@ -17,6 +17,9 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 contract IValidator {
@@ -28,6 +31,32 @@ contract IValidator {
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
+        address signerAddress,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bool isValid);
+
+    /// @param order The order.
+    /// @param signerAddress Address that should have signed the given order.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidOrderSignature(
+        LibOrder.Order calldata order,
+        address signerAddress,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bool isValid);
+
+    /// @param order The order.
+    /// @param signerAddress Address that should have signed the given order.
+    /// @param signature Proof of signing.
+    /// @return Validity of order.
+    function isValidOrder(
+        LibOrder.Order calldata order,
         address signerAddress,
         bytes calldata signature
     )

@@ -19,6 +19,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../interfaces/ISignatureValidator.sol";
 
 
@@ -40,6 +41,7 @@ contract MSignatureValidator is
         Wallet,          // 0x04
         Validator,       // 0x05
         PreSigned,       // 0x06
-        NSignatureTypes  // 0x07, number of signature types. Always leave at end.
+        OrderValidator,  // 0x07
+        NSignatureTypes  // 0x08, number of signature types. Always leave at end.
     }
 }
