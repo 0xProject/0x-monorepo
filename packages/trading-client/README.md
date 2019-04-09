@@ -11,7 +11,7 @@ yarn add @0x/trading-client
 ## Usage
 
 ```typescript
-import { assert } from '@0x/assert';
+import { TradingClient, CoordinatorHandler } from '@0x/trading-client';
 
 assert.isValidBaseUnitAmount('baseUnitAmount', baseUnitAmount);
 ```

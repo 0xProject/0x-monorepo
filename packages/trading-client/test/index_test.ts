@@ -6,7 +6,6 @@ import { Request, RequestHandler, TradingClient } from '../src/index';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
-const expect = chai.expect;
 const assert = chai.assert;
 
 class MockHandler implements RequestHandler {
@@ -23,7 +22,7 @@ class MockHandler implements RequestHandler {
         return this.canHandleResult;
     }
 
-    public handle(request: Request): string {
+    public async handleAsync(request: Request): Promise<string> {
         if (request.methodName === 'success') {
             return this.success;
         } else {
@@ -35,14 +34,17 @@ const alwaysTrueHandler = new MockHandler(true, 'always true success', 'always t
 const alwaysFalseHandler = new MockHandler(false, 'always false success', 'always false handling error');
 
 describe('TradingClient', () => {
-    it('should use a handler', () => {
+    it('should use a handler', async () => {
         const client = new TradingClient([alwaysTrueHandler, alwaysFalseHandler]);
         const request = {
             methodName: 'success',
             arguments: ['one', 'two', { a: 1, b: 2 }],
         };
-        assert.doesNotThrow(() => client.handle(request));
-        assert.equal(client.handle(request), 'always true success');
+
+        assert.doesNotThrow(async () => client.handleAsync(request));
+
+        const result = await client.handleAsync(request);
+        assert.equal(result, 'always true success');
     });
     it('should error when there are no handlers', () => {
         const client = new TradingClient([alwaysFalseHandler, alwaysFalseHandler]);
@@ -50,7 +52,7 @@ describe('TradingClient', () => {
             methodName: 'success',
             arguments: ['one', 'two', { a: 1, b: 2 }],
         };
-        assert.throws(() => client.handle(request), 'Could not find any handlers');
+        assert.throws(async () => client.handleAsync(request), 'Could not find any handlers');
     });
     it('should relay error msg from a handler', () => {
         const client = new TradingClient([alwaysTrueHandler, alwaysFalseHandler]);
@@ -58,6 +60,6 @@ describe('TradingClient', () => {
             methodName: 'failure',
             arguments: ['one', 'two', { a: 1, b: 2 }],
         };
-        assert.throws(() => client.handle(request), 'always true handling error');
+        assert.throws(async () => client.handleAsync(request), 'always true handling error');
     });
 });

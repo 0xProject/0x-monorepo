@@ -1,6 +1,6 @@
 export interface RequestHandler {
     canHandle(request: Request): boolean;
-    handle(request: Request): string; // successful transaction hash
+    handleAsync(request: Request): Promise<string>; // successful transaction hash
 }
 
 export interface Request {
@@ -15,11 +15,11 @@ export class TradingClient {
         this.handlers = handlers;
     }
 
-    public handle(request: Request): string {
+    public async handleAsync(request: Request): Promise<string> {
         for (const handler of this.handlers) {
             if (handler.canHandle(request)) {
                 try {
-                    return handler.handle(request);
+                    return handler.handleAsync(request);
                 } catch (err) {
                     throw err;
                 }
