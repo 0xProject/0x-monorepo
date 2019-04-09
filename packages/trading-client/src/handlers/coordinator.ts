@@ -2,7 +2,7 @@ import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } fr
 import { assert } from '@0x/assert';
 import { ContractAddresses, getContractAddressesForNetworkOrThrow, NetworkId } from '@0x/contract-addresses';
 import { Coordinator, CoordinatorRegistry, Exchange } from '@0x/contract-artifacts';
-import {TransactionEncoder} from '@0x/contract-wrappers';
+import { TransactionEncoder } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
@@ -49,7 +49,6 @@ Object.keys(NetworkId)
             network: name,
             registryAddress: addresses.coordinatorRegistry,
             exchangeAddress: addresses.exchange,
-
         };
     });
 
@@ -59,8 +58,8 @@ export class CoordinatorHandler implements RequestHandler {
     private _coordinatorEndpoints: { [address: string]: string } = {};
 
     constructor(supportedProvider: SupportedProvider) {
-            this._web3Wrapper = new Web3Wrapper(supportedProvider);
-        }
+        this._web3Wrapper = new Web3Wrapper(supportedProvider);
+    }
 
     // tslint:disable-next-line:prefer-function-over-method
     public canHandle(request: Request): boolean {
@@ -74,7 +73,6 @@ export class CoordinatorHandler implements RequestHandler {
                 return false;
             }
             return coordinatorAddresses.includes(signedOrder.senderAddress);
-
         } else if (Object.values(BatchExchangeMethods).includes(request.methodName)) {
             const signedOrders: SignedOrder[] = request.arguments[0];
             try {
@@ -88,14 +86,13 @@ export class CoordinatorHandler implements RequestHandler {
             }
 
             return coordinatorAddresses.includes(getPropertyFromOrders(request, 'senderAddress'));
-
         } else {
             return false;
         }
     }
 
-    public async handleAsync(request: Request): Promise <string> {
-        if (!this.canHandle (request) ) {
+    public async handleAsync(request: Request): Promise<string> {
+        if (!this.canHandle(request)) {
             throw new Error('invalid request');
         }
 
@@ -149,20 +146,32 @@ export class CoordinatorHandler implements RequestHandler {
 
         const [order, assetFillAmount] = request.arguments;
         switch (request.methodName) {
-            case ExchangeMethods.FillOrder: return transactionEncoder.fillOrderTx(order, assetFillAmount);
-            case ExchangeMethods.FillOrKillOrder: return transactionEncoder.fillOrKillOrderTx(order, assetFillAmount);
-            case ExchangeMethods.FillOrderNoThrow: return transactionEncoder.fillOrderNoThrowTx(order, assetFillAmount);
-            case ExchangeMethods.CancelOrder: return transactionEncoder.cancelOrderTx(order);
-            case BatchExchangeMethods.BatchFillOrders: return transactionEncoder.batchFillOrdersTx(order, assetFillAmount);
-            case BatchExchangeMethods.BatchFillOrKillOrders: return transactionEncoder.batchFillOrKillOrdersTx(order, assetFillAmount);
-            case BatchExchangeMethods.BatchFillOrdersNoThrow: return transactionEncoder.batchFillOrdersNoThrowTx(order, assetFillAmount);
-            case BatchExchangeMethods.MarketSellOrders: return transactionEncoder.marketSellOrdersTx(order, assetFillAmount);
-            case BatchExchangeMethods.MarketSellOrdersNoThrow: return transactionEncoder.marketSellOrdersNoThrowTx(order, assetFillAmount);
-            case BatchExchangeMethods.MarketBuyOrders: return transactionEncoder.marketBuyOrdersTx(order, assetFillAmount);
-            case BatchExchangeMethods.MarketBuyOrdersNoThrow: return transactionEncoder.marketBuyOrdersNoThrowTx(order, assetFillAmount);
-            case BatchExchangeMethods.BatchCancelOrders: return transactionEncoder.batchCancelOrdersTx(order);
-            default: throw new Error('Invalid method name');
-
+            case ExchangeMethods.FillOrder:
+                return transactionEncoder.fillOrderTx(order, assetFillAmount);
+            case ExchangeMethods.FillOrKillOrder:
+                return transactionEncoder.fillOrKillOrderTx(order, assetFillAmount);
+            case ExchangeMethods.FillOrderNoThrow:
+                return transactionEncoder.fillOrderNoThrowTx(order, assetFillAmount);
+            case ExchangeMethods.CancelOrder:
+                return transactionEncoder.cancelOrderTx(order);
+            case BatchExchangeMethods.BatchFillOrders:
+                return transactionEncoder.batchFillOrdersTx(order, assetFillAmount);
+            case BatchExchangeMethods.BatchFillOrKillOrders:
+                return transactionEncoder.batchFillOrKillOrdersTx(order, assetFillAmount);
+            case BatchExchangeMethods.BatchFillOrdersNoThrow:
+                return transactionEncoder.batchFillOrdersNoThrowTx(order, assetFillAmount);
+            case BatchExchangeMethods.MarketSellOrders:
+                return transactionEncoder.marketSellOrdersTx(order, assetFillAmount);
+            case BatchExchangeMethods.MarketSellOrdersNoThrow:
+                return transactionEncoder.marketSellOrdersNoThrowTx(order, assetFillAmount);
+            case BatchExchangeMethods.MarketBuyOrders:
+                return transactionEncoder.marketBuyOrdersTx(order, assetFillAmount);
+            case BatchExchangeMethods.MarketBuyOrdersNoThrow:
+                return transactionEncoder.marketBuyOrdersNoThrowTx(order, assetFillAmount);
+            case BatchExchangeMethods.BatchCancelOrders:
+                return transactionEncoder.batchCancelOrdersTx(order);
+            default:
+                throw new Error('Invalid method name');
         }
     }
     public getCoordinatorInstance(address: string): CoordinatorContract {
@@ -176,13 +185,13 @@ export class CoordinatorHandler implements RequestHandler {
         }
         return this._coordinatorInstances[address];
     }
-    public async updateCoordinatorEndpointsAsync(): Promise <void> {
-        if (Object.keys (this._coordinatorEndpoints) !== Object.keys(networkInfoByCoordinatorAddress) ) {
+    public async updateCoordinatorEndpointsAsync(): Promise<void> {
+        if (Object.keys(this._coordinatorEndpoints) !== Object.keys(networkInfoByCoordinatorAddress)) {
             this._coordinatorEndpoints = await this._getCoordinatorEndpointsAsync();
         }
     }
     // todo: does it return all endpoints when calling await? test by calling constructor and checking for endpoints
-    private async _getCoordinatorEndpointsAsync(): Promise <{ [adddress: string]: string }> {
+    private async _getCoordinatorEndpointsAsync(): Promise<{ [adddress: string]: string }> {
         const result: { [adddress: string]: string } = {};
         Object.keys(networkInfoByCoordinatorAddress).forEach(async address => {
             const registryAddress = networkInfoByCoordinatorAddress[address].registryAddress;
