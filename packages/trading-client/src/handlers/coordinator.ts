@@ -53,8 +53,6 @@ Object.keys(NetworkId)
         };
     });
 
-console.log(networkInfoByCoordinatorAddress);
-
 export class CoordinatorHandler implements RequestHandler {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _coordinatorInstances: { [address: string]: CoordinatorContract } = {};
@@ -64,6 +62,7 @@ export class CoordinatorHandler implements RequestHandler {
             this._web3Wrapper = new Web3Wrapper(supportedProvider);
         }
 
+    // tslint:disable-next-line:prefer-function-over-method
     public canHandle(request: Request): boolean {
         const coordinatorAddresses = Object.keys(networkInfoByCoordinatorAddress);
 
@@ -109,7 +108,7 @@ export class CoordinatorHandler implements RequestHandler {
             body: JSON.stringify(payload),
             method: 'POST',
         });
-        return 'ok';
+        return handleServerResponse(response);
         // if (
         //     request.methodName === ExchangeMethods.CancelOrder ||
         //     request.methodName === BatchExchangeMethods.BatchCancelOrders
