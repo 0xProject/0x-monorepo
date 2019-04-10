@@ -11,6 +11,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "clean": "shx rm -rf lib src/artifacts generated_docs",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },

@@ -185,7 +185,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         }
 
         case ActionTypes.BatchDispatch: {
-            const userAddress = _.isUndefined(action.data.userAddressIfExists) ? '' : action.data.userAddressIfExists;
+            const userAddress = action.data.userAddressIfExists === undefined ? '' : action.data.userAddressIfExists;
             return {
                 ...state,
                 networkId: action.data.networkId,
@@ -286,7 +286,7 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         }
 
         case ActionTypes.UpdateUserAddress: {
-            const userAddress = _.isUndefined(action.data) ? '' : action.data;
+            const userAddress = action.data === undefined ? '' : action.data;
             return {
                 ...state,
                 userAddress,

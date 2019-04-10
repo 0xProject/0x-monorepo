@@ -43,7 +43,7 @@ export const utils = {
         suffix: EtherscanLinkSuffixes,
     ): string | undefined {
         const networkName = constants.NETWORK_NAME_BY_ID[networkId];
-        if (_.isUndefined(networkName)) {
+        if (networkName === undefined) {
             return undefined;
         }
         const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;

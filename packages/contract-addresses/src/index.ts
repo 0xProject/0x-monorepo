@@ -102,7 +102,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
  * given networkId.
  */
 export function getContractAddressesForNetworkOrThrow(networkId: NetworkId): ContractAddresses {
-    if (_.isUndefined(networkToAddresses[networkId])) {
+    if (networkToAddresses[networkId] === undefined) {
         throw new Error(`Unknown network id (${networkId}). No known 0x contracts have been deployed on this network.`);
     }
     return networkToAddresses[networkId];

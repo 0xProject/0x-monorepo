@@ -124,7 +124,7 @@ export class TypeDocUtils {
                         this._docsInfo.markdownMenu[sectionName] = [sectionName];
                         const entities = child.children;
                         const commentObj = child.comment;
-                        const sectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
+                        const sectionComment = commentObj !== undefined ? commentObj.shortText : '';
                         const isClassOrObjectLiteral = true;
                         const docSection = this._convertEntitiesToDocSection(
                             entities,
@@ -141,7 +141,7 @@ export class TypeDocUtils {
                         this._docsInfo.markdownMenu[sectionName] = [sectionName];
                         const entities = [child];
                         const commentObj = child.comment;
-                        const SectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
+                        const SectionComment = commentObj !== undefined ? commentObj.shortText : '';
                         const docSection = this._convertEntitiesToDocSection(entities, sectionName);
                         docSection.comment = SectionComment;
                         docAgnosticFormat[sectionName] = docSection;
@@ -257,41 +257,42 @@ export class TypeDocUtils {
         return docSection;
     }
     private _convertCustomType(entity: TypeDocNode, sectionName: string): CustomType {
-        const typeIfExists = !_.isUndefined(entity.type) ? this._convertType(entity.type, sectionName) : undefined;
+        const typeIfExists = entity.type !== undefined ? this._convertType(entity.type, sectionName) : undefined;
         const isConstructor = false;
-        const methodIfExists = !_.isUndefined(entity.declaration)
-            ? this._convertMethod(entity.declaration, isConstructor, sectionName)
-            : undefined;
-        const doesIndexSignatureExist = !_.isUndefined(entity.indexSignature);
+        const methodIfExists =
+            entity.declaration !== undefined
+                ? this._convertMethod(entity.declaration, isConstructor, sectionName)
+                : undefined;
+        const doesIndexSignatureExist = entity.indexSignature !== undefined;
         const indexSignature = entity.indexSignature;
         const indexSignatureIfExists = doesIndexSignatureExist
             ? this._convertIndexSignature(indexSignature, sectionName)
             : undefined;
         const commentIfExists =
-            !_.isUndefined(entity.comment) && !_.isUndefined(entity.comment.shortText)
+            entity.comment !== undefined && entity.comment.shortText !== undefined
                 ? entity.comment.shortText
                 : undefined;
 
-        const childrenIfExist = !_.isUndefined(entity.children)
-            ? _.map(entity.children, (child: TypeDocNode) => {
-                  let childTypeIfExists = !_.isUndefined(child.type)
-                      ? this._convertType(child.type, sectionName)
-                      : undefined;
-                  if (child.kindString === KindString.Method) {
-                      childTypeIfExists = {
+        const childrenIfExist =
+            entity.children !== undefined
+                ? _.map(entity.children, (child: TypeDocNode) => {
+                      let childTypeIfExists =
+                          child.type !== undefined ? this._convertType(child.type, sectionName) : undefined;
+                      if (child.kindString === KindString.Method) {
+                          childTypeIfExists = {
+                              name: child.name,
+                              typeDocType: TypeDocTypes.Reflection,
+                              method: this._convertMethod(child, isConstructor, sectionName),
+                          };
+                      }
+                      const c: CustomTypeChild = {
                           name: child.name,
-                          typeDocType: TypeDocTypes.Reflection,
-                          method: this._convertMethod(child, isConstructor, sectionName),
+                          type: childTypeIfExists,
+                          defaultValue: child.defaultValue,
                       };
-                  }
-                  const c: CustomTypeChild = {
-                      name: child.name,
-                      type: childTypeIfExists,
-                      defaultValue: child.defaultValue,
-                  };
-                  return c;
-              })
-            : undefined;
+                      return c;
+                  })
+                : undefined;
 
         const customType = {
             name: entity.name,
@@ -316,9 +317,9 @@ export class TypeDocUtils {
     }
     private _convertProperty(entity: TypeDocNode, sectionName: string): Property {
         const source = entity.sources[0];
-        const commentIfExists = !_.isUndefined(entity.comment) ? entity.comment.shortText : undefined;
+        const commentIfExists = entity.comment !== undefined ? entity.comment.shortText : undefined;
         const isConstructor = false;
-        const isStatic = _.isUndefined(entity.flags.isStatic) ? false : entity.flags.isStatic;
+        const isStatic = entity.flags.isStatic === undefined ? false : entity.flags.isStatic;
         const callPath = this._getCallPath(sectionName, isStatic, isConstructor, entity.name);
         const property = {
             name: entity.name,
@@ -335,16 +336,17 @@ export class TypeDocUtils {
     private _convertMethod(entity: TypeDocNode, isConstructor: boolean, sectionName: string): TypescriptMethod {
         const signature = entity.signatures[0];
         const source = entity.sources[0];
-        const hasComment = !_.isUndefined(signature.comment);
-        const isStatic = _.isUndefined(entity.flags.isStatic) ? false : entity.flags.isStatic;
+        const hasComment = signature.comment !== undefined;
+        const isStatic = entity.flags.isStatic === undefined ? false : entity.flags.isStatic;
 
         const parameters = _.map(signature.parameters, param => {
             return this._convertParameter(param, sectionName);
         });
         const returnType = this._convertType(signature.type, sectionName);
-        const typeParameter = _.isUndefined(signature.typeParameter)
-            ? undefined
-            : this._convertTypeParameter(signature.typeParameter[0], sectionName);
+        const typeParameter =
+            signature.typeParameter === undefined
+                ? undefined
+                : this._convertTypeParameter(signature.typeParameter[0], sectionName);
 
         const callPath = this._getCallPath(sectionName, isStatic, isConstructor, entity.name);
         const method = {
@@ -389,15 +391,16 @@ export class TypeDocUtils {
     private _convertFunction(entity: TypeDocNode, sectionName: string, isObjectLiteral: boolean): TypescriptFunction {
         const signature = entity.signatures[0];
         const source = entity.sources[0];
-        const hasComment = !_.isUndefined(signature.comment);
+        const hasComment = signature.comment !== undefined;
 
         const parameters = _.map(signature.parameters, param => {
             return this._convertParameter(param, sectionName);
         });
         const returnType = this._convertType(signature.type, sectionName);
-        const typeParameter = _.isUndefined(signature.typeParameter)
-            ? undefined
-            : this._convertTypeParameter(signature.typeParameter[0], sectionName);
+        const typeParameter =
+            signature.typeParameter === undefined
+                ? undefined
+                : this._convertTypeParameter(signature.typeParameter[0], sectionName);
 
         let callPath = '';
         if (isObjectLiteral) {
@@ -422,7 +425,7 @@ export class TypeDocUtils {
     }
     private _convertTypeParameter(entity: TypeDocNode, sectionName: string): TypeParameter {
         let type;
-        if (!_.isUndefined(entity.type)) {
+        if (entity.type !== undefined) {
             type = this._convertType(entity.type, sectionName);
         }
         const parameter = {
@@ -439,7 +442,7 @@ export class TypeDocUtils {
             comment = entity.comment.text;
         }
 
-        const isOptional = !_.isUndefined(entity.flags.isOptional) ? entity.flags.isOptional : false;
+        const isOptional = entity.flags.isOptional !== undefined ? entity.flags.isOptional : false;
 
         const type = this._convertType(entity.type, sectionName);
 
@@ -464,11 +467,11 @@ export class TypeDocUtils {
         let methodIfExists;
         let tupleElementsIfExists;
         const doesIndexSignatureExist =
-            !_.isUndefined(entity.declaration) && !_.isUndefined(entity.declaration.indexSignature);
+            entity.declaration !== undefined && entity.declaration.indexSignature !== undefined;
         if (doesIndexSignatureExist) {
             const indexSignature = entity.declaration.indexSignature;
             indexSignatureIfExists = this._convertIndexSignature(indexSignature, sectionName);
-        } else if (!_.isUndefined(entity.declaration)) {
+        } else if (entity.declaration !== undefined) {
             const isConstructor = false;
             methodIfExists = this._convertMethod(entity.declaration, isConstructor, sectionName);
         } else if (entity.type === TypeDocTypes.Tuple) {
@@ -479,12 +482,13 @@ export class TypeDocUtils {
             });
         }
 
-        const elementTypeIfExists = !_.isUndefined(entity.elementType)
-            ? {
-                  name: entity.elementType.name,
-                  typeDocType: entity.elementType.type,
-              }
-            : undefined;
+        const elementTypeIfExists =
+            entity.elementType !== undefined
+                ? {
+                      name: entity.elementType.name,
+                      typeDocType: entity.elementType.type,
+                  }
+                : undefined;
 
         const type: Type = {
             name: entity.name,
@@ -499,7 +503,7 @@ export class TypeDocUtils {
             tupleElements: tupleElementsIfExists,
         };
         const externalLinkIfExists = this._externalTypeToLink[entity.name];
-        if (!_.isUndefined(externalLinkIfExists)) {
+        if (externalLinkIfExists !== undefined) {
             type.externalLink = externalLinkIfExists;
         }
         return type;

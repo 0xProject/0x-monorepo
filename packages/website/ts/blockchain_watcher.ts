@@ -20,7 +20,7 @@ export class BlockchainWatcher {
         this._stopEmittingUserBalanceState();
         // HACK: stop() is only available on providerEngine instances
         const provider = this._web3Wrapper.getProvider();
-        if (!_.isUndefined((provider as any).stop)) {
+        if ((provider as any).stop !== undefined) {
             (provider as any).stop();
         }
     }
@@ -29,7 +29,7 @@ export class BlockchainWatcher {
         this._prevUserAddressIfExists = userAddress;
     }
     public async startEmittingUserBalanceStateAsync(): Promise<void> {
-        if (!_.isUndefined(this._watchBalanceIntervalId)) {
+        if (this._watchBalanceIntervalId !== undefined) {
             return; // we are already emitting the state
         }
         this._prevUserEtherBalanceInWei = undefined;
@@ -60,26 +60,26 @@ export class BlockchainWatcher {
             }
 
             // Check for user ether balance changes
-            if (!_.isUndefined(userAddressIfExists)) {
+            if (userAddressIfExists !== undefined) {
                 await this._updateUserWeiBalanceAsync(userAddressIfExists);
             }
         } else {
             // This logic is primarily for the Ledger, since we don't regularly poll for the address
             // we simply update the balance for the last fetched address.
-            if (!_.isUndefined(this._prevUserAddressIfExists)) {
+            if (this._prevUserAddressIfExists !== undefined) {
                 await this._updateUserWeiBalanceAsync(this._prevUserAddressIfExists);
             }
         }
     }
     private async _updateUserWeiBalanceAsync(userAddress: string): Promise<void> {
         const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(userAddress);
-        if (_.isUndefined(this._prevUserEtherBalanceInWei) || !balanceInWei.eq(this._prevUserEtherBalanceInWei)) {
+        if (this._prevUserEtherBalanceInWei === undefined || !balanceInWei.eq(this._prevUserEtherBalanceInWei)) {
             this._prevUserEtherBalanceInWei = balanceInWei;
             this._dispatcher.updateUserWeiBalance(balanceInWei);
         }
     }
     private _stopEmittingUserBalanceState(): void {
-        if (!_.isUndefined(this._watchBalanceIntervalId)) {
+        if (this._watchBalanceIntervalId !== undefined) {
             intervalUtils.clearAsyncExcludingInterval(this._watchBalanceIntervalId);
         }
     }

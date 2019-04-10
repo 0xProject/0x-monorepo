@@ -33,7 +33,7 @@ export const assert = {
     },
     isValidAssetMetaData(variableName: string, metaData: AssetMetaData): void {
         assert.isHexString(`${variableName}.assetProxyId`, metaData.assetProxyId);
-        if (!_.isUndefined(metaData.primaryColor)) {
+        if (metaData.primaryColor !== undefined) {
             assert.isString(`${variableName}.primaryColor`, metaData.primaryColor);
         }
         if (metaData.assetProxyId === AssetProxyId.ERC20) {

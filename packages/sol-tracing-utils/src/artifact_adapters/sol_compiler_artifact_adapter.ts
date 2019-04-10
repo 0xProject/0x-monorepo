@@ -26,11 +26,11 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
             ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
             : {};
-        if (_.isUndefined(artifactsPath) && _.isUndefined(config.artifactsDir)) {
+        if (artifactsPath === undefined && config.artifactsDir === undefined) {
             throw new Error(`artifactsDir not found in ${CONFIG_FILE}`);
         }
         this._artifactsPath = (artifactsPath || config.artifactsDir) as string;
-        if (_.isUndefined(sourcesPath) && _.isUndefined(config.contractsDir)) {
+        if (sourcesPath === undefined && config.contractsDir === undefined) {
             throw new Error(`contractsDir not found in ${CONFIG_FILE}`);
         }
         this._sourcesPath = (sourcesPath || config.contractsDir) as string;
@@ -47,7 +47,7 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
         const contractsData: ContractData[] = [];
         for (const artifactFileName of artifactFileNames) {
             const artifact: ContractArtifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
-            if (_.isUndefined(artifact.compilerOutput.evm)) {
+            if (artifact.compilerOutput.evm === undefined) {
                 logUtils.warn(`${artifactFileName} doesn't contain bytecode. Skipping...`);
                 continue;
             }

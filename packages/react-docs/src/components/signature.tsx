@@ -66,15 +66,16 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
         paramStringArray.pop();
     }
     const methodName = props.shouldHideMethodName ? '' : props.name;
-    const typeParameterIfExists = _.isUndefined(props.typeParameter)
-        ? undefined
-        : renderTypeParameter(
-              props.typeParameter,
-              props.docsInfo,
-              sectionName,
-              props.isInPopover,
-              props.typeDefinitionByName,
-          );
+    const typeParameterIfExists =
+        props.typeParameter === undefined
+            ? undefined
+            : renderTypeParameter(
+                  props.typeParameter,
+                  props.docsInfo,
+                  sectionName,
+                  props.isInPopover,
+                  props.typeDefinitionByName,
+              );
     return (
         <span style={{ fontSize: 15 }}>
             {props.callPath}
@@ -109,7 +110,7 @@ function renderParameters(
 ): React.ReactNode[] {
     const params = _.map(parameters, (p: Parameter, i: number) => {
         const isOptional = p.isOptional;
-        const hasDefaultValue = !_.isUndefined(p.defaultValue);
+        const hasDefaultValue = p.defaultValue !== undefined;
         const type = (
             <Type
                 type={p.type}
@@ -145,7 +146,7 @@ function renderTypeParameter(
     const typeParam = (
         <span>
             {`<${typeParameter.name}`}
-            {!_.isUndefined(typeParameter.type) && (
+            {typeParameter.type !== undefined && (
                 <span>
                     {' extends '}
                     <Type

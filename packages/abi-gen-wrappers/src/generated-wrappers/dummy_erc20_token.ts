@@ -760,7 +760,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _decimals: BigNumber,
             _totalSupply: BigNumber,
     ): Promise<DummyERC20TokenContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);

@@ -11,7 +11,8 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --format stylish --project ."
+        "lint": "tslint --format stylish --project .",
+        "fix": "tslint --format stylish --fix --project ."
     },
     "repository": {
         "type": "git",

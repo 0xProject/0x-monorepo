@@ -46,7 +46,7 @@ export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountI
         const { asset } = this.props;
         return (
             <Container whiteSpace="nowrap">
-                {_.isUndefined(asset) ? this._renderTokenSelectionContent() : this._renderContentForAsset(asset)}
+                {asset === undefined ? this._renderTokenSelectionContent() : this._renderContentForAsset(asset)}
             </Container>
         );
     }
@@ -92,7 +92,7 @@ export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountI
     private readonly _renderTokenSelectionContent = (): React.ReactNode => {
         const { numberOfAssetsAvailable } = this.props;
         let text = 'Select Token';
-        if (_.isUndefined(numberOfAssetsAvailable)) {
+        if (numberOfAssetsAvailable === undefined) {
             text = 'Loading...';
         } else if (numberOfAssetsAvailable === 0) {
             text = 'Tokens Unavailable';
@@ -134,14 +134,14 @@ export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountI
         // We don't want to allow opening the token selection panel if there are no assets.
         // Since styles are inferred from the presence of a click handler, we want to return undefined
         // instead of providing a noop.
-        if (!this._areAnyAssetsAvailable() || _.isUndefined(this.props.onSelectAssetClick)) {
+        if (!this._areAnyAssetsAvailable() || this.props.onSelectAssetClick === undefined) {
             return undefined;
         }
         return this._handleSelectAssetClick;
     };
     private readonly _areAnyAssetsAvailable = (): boolean => {
         const { numberOfAssetsAvailable } = this.props;
-        return !_.isUndefined(numberOfAssetsAvailable) && numberOfAssetsAvailable > 0;
+        return numberOfAssetsAvailable !== undefined && numberOfAssetsAvailable > 0;
     };
     private readonly _handleSelectAssetClick = (): void => {
         if (this.props.onSelectAssetClick) {
@@ -151,7 +151,7 @@ export class ERC20AssetAmountInput extends React.PureComponent<ERC20AssetAmountI
     // For assets with symbols of different length,
     // start scaling the input at different character lengths
     private readonly _textLengthThresholdForAsset = (asset?: ERC20Asset): number => {
-        if (_.isUndefined(asset)) {
+        if (asset === undefined) {
             return 3;
         }
         const symbol = asset.metaData.symbol;

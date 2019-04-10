@@ -27,7 +27,7 @@ const getRollbarHostDomains = (): string[] => {
 let rollbar: any;
 // Configures rollbar and sets up error catching
 export const setupRollbar = (): any => {
-    if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENABLED) {
+    if (rollbar === undefined && ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENABLED) {
         const hostDomains = getRollbarHostDomains();
         rollbar = new Rollbar({
             accessToken: ROLLBAR_CLIENT_TOKEN,

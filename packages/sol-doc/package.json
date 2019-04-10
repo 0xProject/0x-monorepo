@@ -12,6 +12,7 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "clean": "shx rm -rf lib",
         "generate-v1-protocol-docs": "(cd ../contracts/src/1.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange_v1.sol TokenRegistry/TokenRegistry.sol TokenTransferProxy/TokenTransferProxy_v1.sol) > v1.0.0.json",
         "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange.sol AssetProxy/ERC20Proxy.sol AssetProxy/ERC721Proxy.sol OrderValidator/OrderValidator.sol Forwarder/Forwarder.sol  AssetProxyOwner/AssetProxyOwner.sol) > v2.0.0.json",

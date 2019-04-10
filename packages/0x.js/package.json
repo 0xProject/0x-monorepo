@@ -19,6 +19,7 @@
         "build:ci": "yarn build:commonjs",
         "build:all": "run-p build:umd:prod build:commonjs",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "test:circleci": "run-s test:coverage",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",

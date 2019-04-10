@@ -28,7 +28,7 @@ export const filterUtils = {
             address,
             topics,
         };
-        if (!_.isUndefined(blockRange)) {
+        if (blockRange !== undefined) {
             filter = {
                 ...blockRange,
                 ...filter,
@@ -47,7 +47,7 @@ export const filterUtils = {
             if (!eventInput.indexed) {
                 continue;
             }
-            if (_.isUndefined(indexFilterValues[eventInput.name])) {
+            if (indexFilterValues[eventInput.name] === undefined) {
                 // Null is a wildcard topic in a JSON-RPC call
                 topics.push(null);
             } else {
@@ -61,10 +61,10 @@ export const filterUtils = {
         return topics;
     },
     matchesFilter(log: LogEntry, filter: FilterObject): boolean {
-        if (!_.isUndefined(filter.address) && log.address !== filter.address) {
+        if (filter.address !== undefined && log.address !== filter.address) {
             return false;
         }
-        if (!_.isUndefined(filter.topics)) {
+        if (filter.topics !== undefined) {
             return filterUtils.doesMatchTopics(log.topics, filter.topics);
         }
         return true;

@@ -55,7 +55,7 @@ export const utils = {
             const runtimeBytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.runtimeBytecode);
             // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
             // collisions are practically impossible and it allows us to reuse that code
-            return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
+            return bytecode.match(bytecodeRegex) !== null || bytecode.match(runtimeBytecodeRegex) !== null;
         });
         if (contractDataCandidates.length > 1) {
             const candidates = contractDataCandidates.map(

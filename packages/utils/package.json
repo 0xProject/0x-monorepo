@@ -12,6 +12,7 @@
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*_test.js' 'lib/test/*_test.js'  --bail --exit",

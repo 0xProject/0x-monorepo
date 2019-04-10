@@ -61,7 +61,7 @@ async function confirmAsync(message: string): Promise<void> {
         const currentVersion = pkg.packageJson.version;
         const packageName = pkg.packageJson.name;
         const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
-        if (!_.isNull(nextPatchVersionIfValid)) {
+        if (nextPatchVersionIfValid !== null) {
             packageToNextVersion[packageName] = nextPatchVersionIfValid;
         } else {
             throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
@@ -110,9 +110,9 @@ async function publishImagesToDockerHubAsync(allUpdatedPackages: Package[]): Pro
     for (const pkg of allUpdatedPackages) {
         const packageJSON = pkg.packageJson;
         const shouldPublishDockerImage =
-            !_.isUndefined(packageJSON.config) &&
-            !_.isUndefined(packageJSON.config.postpublish) &&
-            !_.isUndefined(packageJSON.config.postpublish.dockerHubRepo);
+            packageJSON.config !== undefined &&
+            packageJSON.config.postpublish !== undefined &&
+            packageJSON.config.postpublish.dockerHubRepo !== undefined;
         if (!shouldPublishDockerImage) {
             continue;
         }
@@ -143,7 +143,7 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     const rootPackageJsonPath = `${constants.monorepoRootPath}/package.json`;
     const rootPackageJSON = utils.readJSONFile<PackageJSON>(rootPackageJsonPath);
     const packagesWithDocPagesStringIfExist = _.get(rootPackageJSON, 'config.packagesWithDocPages', undefined);
-    if (_.isUndefined(packagesWithDocPagesStringIfExist)) {
+    if (packagesWithDocPagesStringIfExist === undefined) {
         return []; // None to generate & publish
     }
     const packagesWithDocPages = packagesWithDocPagesStringIfExist.split(' ');
@@ -214,7 +214,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
         if (shouldAddNewEntry) {
             // Create a new entry for a patch version with generic changelog entry.
             const nextPatchVersionIfValid = semver.inc(currentVersion, 'patch');
-            if (_.isNull(nextPatchVersionIfValid)) {
+            if (nextPatchVersionIfValid === null) {
                 throw new Error(`Encountered invalid semver version: ${currentVersion} for package: ${packageName}`);
             }
             const newChangelogEntry: VersionChangelog = {
@@ -231,7 +231,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
         } else {
             // Update existing entry with timestamp
             const lastEntry = changelog[0];
-            if (_.isUndefined(lastEntry.timestamp)) {
+            if (lastEntry.timestamp === undefined) {
                 lastEntry.timestamp = TODAYS_TIMESTAMP;
             }
             // Check version number is correct.
@@ -269,7 +269,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
     const updatedVersionIfValid = semver.inc(currentVersion, 'patch');
-    if (_.isNull(updatedVersionIfValid)) {
+    if (updatedVersionIfValid === null) {
         throw new Error(`Encountered invalid semver: ${currentVersion}`);
     }
     if (proposedNextVersion === currentVersion) {

@@ -233,17 +233,18 @@ export class Compiler {
                 continue;
             }
             contractPathToData[contractSource.path] = contractData;
-            const solcVersion = _.isUndefined(this._solcVersionIfExists)
-                ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
-                : this._solcVersionIfExists;
-            if (_.isNull(solcVersion)) {
+            const solcVersion =
+                this._solcVersionIfExists === undefined
+                    ? semver.maxSatisfying(_.keys(solcJSReleases), parseSolidityVersionRange(contractSource.source))
+                    : this._solcVersionIfExists;
+            if (solcVersion === null) {
                 throw new Error(
                     `Couldn't find any solidity version satisfying the constraint ${parseSolidityVersionRange(
                         contractSource.source,
                     )}`,
                 );
             }
-            const isFirstContractWithThisVersion = _.isUndefined(versionToInputs[solcVersion]);
+            const isFirstContractWithThisVersion = versionToInputs[solcVersion] === undefined;
             if (isFirstContractWithThisVersion) {
                 versionToInputs[solcVersion] = {
                     standardInput: {
@@ -290,7 +291,7 @@ export class Compiler {
                 fullSolcVersion = solcJSReleases[solcVersion];
                 compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput, this._isOfflineMode);
             }
-            if (!_.isUndefined(compilerOutput.errors)) {
+            if (compilerOutput.errors !== undefined) {
                 printCompilationErrorsAndWarnings(compilerOutput.errors);
             }
             compilerOutput.sources = makeContractPathsRelative(
@@ -308,7 +309,7 @@ export class Compiler {
                 const contractName = contractPathToData[contractPath].contractName;
 
                 const compiledContract = compilerOutput.contracts[contractPath][contractName];
-                if (_.isUndefined(compiledContract)) {
+                if (compiledContract === undefined) {
                     throw new Error(
                         `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
                     );
@@ -334,7 +335,7 @@ export class Compiler {
         return compilerOutputs;
     }
     private _shouldCompile(contractData: ContractData): boolean {
-        if (_.isUndefined(contractData.currentArtifactIfExists)) {
+        if (contractData.currentArtifactIfExists === undefined) {
             return true;
         } else {
             const currentArtifact = contractData.currentArtifactIfExists as ContractArtifact;
@@ -380,7 +381,7 @@ export class Compiler {
         };
 
         let newArtifact: ContractArtifact;
-        if (!_.isUndefined(currentArtifactIfExists)) {
+        if (currentArtifactIfExists !== undefined) {
             const currentArtifact = currentArtifactIfExists as ContractArtifact;
             newArtifact = {
                 ...currentArtifact,

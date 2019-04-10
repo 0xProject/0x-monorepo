@@ -229,7 +229,7 @@ export async function runMigrationsOnceAsync(
     provider: Web3ProviderEngine,
     txDefaults: TxData,
 ): Promise<ContractAddresses> {
-    if (!_.isUndefined(_cachedContractAddresses)) {
+    if (_cachedContractAddresses !== undefined) {
         return _cachedContractAddresses;
     }
     _cachedContractAddresses = await runMigrationsAsync(provider, txDefaults);

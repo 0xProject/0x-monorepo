@@ -164,7 +164,7 @@ export class VoteForm extends React.Component<Props> {
                         errors={errors}
                     />
                 </InputRow>
-                {!_.isUndefined(errors.signError) && (
+                {errors.signError !== undefined && (
                     <Paragraph isMuted={true} color={colors.red}>
                         {errors.signError}
                     </Paragraph>
@@ -256,7 +256,7 @@ export class VoteForm extends React.Component<Props> {
                 }
             } else {
                 const responseBody = await response.json();
-                const errorMessage = !_.isUndefined(responseBody.reason) ? responseBody.reason : 'Unknown Error';
+                const errorMessage = responseBody.reason !== undefined ? responseBody.reason : 'Unknown Error';
                 this._handleError(errorMessage);
             }
         } catch (err) {

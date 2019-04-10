@@ -51,7 +51,7 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Constructor,
             // tslint:disable-next-line:no-unnecessary-type-assertion
         ) as ConstructorAbi | undefined;
-        if (!_.isUndefined(constructorAbiIfExists)) {
+        if (constructorAbiIfExists !== undefined) {
             return constructorAbiIfExists;
         } else {
             // If the constructor is not explicitly defined, it won't be included in the ABI. It is
@@ -79,7 +79,7 @@ export class BaseContract {
             ...removeUndefinedProperties(txDefaults),
             ...removeUndefinedProperties(txData),
         };
-        if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
+        if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
             txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         return txDataWithDefaults;
@@ -122,7 +122,7 @@ export class BaseContract {
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
-        if (_.isUndefined(abiEncoder)) {
+        if (abiEncoder === undefined) {
             throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
         }
         return abiEncoder;

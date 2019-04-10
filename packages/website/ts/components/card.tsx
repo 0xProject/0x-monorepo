@@ -38,7 +38,7 @@ export const Card: React.StatelessComponent<CardProps> = (props: CardProps) => {
                     {_.map(links, (link, index) => (
                         <Button
                             href={link.url}
-                            target={!_.isUndefined(link.url) ? '_blank' : undefined}
+                            target={link.url !== undefined ? '_blank' : undefined}
                             isWithArrow={true}
                             isAccentColor={true}
                             key={`cardLink-${index}-${link.url}`}

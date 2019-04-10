@@ -21,7 +21,7 @@ export class Analytics {
     }
     public static getHeap(): HeapAnalytics {
         const heap = (window as any).heap;
-        if (!_.isUndefined(heap)) {
+        if (heap !== undefined) {
             return heap;
         } else {
             throw new Error('Could not find the Heap SDK on the page.');

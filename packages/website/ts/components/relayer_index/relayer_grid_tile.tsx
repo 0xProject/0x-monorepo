@@ -82,7 +82,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
     };
     const headerImageUrl = props.relayerInfo.logoImgUrl;
     const headerBackgroundColor =
-        !_.isUndefined(headerImageUrl) && !_.isUndefined(props.relayerInfo.primaryColor)
+        headerImageUrl !== undefined && props.relayerInfo.primaryColor !== undefined
             ? props.relayerInfo.primaryColor
             : FALLBACK_PRIMARY_COLOR;
     const isExpanded = props.style === RelayerGridTileStyle.Expanded;
@@ -104,7 +104,7 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                             {props.relayerInfo.name}
                         </div>
                         <Section titleText="Weekly Trade Volume">
-                            {!_.isUndefined(weeklyTxnVolume) && (
+                            {weeklyTxnVolume !== undefined && (
                                 <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
                             )}
                         </Section>

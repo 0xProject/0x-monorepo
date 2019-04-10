@@ -16,7 +16,7 @@ export const orderParser = {
             const queryPair = queryParam.split('=');
             return queryPair[0] === 'order';
         });
-        if (_.isUndefined(orderQueryParam)) {
+        if (orderQueryParam === undefined) {
             return undefined;
         }
         const orderPair = orderQueryParam.split('=');

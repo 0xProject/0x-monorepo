@@ -47,7 +47,7 @@ export async function publishReleaseNotesAsync(
         aggregateNotes += getReleaseNotesForPackage(pkg.location, pkg.packageJson.name);
 
         const packageAssets = _.get(pkg.packageJson, 'config.postpublish.assets');
-        if (!_.isUndefined(packageAssets)) {
+        if (packageAssets !== undefined) {
             assets = [...assets, ...packageAssets];
         }
     });

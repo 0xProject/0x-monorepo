@@ -427,7 +427,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
     private async _getTokenContractAsync(tokenAddress: string): Promise<ERC20TokenContract> {
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         let tokenContract = this._tokenContractsByAddress[normalizedTokenAddress];
-        if (!_.isUndefined(tokenContract)) {
+        if (tokenContract !== undefined) {
             return tokenContract;
         }
         const contractInstance = new ERC20TokenContract(

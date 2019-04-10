@@ -71,7 +71,7 @@ describe('#SolidityDocGenerator', () => {
                 methodDoc = doc.NatspecEverything.methods.find(method => {
                     return method.name === 'publicMethod';
                 }) as SolidityMethod;
-                if (_.isUndefined(methodDoc)) {
+                if (methodDoc === undefined) {
                     throw new Error('publicMethod not found');
                 }
             });
@@ -101,7 +101,7 @@ describe('#SolidityDocGenerator', () => {
                 methodDoc = doc.NatspecEverything.methods.find(method => {
                     return method.name === 'externalMethod';
                 }) as SolidityMethod;
-                if (_.isUndefined(methodDoc)) {
+                if (methodDoc === undefined) {
                     throw new Error('externalMethod not found');
                 }
             });
@@ -129,7 +129,7 @@ describe('#SolidityDocGenerator', () => {
             const methodDoc: SolidityMethod = doc.NatspecEverything.methods.find(method => {
                 return method.name === 'methodWithLongDevdoc';
             }) as SolidityMethod;
-            if (_.isUndefined(methodDoc)) {
+            if (methodDoc === undefined) {
                 throw new Error('methodWithLongDevdoc not found');
             }
             expect(methodDoc.comment).to.equal(
@@ -153,7 +153,7 @@ describe('#SolidityDocGenerator', () => {
             const methodDoc: SolidityMethod = doc.NatspecEverything.methods.find(method => {
                 return method.name === 'methodWithSolhintDirective';
             }) as SolidityMethod;
-            if (_.isUndefined(methodDoc)) {
+            if (methodDoc === undefined) {
                 throw new Error('methodWithSolhintDirective not found');
             }
             expect(methodDoc.comment).to.equal('methodWithSolhintDirective @dev');
@@ -171,12 +171,12 @@ describe('#SolidityDocGenerator', () => {
                 methodWithMultipleReturnValues = method;
             }
         }
-        if (_.isUndefined(methodWithMultipleReturnValues)) {
+        if (methodWithMultipleReturnValues === undefined) {
             throw new Error('method should not be undefined');
         }
         const returnType = methodWithMultipleReturnValues.returnType;
         expect(returnType.typeDocType).to.equal('tuple');
-        if (_.isUndefined(returnType.tupleElements)) {
+        if (returnType.tupleElements === undefined) {
             throw new Error('returnType.tupleElements should not be undefined');
         }
         expect(returnType.tupleElements.length).to.equal(2);
@@ -193,7 +193,7 @@ describe('#SolidityDocGenerator', () => {
                 methodWithStructParamAndReturn = method;
             }
         }
-        if (_.isUndefined(methodWithStructParamAndReturn)) {
+        if (methodWithStructParamAndReturn === undefined) {
             throw new Error('method should not be undefined');
         }
         /**
@@ -225,7 +225,7 @@ function verifyTokenTransferProxyABIIsDocumented(doc: DocAgnosticFormat, contrac
     expect(doc[contractName].constructors.length).to.equal(tokenTransferProxyConstructorCount);
     expect(doc[contractName].methods.length).to.equal(tokenTransferProxyMethodCount);
     const events = doc[contractName].events;
-    if (_.isUndefined(events)) {
+    if (events === undefined) {
         throw new Error('events should never be undefined');
     }
     expect(events.length).to.equal(tokenTransferProxyEventCount);
@@ -242,7 +242,7 @@ function verifyTokenTransferProxyAndDepsABIsAreDocumented(doc: DocAgnosticFormat
     const erc20EventCount = 2;
     expect(doc.ERC20.constructors.length).to.equal(erc20ConstructorCount);
     expect(doc.ERC20.methods.length).to.equal(erc20MethodCount);
-    if (_.isUndefined(doc.ERC20.events)) {
+    if (doc.ERC20.events === undefined) {
         throw new Error('events should never be undefined');
     }
     expect(doc.ERC20.events.length).to.equal(erc20EventCount);
@@ -255,7 +255,7 @@ function verifyTokenTransferProxyAndDepsABIsAreDocumented(doc: DocAgnosticFormat
     const erc20BasicEventCount = 1;
     expect(doc.ERC20Basic.constructors.length).to.equal(erc20BasicConstructorCount);
     expect(doc.ERC20Basic.methods.length).to.equal(erc20BasicMethodCount);
-    if (_.isUndefined(doc.ERC20Basic.events)) {
+    if (doc.ERC20Basic.events === undefined) {
         throw new Error('events should never be undefined');
     }
     expect(doc.ERC20Basic.events.length).to.equal(erc20BasicEventCount);

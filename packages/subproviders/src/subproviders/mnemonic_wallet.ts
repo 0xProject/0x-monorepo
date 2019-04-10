@@ -82,7 +82,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
-        if (_.isUndefined(txParams.from) || !addressUtils.isAddress(txParams.from)) {
+        if (txParams.from === undefined || !addressUtils.isAddress(txParams.from)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
         const privateKeyWallet = this._privateKeyWalletForAddress(txParams.from);
@@ -100,7 +100,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        if (_.isUndefined(data)) {
+        if (data === undefined) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
@@ -120,7 +120,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
-        if (_.isUndefined(typedData)) {
+        if (typedData === undefined) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isETHAddressHex('address', address);
@@ -140,7 +140,7 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
             this._derivedKeyInfo,
             this._addressSearchLimit,
         );
-        if (_.isUndefined(matchedDerivedKeyInfo)) {
+        if (matchedDerivedKeyInfo === undefined) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
         return matchedDerivedKeyInfo;

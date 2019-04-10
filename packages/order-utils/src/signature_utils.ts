@@ -36,7 +36,7 @@ export const signatureUtils = {
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
         const signatureTypeIndexIfExists = utils.getSignatureTypeIndexIfExists(signature);
-        if (_.isUndefined(signatureTypeIndexIfExists)) {
+        if (signatureTypeIndexIfExists === undefined) {
             throw new Error(`Unrecognized signatureType in signature: ${signature}`);
         }
 

@@ -33,7 +33,7 @@ export class OrderFilledCancelledLazyStore implements AbstractOrderFilledCancell
      * @return filledTakerAssetAmount
      */
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
-        if (_.isUndefined(this._filledTakerAmount[orderHash])) {
+        if (this._filledTakerAmount[orderHash] === undefined) {
             const filledTakerAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
             this.setFilledTakerAmount(orderHash, filledTakerAmount);
         }
@@ -62,7 +62,7 @@ export class OrderFilledCancelledLazyStore implements AbstractOrderFilledCancell
      */
     public async getIsCancelledAsync(signedOrder: SignedOrder): Promise<boolean> {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._isCancelled[orderHash])) {
+        if (this._isCancelled[orderHash] === undefined) {
             const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
             this.setIsCancelled(orderHash, isCancelled);
         }

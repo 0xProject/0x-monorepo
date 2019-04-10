@@ -18,6 +18,7 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {

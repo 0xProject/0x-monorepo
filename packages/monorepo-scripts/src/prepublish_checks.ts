@@ -64,7 +64,7 @@ async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
         const packageName = pkg.packageJson.name;
         const packageVersion = pkg.packageJson.version;
         const packageRegistryJsonIfExists = await npmUtils.getPackageRegistryJsonIfExistsAsync(packageName);
-        if (_.isUndefined(packageRegistryJsonIfExists)) {
+        if (packageRegistryJsonIfExists === undefined) {
             continue; // noop for packages not yet published to NPM
         }
         const allVersionsIncludingUnpublished = npmUtils.getPreviouslyPublishedVersions(packageRegistryJsonIfExists);
@@ -101,7 +101,7 @@ async function checkChangelogFormatAsync(updatedPublicPackages: Package[]): Prom
         const currentVersion = pkg.packageJson.version;
         if (!_.isEmpty(changelog)) {
             const lastEntry = changelog[0];
-            const doesLastEntryHaveTimestamp = !_.isUndefined(lastEntry.timestamp);
+            const doesLastEntryHaveTimestamp = lastEntry.timestamp !== undefined;
             if (semver.lt(lastEntry.version, currentVersion)) {
                 changeLogInconsistencies.push({
                     packageJsonVersion: currentVersion,
@@ -142,14 +142,14 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
     }
 
     // Check to see if Git personal token setup
-    if (_.isUndefined(constants.githubPersonalAccessToken)) {
+    if (constants.githubPersonalAccessToken === undefined) {
         throw new Error(
             'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
         );
     }
 
     // Check to see if discord URL is set up
-    if (_.isUndefined(constants.discordAlertWebhookUrl)) {
+    if (constants.discordAlertWebhookUrl === undefined) {
         throw new Error(
             'You must have a discord webhook URL set to an envVar named `DISCORD_GITHUB_RELEASE_WEBHOOK_URL`. Add it then try again.',
         );

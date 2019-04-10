@@ -26,40 +26,40 @@ const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_
 
 const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: string) => {
     assert.isValidOrderSource('orderSource', config.orderSource);
-    if (!_.isUndefined(config.defaultSelectedAssetData)) {
+    if (config.defaultSelectedAssetData !== undefined) {
         assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
     }
-    if (!_.isUndefined(config.additionalAssetMetaDataMap)) {
+    if (config.additionalAssetMetaDataMap !== undefined) {
         assert.isValidAssetMetaDataMap('additionalAssetMetaDataMap', config.additionalAssetMetaDataMap);
     }
-    if (!_.isUndefined(config.defaultAssetBuyAmount)) {
+    if (config.defaultAssetBuyAmount !== undefined) {
         assert.isNumber('defaultAssetBuyAmount', config.defaultAssetBuyAmount);
     }
-    if (!_.isUndefined(config.networkId)) {
+    if (config.networkId !== undefined) {
         assert.isNumber('networkId', config.networkId);
     }
-    if (!_.isUndefined(config.availableAssetDatas)) {
+    if (config.availableAssetDatas !== undefined) {
         assert.areValidAssetDatas('availableAssetDatas', config.availableAssetDatas);
     }
-    if (!_.isUndefined(config.onClose)) {
+    if (config.onClose !== undefined) {
         assert.isFunction('onClose', config.onClose);
     }
-    if (!_.isUndefined(config.zIndex)) {
+    if (config.zIndex !== undefined) {
         assert.isNumber('zIndex', config.zIndex);
     }
-    if (!_.isUndefined(config.affiliateInfo)) {
+    if (config.affiliateInfo !== undefined) {
         assert.isValidAffiliateInfo('affiliateInfo', config.affiliateInfo);
     }
-    if (!_.isUndefined(config.provider)) {
+    if (config.provider !== undefined) {
         providerUtils.standardizeOrThrow(config.provider);
     }
-    if (!_.isUndefined(config.walletDisplayName)) {
+    if (config.walletDisplayName !== undefined) {
         assert.isString('walletDisplayName', config.walletDisplayName);
     }
-    if (!_.isUndefined(config.shouldDisablePushToHistory)) {
+    if (config.shouldDisablePushToHistory !== undefined) {
         assert.isBoolean('shouldDisablePushToHistory', config.shouldDisablePushToHistory);
     }
-    if (!_.isUndefined(config.shouldDisableAnalyticsTracking)) {
+    if (config.shouldDisableAnalyticsTracking !== undefined) {
         assert.isBoolean('shouldDisableAnalyticsTracking', config.shouldDisableAnalyticsTracking);
     }
     assert.isString('selector', selector);
@@ -81,7 +81,7 @@ export const unrender = () => {
 // Render instant and return a callback that allows you to remove it from the DOM.
 const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
     const appendToIfExists = document.querySelector(selector);
-    assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
+    assert.assert(appendToIfExists !== null, `Could not find div with selector: ${selector}`);
     parentElement = appendToIfExists as Element;
     injectedDiv = document.createElement('div');
     injectedDiv.setAttribute('id', INJECTED_DIV_ID);
@@ -89,7 +89,7 @@ const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
     parentElement.appendChild(injectedDiv);
     const closeInstant = () => {
         analytics.trackInstantClosed();
-        if (!_.isUndefined(config.onClose)) {
+        if (config.onClose !== undefined) {
             config.onClose();
         }
         unrender();

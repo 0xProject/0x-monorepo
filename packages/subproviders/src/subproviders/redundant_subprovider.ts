@@ -1,6 +1,5 @@
 import { promisify } from '@0x/utils';
 import { JSONRPCRequestPayload } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { Callback } from '../types';
 
@@ -28,7 +27,7 @@ export class RedundantSubprovider extends Subprovider {
                 continue;
             }
         }
-        if (!_.isUndefined(lastErr)) {
+        if (lastErr !== undefined) {
             throw lastErr;
         }
     }

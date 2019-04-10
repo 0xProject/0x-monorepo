@@ -52,19 +52,24 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             providerState,
             network: networkId,
             walletDisplayName: props.walletDisplayName,
-            selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
-                ? undefined
-                : assetUtils.createAssetFromAssetDataOrThrow(
-                      props.defaultSelectedAssetData,
-                      completeAssetMetaDataMap,
-                      networkId,
-                  ),
-            selectedAssetUnitAmount: _.isUndefined(props.defaultAssetBuyAmount)
-                ? undefined
-                : new BigNumber(props.defaultAssetBuyAmount),
-            availableAssets: _.isUndefined(props.availableAssetDatas)
-                ? undefined
-                : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
+            selectedAsset:
+                props.defaultSelectedAssetData === undefined
+                    ? undefined
+                    : assetUtils.createAssetFromAssetDataOrThrow(
+                          props.defaultSelectedAssetData,
+                          completeAssetMetaDataMap,
+                          networkId,
+                      ),
+            selectedAssetUnitAmount:
+                props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount),
+            availableAssets:
+                props.availableAssetDatas === undefined
+                    ? undefined
+                    : assetUtils.createAssetsFromAssetDatas(
+                          props.availableAssetDatas,
+                          completeAssetMetaDataMap,
+                          networkId,
+                      ),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
         };
@@ -83,7 +88,7 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchEthPriceAndDispatchToStore(dispatch);
         // fetch available assets if none are specified
-        if (_.isUndefined(state.availableAssets)) {
+        if (state.availableAssets === undefined) {
             // tslint:disable-next-line:no-floating-promises
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(state, dispatch);
         }

@@ -161,9 +161,9 @@ class TokenSelectorRowIcon extends React.PureComponent<TokenSelectorRowIconProps
 
         const TokenIcon = getTokenIcon(token.metaData.symbol);
         const displaySymbol = assetUtils.bestNameForAsset(token);
-        if (!_.isUndefined(iconUrlIfExists)) {
+        if (iconUrlIfExists !== undefined) {
             return <img src={iconUrlIfExists} />;
-        } else if (!_.isUndefined(TokenIcon)) {
+        } else if (TokenIcon !== undefined) {
             return <TokenIcon />;
         } else {
             return (

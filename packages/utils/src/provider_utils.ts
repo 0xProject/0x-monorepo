@@ -62,11 +62,11 @@ export const providerUtils = {
             };
             return provider;
             // Case 3: The provider has a `sendAsync` method, so we use it.
-        } else if (!_.isUndefined((supportedProvider as any).sendAsync)) {
+        } else if ((supportedProvider as any).sendAsync !== undefined) {
             provider.sendAsync = (supportedProvider as any).sendAsync.bind(supportedProvider);
             return provider;
             // Case 4: The provider does not have a `sendAsync` method but does have a `send` method
-        } else if (!_.isUndefined((supportedProvider as any).send)) {
+        } else if ((supportedProvider as any).send !== undefined) {
             // HACK(fabio): Detect if the `send` method has the old interface `send(payload, cb)` such
             // as in versions < Web3.js@1.0.0-beta.37. If so, do a simple re-mapping
             if (_.includes((supportedProvider as any).send.toString(), 'function (payload, callback)')) {

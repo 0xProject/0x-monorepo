@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { ContractSource } from '../types';
 
 import { Resolver } from './resolver';
@@ -12,7 +10,7 @@ export class FallthroughResolver extends Resolver {
     public resolveIfExists(importPath: string): ContractSource | undefined {
         for (const resolver of this._resolvers) {
             const contractSourceIfExists = resolver.resolveIfExists(importPath);
-            if (!_.isUndefined(contractSourceIfExists)) {
+            if (contractSourceIfExists !== undefined) {
                 return contractSourceIfExists;
             }
         }

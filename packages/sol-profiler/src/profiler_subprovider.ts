@@ -49,7 +49,7 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
     // tslint:disable prefer-function-over-method
     protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
         const receipt = await this._web3Wrapper.getTransactionReceiptIfExistsAsync(traceInfo.txHash);
-        if (_.isUndefined(receipt)) {
+        if (receipt === undefined) {
             return;
         }
         if (receipt.gasUsed === BASE_COST) {
@@ -131,7 +131,7 @@ export const profilerHandler: SingleFileSubtraceHandler = (
     // TODO(logvinov): Optimize the loop below.
     const interestingStructLogs = _.filter(subtrace, structLog => {
         const sourceRange = pcToSourceRange[structLog.pc];
-        if (_.isUndefined(sourceRange)) {
+        if (sourceRange === undefined) {
             return false;
         }
         return sourceRange.fileName === absoluteFileName;

@@ -51,13 +51,13 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
         this._ledgerEthereumClientFactoryAsync = config.ledgerEthereumClientFactoryAsync;
         this._baseDerivationPath = config.baseDerivationPath || DEFAULT_BASE_DERIVATION_PATH;
         this._shouldAlwaysAskForConfirmation =
-            !_.isUndefined(config.accountFetchingConfigs) &&
-            !_.isUndefined(config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation)
+            config.accountFetchingConfigs !== undefined &&
+            config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation !== undefined
                 ? config.accountFetchingConfigs.shouldAskForOnDeviceConfirmation
                 : ASK_FOR_ON_DEVICE_CONFIRMATION;
         this._addressSearchLimit =
-            !_.isUndefined(config.accountFetchingConfigs) &&
-            !_.isUndefined(config.accountFetchingConfigs.addressSearchLimit)
+            config.accountFetchingConfigs !== undefined &&
+            config.accountFetchingConfigs.addressSearchLimit !== undefined
                 ? config.accountFetchingConfigs.addressSearchLimit
                 : DEFAULT_ADDRESS_SEARCH_LIMIT;
     }
@@ -100,7 +100,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         LedgerSubprovider._validateTxParams(txParams);
-        if (_.isUndefined(txParams.from) || !addressUtils.isAddress(txParams.from)) {
+        if (txParams.from === undefined || !addressUtils.isAddress(txParams.from)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
         const initialDerivedKeyInfo = await this._initialDerivedKeyInfoAsync();
@@ -156,7 +156,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        if (_.isUndefined(data)) {
+        if (data === undefined) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
@@ -198,7 +198,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.acquire();
-        if (!_.isUndefined(this._ledgerClientIfExists)) {
+        if (this._ledgerClientIfExists !== undefined) {
             this._connectionLock.release();
             throw new Error(LedgerSubproviderErrors.MultipleOpenConnectionsDisallowed);
         }
@@ -208,7 +208,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
     }
     private async _destroyLedgerClientAsync(): Promise<void> {
         await this._connectionLock.acquire();
-        if (_.isUndefined(this._ledgerClientIfExists)) {
+        if (this._ledgerClientIfExists === undefined) {
             this._connectionLock.release();
             return;
         }
@@ -248,7 +248,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             initalHDKey,
             this._addressSearchLimit,
         );
-        if (_.isUndefined(matchedDerivedKeyInfo)) {
+        if (matchedDerivedKeyInfo === undefined) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
         return matchedDerivedKeyInfo;

@@ -39,7 +39,7 @@ export const fetchUtils = {
 
 function queryStringFromQueryParams(queryParams?: object): string {
     // if params are undefined or empty, return an empty string
-    if (_.isUndefined(queryParams) || _.isEmpty(queryParams)) {
+    if (queryParams === undefined || _.isEmpty(queryParams)) {
         return '';
     }
     // stringify the formatted object

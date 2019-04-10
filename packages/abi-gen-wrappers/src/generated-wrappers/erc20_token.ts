@@ -389,7 +389,7 @@ export class ERC20TokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<ERC20TokenContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
