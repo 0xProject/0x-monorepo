@@ -128,12 +128,6 @@ contract LibOrder is
         // ));
 
         assembly {
-            // Compute hashes of dynamically sized data
-            let makerAssetDataHash := keccak256(add(makerAssetData, 32), mload(makerAssetData))
-            let takerAssetDataHash := keccak256(add(takerAssetData, 32), mload(takerAssetData))
-            let makerFeeAssetDataHash := keccak256(add(makerFeeAssetData, 32), mload(makerFeeAssetData))
-            let takerFeeAssetDataHash := keccak256(add(takerFeeAssetData, 32), mload(takerFeeAssetData))
-
             // Calculate memory addresses that will be swapped out before hashing
             let pos1 := sub(order, 32)
             let pos2 := add(order, 320)
@@ -150,10 +144,10 @@ contract LibOrder is
 
             // Hash in place
             mstore(pos1, schemaHash)
-            mstore(pos2, makerAssetDataHash)
-            mstore(pos3, takerAssetDataHash)
-            mstore(pos4, makerFeeAssetDataHash)
-            mstore(pos5, takerFeeAssetDataHash)
+            mstore(pos2, keccak256(add(makerAssetData, 32), mload(makerAssetData)))        // store hash of makerAssetData
+            mstore(pos3, keccak256(add(takerAssetData, 32), mload(takerAssetData)))        // store hash of takerAssetData
+            mstore(pos4, keccak256(add(makerFeeAssetData, 32), mload(makerFeeAssetData)))  // store hash of makerFeeAssetData
+            mstore(pos5, keccak256(add(takerFeeAssetData, 32), mload(takerFeeAssetData)))  // store hash of takerFeeAssetData
             result := keccak256(pos1, 480)
 
             // Restore
