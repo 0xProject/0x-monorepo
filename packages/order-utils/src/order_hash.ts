@@ -65,6 +65,7 @@ export const orderHashUtils = {
             throw error;
         }
         const typedData = eip712Utils.createOrderTypedData(order);
+        console.log((typedData.types as any).Order);
         const orderHashBuff = signTypedDataUtils.generateTypedDataHash(typedData);
         return orderHashBuff;
     },
