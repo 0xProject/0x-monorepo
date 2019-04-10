@@ -22,6 +22,10 @@
             {
                 "note": "Add `chainId` field to `EIP712DomainWithDefaultSchema`",
                 "pr": 1742
+            },
+            {
+                "note": "Add `SignatureType.OrderValidator`, `RevertReason.InappropriateSignatureType`",
+                "pr": 0
             }
         ]
     },
