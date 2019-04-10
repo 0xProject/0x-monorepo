@@ -21,6 +21,10 @@
             {
                 "note": "Upgrade all string reverts to rich reverts",
                 "pr": 1761
+            },
+            {
+                "note": "Add support for `SignatureType.OrderValidator` for orders",
+                "pr": 0
             }
         ]
     },
