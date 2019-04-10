@@ -39,7 +39,7 @@ const team: TeamMember[] = [
         title: 'Director of operations',
     },
     {
-        imageUrl: '/images/team/leonidL.jpg',
+        imageUrl: '/images/team/leol.jpg',
         name: 'Leonid Logvinov',
         title: 'engineer',
     },
@@ -139,17 +139,17 @@ const team: TeamMember[] = [
         title: 'strategic legal counsel',
     },
     {
-        imageUrl: '/images/team/steveK.jpg',
+        imageUrl: '/images/team/stevek.jpg',
         name: 'Steve Klebanoff',
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/team/xianny.jpg',
+        imageUrl: '/images/team/xiannyn.jpg',
         name: 'Xianny Ng',
         title: 'engineer',
     },
     {
-        imageUrl: '/images/team/oshirob.png',
+        imageUrl: '/images/team/brento.jpg',
         name: 'Brent Oshiro',
         title: 'community engagement lead',
     },
