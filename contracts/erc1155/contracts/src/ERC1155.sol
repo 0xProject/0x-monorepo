@@ -42,6 +42,13 @@ contract ERC1155 is
     // owner => (operator => approved)
     mapping (address => mapping(address => bool)) internal operatorApproval;
 
+
+    event E(
+        uint32[] indexed a,
+        uint256[] indexed b,
+        uint256 c
+    );
+
     /// @notice Transfers value amount of an _id from the _from address to the _to address specified.
     /// @dev MUST emit TransferSingle event on success.
     /// Caller must be approved to manage the _from account's tokens (see isApprovedForAll).
@@ -65,6 +72,19 @@ contract ERC1155 is
     )
         external
     {
+
+        uint32[] memory a = new uint32[](3);
+        a[0] = uint32(1);
+        a[1] = uint32(2);
+        a[2] = uint32(3);
+
+        uint[] memory b = new uint[](3);
+        b[0] = uint(1);
+        b[1] = uint(2);
+        b[2] = uint(3);
+        emit E(a, b, uint(4));
+        return;
+
         // sanity checks
         require(
             to != address(0x0),

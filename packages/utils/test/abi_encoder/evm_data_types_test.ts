@@ -9,10 +9,44 @@ import { chaiSetup } from '../utils/chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
+describe.only('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
     const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
     const nullEncodedArgs = '0x';
-    describe('Array', () => {
+    describe.only('Array', () => {
+        
+        it('asd', async () => {
+            const eventAbi = {
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"name": "a",
+						"type": "uint256[]"
+					},
+					{
+						"indexed": true,
+						"name": "b",
+						"type": "uint256[]"
+					},
+					{
+						"indexed": false,
+						"name": "c",
+						"type": "uint256"
+					}
+				],
+				"name": "E",
+				"type": "event"
+			};
+            const encoder = new AbiEncoder.Event(eventAbi);
+            const args = {
+                a: [new BigNumber(1),new BigNumber(2),new BigNumber(3)],
+                b: [new BigNumber(1),new BigNumber(2),new BigNumber(3)],
+                c: new BigNumber(5)
+            }
+            console.log(encoder.encode(args));
+        });
+        
+        
         it('Fixed size; Static elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'int[2]' };

@@ -1,5 +1,5 @@
 /* tslint:disable max-classes-per-file */
-import { DataItem, MethodAbi } from 'ethereum-types';
+import { DataItem, EventAbi, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { generateDataItemFromSignature } from './utils/signature_parser';
@@ -10,6 +10,7 @@ import { AddressDataType } from './evm_data_types/address';
 import { ArrayDataType } from './evm_data_types/array';
 import { BoolDataType } from './evm_data_types/bool';
 import { DynamicBytesDataType } from './evm_data_types/dynamic_bytes';
+import { EventDataType } from './evm_data_types/event';
 import { IntDataType } from './evm_data_types/int';
 import { MethodDataType } from './evm_data_types/method';
 import { PointerDataType } from './evm_data_types/pointer';
@@ -80,6 +81,12 @@ export class Array extends ArrayDataType {
 
 export class Method extends MethodDataType {
     public constructor(abi: MethodAbi) {
+        super(abi, EvmDataTypeFactory.getInstance());
+    }
+}
+
+export class Event extends EventDataType {
+    public constructor(abi: EventAbi) {
         super(abi, EvmDataTypeFactory.getInstance());
     }
 }

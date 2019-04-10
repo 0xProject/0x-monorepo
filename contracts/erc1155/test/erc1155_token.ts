@@ -124,7 +124,7 @@ describe('ERC1155Token', () => {
             const expectedFinalBalances = [nftNotOwnerBalance, nftOwnerBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
         });
-        it('should trigger callback if transferring to a contract', async () => {
+        it.only('should trigger callback if transferring to a contract', async () => {
             // setup test parameters
             const tokenHolders = [spender, receiver];
             const tokenToTransfer = fungibleToken;
@@ -145,6 +145,7 @@ describe('ERC1155Token', () => {
                 valueToTransfer,
                 receiverCallbackData,
             );
+            console.log(JSON.stringify(tx, null, 4));
             expect(tx.logs.length).to.be.equal(2);
             const receiverLog = tx.logs[1] as LogWithDecodedArgs<DummyERC1155ReceiverBatchTokenReceivedEventArgs>;
             // check callback logs

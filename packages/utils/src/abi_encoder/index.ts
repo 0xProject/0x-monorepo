@@ -4,6 +4,7 @@ export {
     Array,
     Bool,
     DynamicBytes,
+    Event,
     Int,
     Method,
     Pointer,
