@@ -24,7 +24,7 @@
             },
             {
                 "note": "Add support for `SignatureType.OrderValidator` for orders",
-                "pr": 0
+                "pr": 1744
             }
         ]
     },
