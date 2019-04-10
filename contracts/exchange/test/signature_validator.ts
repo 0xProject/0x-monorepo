@@ -31,7 +31,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe.only('MixinSignatureValidator', () => {
+describe('MixinSignatureValidator', () => {
     let chainId: number;
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
@@ -152,11 +152,7 @@ describe.only('MixinSignatureValidator', () => {
 
         it('should return false when SignatureType=Invalid and signature has a length of zero', async () => {
             const signatureHex = `0x${Buffer.from([SignatureType.Invalid]).toString('hex')}`;
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signedOrder.makerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -185,11 +181,7 @@ describe.only('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
@@ -208,11 +200,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature.
             // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                notSignerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -231,11 +219,7 @@ describe.only('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
@@ -255,11 +239,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature.
             // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                notSignerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -277,11 +257,7 @@ describe.only('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                testWallet.address,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, testWallet.address, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
@@ -300,11 +276,7 @@ describe.only('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                testWallet.address,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, testWallet.address, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -322,11 +294,7 @@ describe.only('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             await expectContractCallFailedAsync(
-                validateCallAsync(
-                    signedOrder,
-                    maliciousWallet.address,
-                    signatureHex,
-                ),
+                validateCallAsync(signedOrder, maliciousWallet.address, signatureHex),
                 RevertReason.WalletError,
             );
         });
@@ -336,11 +304,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
@@ -351,11 +315,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureHex = ethUtil.bufferToHex(signature);
             // This will return false because we signed the message with `signerAddress`, but
             // are validating against `notSignerAddress`
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                notSignerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -385,11 +345,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -407,29 +363,20 @@ describe.only('MixinSignatureValidator', () => {
             // Validate presigned signature
             const signature = ethUtil.toBuffer(`0x${SignatureType.PreSigned}`);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signedOrder.makerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
         it('should return false when SignatureType=Presigned and signer has not presigned hash', async () => {
             const signature = ethUtil.toBuffer(`0x${SignatureType.PreSigned}`);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signedOrder.makerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
     };
 
     describe('isValidHashSignature', () => {
-
-        const validateCallAsync = (order: SignedOrder, signer: string, signatureHex: string) => {
+        const validateCallAsync = async (order: SignedOrder, signer: string, signatureHex: string) => {
             const orderHashHex = orderHashUtils.getOrderHashHex(order);
             return signatureValidator.isValidHashSignature.callAsync(orderHashHex, signer, signatureHex);
         };
@@ -486,8 +433,7 @@ describe.only('MixinSignatureValidator', () => {
     });
 
     describe('isValidOrderSignature', () => {
-
-        const validateCallAsync = (order: SignedOrder, signer: string, signatureHex: string) => {
+        const validateCallAsync = async (order: SignedOrder, signer: string, signatureHex: string) => {
             return signatureValidator.isValidOrderSignature.callAsync(order, signer, signatureHex);
         };
 
@@ -500,11 +446,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
@@ -515,11 +457,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureHex = ethUtil.bufferToHex(signature);
             // This will return false because we signed the message with `signerAddress`, but
             // are validating against `notSignerAddress`
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                notSignerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
@@ -549,11 +487,7 @@ describe.only('MixinSignatureValidator', () => {
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
