@@ -17,6 +17,10 @@
             {
                 "note": "Refactor example contracts that use `executeTransaction`",
                 "pr": 1753
+            },
+            {
+                "note": "Add support for `SignatureType.OrderValidator` for orders",
+                "pr": 0
             }
         ]
     },

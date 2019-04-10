@@ -17,7 +17,9 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 
 
@@ -33,6 +35,23 @@ contract TestStaticCallReceiver {
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
+        address signerAddress,
+        bytes calldata signature
+    )
+        external
+        returns (bool isValid)
+    {
+        updateState();
+        return true;
+    }
+
+    /// @dev Updates state and returns true. Intended to be used with `OrderValidator` signature type.
+    /// @param order The order.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidOrder(
+        LibOrder.Order calldata order,
         address signerAddress,
         bytes calldata signature
     )
