@@ -139,7 +139,7 @@ const team: TeamMember[] = [
         title: 'strategic legal counsel',
     },
     {
-        imageUrl: '/images/team/stevek.jpg',
+        imageUrl: '/images/team/steve.jpg',
         name: 'Steve Klebanoff',
         title: 'senior engineer',
     },
