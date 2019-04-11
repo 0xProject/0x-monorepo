@@ -32,8 +32,13 @@ export enum TransactionErrorCode {
 }
 
 export class SignatureError extends RevertError {
-    constructor(error?: SignatureErrorCode, orderHash?: string) {
-        super('SignatureError(uint8 error,bytes32 orderHash)', { error, orderHash });
+    constructor(error?: SignatureErrorCode, orderHash?: string, signer?: string, signature?: string) {
+        super('SignatureError(uint8 error, bytes32 orderHash, address signer, bytes signature)', {
+            error,
+            orderHash,
+            signer,
+            signature,
+        });
     }
 }
 
