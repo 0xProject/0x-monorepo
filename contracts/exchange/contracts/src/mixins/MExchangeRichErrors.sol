@@ -48,8 +48,7 @@ contract MExchangeRichErrors is
 
     enum TransactionErrorCodes {
         NO_REENTRANCY,
-        ALREADY_EXECUTED,
-        BAD_SIGNATURE
+        ALREADY_EXECUTED
     }
 
     // solhint-disable func-name-mixedcase
@@ -184,6 +183,18 @@ contract MExchangeRichErrors is
     function TransactionError(
         TransactionErrorCodes error,
         bytes32 transactionHash
+    )
+        internal
+        pure
+        returns (bytes memory);
+
+    bytes4 internal constant TRANSACTION_SIGNATURE_ERROR_SELECTOR =
+        bytes4(keccak256("TransactionSignatureError(bytes32,address,bytes)"));
+
+    function TransactionSignatureError(
+        bytes32 transactionHash,
+        address signer,
+        bytes memory signature
     )
         internal
         pure
