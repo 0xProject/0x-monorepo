@@ -47,6 +47,7 @@ contract MixinTransactions is
         bytes memory signature
     )
         public
+        returns (bytes memory)
     {
         bytes32 transactionHash = getTransactionHash(transaction);
 
@@ -87,11 +88,11 @@ contract MixinTransactions is
 
         // Execute transaction
         transactions[transactionHash] = true;
-        (bool didSucceed, bytes memory callReturnData) = address(this).delegatecall(transaction.data);
+        (bool didSucceed, bytes memory returnData) = address(this).delegatecall(transaction.data);
         if (!didSucceed) {
             rrevert(TransactionExecutionError(
                 transactionHash,
-                callReturnData
+                returnData
             ));
         }
 
@@ -99,6 +100,8 @@ contract MixinTransactions is
         if (signerAddress != msg.sender) {
             currentContextAddress = address(0);
         }
+
+        return returnData;
     }
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
