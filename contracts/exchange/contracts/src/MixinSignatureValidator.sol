@@ -60,8 +60,8 @@ contract MixinSignatureValidator is
                     signature
                 )) {
                 rrevert(SignatureError(
-                    hash,
-                    SignatureErrorCodes.BAD_SIGNATURE
+                    SignatureErrorCodes.BAD_SIGNATURE,
+                    hash
                 ));
             }
         }
@@ -102,7 +102,7 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         if (signature.length == 0) {
-            rrevert(SignatureError(hash, SignatureErrorCodes.INVALID_LENGTH));
+            rrevert(SignatureError(SignatureErrorCodes.INVALID_LENGTH, hash));
         }
 
         // Pop last byte off of signature byte array.
@@ -110,7 +110,7 @@ contract MixinSignatureValidator is
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
-            rrevert(SignatureError(hash, SignatureErrorCodes.UNSUPPORTED));
+            rrevert(SignatureError(SignatureErrorCodes.UNSUPPORTED, hash));
         }
 
         SignatureType signatureType = SignatureType(signatureTypeRaw);
@@ -128,8 +128,8 @@ contract MixinSignatureValidator is
         // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
             rrevert(SignatureError(
-                hash,
-                SignatureErrorCodes.ILLEGAL
+                SignatureErrorCodes.ILLEGAL,
+                hash
             ));
 
         // Always invalid signature.
@@ -139,8 +139,8 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Invalid) {
             if (signature.length != 0) {
                 rrevert(SignatureError(
-                    hash,
-                    SignatureErrorCodes.INVALID_LENGTH
+                    SignatureErrorCodes.INVALID_LENGTH,
+                    hash
                 ));
             }
             isValid = false;
@@ -150,8 +150,8 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP712) {
             if (signature.length != 65) {
                 rrevert(SignatureError(
-                    hash,
-                    SignatureErrorCodes.INVALID_LENGTH
+                    SignatureErrorCodes.INVALID_LENGTH,
+                    hash
                 ));
             }
             v = uint8(signature[0]);
@@ -170,8 +170,8 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EthSign) {
             if (signature.length != 65) {
                 rrevert(SignatureError(
-                    hash,
-                    SignatureErrorCodes.INVALID_LENGTH
+                    SignatureErrorCodes.INVALID_LENGTH,
+                    hash
                 ));
             }
             v = uint8(signature[0]);
@@ -233,7 +233,7 @@ contract MixinSignatureValidator is
         // that we currently support. In this case returning false
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
-        rrevert(SignatureError(hash, SignatureErrorCodes.UNSUPPORTED));
+        rrevert(SignatureError(SignatureErrorCodes.UNSUPPORTED, hash));
     }
 
     /// @dev Verifies signature using logic defined by Wallet contract.
@@ -275,7 +275,7 @@ contract MixinSignatureValidator is
         }
         if (didSucceed)
             return isValid;
-        rrevert(SignatureError(hash, SignatureErrorCodes.WALLET_ERROR));
+        rrevert(SignatureError(SignatureErrorCodes.WALLET_ERROR, hash));
     }
 
     /// @dev Verifies signature using logic defined by Validator contract.
@@ -319,7 +319,6 @@ contract MixinSignatureValidator is
         }
         if (didSucceed)
             return isValid;
-        rrevert(
-            SignatureError(hash, SignatureErrorCodes.VALIDATOR_ERROR));
+        rrevert(SignatureError(SignatureErrorCodes.VALIDATOR_ERROR, hash));
     }
 }

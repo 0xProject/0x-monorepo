@@ -1126,7 +1126,7 @@ describe('matchOrders', () => {
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexLeft, OrderStatus.Cancelled);
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHexLeft);
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -1145,7 +1145,7 @@ describe('matchOrders', () => {
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexRight, OrderStatus.Cancelled);
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHexRight);
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -1189,8 +1189,8 @@ describe('matchOrders', () => {
             };
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                orderHashHex,
             );
             // Match orders
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
@@ -1214,8 +1214,8 @@ describe('matchOrders', () => {
             };
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                orderHashHex,
             );
             // Match orders
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
