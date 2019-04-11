@@ -216,6 +216,23 @@ contract MixinExchangeRichErrors is
         );
     }
 
+    function TransactionSignatureError(
+        bytes32 transactionHash,
+        address signer,
+        bytes memory signature
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            TRANSACTION_SIGNATURE_ERROR_SELECTOR,
+            transactionHash,
+            signer,
+            signature
+        );
+    }
+
     function TransactionExecutionError(
         bytes32 transactionHash,
         bytes memory errorData

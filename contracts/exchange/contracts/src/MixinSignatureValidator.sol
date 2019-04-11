@@ -272,24 +272,23 @@ contract MixinSignatureValidator is
         assembly {
             mstore(signature, sub(signatureLength, 1))
         }
-
         // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
             IWallet(walletAddress).isValidSignature.selector,
             hash,
             signature
         );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return data should be a single bool.
         if (didSucceed && returnData.length == 32)
             return returnData.readUint256(0) != 0;
-
         // Static call to verifier failed.
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
         rrevert(SignatureError(
             SignatureErrorCodes.WALLET_ERROR,
             hash,
@@ -323,7 +322,6 @@ contract MixinSignatureValidator is
         assembly {
             mstore(signature, sub(signatureLength, 21))
         }
-
         // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
             IValidator(validatorAddress).isValidSignature.selector,
@@ -331,17 +329,16 @@ contract MixinSignatureValidator is
             signerAddress,
             signature
         );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
         // Return data should be a single bool.
         if (didSucceed && returnData.length == 32)
             return returnData.readUint256(0) != 0;
-
         // Static call to verifier failed.
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
         rrevert(SignatureError(
             SignatureErrorCodes.VALIDATOR_ERROR,
             hash,

@@ -29,6 +29,7 @@ import {
 } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { artifacts, ExchangeContract, ExchangeWrapper, ExchangeWrapperContract, WhitelistContract } from '../src/';
@@ -136,7 +137,7 @@ describe('Exchange transactions', () => {
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
     });
-    describe('executeTransaction', () => {
+    describe.only('executeTransaction', () => {
         describe('fillOrder', () => {
             let takerAssetFillAmount: BigNumber;
             beforeEach(async () => {
@@ -151,6 +152,24 @@ describe('Exchange transactions', () => {
                     signedOrder.signature,
                 );
                 signedTx = takerTransactionFactory.newSignedTransaction(data);
+            });
+
+            it('should throw if signature is invalid', async () => {
+                const v = ethUtil.toBuffer(signedTx.signature.slice(0, 4));
+                const invalidR = ethUtil.sha3('invalidR');
+                const invalidS = ethUtil.sha3('invalidS');
+                const signatureType = ethUtil.toBuffer(`0x${signedTx.signature.slice(-2)}`);
+                const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
+                const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
+                signedTx.signature = invalidSigHex;
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTx);
+                const expectedError = new ExchangeRevertErrors.TransactionSignatureError(
+                    transactionHashHex,
+                    signedTx.signerAddress,
+                    signedTx.signature,
+                );
+                const tx = exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
 
             it('should throw if not called by specified sender', async () => {
