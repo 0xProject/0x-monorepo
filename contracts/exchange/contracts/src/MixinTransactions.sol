@@ -53,16 +53,16 @@ contract MixinTransactions is
         // Prevent reentrancy
         if (currentContextAddress != address(0)) {
             rrevert(TransactionError(
-                transactionHash,
-                TransactionErrorCodes.NO_REENTRANCY
+                TransactionErrorCodes.NO_REENTRANCY,
+                transactionHash
             ));
         }
 
         // Validate transaction has not been executed
         if (transactions[transactionHash]) {
             rrevert(TransactionError(
-                transactionHash,
-                TransactionErrorCodes.ALREADY_EXECUTED
+                TransactionErrorCodes.ALREADY_EXECUTED,
+                transactionHash
             ));
         }
 
@@ -75,8 +75,8 @@ contract MixinTransactions is
                     signerAddress,
                     signature)) {
                 rrevert(TransactionError(
-                    transactionHash,
-                    TransactionErrorCodes.BAD_SIGNATURE
+                    TransactionErrorCodes.BAD_SIGNATURE,
+                    transactionHash
                 ));
             }
 
