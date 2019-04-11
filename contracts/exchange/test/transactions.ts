@@ -1,3 +1,4 @@
+// tslint:disable: max-file-line-count
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
