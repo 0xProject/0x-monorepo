@@ -31,5 +31,6 @@ contract ITransactions {
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
     )
-        public;
+        public
+        returns (bytes memory);
 }
