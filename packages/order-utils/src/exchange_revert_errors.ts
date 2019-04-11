@@ -28,14 +28,13 @@ export enum AssetProxyDispatchErrorCode {
 export enum TransactionErrorCode {
     NoReentrancy,
     AlreadyExecuted,
-    BadSignature,
 }
 
 export class SignatureError extends RevertError {
-    constructor(error?: SignatureErrorCode, orderHash?: string, signer?: string, signature?: string) {
-        super('SignatureError(uint8 error, bytes32 orderHash, address signer, bytes signature)', {
+    constructor(error?: SignatureErrorCode, hash?: string, signer?: string, signature?: string) {
+        super('SignatureError(uint8 error, bytes32 hash, address signer, bytes signature)', {
             error,
-            orderHash,
+            hash,
             signer,
             signature,
         });
@@ -120,6 +119,16 @@ export class TransactionError extends RevertError {
     }
 }
 
+export class TransactionSignatureError extends RevertError {
+    constructor(transactionHash?: string, signer?: string, signature?: string) {
+        super('TransactionSignatureError(bytes32 transactionHash, address signer, bytes signature)', {
+            transactionHash,
+            signer,
+            signature,
+        });
+    }
+}
+
 export class TransactionExecutionError extends RevertError {
     constructor(transactionHash?: string, errorData?: string) {
         super('TransactionExecutionError(bytes32 transactionHash, bytes errorData)', { transactionHash, errorData });
@@ -145,6 +154,7 @@ const types = [
     AssetProxyTransferError,
     NegativeSpreadError,
     TransactionError,
+    TransactionSignatureError,
     TransactionExecutionError,
     IncompleteFillError,
 ];
