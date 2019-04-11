@@ -39,8 +39,6 @@ contract RichErrors is
     {
         return abi.encodeWithSelector(
             STANDARD_ERROR_SELECTOR,
-            uint256(0x20),
-            bytes(message).length,
             bytes(message)
         );
     }
