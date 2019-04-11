@@ -940,15 +940,15 @@ function validationErrorToRevertError(order: Order, reason: RevertReason): Rever
         case RevertReason.InvalidTaker:
             return new ExchangeRevertErrors.InvalidTakerError(orderHash);
         case RevertReason.OrderUnfillable:
-            return new ExchangeRevertErrors.OrderStatusError(orderHash);
+            return new ExchangeRevertErrors.OrderStatusError(undefined, orderHash);
         case RevertReason.InvalidTakerAmount:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount);
+            return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount, orderHash);
         case RevertReason.TakerOverpay:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.TakerOverpay);
+            return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.TakerOverpay, orderHash);
         case RevertReason.OrderOverfill:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.Overfill);
+            return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.Overfill, orderHash);
         case RevertReason.InvalidFillPrice:
-            return new ExchangeRevertErrors.FillError(orderHash, ExchangeRevertErrors.FillErrorCode.InvalidFillPrice);
+            return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.InvalidFillPrice, orderHash);
         case RevertReason.TransferFailed:
             return new ExchangeRevertErrors.AssetProxyTransferError(orderHash, undefined, RevertReason.TransferFailed);
         default:

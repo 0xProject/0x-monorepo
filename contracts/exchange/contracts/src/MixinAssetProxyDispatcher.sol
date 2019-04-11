@@ -85,9 +85,9 @@ contract MixinAssetProxyDispatcher is
             // Ensure assetData length is valid
             if (assetData.length <= 3) {
                 rrevert(AssetProxyDispatchError(
+                    AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
                     orderHash,
-                    assetData,
-                    AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH
+                    assetData
                 ));
             }
 
@@ -104,9 +104,9 @@ contract MixinAssetProxyDispatcher is
             // Ensure that assetProxy exists
             if (assetProxy == address(0)) {
                 rrevert(AssetProxyDispatchError(
+                    AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
                     orderHash,
-                    assetData,
-                    AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY
+                    assetData
                 ));
             }
 

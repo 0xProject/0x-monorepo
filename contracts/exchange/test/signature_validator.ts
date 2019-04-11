@@ -130,8 +130,8 @@ describe('MixinSignatureValidator', () => {
             const emptySignature = '0x';
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
+                orderHashHex,
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -146,8 +146,8 @@ describe('MixinSignatureValidator', () => {
             const unsupportedSignatureHex = `0x${Buffer.from([unsupportedSignatureType]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.Unsupported,
+                orderHashHex,
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -161,8 +161,8 @@ describe('MixinSignatureValidator', () => {
             const unsupportedSignatureHex = `0x${Buffer.from([SignatureType.Illegal]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.Illegal,
+                orderHashHex,
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -190,8 +190,8 @@ describe('MixinSignatureValidator', () => {
             const signatureHex = ethUtil.bufferToHex(signatureBuffer);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
+                orderHashHex,
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -352,8 +352,8 @@ describe('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.WalletError,
+                orderHashHex,
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -400,8 +400,8 @@ describe('MixinSignatureValidator', () => {
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                orderHashHex,
                 ExchangeRevertErrors.SignatureErrorCode.ValidatorError,
+                orderHashHex,
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
