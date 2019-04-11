@@ -2,13 +2,6 @@ import { logUtils } from '@0x/utils';
 import { NodeType, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-// HACK(albrow): 🐉 We have to do this so that debug.setHead works correctly.
-// (Geth does not seem to like debug.setHead(0), so by sending some transactions
-// we increase the current block number beyond 0). Additionally, some tests seem
-// to break when there are fewer than 3 blocks in the chain. (We have no idea
-// why, but it was consistently reproducible).
-const MINIMUM_BLOCKS = 3;
-
 export class BlockchainLifecycle {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _snapshotIdsStack: number[];
@@ -26,13 +19,7 @@ export class BlockchainLifecycle {
                 this._snapshotIdsStack.push(snapshotId);
                 break;
             case NodeType.Geth:
-                let blockNumber = await this._web3Wrapper.getBlockNumberAsync();
-                if (blockNumber < MINIMUM_BLOCKS) {
-                    // If the minimum block number is not met, force Geth to
-                    // mine some blocks by sending some dummy transactions.
-                    await this._mineMinimumBlocksAsync();
-                    blockNumber = await this._web3Wrapper.getBlockNumberAsync();
-                }
+                const blockNumber = await this._web3Wrapper.getBlockNumberAsync();
                 this._snapshotIdsStack.push(blockNumber);
                 // HACK(albrow) It's possible that we applied a time offset but
                 // the transaction we mined to put that time offset into the
@@ -62,14 +49,6 @@ export class BlockchainLifecycle {
             default:
                 throw new Error(`Unknown node type: ${nodeType}`);
         }
-    }
-    private async _mineMinimumBlocksAsync(): Promise<void> {
-        logUtils.warn('WARNING: minimum block number for tests not met. Mining additional blocks...');
-        while ((await this._web3Wrapper.getBlockNumberAsync()) < MINIMUM_BLOCKS) {
-            logUtils.warn('Mining block...');
-            await this._mineDummyBlockAsync();
-        }
-        logUtils.warn('Done mining the minimum number of blocks.');
     }
     private async _getNodeTypeAsync(): Promise<NodeType> {
         if (this._nodeType === undefined) {

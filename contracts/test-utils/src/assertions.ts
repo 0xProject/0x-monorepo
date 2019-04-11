@@ -42,7 +42,7 @@ async function _getInsufficientFundsErrorMessageAsync(): Promise<string> {
 }
 
 async function _getTransactionFailedErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethErrorAsync('revert', 'always failing transaction');
+    return _getGanacheOrGethErrorAsync('revert', 'Transaction failed');
 }
 
 async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
@@ -65,7 +65,7 @@ export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string
  * @returns the expected error message.
  */
 export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
-    return _getGanacheOrGethErrorAsync(reason, 'always failing transaction');
+    return _getGanacheOrGethErrorAsync(reason, 'Transaction failed');
 }
 
 /**

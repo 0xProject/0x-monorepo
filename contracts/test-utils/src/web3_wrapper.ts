@@ -40,7 +40,7 @@ export const txDefaults = testProvider === ProviderType.Ganache ? ganacheTxDefau
 const gethConfigs = {
     shouldUseInProcessGanache: false,
     rpcUrl: 'http://localhost:8501',
-    shouldUseFakeGasEstimate: false,
+    shouldUseFakeGasEstimate: true,
 };
 const ganacheConfigs = {
     shouldUseInProcessGanache: true,
