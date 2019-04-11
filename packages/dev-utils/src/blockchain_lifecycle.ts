@@ -1,4 +1,3 @@
-import { logUtils } from '@0x/utils';
 import { NodeType, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
