@@ -42,35 +42,4 @@ contract MSignatureValidator is
         PreSigned,       // 0x06
         NSignatureTypes  // 0x07, number of signature types. Always leave at end.
     }
-
-    /// @dev Verifies signature using logic defined by Wallet contract.
-    /// @param hash Any 32 byte hash.
-    /// @param walletAddress Address that should have signed the given hash
-    ///                      and defines its own signature verification method.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function isValidWalletSignature(
-        bytes32 hash,
-        address walletAddress,
-        bytes memory signature
-    )
-        internal
-        view
-        returns (bool isValid);
-
-    /// @dev Verifies signature using logic defined by Validator contract.
-    /// @param validatorAddress Address of validator contract.
-    /// @param hash Any 32 byte hash.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function isValidValidatorSignature(
-        address validatorAddress,
-        bytes32 hash,
-        address signerAddress,
-        bytes memory signature
-    )
-        internal
-        view
-        returns (bool isValid);
 }

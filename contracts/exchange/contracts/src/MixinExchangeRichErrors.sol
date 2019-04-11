@@ -30,7 +30,9 @@ contract MixinExchangeRichErrors is
     // solhint-disable func-name-mixedcase
     function SignatureError(
         SignatureErrorCodes error,
-        bytes32 orderHash
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature
     )
         internal
         pure
@@ -39,7 +41,9 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             SIGNATURE_ERROR_SELECTOR,
             error,
-            orderHash
+            orderHash,
+            signer,
+            signature
         );
     }
 

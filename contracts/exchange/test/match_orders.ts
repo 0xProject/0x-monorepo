@@ -1191,6 +1191,8 @@ describe('matchOrders', () => {
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                 orderHashHex,
+                signedOrderRight.makerAddress,
+                signedOrderRight.signature,
             );
             // Match orders
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
@@ -1216,6 +1218,8 @@ describe('matchOrders', () => {
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                 orderHashHex,
+                signedOrderRight.makerAddress,
+                signedOrderRight.signature,
             );
             // Match orders
             const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
