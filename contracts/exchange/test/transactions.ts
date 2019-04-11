@@ -203,8 +203,8 @@ describe('Exchange transactions', () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTx);
                 const expectedError = new ExchangeRevertErrors.TransactionError(
-                    transactionHashHex,
                     ExchangeRevertErrors.TransactionErrorCode.AlreadyExecuted,
+                    transactionHashHex,
                 );
                 const tx = exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 return expect(tx).to.revertWith(expectedError);
@@ -237,7 +237,7 @@ describe('Exchange transactions', () => {
             it('should cancel the order when signed by maker and called by sender', async () => {
                 await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Cancelled);
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHex);
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, senderAddress);
                 return expect(tx).to.revertWith(expectedError);
             });
@@ -285,7 +285,7 @@ describe('Exchange transactions', () => {
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedFillTx);
                 const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                     transactionHashHex,
-                    new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Cancelled).encode(),
+                    new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHex).encode(),
                 );
                 const tx = exchangeWrapperContract.fillOrder.sendTransactionAsync(
                     orderWithoutDomain,

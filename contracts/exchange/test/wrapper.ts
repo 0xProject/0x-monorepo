@@ -207,7 +207,7 @@ describe('Exchange wrappers', () => {
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Expired);
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Expired, orderHashHex);
             const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -587,7 +587,7 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrders[0]);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.FullyFilled);
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.FullyFilled, orderHashHex);
                 const tx = exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
                 });
@@ -833,8 +833,8 @@ describe('Exchange wrappers', () => {
                 };
                 const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
                 const expectedError = new ExchangeRevertErrors.SignatureError(
-                    orderHashHex,
                     ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    orderHashHex,
                 );
                 const tx = exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
@@ -1096,8 +1096,8 @@ describe('Exchange wrappers', () => {
                 };
                 const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
                 const expectedError = new ExchangeRevertErrors.SignatureError(
-                    orderHashHex,
                     ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    orderHashHex,
                 );
                 const tx = exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
