@@ -61,7 +61,7 @@ jobs:
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
-            - image: 0xorg/devnet
+            - image: 0xorg/devnet:1.8.24
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -399,11 +399,9 @@ workflows:
             - test-contracts-ganache:
                   requires:
                       - build
-            # TODO(albrow): Tests always fail on Geth right now because our fork
-            # is outdated. Uncomment once we have updated our Geth fork.
-            # - test-contracts-geth:
-            #       requires:
-            #           - build
+            - test-contracts-geth:
+                  requires:
+                      - build
             - test-pipeline:
                   requires:
                       - build
