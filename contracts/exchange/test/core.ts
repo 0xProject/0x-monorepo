@@ -54,7 +54,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange core', () => {
+describe.only('Exchange core', () => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -700,6 +700,7 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.makerAssetData,
+                RevertReason.TransferFailed,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(expectedError);
@@ -726,6 +727,7 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.takerAssetData,
+                RevertReason.TransferFailed,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(expectedError);
