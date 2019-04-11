@@ -835,6 +835,8 @@ describe('Exchange wrappers', () => {
                 const expectedError = new ExchangeRevertErrors.SignatureError(
                     ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                     orderHashHex,
+                    signedOrders[1].makerAddress,
+                    signedOrders[1].signature,
                 );
                 const tx = exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
@@ -1098,6 +1100,8 @@ describe('Exchange wrappers', () => {
                 const expectedError = new ExchangeRevertErrors.SignatureError(
                     ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                     orderHashHex,
+                    signedOrders[1].makerAddress,
+                    signedOrders[1].signature,
                 );
                 const tx = exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
