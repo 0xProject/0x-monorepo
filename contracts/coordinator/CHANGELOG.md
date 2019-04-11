@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _April 11, 2019_
+
+    * Make `decodeOrdersFromFillData`, `getCoordinatorApprovalHash`, and `getTransactionHash` public (#1729)
+    * Make `assertValidTransactionOrdersApproval` internal (#1729)
+
 ## v1.1.0 - _March 21, 2019_
 
     * Run Web3ProviderEngine without excess block polling (#1695)

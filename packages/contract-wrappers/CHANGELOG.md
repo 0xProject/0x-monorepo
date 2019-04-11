@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.0.0 - _April 11, 2019_
+
+    * Added a simulation to transfer from maker to taker during `exchange.validateOrderFillableOrThrowAsync` (#1714)
+    * Added additional properties to `ValidateOrderFillableOpts`. An order can now be validated to fill a non-zero amount by specifying `validateRemainingOrderAmountIsFillable` as `false`. The default `true` will continue to validate the entire remaining balance is fillable. (#1714)
+
 ## v8.0.5 - _March 21, 2019_
 
     * Dependencies updated

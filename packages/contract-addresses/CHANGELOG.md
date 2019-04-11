@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.1 - _April 11, 2019_
+
+    * Dependencies updated
+
 ## v2.3.0 - _March 21, 2019_
 
     * Add addresses for coordinator extension contract and coordinator registry (#1689)

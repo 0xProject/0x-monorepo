@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _April 11, 2019_
+
+    * Dependencies updated
+
 ## v3.1.0 - _March 21, 2019_
 
     * Run Web3ProviderEngine without excess block polling (#1695)

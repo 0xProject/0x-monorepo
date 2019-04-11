@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _April 11, 2019_
+
+    * Added IAssetProxy wrapper (#1714)
+
 ## v4.1.0 - _March 21, 2019_
 
     * Add Coordinator and CoordinatorRegistry contract wrappers (#1689)
