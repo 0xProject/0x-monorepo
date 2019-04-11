@@ -25,6 +25,11 @@ contract RichErrors is
     MRichErrors
 {
     // solhint-disable func-name-mixedcase
+    /// @dev ABI encode a standard, string revert error payload.
+    ///      This is the same payload that would be included by a `revert(string)`
+    ///      solidity statement. It has the function signature `Error(string)`.
+    /// @param message The error string.
+    /// @return The ABI encoded error.
     function StandardError(
         string memory message
     )
@@ -32,13 +37,14 @@ contract RichErrors is
         pure
         returns (bytes memory)
     {
-        return abi.encodePacked(
+        return abi.encodeWithSelector(
             STANDARD_ERROR_SELECTOR,
             uint256(0x20),
             bytes(message).length,
             bytes(message)
         );
     }
+    // solhint-enable func-name-mixedcase
 
     /// @dev Reverts an encoded rich revert reason `errorData`.
     /// @param errorData ABI encoded error data.
