@@ -74,9 +74,10 @@ contract MixinTransactions is
                     transactionHash,
                     signerAddress,
                     signature)) {
-                rrevert(TransactionError(
-                    TransactionErrorCodes.BAD_SIGNATURE,
-                    transactionHash
+                rrevert(TransactionSignatureError(
+                    transactionHash,
+                    signerAddress,
+                    signature
                 ));
             }
 
