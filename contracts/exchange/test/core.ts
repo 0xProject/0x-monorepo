@@ -299,6 +299,8 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.BadSignature,
                 orderHashHex,
+                signedOrder.makerAddress,
+                invalidSigHex,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -339,6 +341,8 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.WalletError,
                 orderHashHex,
+                signedOrder.makerAddress,
+                signedOrder.signature,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -359,6 +363,8 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.ValidatorError,
                 orderHashHex,
+                signedOrder.makerAddress,
+                signedOrder.signature,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
