@@ -54,22 +54,22 @@ contract MExchangeRichErrors is
 
     // solhint-disable func-name-mixedcase
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureError(bytes32,uint8)"));
+        bytes4(keccak256("SignatureError(uint8,bytes32)"));
 
     function SignatureError(
-        bytes32 orderHash,
-        SignatureErrorCodes error
+        SignatureErrorCodes error,
+        bytes32 orderHash
     )
         internal
         pure
         returns (bytes memory);
 
     bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
-        bytes4(keccak256("OrderStatusError(bytes32,uint8)"));
+        bytes4(keccak256("OrderStatusError(uint8,bytes32)"));
 
     function OrderStatusError(
-        bytes32 orderHash,
-        LibOrder.OrderStatus orderStatus
+        LibOrder.OrderStatus orderStatus,
+        bytes32 orderHash
     )
         internal
         pure
@@ -98,11 +98,11 @@ contract MExchangeRichErrors is
         returns (bytes memory);
 
     bytes4 internal constant FILL_ERROR_SELECTOR =
-        bytes4(keccak256("FillError(bytes32,uint8)"));
+        bytes4(keccak256("FillError(uint8,bytes32)"));
 
     function FillError(
-        bytes32 orderHash,
-        FillErrorCodes error
+        FillErrorCodes error,
+        bytes32 orderHash
     )
         internal
         pure
@@ -142,12 +142,12 @@ contract MExchangeRichErrors is
         returns (bytes memory);
 
     bytes4 internal constant ASSET_PROXY_DISPATCH_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyDispatchError(bytes32,bytes,uint8)"));
+        bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"));
 
     function AssetProxyDispatchError(
+        AssetProxyDispatchErrorCodes error,
         bytes32 orderHash,
-        bytes memory assetData,
-        AssetProxyDispatchErrorCodes error
+        bytes memory assetData
     )
         internal
         pure
@@ -177,11 +177,11 @@ contract MExchangeRichErrors is
         returns (bytes memory);
 
     bytes4 internal constant TRANSACTION_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionError(bytes32,uint8)"));
+        bytes4(keccak256("TransactionError(uint8,bytes32)"));
 
     function TransactionError(
-        bytes32 transactionHash,
-        TransactionErrorCodes error
+        TransactionErrorCodes error,
+        bytes32 transactionHash
     )
         internal
         pure
