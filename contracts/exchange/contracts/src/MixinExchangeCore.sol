@@ -352,14 +352,16 @@ contract MixinExchangeCore is
 
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
+            address makerAddress = order.makerAddress;
             if (!isValidSignature(
                     orderInfo.orderHash,
-                    order.makerAddress,
-                    signature
-                )) {
+                    makerAddress,
+                    signature)) {
                 rrevert(SignatureError(
                     SignatureErrorCodes.BAD_SIGNATURE,
-                    orderInfo.orderHash
+                    orderInfo.orderHash,
+                    makerAddress,
+                    signature
                 ));
             }
         }

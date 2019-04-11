@@ -54,11 +54,13 @@ contract MExchangeRichErrors is
 
     // solhint-disable func-name-mixedcase
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureError(uint8,bytes32)"));
+        bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"));
 
     function SignatureError(
         SignatureErrorCodes error,
-        bytes32 orderHash
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature
     )
         internal
         pure
