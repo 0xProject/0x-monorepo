@@ -57,11 +57,12 @@ contract MixinSignatureValidator is
             if (!isValidSignature(
                     hash,
                     signerAddress,
-                    signature
-                )) {
+                    signature)) {
                 rrevert(SignatureError(
                     SignatureErrorCodes.BAD_SIGNATURE,
-                    hash
+                    hash,
+                    signerAddress,
+                    signature
                 ));
             }
         }
@@ -102,15 +103,25 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         if (signature.length == 0) {
-            rrevert(SignatureError(SignatureErrorCodes.INVALID_LENGTH, hash));
+            rrevert(SignatureError(
+                SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
         }
 
         // Pop last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature.popLastByte());
+        uint8 signatureTypeRaw = uint8(signature[signature.length-1]);
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
-            rrevert(SignatureError(SignatureErrorCodes.UNSUPPORTED, hash));
+            rrevert(SignatureError(
+                SignatureErrorCodes.UNSUPPORTED,
+                hash,
+                signerAddress,
+                signature
+            ));
         }
 
         SignatureType signatureType = SignatureType(signatureTypeRaw);
@@ -129,7 +140,9 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Illegal) {
             rrevert(SignatureError(
                 SignatureErrorCodes.ILLEGAL,
-                hash
+                hash,
+                signerAddress,
+                signature
             ));
 
         // Always invalid signature.
@@ -137,10 +150,12 @@ contract MixinSignatureValidator is
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
         } else if (signatureType == SignatureType.Invalid) {
-            if (signature.length != 0) {
+            if (signature.length != 1) {
                 rrevert(SignatureError(
                     SignatureErrorCodes.INVALID_LENGTH,
-                    hash
+                    hash,
+                    signerAddress,
+                    signature
                 ));
             }
             isValid = false;
@@ -148,10 +163,12 @@ contract MixinSignatureValidator is
 
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
-            if (signature.length != 65) {
+            if (signature.length != 66) {
                 rrevert(SignatureError(
                     SignatureErrorCodes.INVALID_LENGTH,
-                    hash
+                    hash,
+                    signerAddress,
+                    signature
                 ));
             }
             v = uint8(signature[0]);
@@ -168,10 +185,12 @@ contract MixinSignatureValidator is
 
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
-            if (signature.length != 65) {
+            if (signature.length != 66) {
                 rrevert(SignatureError(
                     SignatureErrorCodes.INVALID_LENGTH,
-                    hash
+                    hash,
+                    signerAddress,
+                    signature
                 ));
             }
             v = uint8(signature[0]);
@@ -207,15 +226,7 @@ contract MixinSignatureValidator is
         // | 0x00 + x | 20     | Address of validator contract   |
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
-            // Pop last 20 bytes off of signature byte array.
-            address validatorAddress = signature.popLast20Bytes();
-
-            // Ensure signer has approved validator.
-            if (!allowedValidators[signerAddress][validatorAddress]) {
-                return false;
-            }
             isValid = isValidValidatorSignature(
-                validatorAddress,
                 hash,
                 signerAddress,
                 signature
@@ -233,7 +244,12 @@ contract MixinSignatureValidator is
         // that we currently support. In this case returning false
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
-        rrevert(SignatureError(SignatureErrorCodes.UNSUPPORTED, hash));
+        rrevert(SignatureError(
+            SignatureErrorCodes.UNSUPPORTED,
+            hash,
+            signerAddress,
+            signature
+        ));
     }
 
     /// @dev Verifies signature using logic defined by Wallet contract.
@@ -247,78 +263,90 @@ contract MixinSignatureValidator is
         address walletAddress,
         bytes memory signature
     )
-        internal
+        private
         view
         returns (bool isValid)
     {
+        uint256 signatureLength = signature.length;
+        // Shave the signature type off the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 1))
+        }
+
+        // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
             IWallet(walletAddress).isValidSignature.selector,
             hash,
             signature
         );
-        bool didSucceed;
-        assembly {
-            let cdStart := add(callData, 32)
-            didSucceed := staticcall(
-                gas,              // forward all gas
-                walletAddress,    // address of Wallet contract
-                cdStart,          // pointer to start of input
-                mload(callData),  // length of input
-                cdStart,          // write output over input
-                32                // output size is 32 bytes
-            )
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Return data should be a single bool.
+        if (didSucceed && returnData.length == 32)
+            return returnData.readUint256(0) != 0;
 
-            if eq(didSucceed, 1) {
-                // Signature is valid if call did not revert and returned true
-                isValid := mload(cdStart)
-            }
+        // Static call to verifier failed.
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
         }
-        if (didSucceed)
-            return isValid;
-        rrevert(SignatureError(SignatureErrorCodes.WALLET_ERROR, hash));
+        rrevert(SignatureError(
+            SignatureErrorCodes.WALLET_ERROR,
+            hash,
+            walletAddress,
+            signature
+        ));
     }
 
     /// @dev Verifies signature using logic defined by Validator contract.
-    /// @param validatorAddress Address of validator contract.
     /// @param hash Any 32 byte hash.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the address recovered from the provided signature matches the input signer address.
     function isValidValidatorSignature(
-        address validatorAddress,
         bytes32 hash,
         address signerAddress,
         bytes memory signature
     )
-        internal
+        private
         view
         returns (bool isValid)
     {
+        uint256 signatureLength = signature.length;
+        // Read the validator address from the signature.
+        address validatorAddress = signature.readAddress(signatureLength - 21);
+        // Ensure signer has approved validator.
+        if (!allowedValidators[signerAddress][validatorAddress]) {
+            return false;
+        }
+        // Shave the validator address and signature type from the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 21))
+        }
+
+        // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
-            IValidator(signerAddress).isValidSignature.selector,
+            IValidator(validatorAddress).isValidSignature.selector,
             hash,
             signerAddress,
             signature
         );
-        bool didSucceed;
-        assembly {
-            let cdStart := add(callData, 32)
-            didSucceed := staticcall(
-                gas,               // forward all gas
-                validatorAddress,  // address of Validator contract
-                cdStart,           // pointer to start of input
-                mload(callData),   // length of input
-                cdStart,           // write output over input
-                32                 // output size is 32 bytes
-            )
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
+        // Return data should be a single bool.
+        if (didSucceed && returnData.length == 32)
+            return returnData.readUint256(0) != 0;
 
-            if eq(didSucceed, 1) {
-                // Signature is valid if call did not revert and returned true
-                isValid := mload(cdStart)
-            }
+        // Static call to verifier failed.
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
         }
-        if (didSucceed)
-            return isValid;
-        rrevert(SignatureError(SignatureErrorCodes.VALIDATOR_ERROR, hash));
+        rrevert(SignatureError(
+            SignatureErrorCodes.VALIDATOR_ERROR,
+            hash,
+            signerAddress,
+            signature
+        ));
     }
 }
