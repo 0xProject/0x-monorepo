@@ -274,9 +274,9 @@ describe('AssetProxyDispatcher', () => {
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
+                ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy,
                 orderHash,
                 encodedAssetData,
-                ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy,
             );
             const tx = assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                 orderHash,

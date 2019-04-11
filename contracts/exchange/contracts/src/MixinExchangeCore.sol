@@ -219,18 +219,20 @@ contract MixinExchangeCore is
         // Compute proportional fill amounts
         fillResults = calculateFillResults(order, takerAssetFilledAmount);
 
+        bytes32 orderHash = orderInfo.orderHash;
+
         // Update exchange internal state
         updateFilledState(
             order,
             takerAddress,
-            orderInfo.orderHash,
+            orderHash,
             orderInfo.orderTakerAssetFilledAmount,
             fillResults
         );
 
         // Settle order
         settleOrder(
-            orderInfo.orderHash,
+            orderHash,
             order,
             takerAddress,
             fillResults
@@ -329,8 +331,8 @@ contract MixinExchangeCore is
         // An order can only be filled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
             rrevert(OrderStatusError(
-                orderInfo.orderHash,
-                OrderStatus(orderInfo.orderStatus)
+                OrderStatus(orderInfo.orderStatus),
+                orderInfo.orderHash
             ));
         }
 
@@ -356,8 +358,8 @@ contract MixinExchangeCore is
                     signature
                 )) {
                 rrevert(SignatureError(
-                    orderInfo.orderHash,
-                    SignatureErrorCodes.BAD_SIGNATURE
+                    SignatureErrorCodes.BAD_SIGNATURE,
+                    orderInfo.orderHash
                 ));
             }
         }
@@ -382,14 +384,14 @@ contract MixinExchangeCore is
         // Revert if fill amount is invalid
         // TODO: reconsider necessity for v2.1
         if (takerAssetFillAmount == 0) {
-            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.INVALID_TAKER_AMOUNT));
+            rrevert(FillError(FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
         }
 
         // Make sure taker does not pay more than desired amount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
         if (takerAssetFilledAmount > takerAssetFillAmount) {
-            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.TAKER_OVERPAY));
+            rrevert(FillError(FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
         }
 
         // Make sure order is not overfilled
@@ -397,7 +399,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         if (safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
             > order.takerAssetAmount) {
-            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.OVERFILL));
+            rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
         }
 
         // Make sure order is filled at acceptable price.
@@ -419,7 +421,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         if (safeMul(makerAssetFilledAmount, order.takerAssetAmount)
             > safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
-            rrevert(FillError(orderInfo.orderHash, FillErrorCodes.INVALID_FILL_PRICE));
+            rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
         }
     }
 
@@ -436,7 +438,7 @@ contract MixinExchangeCore is
         // Ensure order is valid
         // An order can only be cancelled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
-            rrevert(OrderStatusError(orderInfo.orderHash, OrderStatus(orderInfo.orderStatus)));
+            rrevert(OrderStatusError(OrderStatus(orderInfo.orderStatus), orderInfo.orderHash));
         }
 
         // Validate sender is allowed to cancel this order

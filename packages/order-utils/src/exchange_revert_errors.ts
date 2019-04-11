@@ -32,14 +32,14 @@ export enum TransactionErrorCode {
 }
 
 export class SignatureError extends RevertError {
-    constructor(orderHash?: string, error?: SignatureErrorCode) {
-        super('SignatureError(bytes32 orderHash, uint8 error)', { orderHash, error });
+    constructor(error?: SignatureErrorCode, orderHash?: string) {
+        super('SignatureError(uint8 error,bytes32 orderHash)', { error, orderHash });
     }
 }
 
 export class OrderStatusError extends RevertError {
-    constructor(orderHash?: string, status?: OrderStatus) {
-        super('OrderStatusError(bytes32 orderHash, uint8 status)', { orderHash, status });
+    constructor(status?: OrderStatus, orderHash?: string) {
+        super('OrderStatusError(uint8 status, bytes32 orderHash)', { status, orderHash });
     }
 }
 
@@ -62,14 +62,18 @@ export class InvalidMakerError extends RevertError {
 }
 
 export class FillError extends RevertError {
-    constructor(orderHash?: string, error?: FillErrorCode) {
-        super('FillError(bytes32 orderHash, uint8 error)', { orderHash, error });
+    constructor(error?: FillErrorCode, orderHash?: string) {
+        super('FillError(uint8 error, bytes32 orderHash)', { error, orderHash });
     }
 }
 
 export class OrderEpochError extends RevertError {
     constructor(maker?: string, sender?: string, currentEpoch?: BigNumber | number | string) {
-        super('OrderEpochError(address maker, address sender, uint256 currentEpoch)', { maker, sender, currentEpoch });
+        super('OrderEpochError(address maker, address sender, uint256 currentEpoch)', {
+            maker,
+            sender,
+            currentEpoch,
+        });
     }
 }
 
@@ -80,11 +84,11 @@ export class AssetProxyExistsError extends RevertError {
 }
 
 export class AssetProxyDispatchError extends RevertError {
-    constructor(orderHash?: string, assetData?: string, error?: AssetProxyDispatchErrorCode) {
-        super('AssetProxyDispatchError(bytes32 orderHash, bytes assetData, uint8 error)', {
+    constructor(error?: AssetProxyDispatchErrorCode, orderHash?: string, assetData?: string) {
+        super('AssetProxyDispatchError(uint8 error, bytes32 orderHash, bytes assetData)', {
+            error,
             orderHash,
             assetData,
-            error,
         });
     }
 }
@@ -106,8 +110,8 @@ export class NegativeSpreadError extends RevertError {
 }
 
 export class TransactionError extends RevertError {
-    constructor(transactionHash?: string, error?: TransactionErrorCode) {
-        super('TransactionError(bytes32 transactionHash, uint8 error)', { transactionHash, error });
+    constructor(error?: TransactionErrorCode, transactionHash?: string) {
+        super('TransactionError(uint8 error, bytes32 transactionHash)', { error, transactionHash });
     }
 }
 
