@@ -280,7 +280,7 @@ contract MixinSignatureValidator is
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return data should be a single bool.
         if (didSucceed && returnData.length == 32) {
-            return returnData.readUint256(0) != 0;
+            return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
         rrevert(SignatureWalletError(
@@ -338,7 +338,7 @@ contract MixinSignatureValidator is
         (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
         // Return data should be a single bool.
         if (didSucceed && returnData.length == 32) {
-            return returnData.readUint256(0) != 0;
+            return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
         rrevert(SignatureValidatorError(
