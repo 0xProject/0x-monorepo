@@ -47,6 +47,44 @@ contract MixinExchangeRichErrors is
         );
     }
 
+    function SignatureValidatorError(
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            SIGNATURE_VALIDATOR_ERROR_SELECTOR,
+            orderHash,
+            signer,
+            signature,
+            errorData
+        );
+    }
+
+    function SignatureWalletError(
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            SIGNATURE_WALLET_ERROR_SELECTOR,
+            orderHash,
+            signer,
+            signature,
+            errorData
+        );
+    }
+
     function OrderStatusError(
         LibOrder.OrderStatus orderStatus,
         bytes32 orderHash
@@ -172,7 +210,7 @@ contract MixinExchangeRichErrors is
     function AssetProxyTransferError(
         bytes32 orderHash,
         bytes memory assetData,
-        string memory errorMessage
+        bytes memory errorData
     )
         internal
         pure
@@ -182,7 +220,7 @@ contract MixinExchangeRichErrors is
             ASSET_PROXY_TRANSFER_ERROR_SELECTOR,
             orderHash,
             assetData,
-            errorMessage
+            errorData
         );
     }
 
