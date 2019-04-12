@@ -17,6 +17,7 @@
         "generated-artifacts/ReentrantERC20Token.json",
         "generated-artifacts/TestAssetProxyDispatcher.json",
         "generated-artifacts/TestExchangeInternals.json",
+        "generated-artifacts/TestRevertReceiver.json",
         "generated-artifacts/TestSignatureValidator.json",
         "generated-artifacts/TestStaticCallReceiver.json",
         "generated-artifacts/Validator.json",
