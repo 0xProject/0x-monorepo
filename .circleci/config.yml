@@ -61,7 +61,7 @@ jobs:
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
-            - image: 0xorg/devnet:1.8.24
+            - image: 0xorg/devnet:constantinople-0.0.1
         working_directory: ~/repo
         steps:
             - restore_cache:
