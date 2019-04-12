@@ -21,9 +21,10 @@ pragma solidity ^0.5.5;
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 
 
+// solhint-disable no-unused-vars
 contract TestRevertReceiver {
 
-    string constant REVERT_REASON = "you shall not pass";
+    string constant public REVERT_REASON = "you shall not pass";
 
     /// @dev Reverts with `REVERT_REASON`. Intended to be used with `Validator` signature type.
     /// @param hash Message hash that is signed.
