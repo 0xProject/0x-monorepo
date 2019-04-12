@@ -5,6 +5,7 @@ mkdir -p /var/log
 
 # Start Geth and direct output to stdout
 /geth \
+    --allow-insecure-unlock \
     --verbosity 5 \
     --datadir node0/ \
     --syncmode 'full' \
