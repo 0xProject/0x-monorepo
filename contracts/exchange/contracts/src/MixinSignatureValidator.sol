@@ -111,7 +111,7 @@ contract MixinSignatureValidator is
             ));
         }
 
-        // Pop last byte off of signature byte array.
+        // Read the last byte off of signature byte array.
         uint8 signatureTypeRaw = uint8(signature[signature.length-1]);
 
         // Ensure signature is supported
@@ -219,12 +219,6 @@ contract MixinSignatureValidator is
             return isValid;
 
         // Signature verified by validator contract.
-        // If used with an order, the maker of the order can still be an EOA.
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 20     | Address of validator contract   |
-        // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
             isValid = isValidValidatorSignature(
                 hash,
@@ -282,7 +276,6 @@ contract MixinSignatureValidator is
         assembly {
             mstore(signature, signatureLength)
         }
-
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return data should be a single bool.
@@ -311,6 +304,13 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
+        // If used with an order, the maker of the order can still be an EOA.
+        // A signature using this type should be encoded as:
+        // | Offset   | Length | Contents                        |
+        // | 0x00     | x      | Signature to validate           |
+        // | 0x00 + x | 20     | Address of validator contract   |
+        // | 0x14 + x | 1      | Signature type is always "\x06" |
+
         uint256 signatureLength = signature.length;
         // Read the validator address from the signature.
         address validatorAddress = signature.readAddress(signatureLength - 21);
