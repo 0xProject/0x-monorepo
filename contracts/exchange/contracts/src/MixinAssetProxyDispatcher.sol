@@ -112,8 +112,8 @@ contract MixinAssetProxyDispatcher is
 
             // Whether the AssetProxy transfer succeeded.
             bool didSucceed;
-            // On failure, the revert message returned by the asset proxy.
-            string memory revertMessage;
+            // On failure, the revert data thrown by the asset proxy.
+            bytes memory revertData;
 
             // We construct calldata for the `assetProxy.transferFrom` ABI.
             // The layout of this calldata is in the table below.
@@ -179,30 +179,14 @@ contract MixinAssetProxyDispatcher is
                 )
 
                 if iszero(didSucceed) { // Call reverted.
-                    // The asset proxies always revert with a standard string error,
-                    // which have the signature `Error(string)` and are ABI encoded
-                    // the same way as calldata for a function call is.
-                    // We will extract the string payload from this to upgrade it
-                    // to a rich revert.
-
-                    // Asset proxy revert errors have the following memory layout:
-                    // | Area            | Offset  | Length   | Contents                              |
-                    // --------------------------------------------------------------------------------
-                    // | Selector        | 0       | 4        | bytes4 function selector (0x08c379a0) |
-                    // | Params          |         |          |                                       |
-                    // |                 | 4       | 32       | uint256 offset to data (always 32)    |
-                    // | Data            |         |          |                                       |
-                    // |                 | 36      | 32       | uint256 length of data (n)            |
-                    // |                 | 68      | n        | Left-aligned message bytes            |
-
-                    // Get the size of the string data/payload.
-                    let revertDataSize := sub(returndatasize(), 36)
+                    // Get the revert data.
+                    let revertDataSize := returndatasize()
                     // We need to move the free memory pointer because we
                     // still have solidity logic that executes after this assembly.
                     mstore(64, add(cdStart, revertDataSize))
-                    // Copy the revert string data.
-                    returndatacopy(cdStart, 36, revertDataSize)
-                    revertMessage := cdStart
+                    // Copy the revert data.
+                    returndatacopy(cdStart, 0, revertDataSize)
+                    revertData := cdStart
                 }
             }
 
@@ -210,7 +194,7 @@ contract MixinAssetProxyDispatcher is
                 rrevert(AssetProxyTransferError(
                     orderHash,
                     assetData,
-                    revertMessage
+                    revertData
                 ));
             }
         }

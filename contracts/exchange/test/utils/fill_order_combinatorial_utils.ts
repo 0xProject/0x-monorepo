@@ -950,7 +950,11 @@ function validationErrorToRevertError(order: Order, reason: RevertReason): Rever
         case RevertReason.InvalidFillPrice:
             return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.InvalidFillPrice, orderHash);
         case RevertReason.TransferFailed:
-            return new ExchangeRevertErrors.AssetProxyTransferError(orderHash, undefined, RevertReason.TransferFailed);
+            return new ExchangeRevertErrors.AssetProxyTransferError(
+                orderHash,
+                undefined,
+                new StringRevertError(RevertReason.TransferFailed).encode(),
+            );
         default:
             return new StringRevertError(reason);
     }

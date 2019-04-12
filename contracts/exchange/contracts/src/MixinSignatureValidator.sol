@@ -279,14 +279,15 @@ contract MixinSignatureValidator is
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32)
+        if (didSucceed && returnData.length == 32) {
             return returnData.readUint256(0) != 0;
+        }
         // Static call to verifier failed.
-        rrevert(SignatureError(
-            SignatureErrorCodes.WALLET_ERROR,
+        rrevert(SignatureWalletError(
             hash,
             walletAddress,
-            signature
+            signature,
+            returnData
         ));
     }
 
@@ -336,14 +337,15 @@ contract MixinSignatureValidator is
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
         // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32)
+        if (didSucceed && returnData.length == 32) {
             return returnData.readUint256(0) != 0;
+        }
         // Static call to verifier failed.
-        rrevert(SignatureError(
-            SignatureErrorCodes.VALIDATOR_ERROR,
+        rrevert(SignatureValidatorError(
             hash,
             signerAddress,
-            signature
+            signature,
+            returnData
         ));
     }
 }

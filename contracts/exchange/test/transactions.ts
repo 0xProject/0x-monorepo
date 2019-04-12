@@ -138,7 +138,7 @@ describe('Exchange transactions', () => {
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
     });
-    describe.only('executeTransaction', () => {
+    describe('executeTransaction', () => {
         describe('fillOrder', () => {
             let takerAssetFillAmount: BigNumber;
             beforeEach(async () => {
