@@ -179,13 +179,16 @@ contract MixinAssetProxyDispatcher is
                 )
 
                 if iszero(didSucceed) { // Call reverted.
-                    // Get the revert data.
                     let revertDataSize := returndatasize()
+                    // Construct a `bytes memory` type to hold the revert data
+                    // at `cdStart`.
+                    // The first 32 bytes are the length of the data.
+                    mstore(cdStart, revertDataSize)
+                    // Copy the revert data immediately after the length. 
+                    returndatacopy(add(cdStart, 32), 0, revertDataSize)
                     // We need to move the free memory pointer because we
                     // still have solidity logic that executes after this assembly.
-                    mstore(64, add(cdStart, revertDataSize))
-                    // Copy the revert data.
-                    returndatacopy(cdStart, 0, revertDataSize)
+                    mstore(64, add(cdStart, add(revertDataSize, 32)))
                     revertData := cdStart
                 }
             }
