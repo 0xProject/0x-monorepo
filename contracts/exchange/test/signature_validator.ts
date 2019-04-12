@@ -90,13 +90,9 @@ describe('MixinSignatureValidator', () => {
         );
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                testValidator.address,
-                true,
-                {
-                    from: signerAddress,
-                },
-            ),
+            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
+                from: signerAddress,
+            }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
@@ -144,6 +140,8 @@ describe('MixinSignatureValidator', () => {
     });
 
     describe('isValidSignature', () => {
+        const REVERT_REASON = 'you shall not pass';
+
         beforeEach(async () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
@@ -412,7 +410,7 @@ describe('MixinSignatureValidator', () => {
                 orderHashHex,
                 revertingWallet.address,
                 signatureHex,
-                new StringRevertError('you shall not pass').encode(),
+                new StringRevertError(REVERT_REASON).encode(),
             );
             const tx = signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -464,11 +462,7 @@ describe('MixinSignatureValidator', () => {
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signerAddress,
-                signatureHex,
-            );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -482,13 +476,9 @@ describe('MixinSignatureValidator', () => {
                 orderHashHex,
                 signedOrder.makerAddress,
                 signatureHex,
-                new StringRevertError('you shall not pass').encode(),
+                new StringRevertError(REVERT_REASON).encode(),
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signerAddress,
-                signatureHex,
-            );
+            const tx = signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
