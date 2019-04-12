@@ -112,7 +112,7 @@ contract MixinSignatureValidator is
         }
 
         // Read the last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature[signature.length-1]);
+        uint8 signatureTypeRaw = uint8(signature[signature.length - 1]);
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
