@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,23 +18,23 @@
 
 pragma solidity ^0.5.5;
 
-import "../src/MixinAssetProxyDispatcher.sol";
-import "../src/MixinExchangeRichErrors.sol";
 
+contract MRichErrors {
+    // solhint-disable func-name-mixedcase
 
-contract TestAssetProxyDispatcher is
-    MixinAssetProxyDispatcher,
-    MixinExchangeRichErrors
-{
-    function publicDispatchTransferFrom(
-        bytes32 orderHash,
-        bytes memory assetData,
-        address from,
-        address to,
-        uint256 amount
+    bytes4 internal constant STANDARD_ERROR_SELECTOR =
+        bytes4(keccak256("Error(string)"));
+
+    function StandardError(
+        string memory message
     )
-        public
-    {
-        dispatchTransferFrom(orderHash, assetData, from, to, amount);
-    }
+        internal
+        pure
+        returns (bytes memory);
+
+    /// @dev Reverts an encoded rich revert reason `errorData`.
+    /// @param errorData ABI encoded error data.
+    function rrevert(bytes memory errorData)
+        internal
+        pure;
 }

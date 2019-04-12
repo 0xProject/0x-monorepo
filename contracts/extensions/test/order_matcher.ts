@@ -12,7 +12,6 @@ import {
     constants,
     ERC20BalancesByOwner,
     expectContractCreationFailedAsync,
-    expectTransactionFailedAsync,
     LogDecoder,
     OrderFactory,
     provider,
@@ -21,7 +20,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -241,15 +240,13 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    data,
-                    to: orderMatcher.address,
-                    from: takerAddress,
-                    gas: constants.MAX_MATCH_ORDERS_GAS,
-                }),
-                RevertReason.OnlyContractOwner,
-            );
+            const tx = web3Wrapper.sendTransactionAsync({
+                data,
+                to: orderMatcher.address,
+                from: takerAddress,
+                gas: constants.MAX_MATCH_ORDERS_GAS,
+            });
+            return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
         it('should transfer the correct amounts when orders completely fill each other', async () => {
             // Create orders to match
@@ -676,15 +673,14 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    data,
-                    to: orderMatcher.address,
-                    from: owner,
-                    gas: constants.MAX_MATCH_ORDERS_GAS,
-                }),
-                RevertReason.InvalidOrderSignature,
-            );
+            const expectedError = new ExchangeRevertErrors.SignatureError();
+            const tx = web3Wrapper.sendTransactionAsync({
+                data,
+                to: orderMatcher.address,
+                from: owner,
+                gas: constants.MAX_MATCH_ORDERS_GAS,
+            });
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should revert with the correct reason if fillOrder call reverts', async () => {
             // Create orders to match
@@ -709,15 +705,14 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            await expectTransactionFailedAsync(
-                web3Wrapper.sendTransactionAsync({
-                    data,
-                    to: orderMatcher.address,
-                    from: owner,
-                    gas: constants.MAX_MATCH_ORDERS_GAS,
-                }),
-                RevertReason.TransferFailed,
-            );
+            const expectedError = new ExchangeRevertErrors.AssetProxyTransferError();
+            const tx = web3Wrapper.sendTransactionAsync({
+                data,
+                to: orderMatcher.address,
+                from: owner,
+                gas: constants.MAX_MATCH_ORDERS_GAS,
+            });
+            return expect(tx).to.revertWith(expectedError);
         });
     });
     describe('withdrawAsset', () => {
@@ -757,12 +752,10 @@ describe('OrderMatcher', () => {
         it('should revert if not called by owner', async () => {
             const erc20AWithdrawAmount = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
             expect(erc20AWithdrawAmount).to.be.bignumber.gt(constants.ZERO_AMOUNT);
-            await expectTransactionFailedAsync(
-                orderMatcher.withdrawAsset.sendTransactionAsync(leftMakerAssetData, erc20AWithdrawAmount, {
-                    from: takerAddress,
-                }),
-                RevertReason.OnlyContractOwner,
-            );
+            const tx = orderMatcher.withdrawAsset.sendTransactionAsync(leftMakerAssetData, erc20AWithdrawAmount, {
+                from: takerAddress,
+            });
+            return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
     });
     describe('approveAssetProxy', () => {
@@ -813,12 +806,10 @@ describe('OrderMatcher', () => {
         });
         it('should revert if not called by owner', async () => {
             const approval = new BigNumber(1);
-            await expectTransactionFailedAsync(
-                orderMatcher.approveAssetProxy.sendTransactionAsync(leftMakerAssetData, approval, {
-                    from: takerAddress,
-                }),
-                RevertReason.OnlyContractOwner,
-            );
+            const tx = orderMatcher.approveAssetProxy.sendTransactionAsync(leftMakerAssetData, approval, {
+                from: takerAddress,
+            });
+            return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
     });
 });

@@ -23,16 +23,19 @@ import "./mixins/MExchangeCore.sol";
 import "./mixins/MMatchOrders.sol";
 import "./mixins/MTransactions.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "./mixins/MExchangeRichErrors.sol";
 
 
 contract MixinMatchOrders is
     ReentrancyGuard,
     LibConstants,
     LibMath,
+    LibOrder,
     MAssetProxyDispatcher,
     MExchangeCore,
     MMatchOrders,
-    MTransactions
+    MTransactions,
+    MExchangeRichErrors
 {
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
@@ -64,7 +67,7 @@ contract MixinMatchOrders is
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
-        
+
         // Either our context is valid or we revert
         assertFillableOrder(
             leftOrder,
@@ -103,7 +106,7 @@ contract MixinMatchOrders is
             matchedFillResults.right.takerAssetFilledAmount,
             matchedFillResults.right.makerAssetFilledAmount
         );
-        
+
         // Update exchange state
         updateFilledState(
             leftOrder,
@@ -122,6 +125,8 @@ contract MixinMatchOrders is
 
         // Settle matched orders. Succeeds or throws.
         settleMatchedOrders(
+            leftOrderInfo.orderHash,
+            rightOrderInfo.orderHash,
             leftOrder,
             rightOrder,
             takerAddress,
@@ -139,7 +144,7 @@ contract MixinMatchOrders is
         LibOrder.Order memory rightOrder
     )
         internal
-        pure
+        view
     {
         // Make sure there is a profitable spread.
         // There is a profitable spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
@@ -149,11 +154,13 @@ contract MixinMatchOrders is
         // AND
         // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
         // These equations can be combined to get the following:
-        require(
-            safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) >=
-            safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount),
-            "NEGATIVE_SPREAD_REQUIRED"
-        );
+        if (safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
+            safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+            rrevert(NegativeSpreadError(
+                getOrderHash(leftOrder),
+                getOrderHash(rightOrder)
+            ));
+        }
     }
 
     /// @dev Calculates fill amounts for the matched orders.
@@ -203,7 +210,7 @@ contract MixinMatchOrders is
             matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
             matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
-            // Round down to ensure the maker's exchange rate does not exceed the price specified by the order. 
+            // Round down to ensure the maker's exchange rate does not exceed the price specified by the order.
             // We favor the maker when the exchange rate must be rounded.
             matchedFillResults.left.makerAssetFilledAmount = safeGetPartialAmountFloor(
                 leftOrder.makerAssetAmount,
@@ -259,11 +266,15 @@ contract MixinMatchOrders is
     }
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
+    /// @param leftOrderHash First matched order hash.
+    /// @param rightOrderHash Second matched order hash.
     /// @param leftOrder First matched order.
     /// @param rightOrder Second matched order.
     /// @param takerAddress Address that matched the orders. The taker receives the spread between orders as profit.
     /// @param matchedFillResults Struct holding amounts to transfer between makers, taker, and fee recipients.
     function settleMatchedOrders(
+        bytes32 leftOrderHash,
+        bytes32 rightOrderHash,
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         address takerAddress,
@@ -274,18 +285,21 @@ contract MixinMatchOrders is
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         dispatchTransferFrom(
+            leftOrderHash,
             leftOrder.makerAssetData,
             leftOrder.makerAddress,
             rightOrder.makerAddress,
             matchedFillResults.right.takerAssetFilledAmount
         );
         dispatchTransferFrom(
+            rightOrderHash,
             rightOrder.makerAssetData,
             rightOrder.makerAddress,
             leftOrder.makerAddress,
             matchedFillResults.left.takerAssetFilledAmount
         );
         dispatchTransferFrom(
+            leftOrderHash,
             leftOrder.makerAssetData,
             leftOrder.makerAddress,
             takerAddress,
@@ -294,12 +308,14 @@ contract MixinMatchOrders is
 
         // Maker fees
         dispatchTransferFrom(
+            leftOrderHash,
             zrxAssetData,
             leftOrder.makerAddress,
             leftOrder.feeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
         dispatchTransferFrom(
+            rightOrderHash,
             zrxAssetData,
             rightOrder.makerAddress,
             rightOrder.feeRecipientAddress,
@@ -309,6 +325,7 @@ contract MixinMatchOrders is
         // Taker fees
         if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
             dispatchTransferFrom(
+                leftOrderHash,
                 zrxAssetData,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
@@ -319,12 +336,14 @@ contract MixinMatchOrders is
             );
         } else {
             dispatchTransferFrom(
+                leftOrderHash,
                 zrxAssetData,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
             dispatchTransferFrom(
+                rightOrderHash,
                 zrxAssetData,
                 takerAddress,
                 rightOrder.feeRecipientAddress,

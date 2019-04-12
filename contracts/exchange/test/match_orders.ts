@@ -6,15 +6,14 @@ import {
     constants,
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
-    expectTransactionFailedAsync,
     OrderFactory,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
-import { RevertReason } from '@0x/types';
+import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { OrderStatus, RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -588,10 +587,8 @@ describe('matchOrders', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
-                    await expectTransactionFailedAsync(
-                        exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                        RevertReason.ReentrancyIllegal,
-                    );
+                    const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                 });
             });
         };
@@ -1125,13 +1122,13 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            const orderHashHexLeft = orderHashUtils.getOrderHashHex(signedOrderLeft);
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
             // Match orders
-            return expectTransactionFailedAsync(
-                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReason.OrderUnfillable,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHexLeft);
+            const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('Should throw if right order is not fillable', async () => {
@@ -1144,13 +1141,13 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            const orderHashHexRight = orderHashUtils.getOrderHashHex(signedOrderRight);
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
             // Match orders
-            return expectTransactionFailedAsync(
-                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReason.OrderUnfillable,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHexRight);
+            const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should throw if there is not a positive spread', async () => {
@@ -1163,11 +1160,12 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
+            const orderHashHexLeft = orderHashUtils.getOrderHashHex(signedOrderLeft);
+            const orderHashHexRight = orderHashUtils.getOrderHashHex(signedOrderRight);
             // Match orders
-            return expectTransactionFailedAsync(
-                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReason.NegativeSpreadRequired,
-            );
+            const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
+            const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should throw if the left maker asset is not equal to the right taker asset ', async () => {
@@ -1181,15 +1179,24 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            // Match orders
-            return expectTransactionFailedAsync(
-                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                // We are assuming assetData fields of the right order are the
-                // reverse of the left order, rather than checking equality. This
-                // saves a bunch of gas, but as a result if the assetData fields are
-                // off then the failure ends up happening at signature validation
-                RevertReason.InvalidOrderSignature,
+            // We are assuming assetData fields of the right order are the
+            // reverse of the left order, rather than checking equality. This
+            // saves a bunch of gas, but as a result if the assetData fields are
+            // off then the failure ends up happening at signature validation
+            const reconstructedOrderRight = {
+                ...signedOrderRight,
+                takerAssetData: signedOrderLeft.makerAssetData,
+            };
+            const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                orderHashHex,
+                signedOrderRight.makerAddress,
+                signedOrderRight.signature,
             );
+            // Match orders
+            const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should throw if the right maker asset is not equal to the left taker asset', async () => {
@@ -1203,11 +1210,20 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            // Match orders
-            return expectTransactionFailedAsync(
-                exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReason.InvalidOrderSignature,
+            const reconstructedOrderRight = {
+                ...signedOrderRight,
+                makerAssetData: signedOrderLeft.takerAssetData,
+            };
+            const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                orderHashHex,
+                signedOrderRight.makerAddress,
+                signedOrderRight.signature,
             );
+            // Match orders
+            const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should transfer correct amounts when left order maker asset is an ERC721 token', async () => {

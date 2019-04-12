@@ -5,18 +5,16 @@ import {
     chaiSetup,
     constants,
     ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
-    OrderStatus,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { RevertReason, SignedOrder } from '@0x/types';
+import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { OrderStatus, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -152,10 +150,8 @@ describe('Exchange wrappers', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
-                    await expectTransactionFailedAsync(
-                        exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                        RevertReason.ReentrancyIllegal,
-                    );
+                    const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
+                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                 });
             });
         };
@@ -210,11 +206,10 @@ describe('Exchange wrappers', () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
-
-            return expectTransactionFailedAsync(
-                exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                RevertReason.OrderUnfillable,
-            );
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.Expired, orderHashHex);
+            const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should throw if entire takerAssetFillAmount not filled', async () => {
@@ -224,10 +219,10 @@ describe('Exchange wrappers', () => {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
             });
 
-            return expectTransactionFailedAsync(
-                exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress),
-                RevertReason.CompleteFillFailed,
-            );
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(orderHashHex);
+            const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -462,10 +457,8 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        await expectTransactionFailedAsync(
-                            exchangeWrapper.batchFillOrdersAsync([signedOrder], takerAddress),
-                            RevertReason.ReentrancyIllegal,
-                        );
+                        const tx = exchangeWrapper.batchFillOrdersAsync([signedOrder], takerAddress);
+                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                     });
                 });
             };
@@ -531,10 +524,8 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        await expectTransactionFailedAsync(
-                            exchangeWrapper.batchFillOrKillOrdersAsync([signedOrder], takerAddress),
-                            RevertReason.ReentrancyIllegal,
-                        );
+                        const tx = exchangeWrapper.batchFillOrKillOrdersAsync([signedOrder], takerAddress);
+                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                     });
                 });
             };
@@ -595,13 +586,12 @@ describe('Exchange wrappers', () => {
                 });
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
-
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
-                        takerAssetFillAmounts,
-                    }),
-                    RevertReason.OrderUnfillable,
-                );
+                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrders[0]);
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(OrderStatus.FullyFilled, orderHashHex);
+                const tx = exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmounts,
+                });
+                return expect(tx).to.revertWith(expectedError);
             });
         });
 
@@ -749,12 +739,10 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        await expectTransactionFailedAsync(
-                            exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
-                                takerAssetFillAmount: signedOrder.takerAssetAmount,
-                            }),
-                            RevertReason.ReentrancyIllegal,
-                        );
+                        const tx = exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
+                            takerAssetFillAmount: signedOrder.takerAssetAmount,
+                        });
+                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                     });
                 });
             };
@@ -839,15 +827,21 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
-
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                        takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                    }),
-                    // We simply use the takerAssetData from the first order for all orders.
-                    // If they are not the same, the contract throws when validating the order signature
-                    RevertReason.InvalidOrderSignature,
+                const reconstructedOrder = {
+                    ...signedOrders[1],
+                    takerAssetData: signedOrders[0].takerAssetData,
+                };
+                const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
+                const expectedError = new ExchangeRevertErrors.SignatureError(
+                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    orderHashHex,
+                    signedOrders[1].makerAddress,
+                    signedOrders[1].signature,
                 );
+                const tx = exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                });
+                return expect(tx).to.revertWith(expectedError);
             });
         });
 
@@ -1010,12 +1004,10 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        await expectTransactionFailedAsync(
-                            exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
-                                makerAssetFillAmount: signedOrder.makerAssetAmount,
-                            }),
-                            RevertReason.ReentrancyIllegal,
-                        );
+                        const tx = exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
+                            makerAssetFillAmount: signedOrder.makerAssetAmount,
+                        });
+                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                     });
                 });
             };
@@ -1100,13 +1092,21 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
-
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                        makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                    }),
-                    RevertReason.InvalidOrderSignature,
+                const reconstructedOrder = {
+                    ...signedOrders[1],
+                    makerAssetData: signedOrders[0].makerAssetData,
+                };
+                const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
+                const expectedError = new ExchangeRevertErrors.SignatureError(
+                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    orderHashHex,
+                    signedOrders[1].makerAddress,
+                    signedOrders[1].signature,
                 );
+                const tx = exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
+                    makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                });
+                return expect(tx).to.revertWith(expectedError);
             });
         });
 

@@ -20,12 +20,14 @@ pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
+import "./mixins/MExchangeRichErrors.sol";
 import "./interfaces/IAssetProxy.sol";
 
 
 contract MixinAssetProxyDispatcher is
     Ownable,
-    MAssetProxyDispatcher
+    MAssetProxyDispatcher,
+    MExchangeRichErrors
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => address) public assetProxies;
@@ -40,10 +42,9 @@ contract MixinAssetProxyDispatcher is
         // Ensure that no asset proxy exists with current id.
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
-        require(
-            currentAssetProxy == address(0),
-            "ASSET_PROXY_ALREADY_EXISTS"
-        );
+        if (currentAssetProxy != address(0)) {
+            rrevert(AssetProxyExistsError(currentAssetProxy));
+        }
 
         // Add asset proxy and log registration.
         assetProxies[assetProxyId] = assetProxy;
@@ -65,11 +66,13 @@ contract MixinAssetProxyDispatcher is
     }
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
+    /// @param orderHash Hash of the order associated with this transfer.
     /// @param assetData Byte array encoded for the asset.
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
     function dispatchTransferFrom(
+        bytes32 orderHash,
         bytes memory assetData,
         address from,
         address to,
@@ -80,11 +83,14 @@ contract MixinAssetProxyDispatcher is
         // Do nothing if no amount should be transferred.
         if (amount > 0 && from != to) {
             // Ensure assetData length is valid
-            require(
-                assetData.length > 3,
-                "LENGTH_GREATER_THAN_3_REQUIRED"
-            );
-            
+            if (assetData.length <= 3) {
+                rrevert(AssetProxyDispatchError(
+                    AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
+                    orderHash,
+                    assetData
+                ));
+            }
+
             // Lookup assetProxy. We do not use `LibBytes.readBytes4` for gas efficiency reasons.
             bytes4 assetProxyId;
             assembly {
@@ -96,14 +102,22 @@ contract MixinAssetProxyDispatcher is
             address assetProxy = assetProxies[assetProxyId];
 
             // Ensure that assetProxy exists
-            require(
-                assetProxy != address(0),
-                "ASSET_PROXY_DOES_NOT_EXIST"
-            );
-            
+            if (assetProxy == address(0)) {
+                rrevert(AssetProxyDispatchError(
+                    AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
+                    orderHash,
+                    assetData
+                ));
+            }
+
+            // Whether the AssetProxy transfer succeeded.
+            bool didSucceed;
+            // On failure, the revert data thrown by the asset proxy.
+            bytes memory revertData;
+
             // We construct calldata for the `assetProxy.transferFrom` ABI.
             // The layout of this calldata is in the table below.
-            // 
+            //
             // | Area     | Offset | Length  | Contents                                    |
             // | -------- |--------|---------|-------------------------------------------- |
             // | Header   | 0      | 4       | function selector                           |
@@ -127,12 +141,11 @@ contract MixinAssetProxyDispatcher is
                 // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.
                 let cdEnd := add(cdStart, add(132, dataAreaLength))
 
-                
                 /////// Setup Header Area ///////
                 // This area holds the 4-byte `transferFromSelector`.
                 // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
                 mstore(cdStart, 0xa85e59e400000000000000000000000000000000000000000000000000000000)
-                
+
                 /////// Setup Params Area ///////
                 // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.
                 // Notes:
@@ -142,30 +155,50 @@ contract MixinAssetProxyDispatcher is
                 mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 100), amount)
-                
+
                 /////// Setup Data Area ///////
                 // This area holds `assetData`.
                 let dataArea := add(cdStart, 132)
+                let assetDataArea := assetData
                 // solhint-disable-next-line no-empty-blocks
                 for {} lt(dataArea, cdEnd) {} {
-                    mstore(dataArea, mload(assetData))
+                    mstore(dataArea, mload(assetDataArea))
                     dataArea := add(dataArea, 32)
-                    assetData := add(assetData, 32)
+                    assetDataArea := add(assetDataArea, 32)
                 }
 
                 /////// Call `assetProxy.transferFrom` using the constructed calldata ///////
-                let success := call(
+                didSucceed := call(
                     gas,                    // forward all gas
                     assetProxy,             // call address of asset proxy
                     0,                      // don't send any ETH
                     cdStart,                // pointer to start of input
-                    sub(cdEnd, cdStart),    // length of input  
-                    cdStart,                // write output over input
-                    512                     // reserve 512 bytes for output
+                    sub(cdEnd, cdStart),    // length of input
+                    0,                      // don't store the returndata
+                    0                       // don't store the returndata
                 )
-                if iszero(success) {
-                    revert(cdStart, returndatasize())
+
+                if iszero(didSucceed) { // Call reverted.
+                    let revertDataSize := returndatasize()
+                    // Construct a `bytes memory` type to hold the revert data
+                    // at `cdStart`.
+                    // The first 32 bytes are the length of the data.
+                    mstore(cdStart, revertDataSize)
+                    // Copy the revert data immediately after the length. 
+                    returndatacopy(add(cdStart, 32), 0, revertDataSize)
+                    // We need to move the free memory pointer because we
+                    // still have solidity logic that executes after this assembly.
+                    mstore(64, add(cdStart, add(revertDataSize, 32)))
+                    revertData := cdStart
                 }
+            }
+
+            if (!didSucceed) {
+                rrevert(AssetProxyTransferError(
+                    orderHash,
+                    assetData,
+                    revertData
+                ));
             }
         }
     }

@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add `RevertErrorAbi` interface as part of `AbiDefinition` types",
+                "pr": 1761
+            }
+        ]
+    },
+    {
         "timestamp": 1553091633,
         "version": "2.1.1",
         "changes": [

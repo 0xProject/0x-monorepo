@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.1.1",
+        "changes": [
+            {
+                "note": "Update tests for rich reverts",
+                "pr": 1761
+            }
+        ]
+    },
+    {
         "version": "8.1.0",
         "changes": [
             {

@@ -9,14 +9,14 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     LogDecoder,
+    orderUtils,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -135,20 +135,18 @@ describe('AssetProxyDispatcher', () => {
                 provider,
                 txDefaults,
             );
-            // Register new ERC20 Transfer Proxy contract
-            return expectTransactionFailedAsync(
-                assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
-                    from: owner,
-                }),
-                RevertReason.AssetProxyAlreadyExists,
-            );
+            const expectedError = new ExchangeRevertErrors.AssetProxyExistsError(proxyAddress);
+            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
+                from: owner,
+            });
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should throw if requesting address is not owner', async () => {
-            return expectTransactionFailedAsync(
-                assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: notOwner }),
-                RevertReason.OnlyContractOwner,
-            );
+            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
+                from: notOwner,
+            });
+            return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
 
         it('should log an event with correct arguments when an asset proxy is registered', async () => {
@@ -180,6 +178,7 @@ describe('AssetProxyDispatcher', () => {
     });
 
     describe('dispatchTransferFrom', () => {
+        const orderHash = orderUtils.generatePseudoRandomOrderHash();
         it('should dispatch transfer to registered proxy', async () => {
             // Register ERC20 proxy
             await web3Wrapper.awaitTransactionSuccessAsync(
@@ -194,6 +193,7 @@ describe('AssetProxyDispatcher', () => {
             const amount = new BigNumber(10);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                    orderHash,
                     encodedAssetData,
                     makerAddress,
                     takerAddress,
@@ -226,6 +226,7 @@ describe('AssetProxyDispatcher', () => {
             const amount = constants.ZERO_AMOUNT;
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                    orderHash,
                     encodedAssetData,
                     makerAddress,
                     takerAddress,
@@ -253,6 +254,7 @@ describe('AssetProxyDispatcher', () => {
             const amount = new BigNumber(10);
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                    orderHash,
                     encodedAssetData,
                     makerAddress,
                     makerAddress,
@@ -271,16 +273,20 @@ describe('AssetProxyDispatcher', () => {
             const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
-            return expectTransactionFailedAsync(
-                assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
-                    encodedAssetData,
-                    makerAddress,
-                    takerAddress,
-                    amount,
-                    { from: owner },
-                ),
-                RevertReason.AssetProxyDoesNotExist,
+            const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
+                ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy,
+                orderHash,
+                encodedAssetData,
             );
+            const tx = assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                orderHash,
+                encodedAssetData,
+                makerAddress,
+                takerAddress,
+                amount,
+                { from: owner },
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 });

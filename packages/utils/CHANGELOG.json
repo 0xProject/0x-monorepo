@@ -9,6 +9,10 @@
             {
                 "note": "More robust normalization of `uint256` types in `sign_typed_data_utils`",
                 "pr": 1742
+            },
+            {
+                "note": "Add `RevertError`, `StringRevertError`, `AnyRevertError` types and associated utilities",
+                "pr": 1761
             }
         ]
     },
