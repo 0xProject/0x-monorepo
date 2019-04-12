@@ -41,6 +41,28 @@ export class SignatureError extends RevertError {
     }
 }
 
+export class SignatureValidatorError extends RevertError {
+    constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
+        super('SignatureValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)', {
+            hash,
+            signer,
+            signature,
+            errorData,
+        });
+    }
+}
+
+export class SignatureWalletError extends RevertError {
+    constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
+        super('SignatureWalletError(bytes32 hash, address signer, bytes signature, bytes errorData)', {
+            hash,
+            signer,
+            signature,
+            errorData,
+        });
+    }
+}
+
 export class OrderStatusError extends RevertError {
     constructor(status?: OrderStatus, orderHash?: string) {
         super('OrderStatusError(uint8 status, bytes32 orderHash)', { status, orderHash });
@@ -98,11 +120,11 @@ export class AssetProxyDispatchError extends RevertError {
 }
 
 export class AssetProxyTransferError extends RevertError {
-    constructor(orderHash?: string, assetData?: string, errorMessage?: string) {
-        super('AssetProxyTransferError(bytes32 orderHash, bytes assetData, string errorMessage)', {
+    constructor(orderHash?: string, assetData?: string, errorData?: string) {
+        super('AssetProxyTransferError(bytes32 orderHash, bytes assetData, bytes errorData)', {
             orderHash,
             assetData,
-            errorMessage,
+            errorData,
         });
     }
 }
@@ -144,6 +166,8 @@ export class IncompleteFillError extends RevertError {
 const types = [
     OrderStatusError,
     SignatureError,
+    SignatureWalletError,
+    SignatureValidatorError,
     InvalidSenderError,
     InvalidTakerError,
     InvalidMakerError,
