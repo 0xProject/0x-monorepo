@@ -32,7 +32,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -298,11 +298,11 @@ describe('Exchange core', () => {
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             signedOrder.signature = `0x0${SignatureType.Wallet}`;
-            const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.WalletError,
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signedOrder.signature,
+                constants.NULL_BYTES,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -317,11 +317,11 @@ describe('Exchange core', () => {
             );
             signedOrder.signature = `${maliciousValidator.address}0${SignatureType.Validator}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.ValidatorError,
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signedOrder.signature,
+                constants.NULL_BYTES,
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
@@ -706,7 +706,7 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.makerAssetData,
-                RevertReason.TransferFailed,
+                new StringRevertError(RevertReason.TransferFailed).encode(),
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(expectedError);
@@ -733,7 +733,7 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.takerAssetData,
-                RevertReason.TransferFailed,
+                new StringRevertError(RevertReason.TransferFailed).encode(),
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(expectedError);
@@ -760,7 +760,7 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.makerAssetData,
-                RevertReason.InvalidAmount,
+                new StringRevertError(RevertReason.InvalidAmount).encode(),
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(expectedError);
@@ -787,7 +787,7 @@ describe('Exchange core', () => {
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
                 orderHashHex,
                 signedOrder.takerAssetData,
-                RevertReason.InvalidAmount,
+                new StringRevertError(RevertReason.InvalidAmount).encode(),
             );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(expectedError);

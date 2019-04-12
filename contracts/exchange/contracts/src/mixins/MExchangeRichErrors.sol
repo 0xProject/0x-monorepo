@@ -36,9 +36,7 @@ contract MExchangeRichErrors is
         BAD_SIGNATURE,
         INVALID_LENGTH,
         UNSUPPORTED,
-        ILLEGAL,
-        WALLET_ERROR,
-        VALIDATOR_ERROR
+        ILLEGAL
     }
 
     enum AssetProxyDispatchErrorCodes {
@@ -60,6 +58,32 @@ contract MExchangeRichErrors is
         bytes32 orderHash,
         address signer,
         bytes memory signature
+    )
+        internal
+        pure
+        returns (bytes memory);
+
+    bytes4 internal constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
+        bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"));
+
+    function SignatureValidatorError(
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory);
+
+    bytes4 internal constant SIGNATURE_WALLET_ERROR_SELECTOR =
+        bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"));
+
+    function SignatureWalletError(
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature,
+        bytes memory errorData
     )
         internal
         pure
@@ -155,12 +179,12 @@ contract MExchangeRichErrors is
         returns (bytes memory);
 
     bytes4 internal constant ASSET_PROXY_TRANSFER_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyTransferError(bytes32,bytes,string)"));
+        bytes4(keccak256("AssetProxyTransferError(bytes32,bytes,bytes)"));
 
     function AssetProxyTransferError(
         bytes32 orderHash,
         bytes memory assetData,
-        string memory errorMessage
+        bytes memory errorData
     )
         internal
         pure
