@@ -21,7 +21,7 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/team/willw.jpg',
         name: 'Will Warren',
-        title: 'co-founder & CEO',
+        title: 'Co-founder & CEO',
     },
     {
         imageUrl: '/images/team/amirb.jpg',
@@ -31,142 +31,147 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/team/fabiob.jpg',
         name: 'Fabio Berger',
-        title: 'engineering manager',
+        title: 'Engineering Manager',
     },
     {
         imageUrl: '/images/team/alexv.jpg',
         name: 'Alex Xu',
-        title: 'Director of operations',
+        title: 'Director of Operations',
     },
     {
         imageUrl: '/images/team/leol.jpg',
         name: 'Leonid Logvinov',
-        title: 'engineer',
+        title: 'Engineer',
     },
     {
         imageUrl: '/images/team/benb.jpg',
         name: 'Ben Burns',
-        title: 'designer',
+        title: 'Designer',
     },
     {
         imageUrl: '/images/team/brandonm.jpg',
         name: 'Brandon Millman',
-        title: 'senior engineer',
+        title: 'Senior Engineer',
     },
     {
         imageUrl: '/images/team/toms.jpg',
         name: 'Tom Schmidt',
-        title: 'product lead',
+        title: 'Product Lead',
     },
     {
         imageUrl: '/images/team/jacobe.jpg',
         name: 'Jacob Evans',
-        title: 'ecosystem engineer',
+        title: 'Ecosystem Engineer',
     },
     {
         imageUrl: '/images/team/blake.jpg',
         name: 'Blake Henderson',
-        title: 'ecosystem programs lead',
+        title: 'Ecosystem Programs Lead',
     },
     {
         imageUrl: '/images/team/zack.jpg',
         name: 'Zack Skelly',
-        title: 'lead recruiter',
+        title: 'Lead Recruiter',
     },
     {
         imageUrl: '/images/team/greg.jpg',
         name: 'Greg Hysen',
-        title: 'blockchain engineer',
+        title: 'Blockchain Engineer',
     },
     {
         imageUrl: '/images/team/remcoB.jpg',
         name: 'Remco Bloemen',
-        title: 'technical fellow',
+        title: 'Technical Fellow',
     },
     {
         imageUrl: '/images/team/francesco.jpg',
         name: 'Francesco Agosti',
-        title: 'engineer',
+        title: 'Engineer',
     },
     {
         imageUrl: '/images/team/melo.jpg',
         name: 'Mel Oberto',
-        title: 'people operations specialist',
-    },
-    {
-        imageUrl: '/images/team/alexb.jpg',
-        name: 'Alex Browne',
-        title: 'senior engineer',
-    },
-    {
-        imageUrl: '/images/team/peterz.jpg',
-        name: 'Peter Zeitz',
-        title: 'research fellow',
+        title: 'People Operations Specialist',
     },
     {
         imageUrl: '/images/team/chrisk.jpg',
         name: 'Chris Kalani',
-        title: 'director of design',
+        title: 'Director of Design',
+    },
+    {
+        imageUrl: '/images/team/alexb.jpg',
+        name: 'Alex Browne',
+        title: 'Senior Engineer',
+    },
+    {
+        imageUrl: '/images/team/peterz.jpg',
+        name: 'Peter Zeitz',
+        title: 'Research Fellow',
     },
     {
         imageUrl: '/images/team/clayr.jpg',
         name: 'Clay Robbins',
-        title: 'ecosystem development lead',
+        title: 'Ecosystem Development Lead',
     },
     {
         imageUrl: '/images/team/mattt.jpg',
         name: 'Matt Taylor',
-        title: 'marketing lead',
+        title: 'Marketing Lead',
     },
     {
         imageUrl: '/images/team/eugenea.jpg',
         name: 'Eugene Aumson',
-        title: 'engineer',
+        title: 'Engineer',
     },
     {
         imageUrl: '/images/team/weijew.jpg',
         name: 'Weijie Wu',
-        title: 'research fellow',
+        title: 'Research Fellow',
     },
     {
         imageUrl: '/images/team/rahuls.jpg',
         name: 'Rahul Singireddy',
-        title: 'relayer success manager',
+        title: 'Relayer Success Manager',
     },
     {
         imageUrl: '/images/team/jasons.jpg',
         name: 'Jason Somensatto',
-        title: 'strategic legal counsel',
+        title: 'Strategic Legal Counsel',
     },
     {
         imageUrl: '/images/team/steve.jpg',
         name: 'Steve Klebanoff',
-        title: 'senior engineer',
+        title: 'Senior Engineer',
     },
     {
         imageUrl: '/images/team/xiannyn.jpg',
         name: 'Xianny Ng',
-        title: 'engineer',
+        title: 'Engineer',
     },
     {
         imageUrl: '/images/team/brento.jpg',
         name: 'Brent Oshiro',
-        title: 'community engagement lead',
+        title: 'Community Engagement Lead',
     },
     {
         imageUrl: '/images/team/marcs.jpg',
         name: 'Marc Savino',
-        title: 'technical sourcer',
+        title: 'Technical Sourcer',
     },
     {
         imageUrl: '/images/team/danielp.png',
         name: 'Daniel Pyrathon',
-        title: 'engineer',
+        title: 'Engineer',
     },
     {
         imageUrl: '/images/team/lawrencef.jpg',
         name: 'Lawrence Forman',
-        title: 'engineer',
+        title: 'Engineer',
+    },
+    {
+        imageUrl: '/images/team/paulv.jpg',
+        name: 'Paul Vienhage',
+        title: 'Research Engineer',
     },
 ];
 
@@ -254,7 +259,7 @@ const Member = ({ name, title, imageUrl }: TeamMember) => (
     <StyledMember>
         <img src={imageUrl} alt={name} />
         <Name>{name}</Name>
-        <MemberTitle isMuted={0.5} size={14} style={{ textTransform: 'capitalize' }}>
+        <MemberTitle isMuted={0.5} size={14}>
             {title}
         </MemberTitle>
     </StyledMember>
