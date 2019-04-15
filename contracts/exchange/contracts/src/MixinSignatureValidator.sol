@@ -127,7 +127,7 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        SignatureType signatureType = readValidSignatureType(signature);
+        SignatureType signatureType = readValidSignatureType(hash, signerAddress, signature);
         // Only hash-compatible signature types can be handled by this
         // function.
         if (signatureType == SignatureType.OrderValidator) {
@@ -163,10 +163,10 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        SignatureType signatureType = readValidSignatureType(signature);
+        SignatureType signatureType = readValidSignatureType(orderHash, signerAddress, signature);
         if (signatureType == SignatureType.OrderValidator) {
             // The entire order is verified by validator contract.
-            isValid = isValidOrderValidatorSignature(
+            isValid = validateOrderValidatorSignature(
                 order,
                 orderHash,
                 signerAddress,
@@ -183,168 +183,10 @@ contract MixinSignatureValidator is
         );
     }
 
-    /// @dev Verifies signature using logic defined by Wallet contract.
-    /// @param hash Any 32 byte hash.
-    /// @param walletAddress Address that should have signed the given hash
-    ///                      and defines its own signature verification method.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if signature is valid for given wallet..
-    function isValidWalletSignature(
-        bytes32 hash,
-        address walletAddress,
-        bytes memory signature
-    )
-        private
-        view
-        returns (bool isValid)
-    {
-        uint256 signatureLength = signature.length;
-        // Shave the signature type off the signature.
-        assembly {
-            mstore(signature, sub(signatureLength, 1))
-        }
-        // Encode the call data.
-        bytes memory callData = abi.encodeWithSelector(
-            IWallet(walletAddress).isValidSignature.selector,
-            hash,
-            signature
-        );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32)
-            return returnData.readUint256(0) != 0;
-        // Static call to verifier failed.
-        rrevert(SignatureError(
-            SignatureErrorCodes.WALLET_ERROR,
-            hash,
-            walletAddress,
-            signature
-        ));
-    }
-
-    /// @dev Verifies signature using logic defined by Validator contract.
-    ///      If used with an order, the maker of the order can still be an EOA.
-    /// @param hash Any 32 byte hash.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function isValidValidatorSignature(
-        bytes32 hash,
-        address signerAddress,
-        bytes memory signature
-    )
-        private
-        view
-        returns (bool isValid)
-    {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 20     | Address of validator contract   |
-        // | 0x14 + x | 1      | Signature type is always "\x06" |
-
-        uint256 signatureLength = signature.length;
-        // Read the validator address from the signature.
-        address validatorAddress = signature.readAddress(signatureLength - 21);
-        // Ensure signer has approved validator.
-        if (!allowedValidators[signerAddress][validatorAddress]) {
-            return false;
-        }
-        // Shave the validator address and signature type from the signature.
-        assembly {
-            mstore(signature, sub(signatureLength, 21))
-        }
-        // Encode the call data.
-        bytes memory callData = abi.encodeWithSelector(
-            IValidator(validatorAddress).isValidSignature.selector,
-            hash,
-            signerAddress,
-            signature
-        );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
-        // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32)
-            return returnData.readUint256(0) != 0;
-        // Static call to verifier failed.
-        rrevert(SignatureError(
-            SignatureErrorCodes.VALIDATOR_ERROR,
-            hash,
-            signerAddress,
-            signature
-        ));
-    }
-
-    /// @dev Verifies order AND signature via Validator contract.
-    ///      If used with an order, the maker of the order can still be an EOA.
-    /// @param order The order.
-    /// @param orderHash The order hash.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function isValidOrderValidatorSignature(
-        Order memory order,
-        bytes32 orderHash,
-        address signerAddress,
-        bytes memory signature
-    )
-        private
-        view
-        returns (bool isValid)
-    {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 20     | Address of validator contract   |
-        // | 0x14 + x | 1      | Signature type is always "\x07" |
-
-        uint256 signatureLength = signature.length;
-        // Read the validator address from the signature.
-        address validatorAddress = signature.readAddress(signatureLength - 21);
-        // Ensure signer has approved validator.
-        if (!allowedValidators[signerAddress][validatorAddress]) {
-            return false;
-        }
-        // Shave the validator address and signature type from the signature.
-        assembly {
-            mstore(signature, sub(signatureLength, 21))
-        }
-        // Encode the call data.
-        bytes memory callData = abi.encodeWithSelector(
-            IValidator(validatorAddress).isValidOrder.selector,
-            order,
-            signerAddress,
-            signature
-        );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
-        // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32)
-            return returnData.readUint256(0) != 0;
-        // Static call to verifier failed.
-        rrevert(SignatureError(
-            SignatureErrorCodes.ORDER_VALIDATOR_ERROR,
-            orderHash,
-            signerAddress,
-            signature
-        ));
-    }
-
-    /// Pops the `SignatureType` from the end of a signature and validates it.
+    /// Reads the `SignatureType` from the end of a signature and validates it.
     function readValidSignatureType(
+        bytes32 hash,
+        address signerAddress,
         bytes memory signature
     )
         private
@@ -378,7 +220,7 @@ contract MixinSignatureValidator is
         // signature array with invalid type or length. We may as well make
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
-        if (SignatureType(signatureType) == SignatureType.Illegal) {
+        if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
             rrevert(SignatureError(
                 SignatureErrorCodes.ILLEGAL,
                 hash,
@@ -388,6 +230,170 @@ contract MixinSignatureValidator is
         }
 
         return SignatureType(signatureTypeRaw);
+    }
+
+    /// @dev Verifies signature using logic defined by Wallet contract.
+    /// @param hash Any 32 byte hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own signature verification method.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if signature is valid for given wallet..
+    function validateWalletSignature(
+        bytes32 hash,
+        address walletAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        uint256 signatureLength = signature.length;
+        // Shave the signature type off the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 1))
+        }
+        // Encode the call data.
+        bytes memory callData = abi.encodeWithSelector(
+            IWallet(walletAddress).isValidSignature.selector,
+            hash,
+            signature
+        );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Return data should be a single bool.
+        if (didSucceed && returnData.length == 32) {
+            return returnData.readUint256(0) == 1;
+        }
+        // Static call to verifier failed.
+        rrevert(SignatureWalletError(
+            hash,
+            walletAddress,
+            signature,
+            returnData
+        ));
+    }
+
+    /// @dev Verifies signature using logic defined by Validator contract.
+    /// @param hash Any 32 byte hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the address recovered from the provided signature matches the input signer address.
+    function validateValidatorSignature(
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        // If used with an order, the maker of the order can still be an EOA.
+        // A signature using this type should be encoded as:
+        // | Offset   | Length | Contents                        |
+        // | 0x00     | x      | Signature to validate           |
+        // | 0x00 + x | 20     | Address of validator contract   |
+        // | 0x14 + x | 1      | Signature type is always "\x06" |
+
+        uint256 signatureLength = signature.length;
+        // Read the validator address from the signature.
+        address validatorAddress = signature.readAddress(signatureLength - 21);
+        // Ensure signer has approved validator.
+        if (!allowedValidators[signerAddress][validatorAddress]) {
+            return false;
+        }
+        // Shave the validator address and signature type from the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 21))
+        }
+        // Encode the call data.
+        bytes memory callData = abi.encodeWithSelector(
+            IValidator(validatorAddress).isValidSignature.selector,
+            hash,
+            signerAddress,
+            signature
+        );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
+        // Return data should be a single bool.
+        if (didSucceed && returnData.length == 32) {
+            return returnData.readUint256(0) == 1;
+        }
+        // Static call to verifier failed.
+        rrevert(SignatureValidatorError(
+            hash,
+            signerAddress,
+            signature,
+            returnData
+        ));
+    }
+
+    /// @dev Verifies order AND signature via Validator contract.
+    ///      If used with an order, the maker of the order can still be an EOA.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the address recovered from the provided signature matches the input signer address.
+    function validateOrderValidatorSignature(
+        Order memory order,
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        // A signature using this type should be encoded as:
+        // | Offset   | Length | Contents                        |
+        // | 0x00     | x      | Signature to validate           |
+        // | 0x00 + x | 20     | Address of validator contract   |
+        // | 0x14 + x | 1      | Signature type is always "\x07" |
+
+        uint256 signatureLength = signature.length;
+        // Read the validator address from the signature.
+        address validatorAddress = signature.readAddress(signatureLength - 21);
+        // Ensure signer has approved validator.
+        if (!allowedValidators[signerAddress][validatorAddress]) {
+            return false;
+        }
+        // Shave the validator address and signature type from the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 21))
+        }
+        // Encode the call data.
+        bytes memory callData = abi.encodeWithSelector(
+            IValidator(validatorAddress).isValidOrderSignature.selector,
+            order,
+            orderHash,
+            signerAddress,
+            signature
+        );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
+        // Return data should be a single bool.
+        if (didSucceed && returnData.length == 32) {
+            return returnData.readUint256(0) == 1;
+        }
+        // Static call to verifier failed.
+        rrevert(SignatureOrderValidatorError(
+            orderHash,
+            signerAddress,
+            signature,
+            returnData
+        ));
     }
 
     /// Validates a hash-compatible signature type
@@ -468,7 +474,7 @@ contract MixinSignatureValidator is
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = isValidWalletSignature(
+            isValid = validateWalletSignature(
                 hash,
                 signerAddress,
                 signature
@@ -478,7 +484,7 @@ contract MixinSignatureValidator is
         // Signature verified by validator contract.
         // If used with an order, the maker of the order can still be an EOA.
         } else if (signatureType == SignatureType.Validator) {
-            isValid = isValidValidatorSignature(
+            isValid = validateValidatorSignature(
                 hash,
                 signerAddress,
                 signature

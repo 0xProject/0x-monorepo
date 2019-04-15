@@ -44,4 +44,21 @@ contract MSignatureValidator is
         OrderValidator,  // 0x07
         NSignatureTypes  // 0x08, number of signature types. Always leave at end.
     }
+
+    /// @dev Verifies that an order, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param order The order.
+    /// @param orderHash The hash of the order.
+    /// @param signerAddress Address that should have signed the.Signat given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the signature is valid for the given hash and signer.
+    function isValidOrderWithHashSignature(
+        LibOrder.Order memory order,
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid);
 }

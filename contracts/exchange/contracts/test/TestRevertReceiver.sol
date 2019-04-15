@@ -17,7 +17,9 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 
 
@@ -48,6 +50,24 @@ contract TestRevertReceiver {
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
+        bytes calldata signature
+    )
+        external
+        returns (bool isValid)
+    {
+        revert(REVERT_REASON);
+    }
+
+    /// @dev Reverts with `REVERT_REASON`. Intended to be used with `OrderValidator` signature type.
+    /// @param order The order.
+    /// @param hash Message hash that is signed.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of order signature.
+    function isValidOrderSignature(
+        LibOrder.Order calldata order,
+        bytes32 hash,
+        address signerAddress,
         bytes calldata signature
     )
         external

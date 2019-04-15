@@ -31,8 +31,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe.only('MixinSignatureValidator', () => {
-    const REVERT_REASON = 'you shall not pass';
+describe('MixinSignatureValidator', () => {
     let chainId: number;
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
@@ -43,6 +42,7 @@ describe.only('MixinSignatureValidator', () => {
     let maliciousValidator: TestStaticCallReceiverContract;
     let revertingWallet: TestRevertReceiverContract;
     let revertingValidator: TestRevertReceiverContract;
+    let externalRevertReason: string;
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
@@ -89,6 +89,8 @@ describe.only('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
+        externalRevertReason = await revertingWallet.REVERT_REASON.callAsync();
+
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
@@ -152,11 +154,7 @@ describe.only('MixinSignatureValidator', () => {
                 signedOrder.makerAddress,
                 emptySignature,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signedOrder.makerAddress,
-                emptySignature,
-            );
+            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, emptySignature);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -170,11 +168,7 @@ describe.only('MixinSignatureValidator', () => {
                 signedOrder.makerAddress,
                 unsupportedSignatureHex,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signedOrder.makerAddress,
-                unsupportedSignatureHex,
-            );
+            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, unsupportedSignatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -187,11 +181,7 @@ describe.only('MixinSignatureValidator', () => {
                 signedOrder.makerAddress,
                 illegalSignatureHex,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signedOrder.makerAddress,
-                illegalSignatureHex,
-            );
+            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, illegalSignatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -213,11 +203,7 @@ describe.only('MixinSignatureValidator', () => {
                 signedOrder.makerAddress,
                 signatureHex,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signedOrder.makerAddress,
-                signatureHex,
-            );
+            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -353,11 +339,7 @@ describe.only('MixinSignatureValidator', () => {
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                maliciousWallet.address,
-                signatureHex,
-            );
+            const tx = validateCallAsync(signedOrder, maliciousWallet.address, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -378,13 +360,9 @@ describe.only('MixinSignatureValidator', () => {
                 orderHashHex,
                 revertingWallet.address,
                 signatureHex,
-                new StringRevertError(REVERT_REASON).encode(),
+                new StringRevertError(externalRevertReason).encode(),
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                revertingWallet.address,
-                signatureHex,
-            );
+            const tx = validateCallAsync(signedOrder, revertingWallet.address, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -420,7 +398,7 @@ describe.only('MixinSignatureValidator', () => {
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex);
+            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -434,9 +412,9 @@ describe.only('MixinSignatureValidator', () => {
                 orderHashHex,
                 signedOrder.makerAddress,
                 signatureHex,
-                new StringRevertError(REVERT_REASON).encode(),
+                new StringRevertError(externalRevertReason).encode(),
             );
-            const tx = signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex);
+            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -499,7 +477,7 @@ describe.only('MixinSignatureValidator', () => {
             const inappropriateSignatureHex = `0x${Buffer.from([SignatureType.OrderValidator]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
+                ExchangeRevertErrors.SignatureErrorCode.InappropriateSignatureType,
                 orderHashHex,
                 signedOrder.makerAddress,
                 inappropriateSignatureHex,
@@ -582,17 +560,13 @@ describe.only('MixinSignatureValidator', () => {
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorError(
                 orderHashHex,
                 signedOrder.makerAddress,
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = await validateCallAsync(
-                signedOrder,
-                signerAddress,
-                signatureHex,
-            );
+            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 

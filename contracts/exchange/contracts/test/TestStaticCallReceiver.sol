@@ -45,14 +45,12 @@ contract TestStaticCallReceiver {
         return true;
     }
 
-    /// @dev Updates state and returns true. Intended to be used with `OrderValidator` signature type.
-    /// @param order The order.
-    /// @param signerAddress Address that should have signed the given hash.
+    /// @dev Updates state and returns true. Intended to be used with `Wallet` signature type.
+    /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
-    function isValidOrder(
-        LibOrder.Order calldata order,
-        address signerAddress,
+    function isValidSignature(
+        bytes32 hash,
         bytes calldata signature
     )
         external
@@ -62,12 +60,16 @@ contract TestStaticCallReceiver {
         return true;
     }
 
-    /// @dev Updates state and returns true. Intended to be used with `Wallet` signature type.
-    /// @param hash Message hash that is signed.
+    /// @dev Updates state and returns true. Intended to be used with `OrderValidator` signature type.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
-    function isValidSignature(
-        bytes32 hash,
+    function isValidOrderSignature(
+        LibOrder.Order calldata order,
+        bytes32 orderHash,
+        address signerAddress,
         bytes calldata signature
     )
         external

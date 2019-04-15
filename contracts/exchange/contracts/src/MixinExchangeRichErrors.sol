@@ -85,6 +85,25 @@ contract MixinExchangeRichErrors is
         );
     }
 
+    function SignatureOrderValidatorError(
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR,
+            orderHash,
+            signer,
+            signature,
+            errorData
+        );
+    }
+
     function OrderStatusError(
         LibOrder.OrderStatus orderStatus,
         bytes32 orderHash

@@ -39,24 +39,13 @@ contract IValidator {
         returns (bool isValid);
 
     /// @param order The order.
-    /// @param signerAddress Address that should have signed the given order.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidOrderSignature(
-        LibOrder.Order calldata order,
-        address signerAddress,
-        bytes calldata signature
-    )
-        external
-        view
-        returns (bool isValid);
-
-    /// @param order The order.
+    /// @param orderHash The order hash.
     /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof of signing.
     /// @return Validity of order.
-    function isValidOrder(
+    function isValidOrderSignature(
         LibOrder.Order calldata order,
+        bytes32 orderHash,
         address signerAddress,
         bytes calldata signature
     )

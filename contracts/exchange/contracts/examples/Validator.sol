@@ -57,13 +57,15 @@ contract Validator is
     // solhint-enable no-unused-vars
 
     // solhint-disable no-unused-vars
-    /// @dev Verifies that a signature is valid. `signer` must match `VALID_SIGNER`.
+    /// @dev Verifies that an order and signature is valid. `signer` must match `VALID_SIGNER`.
     /// @param order The order.
+    /// @param orderHash The order hash.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of signature.
-    function isValidOrder(
+    function isValidOrderSignature(
         LibOrder.Order calldata order,
+        bytes32 orderHash,
         address signerAddress,
         bytes calldata signature
     )
