@@ -13,6 +13,10 @@
             {
                 "note": "Add Exchange `RevertError` types to `ExchangeRevertErrors`",
                 "pr": 1761
+            },
+            {
+                "note": "Add `SignatureOrderValidatorError` types to `ExchangeRevertErrors`",
+                "pr": 1774
             }
         ]
     },
