@@ -19,12 +19,22 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "../interfaces/ITransactions.sol";
 
 
 contract MTransactions is
     ITransactions
 {
+    /// @dev Executes an Exchange method call in the context of signer.
+    /// @param transaction 0x transaction containing salt, signerAddress, and data.
+    /// @param signature Proof that transaction has been signed by signer.
+    function _executeTransaction(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes memory signature
+    )
+        internal
+        returns (bytes memory);
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
     ///      If calling a fill function, this address will represent the taker.
