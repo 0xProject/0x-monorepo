@@ -16,8 +16,7 @@ export enum SignatureErrorCode {
     InvalidLength,
     Unsupported,
     Illegal,
-    WalletError,
-    ValidatorError,
+    InappropriateSignatureType,
 }
 
 export enum AssetProxyDispatchErrorCode {
@@ -55,6 +54,17 @@ export class SignatureValidatorError extends RevertError {
 export class SignatureWalletError extends RevertError {
     constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
         super('SignatureWalletError(bytes32 hash, address signer, bytes signature, bytes errorData)', {
+            hash,
+            signer,
+            signature,
+            errorData,
+        });
+    }
+}
+
+export class SignatureOrderValidatorError extends RevertError {
+    constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
+        super('SignatureOrderValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)', {
             hash,
             signer,
             signature,
@@ -168,6 +178,7 @@ const types = [
     SignatureError,
     SignatureWalletError,
     SignatureValidatorError,
+    SignatureOrderValidatorError,
     InvalidSenderError,
     InvalidTakerError,
     InvalidMakerError,
