@@ -39,14 +39,45 @@ contract MixinTransactions is
     // Address of current transaction signer
     address public currentContextAddress;
 
-    /// @dev Executes an exchange method call in the context of signer.
+    /// @dev Executes an Exchange method call in the context of signer.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @param signature Proof of signer transaction by signer.
+    /// @param signature Proof that transaction has been signed by signer.
     function executeTransaction(
         ZeroExTransaction memory transaction,
         bytes memory signature
     )
         public
+        returns (bytes memory)
+    {
+        return _executeTransaction(transaction, signature);
+    }
+
+    /// @dev Executes a batch of Exchange method calls in the context of signer(s).
+    /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
+    /// @param signatures Array of proofs that transactions have been signed by signer(s).
+    function batchExecuteTransactions(
+        ZeroExTransaction[] memory transactions,
+        bytes[] memory signatures
+    )
+        public
+        returns (bytes[] memory)
+    {
+        uint256 length = transactions.length;
+        bytes[] memory returnData = new bytes[](length);
+        for (uint256 i = 0; i != length; i++) {
+            returnData[i] = _executeTransaction(transactions[i], signatures[i]);
+        }
+        return returnData;
+    }
+
+    /// @dev Executes an Exchange method call in the context of signer.
+    /// @param transaction 0x transaction containing salt, signerAddress, and data.
+    /// @param signature Proof that transaction has been signed by signer.
+    function _executeTransaction(
+        ZeroExTransaction memory transaction,
+        bytes memory signature
+    )
+        internal
         returns (bytes memory)
     {
         bytes32 transactionHash = getTransactionHash(transaction);
