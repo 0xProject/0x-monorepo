@@ -554,7 +554,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when `isValidSignature` attempts to update state and SignatureType=OrderValidator', async () => {
+        it('should revert when `isValidOrderSignature` attempts to update state and SignatureType=OrderValidator', async () => {
             const validatorAddress = ethUtil.toBuffer(`${maliciousValidator.address}`);
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
             const signature = Buffer.concat([validatorAddress, signatureType]);
@@ -565,6 +565,22 @@ describe('MixinSignatureValidator', () => {
                 signedOrder.makerAddress,
                 signatureHex,
                 constants.NULL_BYTES,
+            );
+            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert when `isValidOrderSignature` reverts and SignatureType=OrderValidator', async () => {
+            const validatorAddress = ethUtil.toBuffer(`${revertingValidator.address}`);
+            const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
+            const signature = Buffer.concat([validatorAddress, signatureType]);
+            const signatureHex = ethUtil.bufferToHex(signature);
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorError(
+                orderHashHex,
+                signedOrder.makerAddress,
+                signatureHex,
+                new StringRevertError(externalRevertReason).encode(),
             );
             const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
