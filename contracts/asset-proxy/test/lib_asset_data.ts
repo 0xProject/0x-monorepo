@@ -210,7 +210,7 @@ describe('LibAssetData', () => {
         ]);
     });
 
-    it('should query ERC20 balance', async () => {
+    it('should query ERC20 balance by asset data', async () => {
         expect(
             await libAssetData.balanceOf.callAsync(
                 tokenOwnerAddress,
@@ -219,7 +219,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(erc20TokenTotalSupply);
     });
 
-    it('should query ERC721 balance', async () => {
+    it('should query ERC721 balance by asset data', async () => {
         expect(
             await libAssetData.balanceOf.callAsync(
                 tokenOwnerAddress,
@@ -228,7 +228,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(numberOfERC721Tokens);
     });
 
-    it('should query ERC1155 balanceOfBatch', async () => {
+    it('should query ERC1155 balanceOfBatch by asset data', async () => {
         expect(
             await libAssetData.balanceOf.callAsync(
                 tokenOwnerAddress,
@@ -242,7 +242,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(1);
     });
 
-    it('should query multi-asset batch balance', async () => {
+    it('should query multi-asset batch balance by asset data', async () => {
         expect(
             await libAssetData.balanceOf.callAsync(
                 tokenOwnerAddress,
@@ -257,7 +257,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(Math.min(erc20TokenTotalSupply.toNumber(), numberOfERC721Tokens));
     });
 
-    it('should query ERC20 allowances', async () => {
+    it('should query ERC20 allowances by asset data', async () => {
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC20TokenContract(
                 erc20Artifacts.IERC20Token.compilerOutput.abi,
@@ -275,7 +275,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(1);
     });
 
-    it('should query ERC721 allowances', async () => {
+    it('should query ERC721 allowances by asset data', async () => {
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC721TokenContract(
                 erc721Artifacts.IERC721Token.compilerOutput.abi,
@@ -293,7 +293,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(1);
     });
 
-    it('should query ERC1155 allowances', async () => {
+    it('should query ERC1155 allowances by asset data', async () => {
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC1155MintableContract(
                 erc1155Artifacts.IERC1155Mintable.compilerOutput.abi,
@@ -316,7 +316,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(1);
     });
 
-    it('should query multi-asset allowances', async () => {
+    it('should query multi-asset allowances by asset data', async () => {
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC20TokenContract(
                 erc20Artifacts.IERC20Token.compilerOutput.abi,
