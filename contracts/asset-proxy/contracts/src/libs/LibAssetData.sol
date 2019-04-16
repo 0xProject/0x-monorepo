@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 
 
 library LibAssetData {
@@ -38,6 +39,8 @@ library LibAssetData {
 
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
+        } else if (proxyId == ERC721_PROXY_ID) {
+            return IERC721Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
         } else {
             revert("Unsupported proxy identifier");
         }

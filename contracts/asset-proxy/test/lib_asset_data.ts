@@ -1,7 +1,8 @@
 import * as chai from 'chai';
 
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
+import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -51,6 +52,10 @@ describe('LibAssetData', () => {
     let erc20TokenAddress: string;
     const erc20TokenTotalSupply = new BigNumber(1);
 
+    let erc721TokenAddress: string;
+    const firstERC721TokenId = new BigNumber(1);
+    const numberOfERC721Tokens = 10;
+
     before(async () => {
         await blockchainLifecycle.startAsync();
         libAssetData = await LibAssetDataContract.deployFrom0xArtifactAsync(
@@ -70,6 +75,29 @@ describe('LibAssetData', () => {
             new BigNumber(1),
             erc20TokenTotalSupply,
         )).address;
+
+        const erc721TokenContract = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
+            erc721Artifacts.DummyERC721Token,
+            provider,
+            txDefaults,
+            'Dummy',
+            'DUM',
+        );
+        erc721TokenAddress = erc721TokenContract.address;
+        // mint `numberOfERC721Tokens` tokens
+        const transactionMinedPromises = [];
+        for (let i = 0; i < numberOfERC721Tokens; i++) {
+            transactionMinedPromises.push(
+                web3Wrapper.awaitTransactionSuccessAsync(
+                    await erc721TokenContract.mint.sendTransactionAsync(
+                        tokenOwnerAddress,
+                        firstERC721TokenId.plus(i - 1),
+                    ),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                ),
+            );
+        }
+        await Promise.all(transactionMinedPromises);
     });
 
     after(async () => {
@@ -155,5 +183,14 @@ describe('LibAssetData', () => {
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
             ),
         ).to.bignumber.equal(erc20TokenTotalSupply);
+    });
+
+    it('should query ERC721 balance', async () => {
+        expect(
+            await libAssetData.balanceOf.callAsync(
+                tokenOwnerAddress,
+                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+            ),
+        ).to.bignumber.equal(numberOfERC721Tokens);
     });
 });
