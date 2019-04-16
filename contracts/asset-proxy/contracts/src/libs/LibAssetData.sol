@@ -24,6 +24,7 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 library LibAssetData {
     bytes4 constant public ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant public ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
 
     function encodeERC20AssetData(address tokenAddress)
         public
@@ -46,5 +47,33 @@ library LibAssetData {
         require(proxyId == ERC20_PROXY_ID);
 
         tokenAddress = LibBytes.readAddress(assetData, 16);
+    }
+
+    function encodeERC721AssetData(
+        address tokenAddress,
+        uint256 tokenId
+    )
+        public
+        pure
+        returns (bytes memory assetData)
+    {
+        return abi.encodeWithSelector(ERC721_PROXY_ID, tokenAddress, tokenId);
+    }
+
+    function decodeERC721AssetData(bytes memory assetData)
+        public
+        pure
+        returns (
+            bytes4 proxyId,
+            address tokenAddress,
+            uint256 tokenId
+        )
+    {
+        proxyId = LibBytes.readBytes4(assetData, 0);
+
+        require(proxyId == ERC721_PROXY_ID);
+
+        tokenAddress = LibBytes.readAddress(assetData, 16);
+        tokenId = LibBytes.readUint256(assetData, 36);
     }
 }
