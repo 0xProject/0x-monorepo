@@ -81,6 +81,16 @@ library LibAssetData {
 
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).allowance(owner, spender);
+        } else if (proxyId == ERC721_PROXY_ID) {
+            (address tokenAddress, uint256 tokenId) = abi.decode(
+                LibBytes.slice(assetData, 4, assetData.length),
+                (address, uint256)
+            );
+            if (spender == IERC721Token(tokenAddress).getApproved(tokenId)) {
+                return 1;
+            } else {
+                return 0;
+            }
         } else {
             revert("Unsupported proxy identifier");
         }

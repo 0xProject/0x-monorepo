@@ -7,7 +7,7 @@ import {
     ERC1155TransferSingleEventArgs,
 } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, IERC20TokenContract } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { artifacts as erc721Artifacts, DummyERC721TokenContract, IERC721TokenContract } from '@0x/contracts-erc721';
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
@@ -267,6 +267,21 @@ describe('LibAssetData', () => {
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+            ),
+        ).to.bignumber.equal(1);
+    });
+
+    it('should query ERC721 allowances', async () => {
+        new IERC721TokenContract(
+            erc721Artifacts.IERC721Token.compilerOutput.abi,
+            erc721TokenAddress,
+            provider,
+        ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress });
+        expect(
+            await libAssetData.allowance.callAsync(
+                tokenOwnerAddress,
+                approvedSpenderAddress,
+                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ),
         ).to.bignumber.equal(1);
     });
