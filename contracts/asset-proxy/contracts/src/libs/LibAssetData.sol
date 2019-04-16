@@ -102,6 +102,20 @@ library LibAssetData {
             } else {
                 return 0;
             }
+        } else if (proxyId == MULTI_ASSET_PROXY_ID) {
+            uint256 lowestAssetAllowance = ~uint256(0);
+            // solhint-disable-next-line
+            (, bytes[] memory nestedAssetData) = abi.decode(assetDataBody, (uint256[], bytes[]));
+            for (uint256 i = 0; i < nestedAssetData.length; i++) {
+                uint256 assetAllowance = allowance(owner, spender, nestedAssetData[i]);
+                if (assetAllowance < lowestAssetAllowance) {
+                    lowestAssetAllowance = assetAllowance;
+                }
+            }
+            if (lowestAssetAllowance == ~uint256(0)) {
+                lowestAssetAllowance = 0;
+            }
+            return lowestAssetAllowance;
         } else {
             revert("Unsupported proxy identifier");
         }

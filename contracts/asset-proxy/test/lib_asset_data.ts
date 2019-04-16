@@ -315,4 +315,37 @@ describe('LibAssetData', () => {
             ),
         ).to.bignumber.equal(1);
     });
+
+    it('should query multi-asset allowances', async () => {
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC20TokenContract(
+                erc20Artifacts.IERC20Token.compilerOutput.abi,
+                erc20TokenAddress,
+                provider,
+            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC721TokenContract(
+                erc721Artifacts.IERC721Token.compilerOutput.abi,
+                erc721TokenAddress,
+                provider,
+            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        expect(
+            await libAssetData.allowance.callAsync(
+                tokenOwnerAddress,
+                approvedSpenderAddress,
+                await libAssetData.encodeMultiAssetData.callAsync(
+                    [new BigNumber(1), new BigNumber(1)],
+                    [
+                        await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                        await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                    ],
+                ),
+            ),
+        ).to.bignumber.equal(1);
+        return;
+    });
 });
