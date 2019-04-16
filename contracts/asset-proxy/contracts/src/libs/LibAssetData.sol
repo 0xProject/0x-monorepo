@@ -67,6 +67,9 @@ library LibAssetData {
                     lowestAssetBalance = assetBalance;
                 }
             }
+            if (lowestAssetBalance == ~uint256(0)) {
+                lowestAssetBalance = 0;
+            }
             return lowestAssetBalance;
         } else {
             revert("Unsupported proxy identifier");
