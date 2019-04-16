@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155Mintable.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 
@@ -41,6 +42,16 @@ library LibAssetData {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
         } else if (proxyId == ERC721_PROXY_ID) {
             return IERC721Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
+        } else if (proxyId == ERC1155_PROXY_ID) {
+            // solhint-disable-next-line
+            (address tokenAddress, uint256[] memory tokenIds, , ) = abi.decode(
+                LibBytes.slice(assetData, 4, assetData.length),
+                // solhint-disable-next-line
+                (address, uint256[], uint256[], bytes)
+            );
+            address[] memory owners = new address[](1);
+            owners[0] = owner;
+            return IERC1155Mintable(tokenAddress).balanceOfBatch(owners, tokenIds)[0];
         } else {
             revert("Unsupported proxy identifier");
         }

@@ -1,8 +1,14 @@
 import * as chai from 'chai';
+import { LogWithDecodedArgs } from 'ethereum-types';
 
+import {
+    artifacts as erc1155Artifacts,
+    ERC1155MintableContract,
+    ERC1155TransferSingleEventArgs,
+} from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -56,6 +62,9 @@ describe('LibAssetData', () => {
     const firstERC721TokenId = new BigNumber(1);
     const numberOfERC721Tokens = 10;
 
+    let erc1155MintableAddress: string;
+    let erc1155TokenId: BigNumber;
+
     before(async () => {
         await blockchainLifecycle.startAsync();
         libAssetData = await LibAssetDataContract.deployFrom0xArtifactAsync(
@@ -98,6 +107,29 @@ describe('LibAssetData', () => {
             );
         }
         await Promise.all(transactionMinedPromises);
+
+        const erc1155MintableContract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
+            erc1155Artifacts.ERC1155Mintable,
+            provider,
+            txDefaults,
+        );
+        erc1155MintableAddress = erc1155MintableContract.address;
+        // Somewhat re-inventing the wheel here, but the prior art currently
+        // exists only as an unexported test util in the erc1155 package
+        // (Erc1155Wrapper.mintFungibleTokensAsync() in erc1155/test/utils/).
+        // This is concise enough to justify duplication, but it sure is ugly.
+        // tslint:disable-next-line no-unnecessary-type-assertion
+        erc1155TokenId = ((await new LogDecoder(web3Wrapper, erc1155Artifacts).getTxWithDecodedLogsAsync(
+            await erc1155MintableContract.create.sendTransactionAsync('uri:Dummy', /*isNonFungible:*/ false),
+        )).logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>).args.id;
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc1155MintableContract.mintFungible.sendTransactionAsync(
+                erc1155TokenId,
+                [tokenOwnerAddress],
+                [new BigNumber(1)],
+            ),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
     });
 
     after(async () => {
@@ -192,5 +224,19 @@ describe('LibAssetData', () => {
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ),
         ).to.bignumber.equal(numberOfERC721Tokens);
+    });
+
+    it('should query ERC1155 balanceOfBatch', async () => {
+        expect(
+            await libAssetData.balanceOf.callAsync(
+                tokenOwnerAddress,
+                await libAssetData.encodeERC1155AssetData.callAsync(
+                    erc1155MintableAddress,
+                    [erc1155TokenId],
+                    [new BigNumber(1)], // token values
+                    '0x', // callback data
+                ),
+            ),
+        ).to.bignumber.equal(1);
     });
 });
