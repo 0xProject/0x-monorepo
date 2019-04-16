@@ -19,6 +19,32 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+
 
 library LibAssetData {
+    bytes4 constant public ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+
+    function encodeERC20AssetData(address tokenAddress)
+        public
+        pure
+        returns (bytes memory assetData)
+    {
+        return abi.encodeWithSelector(ERC20_PROXY_ID, tokenAddress);
+    }
+
+    function decodeERC20AssetData(bytes memory assetData)
+        public
+        pure
+        returns (
+            bytes4 proxyId,
+            address tokenAddress
+        )
+    {
+        proxyId = LibBytes.readBytes4(assetData, 0);
+
+        require(proxyId == ERC20_PROXY_ID);
+
+        tokenAddress = LibBytes.readAddress(assetData, 16);
+    }
 }
