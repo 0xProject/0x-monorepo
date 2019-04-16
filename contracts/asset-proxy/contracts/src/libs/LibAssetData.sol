@@ -54,13 +54,13 @@ library LibAssetData {
             owners[0] = owner;
             return IERC1155Mintable(tokenAddress).balanceOfBatch(owners, tokenIds)[0];
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
+            uint256 lowestAssetBalance = ~uint256(0);
             // solhint-disable-next-line
             (uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = abi.decode(
                 assetDataBody,
                 // solhint-disable-next-line
                 (uint256[], bytes[])
             );
-            uint256 lowestAssetBalance = ~uint256(0);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
                 uint256 assetBalance = balanceOf(owner, nestedAssetData[i]) / assetAmounts[i];
                 if (assetBalance < lowestAssetBalance) {
