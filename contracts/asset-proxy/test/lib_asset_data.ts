@@ -6,7 +6,7 @@ import {
     ERC1155MintableContract,
     ERC1155TransferSingleEventArgs,
 } from '@0x/contracts-erc1155';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, IERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
@@ -54,6 +54,7 @@ describe('LibAssetData', () => {
     let libAssetData: LibAssetDataContract;
 
     let tokenOwnerAddress: string;
+    let approvedSpenderAddress: string;
 
     let erc20TokenAddress: string;
     const erc20TokenTotalSupply = new BigNumber(1);
@@ -73,7 +74,7 @@ describe('LibAssetData', () => {
             txDefaults,
         );
 
-        tokenOwnerAddress = (await web3Wrapper.getAvailableAddressesAsync())[0];
+        [tokenOwnerAddress, approvedSpenderAddress] = await web3Wrapper.getAvailableAddressesAsync();
 
         erc20TokenAddress = (await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             erc20Artifacts.DummyERC20Token,
@@ -253,5 +254,20 @@ describe('LibAssetData', () => {
                 ),
             ),
         ).to.bignumber.equal(Math.min(erc20TokenTotalSupply.toNumber(), numberOfERC721Tokens));
+    });
+
+    it('should query ERC20 allowances', async () => {
+        new IERC20TokenContract(
+            erc20Artifacts.IERC20Token.compilerOutput.abi,
+            erc20TokenAddress,
+            provider,
+        ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress });
+        expect(
+            await libAssetData.allowance.callAsync(
+                tokenOwnerAddress,
+                approvedSpenderAddress,
+                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+            ),
+        ).to.bignumber.equal(1);
     });
 });

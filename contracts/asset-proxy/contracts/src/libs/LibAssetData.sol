@@ -71,6 +71,21 @@ library LibAssetData {
         }
     }
 
+    function allowance(address owner, address spender, bytes memory assetData)
+        // should we rename to getApproval()? "Allowance" seems out of vogue.
+        public
+        view
+        returns (uint256 amount)
+    {
+        bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
+
+        if (proxyId == ERC20_PROXY_ID) {
+            return IERC20Token(LibBytes.readAddress(assetData, 16)).allowance(owner, spender);
+        } else {
+            revert("Unsupported proxy identifier");
+        }
+    }
+
     function encodeERC20AssetData(address tokenAddress)
         public
         pure
