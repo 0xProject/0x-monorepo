@@ -26,6 +26,7 @@ library LibAssetData {
     bytes4 constant public ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
     bytes4 constant public ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
     bytes4 constant public ERC1155_PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
+    bytes4 constant public MULTI_ASSET_PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));
 
     function encodeERC20AssetData(address tokenAddress)
         public
@@ -110,5 +111,30 @@ library LibAssetData {
         (tokenAddress, tokenIds, tokenValues, callbackData) = abi.decode(
             LibBytes.slice(assetData, 4, assetData.length), (address, uint256[], uint256[], bytes)
         );
+    }
+
+    function encodeMultiAssetData(uint256[] memory amounts, bytes[] memory nestedAssetData)
+        public
+        pure
+        returns (bytes memory assetData)
+    {
+        assetData = abi.encodeWithSelector(MULTI_ASSET_PROXY_ID, amounts, nestedAssetData);
+    }
+
+    function decodeMultiAssetData(bytes memory assetData)
+        public
+        pure
+        returns (
+            bytes4 proxyId,
+            uint256[] memory amounts,
+            bytes[] memory nestedAssetData
+        )
+    {
+        proxyId = LibBytes.readBytes4(assetData, 0);
+
+        require(proxyId == MULTI_ASSET_PROXY_ID);
+
+        // solhint-disable-next-line
+        (amounts, nestedAssetData) = abi.decode(LibBytes.slice(assetData, 4, assetData.length), (uint256[], bytes[]));
     }
 }
