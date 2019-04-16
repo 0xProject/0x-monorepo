@@ -5,6 +5,7 @@ import {
     artifacts as erc1155Artifacts,
     ERC1155MintableContract,
     ERC1155TransferSingleEventArgs,
+    IERC1155MintableContract,
 } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, IERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract, IERC721TokenContract } from '@0x/contracts-erc721';
@@ -282,6 +283,26 @@ describe('LibAssetData', () => {
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+            ),
+        ).to.bignumber.equal(1);
+    });
+
+    it('should query ERC1155 allowances', async () => {
+        new IERC1155MintableContract(
+            erc1155Artifacts.IERC1155Mintable.compilerOutput.abi,
+            erc1155MintableAddress,
+            provider,
+        ).setApprovalForAll.sendTransactionAsync(approvedSpenderAddress, true, { from: tokenOwnerAddress });
+        expect(
+            await libAssetData.allowance.callAsync(
+                tokenOwnerAddress,
+                approvedSpenderAddress,
+                await libAssetData.encodeERC1155AssetData.callAsync(
+                    erc1155MintableAddress,
+                    [erc1155TokenId],
+                    [new BigNumber(1)],
+                    '0x',
+                ),
             ),
         ).to.bignumber.equal(1);
     });

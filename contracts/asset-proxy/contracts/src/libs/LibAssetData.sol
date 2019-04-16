@@ -91,6 +91,18 @@ library LibAssetData {
             } else {
                 return 0;
             }
+        } else if (proxyId == ERC1155_PROXY_ID) {
+            // solhint-disable-next-line
+            (address tokenAddress, , , ) = abi.decode(
+                LibBytes.slice(assetData, 4, assetData.length),
+                // solhint-disable-next-line
+                (address, uint256[], uint256[], bytes)
+            );
+            if (IERC1155(tokenAddress).isApprovedForAll(owner, spender)) {
+                return 1;
+            } else {
+                return 0;
+            }
         } else {
             revert("Unsupported proxy identifier");
         }
