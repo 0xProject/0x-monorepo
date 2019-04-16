@@ -239,4 +239,19 @@ describe('LibAssetData', () => {
             ),
         ).to.bignumber.equal(1);
     });
+
+    it('should query multi-asset batch balance', async () => {
+        expect(
+            await libAssetData.balanceOf.callAsync(
+                tokenOwnerAddress,
+                await libAssetData.encodeMultiAssetData.callAsync(
+                    [new BigNumber(1), new BigNumber(1)],
+                    [
+                        await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                        await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                    ],
+                ),
+            ),
+        ).to.bignumber.equal(Math.min(erc20TokenTotalSupply.toNumber(), numberOfERC721Tokens));
+    });
 });
