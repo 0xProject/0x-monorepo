@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
@@ -45,6 +46,11 @@ const KNOWN_MULTI_ASSET_ENCODING = {
 describe('LibAssetData', () => {
     let libAssetData: LibAssetDataContract;
 
+    let tokenOwnerAddress: string;
+
+    let erc20TokenAddress: string;
+    const erc20TokenTotalSupply = new BigNumber(1);
+
     before(async () => {
         await blockchainLifecycle.startAsync();
         libAssetData = await LibAssetDataContract.deployFrom0xArtifactAsync(
@@ -52,6 +58,18 @@ describe('LibAssetData', () => {
             provider,
             txDefaults,
         );
+
+        tokenOwnerAddress = (await web3Wrapper.getAvailableAddressesAsync())[0];
+
+        erc20TokenAddress = (await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            erc20Artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
+            'Dummy',
+            'DUM',
+            new BigNumber(1),
+            erc20TokenTotalSupply,
+        )).address;
     });
 
     after(async () => {
@@ -128,5 +146,14 @@ describe('LibAssetData', () => {
             KNOWN_MULTI_ASSET_ENCODING.amounts,
             KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
         ]);
+    });
+
+    it('should query ERC20 balance', async () => {
+        expect(
+            await libAssetData.balanceOf.callAsync(
+                tokenOwnerAddress,
+                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+            ),
+        ).to.bignumber.equal(erc20TokenTotalSupply);
     });
 });

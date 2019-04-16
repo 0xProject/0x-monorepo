@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 
 
 library LibAssetData {
@@ -27,6 +28,20 @@ library LibAssetData {
     bytes4 constant public ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
     bytes4 constant public ERC1155_PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
     bytes4 constant public MULTI_ASSET_PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));
+
+    function balanceOf(address owner, bytes memory assetData)
+        public
+        view
+        returns (uint256 amount)
+    {
+        bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
+
+        if (proxyId == ERC20_PROXY_ID) {
+            return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
+        } else {
+            revert("Unsupported proxy identifier");
+        }
+    }
 
     function encodeERC20AssetData(address tokenAddress)
         public
