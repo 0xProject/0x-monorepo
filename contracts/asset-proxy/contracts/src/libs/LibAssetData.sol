@@ -37,6 +37,7 @@ library LibAssetData {
         returns (uint256 amount)
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
+        bytes memory assetDataBody = LibBytes.slice(assetData, 4, assetData.length);
 
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
@@ -45,7 +46,7 @@ library LibAssetData {
         } else if (proxyId == ERC1155_PROXY_ID) {
             // solhint-disable-next-line
             (address tokenAddress, uint256[] memory tokenIds, , ) = abi.decode(
-                LibBytes.slice(assetData, 4, assetData.length),
+                assetDataBody,
                 // solhint-disable-next-line
                 (address, uint256[], uint256[], bytes)
             );
@@ -55,8 +56,9 @@ library LibAssetData {
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
             // solhint-disable-next-line
             (uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = abi.decode(
+                assetDataBody,
                 // solhint-disable-next-line
-                LibBytes.slice(assetData, 4, assetData.length), (uint256[], bytes[])
+                (uint256[], bytes[])
             );
             uint256 lowestAssetBalance = ~uint256(0);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
@@ -78,14 +80,12 @@ library LibAssetData {
         returns (uint256 amount)
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
+        bytes memory assetDataBody = LibBytes.slice(assetData, 4, assetData.length);
 
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).allowance(owner, spender);
         } else if (proxyId == ERC721_PROXY_ID) {
-            (address tokenAddress, uint256 tokenId) = abi.decode(
-                LibBytes.slice(assetData, 4, assetData.length),
-                (address, uint256)
-            );
+            (address tokenAddress, uint256 tokenId) = abi.decode(assetDataBody, (address, uint256));
             if (spender == IERC721Token(tokenAddress).getApproved(tokenId)) {
                 return 1;
             } else {
@@ -93,11 +93,7 @@ library LibAssetData {
             }
         } else if (proxyId == ERC1155_PROXY_ID) {
             // solhint-disable-next-line
-            (address tokenAddress, , , ) = abi.decode(
-                LibBytes.slice(assetData, 4, assetData.length),
-                // solhint-disable-next-line
-                (address, uint256[], uint256[], bytes)
-            );
+            (address tokenAddress, , , ) = abi.decode(assetDataBody, (address, uint256[], uint256[], bytes));
             if (IERC1155(tokenAddress).isApprovedForAll(owner, spender)) {
                 return 1;
             } else {
