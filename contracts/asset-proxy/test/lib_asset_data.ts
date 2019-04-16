@@ -258,11 +258,14 @@ describe('LibAssetData', () => {
     });
 
     it('should query ERC20 allowances', async () => {
-        new IERC20TokenContract(
-            erc20Artifacts.IERC20Token.compilerOutput.abi,
-            erc20TokenAddress,
-            provider,
-        ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress });
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC20TokenContract(
+                erc20Artifacts.IERC20Token.compilerOutput.abi,
+                erc20TokenAddress,
+                provider,
+            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
@@ -273,11 +276,14 @@ describe('LibAssetData', () => {
     });
 
     it('should query ERC721 allowances', async () => {
-        new IERC721TokenContract(
-            erc721Artifacts.IERC721Token.compilerOutput.abi,
-            erc721TokenAddress,
-            provider,
-        ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress });
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC721TokenContract(
+                erc721Artifacts.IERC721Token.compilerOutput.abi,
+                erc721TokenAddress,
+                provider,
+            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
@@ -288,11 +294,14 @@ describe('LibAssetData', () => {
     });
 
     it('should query ERC1155 allowances', async () => {
-        new IERC1155MintableContract(
-            erc1155Artifacts.IERC1155Mintable.compilerOutput.abi,
-            erc1155MintableAddress,
-            provider,
-        ).setApprovalForAll.sendTransactionAsync(approvedSpenderAddress, true, { from: tokenOwnerAddress });
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC1155MintableContract(
+                erc1155Artifacts.IERC1155Mintable.compilerOutput.abi,
+                erc1155MintableAddress,
+                provider,
+            ).setApprovalForAll.sendTransactionAsync(approvedSpenderAddress, true, { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
