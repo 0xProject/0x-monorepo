@@ -145,6 +145,17 @@ describe('LibAssetData', () => {
         );
     }
 
+    async function setERC721AllowanceAsync(): Promise<any> {
+        return web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC721TokenContract(
+                erc721Artifacts.IERC721Token.compilerOutput.abi,
+                erc721TokenAddress,
+                provider,
+            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+
     after(async () => {
         await blockchainLifecycle.revertAsync();
     });
@@ -280,14 +291,7 @@ describe('LibAssetData', () => {
     });
 
     it('should query ERC721 allowances by asset data', async () => {
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC721TokenContract(
-                erc721Artifacts.IERC721Token.compilerOutput.abi,
-                erc721TokenAddress,
-                provider,
-            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await setERC721AllowanceAsync();
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
@@ -322,14 +326,7 @@ describe('LibAssetData', () => {
 
     it('should query multi-asset allowances by asset data', async () => {
         await setERC20AllowanceAsync();
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC721TokenContract(
-                erc721Artifacts.IERC721Token.compilerOutput.abi,
-                erc721TokenAddress,
-                provider,
-            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await setERC721AllowanceAsync();
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
