@@ -1,3 +1,4 @@
+// TODO: change test titles to say "... from asset data"
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
@@ -69,6 +70,7 @@ describe('LibAssetData', () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
+
         libAssetData = await LibAssetDataContract.deployFrom0xArtifactAsync(
             artifacts.LibAssetData,
             provider,
@@ -341,5 +343,25 @@ describe('LibAssetData', () => {
             ),
         ).to.bignumber.equal(1);
         return;
+    });
+
+    it('should query balances for a batch of asset data strings', async () => {
+        expect(
+            await libAssetData.batchBalanceOf.callAsync(tokenOwnerAddress, [
+                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+            ]),
+        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(numberOfERC721Tokens)]);
+    });
+
+    it('should query allowances for a batch of asset data strings', async () => {
+        await setERC20AllowanceAsync();
+        await setERC721AllowanceAsync();
+        expect(
+            await libAssetData.batchAllowance.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
+                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+            ]),
+        ).to.deep.equal([new BigNumber(1), new BigNumber(1)]);
     });
 });

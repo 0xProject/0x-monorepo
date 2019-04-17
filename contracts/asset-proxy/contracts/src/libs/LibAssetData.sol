@@ -72,6 +72,17 @@ library LibAssetData {
         }
     }
 
+    function batchBalanceOf(address owner, bytes[] memory assetData)
+        public
+        view
+        returns (uint256[] memory amounts)
+    {
+        amounts = new uint256[](assetData.length);
+        for (uint256 i = 0; i < assetData.length; i++) {
+            amounts[i] = balanceOf(owner, assetData[i]);
+        }
+    }
+
     function allowance(address owner, address spender, bytes memory assetData)
         // should we rename to getApproval()? "Allowance" seems out of vogue.
         public
@@ -114,6 +125,17 @@ library LibAssetData {
             return lowestAssetAllowance;
         } else {
             revert("Unsupported proxy identifier");
+        }
+    }
+
+    function batchAllowance(address owner, address spender, bytes[] memory assetData)
+        public
+        view
+        returns (uint256[] memory amounts)
+    {
+        amounts = new uint256[](assetData.length);
+        for (uint256 i = 0; i < assetData.length; i++) {
+            amounts[i] = allowance(owner, spender, assetData[i]);
         }
     }
 
