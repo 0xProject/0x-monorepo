@@ -94,7 +94,7 @@ describe('MixinSignatureValidator', () => {
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         const approveValidator = async (validatorAddress: string) => {
             type SendApproveTx = (address: string, approved: boolean, txData: { from: string }) => Promise<string>;
-            const sendTx = async (fn: {sendTransactionAsync: SendApproveTx}) => {
+            const sendTx = async (fn: { sendTransactionAsync: SendApproveTx }) => {
                 return web3Wrapper.awaitTransactionSuccessAsync(
                     await fn.sendTransactionAsync(validatorAddress, true, { from: signerAddress }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
