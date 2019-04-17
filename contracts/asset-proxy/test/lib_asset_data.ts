@@ -134,6 +134,17 @@ describe('LibAssetData', () => {
         );
     });
 
+    async function setERC20AllowanceAsync(): Promise<any> {
+        return web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC20TokenContract(
+                erc20Artifacts.IERC20Token.compilerOutput.abi,
+                erc20TokenAddress,
+                provider,
+            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+    }
+
     after(async () => {
         await blockchainLifecycle.revertAsync();
     });
@@ -258,14 +269,7 @@ describe('LibAssetData', () => {
     });
 
     it('should query ERC20 allowances by asset data', async () => {
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC20TokenContract(
-                erc20Artifacts.IERC20Token.compilerOutput.abi,
-                erc20TokenAddress,
-                provider,
-            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await setERC20AllowanceAsync();
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
@@ -317,14 +321,7 @@ describe('LibAssetData', () => {
     });
 
     it('should query multi-asset allowances by asset data', async () => {
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC20TokenContract(
-                erc20Artifacts.IERC20Token.compilerOutput.abi,
-                erc20TokenAddress,
-                provider,
-            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await setERC20AllowanceAsync();
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC721TokenContract(
                 erc721Artifacts.IERC721Token.compilerOutput.abi,
