@@ -4,6 +4,8 @@ import { Network } from '../types';
 
 interface AssetDataByNetwork {
     [Network.Kovan]?: string;
+    [Network.Ropsten]?: string;
+    [Network.Rinkeby]?: string;
     [Network.Mainnet]?: string;
 }
 

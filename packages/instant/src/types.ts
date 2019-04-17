@@ -90,6 +90,8 @@ export interface Asset {
 
 export enum Network {
     Kovan = 42,
+    Rinkeby = 4,
+    Ropsten = 3,
     Mainnet = 1,
 }
 
