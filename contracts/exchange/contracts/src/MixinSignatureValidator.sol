@@ -155,7 +155,8 @@ contract MixinSignatureValidator is
         SignatureType signatureType = readValidSignatureType(hash, signerAddress, signature);
         // Only hash-compatible signature types can be handled by this
         // function.
-        if (signatureType == SignatureType.OrderValidator) {
+        if (signatureType == SignatureType.OrderValidator ||
+            signatureType == SignatureType.WalletOrderValidator) {
             rrevert(SignatureError(
                 SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
                 hash,
@@ -191,7 +192,16 @@ contract MixinSignatureValidator is
         SignatureType signatureType = readValidSignatureType(orderHash, signerAddress, signature);
         if (signatureType == SignatureType.OrderValidator) {
             // The entire order is verified by validator contract.
-            isValid = validateOrderValidatorSignature(
+            isValid = validateOrderWithValidator(
+                order,
+                orderHash,
+                signerAddress,
+                signature
+            );
+            return isValid;
+        } else if (signatureType == SignatureType.WalletOrderValidator) {
+            // The entire order is verified by a wallet contract.
+            isValid = validateOrderWithWallet(
                 order,
                 orderHash,
                 signerAddress,
@@ -262,8 +272,8 @@ contract MixinSignatureValidator is
     /// @param walletAddress Address that should have signed the given hash
     ///                      and defines its own signature verification method.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if signature is valid for given wallet..
-    function validateWalletSignature(
+    /// @return True if the signature is validated by the Walidator.
+    function validateHashWithWallet(
         bytes32 hash,
         address walletAddress,
         bytes memory signature
@@ -307,8 +317,8 @@ contract MixinSignatureValidator is
     /// @param hash Any 32 byte hash.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function validateValidatorSignature(
+    /// @return True if the signature is validated by the Validator.
+    function validateHashWithValidator(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
@@ -361,14 +371,62 @@ contract MixinSignatureValidator is
         ));
     }
 
+    /// @dev Verifies order AND signature via a Wallet contract.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own order/signature verification method.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return True if order and signature are validated by the Wallet.
+    function validateOrderWithWallet(
+        Order memory order,
+        bytes32 orderHash,
+        address walletAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        uint256 signatureLength = signature.length;
+        // Shave the signature type off the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 1))
+        }
+        // Encode the call data.
+        bytes memory callData = abi.encodeWithSelector(
+            IWallet(walletAddress).isValidOrderSignature.selector,
+            order,
+            orderHash,
+            signature
+        );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Return data should be a single bool.
+        if (didSucceed && returnData.length == 32) {
+            return returnData.readUint256(0) == 1;
+        }
+        // Static call to verifier failed.
+        rrevert(SignatureWalletOrderValidatorError(
+            orderHash,
+            walletAddress,
+            signature,
+            returnData
+        ));
+    }
+
     /// @dev Verifies order AND signature via Validator contract.
     ///      If used with an order, the maker of the order can still be an EOA.
     /// @param order The order.
     /// @param orderHash The order hash.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function validateOrderValidatorSignature(
+    /// @return True if order and signature are validated by the Validator.
+    function validateOrderWithValidator(
         Order memory order,
         bytes32 orderHash,
         address signerAddress,
@@ -422,7 +480,7 @@ contract MixinSignatureValidator is
     }
 
     /// Validates a hash-compatible signature type
-    /// (anything but `SignatureType.OrderValidator`).
+    /// (anything but `OrderValidator` and `WalletOrderValidator`).
     function validateHashSignatureTypes(
         SignatureType signatureType,
         bytes32 hash,
@@ -499,7 +557,7 @@ contract MixinSignatureValidator is
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = validateWalletSignature(
+            isValid = validateHashWithWallet(
                 hash,
                 signerAddress,
                 signature
@@ -509,7 +567,7 @@ contract MixinSignatureValidator is
         // Signature verified by validator contract.
         // If used with an order, the maker of the order can still be an EOA.
         } else if (signatureType == SignatureType.Validator) {
-            isValid = validateValidatorSignature(
+            isValid = validateHashWithValidator(
                 hash,
                 signerAddress,
                 signature

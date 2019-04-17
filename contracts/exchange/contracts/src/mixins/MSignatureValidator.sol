@@ -34,15 +34,16 @@ contract MSignatureValidator is
 
     // Allowed signature types.
     enum SignatureType {
-        Illegal,         // 0x00, default value
-        Invalid,         // 0x01
-        EIP712,          // 0x02
-        EthSign,         // 0x03
-        Wallet,          // 0x04
-        Validator,       // 0x05
-        PreSigned,       // 0x06
-        OrderValidator,  // 0x07
-        NSignatureTypes  // 0x08, number of signature types. Always leave at end.
+        Illegal,                // 0x00, default value
+        Invalid,                // 0x01
+        EIP712,                 // 0x02
+        EthSign,                // 0x03
+        Wallet,                 // 0x04
+        Validator,              // 0x05
+        PreSigned,              // 0x06
+        OrderValidator,         // 0x07
+        WalletOrderValidator,   // 0x08
+        NSignatureTypes         // 0x09, number of signature types. Always leave at end.
     }
 
     /// @dev Verifies that an order, with provided order hash, has been signed

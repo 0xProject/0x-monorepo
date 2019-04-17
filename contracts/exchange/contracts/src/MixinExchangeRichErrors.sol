@@ -104,6 +104,25 @@ contract MixinExchangeRichErrors is
         );
     }
 
+    function SignatureWalletOrderValidatorError(
+        bytes32 orderHash,
+        address wallet,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR,
+            orderHash,
+            wallet,
+            signature,
+            errorData
+        );
+    }
+
     function OrderStatusError(
         LibOrder.OrderStatus orderStatus,
         bytes32 orderHash

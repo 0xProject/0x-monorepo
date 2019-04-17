@@ -103,6 +103,19 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
+    bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
+        bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"));
+
+    function SignatureWalletOrderValidatorError(
+        bytes32 orderHash,
+        address wallet,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory);
+
     bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
         bytes4(keccak256("OrderStatusError(uint8,bytes32)"));
 
