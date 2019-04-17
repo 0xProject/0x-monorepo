@@ -27,6 +27,7 @@ import "./mixins/MTransactions.sol";
 import "./mixins/MExchangeRichErrors.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
+import "./interfaces/IOrderValidator.sol";
 
 
 contract MixinSignatureValidator is
@@ -43,6 +44,9 @@ contract MixinSignatureValidator is
 
     // Mapping of signer => validator => approved
     mapping (address => mapping (address => bool)) public allowedValidators;
+
+    // Mapping of signer => order validator => approved
+    mapping (address => mapping (address => bool)) public allowedOrderValidators;
 
     /// @dev Approves a hash on-chain using any valid signature type.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
@@ -71,7 +75,8 @@ contract MixinSignatureValidator is
         preSigned[hash][signerAddress] = true;
     }
 
-    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
+    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf
+    ///      using the `Validator` signature type.
     /// @param validatorAddress Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
     function setSignatureValidatorApproval(
@@ -83,6 +88,26 @@ contract MixinSignatureValidator is
     {
         address signerAddress = getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;
+        emit SignatureValidatorApproval(
+            signerAddress,
+            validatorAddress,
+            approval
+        );
+    }
+
+    /// @dev Approves/unnapproves an OrderValidator contract to verify signatures on signer's behalf
+    ///      using the `OrderValidator` signature type.
+    /// @param validatorAddress Address of Validator contract.
+    /// @param approval Approval or disapproval of  Validator contract.
+    function setOrderValidatorApproval(
+        address validatorAddress,
+        bool approval
+    )
+        external
+        nonReentrant
+    {
+        address signerAddress = getCurrentContextAddress();
+        allowedOrderValidators[signerAddress][validatorAddress] = approval;
         emit SignatureValidatorApproval(
             signerAddress,
             validatorAddress,
@@ -190,7 +215,7 @@ contract MixinSignatureValidator is
         bytes memory signature
     )
         private
-        view
+        pure
         returns (SignatureType signatureType)
     {
         if (signature.length == 0) {
@@ -203,7 +228,7 @@ contract MixinSignatureValidator is
         }
 
         // Read the last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature[signature.length-1]);
+        uint8 signatureTypeRaw = uint8(signature[signature.length - 1]);
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
@@ -278,6 +303,7 @@ contract MixinSignatureValidator is
     }
 
     /// @dev Verifies signature using logic defined by Validator contract.
+    ///      If used with an order, the maker of the order can still be an EOA.
     /// @param hash Any 32 byte hash.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
@@ -362,7 +388,7 @@ contract MixinSignatureValidator is
         // Read the validator address from the signature.
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
-        if (!allowedValidators[signerAddress][validatorAddress]) {
+        if (!allowedOrderValidators[signerAddress][validatorAddress]) {
             return false;
         }
         // Shave the validator address and signature type from the signature.
@@ -371,10 +397,9 @@ contract MixinSignatureValidator is
         }
         // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
-            IValidator(validatorAddress).isValidOrderSignature.selector,
+            IOrderValidator(validatorAddress).isValidOrderSignature.selector,
             order,
             orderHash,
-            signerAddress,
             signature
         );
         // Restore the full signature.

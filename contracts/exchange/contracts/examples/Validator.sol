@@ -21,10 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/interfaces/IValidator.sol";
+import "../src/interfaces/IOrderValidator.sol";
 
 
 contract Validator is
-    IValidator
+    IValidator,
+    IOrderValidator
 {
 
     // The single valid signer for this validator.
@@ -60,20 +62,18 @@ contract Validator is
     /// @dev Verifies that an order and signature is valid. `signer` must match `VALID_SIGNER`.
     /// @param order The order.
     /// @param orderHash The order hash.
-    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of signature.
     function isValidOrderSignature(
         LibOrder.Order calldata order,
         bytes32 orderHash,
-        address signerAddress,
         bytes calldata signature
     )
         external
         view
         returns (bool isValid)
     {
-        return (signerAddress == VALID_SIGNER);
+        return (order.makerAddress == VALID_SIGNER);
     }
     // solhint-enable no-unused-vars
 }

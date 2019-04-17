@@ -61,13 +61,11 @@ contract TestRevertReceiver {
     /// @dev Reverts with `REVERT_REASON`. Intended to be used with `OrderValidator` signature type.
     /// @param order The order.
     /// @param hash Message hash that is signed.
-    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidOrderSignature(
         LibOrder.Order calldata order,
         bytes32 hash,
-        address signerAddress,
         bytes calldata signature
     )
         external

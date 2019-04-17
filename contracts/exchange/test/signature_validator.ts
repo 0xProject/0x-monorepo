@@ -92,32 +92,20 @@ describe('MixinSignatureValidator', () => {
         externalRevertReason = await revertingWallet.REVERT_REASON.callAsync();
 
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
-                from: signerAddress,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                maliciousValidator.address,
-                true,
-                {
-                    from: signerAddress,
-                },
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                revertingValidator.address,
-                true,
-                {
-                    from: signerAddress,
-                },
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        const approveValidator = async (validatorAddress: string) => {
+            type SendApproveTx = (address: string, approved: boolean, txData: {from: string}) => Promise<string>;
+            const sendTx = async (fn: SendApproveTx) => {
+                return web3Wrapper.awaitTransactionSuccessAsync(
+                    await fn(validatorAddress, true, { from: signerAddress}),
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+            };
+            await sendTx(signatureValidator.setSignatureValidatorApproval.sendTransactionAsync);
+            await sendTx(signatureValidator.setOrderValidatorApproval.sendTransactionAsync);
+        };
+        await approveValidator(testValidator.address);
+        await approveValidator(maliciousValidator.address);
+        await approveValidator(revertingValidator.address);
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
@@ -589,7 +577,7 @@ describe('MixinSignatureValidator', () => {
         it('should return false when SignatureType=OrderValidator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
+                await signatureValidator.setOrderValidatorApproval.sendTransactionAsync(
                     testValidator.address,
                     false,
                     { from: signerAddress },

@@ -63,13 +63,11 @@ contract TestStaticCallReceiver {
     /// @dev Updates state and returns true. Intended to be used with `OrderValidator` signature type.
     /// @param order The order.
     /// @param orderHash The order hash.
-    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidOrderSignature(
         LibOrder.Order calldata order,
         bytes32 orderHash,
-        address signerAddress,
         bytes calldata signature
     )
         external
