@@ -24,7 +24,11 @@
             },
             {
                 "note": "Add support for `SignatureType.OrderValidator` for orders",
-                "pr": 1744
+                "pr": 1774
+            },
+            {
+                "note": "Add support for `SignatureType.WalletOrderValidator` for orders",
+                "pr": 1774
             }
         ]
     },

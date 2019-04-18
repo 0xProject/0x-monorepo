@@ -1,14 +1,5 @@
 [
     {
-        "version": "2.4.0",
-        "changes": [
-            {
-                "note": "Add `OrderStatus` type",
-                "pr": 1761
-            }
-        ]
-    },
-    {
         "version": "2.3.0",
         "changes": [
             {
@@ -24,8 +15,12 @@
                 "pr": 1742
             },
             {
-                "note": "Add `SignatureType.OrderValidator`, `RevertReason.InappropriateSignatureType`",
-                "pr": 1744
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `SignatureType.OrderValidator` and `SignatureType.WalletOrderValidator`",
+                "pr": 1774
             }
         ]
     },

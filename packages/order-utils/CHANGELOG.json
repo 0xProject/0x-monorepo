@@ -15,7 +15,11 @@
                 "pr": 1761
             },
             {
-                "note": "Add `SignatureOrderValidatorError` types to `ExchangeRevertErrors`",
+                "note": "Add `SignatureOrderValidatorError` type to `ExchangeRevertErrors`",
+                "pr": 1774
+            },
+            {
+                "note": "Add `SignatureWalletOrderValidatorError` type to `ExchangeRevertErrors`",
                 "pr": 1774
             }
         ]
