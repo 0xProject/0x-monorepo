@@ -58,7 +58,7 @@ export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Mainnet]: `https://mainnet.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
     [Network.Kovan]: `https://kovan.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
 };
-export const ZERO_EX_SITE_URL = 'https://www.0xproject.com/';
+export const ZERO_EX_SITE_URL = 'https://www.0x.org/';
 export const BLOCK_POLLING_INTERVAL_MS = 10000; // 10s
 export const NO_ACCOUNT: AccountNotReady = {
     state: AccountState.None,
