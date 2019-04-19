@@ -64,11 +64,11 @@ contract ISignatureValidator {
     /// @param signature Proof of signing.
     /// @return Validity of order signature.
     function isValidOrderSignature(
-        LibOrder.Order memory order,
+        LibOrder.Order calldata order,
         address signerAddress,
-        bytes memory signature
+        bytes calldata signature
     )
-        public
+        external
         view
         returns (bool isValid);
 }

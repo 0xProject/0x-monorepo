@@ -121,11 +121,11 @@ contract MixinSignatureValidator is
     /// @param signature Proof that the order has been signed by signer.
     /// @return True if the signature is valid for the given order and signer.
     function isValidOrderSignature(
-        Order memory order,
+        Order calldata order,
         address signerAddress,
-        bytes memory signature
+        bytes calldata signature
     )
-        public
+        external
         view
         returns (bool isValid)
     {
@@ -140,7 +140,7 @@ contract MixinSignatureValidator is
 
     /// @dev Verifies that a hash has been signed by the given signer.
     /// @param hash Any 32-byte hash.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
+    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the signature is valid for the given hash and signer.
     function isValidHashSignature(
@@ -152,7 +152,11 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        SignatureType signatureType = readValidSignatureType(hash, signerAddress, signature);
+        SignatureType signatureType = readValidSignatureType(
+            hash,
+            signerAddress,
+            signature
+        );
         // Only hash-compatible signature types can be handled by this
         // function.
         if (signatureType == SignatureType.OrderValidator ||
@@ -189,7 +193,11 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        SignatureType signatureType = readValidSignatureType(orderHash, signerAddress, signature);
+        SignatureType signatureType = readValidSignatureType(
+            orderHash,
+            signerAddress,
+            signature
+        );
         if (signatureType == SignatureType.OrderValidator) {
             // The entire order is verified by validator contract.
             isValid = validateOrderWithValidator(
