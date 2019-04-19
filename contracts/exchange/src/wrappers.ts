@@ -9,6 +9,7 @@ export * from '../generated-wrappers/i_asset_proxy_dispatcher';
 export * from '../generated-wrappers/i_exchange';
 export * from '../generated-wrappers/i_exchange_core';
 export * from '../generated-wrappers/i_match_orders';
+export * from '../generated-wrappers/i_order_validator';
 export * from '../generated-wrappers/i_signature_validator';
 export * from '../generated-wrappers/i_transactions';
 export * from '../generated-wrappers/i_validator';
