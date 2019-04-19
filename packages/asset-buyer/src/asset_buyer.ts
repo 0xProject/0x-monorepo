@@ -234,29 +234,29 @@ export class AssetBuyer {
             options,
         );
         assert.isValidBuyQuote('buyQuote', buyQuote);
-        if (!_.isUndefined(ethAmount)) {
+        if (ethAmount !== undefined) {
             assert.isBigNumber('ethAmount', ethAmount);
         }
-        if (!_.isUndefined(takerAddress)) {
+        if (takerAddress !== undefined) {
             assert.isETHAddressHex('takerAddress', takerAddress);
         }
         assert.isETHAddressHex('feeRecipient', feeRecipient);
-        if (!_.isUndefined(gasLimit)) {
+        if (gasLimit !== undefined) {
             assert.isNumber('gasLimit', gasLimit);
         }
-        if (!_.isUndefined(gasPrice)) {
+        if (gasPrice !== undefined) {
             assert.isBigNumber('gasPrice', gasPrice);
         }
         const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
         // if no takerAddress is provided, try to get one from the provider
         let finalTakerAddress;
-        if (!_.isUndefined(takerAddress)) {
+        if (takerAddress !== undefined) {
             finalTakerAddress = takerAddress;
         } else {
             const web3Wrapper = new Web3Wrapper(this.provider);
             const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
             const firstAvailableAddress = _.head(availableAddresses);
-            if (!_.isUndefined(firstAvailableAddress)) {
+            if (firstAvailableAddress !== undefined) {
                 finalTakerAddress = firstAvailableAddress;
             } else {
                 throw new Error(AssetBuyerError.NoAddressAvailable);
@@ -314,7 +314,7 @@ export class AssetBuyer {
         // we are forced to OR
         // we have some last refresh time AND that time was sufficiently long ago
         const shouldRefresh =
-            _.isUndefined(ordersEntryIfExists) ||
+            ordersEntryIfExists === undefined ||
             shouldForceOrderRefresh ||
             // tslint:disable:restrict-plus-operands
             ordersEntryIfExists.lastRefreshTime + this.orderRefreshIntervalMs < Date.now();

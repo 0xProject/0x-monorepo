@@ -10,7 +10,7 @@ export const format = {
         decimalPlaces: number = 4,
         defaultText: React.ReactNode = '0 ETH',
     ): React.ReactNode => {
-        if (_.isUndefined(ethBaseUnitAmount)) {
+        if (ethBaseUnitAmount === undefined) {
             return defaultText;
         }
         const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseUnitAmount, ETH_DECIMALS);
@@ -22,7 +22,7 @@ export const format = {
         defaultText: React.ReactNode = '0 ETH',
         minUnitAmountToDisplay: BigNumber = new BigNumber('0.00001'),
     ): React.ReactNode => {
-        if (_.isUndefined(ethUnitAmount)) {
+        if (ethUnitAmount === undefined) {
             return defaultText;
         }
         let roundedAmount = ethUnitAmount.decimalPlaces(decimalPlaces).precision(decimalPlaces);
@@ -47,7 +47,7 @@ export const format = {
         defaultText: React.ReactNode = '$0.00',
         minUnitAmountToDisplay: BigNumber = new BigNumber('0.00001'),
     ): React.ReactNode => {
-        if (_.isUndefined(ethBaseUnitAmount) || _.isUndefined(ethUsdPrice)) {
+        if (ethBaseUnitAmount === undefined || ethUsdPrice === undefined) {
             return defaultText;
         }
         const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseUnitAmount, ETH_DECIMALS);
@@ -59,7 +59,7 @@ export const format = {
         decimalPlaces: number = 2,
         defaultText: React.ReactNode = '$0.00',
     ): React.ReactNode => {
-        if (_.isUndefined(ethUnitAmount) || _.isUndefined(ethUsdPrice)) {
+        if (ethUnitAmount === undefined || ethUsdPrice === undefined) {
             return defaultText;
         }
         const rawUsdPrice = ethUnitAmount.multipliedBy(ethUsdPrice);

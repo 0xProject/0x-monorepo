@@ -6,7 +6,8 @@
                 "note": "Added UntransferrableDummyERC20Token",
                 "pr": 1714
             }
-        ]
+        ],
+        "timestamp": 1554997931
     },
     {
         "version": "2.1.0",

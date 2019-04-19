@@ -107,7 +107,7 @@ export class CoverageSubprovider extends TraceInfoSubprovider {
         const coverageEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex], IGNORE_REGEXP);
 
         // if the source wasn't provided for the fileIndex, we can't cover the file
-        if (_.isUndefined(coverageEntriesDescription)) {
+        if (coverageEntriesDescription === undefined) {
             return {};
         }
 

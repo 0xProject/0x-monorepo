@@ -193,7 +193,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                     className="text-decoration-none"
                 >
                     <div>
-                        {!_.isUndefined(iconIfExists) ? (
+                        {iconIfExists !== undefined ? (
                             <div className="inline-block">
                                 <div className="pr1 table-cell">{this._renderIcon(iconIfExists)}</div>
                                 <div className="table-cell">{link.title}</div>

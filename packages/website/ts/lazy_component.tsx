@@ -32,7 +32,7 @@ export class LazyComponent extends React.Component<LazyComponentProps, LazyCompo
         }
     }
     public render(): React.ReactNode {
-        return _.isUndefined(this.state.component)
+        return this.state.component === undefined
             ? null
             : React.createElement(this.state.component, this.props.reactComponentProps);
     }
@@ -56,7 +56,7 @@ export const createLazyComponent = (componentName: string, lazyImport: () => Pro
         const reactComponentPromise = (async (): Promise<React.ComponentClass<any>> => {
             const mod = await lazyImport();
             const component = mod[componentName];
-            if (_.isUndefined(component)) {
+            if (component === undefined) {
                 throw new Error(`Did not find exported component: ${componentName}`);
             }
             return component;

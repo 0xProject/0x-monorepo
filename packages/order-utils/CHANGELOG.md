@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.2.0 - _April 11, 2019_
+
+    * Added `orderCalculationUtils` (#1714)
+
 ## v7.1.1 - _March 21, 2019_
 
     * Dependencies updated

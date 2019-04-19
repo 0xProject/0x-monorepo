@@ -87,7 +87,7 @@ const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
     const assetEthAmount = buyQuote.worstCaseQuoteInfo.assetEthAmount.toString();
     const feeEthAmount = buyQuote.worstCaseQuoteInfo.feeEthAmount.toString();
     const totalEthAmount = buyQuote.worstCaseQuoteInfo.totalEthAmount.toString();
-    const feePercentage = !_.isUndefined(buyQuote.feePercentage) ? buyQuote.feePercentage.toString() : 0;
+    const feePercentage = buyQuote.feePercentage !== undefined ? buyQuote.feePercentage.toString() : 0;
     const hasFeeOrders = !_.isEmpty(buyQuote.feeOrders) ? 'true' : 'false';
     return {
         assetBuyAmount,

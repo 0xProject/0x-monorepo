@@ -65,11 +65,11 @@ export const assert = {
         assert.assert(isWeb3Provider, assert.typeAssertionMessage(variableName, 'Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
-        if (_.isUndefined(value)) {
+        if (value === undefined) {
             throw new Error(`${variableName} can't be undefined`);
         }
         const schemaValidator = new SchemaValidator();
-        if (!_.isUndefined(subSchemas)) {
+        if (subSchemas !== undefined) {
             _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
         }
         const validationResult = schemaValidator.validate(value, schema);
@@ -80,11 +80,11 @@ Validation errors: ${validationResult.errors.join(', ')}`;
         assert.assert(!hasValidationErrors, msg);
     },
     isWebUri(variableName: string, value: any): void {
-        const isValidUrl = !_.isUndefined(validUrl.isWebUri(value));
+        const isValidUrl = validUrl.isWebUri(value) !== undefined;
         assert.assert(isValidUrl, assert.typeAssertionMessage(variableName, 'web uri', value));
     },
     isUri(variableName: string, value: any): void {
-        const isValidUri = !_.isUndefined(validUrl.isUri(value));
+        const isValidUri = validUrl.isUri(value) !== undefined;
         assert.assert(isValidUri, assert.typeAssertionMessage(variableName, 'uri', value));
     },
     assert(condition: boolean, message: string): void {

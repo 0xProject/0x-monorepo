@@ -26,7 +26,7 @@ export const changelogUtils = {
     },
     getChangelogMdChange(change: Change): string {
         let line = `    * ${change.note}`;
-        if (!_.isUndefined(change.pr)) {
+        if (change.pr !== undefined) {
             line += ` (#${change.pr})`;
         }
         return line;
@@ -71,7 +71,7 @@ export const changelogUtils = {
     getChangelogOrCreateIfMissing(packageName: string, packageLocation: string): Changelog {
         const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
         let changelogJsonIfExists = changelogUtils.getChangelogJSONIfExists(changelogJSONPath);
-        if (_.isUndefined(changelogJsonIfExists)) {
+        if (changelogJsonIfExists === undefined) {
             // If none exists, create new, empty one.
             changelogJsonIfExists = '[]';
             fs.writeFileSync(changelogJSONPath, changelogJsonIfExists);

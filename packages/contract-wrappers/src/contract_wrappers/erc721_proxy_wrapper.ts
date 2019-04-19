@@ -26,7 +26,7 @@ export class ERC721ProxyWrapper extends ContractWrapper {
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).erc721Proxy : address;
+        this.address = address === undefined ? _getDefaultContractAddresses(networkId).erc721Proxy : address;
     }
     /**
      * Get the 4 bytes ID of this asset proxy
@@ -62,7 +62,7 @@ export class ERC721ProxyWrapper extends ContractWrapper {
         return authorizedAddresses;
     }
     private _getERC721ProxyContract(): ERC721ProxyContract {
-        if (!_.isUndefined(this._erc721ProxyContractIfExists)) {
+        if (this._erc721ProxyContractIfExists !== undefined) {
             return this._erc721ProxyContractIfExists;
         }
         const contractInstance = new ERC721ProxyContract(

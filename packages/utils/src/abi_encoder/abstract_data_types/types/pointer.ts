@@ -22,7 +22,7 @@ export abstract class AbstractPointerDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): PointerCalldataBlock {
-        if (_.isUndefined(parentBlock)) {
+        if (parentBlock === undefined) {
             throw new Error(`DependentDataType requires a parent block to generate its block`);
         }
         const destinationBlock = this._destination.generateCalldataBlock(value, parentBlock);

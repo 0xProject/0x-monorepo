@@ -48,7 +48,7 @@ const ASSET_AMOUNT = new BigNumber(0.1);
 export class Handler {
     private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
     private static _createProviderEngine(rpcUrl: string): Web3ProviderEngine {
-        if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
+        if (configs.DISPENSER_PRIVATE_KEY === undefined) {
             throw new Error('Dispenser Private key not found');
         }
         const engine = new Web3ProviderEngine();
@@ -109,7 +109,7 @@ export class Handler {
         const networkId = req.params.networkId;
         const recipient = req.params.recipient;
         const networkConfig = _.get(this._networkConfigByNetworkId, networkId);
-        if (_.isUndefined(networkConfig)) {
+        if (networkConfig === undefined) {
             res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
@@ -144,19 +144,19 @@ export class Handler {
         requestedAssetType: RequestedAssetType,
     ): Promise<void> {
         const networkConfig = _.get(this._networkConfigByNetworkId, req.params.networkId);
-        if (_.isUndefined(networkConfig)) {
+        if (networkConfig === undefined) {
             res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
         res.setHeader('Content-Type', 'application/json');
         const makerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, requestedAssetType]);
-        if (_.isUndefined(makerTokenIfExists)) {
+        if (makerTokenIfExists === undefined) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
         const takerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, takerTokenSymbol]);
-        if (_.isUndefined(takerTokenIfExists)) {
+        if (takerTokenIfExists === undefined) {
             throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
 

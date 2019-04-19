@@ -56,7 +56,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                     <div className="circle mx-auto" style={emptyIdenticonStyles} />
                 ) : (
                     <a href={etherscanLinkIfExists} target="_blank">
-                        {isRegistered && !_.isUndefined(this.props.alternativeImage) ? (
+                        {isRegistered && this.props.alternativeImage !== undefined ? (
                             <img style={tokenImageStyle} src={this.props.alternativeImage} />
                         ) : (
                             <div className="mx-auto" style={{ height: identiconDiameter, width: identiconDiameter }}>
@@ -73,7 +73,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                     <div style={{ height: 25 }}>
                         <EthereumAddress address={address} networkId={this.props.networkId} />
                     </div>
-                    {!_.isUndefined(this.props.isInTokenRegistry) && (
+                    {this.props.isInTokenRegistry !== undefined && (
                         <div>
                             <div
                                 data-tip={true}
@@ -112,7 +112,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                             </div>
                         </div>
                     )}
-                    {!_.isUndefined(this.props.hasUniqueNameAndSymbol) && !this.props.hasUniqueNameAndSymbol && (
+                    {this.props.hasUniqueNameAndSymbol !== undefined && !this.props.hasUniqueNameAndSymbol && (
                         <div>
                             <div
                                 data-tip={true}

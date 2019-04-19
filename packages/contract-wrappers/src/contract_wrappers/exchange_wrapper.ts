@@ -77,10 +77,9 @@ export class ExchangeWrapper extends ContractWrapper {
         super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
-        this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
-            ? _getDefaultContractAddresses(networkId).zrxToken
-            : zrxTokenAddress;
+        this.address = address === undefined ? _getDefaultContractAddresses(networkId).exchange : address;
+        this.zrxTokenAddress =
+            zrxTokenAddress === undefined ? _getDefaultContractAddresses(networkId).zrxToken : zrxTokenAddress;
     }
     /**
      * Retrieve the address of an asset proxy by signature.
@@ -862,7 +861,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<boolean> {
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.isETHAddressHex('validatorAddress', validatorAddress);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const normalizedSignerAddress = signerAddress.toLowerCase();
@@ -888,7 +887,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async isPreSignedAsync(hash: string, signerAddress: string, methodOpts: MethodOpts = {}): Promise<boolean> {
         assert.isHexString('hash', hash);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -912,7 +911,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async isTransactionExecutedAsync(transactionHash: string, methodOpts: MethodOpts = {}): Promise<boolean> {
         assert.isHexString('transactionHash', transactionHash);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -933,7 +932,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async getOrderInfoAsync(order: Order | SignedOrder, methodOpts: MethodOpts = {}): Promise<OrderInfo> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -953,7 +952,7 @@ export class ExchangeWrapper extends ContractWrapper {
         methodOpts: MethodOpts = {},
     ): Promise<OrderInfo[]> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -1162,9 +1161,10 @@ export class ExchangeWrapper extends ContractWrapper {
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
 
         let fillableTakerAssetAmount;
-        const shouldValidateRemainingOrderAmountIsFillable = _.isUndefined(opts.validateRemainingOrderAmountIsFillable)
-            ? true
-            : opts.validateRemainingOrderAmountIsFillable;
+        const shouldValidateRemainingOrderAmountIsFillable =
+            opts.validateRemainingOrderAmountIsFillable === undefined
+                ? true
+                : opts.validateRemainingOrderAmountIsFillable;
         if (opts.expectedFillTakerTokenAmount) {
             // If the caller has specified a taker fill amount, we use this for all validation
             fillableTakerAssetAmount = opts.expectedFillTakerTokenAmount;
@@ -1207,7 +1207,7 @@ export class ExchangeWrapper extends ContractWrapper {
         makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
-        const toAddress = _.isUndefined(takerAddress) ? signedOrder.takerAddress : takerAddress;
+        const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
         const exchangeInstance = await this._getExchangeContractAsync();
         const makerAssetData = signedOrder.makerAssetData;
         const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
@@ -1281,7 +1281,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
-        if (!_.isUndefined(this._exchangeContractIfExists)) {
+        if (this._exchangeContractIfExists !== undefined) {
             return this._exchangeContractIfExists;
         }
         const contractInstance = new ExchangeContract(

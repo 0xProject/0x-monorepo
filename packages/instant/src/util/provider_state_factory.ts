@@ -17,7 +17,7 @@ export const providerStateFactory = {
         supportedProvider?: SupportedProvider,
         walletDisplayName?: string,
     ): ProviderState => {
-        if (!_.isUndefined(supportedProvider)) {
+        if (supportedProvider !== undefined) {
             const provider = providerUtils.standardizeOrThrow(supportedProvider);
             return providerStateFactory.getInitialProviderStateFromProvider(
                 orderSource,
@@ -59,7 +59,7 @@ export const providerStateFactory = {
         walletDisplayName?: string,
     ): Maybe<ProviderState> => {
         const injectedProviderIfExists = providerFactory.getInjectedProviderIfExists();
-        if (!_.isUndefined(injectedProviderIfExists)) {
+        if (injectedProviderIfExists !== undefined) {
             const providerState: ProviderState = {
                 name: envUtil.getProviderName(injectedProviderIfExists),
                 displayName: walletDisplayName || envUtil.getProviderDisplayName(injectedProviderIfExists),

@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { addFadeInAnimation } from 'ts/constants/animations';
 import { ExploreGridTile } from 'ts/pages/explore/explore_grid_tile';
 import { ExploreTile, ExploreTileGridWidth, ExploreTileVisibility, ExploreTileWidth } from 'ts/types';
 
@@ -123,6 +124,9 @@ const ExploreGridList = styled.div<ExploreGridListProps>`
     grid-template-columns: repeat(${ExploreTileGridWidth.ThreeColumn}, 1fr);
     grid-column-gap: 1.5rem;
     grid-row-gap: 1.5rem;
+    z-index: 0;
+    position: relative;
+    ${addFadeInAnimation('0.5s', '0.25s')}
     & > * {
         align-self: stretch;
     }

@@ -22,7 +22,7 @@ export class StaticBytesDataType extends AbstractBlobDataType {
     private static _decodeWidthFromType(type: string): number {
         const matches = StaticBytesDataType._MATCHER.exec(type);
         const width =
-            !_.isNull(matches) && matches.length === 3 && !_.isUndefined(matches[2])
+            matches !== null && matches.length === 3 && matches[2] !== undefined
                 ? parseInt(matches[2], constants.DEC_BASE)
                 : StaticBytesDataType._DEFAULT_WIDTH;
         return width;

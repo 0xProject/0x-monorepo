@@ -13,7 +13,7 @@ interface ConnectedState {
 }
 
 const getTheme = (asset?: Asset): Theme => {
-    if (!_.isUndefined(asset) && !_.isUndefined(asset.metaData.primaryColor)) {
+    if (asset !== undefined && asset.metaData.primaryColor !== undefined) {
         return {
             ...defaultTheme,
             primaryColor: asset.metaData.primaryColor,

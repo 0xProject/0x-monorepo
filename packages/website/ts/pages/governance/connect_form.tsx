@@ -114,9 +114,8 @@ export class ConnectForm extends React.Component<Props, State> {
             errors: {},
             userAddresses: [],
             addressBalances: [],
-            derivationPath: _.isUndefined(derivationPathIfExists)
-                ? configs.DEFAULT_DERIVATION_PATH
-                : derivationPathIfExists,
+            derivationPath:
+                derivationPathIfExists === undefined ? configs.DEFAULT_DERIVATION_PATH : derivationPathIfExists,
             derivationErrMsg: '',
         };
     }
@@ -151,7 +150,7 @@ export class ConnectForm extends React.Component<Props, State> {
                     <ButtonHalf onClick={this._onConnectWalletClickAsync.bind(this)}>Connect Wallet</ButtonHalf>
                     <ButtonHalf onClick={this._onConnectLedgerClickAsync.bind(this)}>Connect Ledger</ButtonHalf>
                 </ButtonRow>
-                {!_.isUndefined(errors.connectionError) && (
+                {errors.connectionError !== undefined && (
                     <Paragraph isMuted={true} color={colors.red}>
                         {errors.connectionError}
                     </Paragraph>
@@ -172,7 +171,7 @@ export class ConnectForm extends React.Component<Props, State> {
                     networkId={this.networkId}
                     onSelectAddress={this._onSelectAddressIndex.bind(this)}
                 />
-                {!_.isUndefined(errors.connectionError) && <ErrorParagraph>{errors.connectionError}</ErrorParagraph>}
+                {errors.connectionError !== undefined && <ErrorParagraph>{errors.connectionError}</ErrorParagraph>}
                 <DerivationPathInput
                     path={derivationPath}
                     onChangePath={this._onChangeDerivationPathAsync.bind(this)}
@@ -199,27 +198,27 @@ export class ConnectForm extends React.Component<Props, State> {
         );
     }
     public async getUserAccountsAsync(): Promise<string[]> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
+        utils.assert(this._contractWrappers !== undefined, 'ContractWrappers must be instantiated.');
         const provider = this._contractWrappers.getProvider();
         const web3Wrapper = new Web3Wrapper(provider);
         const userAccountsIfExists = await web3Wrapper.getAvailableAddressesAsync();
         return userAccountsIfExists;
     }
     public getLedgerDerivationPathIfExists(): string | undefined {
-        if (_.isUndefined(this._ledgerSubprovider)) {
+        if (this._ledgerSubprovider === undefined) {
             return undefined;
         }
         const path = this._ledgerSubprovider.getPath();
         return path;
     }
     public updateLedgerDerivationPathIfExists(path: string): void {
-        if (_.isUndefined(this._ledgerSubprovider)) {
+        if (this._ledgerSubprovider === undefined) {
             return; // noop
         }
         this._ledgerSubprovider.setPath(path);
     }
     public async getZrxBalanceAsync(owner: string): Promise<BigNumber> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
+        utils.assert(this._contractWrappers !== undefined, 'ContractWrappers must be instantiated.');
         const contractAddresses = getContractAddressesForNetworkOrThrow(this.networkId);
         const tokenAddress: string = contractAddresses.zrxToken;
         try {
@@ -232,7 +231,7 @@ export class ConnectForm extends React.Component<Props, State> {
     private async _onConnectWalletClickAsync(): Promise<boolean> {
         const shouldUseLedgerProvider = false;
         const networkIdIfExists = await this._getInjectedProviderNetworkIdIfExistsAsync();
-        this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
+        this.networkId = networkIdIfExists !== undefined ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
 
         await this._resetOrInitializeAsync(this.networkId, shouldUseLedgerProvider);
 
@@ -340,7 +339,7 @@ export class ConnectForm extends React.Component<Props, State> {
     private async _updateSelectedAddressAsync(index: number): Promise<void> {
         const { userAddresses, addressBalances, isLedgerConnected } = this.state;
         const injectedProviderIfExists = await this._getInjectedProviderIfExistsAsync();
-        if (this.props.onWalletConnected && !_.isUndefined(userAddresses[index])) {
+        if (this.props.onWalletConnected && userAddresses[index] !== undefined) {
             const walletInfo: WalletConnectedProps = {
                 contractWrappers: this._contractWrappers,
                 injectedProviderIfExists,
@@ -362,7 +361,7 @@ export class ConnectForm extends React.Component<Props, State> {
     private _getNameGivenProvider(provider: ZeroExProvider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
-        if (_.isUndefined(providerNameIfExists)) {
+        if (providerNameIfExists === undefined) {
             return constants.PROVIDER_NAME_GENERIC;
         }
         return providerNameIfExists;
@@ -374,10 +373,10 @@ export class ConnectForm extends React.Component<Props, State> {
     ): Promise<[ZeroExProvider, LedgerSubprovider | undefined]> {
         // This code is based off of the Blockchain.ts code.
         // TODO refactor to re-use this utility outside of Blockchain.ts
-        const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);
-        const isNetworkIdAvailable = !_.isUndefined(networkIdIfExists);
+        const doesInjectedProviderExist = injectedProviderIfExists !== undefined;
+        const isNetworkIdAvailable = networkIdIfExists !== undefined;
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
-        const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
+        const isPublicNodeAvailableForNetworkId = publicNodeUrlsIfExistsForNetworkId !== undefined;
         const provider = new Web3ProviderEngine();
         const rpcSubproviders = _.map(configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists], publicNodeUrl => {
             return new RPCSubprovider(publicNodeUrl);
@@ -427,17 +426,17 @@ export class ConnectForm extends React.Component<Props, State> {
         }
     }
     private async _getInjectedProviderIfExistsAsync(): Promise<InjectedProvider | undefined> {
-        if (!_.isUndefined(this._injectedProviderIfExists)) {
+        if (this._injectedProviderIfExists !== undefined) {
             return this._injectedProviderIfExists;
         }
         let injectedProviderIfExists = (window as any).ethereum;
-        if (!_.isUndefined(injectedProviderIfExists)) {
-            if (!_.isUndefined(injectedProviderIfExists.enable)) {
+        if (injectedProviderIfExists !== undefined) {
+            if (injectedProviderIfExists.enable !== undefined) {
                 await injectedProviderIfExists.enable();
             }
         } else {
             const injectedWeb3IfExists = (window as any).web3;
-            if (!_.isUndefined(injectedWeb3IfExists) && !_.isUndefined(injectedWeb3IfExists.currentProvider)) {
+            if (injectedWeb3IfExists !== undefined && injectedWeb3IfExists.currentProvider !== undefined) {
                 injectedProviderIfExists = injectedWeb3IfExists.currentProvider;
             } else {
                 return undefined;
@@ -451,7 +450,7 @@ export class ConnectForm extends React.Component<Props, State> {
         // Ethereum node, this call will throw. We need to handle this case gracefully
         const injectedProviderIfExists = await this._getInjectedProviderIfExistsAsync();
         let networkIdIfExists: number;
-        if (!_.isUndefined(injectedProviderIfExists)) {
+        if (injectedProviderIfExists !== undefined) {
             try {
                 const injectedWeb3Wrapper = new Web3Wrapper(injectedProviderIfExists);
                 networkIdIfExists = await injectedWeb3Wrapper.getNetworkIdAsync();
@@ -473,14 +472,14 @@ export class ConnectForm extends React.Component<Props, State> {
         this._providerEngine = provider;
         this.networkId = await this._web3Wrapper.getNetworkIdAsync();
         this._providerName = this._getNameGivenProvider(provider);
-        if (!_.isUndefined(this._contractWrappers)) {
+        if (this._contractWrappers !== undefined) {
             this._contractWrappers.unsubscribeAll();
         }
         const contractWrappersConfig = {
             networkId,
         };
         this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
-        if (shouldUserLedgerProvider && !_.isUndefined(ledgerSubproviderIfExists)) {
+        if (shouldUserLedgerProvider && ledgerSubproviderIfExists !== undefined) {
             delete this._userAddressIfExists;
             this._ledgerSubprovider = ledgerSubproviderIfExists;
         } else {

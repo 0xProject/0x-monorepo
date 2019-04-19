@@ -25,7 +25,7 @@ export class Translate {
     private _selectedLanguage: Language;
     private _translation: Translation;
     constructor(desiredLanguage?: Language) {
-        if (!_.isUndefined(desiredLanguage)) {
+        if (desiredLanguage !== undefined) {
             this.setLanguage(desiredLanguage);
             return;
         }
@@ -46,7 +46,7 @@ export class Translate {
         return this._selectedLanguage;
     }
     public setLanguage(language: Language): void {
-        const isLanguageSupported = !_.isUndefined(languageToTranslations[language]);
+        const isLanguageSupported = languageToTranslations[language] !== undefined;
         if (!isLanguageSupported) {
             throw new Error(`${language} not supported`);
         }
@@ -57,10 +57,10 @@ export class Translate {
         let text = this._translation[key];
         // if a translation does not exist for a certain language, fallback to english
         // if it still doesn't exist in english, throw an error
-        if (_.isUndefined(text)) {
+        if (text === undefined) {
             const englishTranslation: Translation = languageToTranslations[Language.English];
             const englishText = englishTranslation[key];
-            if (!_.isUndefined(englishText)) {
+            if (englishText !== undefined) {
                 text = englishText;
             } else {
                 throw new Error(
@@ -68,7 +68,7 @@ export class Translate {
                 );
             }
         }
-        if (!_.isUndefined(decoration) && !_.includes(languagesWithoutCaps, this._selectedLanguage)) {
+        if (decoration !== undefined && !_.includes(languagesWithoutCaps, this._selectedLanguage)) {
             switch (decoration) {
                 case Deco.Cap:
                     text = this._capitalize(text);

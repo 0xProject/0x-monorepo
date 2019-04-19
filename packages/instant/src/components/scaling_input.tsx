@@ -140,7 +140,7 @@ export class ScalingInput extends React.PureComponent<ScalingInputProps> {
             value.split(''),
             (sum, char) => {
                 const widthOverride = scalingSettings.characterWidthOverrides[char];
-                if (!_.isUndefined(widthOverride)) {
+                if (widthOverride !== undefined) {
                     // tslint is confused
                     // tslint:disable-next-line:restrict-plus-operands
                     return sum + widthOverride;
@@ -157,7 +157,7 @@ export class ScalingInput extends React.PureComponent<ScalingInputProps> {
     private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
         const { maxLength } = this.props;
-        if (!_.isUndefined(value) && !_.isUndefined(maxLength) && value.length > maxLength) {
+        if (value !== undefined && maxLength !== undefined && value.length > maxLength) {
             return;
         }
         this.props.onChange(event);

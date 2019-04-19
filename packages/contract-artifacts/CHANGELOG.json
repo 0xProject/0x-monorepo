@@ -6,7 +6,8 @@
                 "note": "Added artifact for  `IAssetProxy`",
                 "pr": 1714
             }
-        ]
+        ],
+        "timestamp": 1554997931
     },
     {
         "version": "1.4.0",

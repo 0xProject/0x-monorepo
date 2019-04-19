@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.5.0 - _April 11, 2019_
+
+    * Added artifact for  `IAssetProxy` (#1714)
+
 ## v1.4.0 - _March 21, 2019_
 
     * Added artifact for `Coordinaotr` and `CoordinatorRegistry` contracts (#1689)

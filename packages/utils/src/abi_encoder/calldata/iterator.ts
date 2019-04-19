@@ -57,7 +57,7 @@ abstract class BaseIterator implements Iterable<CalldataBlock> {
         _.each(set.getMembers(), (member: CalldataBlock) => {
             // Traverse child if it is a unique pointer.
             // A pointer that is an alias for another pointer is ignored.
-            if (member instanceof PointerCalldataBlock && _.isUndefined(member.getAlias())) {
+            if (member instanceof PointerCalldataBlock && member.getAlias() === undefined) {
                 const dependency = member.getDependency();
                 queue.mergeBack(BaseIterator._createQueue(dependency));
             }
@@ -76,7 +76,7 @@ abstract class BaseIterator implements Iterable<CalldataBlock> {
         return {
             next: () => {
                 const nextBlock = this.nextBlock();
-                if (!_.isUndefined(nextBlock)) {
+                if (nextBlock !== undefined) {
                     return {
                         value: nextBlock,
                         done: false,

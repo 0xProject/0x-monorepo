@@ -8,7 +8,7 @@ export const utils = {
         return valueNumber;
     },
     convertHexToNumberOrNull(hex: string | null): number | null {
-        if (_.isNull(hex)) {
+        if (hex === null) {
             return null;
         }
         const decimal = utils.convertHexToNumber(hex);

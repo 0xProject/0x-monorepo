@@ -62,6 +62,8 @@
         "no-inferred-empty-object-type": true,
         "no-invalid-template-strings": true,
         "no-invalid-this": true,
+        "no-lodash-isnull": true,
+        "no-lodash-isundefined": true,
         "no-misused-new": true,
         "no-non-null-assertion": true,
         "no-parameter-reassignment": true,

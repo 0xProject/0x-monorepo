@@ -24,9 +24,9 @@ export interface Web3Config {
 export const web3Factory = {
     getRpcProvider(config: Web3Config = {}): Web3ProviderEngine {
         const provider = new Web3ProviderEngine();
-        const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
+        const hasAddresses = config.hasAddresses === undefined || config.hasAddresses;
         config.shouldUseFakeGasEstimate =
-            _.isUndefined(config.shouldUseFakeGasEstimate) || config.shouldUseFakeGasEstimate;
+            config.shouldUseFakeGasEstimate === undefined || config.shouldUseFakeGasEstimate;
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
@@ -41,13 +41,13 @@ export const web3Factory = {
         };
         const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
-            if (!_.isUndefined(config.rpcUrl)) {
+            if (config.rpcUrl !== undefined) {
                 throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
             }
             const shouldThrowErrorsOnGanacheRPCResponse =
-                _.isUndefined(config.shouldThrowErrorsOnGanacheRPCResponse) ||
+                config.shouldThrowErrorsOnGanacheRPCResponse === undefined ||
                 config.shouldThrowErrorsOnGanacheRPCResponse;
-            if (!_.isUndefined(config.ganacheDatabasePath)) {
+            if (config.ganacheDatabasePath !== undefined) {
                 const doesDatabaseAlreadyExist = fs.existsSync(config.ganacheDatabasePath);
                 if (!doesDatabaseAlreadyExist) {
                     // Working with local DB snapshot. Ganache requires this directory to exist

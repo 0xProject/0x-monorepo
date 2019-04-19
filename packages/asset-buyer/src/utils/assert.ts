@@ -1,6 +1,5 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import * as _ from 'lodash';
 
 import { BuyQuote, BuyQuoteInfo, OrderProvider, OrderProviderRequest } from '../types';
 
@@ -13,7 +12,7 @@ export const assert = {
         assert.isValidBuyQuoteInfo(`${variableName}.bestCaseQuoteInfo`, buyQuote.bestCaseQuoteInfo);
         assert.isValidBuyQuoteInfo(`${variableName}.worstCaseQuoteInfo`, buyQuote.worstCaseQuoteInfo);
         sharedAssert.isBigNumber(`${variableName}.assetBuyAmount`, buyQuote.assetBuyAmount);
-        if (!_.isUndefined(buyQuote.feePercentage)) {
+        if (buyQuote.feePercentage !== undefined) {
             sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
         }
     },

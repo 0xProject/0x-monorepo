@@ -62,7 +62,7 @@ describe('source maps', () => {
             _.forEach(pcToSourceRange, sourceRange => {
                 // Solidity source maps are too short and we map some instructions to undefined
                 // Source: https://github.com/ethereum/solidity/issues/3741
-                if (!_.isUndefined(sourceRange)) {
+                if (sourceRange !== undefined) {
                     expect(sourceRange).to.be.deep.equal(expectedSourceRange);
                 }
             });

@@ -1,6 +1,6 @@
 {
     "name": "@0x/utils",
-    "version": "4.3.0",
+    "version": "4.3.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -12,6 +12,7 @@
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*_test.js' 'lib/test/*_test.js'  --bail --exit",
@@ -28,7 +29,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^3.0.0",
+        "@0x/tslint-config": "^3.0.1",
         "@types/detect-node": "2.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
@@ -44,14 +45,14 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/types": "^2.2.1",
-        "@0x/typescript-typings": "^4.2.1",
+        "@0x/types": "^2.2.2",
+        "@0x/typescript-typings": "^4.2.2",
         "@types/node": "*",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~8.0.2",
         "chalk": "^2.3.0",
         "detect-node": "2.0.3",
-        "ethereum-types": "^2.1.1",
+        "ethereum-types": "^2.1.2",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "isomorphic-fetch": "2.2.1",

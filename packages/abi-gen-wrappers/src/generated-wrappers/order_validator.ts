@@ -232,7 +232,7 @@ export class OrderValidatorContract extends BaseContract {
             _exchange: string,
             _zrxAssetData: string,
     ): Promise<OrderValidatorContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);

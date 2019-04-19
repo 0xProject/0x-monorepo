@@ -37,7 +37,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
      * @param userAddress Ethereum address of interest
      */
     public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        if (_.isUndefined(this._balance[assetData]) || _.isUndefined(this._balance[assetData][userAddress])) {
+        if (this._balance[assetData] === undefined || this._balance[assetData][userAddress] === undefined) {
             const balance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, userAddress);
             this.setBalance(assetData, userAddress, balance);
         }
@@ -50,7 +50,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
      * @param userAddress Ethereum address of interest
      */
     public setBalance(assetData: string, userAddress: string, balance: BigNumber): void {
-        if (_.isUndefined(this._balance[assetData])) {
+        if (this._balance[assetData] === undefined) {
             this._balance[assetData] = {};
         }
         this._balance[assetData][userAddress] = balance;
@@ -61,7 +61,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
      * @param userAddress Ethereum address of interest
      */
     public deleteBalance(assetData: string, userAddress: string): void {
-        if (!_.isUndefined(this._balance[assetData])) {
+        if (this._balance[assetData] !== undefined) {
             delete this._balance[assetData][userAddress];
             if (_.isEmpty(this._balance[assetData])) {
                 delete this._balance[assetData];
@@ -75,8 +75,8 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
      */
     public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
         if (
-            _.isUndefined(this._proxyAllowance[assetData]) ||
-            _.isUndefined(this._proxyAllowance[assetData][userAddress])
+            this._proxyAllowance[assetData] === undefined ||
+            this._proxyAllowance[assetData][userAddress] === undefined
         ) {
             const proxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
                 assetData,
@@ -93,7 +93,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
      * @param userAddress Ethereum address of interest
      */
     public setProxyAllowance(assetData: string, userAddress: string, proxyAllowance: BigNumber): void {
-        if (_.isUndefined(this._proxyAllowance[assetData])) {
+        if (this._proxyAllowance[assetData] === undefined) {
             this._proxyAllowance[assetData] = {};
         }
         this._proxyAllowance[assetData][userAddress] = proxyAllowance;
@@ -104,7 +104,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
      * @param userAddress Ethereum address of interest
      */
     public deleteProxyAllowance(assetData: string, userAddress: string): void {
-        if (!_.isUndefined(this._proxyAllowance[assetData])) {
+        if (this._proxyAllowance[assetData] !== undefined) {
             delete this._proxyAllowance[assetData][userAddress];
             if (_.isEmpty(this._proxyAllowance[assetData])) {
                 delete this._proxyAllowance[assetData];
@@ -123,7 +123,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
                 if (
                     decodedAssetData.assetProxyId === AssetProxyId.ERC721 &&
                     decodedAssetData.tokenAddress === tokenAddress &&
-                    !_.isUndefined(this._proxyAllowance[assetData][userAddress])
+                    this._proxyAllowance[assetData][userAddress] !== undefined
                 ) {
                     delete this._proxyAllowance[assetData][userAddress];
                 }

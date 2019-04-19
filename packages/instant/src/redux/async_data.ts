@@ -59,7 +59,7 @@ export const asyncData = {
         let availableAddresses: string[];
         try {
             // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
-            const isPrivacyModeEnabled = !_.isUndefined((provider as any).enable);
+            const isPrivacyModeEnabled = (provider as any).enable !== undefined;
             availableAddresses =
                 isPrivacyModeEnabled && shouldAttemptUnlock
                     ? await (provider as any).enable()
@@ -97,8 +97,8 @@ export const asyncData = {
         const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
         const assetBuyer = providerState.assetBuyer;
         if (
-            !_.isUndefined(selectedAssetUnitAmount) &&
-            !_.isUndefined(selectedAsset) &&
+            selectedAssetUnitAmount !== undefined &&
+            selectedAsset !== undefined &&
             selectedAssetUnitAmount.isGreaterThan(BIG_NUMBER_ZERO) &&
             buyOrderState.processState === OrderProcessState.None
         ) {

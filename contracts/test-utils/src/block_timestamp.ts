@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { constants } from './constants';
 import { web3Wrapper } from './web3_wrapper';
 
@@ -13,7 +11,7 @@ let firstAccount: string | undefined;
  * reject if the time could not be increased.
  */
 export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<number> {
-    if (_.isUndefined(firstAccount)) {
+    if (firstAccount === undefined) {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         firstAccount = accounts[0];
     }
@@ -36,7 +34,7 @@ export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<nu
  */
 export async function getLatestBlockTimestampAsync(): Promise<number> {
     const currentBlockIfExists = await web3Wrapper.getBlockIfExistsAsync('latest');
-    if (_.isUndefined(currentBlockIfExists)) {
+    if (currentBlockIfExists === undefined) {
         throw new Error(`Unable to fetch latest block.`);
     }
     return currentBlockIfExists.timestamp;

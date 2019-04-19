@@ -9,13 +9,13 @@ export const localStorage = {
             return undefined;
         }
         const item = window.localStorage.getItem(key);
-        if (_.isNull(item) || item === 'undefined') {
+        if (item === null || item === 'undefined') {
             return '';
         }
         return item;
     },
     setItem(key: string, value: string): void {
-        if (!localStorage.doesExist || _.isUndefined(value)) {
+        if (!localStorage.doesExist || value === undefined) {
             return;
         }
         window.localStorage.setItem(key, value);

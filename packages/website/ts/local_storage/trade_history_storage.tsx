@@ -29,7 +29,7 @@ export const tradeHistoryStorage = {
     addFillToUser(userAddress: string, networkId: number, fill: Fill): void {
         const fillsByHash = tradeHistoryStorage.getUserFillsByHash(userAddress, networkId);
         const fillHash = tradeHistoryStorage._getFillHash(fill);
-        const doesFillExist = !_.isUndefined(fillsByHash[fillHash]);
+        const doesFillExist = fillsByHash[fillHash] !== undefined;
         if (doesFillExist) {
             return; // noop
         }
@@ -41,7 +41,7 @@ export const tradeHistoryStorage = {
     removeFillFromUser(userAddress: string, networkId: number, fill: Fill): void {
         const fillsByHash = tradeHistoryStorage.getUserFillsByHash(userAddress, networkId);
         const fillHash = tradeHistoryStorage._getFillHash(fill);
-        const doesFillExist = !_.isUndefined(fillsByHash[fillHash]);
+        const doesFillExist = fillsByHash[fillHash] !== undefined;
         if (!doesFillExist) {
             return; // noop
         }

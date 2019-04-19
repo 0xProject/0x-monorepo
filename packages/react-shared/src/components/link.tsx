@@ -143,7 +143,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
     // is within a dropdown we want to close upon being clicked). Because of this, we register the
     // click event of an inner span, and pass it around the react-scroll link to an outer span.
     private _onClickPropagateClickEventAroundScrollLink(): void {
-        if (!_.isNull(this._outerReactScrollSpan)) {
+        if (this._outerReactScrollSpan !== null) {
             this._outerReactScrollSpan.click();
         }
     }

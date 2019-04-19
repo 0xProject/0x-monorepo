@@ -16,7 +16,7 @@ export class TokenIcon extends React.Component<TokenIconProps, TokenIconState> {
         const token = this.props.token;
         const diameter = this.props.diameter;
         const icon =
-            token.isRegistered && !_.isUndefined(token.iconUrl) ? (
+            token.isRegistered && token.iconUrl !== undefined ? (
                 <img style={{ width: diameter, height: diameter }} src={token.iconUrl} />
             ) : (
                 <Identicon address={token.address} diameter={diameter} />

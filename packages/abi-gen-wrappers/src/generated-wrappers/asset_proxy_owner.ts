@@ -1426,7 +1426,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             _required: BigNumber,
             _secondsTimeLocked: BigNumber,
     ): Promise<AssetProxyOwnerContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);

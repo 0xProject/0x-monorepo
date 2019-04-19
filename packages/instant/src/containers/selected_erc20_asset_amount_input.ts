@@ -47,10 +47,10 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     const isInputEnabled = processState === OrderProcessState.None || processState === OrderProcessState.Failure;
     const isInputDisabled = !isInputEnabled;
     const selectedAsset =
-        !_.isUndefined(state.selectedAsset) && state.selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+        state.selectedAsset !== undefined && state.selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
             ? (state.selectedAsset as ERC20Asset)
             : undefined;
-    const numberOfAssetsAvailable = _.isUndefined(state.availableAssets) ? undefined : state.availableAssets.length;
+    const numberOfAssetsAvailable = state.availableAssets === undefined ? undefined : state.availableAssets.length;
     const canSelectOtherAsset =
         numberOfAssetsAvailable && numberOfAssetsAvailable > 1
             ? isInputEnabled || processState === OrderProcessState.Success
@@ -84,7 +84,7 @@ const mapDispatchToProps = (
         // reset our buy state
         dispatch(actions.setBuyOrderStateNone());
 
-        if (!_.isUndefined(value) && value.isGreaterThan(0) && !_.isUndefined(asset)) {
+        if (value !== undefined && value.isGreaterThan(0) && asset !== undefined) {
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises

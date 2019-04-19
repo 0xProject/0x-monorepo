@@ -310,9 +310,8 @@ export class OrderStateUtils {
         if (assetDataUtils.isERC20AssetData(decodedAssetData) || assetDataUtils.isERC721AssetData(decodedAssetData)) {
             const balance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
             const tokenAddress = decodedAssetData.tokenAddress;
-            balances[tokenAddress] = _.isUndefined(initialBalances[tokenAddress])
-                ? balance
-                : balances[tokenAddress].plus(balance);
+            balances[tokenAddress] =
+                initialBalances[tokenAddress] === undefined ? balance : balances[tokenAddress].plus(balance);
         } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
             for (const assetDataElement of decodedAssetData.nestedAssetData) {
                 balances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, balances);
@@ -333,9 +332,8 @@ export class OrderStateUtils {
                 traderAddress,
             );
             const tokenAddress = decodedAssetData.tokenAddress;
-            allowances[tokenAddress] = _.isUndefined(initialAllowances[tokenAddress])
-                ? allowance
-                : allowances[tokenAddress].plus(allowance);
+            allowances[tokenAddress] =
+                initialAllowances[tokenAddress] === undefined ? allowance : allowances[tokenAddress].plus(allowance);
         } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
             for (const assetDataElement of decodedAssetData.nestedAssetData) {
                 allowances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, allowances);

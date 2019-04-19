@@ -98,7 +98,7 @@ class HeaderBase extends React.Component<HeaderProps> {
                         </NavLinks>
 
                         <MediaQuery minWidth={990}>
-                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" href="/explore">
+                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" to="/explore">
                                 Trade on 0x
                             </TradeButton>
                         </MediaQuery>
@@ -117,13 +117,14 @@ export const Header = withTheme(HeaderBase);
 const NavItem = (props: { link: NavItemProps; key: string }) => {
     const { link } = props;
     const Subnav = link.dropdownComponent;
-    const linkElement = _.isUndefined(link.url) ? (
-        <StyledAnchor href="#">{link.text}</StyledAnchor>
-    ) : (
-        <StyledNavLink to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
-            {link.text}
-        </StyledNavLink>
-    );
+    const linkElement =
+        link.url === undefined ? (
+            <StyledAnchor href="#">{link.text}</StyledAnchor>
+        ) : (
+            <StyledNavLink to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+                {link.text}
+            </StyledNavLink>
+        );
     return (
         <LinkWrap>
             {linkElement}

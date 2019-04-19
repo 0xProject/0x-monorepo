@@ -13,7 +13,7 @@ export class Heartbeater {
     }
 
     public start(intervalTimeMs: number): void {
-        if (!_.isUndefined(this._intervalId)) {
+        if (this._intervalId !== undefined) {
             throw new Error('Heartbeat is running, please stop before restarting');
         }
 

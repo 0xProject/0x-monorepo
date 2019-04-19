@@ -437,7 +437,7 @@ export class FillOrderCombinatorialUtils {
         lazyStore: BalanceAndProxyAllowanceLazyStore,
         fillRevertReasonIfExists: RevertReason | undefined,
     ): Promise<void> {
-        if (!_.isUndefined(fillRevertReasonIfExists)) {
+        if (fillRevertReasonIfExists !== undefined) {
             return expectTransactionFailedAsync(
                 this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
                 fillRevertReasonIfExists,

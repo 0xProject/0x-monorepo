@@ -15,7 +15,7 @@ import { runMigrationsAsync } from './migration';
     const packageJsonPath = path.join(__dirname, '..', 'package.json');
     const packageJsonString = fs.readFileSync(packageJsonPath, 'utf8');
     const packageJson = JSON.parse(packageJsonString);
-    if (_.isUndefined(packageJson.config) || _.isUndefined(packageJson.config.snapshot_name)) {
+    if (packageJson.config === undefined || packageJson.config.snapshot_name === undefined) {
         throw new Error(`Did not find 'snapshot_name' key in package.json config`);
     }
 

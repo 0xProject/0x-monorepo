@@ -115,7 +115,7 @@ export class ERC1155ProxyWrapper {
             valuesToTransfer,
             receiverCallbackData,
         );
-        if (!_.isUndefined(extraData)) {
+        if (extraData !== undefined) {
             encodedAssetData = `${encodedAssetData}${extraData}`;
         }
         const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
@@ -199,10 +199,10 @@ export class ERC1155ProxyWrapper {
                 // Mint tokens for each owner for this token
                 for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                     // tslint:disable-next-line:no-unused-variable
-                    if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress])) {
+                    if (fungibleHoldingsByOwner[tokenOwnerAddress] === undefined) {
                         fungibleHoldingsByOwner[tokenOwnerAddress] = {};
                     }
-                    if (_.isUndefined(fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress])) {
+                    if (fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress] === undefined) {
                         fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress] = {};
                     }
                     fungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString] =
@@ -221,13 +221,13 @@ export class ERC1155ProxyWrapper {
                 const tokenIdAsString = tokenId.toString();
                 this._nonFungibleTokenIds.push(tokenIdAsString);
                 _.each(this._tokenOwnerAddresses, async (tokenOwnerAddress: string, i: number) => {
-                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress])) {
+                    if (nonFungibleHoldingsByOwner[tokenOwnerAddress] === undefined) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress] = {};
                     }
-                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress])) {
+                    if (nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress] === undefined) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress] = {};
                     }
-                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString])) {
+                    if (nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString] === undefined) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress][dummyAddress][tokenIdAsString] = [];
                     }
                     this._nfts.push({ id: nftIds[i], tokenId });
@@ -278,26 +278,25 @@ export class ERC1155ProxyWrapper {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
                 // Fungible tokens
                 for (const tokenId of this._fungibleTokenIds) {
-                    if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress])) {
+                    if (tokenHoldingsByOwner[tokenOwnerAddress] === undefined) {
                         tokenHoldingsByOwner[tokenOwnerAddress] = {};
                     }
-                    if (_.isUndefined(tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress])) {
+                    if (tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress] === undefined) {
                         tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress] = {};
                     }
                     tokenHoldingsByOwner[tokenOwnerAddress][tokenAddress][tokenId] = balances[i++];
                 }
                 // Non-fungible tokens
                 for (const nft of this._nfts) {
-                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress])) {
+                    if (nonFungibleHoldingsByOwner[tokenOwnerAddress] === undefined) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress] = {};
                     }
-                    if (_.isUndefined(nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress])) {
+                    if (nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress] === undefined) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress] = {};
                     }
                     if (
-                        _.isUndefined(
-                            nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()],
-                        )
+                        nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()] ===
+                        undefined
                     ) {
                         nonFungibleHoldingsByOwner[tokenOwnerAddress][tokenAddress][nft.tokenId.toString()] = [];
                     }
@@ -348,25 +347,25 @@ export class ERC1155ProxyWrapper {
         const tokenWrapper = _.find(this._dummyTokenWrappers, (wrapper: Erc1155Wrapper) => {
             return wrapper.getContract().address === contractAddress;
         });
-        if (_.isUndefined(tokenWrapper)) {
+        if (tokenWrapper === undefined) {
             throw new Error(`Contract: ${contractAddress} was not deployed through ERC1155ProxyWrapper`);
         }
         return tokenWrapper;
     }
     private _getContractFromAddress(tokenAddress: string): ERC1155MintableContract {
         const tokenContractIfExists = _.find(this._dummyTokenWrappers, c => c.getContract().address === tokenAddress);
-        if (_.isUndefined(tokenContractIfExists)) {
+        if (tokenContractIfExists === undefined) {
             throw new Error(`Token: ${tokenAddress} was not deployed through ERC1155ProxyWrapper`);
         }
         return tokenContractIfExists.getContract();
     }
     private _validateDummyTokenContractsExistOrThrow(): void {
-        if (_.isUndefined(this._dummyTokenWrappers)) {
+        if (this._dummyTokenWrappers === undefined) {
             throw new Error('Dummy ERC1155 tokens not yet deployed, please call "deployDummyTokensAsync"');
         }
     }
     private _validateProxyContractExistsOrThrow(): void {
-        if (_.isUndefined(this._proxyContract)) {
+        if (this._proxyContract === undefined) {
             throw new Error('ERC1155 proxy contract not yet deployed, please call "deployProxyAsync"');
         }
     }

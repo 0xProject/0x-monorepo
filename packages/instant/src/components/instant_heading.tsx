@@ -104,7 +104,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
 
     private _renderAmountsSection(): React.ReactNode {
         if (
-            _.isUndefined(this.props.totalEthBaseUnitAmount) &&
+            this.props.totalEthBaseUnitAmount === undefined &&
             this.props.quoteRequestState !== AsyncProcessState.Pending
         ) {
             return null;
@@ -148,7 +148,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
         if (this.props.quoteRequestState === AsyncProcessState.Pending) {
             return <AmountPlaceholder isPulsating={true} color={PLACEHOLDER_COLOR} />;
         }
-        if (_.isUndefined(this.props.selectedAssetUnitAmount)) {
+        if (this.props.selectedAssetUnitAmount === undefined) {
             return <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />;
         }
         return amountFunction();

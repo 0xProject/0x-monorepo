@@ -72,7 +72,7 @@ export class BlockchainLifecycle {
         logUtils.warn('Done mining the minimum number of blocks.');
     }
     private async _getNodeTypeAsync(): Promise<NodeType> {
-        if (_.isUndefined(this._nodeType)) {
+        if (this._nodeType === undefined) {
             this._nodeType = await this._web3Wrapper.getNodeTypeAsync();
         }
         return this._nodeType;

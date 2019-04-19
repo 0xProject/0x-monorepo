@@ -1,6 +1,6 @@
 {
     "name": "ethereum-types",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -12,6 +12,7 @@
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
@@ -29,7 +30,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethereum-types/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^3.0.0",
+        "@0x/tslint-config": "^3.0.1",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
