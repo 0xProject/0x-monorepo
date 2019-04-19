@@ -17,15 +17,19 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/interfaces/IValidator.sol";
+import "../src/interfaces/IOrderValidator.sol";
 
 
-contract Validator is 
-    IValidator
+contract Validator is
+    IValidator,
+    IOrderValidator
 {
 
-    // The single valid signer for this wallet.
+    // The single valid signer for this validator.
     // solhint-disable-next-line var-name-mixedcase
     address internal VALID_SIGNER;
 
@@ -35,12 +39,12 @@ contract Validator is
         VALID_SIGNER = validSigner;
     }
 
+    // solhint-disable no-unused-vars
     /// @dev Verifies that a signature is valid. `signer` must match `VALID_SIGNER`.
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return Validity of signature.
-    // solhint-disable no-unused-vars
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
@@ -51,6 +55,25 @@ contract Validator is
         returns (bool isValid)
     {
         return (signerAddress == VALID_SIGNER);
+    }
+    // solhint-enable no-unused-vars
+
+    // solhint-disable no-unused-vars
+    /// @dev Verifies that an order and signature is valid. `signer` must match `VALID_SIGNER`.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of signature.
+    function isValidOrderSignature(
+        LibOrder.Order calldata order,
+        bytes32 orderHash,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bool isValid)
+    {
+        return (order.makerAddress == VALID_SIGNER);
     }
     // solhint-enable no-unused-vars
 }
