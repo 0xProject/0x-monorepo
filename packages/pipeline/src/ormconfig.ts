@@ -28,6 +28,7 @@ import {
     TokenOrderbookSnapshot,
     Transaction,
 } from './entities';
+import { ExchangeObservations } from './entities/price_data';
 
 const entities = [
     Block,
@@ -57,6 +58,7 @@ const entities = [
     TokenMetadata,
     TokenOrderbookSnapshot,
     Transaction,
+    ExchangeObservations,
 ];
 
 const config: ConnectionOptions = {
