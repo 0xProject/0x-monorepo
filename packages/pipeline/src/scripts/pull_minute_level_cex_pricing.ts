@@ -2,6 +2,7 @@ import { Connection, ConnectionOptions, createConnection, EntityManager, Timesta
 import * as ormConfig from '../ormconfig';
 import { ExchangeObservations } from '../entities/price_data';
 import axios from 'axios';
+import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange_events';
 
 
 const CRYPTOCOMPARE_API_KEY = process.env[0]
@@ -60,11 +61,28 @@ function getYesterdayBounds(): [number, number] {
     return [lowerBound / 1000, upperBound / 1000]
 }
 
+function makeExchangeObservations(market: Market, data: CryptoCompareOHLCVData[]): ExchangeObservations[] {
+    return data.map(item => {
+        let observation = new ExchangeObservations()
+        observation.timestamp = new Date(item.time * 1000)
+        observation.exchange = market.exchange
+        observation.base = market.base
+        observation.quote = market.quote
+        observation.open = item.open
+        observation.close = item.close
+        observation.high = item.high
+        observation.low = item.low
+        observation.volumeFrom = item.volumefrom
+        observation.volumeTo = item.volumeto
+        return observation;
+    })
+}
+
 
 async function main(connection: Connection): Promise<void> {
 
     let loadFailed = false;
-    let results: PriceObservations[] = []
+    let results: ExchangeObservations[] = []
 
     for (let i = 0; i < pairsToETL.length; i++) {
         let pair = pairsToETL[i]
@@ -90,23 +108,18 @@ async function main(connection: Connection): Promise<void> {
         const filteredOrderTimes = ohlcvData.filter((order) => {
             return (order.time >= lowerBound) && (order.time <= upperBound)
         })
-        filteredOrderTimes.forEach(element => {
-            let {time, volumefrom, volumeto, ...other} = element
-            results.push({
-                timestamp: new Date(time * 1000),
-                volumeFrom: volumefrom,
-                volumeTo: volumeto,
-                ...other,
-                ...pair
-            })
-        });
+        const observations = makeExchangeObservations(pair, filteredOrderTimes)
+        results = results.concat(observations)
+        console.info(`Fetched ${filteredOrderTimes.length} rows for market ${JSON.stringify(pair)}`)
     }
 
     if (loadFailed) {
         console.error("One or more loads failed. Exiting")
         return
     }
-    console.log(results)
+    
+    const repository = connection.getRepository(ExchangeObservations);
+    await repository.save(results)
 }
 
 (async () => {

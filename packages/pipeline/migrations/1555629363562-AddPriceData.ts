@@ -3,9 +3,11 @@ import {MigrationInterface, QueryRunner, Table} from "typeorm";
 const priceData = new Table({
     name: 'raw.exchange_observations',
     columns: [
-        {name: 'id', type: 'bigint', isPrimary: true},
+        {name: 'id', type: 'bigint', isPrimary: true, isGenerated: true, generationStrategy: 'increment'},
         {name: 'timestamp', type: 'timestamp', isNullable: false},
         {name: 'exchange', type: 'varchar', isNullable: false},
+        {name: 'base', type: 'varchar', isNullable: false},
+        {name: 'quote', type: 'varchar', isNullable: false},
         {name: 'open', type: 'float', isNullable: true},
         {name: 'close', type: 'float', isNullable: true},
         {name: 'high', type: 'float', isNullable: true},
