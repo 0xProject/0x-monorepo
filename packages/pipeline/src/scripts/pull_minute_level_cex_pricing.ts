@@ -2,23 +2,15 @@ import { Connection, ConnectionOptions, createConnection, EntityManager, Timesta
 import * as ormConfig from '../ormconfig';
 import { ExchangeObservations } from '../entities/price_data';
 import axios from 'axios';
+import { CryptoCompareOHLCVRecord, CryptoCompareOHLCVResponse } from '../data_sources/ohlcv_external/crypto_compare';
 
-const ONE_DAY_IN_MS = 3600 * 24 * 1000
+const MS_IN_SECS = 1000
+const ONE_DAY_IN_MS = 3600 * 24 * MS_IN_SECS
 
 interface Market {
     base: string
     quote: string
     exchange: string
-}
-
-interface CryptoCompareOHLCVData {
-    time: number
-    close: number
-    high: number
-    low: number
-    open: number
-    volumefrom: number
-    volumeto: number
 }
 
 /**
@@ -57,7 +49,7 @@ function getYesterdayBounds(): [number, number] {
     const yesterday = new Date(currentDay.getTime() - ONE_DAY_IN_MS)
     const lowerBound = yesterday.setUTCHours(0, 0, 0, 0)
     const upperBound = yesterday.setUTCHours(23,59,59,999)
-    return [lowerBound / 1000, upperBound / 1000]
+    return [lowerBound / MS_IN_SECS, upperBound / MS_IN_SECS]
 }
 
 /**
@@ -66,10 +58,10 @@ function getYesterdayBounds(): [number, number] {
  * @param market the market from where the `data` comes from
  * @param data a list of OHLCV data
  */
-function makeExchangeObservations(market: Market, data: CryptoCompareOHLCVData[]): ExchangeObservations[] {
+function makeExchangeObservations(market: Market, data: CryptoCompareOHLCVRecord[]): ExchangeObservations[] {
     return data.map(item => {
         let observation = new ExchangeObservations()
-        observation.timestamp = new Date(item.time * 1000)
+        observation.timestamp = new Date(item.time * MS_IN_SECS)
         observation.exchange = market.exchange
         observation.base = market.base
         observation.quote = market.quote
@@ -97,13 +89,14 @@ async function main(connection: Connection): Promise<void> {
             console.error(`API response for market ${JSON.stringify(pair)} returned status code ${response.status}`)
             return;
         }
-        if (response.data.Response != 'Success') {
+        let responseData = response.data as CryptoCompareOHLCVResponse
+        if (responseData.Response != 'Success') {
             console.error(`API response for market ${JSON.stringify(pair)} returned response ${response.data.Response}`)
             return;
         }
 
         // For any given day, we only want to only persist results that represent the last full day.
-        let ohlcvData = response.data.Data as CryptoCompareOHLCVData[]
+        let ohlcvData = responseData.Data;
         const [lowerBound, upperBound] = getYesterdayBounds()
         ohlcvData.sort((first, second) => {
             return first.time < second.time ? -1: 1
