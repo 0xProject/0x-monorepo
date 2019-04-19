@@ -32,6 +32,7 @@
         "src/interfaces/IExchange.sol",
         "src/interfaces/IExchangeCore.sol",
         "src/interfaces/IMatchOrders.sol",
+        "src/interfaces/IOrderValidator.sol",
         "src/interfaces/ISignatureValidator.sol",
         "src/interfaces/ITransactions.sol",
         "src/interfaces/IValidator.sol",
