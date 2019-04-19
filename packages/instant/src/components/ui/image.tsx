@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { ColorOption, styled } from '../../style/theme';
+import { styled } from '../../style/theme';
 
 export interface ImageProps extends React.HTMLAttributes<HTMLImageElement> {
     rounded?: boolean;

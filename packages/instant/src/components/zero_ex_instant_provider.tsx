@@ -1,3 +1,4 @@
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -18,7 +19,6 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
-import { AssetProxyId } from '@0x/types';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 

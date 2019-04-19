@@ -33,7 +33,6 @@ const ICON_COLOR = ColorOption.white;
 
 export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
-        const { selectedAsset } = this.props;
         return this._renderAssetHeadingContent();
     }
 
@@ -50,7 +49,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
         }
         return null;
     }
-
+    // tslint:disable-next-line:prefer-function-over-method
     private _renderERC721AssetHeading(asset: ERC721Asset): React.ReactNode {
         return (
             <Container width="100%" padding="30px 0px 0px">
