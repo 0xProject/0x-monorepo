@@ -3,8 +3,6 @@ import * as ormConfig from '../ormconfig';
 import { ExchangeObservations } from '../entities/price_data';
 import axios from 'axios';
 
-
-const CRYPTOCOMPARE_API_KEY = process.env[0]
 const ONE_DAY_IN_MS = 3600 * 24 * 1000
 
 interface Market {
@@ -23,8 +21,6 @@ interface CryptoCompareOHLCVData {
     volumeto: number
 }
 
-
-
 /**
  * Returns the current CryptoCompare URL required to fetch OHLCV data 
  * 
@@ -32,7 +28,7 @@ interface CryptoCompareOHLCVData {
  * @param limit a positive integer that represents hany results you want back 
  */
 function getCryptoCompareURL(market: Market, limit: number = 2000): string {
-    return `https://min-api.cryptocompare.com/data/histominute?fsym=${market.base}&tsym=${market.quote}&e=${market.exchange}&limit=${limit}&api_key=${CRYPTOCOMPARE_API_KEY}`
+    return `https://min-api.cryptocompare.com/data/histominute?fsym=${market.base}&tsym=${market.quote}&e=${market.exchange}&limit=${limit}`
 }
 
 /**
