@@ -2,35 +2,15 @@ import { Connection, ConnectionOptions, createConnection, EntityManager, Timesta
 import * as ormConfig from '../ormconfig';
 import { ExchangeObservations } from '../entities/price_data';
 import axios from 'axios';
-import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange_events';
 
 
 const CRYPTOCOMPARE_API_KEY = process.env[0]
 const ONE_DAY_IN_MS = 3600 * 24 * 1000
-function getCryptoCompareURL(market: Market, limit: number = 2000): string {
-    return `https://min-api.cryptocompare.com/data/histominute?fsym=${market.base}&tsym=${market.quote}&e=${market.exchange}&limit=${limit}&api_key=${CRYPTOCOMPARE_API_KEY}`
-}
 
 interface Market {
     base: string
     quote: string
     exchange: string
-}
-
-interface PriceObservations {
-    timestamp: Date
-    exchange: string
-    base: string
-    quote: string
-    open?: number
-    close?: number
-    high?: number
-    low?: number
-    volumeFrom?: number
-    volumeTo?: number
-    highestBig?: number
-    lowerAsk?: number
-    other?: object
 }
 
 interface CryptoCompareOHLCVData {
@@ -43,6 +23,21 @@ interface CryptoCompareOHLCVData {
     volumeto: number
 }
 
+
+
+/**
+ * Returns the current CryptoCompare URL required to fetch OHLCV data 
+ * 
+ * @param market a market instance that is compatible with CryptoCompare
+ * @param limit a positive integer that represents hany results you want back 
+ */
+function getCryptoCompareURL(market: Market, limit: number = 2000): string {
+    return `https://min-api.cryptocompare.com/data/histominute?fsym=${market.base}&tsym=${market.quote}&e=${market.exchange}&limit=${limit}&api_key=${CRYPTOCOMPARE_API_KEY}`
+}
+
+/**
+ * Other possible markets can be found at https://min-api.cryptocompare.com/documentation?key=Other&cat=allExchangesV2Endpoint
+ */
 const pairsToETL: Market[] = [
     {base: "ETH", quote: "USDC", exchange: "Binance"},
     {base: "ETH", quote: "USDT", exchange: "Binance"},
@@ -52,7 +47,15 @@ const pairsToETL: Market[] = [
     {base: "BAT", quote: "ETH", exchange: "Poloniex"},
 ]
 
-
+/**
+ * Returns the first and last UNIX epoch of the previous day
+ * 
+ * Example, if the current unix epoch is 1555714553 (Friday, April 19, 2019 10:55:53 PM) then
+ * this function will return, in order: [
+ *     1555545600 (Thursday, April 18, 2019 12:00:00 AM),
+ *     1555631999 (Thursday, April 18, 2019 11:59:59 )
+ * ]
+ */
 function getYesterdayBounds(): [number, number] {
     const currentDay = new Date(new Date().toUTCString())
     const yesterday = new Date(currentDay.getTime() - ONE_DAY_IN_MS)
@@ -61,6 +64,12 @@ function getYesterdayBounds(): [number, number] {
     return [lowerBound / 1000, upperBound / 1000]
 }
 
+/**
+ * Returns a exchange observation that can be persisted to Postgres
+ * 
+ * @param market the market from where the `data` comes from
+ * @param data a list of OHLCV data
+ */
 function makeExchangeObservations(market: Market, data: CryptoCompareOHLCVData[]): ExchangeObservations[] {
     return data.map(item => {
         let observation = new ExchangeObservations()
@@ -81,25 +90,23 @@ function makeExchangeObservations(market: Market, data: CryptoCompareOHLCVData[]
 
 async function main(connection: Connection): Promise<void> {
 
-    let loadFailed = false;
     let results: ExchangeObservations[] = []
 
     for (let i = 0; i < pairsToETL.length; i++) {
         let pair = pairsToETL[i]
         let url = getCryptoCompareURL(pair)
         let response = await axios.get(url)
+
         if (response.status != 200) {
             console.error(`API response for market ${JSON.stringify(pair)} returned status code ${response.status}`)
-            loadFailed = true
+            return;
         }
         if (response.data.Response != 'Success') {
             console.error(`API response for market ${JSON.stringify(pair)} returned response ${response.data.Response}`)
-            loadFailed = true
-        }
-        if (loadFailed) {
-            break
+            return;
         }
 
+        // For any given day, we only want to only persist results that represent the last full day.
         let ohlcvData = response.data.Data as CryptoCompareOHLCVData[]
         const [lowerBound, upperBound] = getYesterdayBounds()
         ohlcvData.sort((first, second) => {
@@ -112,12 +119,8 @@ async function main(connection: Connection): Promise<void> {
         results = results.concat(observations)
         console.info(`Fetched ${filteredOrderTimes.length} rows for market ${JSON.stringify(pair)}`)
     }
-
-    if (loadFailed) {
-        console.error("One or more loads failed. Exiting")
-        return
-    }
     
+    // Persist all the results to Postgres
     const repository = connection.getRepository(ExchangeObservations);
     await repository.save(results)
 }
