@@ -71,9 +71,14 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             walletDisplayName: props.walletDisplayName,
             selectedAsset,
             selectedAssetUnitAmount,
-            availableAssets: props.availableAssetDatas === undefined
-                ? undefined
-                : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
+            availableAssets:
+                props.availableAssetDatas === undefined
+                    ? undefined
+                    : assetUtils.createAssetsFromAssetDatas(
+                          props.availableAssetDatas,
+                          completeAssetMetaDataMap,
+                          networkId,
+                      ),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
         };
