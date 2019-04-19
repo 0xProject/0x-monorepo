@@ -56,6 +56,12 @@
                 >
                     Buy GNO
                 </button>
+                <button
+                    class="button is-success"
+                    onClick="renderWithAssetData('0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849')"
+                >
+                    Buy Axie
+                </button>
             </div>
         </div>
         <div id="zeroExInstantContainer"></div>
@@ -74,26 +80,7 @@
                 EXPONENTIAL_AT: 1000,
                 DECIMAL_PLACES: 78,
             });
-            const providedERC721Orders = [
-                {
-                    makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
-                    takerAddress: '0x0000000000000000000000000000000000000000',
-                    makerFee: '0',
-                    takerFee: '0',
-                    senderAddress: '0x0000000000000000000000000000000000000000',
-                    makerAssetAmount: '1',
-                    takerAssetAmount: '25000000000000000',
-                    makerAssetData:
-                        '0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849',
-                    takerAssetData: '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-                    exchangeAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
-                    feeRecipientAddress: '0x66a836664adc7c525c0cc4527dee8619d4faf669',
-                    salt: '42590862996212841020147351180680206562457006442037112428279886598164988134462',
-                    expirationTimeSeconds: '1557096915',
-                    signature:
-                        '0x1b5b61b4e1fdd697a04adb6b9c7b6c20f21992cbe12493a8990ae86ebdf9099d535f0294d43790c45eabf4f297178a0181766082fdaa8e4872b93d29180916f30002',
-                },
-            ];
+
             const additionalAssetMetaDataMap = {
                 '0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849': {
                     assetProxyId: '0x02571792',
@@ -104,7 +91,7 @@
                 },
             };
 
-            const providedERC20Orders = [
+            const providedOrders = [
                 // Order selling REP
                 {
                     senderAddress: '0x0000000000000000000000000000000000000000',
@@ -198,12 +185,7 @@
                     };
                 }
                 const renderOptionsOverrides = {
-                    orderSource:
-                        orderSourceOverride === 'provided_erc20'
-                            ? providedERC20Orders
-                            : orderSourceOverride === 'provided_erc721'
-                            ? providedERC721Orders
-                            : orderSourceOverride,
+                    orderSource: orderSourceOverride === 'provided' ? providedOrders : orderSourceOverride,
                     networkId: +queryParams.getQueryParamValue('networkId') || undefined,
                     defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
                     availableAssetDatas: availableAssetDatasString ? JSON.parse(availableAssetDatasString) : undefined,
