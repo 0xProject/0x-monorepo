@@ -245,7 +245,7 @@ export class DutchAuctionContract extends BaseContract {
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('DutchAuction', abi, address, supportedProvider, txDefaults);
+        super('DutchAuction', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
