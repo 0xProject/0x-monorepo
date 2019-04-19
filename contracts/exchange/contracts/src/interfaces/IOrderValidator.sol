@@ -19,22 +19,22 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
-import "../src/MixinSignatureValidator.sol";
-import "../src/MixinTransactions.sol";
-import "../src/MixinExchangeRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
-contract TestSignatureValidator is
-    LibEIP712ExchangeDomain,
-    MixinSignatureValidator,
-    MixinTransactions,
-    MixinExchangeRichErrors
-{
+contract IOrderValidator {
 
-    // solhint-disable no-empty-blocks
-    constructor (uint256 chainId)
-        public
-        LibEIP712ExchangeDomain(chainId, address(0))
-    {}
+    /// @dev Verifies that an order AND a signature is valid.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of order and signature.
+    function isValidOrderSignature(
+        LibOrder.Order calldata order,
+        bytes32 orderHash,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bool isValid);
 }
