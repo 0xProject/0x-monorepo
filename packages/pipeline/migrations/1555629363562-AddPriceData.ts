@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
 const priceData = new Table({
-    name: 'raw.price_data',
+    name: 'raw.exchange_observations',
     columns: [
         {name: 'id', type: 'bigint', isPrimary: true},
         {name: 'timestamp', type: 'timestamp', isNullable: false},
