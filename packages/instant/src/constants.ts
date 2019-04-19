@@ -16,7 +16,8 @@ export const ONE_SECOND_MS = 1000;
 export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 export const GIT_SHA = process.env.GIT_SHA;
 export const NODE_ENV = process.env.NODE_ENV;
-export const SLIPPAGE_PERCENTAGE = 0.2;
+export const ERC20_BUY_QUOTE_SLIPPAGE_PERCENTAGE = 0.2;
+export const ERC721_BUY_QUOTE_SLIPPAGE_PERCENTAGE = 0;
 export const NPM_PACKAGE_VERSION = process.env.NPM_PACKAGE_VERSION;
 export const DEFAULT_UNKOWN_ASSET_NAME = '???';
 export const ACCOUNT_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 5;
@@ -57,7 +58,7 @@ export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Mainnet]: `https://mainnet.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
     [Network.Kovan]: `https://kovan.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
 };
-export const ZERO_EX_SITE_URL = 'https://www.0xproject.com/';
+export const ZERO_EX_SITE_URL = 'https://www.0x.org/';
 export const BLOCK_POLLING_INTERVAL_MS = 10000; // 10s
 export const NO_ACCOUNT: AccountNotReady = {
     state: AccountState.None,

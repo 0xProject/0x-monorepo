@@ -1,10 +1,9 @@
-import { AssetProxyId } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState, BaseCurrency, ERC20Asset, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
+import { AccountState, BaseCurrency, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
@@ -100,13 +99,12 @@ export const asyncData = {
             selectedAssetUnitAmount !== undefined &&
             selectedAsset !== undefined &&
             selectedAssetUnitAmount.isGreaterThan(BIG_NUMBER_ZERO) &&
-            buyOrderState.processState === OrderProcessState.None &&
-            selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+            buyOrderState.processState === OrderProcessState.None
         ) {
             await buyQuoteUpdater.updateBuyQuoteAsync(
                 assetBuyer,
                 dispatch,
-                selectedAsset as ERC20Asset,
+                selectedAsset,
                 selectedAssetUnitAmount,
                 fetchOrigin,
                 {
