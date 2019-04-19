@@ -1,5 +1,4 @@
 import { AssetProxyId } from '@0x/types';
-import * as _ from 'lodash';
 import * as React from 'react';
 
 import PoweredByLogo from '../assets/powered_by_0x.svg';
@@ -88,7 +87,7 @@ export class ZeroExInstantContainer extends React.PureComponent<
     }
     private readonly _handleSymbolClick = (asset?: Asset): void => {
         // TODO: If ERC721 link open sea or allow to choose another ERC721?
-        if (_.isUndefined(asset) || asset.metaData.assetProxyId === AssetProxyId.ERC20) {
+        if (asset === undefined || asset.metaData.assetProxyId === AssetProxyId.ERC20) {
             analytics.trackTokenSelectorOpened();
             this.setState({
                 tokenSelectionPanelAnimationState: 'slidIn',

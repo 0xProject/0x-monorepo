@@ -48,19 +48,19 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             ...defaultState.assetMetaDataMap,
         };
 
-        const selectedAsset = _.isUndefined(props.defaultSelectedAssetData)
-            ? undefined
-            : assetUtils.createAssetFromAssetDataOrThrow(
-                  props.defaultSelectedAssetData,
-                  completeAssetMetaDataMap,
-                  networkId,
-              );
+        const selectedAsset =
+            props.defaultSelectedAssetData === undefined
+                ? undefined
+                : assetUtils.createAssetFromAssetDataOrThrow(
+                      props.defaultSelectedAssetData,
+                      completeAssetMetaDataMap,
+                      networkId,
+                  );
 
         let selectedAssetUnitAmount: BigNumber | undefined = new BigNumber(1);
-        if (!_.isUndefined(selectedAsset) && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
-            selectedAssetUnitAmount = _.isUndefined(props.defaultAssetBuyAmount)
-                ? undefined
-                : new BigNumber(props.defaultAssetBuyAmount);
+        if (selectedAsset !== undefined && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+            selectedAssetUnitAmount =
+                props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount);
         }
 
         // construct the final state

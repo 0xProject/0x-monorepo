@@ -38,7 +38,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
 
     private _renderAssetHeadingContent(): React.ReactNode {
         const { selectedAsset } = this.props;
-        if (_.isUndefined(selectedAsset)) {
+        if (selectedAsset === undefined) {
             // TODO: Only the ERC20 flow supports selecting assets.
             return this._renderERC20AssetHeading();
         }
