@@ -34,7 +34,7 @@ library LibAssetData {
     function balanceOf(address owner, bytes memory assetData)
         public
         view
-        returns (uint256 amount)
+        returns (uint256 balance)
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
         bytes memory assetDataBody = LibBytes.slice(assetData, 4, assetData.length);
@@ -75,11 +75,11 @@ library LibAssetData {
     function batchBalanceOf(address owner, bytes[] memory assetData)
         public
         view
-        returns (uint256[] memory amounts)
+        returns (uint256[] memory balances)
     {
-        amounts = new uint256[](assetData.length);
+        balances = new uint256[](assetData.length);
         for (uint256 i = 0; i < assetData.length; i++) {
-            amounts[i] = balanceOf(owner, assetData[i]);
+            balances[i] = balanceOf(owner, assetData[i]);
         }
     }
 
