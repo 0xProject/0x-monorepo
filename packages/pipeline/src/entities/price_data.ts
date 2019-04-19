@@ -31,16 +31,16 @@ export class ExchangeObservations {
     @Column({ type: 'float' })
     public low?: number
 
-    @Column({ type: 'float' })
+    @Column({ type: 'float', name: "volume_from" })
     public volumeFrom?: number
 
-    @Column({ type: 'float' })
+    @Column({ type: 'float', name: "volume_to" })
     public volumeTo?: number
 
-    @Column({ type: 'float' })
+    @Column({ type: 'float', name: "highest_bid" })
     public highestBid?: number
 
-    @Column({ type: 'float' })
+    @Column({ type: 'float', name: "lowest_ask" })
     public lowestAsk?: number
 
     @Column({ type: 'simple-json' })
