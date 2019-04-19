@@ -225,3 +225,8 @@ export interface DutchAuctionData {
     beginTimeSeconds: BigNumber;
     beginAmount: BigNumber;
 }
+
+export interface CoordinatorServerResponse {
+    signatures: string[];
+    expirationTimeSeconds: BigNumber;
+}
