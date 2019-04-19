@@ -87,13 +87,12 @@ export class ZeroExInstantContainer extends React.PureComponent<
         );
     }
     private readonly _handleSymbolClick = (asset?: Asset): void => {
+        // TODO: If ERC721 link open sea or allow to choose another ERC721?
         if (_.isUndefined(asset) || asset.metaData.assetProxyId === AssetProxyId.ERC20) {
             analytics.trackTokenSelectorOpened();
             this.setState({
                 tokenSelectionPanelAnimationState: 'slidIn',
             });
-        } else if (asset.metaData.assetProxyId === AssetProxyId.ERC721) {
-            // TODO: Link open sea or allow to choose another ERC721?
         }
     };
     private readonly _handlePanelCloseClickedX = (): void => {
