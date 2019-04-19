@@ -121,11 +121,11 @@ contract MixinSignatureValidator is
     /// @param signature Proof that the order has been signed by signer.
     /// @return True if the signature is valid for the given order and signer.
     function isValidOrderSignature(
-        Order calldata order,
+        Order memory order,
         address signerAddress,
-        bytes calldata signature
+        bytes memory signature
     )
-        external
+        public
         view
         returns (bool isValid)
     {
