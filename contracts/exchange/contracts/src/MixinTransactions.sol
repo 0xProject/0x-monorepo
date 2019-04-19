@@ -70,7 +70,7 @@ contract MixinTransactions is
         address signerAddress = transaction.signerAddress;
         if (signerAddress != msg.sender) {
             // Validate signature
-            if (!isValidSignature(
+            if (!isValidHashSignature(
                     transactionHash,
                     signerAddress,
                     signature)) {

@@ -36,7 +36,8 @@ contract MExchangeRichErrors is
         BAD_SIGNATURE,
         INVALID_LENGTH,
         UNSUPPORTED,
-        ILLEGAL
+        ILLEGAL,
+        INAPPROPRIATE_SIGNATURE_TYPE
     }
 
     enum AssetProxyDispatchErrorCodes {
@@ -82,6 +83,32 @@ contract MExchangeRichErrors is
     function SignatureWalletError(
         bytes32 orderHash,
         address signer,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory);
+
+    bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
+        bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"));
+
+    function SignatureOrderValidatorError(
+        bytes32 orderHash,
+        address signer,
+        bytes memory signature,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory);
+
+    bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
+        bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"));
+
+    function SignatureWalletOrderValidatorError(
+        bytes32 orderHash,
+        address wallet,
         bytes memory signature,
         bytes memory errorData
     )
