@@ -353,7 +353,8 @@ contract MixinExchangeCore is
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             address makerAddress = order.makerAddress;
-            if (!isValidSignature(
+            if (!isValidOrderWithHashSignature(
+                    order,
                     orderInfo.orderHash,
                     makerAddress,
                     signature)) {

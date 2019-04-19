@@ -17,6 +17,9 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 contract IWallet {
@@ -27,6 +30,20 @@ contract IWallet {
     /// @return Validity of order signature.
     function isValidSignature(
         bytes32 hash,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bool isValid);
+
+    /// @dev Verifies that an order AND a signature is valid.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param signature Proof of signing.
+    /// @return Validity of order and signature.
+    function isValidOrderSignature(
+        LibOrder.Order calldata order,
+        bytes32 orderHash,
         bytes calldata signature
     )
         external
