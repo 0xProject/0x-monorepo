@@ -64,7 +64,16 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
                     </Text>
                 </Flex>
                 <Flex>
-                    <Image src={asset.metaData.imageUrl} rounded={true} width="200px" height="200px" />
+                    <Container
+                        marginTop="15px"
+                        width="200px"
+                        height="200px"
+                        position="relative"
+                        overflow="hidden"
+                        borderRadius="50%"
+                    >
+                        <Image src={asset.metaData.imageUrl} height="100%" objectFit="cover" />
+                    </Container>
                 </Flex>
             </Container>
         );

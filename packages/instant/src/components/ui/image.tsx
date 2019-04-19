@@ -3,12 +3,16 @@ import * as React from 'react';
 import { styled } from '../../style/theme';
 
 export interface ImageProps extends React.HTMLAttributes<HTMLImageElement> {
-    rounded?: boolean;
+    height?: string;
+    width?: string;
+    objectFit?: string;
 }
 
 export const Image = styled.img<ImageProps>`
     && {
-        ${props => (props.rounded ? 'border-radius: 50%' : '')};
+        ${props => (props.height ? `height: ${props.height}` : '')};
+        ${props => (props.width ? `width: ${props.width}` : '')};
+        ${props => (props.objectFit ? `object-fit: ${props.objectFit}` : '')};
     }
 `;
 
