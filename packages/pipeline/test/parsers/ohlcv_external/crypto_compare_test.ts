@@ -6,6 +6,7 @@ import { CryptoCompareOHLCVRecord } from '../../../src/data_sources/ohlcv_extern
 import { OHLCVExternal } from '../../../src/entities';
 import { OHLCVMetadata, parseRecords } from '../../../src/parsers/ohlcv_external/crypto_compare';
 import { chaiSetup } from '../../utils/chai_setup';
+import { getYesterdayBounds } from '../../../src/scripts/pull_minute_level_cex_pricing';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -60,3 +61,12 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
         });
     });
 });
+
+
+describe('Date range utils', () => {
+    it('correctly calculates upper and lower bound of a day, given a date', () => {
+        const date = new Date(1555714553000)
+        const [lower, upper] = getYesterdayBounds(date)
+        expect(lower).to.eq(1555545600)
+    })
+})

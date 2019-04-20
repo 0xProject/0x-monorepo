@@ -44,8 +44,8 @@ const pairsToETL: Market[] = [
  *     1555631999 (Thursday, April 18, 2019 11:59:59 )
  * ]
  */
-function getYesterdayBounds(): [number, number] {
-    const currentDay = new Date(new Date().toUTCString())
+export function getYesterdayBounds(day?: Date): [number, number] {
+    const currentDay = day || new Date(new Date().toUTCString())
     const yesterday = new Date(currentDay.getTime() - ONE_DAY_IN_MS)
     const lowerBound = yesterday.setUTCHours(0, 0, 0, 0)
     const upperBound = yesterday.setUTCHours(23,59,59,999)
@@ -111,7 +111,7 @@ async function main(connection: Connection): Promise<void> {
     
     // Persist all the results to Postgres
     const repository = connection.getRepository(ExchangeObservations);
-    await repository.save(results)
+    await repository.save(results, {chunk: 1440})
 }
 
 (async () => {
