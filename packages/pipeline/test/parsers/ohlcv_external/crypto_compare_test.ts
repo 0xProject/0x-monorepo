@@ -65,8 +65,17 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
 
 describe('Date range utils', () => {
     it('correctly calculates upper and lower bound of a day, given a date', () => {
-        const date = new Date(1555714553000)
-        const [lower, upper] = getYesterdayBounds(date)
-        expect(lower).to.eq(1555545600)
+        const tests: [number, number, number][] = [
+            [1555714553000, 1555545600, 1555631999],
+            [1555720191367, 1555632000, 1555718399]
+        ]
+        tests.forEach(test => {
+            const [dateUTC, expectedLower, expectedUpper] = test
+            const date = new Date(dateUTC)
+            const [lower, upper] = getYesterdayBounds(date)
+
+            expect(lower).to.eq(expectedLower)
+            expect(upper).to.eq(expectedUpper)
+        });
     })
 })

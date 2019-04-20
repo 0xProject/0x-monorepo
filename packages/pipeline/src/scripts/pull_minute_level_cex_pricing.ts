@@ -49,7 +49,7 @@ export function getYesterdayBounds(day?: Date): [number, number] {
     const yesterday = new Date(currentDay.getTime() - ONE_DAY_IN_MS)
     const lowerBound = yesterday.setUTCHours(0, 0, 0, 0)
     const upperBound = yesterday.setUTCHours(23,59,59,999)
-    return [lowerBound / MS_IN_SECS, upperBound / MS_IN_SECS]
+    return [lowerBound / MS_IN_SECS, Math.floor(upperBound / MS_IN_SECS)]
 }
 
 /**
