@@ -28,6 +28,7 @@ export { OrderFactory } from './order_factory';
 export { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from './combinatorial_utils';
 export { TransactionFactory } from './transaction_factory';
 export { testWithReferenceFuncAsync } from './test_with_reference';
+export { exchangeDataEncoder } from './exchange_data_encoder';
 export {
     MarketBuyOrders,
     MarketSellOrders,
