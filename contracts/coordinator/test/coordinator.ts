@@ -9,7 +9,8 @@ import {
 } from '@0x/contracts-exchange';
 import {
     chaiSetup,
-    constants as devConstants,
+    constants,
+    exchangeDataEncoder,
     expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     OrderFactory,
@@ -25,7 +26,7 @@ import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
-import { ApprovalFactory, artifacts, constants, CoordinatorContract, exchangeDataEncoder } from '../src';
+import { ApprovalFactory, artifacts, CoordinatorContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -68,7 +69,7 @@ describe('Coordinator tests', () => {
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
-            devConstants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_DECIMALS,
         );
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -82,12 +83,12 @@ describe('Coordinator tests', () => {
 
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
-            devConstants.AWAIT_TRANSACTION_MINED_MS,
+            constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         await web3Wrapper.awaitTransactionSuccessAsync(
             await exchange.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
-            devConstants.AWAIT_TRANSACTION_MINED_MS,
+            constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
@@ -100,7 +101,7 @@ describe('Coordinator tests', () => {
 
         // Configure order defaults
         const defaultOrderParams = {
-            ...devConstants.STATIC_ORDER_PARAMS,
+            ...constants.STATIC_ORDER_PARAMS,
             senderAddress: coordinatorContract.address,
             makerAddress,
             feeRecipientAddress,
@@ -111,9 +112,9 @@ describe('Coordinator tests', () => {
                 chainId,
             },
         };
-        const makerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        const takerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
-        const feeRecipientPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(feeRecipientAddress)];
+        const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
+        const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
+        const feeRecipientPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(feeRecipientAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
@@ -148,7 +149,7 @@ describe('Coordinator tests', () => {
                         [approval.signature],
                         { from: takerAddress },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -180,7 +181,7 @@ describe('Coordinator tests', () => {
                         [],
                         { from: feeRecipientAddress },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -212,7 +213,7 @@ describe('Coordinator tests', () => {
                         [],
                         {
                             from: takerAddress,
-                            gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS,
+                            gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
                         },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -310,9 +311,9 @@ describe('Coordinator tests', () => {
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
-                        { from: takerAddress, gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS },
+                        { from: takerAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -344,9 +345,9 @@ describe('Coordinator tests', () => {
                         transaction.signature,
                         [],
                         [],
-                        { from: feeRecipientAddress, gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS },
+                        { from: feeRecipientAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',

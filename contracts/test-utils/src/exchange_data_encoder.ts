@@ -1,14 +1,13 @@
 import { artifacts, IExchangeContract } from '@0x/contracts-exchange';
-import { constants as devConstants, provider } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 
-import { constants } from './index';
+import { constants, provider } from './index';
 
 export const exchangeDataEncoder = {
-    encodeOrdersToExchangeData(fnName: string, orders: SignedOrder[]): string {
+    encodeOrdersToExchangeData(fnName: string, orders: SignedOrder[] = []): string {
         const exchangeInstance = new IExchangeContract(
             artifacts.IExchange.compilerOutput.abi,
-            devConstants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
             provider,
         );
         let data;
@@ -42,7 +41,7 @@ export const exchangeDataEncoder = {
         } else if (fnName === constants.BATCH_CANCEL_ORDERS) {
             data = exchangeInstance.batchCancelOrders.getABIEncodedTransactionData(orders);
         } else if (fnName === constants.CANCEL_ORDERS_UP_TO) {
-            data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(devConstants.ZERO_AMOUNT);
+            data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(constants.ZERO_AMOUNT);
         } else {
             throw new Error(`Error: ${fnName} not a supported function`);
         }
