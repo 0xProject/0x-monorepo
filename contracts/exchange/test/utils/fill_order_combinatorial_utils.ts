@@ -440,11 +440,7 @@ export class FillOrderCombinatorialUtils {
         lazyStore: BalanceAndProxyAllowanceLazyStore,
         fillRevertReasonIfExists: RevertReason | RevertError | undefined,
     ): Promise<void> {
-<<<<<<< HEAD
         if (fillRevertReasonIfExists !== undefined) {
-=======
-        if (!_.isUndefined(fillRevertReasonIfExists)) {
->>>>>>> In `@0x/contracts-exchange`: Update tests for rich reverts
             const tx = this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount });
             return expect(tx).to.revertWith(fillRevertReasonIfExists);
         }
