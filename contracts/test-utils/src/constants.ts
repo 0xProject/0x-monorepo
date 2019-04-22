@@ -71,4 +71,12 @@ export const constants = {
         'SET_SIGNATURE_VALIDATOR_APPROVAL',
     ],
     KECCAK256_NULL: ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.SHA3_NULL)),
+    SINGLE_FILL_FN_NAMES: ['fillOrder', 'fillOrKillOrder', 'fillOrderNoThrow'],
+    BATCH_FILL_FN_NAMES: ['batchFillOrders', 'batchFillOrKillOrders', 'batchFillOrdersNoThrow'],
+    MARKET_FILL_FN_NAMES: ['marketBuyOrders', 'marketBuyOrdersNoThrow', 'marketSellOrders', 'marketSellOrdersNoThrow'],
+    MATCH_ORDERS: 'matchOrders',
+    CANCEL_ORDER: 'cancelOrder',
+    BATCH_CANCEL_ORDERS: 'batchCancelOrders',
+    CANCEL_ORDERS_UP_TO: 'cancelOrdersUpTo',
+    TIME_BUFFER: new BigNumber(1000),
 };
