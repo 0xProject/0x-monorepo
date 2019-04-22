@@ -37,27 +37,19 @@ library LibAssetData {
         returns (uint256 balance)
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
-        bytes memory assetDataBody = LibBytes.slice(assetData, 4, assetData.length);
-
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
         } else if (proxyId == ERC721_PROXY_ID) {
-            (bytes4 proxyId, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
+            (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             return getERC721TokenOwner(tokenAddress, tokenId) == owner ? 1 : 0;
         } else if (proxyId == ERC1155_PROXY_ID) {
-            (address tokenAddress, uint256[] memory tokenIds, , ) = abi.decode( // solhint-disable-line indent
-                assetDataBody,
-                (address, uint256[], uint256[], bytes) // solhint-disable-line indent
-            );
+            (, address tokenAddress, uint256[] memory tokenIds, , ) = decodeERC1155AssetData(assetData);
             address[] memory owners = new address[](1);
             owners[0] = owner;
             return IERC1155(tokenAddress).balanceOfBatch(owners, tokenIds)[0];
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
             uint256 lowestAssetBalance = ~uint256(0);
-            (uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = abi.decode( // solhint-disable-line indent
-                assetDataBody,
-                (uint256[], bytes[]) // solhint-disable-line indent
-            );
+            (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
                 uint256 assetBalance = balanceOf(owner, nestedAssetData[i]) / assetAmounts[i];
                 if (assetBalance < lowestAssetBalance) {
@@ -91,20 +83,18 @@ library LibAssetData {
         returns (uint256 amount)
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
-        bytes memory assetDataBody = LibBytes.slice(assetData, 4, assetData.length);
 
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).allowance(owner, spender);
         } else if (proxyId == ERC721_PROXY_ID) {
-            (address tokenAddress, uint256 tokenId) = abi.decode(assetDataBody, (address, uint256));
+            (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             if (spender == IERC721Token(tokenAddress).getApproved(tokenId)) {
                 return 1;
             } else {
                 return 0;
             }
         } else if (proxyId == ERC1155_PROXY_ID) {
-            // solhint-disable-next-line indent
-            (address tokenAddress, , , ) = abi.decode(assetDataBody, (address, uint256[], uint256[], bytes));
+            (, address tokenAddress, , , ) = decodeERC1155AssetData(assetData);
             if (IERC1155(tokenAddress).isApprovedForAll(owner, spender)) {
                 return 1;
             } else {
@@ -113,7 +103,7 @@ library LibAssetData {
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
             uint256 lowestAssetAllowance = ~uint256(0);
             // solhint-disable-next-line indent
-            (, bytes[] memory nestedAssetData) = abi.decode(assetDataBody, (uint256[], bytes[]));
+            (, , bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
                 uint256 assetAllowance = allowance(owner, spender, nestedAssetData[i]);
                 if (assetAllowance < lowestAssetAllowance) {
