@@ -249,7 +249,7 @@ describe('LibAssetData', () => {
                 tokenOwnerAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ),
-        ).to.bignumber.equal(numberOfERC721Tokens);
+        ).to.bignumber.equal(1);
     });
 
     it('should query ERC1155 balanceOfBatch by asset data', async () => {
@@ -351,7 +351,7 @@ describe('LibAssetData', () => {
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ]),
-        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(numberOfERC721Tokens)]);
+        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(1)]);
     });
 
     it('should query allowances for a batch of asset data strings', async () => {
@@ -363,5 +363,19 @@ describe('LibAssetData', () => {
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ]),
         ).to.deep.equal([new BigNumber(1), new BigNumber(1)]);
+    });
+
+    describe('getERC721TokenOwner', async () => {
+        it('should return the null address when tokenId is not owned', async () => {
+            const nonexistentTokenId = new BigNumber(1234567890);
+            expect(
+                await libAssetData.getERC721TokenOwner.callAsync(erc721TokenAddress, nonexistentTokenId),
+            ).to.be.equal(constants.NULL_ADDRESS);
+        });
+        it('should return the owner address when tokenId is owned', async () => {
+            expect(
+                await libAssetData.getERC721TokenOwner.callAsync(erc721TokenAddress, firstERC721TokenId),
+            ).to.be.equal(tokenOwnerAddress);
+        });
     });
 });

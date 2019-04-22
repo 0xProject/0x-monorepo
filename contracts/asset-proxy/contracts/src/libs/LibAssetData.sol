@@ -42,7 +42,8 @@ library LibAssetData {
         if (proxyId == ERC20_PROXY_ID) {
             return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
         } else if (proxyId == ERC721_PROXY_ID) {
-            return IERC721Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
+            (bytes4 proxyId, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
+            return getERC721TokenOwner(tokenAddress, tokenId) == owner ? 1 : 0;
         } else if (proxyId == ERC1155_PROXY_ID) {
             (address tokenAddress, uint256[] memory tokenIds, , ) = abi.decode( // solhint-disable-line indent
                 assetDataBody,
@@ -246,5 +247,44 @@ library LibAssetData {
 
         // solhint-disable-next-line indent
         (amounts, nestedAssetData) = abi.decode(LibBytes.slice(assetData, 4, assetData.length), (uint256[], bytes[]));
+    }
+
+    /// @dev Calls `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
+    /// @param token Address of ERC721 token.
+    /// @param tokenId The identifier for the specific NFT.
+    /// @return Owner of tokenId or null address if unowned.
+    function getERC721TokenOwner(address token, uint256 tokenId)
+        public
+        view
+        returns (address owner)
+    {
+        assembly {
+            // load free memory pointer
+            let cdStart := mload(64)
+
+            // bytes4(keccak256(ownerOf(uint256))) = 0x6352211e
+            mstore(cdStart, 0x6352211e00000000000000000000000000000000000000000000000000000000)
+            mstore(add(cdStart, 4), tokenId)
+
+            // staticcall `ownerOf(tokenId)`
+            // `ownerOf` will revert if tokenId is not owned
+            let success := staticcall(
+                gas,      // forward all gas
+                token,    // call token contract
+                cdStart,  // start of calldata
+                36,       // length of input is 36 bytes
+                cdStart,  // write output over input
+                32        // size of output is 32 bytes
+            )
+
+            // Success implies that tokenId is owned
+            // Copy owner from return data if successful
+            if success {
+                owner := mload(cdStart)
+            }
+        }
+
+        // Owner initialized to address(0), no need to modify if call is unsuccessful
+        return owner;
     }
 }
