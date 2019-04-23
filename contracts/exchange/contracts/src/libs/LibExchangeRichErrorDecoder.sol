@@ -220,7 +220,7 @@ contract LibExchangeRichErrorDecoder is
     {
         _assertSelectorBytes(encoded, FILL_ERROR_SELECTOR);
         errorCode = FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
+        orderHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 
     /// @dev Decompose an ABI-encoded OrderEpochError.
