@@ -331,8 +331,8 @@ contract MixinExchangeCore is
         // An order can only be filled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
             rrevert(OrderStatusError(
-                OrderStatus(orderInfo.orderStatus),
-                orderInfo.orderHash
+                orderInfo.orderHash,
+                OrderStatus(orderInfo.orderStatus)
             ));
         }
 
@@ -441,7 +441,10 @@ contract MixinExchangeCore is
         // Ensure order is valid
         // An order can only be cancelled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
-            rrevert(OrderStatusError(OrderStatus(orderInfo.orderStatus), orderInfo.orderHash));
+            rrevert(OrderStatusError(
+                orderInfo.orderHash,
+                OrderStatus(orderInfo.orderStatus)
+            ));
         }
 
         // Validate sender is allowed to cancel this order

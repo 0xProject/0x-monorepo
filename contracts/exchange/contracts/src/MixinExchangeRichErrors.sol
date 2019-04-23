@@ -29,8 +29,8 @@ contract MixinExchangeRichErrors is
 {
     // solhint-disable func-name-mixedcase
     function SignatureError(
-        SignatureErrorCodes error,
-        bytes32 orderHash,
+        SignatureErrorCodes errorCode,
+        bytes32 hash,
         address signer,
         bytes memory signature
     )
@@ -40,15 +40,15 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             SIGNATURE_ERROR_SELECTOR,
-            error,
-            orderHash,
+            errorCode,
+            hash,
             signer,
             signature
         );
     }
 
     function SignatureValidatorError(
-        bytes32 orderHash,
+        bytes32 hash,
         address signer,
         bytes memory signature,
         bytes memory errorData
@@ -59,7 +59,7 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             SIGNATURE_VALIDATOR_ERROR_SELECTOR,
-            orderHash,
+            hash,
             signer,
             signature,
             errorData
@@ -67,7 +67,7 @@ contract MixinExchangeRichErrors is
     }
 
     function SignatureWalletError(
-        bytes32 orderHash,
+        bytes32 hash,
         address signer,
         bytes memory signature,
         bytes memory errorData
@@ -78,7 +78,7 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             SIGNATURE_WALLET_ERROR_SELECTOR,
-            orderHash,
+            hash,
             signer,
             signature,
             errorData
@@ -124,8 +124,8 @@ contract MixinExchangeRichErrors is
     }
 
     function OrderStatusError(
-        LibOrder.OrderStatus orderStatus,
-        bytes32 orderHash
+        bytes32 orderHash,
+        LibOrder.OrderStatus orderStatus
     )
         internal
         pure
@@ -133,8 +133,8 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             ORDER_STATUS_ERROR_SELECTOR,
-            orderStatus,
-            orderHash
+            orderHash,
+            orderStatus
         );
     }
 
@@ -169,7 +169,7 @@ contract MixinExchangeRichErrors is
     }
 
     function FillError(
-        FillErrorCodes error,
+        FillErrorCodes errorCode,
         bytes32 orderHash
     )
         internal
@@ -178,7 +178,7 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             FILL_ERROR_SELECTOR,
-            error,
+            errorCode,
             orderHash
         );
     }
@@ -229,7 +229,7 @@ contract MixinExchangeRichErrors is
     }
 
     function AssetProxyDispatchError(
-        AssetProxyDispatchErrorCodes error,
+        AssetProxyDispatchErrorCodes errorCode,
         bytes32 orderHash,
         bytes memory assetData
     )
@@ -239,7 +239,7 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             ASSET_PROXY_DISPATCH_ERROR_SELECTOR,
-            error,
+            errorCode,
             orderHash,
             assetData
         );
@@ -278,7 +278,7 @@ contract MixinExchangeRichErrors is
     }
 
     function TransactionError(
-        TransactionErrorCodes error,
+        TransactionErrorCodes errorCode,
         bytes32 transactionHash
     )
         internal
@@ -287,7 +287,7 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             TRANSACTION_ERROR_SELECTOR,
-            error,
+            errorCode,
             transactionHash
         );
     }
