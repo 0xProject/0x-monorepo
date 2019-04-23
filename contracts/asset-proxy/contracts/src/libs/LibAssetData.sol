@@ -43,10 +43,20 @@ library LibAssetData {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             return getERC721TokenOwner(tokenAddress, tokenId) == owner ? 1 : 0;
         } else if (proxyId == ERC1155_PROXY_ID) {
-            (, address tokenAddress, uint256[] memory tokenIds, , ) = decodeERC1155AssetData(assetData);
-            address[] memory owners = new address[](1);
-            owners[0] = owner;
-            return IERC1155(tokenAddress).balanceOfBatch(owners, tokenIds)[0];
+            uint256 lowestTokenBalance = 0;
+            (
+                ,
+                address tokenAddress,
+                uint256[] memory tokenIds,
+                uint256[] memory tokenValues,
+            ) = decodeERC1155AssetData(assetData);
+            for (uint256 i = 0; i < tokenIds.length; i++) {
+                uint256 tokenBalance = IERC1155(tokenAddress).balanceOf(owner, tokenIds[i]) / tokenValues[i];
+                if (tokenBalance < lowestTokenBalance || lowestTokenBalance == 0) {
+                    lowestTokenBalance = tokenBalance;
+                }
+            }
+            return lowestTokenBalance;
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
             uint256 lowestAssetBalance = 0;
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);

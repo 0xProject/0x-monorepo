@@ -252,7 +252,7 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(1);
     });
 
-    it('should query ERC1155 balanceOfBatch by asset data', async () => {
+    it('should query ERC1155 balances by asset data', async () => {
         expect(
             await libAssetData.balanceOf.callAsync(
                 tokenOwnerAddress,
