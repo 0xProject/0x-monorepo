@@ -17,7 +17,7 @@ This repository contains a few helpful scripts for working with this mono repo.
 In order to reduce the size of this repo, we try and use the same versions of dependencies between packages. To make it easier to discover version discrepancies between packages, you can run:
 
 ```bash
-yarn scripts:deps_versions
+yarn script:deps_versions
 ```
 
 This will list out any dependencies that differ in versions between packages.
