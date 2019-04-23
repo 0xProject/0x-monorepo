@@ -940,7 +940,7 @@ function validationErrorToRevertError(order: Order, reason: RevertReason): Rever
         case RevertReason.InvalidTaker:
             return new ExchangeRevertErrors.InvalidTakerError(orderHash);
         case RevertReason.OrderUnfillable:
-            return new ExchangeRevertErrors.OrderStatusError(undefined, orderHash);
+            return new ExchangeRevertErrors.OrderStatusError(orderHash);
         case RevertReason.InvalidTakerAmount:
             return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount, orderHash);
         case RevertReason.TakerOverpay:

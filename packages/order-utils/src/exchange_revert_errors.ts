@@ -85,8 +85,8 @@ export class SignatureWalletOrderValidatorError extends RevertError {
 }
 
 export class OrderStatusError extends RevertError {
-    constructor(status?: OrderStatus, orderHash?: string) {
-        super('OrderStatusError(uint8 status, bytes32 orderHash)', { status, orderHash });
+    constructor(orderHash?: string, status?: OrderStatus) {
+        super('OrderStatusError(bytes32 orderHash, uint8 status)', { orderHash, status });
     }
 }
 

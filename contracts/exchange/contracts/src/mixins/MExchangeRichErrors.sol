@@ -55,8 +55,8 @@ contract MExchangeRichErrors is
         bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"));
 
     function SignatureError(
-        SignatureErrorCodes error,
-        bytes32 orderHash,
+        SignatureErrorCodes errorCode,
+        bytes32 hash,
         address signer,
         bytes memory signature
     )
@@ -68,7 +68,7 @@ contract MExchangeRichErrors is
         bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"));
 
     function SignatureValidatorError(
-        bytes32 orderHash,
+        bytes32 hash,
         address signer,
         bytes memory signature,
         bytes memory errorData
@@ -81,7 +81,7 @@ contract MExchangeRichErrors is
         bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"));
 
     function SignatureWalletError(
-        bytes32 orderHash,
+        bytes32 hash,
         address signer,
         bytes memory signature,
         bytes memory errorData
@@ -117,11 +117,11 @@ contract MExchangeRichErrors is
         returns (bytes memory);
 
     bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
-        bytes4(keccak256("OrderStatusError(uint8,bytes32)"));
+        bytes4(keccak256("OrderStatusError(bytes32,uint8)"));
 
     function OrderStatusError(
-        LibOrder.OrderStatus orderStatus,
-        bytes32 orderHash
+        bytes32 orderHash,
+        LibOrder.OrderStatus orderStatus
     )
         internal
         pure
@@ -153,7 +153,7 @@ contract MExchangeRichErrors is
         bytes4(keccak256("FillError(uint8,bytes32)"));
 
     function FillError(
-        FillErrorCodes error,
+        FillErrorCodes errorCode,
         bytes32 orderHash
     )
         internal
@@ -197,7 +197,7 @@ contract MExchangeRichErrors is
         bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"));
 
     function AssetProxyDispatchError(
-        AssetProxyDispatchErrorCodes error,
+        AssetProxyDispatchErrorCodes errorCode,
         bytes32 orderHash,
         bytes memory assetData
     )
@@ -232,7 +232,7 @@ contract MExchangeRichErrors is
         bytes4(keccak256("TransactionError(uint8,bytes32)"));
 
     function TransactionError(
-        TransactionErrorCodes error,
+        TransactionErrorCodes errorCode,
         bytes32 transactionHash
     )
         internal
