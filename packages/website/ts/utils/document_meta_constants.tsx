@@ -13,8 +13,7 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
     },
     EXPLORE: {
         title: '0x Explore: Trade on 0x Relayers',
-        description:
-            'Check out the wide range of projects and businesses building in the 0x ecosystem!',
+        description: 'Check out the wide range of projects and businesses building in the 0x ecosystem!',
         keywords: '',
     },
     WHY: {
