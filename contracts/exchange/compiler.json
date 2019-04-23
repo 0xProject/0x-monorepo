@@ -39,6 +39,7 @@
         "src/interfaces/IValidator.sol",
         "src/interfaces/IWallet.sol",
         "src/interfaces/IWrapperFunctions.sol",
+        "src/libs/LibExchangeRichErrorDecoder.sol",
         "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",
         "test/TestExchangeInternals.sol",
