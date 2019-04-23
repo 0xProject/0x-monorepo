@@ -2,6 +2,6 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": [],
+    "files": ["generated-artifacts/RichRevertsDecoder.json"],
     "exclude": ["./deploy/solc/solc_bin"]
 }
