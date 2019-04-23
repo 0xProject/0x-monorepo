@@ -48,11 +48,11 @@ library LibAssetData {
             owners[0] = owner;
             return IERC1155(tokenAddress).balanceOfBatch(owners, tokenIds)[0];
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
-            uint256 lowestAssetBalance = ~uint256(0);
+            uint256 lowestAssetBalance = 0;
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
                 uint256 assetBalance = balanceOf(owner, nestedAssetData[i]) / assetAmounts[i];
-                if (assetBalance < lowestAssetBalance) {
+                if (assetBalance < lowestAssetBalance || lowestAssetBalance == 0) {
                     lowestAssetBalance = assetBalance;
                 }
             }
@@ -101,17 +101,14 @@ library LibAssetData {
                 return 0;
             }
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
-            uint256 lowestAssetAllowance = ~uint256(0);
+            uint256 lowestAssetAllowance = 0;
             // solhint-disable-next-line indent
             (, , bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
                 uint256 assetAllowance = allowance(owner, spender, nestedAssetData[i]);
-                if (assetAllowance < lowestAssetAllowance) {
+                if (assetAllowance < lowestAssetAllowance || lowestAssetAllowance == 0) {
                     lowestAssetAllowance = assetAllowance;
                 }
-            }
-            if (lowestAssetAllowance == ~uint256(0)) {
-                lowestAssetAllowance = 0;
             }
             return lowestAssetAllowance;
         } else {
