@@ -31,7 +31,7 @@ library LibAssetData {
     bytes4 constant public ERC1155_PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
     bytes4 constant public MULTI_ASSET_PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));
 
-    function balanceOf(address owner, bytes memory assetData)
+    function getBalance(address owner, bytes memory assetData)
         public
         view
         returns (uint256 balance)
@@ -62,7 +62,7 @@ library LibAssetData {
             uint256 lowestAssetBalance = 0;
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
-                uint256 assetBalance = balanceOf(owner, nestedAssetData[i]) / assetAmounts[i];
+                uint256 assetBalance = getBalance(owner, nestedAssetData[i]) / assetAmounts[i];
                 if (assetBalance < lowestAssetBalance || lowestAssetBalance == 0) {
                     lowestAssetBalance = assetBalance;
                 }
@@ -76,14 +76,14 @@ library LibAssetData {
         }
     }
 
-    function batchBalanceOf(address owner, bytes[] memory assetData)
+    function batchGetBalance(address owner, bytes[] memory assetData)
         public
         view
         returns (uint256[] memory balances)
     {
         balances = new uint256[](assetData.length);
         for (uint256 i = 0; i < assetData.length; i++) {
-            balances[i] = balanceOf(owner, assetData[i]);
+            balances[i] = getBalance(owner, assetData[i]);
         }
     }
 

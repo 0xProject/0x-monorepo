@@ -241,7 +241,7 @@ describe('LibAssetData', () => {
 
     it('should query ERC20 balance by asset data', async () => {
         expect(
-            await libAssetData.balanceOf.callAsync(
+            await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
             ),
@@ -250,7 +250,7 @@ describe('LibAssetData', () => {
 
     it('should query ERC721 balance by asset data', async () => {
         expect(
-            await libAssetData.balanceOf.callAsync(
+            await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ),
@@ -259,7 +259,7 @@ describe('LibAssetData', () => {
 
     it('should query ERC1155 balances by asset data', async () => {
         expect(
-            await libAssetData.balanceOf.callAsync(
+            await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
                 await libAssetData.encodeERC1155AssetData.callAsync(
                     erc1155MintableAddress,
@@ -273,7 +273,7 @@ describe('LibAssetData', () => {
 
     it('should query multi-asset batch balance by asset data', async () => {
         expect(
-            await libAssetData.balanceOf.callAsync(
+            await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
                 await libAssetData.encodeMultiAssetData.callAsync(
                     [new BigNumber(1), new BigNumber(1)],
@@ -372,7 +372,7 @@ describe('LibAssetData', () => {
 
     it('should query balances for a batch of asset data strings', async () => {
         expect(
-            await libAssetData.batchBalanceOf.callAsync(tokenOwnerAddress, [
+            await libAssetData.batchGetBalance.callAsync(tokenOwnerAddress, [
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ]),
