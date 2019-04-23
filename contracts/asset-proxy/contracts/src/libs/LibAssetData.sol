@@ -139,6 +139,24 @@ library LibAssetData {
         }
     }
 
+    function getBalanceAndAllowance(address owner, address spender, bytes memory assetData)
+        public
+        view
+        returns (uint256 balance, uint256 allowance)
+    {
+        balance = getBalance(owner, assetData);
+        allowance = getAllowance(owner, spender, assetData);
+    }
+
+    function batchGetBalanceAndAllowance(address owner, address spender, bytes[] memory assetData)
+        public
+        view
+        returns (uint256[] memory balances, uint256[] memory allowances)
+    {
+        balances = batchGetBalance(owner, assetData);
+        allowances = batchGetAllowance(owner, spender, assetData);
+    }
+
     function encodeERC20AssetData(address tokenAddress)
         public
         pure

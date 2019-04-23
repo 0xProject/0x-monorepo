@@ -403,4 +403,24 @@ describe('LibAssetData', () => {
             ).to.be.equal(tokenOwnerAddress);
         });
     });
+
+    it('should query balance and allowance together, from asset data', async () => {
+        await setERC20AllowanceAsync();
+        expect(
+            await libAssetData.getBalanceAndAllowance.callAsync(
+                tokenOwnerAddress,
+                approvedSpenderAddress,
+                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+            ),
+        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(1)]);
+    });
+
+    it('should query balances and allowances together, from an asset data array', async () => {
+        await setERC20AllowanceAsync();
+        expect(
+            await libAssetData.batchGetBalanceAndAllowance.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
+                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+            ]),
+        ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [new BigNumber(1)]]);
+    });
 });
