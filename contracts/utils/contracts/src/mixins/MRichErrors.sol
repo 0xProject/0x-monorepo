@@ -18,13 +18,18 @@
 
 pragma solidity ^0.5.5;
 
+import "./MRichErrorTypes.sol";
 
-contract MRichErrors {
+contract MRichErrors is
+    MRichErrorTypes
+{
     // solhint-disable func-name-mixedcase
 
-    bytes4 internal constant STANDARD_ERROR_SELECTOR =
-        bytes4(keccak256("Error(string)"));
-
+    /// @dev ABI encode a standard, string revert error payload.
+    ///      This is the same payload that would be included by a `revert(string)`
+    ///      solidity statement. It has the function signature `Error(string)`.
+    /// @param message The error string.
+    /// @return The ABI encoded error.
     function StandardError(
         string memory message
     )

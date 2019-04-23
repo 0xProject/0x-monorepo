@@ -20,40 +20,14 @@ pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/mixins/MRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "./MExchangeRichErrorTypes.sol";
 
 
 contract MExchangeRichErrors is
+    MExchangeRichErrorTypes,
     MRichErrors
 {
-    enum FillErrorCodes {
-        INVALID_TAKER_AMOUNT,
-        TAKER_OVERPAY,
-        OVERFILL,
-        INVALID_FILL_PRICE
-    }
-
-    enum SignatureErrorCodes {
-        BAD_SIGNATURE,
-        INVALID_LENGTH,
-        UNSUPPORTED,
-        ILLEGAL,
-        INAPPROPRIATE_SIGNATURE_TYPE
-    }
-
-    enum AssetProxyDispatchErrorCodes {
-        INVALID_ASSET_DATA_LENGTH,
-        UNKNOWN_ASSET_PROXY
-    }
-
-    enum TransactionErrorCodes {
-        NO_REENTRANCY,
-        ALREADY_EXECUTED
-    }
-
     // solhint-disable func-name-mixedcase
-    bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"));
-
     function SignatureError(
         SignatureErrorCodes errorCode,
         bytes32 hash,
@@ -63,9 +37,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"));
 
     function SignatureValidatorError(
         bytes32 hash,
@@ -77,9 +48,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant SIGNATURE_WALLET_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"));
-
     function SignatureWalletError(
         bytes32 hash,
         address signer,
@@ -89,9 +57,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"));
 
     function SignatureOrderValidatorError(
         bytes32 orderHash,
@@ -103,9 +68,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"));
-
     function SignatureWalletOrderValidatorError(
         bytes32 orderHash,
         address wallet,
@@ -116,9 +78,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
-        bytes4(keccak256("OrderStatusError(bytes32,uint8)"));
-
     function OrderStatusError(
         bytes32 orderHash,
         LibOrder.OrderStatus orderStatus
@@ -126,9 +85,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant INVALID_SENDER_ERROR_SELECTOR =
-        bytes4(keccak256("InvalidSenderError(bytes32,address)"));
 
     function InvalidSenderError(
         bytes32 orderHash,
@@ -138,9 +94,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant INVALID_MAKER_ERROR_SELECTOR =
-        bytes4(keccak256("InvalidMakerError(bytes32,address)"));
-
     function InvalidMakerError(
         bytes32 orderHash,
         address maker
@@ -148,9 +101,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant FILL_ERROR_SELECTOR =
-        bytes4(keccak256("FillError(uint8,bytes32)"));
 
     function FillError(
         FillErrorCodes errorCode,
@@ -160,9 +110,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant INVALID_TAKER_ERROR_SELECTOR =
-        bytes4(keccak256("InvalidTakerError(bytes32,address)"));
-
     function InvalidTakerError(
         bytes32 orderHash,
         address taker
@@ -170,9 +117,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant ORDER_EPOCH_ERROR_SELECTOR =
-        bytes4(keccak256("OrderEpochError(address,address,uint256)"));
 
     function OrderEpochError(
         address maker,
@@ -183,18 +127,12 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant ASSET_PROXY_EXISTS_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyExistsError(address)"));
-
     function AssetProxyExistsError(
         address proxyAddress
     )
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant ASSET_PROXY_DISPATCH_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"));
 
     function AssetProxyDispatchError(
         AssetProxyDispatchErrorCodes errorCode,
@@ -205,9 +143,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant ASSET_PROXY_TRANSFER_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyTransferError(bytes32,bytes,bytes)"));
-
     function AssetProxyTransferError(
         bytes32 orderHash,
         bytes memory assetData,
@@ -217,9 +152,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant NEGATIVE_SPREAD_ERROR_SELECTOR =
-        bytes4(keccak256("NegativeSpreadError(bytes32,bytes32)"));
-
     function NegativeSpreadError(
         bytes32 leftOrderHash,
         bytes32 rightOrderHash
@@ -228,9 +160,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant TRANSACTION_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionError(uint8,bytes32)"));
-
     function TransactionError(
         TransactionErrorCodes errorCode,
         bytes32 transactionHash
@@ -238,9 +167,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant TRANSACTION_SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionSignatureError(bytes32,address,bytes)"));
 
     function TransactionSignatureError(
         bytes32 transactionHash,
@@ -251,9 +177,6 @@ contract MExchangeRichErrors is
         pure
         returns (bytes memory);
 
-    bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"));
-
     function TransactionExecutionError(
         bytes32 transactionHash,
         bytes memory errorData
@@ -261,9 +184,6 @@ contract MExchangeRichErrors is
         internal
         pure
         returns (bytes memory);
-
-    bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
-        bytes4(keccak256("IncompleteFillError(bytes32)"));
 
     function IncompleteFillError(
         bytes32 orderHash
