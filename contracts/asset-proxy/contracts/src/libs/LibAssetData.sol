@@ -116,9 +116,9 @@ library LibAssetData {
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
             uint256 lowestAssetAllowance = 0;
             // solhint-disable-next-line indent
-            (, , bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
+            (, uint256[] memory amounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
-                uint256 assetAllowance = allowance(owner, spender, nestedAssetData[i]);
+                uint256 assetAllowance = allowance(owner, spender, nestedAssetData[i]) / amounts[i];
                 if (assetAllowance < lowestAssetAllowance || lowestAssetAllowance == 0) {
                     lowestAssetAllowance = assetAllowance;
                 }
