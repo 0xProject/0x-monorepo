@@ -31,6 +31,14 @@ library LibAssetData {
     bytes4 constant public ERC1155_PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
     bytes4 constant public MULTI_ASSET_PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));
 
+    /// @dev Returns the owner's balance of the token(s) specified in
+    ///     assetData.  When the asset data contains multiple tokens (eg in
+    ///     ERC1155 or Multi-Asset), the return value indicates how many
+    ///     complete "baskets" of those tokens are owned by owner.
+    /// @param owner Owner of the tokens specified by assetData.
+    /// @param assetData Description of tokens, per the AssetProxy contract
+    ///     specification.
+    /// @return Number of tokens (or token baskets) held by owner.
     function getBalance(address owner, bytes memory assetData)
         public
         view
@@ -76,6 +84,12 @@ library LibAssetData {
         }
     }
 
+    /// @dev Calls getBalance() for each element of assetData.
+    /// @param owner Owner of the tokens specified by assetData.
+    /// @param assetData Array of token descriptors, each encoded per the
+    ///     AssetProxy contract specification.
+    /// @return Array of token balances from getBalance(), with each element
+    ///     corresponding to the same-indexed element in the assetData input.
     function batchGetBalance(address owner, bytes[] memory assetData)
         public
         view
@@ -87,6 +101,16 @@ library LibAssetData {
         }
     }
 
+    /// @dev Returns the number of token(s) (described by assetData) that
+    ///     spender is authorized to spend.  When the asset data contains
+    ///     multiple tokens (eg for Multi-Asset), the return value indicates
+    ///     how many complete "baskets" of those tokens may be spent by spender.
+    /// @param owner Owner of the tokens specified by assetData.
+    /// @param spender Address whose authority to spend is in question.
+    /// @param assetData Description of tokens, per the AssetProxy contract
+    ///     specification.
+    /// @return Number of tokens (or token baskets) that the spender is
+    ///     authorized to spend.
     function getAllowance(address owner, address spender, bytes memory assetData)
         public
         view
@@ -128,6 +152,14 @@ library LibAssetData {
         }
     }
 
+    /// @dev Calls getAllowance() for each element of assetData.
+    /// @param owner Owner of the tokens specified by assetData.
+    /// @param spender Address whose authority to spend is in question.
+    /// @param assetData Description of tokens, per the AssetProxy contract
+    ///     specification.
+    /// @return An array of token allowances from getAllowance(), with each
+    ///     element corresponding to the same-indexed element in the assetData
+    ///     input.
     function batchGetAllowance(address owner, address spender, bytes[] memory assetData)
         public
         view
@@ -139,6 +171,14 @@ library LibAssetData {
         }
     }
 
+    /// @dev Calls getBalance() and getAllowance() for assetData.
+    /// @param owner Owner of the tokens specified by assetData.
+    /// @param spender Address whose authority to spend is in question.
+    /// @param assetData Description of tokens, per the AssetProxy contract
+    ///     specification.
+    /// @return Number of tokens (or token baskets) held by owner, and number
+    ///     of tokens (or token baskets) that the spender is authorized to
+    ///     spend.
     function getBalanceAndAllowance(address owner, address spender, bytes memory assetData)
         public
         view
@@ -148,6 +188,15 @@ library LibAssetData {
         allowance = getAllowance(owner, spender, assetData);
     }
 
+    /// @dev Calls batchGetBalance() and batchGetAllowance() for each element
+    ///     of assetData.
+    /// @param owner Owner of the tokens specified by assetData.
+    /// @param spender Address whose authority to spend is in question.
+    /// @param assetData Description of tokens, per the AssetProxy contract
+    ///     specification.
+    /// @return An array of token balances from getBalance(), and an array of
+    ///     token allowances from getAllowance(), with each element
+    ///     corresponding to the same-indexed element in the assetData input.
     function batchGetBalanceAndAllowance(address owner, address spender, bytes[] memory assetData)
         public
         view
@@ -157,6 +206,11 @@ library LibAssetData {
         allowances = batchGetAllowance(owner, spender, assetData);
     }
 
+    /// @dev Encode ERC-20 asset data into the format described in the
+    ///     AssetProxy contract specification.
+    /// @param tokenAddress The address of the ERC-20 contract hosting the
+    ///     token to be traded.
+    /// @return AssetProxy-compliant data describing the asset.
     function encodeERC20AssetData(address tokenAddress)
         public
         pure
@@ -165,6 +219,12 @@ library LibAssetData {
         return abi.encodeWithSelector(ERC20_PROXY_ID, tokenAddress);
     }
 
+    /// @dev Decode ERC-20 asset data from the format described in the
+    ///     AssetProxy contract specification.
+    /// @param assetData AssetProxy-compliant asset data describing an ERC-20
+    ///     asset.
+    /// @return The ERC-20 AssetProxy identifier, and the address of the ERC-20
+    ///     contract hosting this asset.
     function decodeERC20AssetData(bytes memory assetData)
         public
         pure
@@ -180,6 +240,12 @@ library LibAssetData {
         tokenAddress = LibBytes.readAddress(assetData, 16);
     }
 
+    /// @dev Encode ERC-721 asset data into the format described in the
+    ///     AssetProxy specification.
+    /// @param tokenAddress The address of the ERC-721 contract hosting the
+    ///     token to be traded.
+    /// @param tokenId The identifier of the specific token to be traded.
+    /// @return AssetProxy-compliant asset data describing the asset.
     function encodeERC721AssetData(
         address tokenAddress,
         uint256 tokenId
@@ -191,6 +257,13 @@ library LibAssetData {
         return abi.encodeWithSelector(ERC721_PROXY_ID, tokenAddress, tokenId);
     }
 
+    /// @dev Decode ERC-721 asset data from the format described in the
+    ///     AssetProxy contract specification.
+    /// @param assetData AssetProxy-compliant asset data describing an ERC-721
+    ///     asset.
+    /// @return The ERC-721 AssetProxy identifier, the address of the ERC-721
+    ///     contract hosting this asset, and the identifier of the specific
+    ///     token to be traded.
     function decodeERC721AssetData(bytes memory assetData)
         public
         pure
@@ -208,6 +281,14 @@ library LibAssetData {
         tokenId = LibBytes.readUint256(assetData, 36);
     }
 
+    /// @dev Encode ERC-1155 asset data into the format described in the
+    ///     AssetProxy contract specification.
+    /// @param tokenAddress The address of the ERC-1155 contract hosting the
+    ///     token(s) to be traded.
+    /// @param tokenIds The identifiers of the specific tokens to be traded.
+    /// @param tokenValues The amounts of each token to be traded.
+    /// @param callbackData ...
+    /// @return AssetProxy-compliant asset data describing the set of assets.
     function encodeERC1155AssetData(
         address tokenAddress,
         uint256[] memory tokenIds,
@@ -221,6 +302,15 @@ library LibAssetData {
         return abi.encodeWithSelector(ERC1155_PROXY_ID, tokenAddress, tokenIds, tokenValues, callbackData);
     }
 
+    /// @dev Decode ERC-1155 asset data from the format described in the
+    ///     AssetProxy contract specification.
+    /// @param assetData AssetProxy-compliant asset data describing an ERC-1155
+    ///     set of assets.
+    /// @return The ERC-1155 AssetProxy identifier, the address of the ERC-1155
+    ///     contract hosting the assets, an array of the identifiers of the
+    ///     tokens to be traded, an array of token amounts to be traded, and
+    ///     callback data.  Each element of the arrays corresponds to the
+    ///     same-indexed element of the other array.
     function decodeERC1155AssetData(bytes memory assetData)
         public
         pure
@@ -241,6 +331,12 @@ library LibAssetData {
         );
     }
 
+    /// @dev Encode data for multiple assets, per the AssetProxy contract
+    ///     specification.
+    /// @param amounts The amounts of each asset to be traded.
+    /// @param nestedAssetData AssetProxy-compliant data describing each asset
+    ///     to be traded.
+    /// @return AssetProxy-compliant data describing the set of assets.
     function encodeMultiAssetData(uint256[] memory amounts, bytes[] memory nestedAssetData)
         public
         pure
@@ -249,6 +345,15 @@ library LibAssetData {
         assetData = abi.encodeWithSelector(MULTI_ASSET_PROXY_ID, amounts, nestedAssetData);
     }
 
+    /// @dev Decode multi-asset data from the format described in the
+    ///     AssetProxy contract specification.
+    /// @param assetData AssetProxy-compliant data describing a multi-asset
+    ///     basket.
+    /// @return The Multi-Asset AssetProxy identifier, an array of the amounts
+    ///     of the assets to be traded, and an array of the
+    ///     AssetProxy-compliant data describing each asset to be traded.  Each
+    ///     element of the arrays corresponds to the same-indexed element of
+    ///     the other array.
     function decodeMultiAssetData(bytes memory assetData)
         public
         pure
