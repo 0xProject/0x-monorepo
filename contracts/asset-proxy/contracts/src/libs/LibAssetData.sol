@@ -38,7 +38,8 @@ library LibAssetData {
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
         if (proxyId == ERC20_PROXY_ID) {
-            return IERC20Token(LibBytes.readAddress(assetData, 16)).balanceOf(owner);
+            address tokenAddress = LibBytes.readAddress(assetData, 16);
+            return IERC20Token(tokenAddress).balanceOf(owner);
         } else if (proxyId == ERC721_PROXY_ID) {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             return getERC721TokenOwner(tokenAddress, tokenId) == owner ? 1 : 0;
@@ -95,7 +96,8 @@ library LibAssetData {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
 
         if (proxyId == ERC20_PROXY_ID) {
-            return IERC20Token(LibBytes.readAddress(assetData, 16)).allowance(owner, spender);
+            address tokenAddress = LibBytes.readAddress(assetData, 16);
+            return IERC20Token(tokenAddress).allowance(owner, spender);
         } else if (proxyId == ERC721_PROXY_ID) {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             if (spender == IERC721Token(tokenAddress).getApproved(tokenId)) {
