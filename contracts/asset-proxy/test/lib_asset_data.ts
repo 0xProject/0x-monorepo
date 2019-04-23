@@ -289,7 +289,7 @@ describe('LibAssetData', () => {
     it('should query ERC20 allowances by asset data', async () => {
         await setERC20AllowanceAsync();
         expect(
-            await libAssetData.allowance.callAsync(
+            await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
@@ -300,7 +300,7 @@ describe('LibAssetData', () => {
     it('should query ERC721 approval by asset data', async () => {
         await setERC721AllowanceAsync();
         expect(
-            await libAssetData.allowance.callAsync(
+            await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
@@ -320,7 +320,7 @@ describe('LibAssetData', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         expect(
-            await libAssetData.allowance.callAsync(
+            await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 anotherApprovedSpenderAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
@@ -338,7 +338,7 @@ describe('LibAssetData', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         expect(
-            await libAssetData.allowance.callAsync(
+            await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeERC1155AssetData.callAsync(
@@ -355,7 +355,7 @@ describe('LibAssetData', () => {
         await setERC20AllowanceAsync();
         await setERC721AllowanceAsync();
         expect(
-            await libAssetData.allowance.callAsync(
+            await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeMultiAssetData.callAsync(
@@ -383,7 +383,7 @@ describe('LibAssetData', () => {
         await setERC20AllowanceAsync();
         await setERC721AllowanceAsync();
         expect(
-            await libAssetData.batchAllowance.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
+            await libAssetData.batchGetAllowance.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ]),

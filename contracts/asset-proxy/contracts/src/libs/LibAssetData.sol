@@ -87,8 +87,7 @@ library LibAssetData {
         }
     }
 
-    function allowance(address owner, address spender, bytes memory assetData)
-        // should we rename to getApproval()? "Allowance" seems out of vogue.
+    function getAllowance(address owner, address spender, bytes memory assetData)
         public
         view
         returns (uint256 amount)
@@ -118,7 +117,7 @@ library LibAssetData {
             // solhint-disable-next-line indent
             (, uint256[] memory amounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
-                uint256 assetAllowance = allowance(owner, spender, nestedAssetData[i]) / amounts[i];
+                uint256 assetAllowance = getAllowance(owner, spender, nestedAssetData[i]) / amounts[i];
                 if (assetAllowance < lowestAssetAllowance || lowestAssetAllowance == 0) {
                     lowestAssetAllowance = assetAllowance;
                 }
@@ -129,14 +128,14 @@ library LibAssetData {
         }
     }
 
-    function batchAllowance(address owner, address spender, bytes[] memory assetData)
+    function batchGetAllowance(address owner, address spender, bytes[] memory assetData)
         public
         view
         returns (uint256[] memory amounts)
     {
         amounts = new uint256[](assetData.length);
         for (uint256 i = 0; i < assetData.length; i++) {
-            amounts[i] = allowance(owner, spender, assetData[i]);
+            amounts[i] = getAllowance(owner, spender, assetData[i]);
         }
     }
 
