@@ -57,10 +57,14 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
                       networkId,
                   );
 
-        let selectedAssetUnitAmount: BigNumber | undefined = new BigNumber(1);
-        if (selectedAsset !== undefined && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
-            selectedAssetUnitAmount =
-                props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount);
+        let selectedAssetUnitAmount: BigNumber | undefined;
+        if (selectedAsset !== undefined) {
+            if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+                selectedAssetUnitAmount =
+                    props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount);
+            } else if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC721) {
+                selectedAssetUnitAmount = new BigNumber(1);
+            }
         }
 
         // construct the final state
