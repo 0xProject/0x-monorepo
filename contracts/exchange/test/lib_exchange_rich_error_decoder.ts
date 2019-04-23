@@ -9,7 +9,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
-import { BigNumber, RevertError } from '@0x/utils';
+import { RevertError } from '@0x/utils';
 import * as chai from 'chai';
 import * as crypto from 'crypto';
 import * as _ from 'lodash';
@@ -43,7 +43,7 @@ describe.only('LibExchangeRichErrorDecoder', () => {
         );
     });
 
-    function generateRandomBytes(length: number) {
+    function generateRandomBytes(length: number): string {
         const bytes = crypto.randomBytes(length).toString('hex');
         return `0x${bytes}`;
     }
@@ -54,7 +54,7 @@ describe.only('LibExchangeRichErrorDecoder', () => {
     ) {
         const revert = new revertType(...parameters);
         const encoded = revert.encode();
-        // Exploit the fact that `RevertError` types have the smae name as their
+        // Exploit the fact that `RevertError` types have the same names as their
         // Solidity counterparts.
         const endpointName = `decode${revert.name}`;
         const callAsync = (encoded: string) => {
@@ -243,6 +243,54 @@ describe.only('LibExchangeRichErrorDecoder', () => {
             [
                 leftOrderHash,
                 rightOrderHash,
+            ],
+        );
+    })();
+
+    (() => {
+        const errorCode = ExchangeRevertErrors.TransactionErrorCode.AlreadyExecuted;
+        const transactionHash = orderUtils.generatePseudoRandomOrderHash();
+        createDecodeTest(
+            ExchangeRevertErrors.TransactionError,
+            [
+                errorCode,
+                transactionHash,
+            ],
+        );
+    })();
+
+    (() => {
+        const transactionHash = orderUtils.generatePseudoRandomOrderHash();
+        const signer = addressUtils.generatePseudoRandomAddress();
+        const signature = generateRandomBytes(SIGNATURE_LENGTH);
+        createDecodeTest(
+            ExchangeRevertErrors.TransactionSignatureError,
+            [
+                transactionHash,
+                signer,
+                signature,
+            ],
+        );
+    })();
+
+    (() => {
+        const transactionHash = orderUtils.generatePseudoRandomOrderHash();
+        const errorData = generateRandomBytes(ERROR_DATA_LENGTH);
+        createDecodeTest(
+            ExchangeRevertErrors.TransactionExecutionError,
+            [
+                transactionHash,
+                errorData,
+            ],
+        );
+    })();
+
+    (() => {
+        const orderHash = orderUtils.generatePseudoRandomOrderHash();
+        createDecodeTest(
+            ExchangeRevertErrors.IncompleteFillError,
+            [
+                orderHash,
             ],
         );
     })();
