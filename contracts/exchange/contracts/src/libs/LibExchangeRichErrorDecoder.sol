@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-exchange/contracts/src/mixins/MExchangeRichErrorTypes.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "../mixins/MExchangeRichErrorTypes.sol";
 
 
-contract RichRevertsDecoder is
+contract LibExchangeRichErrorDecoder is
     MExchangeRichErrorTypes
 {
     /// @dev Decompose an ABI-encoded StandardError.
