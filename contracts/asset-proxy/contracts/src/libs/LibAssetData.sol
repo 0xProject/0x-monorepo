@@ -90,7 +90,7 @@ library LibAssetData {
     function getAllowance(address owner, address spender, bytes memory assetData)
         public
         view
-        returns (uint256 amount)
+        returns (uint256 allowance)
     {
         bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
 
@@ -131,11 +131,11 @@ library LibAssetData {
     function batchGetAllowance(address owner, address spender, bytes[] memory assetData)
         public
         view
-        returns (uint256[] memory amounts)
+        returns (uint256[] memory allowances)
     {
-        amounts = new uint256[](assetData.length);
+        allowances = new uint256[](assetData.length);
         for (uint256 i = 0; i < assetData.length; i++) {
-            amounts[i] = getAllowance(owner, spender, assetData[i]);
+            allowances[i] = getAllowance(owner, spender, assetData[i]);
         }
     }
 
