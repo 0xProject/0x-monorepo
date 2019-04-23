@@ -23,7 +23,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('LibExchangeRichErrorDecoder', () => {
+describe('LibExchangeRichErrorDecoder', () => {
     const SIGNATURE_LENGTH = 66;
     const ASSET_DATA_LENGTH = 36;
     const ERROR_DATA_LENGTH = 100;
