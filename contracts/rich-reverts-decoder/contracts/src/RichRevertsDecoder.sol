@@ -25,10 +25,6 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 contract RichRevertsDecoder is
     MExchangeRichErrorTypes
 {
-
-    bytes4 private constant STANDARD_ERROR_SELECTOR =
-        bytes4(keccak256("Error(string)"));
-
     /// @dev Decompose an ABI-encoded StandardError.
     ///      This is the standard, string revert() error.
     /// @param encoded ABI-encoded revert error.
@@ -42,9 +38,6 @@ contract RichRevertsDecoder is
         _assertSelectorBytes(encoded, STANDARD_ERROR_SELECTOR);
         message = _readErrorParameterAsString(encoded, 0);
     }
-
-    bytes4 private constant SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"));
 
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.
@@ -67,9 +60,6 @@ contract RichRevertsDecoder is
         signer = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
     }
-
-    bytes4 private constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"));
 
     /// @dev Decompose an ABI-encoded SignatureValidatorError.
     /// @param encoded ABI-encoded revert error.
@@ -96,9 +86,6 @@ contract RichRevertsDecoder is
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
 
-    bytes4 private constant SIGNATURE_WALLET_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"));
-
     /// @dev Decompose an ABI-encoded SignatureWalletError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
@@ -123,9 +110,6 @@ contract RichRevertsDecoder is
         signature = _readErrorParameterAsBytes(encoded, 3);
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
-
-    bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"));
 
     /// @dev Decompose an ABI-encoded SignatureOrderValidatorError.
     /// @param encoded ABI-encoded revert error.
@@ -152,9 +136,6 @@ contract RichRevertsDecoder is
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
 
-    bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"));
-
     /// @dev Decompose an ABI-encoded SignatureWalletOrderValidatorError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
@@ -180,9 +161,6 @@ contract RichRevertsDecoder is
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
 
-    bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
-        bytes4(keccak256("OrderStatusError(bytes32,uint8)"));
-
     /// @dev Decompose an ABI-encoded OrderStatusError.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
@@ -191,13 +169,64 @@ contract RichRevertsDecoder is
         public
         pure
         returns (
-            bytes32 hash,
+            bytes32 orderHash,
             LibOrder.OrderStatus orderStatus
         )
     {
         _assertSelectorBytes(encoded, ORDER_STATUS_ERROR_SELECTOR);
-        hash = _readErrorParameterAsBytes32(encoded, 0);
+        orderHash = _readErrorParameterAsBytes32(encoded, 0);
         orderStatus = LibOrder.OrderStatus(_readErrorParameterAsUint256(encoded, 1));
+    }
+
+    /// @dev Decompose an ABI-encoded InvalidSenderError.
+    /// @param encoded ABI-encoded revert error.
+    /// @return orderHash The order hash.
+    /// @return sender The sender of the order.
+    function decomposeInvalidSenderError(bytes memory encoded)
+        public
+        pure
+        returns (
+            bytes32 orderHash,
+            address sender
+        )
+    {
+        _assertSelectorBytes(encoded, INVALID_SENDER_ERROR_SELECTOR);
+        orderHash = _readErrorParameterAsBytes32(encoded, 0);
+        sender = _readErrorParameterAsAddress(encoded, 1);
+    }
+
+    /// @dev Decompose an ABI-encoded InvalidMakerError.
+    /// @param encoded ABI-encoded revert error.
+    /// @return orderHash The order hash.
+    /// @return maker The maker of the order.
+    function decomposeInvalidMakerError(bytes memory encoded)
+        public
+        pure
+        returns (
+            bytes32 orderHash,
+            address maker
+        )
+    {
+        _assertSelectorBytes(encoded, INVALID_SENDER_ERROR_SELECTOR);
+        orderHash = _readErrorParameterAsBytes32(encoded, 0);
+        maker = _readErrorParameterAsAddress(encoded, 1);
+    }
+
+    /// @dev Decompose an ABI-encoded FillError.
+    /// @param encoded ABI-encoded revert error.
+    /// @return errorCode The error code.
+    /// @return orderHash The order hash.
+    function decomposeFillError(bytes memory encoded)
+        public
+        pure
+        returns (
+            FillErrorCodes errorCode,
+            bytes32 orderHash
+        )
+    {
+        _assertSelectorBytes(encoded, FILL_ERROR_SELECTOR);
+        errorCode = FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        orderHash = _readErrorParameterAsBytes32(encoded, 0);
     }
 
     /// @dev Revert if the leading 4 bytes of `encoded` is not `selector`.
