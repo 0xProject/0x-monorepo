@@ -57,6 +57,7 @@ describe('LibAssetData', () => {
 
     let tokenOwnerAddress: string;
     let approvedSpenderAddress: string;
+    let anotherApprovedSpenderAddress: string;
 
     let erc20TokenAddress: string;
     const erc20TokenTotalSupply = new BigNumber(1);
@@ -77,7 +78,11 @@ describe('LibAssetData', () => {
             txDefaults,
         );
 
-        [tokenOwnerAddress, approvedSpenderAddress] = await web3Wrapper.getAvailableAddressesAsync();
+        [
+            tokenOwnerAddress,
+            approvedSpenderAddress,
+            anotherApprovedSpenderAddress,
+        ] = await web3Wrapper.getAvailableAddressesAsync();
 
         erc20TokenAddress = (await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             erc20Artifacts.DummyERC20Token,
@@ -292,12 +297,32 @@ describe('LibAssetData', () => {
         ).to.bignumber.equal(1);
     });
 
-    it('should query ERC721 allowances by asset data', async () => {
+    it('should query ERC721 approval by asset data', async () => {
         await setERC721AllowanceAsync();
         expect(
             await libAssetData.allowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
+                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+            ),
+        ).to.bignumber.equal(1);
+    });
+
+    it('should query ERC721 approvalForAll by assetData', async () => {
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await new IERC721TokenContract(
+                erc721Artifacts.IERC721Token.compilerOutput.abi,
+                erc721TokenAddress,
+                provider,
+            ).setApprovalForAll.sendTransactionAsync(anotherApprovedSpenderAddress, true, {
+                from: tokenOwnerAddress,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        expect(
+            await libAssetData.allowance.callAsync(
+                tokenOwnerAddress,
+                anotherApprovedSpenderAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ),
         ).to.bignumber.equal(1);

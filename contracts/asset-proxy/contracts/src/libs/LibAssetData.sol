@@ -100,7 +100,8 @@ library LibAssetData {
             return IERC20Token(tokenAddress).allowance(owner, spender);
         } else if (proxyId == ERC721_PROXY_ID) {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
-            if (spender == IERC721Token(tokenAddress).getApproved(tokenId)) {
+            IERC721Token token = IERC721Token(tokenAddress);
+            if (spender == token.getApproved(tokenId) || token.isApprovedForAll(owner, spender)) {
                 return 1;
             } else {
                 return 0;
