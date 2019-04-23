@@ -18,11 +18,13 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-exchange/contracts/src/interfaces/MExchangeRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/mixins/LibBytes.sol";
+import "@0x/contracts-exchange/contracts/src/mixins/MExchangeRichErrorTypes.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
-contract MixinRichErrors {
+contract RichRevertsDecoder is
+    MExchangeRichErrorTypes
+{
 
     bytes4 private constant STANDARD_ERROR_SELECTOR =
         bytes4(keccak256("Error(string)"));
@@ -53,16 +55,16 @@ contract MixinRichErrors {
         public
         pure
         returns (
-            SignatureErrorCode errorCode,
+            SignatureErrorCodes errorCode,
             bytes32 hash,
             address signer,
             bytes memory signature
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_ERROR_SELECTOR);
-        errorCode = SignatureErrorCode(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
-        signer = _readErrorParameterAsBytes32(encoded, 2);
+        signer = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
     }
 
@@ -79,7 +81,7 @@ contract MixinRichErrors {
         public
         pure
         returns (
-            SignatureErrorCode errorCode,
+            SignatureErrorCodes errorCode,
             bytes32 hash,
             address signer,
             bytes memory signature,
@@ -87,9 +89,9 @@ contract MixinRichErrors {
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_VALIDATOR_ERROR_SELECTOR);
-        errorCode = SignatureErrorCode(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
-        signer = _readErrorParameterAsBytes32(encoded, 2);
+        signer = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
@@ -107,7 +109,7 @@ contract MixinRichErrors {
         public
         pure
         returns (
-            SignatureErrorCode errorCode,
+            SignatureErrorCodes errorCode,
             bytes32 hash,
             address signer,
             bytes memory signature,
@@ -115,9 +117,9 @@ contract MixinRichErrors {
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_WALLET_ERROR_SELECTOR);
-        errorCode = SignatureErrorCode(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
-        signer = _readErrorParameterAsBytes32(encoded, 2);
+        signer = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
@@ -135,7 +137,7 @@ contract MixinRichErrors {
         public
         pure
         returns (
-            SignatureErrorCode errorCode,
+            SignatureErrorCodes errorCode,
             bytes32 hash,
             address signer,
             bytes memory signature,
@@ -143,9 +145,9 @@ contract MixinRichErrors {
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR);
-        errorCode = SignatureErrorCode(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
-        signer = _readErrorParameterAsBytes32(encoded, 2);
+        signer = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
@@ -163,7 +165,7 @@ contract MixinRichErrors {
         public
         pure
         returns (
-            SignatureErrorCode errorCode,
+            SignatureErrorCodes errorCode,
             bytes32 hash,
             address signer,
             bytes memory signature,
@@ -171,9 +173,9 @@ contract MixinRichErrors {
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR);
-        errorCode = SignatureErrorCode(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
-        signer = _readErrorParameterAsBytes32(encoded, 2);
+        signer = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
@@ -224,10 +226,20 @@ contract MixinRichErrors {
     function _readErrorParameterAsBytes32(bytes memory encoded, uint256 index)
         private
         pure
-        returns (uint256 value)
+        returns (bytes32 value)
     {
         uint256 parameterOffset = 4 + index * 32;
         return LibBytes.readBytes32(encoded, parameterOffset);
+    }
+
+    /// @dev Read a parameter at index `index` as an address.
+    function _readErrorParameterAsAddress(bytes memory encoded, uint256 index)
+        private
+        pure
+        returns (address value)
+    {
+        uint256 parameterOffset = 4 + index * 32;
+        return address(uint160(LibBytes.readUint256(encoded, parameterOffset)));
     }
 
     /// @dev Read a parameter at index `index` as a bytes.
