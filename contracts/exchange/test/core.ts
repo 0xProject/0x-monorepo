@@ -220,8 +220,6 @@ describe('Exchange core', () => {
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-
-        // Grant the reentrant ERC20 token a
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
