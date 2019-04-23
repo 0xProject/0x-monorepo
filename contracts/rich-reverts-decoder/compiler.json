@@ -22,7 +22,5 @@
             }
         }
     },
-    "contracts": [
-        "src/Helper.sol"
-    ]
+    "contracts": ["src/RichRevertsDecoder.sol"]
 }
