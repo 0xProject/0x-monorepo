@@ -107,7 +107,6 @@ export const eip712Utils = {
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
             verifyingContractAddress,
-            chainId: transaction.chainId,
         };
         const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
         const approval = {
