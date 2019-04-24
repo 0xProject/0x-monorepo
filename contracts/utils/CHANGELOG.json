@@ -13,6 +13,10 @@
             {
                 "note": "Add `RichErrors` and `mixins/MRichErrors`",
                 "pr": 1761
+            },
+            {
+                "note": "Break out types/interaces from `MRichErrors` into `MRichErrorTypes`.",
+                "pr": TODO
             }
         ]
     },
