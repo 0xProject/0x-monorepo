@@ -28,15 +28,15 @@
             },
             {
                 "note": "Add `LibExchangeRichErrorDecoder` contract.",
-                "pr": TODO
+                "pr": 1790
             },
             {
                 "note": "Break out types/interaces from `MExchangeRichErrors` into `MExchangeRichErrorTypes`.",
-                "pr": TODO
+                "pr": 1790
             },
             {
                 "note": "Reorder some revert error parameters for consistency",
-                "pr": TODO
+                "pr": 1790
             }
         ]
     },
