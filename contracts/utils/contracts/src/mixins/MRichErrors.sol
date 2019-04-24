@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 
 import "./MRichErrorTypes.sol";
 
+
 contract MRichErrors is
     MRichErrorTypes
 {

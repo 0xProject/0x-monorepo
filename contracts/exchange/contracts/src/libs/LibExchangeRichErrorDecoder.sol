@@ -249,9 +249,7 @@ contract LibExchangeRichErrorDecoder is
     function decodeAssetProxyExistsError(bytes memory encoded)
         public
         pure
-        returns (
-           address assetProxyAddress
-        )
+        returns (address assetProxyAddress)
     {
         _assertSelectorBytes(encoded, ASSET_PROXY_EXISTS_ERROR_SELECTOR);
         assetProxyAddress = _readErrorParameterAsAddress(encoded, 0);
