@@ -212,13 +212,13 @@ export function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]):
     if (!_.isEmpty(errors)) {
         errors.forEach(error => {
             const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-            logUtils.log(chalk.red('error'), normalizedErrMsg);
+            logUtils.warn(chalk.red('error'), normalizedErrMsg);
         });
         throw new CompilationError(errors.length);
     } else {
         warnings.forEach(warning => {
             const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-            logUtils.log(chalk.yellow('warning'), normalizedWarningMsg);
+            logUtils.warn(chalk.yellow('warning'), normalizedWarningMsg);
         });
     }
 }
