@@ -32,7 +32,7 @@
             },
             {
                 "note": "Reorder parameters of some `RevertError` types to match smart contracts.",
-                "pr": TODO
+                "pr": 1790
             }
         ]
     },
