@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.7",
+        "changes": [
+            {
+                "note": "Fix race-condition bug due to async callback modifying shared state",
+                "pr": 1789
+            }
+        ]
+    },
+    {
         "version": "4.0.6",
         "changes": [
             {
