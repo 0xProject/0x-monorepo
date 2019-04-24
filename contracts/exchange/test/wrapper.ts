@@ -213,10 +213,7 @@ describe('Exchange wrappers', () => {
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHashHex,
-                OrderStatus.Expired,
-            );
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Expired);
             const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -597,10 +594,7 @@ describe('Exchange wrappers', () => {
 
                 await exchangeWrapper.fillOrKillOrderAsync(signedOrders[0], takerAddress);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrders[0]);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                    orderHashHex,
-                    OrderStatus.FullyFilled,
-                );
+                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.FullyFilled);
                 const tx = exchangeWrapper.batchFillOrKillOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
                 });
