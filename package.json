@@ -44,6 +44,9 @@
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done; yarn generate_protocol_doc",
         "generate_protocol_doc": "mkdir -p staging-doc-jsons/contracts; (cd contracts; sol-doc --contracts-dir . --contracts ${npm_package_config_contractsToDocument}) > staging-doc-jsons/contracts/v2.0.0.json",
+        "start_local_s3": "mkdir -p local_s3_root; node ./packages/monorepo-scripts/lib/host_local_s3.js --port 8081 --directory local_s3_root",
+        "upload_staging_doc_jsons_to_s3": "node ./packages/monorepo-scripts/lib/upload_doc_jsons.js --directory staging-doc-jsons $ADDITIONAL_S3_ARGS",
+        "upload_staging_doc_jsons_to_local_s3": "ADDITIONAL_S3_ARGS='--s3Endpoint http://localhost:8081' yarn upload_staging_doc_jsons_doc_to_s3",
         "bundlewatch": "bundlewatch",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
