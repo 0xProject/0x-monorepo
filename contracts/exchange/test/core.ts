@@ -40,6 +40,7 @@ import * as _ from 'lodash';
 import { Erc1155Wrapper } from '../../erc1155/lib/src';
 import {
     artifacts,
+    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeContract,
     ExchangeWrapper,
@@ -281,7 +282,7 @@ describe('Exchange core', () => {
                 });
             });
         };
-        describe('fillOrder reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+        describe('fillOrder reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         it('should throw if signature is invalid', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
