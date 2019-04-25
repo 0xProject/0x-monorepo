@@ -6,3 +6,23 @@ export interface AbiDecodedFillOrderData {
     takerAssetFillAmount: BigNumber;
     signature: string;
 }
+
+export enum ExchangeFunctionName {
+    FillOrder = 'fillOrder',
+    FillOrKillOrder = 'fillOrKillOrder',
+    FillOrderNoThrow = 'fillOrderNoThrow',
+    BatchFillOrders = 'batchFillOrders',
+    BatchFillOrKillOrders = 'batchFillOrKillOrders',
+    BatchFillOrdersNoThrow = 'batchFillOrdersNoThrow',
+    MarketBuyOrders = 'marketBuyOrders',
+    MarketBuyOrdersNoThrow = 'marketBuyOrdersNoThrow',
+    MarketSellOrders = 'marketSellOrders',
+    MarketSellOrdersNoThrow = 'marketSellOrdersNoThrow',
+    MatchOrders = 'matchOrders',
+    CancelOrder = 'cancelOrder',
+    BatchCancelOrders = 'batchCancelOrders',
+    CancelOrdersUpTo = 'cancelOrdersUpTo',
+    PreSign = 'preSign',
+    SetSignatureValidatorApproval = 'setSignatureValidatorApproval',
+    SetOrderValidatorApproval = 'setOrderValidatorApproval',
+}
