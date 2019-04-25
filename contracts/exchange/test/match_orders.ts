@@ -21,6 +21,7 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    constants as exchangeConstants,
     ExchangeContract,
     ExchangeWrapper,
     MatchOrderTester,
@@ -592,7 +593,7 @@ describe('matchOrders', () => {
                 });
             });
         };
-        describe('matchOrders reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+        describe('matchOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         it('should transfer the correct amounts when orders completely fill each other', async () => {
             // Create orders to match

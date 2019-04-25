@@ -1,8 +1,8 @@
+import { constants as exchangeConstants, exchangeDataEncoder, ExchangeFunctionName } from '@0x/contracts-exchange';
 import {
     addressUtils,
     chaiSetup,
     constants,
-    exchangeDataEncoder,
     expectContractCallFailedAsync,
     getLatestBlockTimestampAsync,
     provider,
@@ -144,7 +144,7 @@ describe('Mixins tests', () => {
     });
 
     describe('decodeOrdersFromFillData', () => {
-        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -157,7 +157,7 @@ describe('Mixins tests', () => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of constants.BATCH_FILL_FN_NAMES) {
+        for (const fnName of exchangeConstants.BATCH_FILL_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -170,7 +170,7 @@ describe('Mixins tests', () => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of constants.MARKET_FILL_FN_NAMES) {
+        for (const fnName of exchangeConstants.MARKET_FILL_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -183,7 +183,11 @@ describe('Mixins tests', () => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of [constants.CANCEL_ORDER, constants.BATCH_CANCEL_ORDERS, constants.CANCEL_ORDERS_UP_TO]) {
+        for (const fnName of [
+            ExchangeFunctionName.CancelOrder,
+            ExchangeFunctionName.BatchCancelOrders,
+            ExchangeFunctionName.CancelOrdersUpTo,
+        ]) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -208,7 +212,7 @@ describe('Mixins tests', () => {
     });
 
     describe('Single order approvals', () => {
-        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
             it(`Should be successful: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -377,9 +381,9 @@ describe('Mixins tests', () => {
     });
     describe('Batch order approvals', () => {
         for (const fnName of [
-            ...constants.BATCH_FILL_FN_NAMES,
-            ...constants.MARKET_FILL_FN_NAMES,
-            constants.MATCH_ORDERS,
+            ...exchangeConstants.BATCH_FILL_FN_NAMES,
+            ...exchangeConstants.MARKET_FILL_FN_NAMES,
+            ExchangeFunctionName.MatchOrders,
         ]) {
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver1], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
@@ -694,7 +698,7 @@ describe('Mixins tests', () => {
     describe('cancels', () => {
         it('should allow the tx signer to call `cancelOrder` without approval', async () => {
             const orders = [defaultOrder];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDER, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
             const transaction = transactionFactory.newSignedTransaction(data);
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,
@@ -707,7 +711,7 @@ describe('Mixins tests', () => {
         });
         it('should allow the tx signer to call `batchCancelOrders` without approval', async () => {
             const orders = [defaultOrder, defaultOrder];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.BATCH_CANCEL_ORDERS, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = transactionFactory.newSignedTransaction(data);
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,
@@ -719,8 +723,7 @@ describe('Mixins tests', () => {
             );
         });
         it('should allow the tx signer to call `cancelOrdersUpTo` without approval', async () => {
-            const orders: SignedOrder[] = [];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS_UP_TO, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo);
             const transaction = transactionFactory.newSignedTransaction(data);
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,
