@@ -48,30 +48,14 @@ contract MixinSignatureValidator is
     // Mapping of signer => order validator => approved
     mapping (address => mapping (address => bool)) public allowedOrderValidators;
 
-    /// @dev Approves a hash on-chain using any valid signature type.
+    /// @dev Approves a hash on-chain.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    function preSign(
-        bytes32 hash,
-        address signerAddress,
-        bytes calldata signature
-    )
+    /// @param hash Any 32-byte hash.
+    function preSign(bytes32 hash)
         external
+        nonReentrant
     {
-        if (signerAddress != msg.sender) {
-            if (!isValidHashSignature(
-                    hash,
-                    signerAddress,
-                    signature)) {
-                rrevert(SignatureError(
-                    SignatureErrorCodes.BAD_SIGNATURE,
-                    hash,
-                    signerAddress,
-                    signature
-                ));
-            }
-        }
+        address signerAddress = getCurrentContextAddress();
         preSigned[hash][signerAddress] = true;
     }
 
