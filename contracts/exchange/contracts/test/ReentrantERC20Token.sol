@@ -50,7 +50,9 @@ contract ReentrantERC20Token is
         CANCEL_ORDER,
         BATCH_CANCEL_ORDERS,
         CANCEL_ORDERS_UP_TO,
+        PRE_SIGN,
         SET_SIGNATURE_VALIDATOR_APPROVAL,
+        SET_ORDER_VALIDATOR_APPROVAL,
         NONE
     }
 
@@ -161,9 +163,20 @@ contract ReentrantERC20Token is
                 exchange.cancelOrdersUpTo.selector,
                 1
             );
+        } else if (currentFunctionId == uint8(ExchangeFunction.PRE_SIGN)) {
+            callData = abi.encodeWithSelector(
+                exchange.preSign.selector,
+                uint256(getRandomAddress())
+            );
         } else if (currentFunctionId == uint8(ExchangeFunction.SET_SIGNATURE_VALIDATOR_APPROVAL)) {
             callData = abi.encodeWithSelector(
                 exchange.setSignatureValidatorApproval.selector,
+                getRandomAddress(),
+                false
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.SET_ORDER_VALIDATOR_APPROVAL)) {
+            callData = abi.encodeWithSelector(
+                exchange.setOrderValidatorApproval.selector,
                 getRandomAddress(),
                 false
             );
