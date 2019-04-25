@@ -502,8 +502,8 @@ describe('Coordinator tests', () => {
             });
         });
         it('cancelOrdersUpTo call should be successful without an approval', async () => {
-            const orders: SignedOrder[] = [];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, orders);
+            const targetEpoch = constants.ZERO_AMOUNT;
+            const data = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
@@ -524,7 +524,7 @@ describe('Coordinator tests', () => {
             const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
             expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
             expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
-            expect(cancelLogArgs.orderEpoch).to.bignumber.eq(new BigNumber(1));
+            expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
         });
     });
 });
