@@ -212,12 +212,29 @@ export class ExchangeWrapper {
         return tx;
     }
     public async executeTransactionAsync(
-        signedTx: SignedZeroExTransaction,
+        signedTransaction: SignedZeroExTransaction,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.executeTransaction.sendTransactionAsync(signedTx, signedTx.signature, {
-            from,
-        });
+        const txHash = await this._exchange.executeTransaction.sendTransactionAsync(
+            signedTransaction,
+            signedTransaction.signature,
+            {
+                from,
+            },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async batchExecuteTransactionsAsync(
+        signedTransactions: SignedZeroExTransaction[],
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const signatures = signedTransactions.map(signedTransaction => signedTransaction.signature);
+        const txHash = await this._exchange.batchExecuteTransactions.sendTransactionAsync(
+            signedTransactions,
+            signatures,
+            { from },
+        );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }

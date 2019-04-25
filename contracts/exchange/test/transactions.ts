@@ -54,6 +54,7 @@ describe('Exchange transactions', () => {
     let takerAddress: string;
     let feeRecipientAddress: string;
     let validatorAddress: string;
+    let taker2Address: string;
 
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
@@ -65,6 +66,7 @@ describe('Exchange transactions', () => {
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;
     let takerTransactionFactory: TransactionFactory;
+    let taker2TransactionFactory: TransactionFactory;
     let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
 
@@ -72,6 +74,7 @@ describe('Exchange transactions', () => {
     let defaultTakerTokenAddress: string;
     let makerPrivateKey: Buffer;
     let takerPrivateKey: Buffer;
+    let taker2PrivateKey: Buffer;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -95,7 +98,8 @@ describe('Exchange transactions', () => {
             takerAddress,
             feeRecipientAddress,
             validatorAddress,
-        ] = _.slice(accounts, 0, 6));
+            taker2Address,
+        ] = _.slice(accounts, 0, 7));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
@@ -140,9 +144,11 @@ describe('Exchange transactions', () => {
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
+        taker2PrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(taker2Address)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchangeInstance.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId);
+        taker2TransactionFactory = new TransactionFactory(taker2PrivateKey, exchangeInstance.address, chainId);
     });
     describe('executeTransaction', () => {
         describe('single order fills', () => {
@@ -592,8 +598,264 @@ describe('Exchange transactions', () => {
                 expect(validatorApprovalLogArgs.approved).to.eq(shouldApprove);
             });
         });
-        describe('batchExecuteTransactions', () => {});
-        describe.only('examples', () => {
+        describe('batchExecuteTransactions', () => {
+            it('should successfully call fillOrder via 2 transactions with different taker signatures', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = takerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = taker2TransactionFactory.newSignedTransaction(data2);
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    senderAddress,
+                );
+                const fillLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                );
+                expect(fillLogs.length).to.eq(2);
+
+                const fill1LogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill1LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill1LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.senderAddress).to.eq(senderAddress);
+                expect(fill1LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill1LogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fill1LogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fill1LogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fill1LogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fill1LogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fill1LogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fill1LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const fill2LogArgs = (fillLogs[1] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill2LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill2LogArgs.takerAddress).to.eq(taker2Address);
+                expect(fill2LogArgs.senderAddress).to.eq(senderAddress);
+                expect(fill2LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill2LogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(fill2LogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(fill2LogArgs.makerAssetFilledAmount).to.bignumber.eq(order2.makerAssetAmount);
+                expect(fill2LogArgs.takerAssetFilledAmount).to.bignumber.eq(order2.takerAssetAmount);
+                expect(fill2LogArgs.makerFeePaid).to.bignumber.eq(order2.makerFee);
+                expect(fill2LogArgs.takerFeePaid).to.bignumber.eq(order2.takerFee);
+                expect(fill2LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should successfully call fillOrder via 2 transactions when called by taker with no signatures', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = takerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = takerTransactionFactory.newSignedTransaction(data2);
+                transaction1.signature = constants.NULL_BYTES;
+                transaction2.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    takerAddress,
+                );
+                const fillLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                );
+                expect(fillLogs.length).to.eq(2);
+
+                const fill1LogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill1LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill1LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.senderAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill1LogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fill1LogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fill1LogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fill1LogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fill1LogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fill1LogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fill1LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const fill2LogArgs = (fillLogs[1] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill2LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill2LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill2LogArgs.senderAddress).to.eq(takerAddress);
+                expect(fill2LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill2LogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(fill2LogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(fill2LogArgs.makerAssetFilledAmount).to.bignumber.eq(order2.makerAssetAmount);
+                expect(fill2LogArgs.takerAssetFilledAmount).to.bignumber.eq(order2.takerAssetAmount);
+                expect(fill2LogArgs.makerFeePaid).to.bignumber.eq(order2.makerFee);
+                expect(fill2LogArgs.takerFeePaid).to.bignumber.eq(order2.takerFee);
+                expect(fill2LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should successfully call fillOrder via 2 transactions when one is signed by taker1 and executeTransaction is called by taker2', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = takerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = taker2TransactionFactory.newSignedTransaction(data2);
+                transaction2.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    taker2Address,
+                );
+                const fillLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                );
+                expect(fillLogs.length).to.eq(2);
+
+                const fill1LogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill1LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill1LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.senderAddress).to.eq(taker2Address);
+                expect(fill1LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill1LogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fill1LogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fill1LogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fill1LogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fill1LogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fill1LogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fill1LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const fill2LogArgs = (fillLogs[1] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill2LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill2LogArgs.takerAddress).to.eq(taker2Address);
+                expect(fill2LogArgs.senderAddress).to.eq(taker2Address);
+                expect(fill2LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill2LogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(fill2LogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(fill2LogArgs.makerAssetFilledAmount).to.bignumber.eq(order2.makerAssetAmount);
+                expect(fill2LogArgs.takerAssetFilledAmount).to.bignumber.eq(order2.takerAssetAmount);
+                expect(fill2LogArgs.makerFeePaid).to.bignumber.eq(order2.makerFee);
+                expect(fill2LogArgs.takerFeePaid).to.bignumber.eq(order2.takerFee);
+                expect(fill2LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should return the correct data for 2 different fillOrder calls', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = takerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = taker2TransactionFactory.newSignedTransaction(data2);
+                const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                    { from: senderAddress },
+                );
+                const abi = artifacts.Exchange.compilerOutput.abi;
+                const methodAbi = abi.filter(
+                    abiItem => (abiItem as MethodAbi).name === ExchangeFunctionName.FillOrder,
+                )[0] as MethodAbi;
+                const abiEncoder = new AbiEncoder.Method(methodAbi);
+                const fillResults1: FillResults = abiEncoder.decodeReturnValues(returnData[0]).fillResults;
+                const fillResults2: FillResults = abiEncoder.decodeReturnValues(returnData[1]).fillResults;
+                expect(fillResults1.makerAssetFilledAmount).to.be.bignumber.eq(order1.makerAssetAmount);
+                expect(fillResults1.takerAssetFilledAmount).to.be.bignumber.eq(order1.takerAssetAmount);
+                expect(fillResults1.makerFeePaid).to.be.bignumber.eq(order1.makerFee);
+                expect(fillResults1.takerFeePaid).to.be.bignumber.eq(order1.takerFee);
+                expect(fillResults2.makerAssetFilledAmount).to.be.bignumber.eq(order2.makerAssetAmount);
+                expect(fillResults2.takerAssetFilledAmount).to.be.bignumber.eq(order2.takerAssetAmount);
+                expect(fillResults2.makerFeePaid).to.be.bignumber.eq(order2.makerFee);
+                expect(fillResults2.takerFeePaid).to.be.bignumber.eq(order2.takerFee);
+            });
+            it('should successfully call fillOrder and cancelOrder via 2 transactions', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+                    order2,
+                ]);
+                const transaction1 = takerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = makerTransactionFactory.newSignedTransaction(data2);
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    senderAddress,
+                );
+
+                let fillLogIndex: number = 0;
+                let cancelLogIndex: number = 0;
+                const fillLogs = transactionReceipt.logs.filter((log, index) => {
+                    if ((log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill') {
+                        fillLogIndex = index;
+                        return true;
+                    }
+                    return false;
+                });
+                const cancelLogs = transactionReceipt.logs.filter((log, index) => {
+                    if ((log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel') {
+                        cancelLogIndex = index;
+                        return true;
+                    }
+                    return false;
+                });
+                expect(fillLogs.length).to.eq(1);
+                expect(cancelLogs.length).to.eq(1);
+                expect(cancelLogIndex).to.greaterThan(fillLogIndex);
+
+                const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fillLogArgs.makerAddress).to.eq(makerAddress);
+                expect(fillLogArgs.takerAddress).to.eq(takerAddress);
+                expect(fillLogArgs.senderAddress).to.eq(senderAddress);
+                expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fillLogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fillLogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fillLogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fillLogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
+                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.senderAddress).to.eq(senderAddress);
+                expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(cancelLogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(cancelLogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should return the correct data for a fillOrder and cancelOrder call', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+                    order2,
+                ]);
+                const transaction1 = takerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = makerTransactionFactory.newSignedTransaction(data2);
+                const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                    { from: senderAddress },
+                );
+                const abi = artifacts.Exchange.compilerOutput.abi;
+                const methodAbi = abi.filter(
+                    abiItem => (abiItem as MethodAbi).name === ExchangeFunctionName.FillOrder,
+                )[0] as MethodAbi;
+                const abiEncoder = new AbiEncoder.Method(methodAbi);
+                const fillResults: FillResults = abiEncoder.decodeReturnValues(returnData[0]).fillResults;
+                expect(fillResults.makerAssetFilledAmount).to.be.bignumber.eq(order1.makerAssetAmount);
+                expect(fillResults.takerAssetFilledAmount).to.be.bignumber.eq(order1.takerAssetAmount);
+                expect(fillResults.makerFeePaid).to.be.bignumber.eq(order1.makerFee);
+                expect(fillResults.takerFeePaid).to.be.bignumber.eq(order1.takerFee);
+                expect(returnData[1]).to.eq(constants.NULL_BYTES);
+            });
+            it('should revert if a single transaction reverts', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
+                const transaction1 = makerTransactionFactory.newSignedTransaction(data1);
+                const transaction2 = takerTransactionFactory.newSignedTransaction(data2);
+                const tx = exchangeWrapper.batchExecuteTransactionsAsync([transaction1, transaction2], senderAddress);
+                const nestedError = new ExchangeRevertErrors.OrderStatusError(
+                    OrderStatus.Cancelled,
+                    orderHashUtils.getOrderHashHex(order),
+                ).encode();
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
+                    nestedError,
+                );
+                expect(tx).to.revertWith(expectedError);
+            });
+        });
+        describe('examples', () => {
             describe('ExchangeWrapper', () => {
                 let exchangeWrapperContract: ExchangeWrapperContract;
 
