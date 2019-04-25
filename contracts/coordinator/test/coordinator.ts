@@ -2,15 +2,17 @@ import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
+    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
     ExchangeContract,
+    exchangeDataEncoder,
     ExchangeFillEventArgs,
+    ExchangeFunctionName,
 } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
-    exchangeDataEncoder,
     expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     OrderFactory,
@@ -128,7 +130,7 @@ describe('Coordinator tests', () => {
     });
 
     describe('single order fills', () => {
-        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
             it(`${fnName} should fill the order with a signed approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -292,7 +294,7 @@ describe('Coordinator tests', () => {
         }
     });
     describe('batch order fills', () => {
-        for (const fnName of [...constants.MARKET_FILL_FN_NAMES, ...constants.BATCH_FILL_FN_NAMES]) {
+        for (const fnName of [...exchangeConstants.MARKET_FILL_FN_NAMES, ...exchangeConstants.BATCH_FILL_FN_NAMES]) {
             it(`${fnName} should fill the orders with a signed approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -443,7 +445,7 @@ describe('Coordinator tests', () => {
     describe('cancels', () => {
         it('cancelOrder call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync()];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDER, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
@@ -471,7 +473,7 @@ describe('Coordinator tests', () => {
         });
         it('batchCancelOrders call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.BATCH_CANCEL_ORDERS, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
@@ -501,7 +503,7 @@ describe('Coordinator tests', () => {
         });
         it('cancelOrdersUpTo call should be successful without an approval', async () => {
             const orders: SignedOrder[] = [];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS_UP_TO, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(

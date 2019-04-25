@@ -20,7 +20,13 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract, ExchangeWrapper, ReentrantERC20TokenContract } from '../src';
+import {
+    artifacts,
+    constants as exchangeConstants,
+    ExchangeContract,
+    ExchangeWrapper,
+    ReentrantERC20TokenContract,
+} from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -155,7 +161,7 @@ describe('Exchange wrappers', () => {
                 });
             });
         };
-        describe('fillOrKillOrder reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+        describe('fillOrKillOrder reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         it('should transfer the correct amounts', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
@@ -244,7 +250,7 @@ describe('Exchange wrappers', () => {
                 });
             });
         };
-        describe('fillOrderNoThrow reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+        describe('fillOrderNoThrow reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         it('should transfer the correct amounts', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
@@ -462,7 +468,7 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('batchFillOrders reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('batchFillOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
@@ -529,7 +535,8 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('batchFillOrKillOrders reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('batchFillOrKillOrders reentrancy tests', () =>
+                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
@@ -613,7 +620,8 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('batchFillOrdersNoThrow reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('batchFillOrdersNoThrow reentrancy tests', () =>
+                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
@@ -746,7 +754,7 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('marketSellOrders reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('marketSellOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire takerAssetFillAmount is filled', async () => {
                 const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
@@ -865,7 +873,8 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('marketSellOrdersNoThrow reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('marketSellOrdersNoThrow reentrancy tests', () =>
+                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire takerAssetFillAmount is filled', async () => {
                 const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
@@ -1011,7 +1020,7 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('marketBuyOrders reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('marketBuyOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire makerAssetFillAmount is filled', async () => {
                 const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(
@@ -1130,7 +1139,8 @@ describe('Exchange wrappers', () => {
                     });
                 });
             };
-            describe('marketBuyOrdersNoThrow reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+            describe('marketBuyOrdersNoThrow reentrancy tests', () =>
+                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire makerAssetFillAmount is filled', async () => {
                 const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(
