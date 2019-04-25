@@ -39,6 +39,16 @@ contract ISignatureValidator {
     )
         external;
 
+    /// @dev Approves/unnapproves an OrderValidator contract to verify signatures on signer's behalf
+    ///      using the `OrderValidator` signature type.
+    /// @param validatorAddress Address of Validator contract.
+    /// @param approval Approval or disapproval of  Validator contract.
+    function setOrderValidatorApproval(
+        address validatorAddress,
+        bool approval
+    )
+        external;
+
     /// @dev Verifies that a signature for a hash is valid.
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address of signer.
