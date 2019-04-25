@@ -429,11 +429,7 @@ describe('MixinSignatureValidator', () => {
             // Presign hash
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.preSign.sendTransactionAsync(
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    signedOrder.signature,
-                ),
+                await signatureValidator.preSign.sendTransactionAsync(orderHashHex, { from: signedOrder.makerAddress }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // Validate presigned signature
