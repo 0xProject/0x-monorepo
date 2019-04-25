@@ -45,7 +45,7 @@ import {
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
+// tslint:disable:no-unnecessary-type-assertion
 describe('Exchange transactions', () => {
     let chainId: number;
     let senderAddress: string;
@@ -852,7 +852,7 @@ describe('Exchange transactions', () => {
                     transactionHashUtils.getTransactionHashHex(transaction2),
                     nestedError,
                 );
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
         });
         describe('examples', () => {
