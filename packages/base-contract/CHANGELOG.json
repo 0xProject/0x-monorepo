@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Export `PromiseWithTransactionHash` type",
+                "pr": TODO
+            }
+        ]
+    },
+    {
         "version": "5.0.5",
         "changes": [
             {

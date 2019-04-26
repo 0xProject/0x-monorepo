@@ -20,6 +20,15 @@ export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
 }
 
+// Not used here, but generated contracts will return it in `awaitTransactionSuccessAsync()`.
+// Maybe there's a better place for this.
+export class PromiseWithTransactionHash<T> extends Promise<T> {
+    public txHash: string = '';
+    constructor(executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
+        super(executor);
+    }
+}
+
 const REVERT_ERROR_SELECTOR = '08c379a0';
 const REVERT_ERROR_SELECTOR_OFFSET = 2;
 const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
