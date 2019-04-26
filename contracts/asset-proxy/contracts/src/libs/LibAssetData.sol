@@ -383,7 +383,7 @@ library LibAssetData {
             // Point to the first parameter's data:
             amounts := add(assetData, mload(assetData))
             // Point to the next parameter's data:
-            //nestedAssetData := add(assetData, mload(add(assetData, 32)))
+            nestedAssetData := add(assetData, mload(add(assetData, 32)))
         }
     }
 
