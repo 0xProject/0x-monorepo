@@ -619,7 +619,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         );
 
         if (response.status !== HTTP_OK) {
-            throw new Error(`${response.status}: ${JSON.stringify(await response.json())}`); // todo
+            throw new Error(`${response.status}: ${JSON.stringify(await response.json())}`); // todo (xianny)
         }
 
         return (await response.json()) as CoordinatorServerApprovalResponse | CoordinatorServerCancellationResponse;
@@ -650,7 +650,7 @@ export class CoordinatorWrapper extends ContractWrapper {
             orderTransactionOpts,
         );
     }
-} // tslint:disable:max-file-line-count
+}
 
 function getFeeRecipientOrThrow(orders: Array<Order | SignedOrder>): string {
     const uniqueFeeRecipients = new Set(orders.map(o => o.feeRecipientAddress));
@@ -669,3 +669,4 @@ function getMakerAddressOrThrow(orders: Array<Order | SignedOrder>): string {
     }
     return orders[0].makerAddress;
 }
+ // tslint:disable:max-file-line-count
