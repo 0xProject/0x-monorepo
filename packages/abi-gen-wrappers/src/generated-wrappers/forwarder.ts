@@ -1,13 +1,24 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
-import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 
@@ -55,6 +66,29 @@ export class ForwarderContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            makerAssetFillAmount: BigNumber,
+            signatures: string[],
+            feeOrders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            feeSignatures: string[],
+            feePercentage: BigNumber,
+            feeRecipient: string,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ForwarderContract;
+            const txHash = await self.marketBuyOrdersWithEth.sendTransactionAsync(orders,
+    makerAssetFillAmount,
+    signatures,
+    feeOrders,
+    feeSignatures,
+    feePercentage,
+    feeRecipient
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -170,6 +204,19 @@ export class ForwarderContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            assetData: string,
+            amount: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ForwarderContract;
+            const txHash = await self.withdrawAsset.sendTransactionAsync(assetData,
+    amount
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             assetData: string,
@@ -294,6 +341,27 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        async awaitTransactionSuccessAsync(
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            signatures: string[],
+            feeOrders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            feeSignatures: string[],
+            feePercentage: BigNumber,
+            feeRecipient: string,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ForwarderContract;
+            const txHash = await self.marketSellOrdersWithEth.sendTransactionAsync(orders,
+    signatures,
+    feeOrders,
+    feeSignatures,
+    feePercentage,
+    feeRecipient
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
+        },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             signatures: string[],
@@ -399,6 +467,17 @@ export class ForwarderContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            newOwner: string,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ForwarderContract;
+            const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             newOwner: string,
@@ -518,7 +597,7 @@ _wethAssetData
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('Forwarder', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('Forwarder', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

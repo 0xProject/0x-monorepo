@@ -1,13 +1,24 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
-import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type WETH9EventArgs =
@@ -101,6 +112,19 @@ export class WETH9Contract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            guy: string,
+            wad: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as WETH9Contract;
+            const txHash = await self.approve.sendTransactionAsync(guy,
+    wad
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             guy: string,
@@ -216,6 +240,21 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        async awaitTransactionSuccessAsync(
+            src: string,
+            dst: string,
+            wad: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as WETH9Contract;
+            const txHash = await self.transferFrom.sendTransactionAsync(src,
+    dst,
+    wad
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
+        },
         async estimateGasAsync(
             src: string,
             dst: string,
@@ -303,6 +342,17 @@ export class WETH9Contract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            wad: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as WETH9Contract;
+            const txHash = await self.withdraw.sendTransactionAsync(wad
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             wad: BigNumber,
@@ -463,6 +513,19 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        async awaitTransactionSuccessAsync(
+            dst: string,
+            wad: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as WETH9Contract;
+            const txHash = await self.transfer.sendTransactionAsync(dst,
+    wad
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
+        },
         async estimateGasAsync(
             dst: string,
             wad: BigNumber,
@@ -541,6 +604,15 @@ export class WETH9Contract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as WETH9Contract;
+            const txHash = await self.deposit.sendTransactionAsync();
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             txData: Partial<TxData> = {},
@@ -663,7 +735,7 @@ export class WETH9Contract extends BaseContract {
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('WETH9', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('WETH9', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

@@ -1,13 +1,24 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
-import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type ERC20ProxyEventArgs =
@@ -56,6 +67,17 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            target: string,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20ProxyContract;
+            const txHash = await self.addAuthorizedAddress.sendTransactionAsync(target
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             target: string,
@@ -161,6 +183,17 @@ export class ERC20ProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        async awaitTransactionSuccessAsync(
+            target: string,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20ProxyContract;
+            const txHash = await self.removeAuthorizedAddress.sendTransactionAsync(target
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
+        },
         async estimateGasAsync(
             target: string,
             txData: Partial<TxData> = {},
@@ -265,6 +298,19 @@ export class ERC20ProxyContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            target: string,
+            index: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20ProxyContract;
+            const txHash = await self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
+    index
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             target: string,
@@ -428,6 +474,17 @@ export class ERC20ProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        async awaitTransactionSuccessAsync(
+            newOwner: string,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20ProxyContract;
+            const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
+        },
         async estimateGasAsync(
             newOwner: string,
             txData: Partial<TxData> = {},
@@ -525,7 +582,7 @@ export class ERC20ProxyContract extends BaseContract {
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('ERC20Proxy', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('ERC20Proxy', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

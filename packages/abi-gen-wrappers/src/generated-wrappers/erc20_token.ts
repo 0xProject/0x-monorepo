@@ -1,13 +1,24 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
-import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type ERC20TokenEventArgs =
@@ -61,6 +72,19 @@ export class ERC20TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            _spender: string,
+            _value: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20TokenContract;
+            const txHash = await self.approve.sendTransactionAsync(_spender,
+    _value
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             _spender: string,
@@ -175,6 +199,21 @@ export class ERC20TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _value: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20TokenContract;
+            const txHash = await self.transferFrom.sendTransactionAsync(_from,
+    _to,
+    _value
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             _from: string,
@@ -294,6 +333,19 @@ export class ERC20TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        async awaitTransactionSuccessAsync(
+            _to: string,
+            _value: BigNumber,
+            pollingIntervalMs?: number,
+        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = this as any as ERC20TokenContract;
+            const txHash = await self.transfer.sendTransactionAsync(_to,
+    _value
+    );
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            receiptPromise.txHash = txHash;
+            return receiptPromise;
         },
         async estimateGasAsync(
             _to: string,
@@ -428,7 +480,7 @@ export class ERC20TokenContract extends BaseContract {
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('ERC20Token', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('ERC20Token', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
