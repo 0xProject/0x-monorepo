@@ -97,6 +97,7 @@ export class CoordinatorContract extends BaseContract {
             transactionSignature: string,
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -106,7 +107,7 @@ export class CoordinatorContract extends BaseContract {
     transactionSignature,
     approvalExpirationTimeSeconds,
     approvalSignatures
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,

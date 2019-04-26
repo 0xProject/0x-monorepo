@@ -75,6 +75,7 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feePercentage: BigNumber,
             feeRecipient: string,
+            txData: Partial<TxDataPayable> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -86,7 +87,7 @@ export class ForwarderContract extends BaseContract {
     feeSignatures,
     feePercentage,
     feeRecipient
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -214,13 +215,14 @@ export class ForwarderContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             assetData: string,
             amount: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ForwarderContract;
             const txHash = await self.withdrawAsset.sendTransactionAsync(assetData,
     amount
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -360,6 +362,7 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feePercentage: BigNumber,
             feeRecipient: string,
+            txData: Partial<TxDataPayable> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -370,7 +373,7 @@ export class ForwarderContract extends BaseContract {
     feeSignatures,
     feePercentage,
     feeRecipient
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -488,12 +491,13 @@ export class ForwarderContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             newOwner: string,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ForwarderContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,

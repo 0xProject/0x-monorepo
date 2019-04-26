@@ -102,13 +102,14 @@ export class ZRXTokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _spender: string,
             _value: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ZRXTokenContract;
             const txHash = await self.approve.sendTransactionAsync(_spender,
     _value
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -236,6 +237,7 @@ export class ZRXTokenContract extends BaseContract {
             _from: string,
             _to: string,
             _value: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -243,7 +245,7 @@ export class ZRXTokenContract extends BaseContract {
             const txHash = await self.transferFrom.sendTransactionAsync(_from,
     _to,
     _value
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -427,13 +429,14 @@ export class ZRXTokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _to: string,
             _value: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ZRXTokenContract;
             const txHash = await self.transfer.sendTransactionAsync(_to,
     _value
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,

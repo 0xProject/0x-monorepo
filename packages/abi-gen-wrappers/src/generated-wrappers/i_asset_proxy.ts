@@ -51,12 +51,13 @@ export class IAssetProxyContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             target: string,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as IAssetProxyContract;
             const txHash = await self.addAuthorizedAddress.sendTransactionAsync(target
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -144,12 +145,13 @@ export class IAssetProxyContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             target: string,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as IAssetProxyContract;
             const txHash = await self.removeAuthorizedAddress.sendTransactionAsync(target
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -241,13 +243,14 @@ export class IAssetProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             target: string,
             index: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as IAssetProxyContract;
             const txHash = await self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
     index
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -353,6 +356,7 @@ export class IAssetProxyContract extends BaseContract {
             from: string,
             to: string,
             amount: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -361,7 +365,7 @@ export class IAssetProxyContract extends BaseContract {
     from,
     to,
     amount
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -519,12 +523,13 @@ export class IAssetProxyContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             newOwner: string,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as IAssetProxyContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,

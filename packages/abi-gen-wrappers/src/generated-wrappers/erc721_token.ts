@@ -112,13 +112,14 @@ export class ERC721TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _approved: string,
             _tokenId: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721TokenContract;
             const txHash = await self.approve.sendTransactionAsync(_approved,
     _tokenId
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -220,6 +221,7 @@ export class ERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -227,7 +229,7 @@ export class ERC721TokenContract extends BaseContract {
             const txHash = await self.transferFrom.sendTransactionAsync(_from,
     _to,
     _tokenId
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -335,6 +337,7 @@ export class ERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -342,7 +345,7 @@ export class ERC721TokenContract extends BaseContract {
             const txHash = await self.safeTransferFrom1.sendTransactionAsync(_from,
     _to,
     _tokenId
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -502,13 +505,14 @@ export class ERC721TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _operator: string,
             _approved: boolean,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721TokenContract;
             const txHash = await self.setApprovalForAll.sendTransactionAsync(_operator,
     _approved
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
@@ -614,6 +618,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             _data: string,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
@@ -622,7 +627,7 @@ export class ERC721TokenContract extends BaseContract {
     _to,
     _tokenId,
     _data
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,

@@ -63,12 +63,13 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
+            txData: Partial<TxData> = {},
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as CoordinatorRegistryContract;
             const txHash = await self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
-    );
+    , txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
             const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
                 txHash,
