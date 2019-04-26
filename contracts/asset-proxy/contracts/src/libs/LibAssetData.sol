@@ -307,7 +307,9 @@ library LibAssetData {
     ///     contract hosting the assets, an array of the identifiers of the
     ///     tokens to be traded, an array of token amounts to be traded, and
     ///     callback data.  Each element of the arrays corresponds to the
-    ///     same-indexed element of the other array.
+    ///     same-indexed element of the other array.  Return values specified as
+    ///     `memory` are returned as pointers to locations within the memory of
+    ///     the input parameter `assetData`.
     function decodeERC1155AssetData(bytes memory assetData)
         public
         pure
@@ -323,9 +325,18 @@ library LibAssetData {
 
         require(proxyId == ERC1155_PROXY_ID, "WRONG_PROXY_ID");
 
-        (tokenAddress, tokenIds, tokenValues, callbackData) = abi.decode( // solhint-disable-line indent
-            LibBytes.slice(assetData, 4, assetData.length), (address, uint256[], uint256[], bytes)
-        );
+        assembly {
+            // Skip selector and length to get to the first parameter:
+            assetData := add(assetData, 36)
+            // Read the value of the first parameter:
+            tokenAddress := mload(assetData)
+            // Point to the next parameter's data:
+            tokenIds := add(assetData, mload(add(assetData, 32)))
+            // Point to the next parameter's data:
+            tokenValues := add(assetData, mload(add(assetData, 64)))
+            // Point to the next parameter's data:
+            callbackData := add(assetData, mload(add(assetData, 96)))
+        }
     }
 
     /// @dev Encode data for multiple assets, per the AssetProxy contract
