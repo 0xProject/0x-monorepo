@@ -300,7 +300,9 @@ library LibAssetData {
     }
 
     /// @dev Decode ERC-1155 asset data from the format described in the
-    ///     AssetProxy contract specification.
+    ///     AssetProxy contract specification.  Return values specified as
+    ///     `memory` are returned as pointers to locations within the memory of
+    ///     the input parameter `assetData`.
     /// @param assetData AssetProxy-compliant asset data describing an ERC-1155
     ///     set of assets.
     /// @return The ERC-1155 AssetProxy identifier, the address of the ERC-1155
@@ -323,9 +325,18 @@ library LibAssetData {
 
         require(proxyId == ERC1155_PROXY_ID, "WRONG_PROXY_ID");
 
-        (tokenAddress, tokenIds, tokenValues, callbackData) = abi.decode( // solhint-disable-line indent
-            LibBytes.slice(assetData, 4, assetData.length), (address, uint256[], uint256[], bytes)
-        );
+        assembly {
+            // Skip selector and length to get to the first parameter:
+            assetData := add(assetData, 36)
+            // Read the value of the first parameter:
+            tokenAddress := mload(assetData)
+            // Point to the next parameter's data:
+            tokenIds := add(assetData, mload(add(assetData, 32)))
+            // Point to the next parameter's data:
+            tokenValues := add(assetData, mload(add(assetData, 64)))
+            // Point to the next parameter's data:
+            callbackData := add(assetData, mload(add(assetData, 96)))
+        }
     }
 
     /// @dev Encode data for multiple assets, per the AssetProxy contract
@@ -350,7 +361,9 @@ library LibAssetData {
     ///     of the assets to be traded, and an array of the
     ///     AssetProxy-compliant data describing each asset to be traded.  Each
     ///     element of the arrays corresponds to the same-indexed element of
-    ///     the other array.
+    ///     the other array.  Return values specified as `memory` are returned
+    ///     as pointers to locations within the memory of the input parameter
+    ///     `assetData`.
     function decodeMultiAssetData(bytes memory assetData)
         public
         pure
@@ -364,8 +377,14 @@ library LibAssetData {
 
         require(proxyId == MULTI_ASSET_PROXY_ID, "WRONG_PROXY_ID");
 
-        // solhint-disable-next-line indent
-        (amounts, nestedAssetData) = abi.decode(LibBytes.slice(assetData, 4, assetData.length), (uint256[], bytes[]));
+        assembly {
+            // Skip selector and length to get to the first parameter.
+            assetData := add(assetData, 36)
+            // Point to the first parameter's data:
+            amounts := add(assetData, mload(assetData))
+            // Point to the next parameter's data:
+            //nestedAssetData := add(assetData, mload(add(assetData, 32)))
+        }
     }
 
     /// @dev Calls `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
