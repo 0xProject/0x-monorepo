@@ -98,7 +98,7 @@ export class CoordinatorContract extends BaseContract {
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as CoordinatorContract;
             const txHash = await self.executeTransaction.sendTransactionAsync(transaction,
     txOrigin,
@@ -106,7 +106,7 @@ export class CoordinatorContract extends BaseContract {
     approvalExpirationTimeSeconds,
     approvalSignatures
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

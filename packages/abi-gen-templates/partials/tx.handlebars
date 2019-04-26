@@ -28,10 +28,10 @@ public {{this.tsName}} = {
     async awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
         pollingIntervalMs?: number,
-    ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+    ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
         const self = this as any as {{contractName}}Contract;
         const txHash = await self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}});
-        const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+        const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
         receiptPromise.txHash = txHash;
         return receiptPromise;
     },

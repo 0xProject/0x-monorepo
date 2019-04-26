@@ -71,11 +71,11 @@ export class ERC721ProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             target: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.addAuthorizedAddress.sendTransactionAsync(target
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -186,11 +186,11 @@ export class ERC721ProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             target: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.removeAuthorizedAddress.sendTransactionAsync(target
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -303,12 +303,12 @@ export class ERC721ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
     index
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -477,11 +477,11 @@ export class ERC721ProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             newOwner: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

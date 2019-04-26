@@ -103,12 +103,12 @@ export class DummyERC20TokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.approve.sendTransactionAsync(_spender,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -231,13 +231,13 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.transferFrom.sendTransactionAsync(_from,
     _to,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -438,11 +438,11 @@ export class DummyERC20TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _value: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.mint.sendTransactionAsync(_value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -529,12 +529,12 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.transfer.sendTransactionAsync(_to,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -657,12 +657,12 @@ export class DummyERC20TokenContract extends BaseContract {
             _target: string,
             _value: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.setBalance.sendTransactionAsync(_target,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -751,11 +751,11 @@ export class DummyERC20TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             newOwner: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

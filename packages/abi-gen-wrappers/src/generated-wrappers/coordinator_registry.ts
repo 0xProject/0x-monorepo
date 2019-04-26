@@ -64,11 +64,11 @@ export class CoordinatorRegistryContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as CoordinatorRegistryContract;
             const txHash = await self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

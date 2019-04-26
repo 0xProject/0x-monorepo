@@ -117,12 +117,12 @@ export class WETH9Contract extends BaseContract {
             guy: string,
             wad: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as WETH9Contract;
             const txHash = await self.approve.sendTransactionAsync(guy,
     wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -245,13 +245,13 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as WETH9Contract;
             const txHash = await self.transferFrom.sendTransactionAsync(src,
     dst,
     wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -346,11 +346,11 @@ export class WETH9Contract extends BaseContract {
         async awaitTransactionSuccessAsync(
             wad: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as WETH9Contract;
             const txHash = await self.withdraw.sendTransactionAsync(wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -517,12 +517,12 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as WETH9Contract;
             const txHash = await self.transfer.sendTransactionAsync(dst,
     wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -607,10 +607,10 @@ export class WETH9Contract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as WETH9Contract;
             const txHash = await self.deposit.sendTransactionAsync();
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

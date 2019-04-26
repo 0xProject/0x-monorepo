@@ -76,7 +76,7 @@ export class ForwarderContract extends BaseContract {
             feePercentage: BigNumber,
             feeRecipient: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ForwarderContract;
             const txHash = await self.marketBuyOrdersWithEth.sendTransactionAsync(orders,
     makerAssetFillAmount,
@@ -86,7 +86,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -209,12 +209,12 @@ export class ForwarderContract extends BaseContract {
             assetData: string,
             amount: BigNumber,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ForwarderContract;
             const txHash = await self.withdrawAsset.sendTransactionAsync(assetData,
     amount
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -349,7 +349,7 @@ export class ForwarderContract extends BaseContract {
             feePercentage: BigNumber,
             feeRecipient: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ForwarderContract;
             const txHash = await self.marketSellOrdersWithEth.sendTransactionAsync(orders,
     signatures,
@@ -358,7 +358,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -471,11 +471,11 @@ export class ForwarderContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             newOwner: string,
             pollingIntervalMs?: number,
-        ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ForwarderContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

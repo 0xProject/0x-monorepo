@@ -22,6 +22,8 @@ export interface AbiEncoderByFunctionSignature {
 
 // Not used here, but generated contracts will return it in `awaitTransactionSuccessAsync()`.
 // Maybe there's a better place for this.
+// Must be a class to get tsc to regard as a Promise type.
+// tslint:disable: max-classes-per-file
 export class PromiseWithTransactionHash<T> extends Promise<T> {
     public txHash: string = '';
     constructor(executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
