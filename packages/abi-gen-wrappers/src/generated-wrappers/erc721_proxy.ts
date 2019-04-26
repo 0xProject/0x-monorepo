@@ -71,12 +71,17 @@ export class ERC721ProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             target: string,
             pollingIntervalMs?: number,
+            timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.addAuthorizedAddress.sendTransactionAsync(target
     );
             // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
+                txHash,
+                pollingIntervalMs,
+                timeoutMs,
+            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -187,12 +192,17 @@ export class ERC721ProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             target: string,
             pollingIntervalMs?: number,
+            timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.removeAuthorizedAddress.sendTransactionAsync(target
     );
             // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
+                txHash,
+                pollingIntervalMs,
+                timeoutMs,
+            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -305,13 +315,18 @@ export class ERC721ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             pollingIntervalMs?: number,
+            timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
     index
     );
             // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
+                txHash,
+                pollingIntervalMs,
+                timeoutMs,
+            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -480,12 +495,17 @@ export class ERC721ProxyContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             newOwner: string,
             pollingIntervalMs?: number,
+            timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as ERC721ProxyContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     );
             // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
+                txHash,
+                pollingIntervalMs,
+                timeoutMs,
+            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
