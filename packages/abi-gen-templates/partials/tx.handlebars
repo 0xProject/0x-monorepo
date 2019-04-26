@@ -28,14 +28,20 @@ public {{this.tsName}} = {
     async awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
     {{#this.payable}}
-        txData: Partial<TxDataPayable> = {},
+        txData?: Partial<TxDataPayable> | number,
     {{/this.payable}}
     {{^this.payable}}
-        txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | number,
     {{/this.payable}}
         pollingIntervalMs?: number,
         timeoutMs?: number,
     ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        // `txData` is optional, so it might be set to `pollingIntervalMs`.
+        if (typeof(txData) === 'number') {
+            pollingIntervalMs = txData;
+            timeoutMs = pollingIntervalMs;
+            txData = {};
+        }
         const self = this as any as {{contractName}}Contract;
         {{#if inputs}}
         const txHash = await self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
@@ -47,7 +53,7 @@ public {{this.tsName}} = {
             txHash,
             pollingIntervalMs,
             timeoutMs,
-        ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+        ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
         receiptPromise.txHash = txHash;
         return receiptPromise;
     },

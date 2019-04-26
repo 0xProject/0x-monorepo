@@ -116,10 +116,16 @@ export class WETH9Contract extends BaseContract {
         async awaitTransactionSuccessAsync(
             guy: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as WETH9Contract;
             const txHash = await self.approve.sendTransactionAsync(guy,
     wad
@@ -129,7 +135,7 @@ export class WETH9Contract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -251,10 +257,16 @@ export class WETH9Contract extends BaseContract {
             src: string,
             dst: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as WETH9Contract;
             const txHash = await self.transferFrom.sendTransactionAsync(src,
     dst,
@@ -265,7 +277,7 @@ export class WETH9Contract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -359,10 +371,16 @@ export class WETH9Contract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as WETH9Contract;
             const txHash = await self.withdraw.sendTransactionAsync(wad
     , txData);
@@ -371,7 +389,7 @@ export class WETH9Contract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -537,10 +555,16 @@ export class WETH9Contract extends BaseContract {
         async awaitTransactionSuccessAsync(
             dst: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as WETH9Contract;
             const txHash = await self.transfer.sendTransactionAsync(dst,
     wad
@@ -550,7 +574,7 @@ export class WETH9Contract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -634,10 +658,16 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         async awaitTransactionSuccessAsync(
-            txData: Partial<TxDataPayable> = {},
+            txData?: Partial<TxDataPayable> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as WETH9Contract;
             const txHash = await self.deposit.sendTransactionAsync(txData);
             // tslint:disable-next-line: no-unnecessary-type-assertion
@@ -645,7 +675,7 @@ export class WETH9Contract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

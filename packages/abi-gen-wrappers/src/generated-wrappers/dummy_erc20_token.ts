@@ -102,10 +102,16 @@ export class DummyERC20TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _spender: string,
             _value: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.approve.sendTransactionAsync(_spender,
     _value
@@ -115,7 +121,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -237,10 +243,16 @@ export class DummyERC20TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _value: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.transferFrom.sendTransactionAsync(_from,
     _to,
@@ -251,7 +263,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -451,10 +463,16 @@ export class DummyERC20TokenContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             _value: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.mint.sendTransactionAsync(_value
     , txData);
@@ -463,7 +481,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -549,10 +567,16 @@ export class DummyERC20TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _to: string,
             _value: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.transfer.sendTransactionAsync(_to,
     _value
@@ -562,7 +586,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -684,10 +708,16 @@ export class DummyERC20TokenContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             _target: string,
             _value: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.setBalance.sendTransactionAsync(_target,
     _value
@@ -697,7 +727,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -785,10 +815,16 @@ export class DummyERC20TokenContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             newOwner: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DummyERC20TokenContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     , txData);
@@ -797,7 +833,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

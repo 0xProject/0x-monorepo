@@ -161,10 +161,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             owner: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.removeOwner.sendTransactionAsync(owner
     , txData);
@@ -173,7 +179,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -255,10 +261,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             transactionId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.revokeConfirmation.sendTransactionAsync(transactionId
     , txData);
@@ -267,7 +279,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -407,10 +419,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             transactionId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(transactionId
     , txData);
@@ -419,7 +437,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -561,10 +579,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             assetProxyContract: string,
             isRegistered: boolean,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.registerAssetProxy.sendTransactionAsync(assetProxyContract,
     isRegistered
@@ -574,7 +598,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -662,10 +686,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             owner: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.addOwner.sendTransactionAsync(owner
     , txData);
@@ -674,7 +704,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -784,10 +814,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked
     , txData);
@@ -796,7 +832,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1076,10 +1112,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             _required: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.changeRequirement.sendTransactionAsync(_required
     , txData);
@@ -1088,7 +1130,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1170,10 +1212,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             transactionId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.confirmTransaction.sendTransactionAsync(transactionId
     , txData);
@@ -1182,7 +1230,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1272,10 +1320,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             destination: string,
             value: BigNumber,
             data: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.submitTransaction.sendTransactionAsync(destination,
     value,
@@ -1286,7 +1340,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1464,10 +1518,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             owner: string,
             newOwner: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.replaceOwner.sendTransactionAsync(owner,
     newOwner
@@ -1477,7 +1537,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1565,10 +1625,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             transactionId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.executeTransaction.sendTransactionAsync(transactionId
     , txData);
@@ -1577,7 +1643,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

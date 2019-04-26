@@ -51,10 +51,16 @@ export class DutchAuctionContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DutchAuctionContract;
             const txHash = await self.getAuctionDetails.sendTransactionAsync(order
     , txData);
@@ -63,7 +69,7 @@ export class DutchAuctionContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -157,10 +163,16 @@ export class DutchAuctionContract extends BaseContract {
             sellOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             buySignature: string,
             sellSignature: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as DutchAuctionContract;
             const txHash = await self.matchOrders.sendTransactionAsync(buyOrder,
     sellOrder,
@@ -172,7 +184,7 @@ export class DutchAuctionContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

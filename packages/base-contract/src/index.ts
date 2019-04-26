@@ -20,14 +20,26 @@ export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
 }
 
-// Not used here, but generated contracts will return it in `awaitTransactionSuccessAsync()`.
-// Maybe there's a better place for this.
-// Must be a class to get tsc to regard as a Promise type.
 // tslint:disable: max-classes-per-file
-export class PromiseWithTransactionHash<T> extends Promise<T> {
+/**
+ * @dev A promise-compatible type that exposes a `txHash` field.
+ *      Not used by BaseContract, but generated contracts will return it in
+ *      `awaitTransactionSuccessAsync()`.
+ *      Maybe there's a better place for this.
+ *      If you're wondering why this class is not simpler, it's to get around
+ *      Typescript/ES5 transpiling issues.
+ */
+export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
     public txHash: string = '';
-    constructor(executor: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
-        super(executor);
+    private readonly _promise: Promise<T>;
+    constructor(handler: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
+        this._promise = new Promise(handler);
+    }
+    public then<TResult>(
+        onFulfilled?: (v: T) => TResult | PromiseLike<TResult>,
+        onRejected?: (reason: any) => PromiseLike<never>,
+    ): PromiseLike<TResult> {
+        return this._promise.then<TResult>(onFulfilled, onRejected);
     }
 }
 

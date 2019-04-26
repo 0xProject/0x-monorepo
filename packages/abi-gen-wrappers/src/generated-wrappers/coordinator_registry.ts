@@ -63,10 +63,16 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as CoordinatorRegistryContract;
             const txHash = await self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
     , txData);
@@ -75,7 +81,7 @@ export class CoordinatorRegistryContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

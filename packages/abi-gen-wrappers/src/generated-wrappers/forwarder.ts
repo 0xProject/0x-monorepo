@@ -75,10 +75,16 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feePercentage: BigNumber,
             feeRecipient: string,
-            txData: Partial<TxDataPayable> = {},
+            txData?: Partial<TxDataPayable> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as ForwarderContract;
             const txHash = await self.marketBuyOrdersWithEth.sendTransactionAsync(orders,
     makerAssetFillAmount,
@@ -93,7 +99,7 @@ export class ForwarderContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -215,10 +221,16 @@ export class ForwarderContract extends BaseContract {
         async awaitTransactionSuccessAsync(
             assetData: string,
             amount: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as ForwarderContract;
             const txHash = await self.withdrawAsset.sendTransactionAsync(assetData,
     amount
@@ -228,7 +240,7 @@ export class ForwarderContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -362,10 +374,16 @@ export class ForwarderContract extends BaseContract {
             feeSignatures: string[],
             feePercentage: BigNumber,
             feeRecipient: string,
-            txData: Partial<TxDataPayable> = {},
+            txData?: Partial<TxDataPayable> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as ForwarderContract;
             const txHash = await self.marketSellOrdersWithEth.sendTransactionAsync(orders,
     signatures,
@@ -379,7 +397,7 @@ export class ForwarderContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -491,10 +509,16 @@ export class ForwarderContract extends BaseContract {
         },
         async awaitTransactionSuccessAsync(
             newOwner: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
             const self = this as any as ForwarderContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     , txData);
@@ -503,7 +527,7 @@ export class ForwarderContract extends BaseContract {
                 txHash,
                 pollingIntervalMs,
                 timeoutMs,
-            ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
