@@ -1,26 +1,17 @@
-import {
-    CoordinatorContract,
-    CoordinatorRegistryContract,
-    ExchangeContract,
-} from '@0x/abi-gen-wrappers';
+import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 import { Coordinator, CoordinatorRegistry, Exchange } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import {
-    generatePseudoRandomSalt,
-    signatureUtils,
-    transactionHashUtils,
-} from '@0x/order-utils';
-import { Order, SignedOrder, ZeroExTransaction } from '@0x/types';
+import { generatePseudoRandomSalt, signatureUtils, transactionHashUtils } from '@0x/order-utils';
+import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
-import * as http from 'http';
-import * as request from 'supertest';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import {
-    CoordinatorServerResponse,
+    CoordinatorServerApprovalResponse,
+    CoordinatorServerCancellationResponse,
     OrderTransactionOpts,
 } from '../types';
 import { assert } from '../utils/assert';
@@ -33,8 +24,8 @@ import { ContractWrapper } from './contract_wrapper';
 const HTTP_OK = 200;
 
 /**
- * This class includes all the functionality related to calling methods, sending transactions and subscribing to
- * events of the 0x V2 Coordinator smart contract.
+ * This class includes all the functionality related to filling or cancelling orders through
+ * the 0x V2 Coordinator smart contract.
  */
 export class CoordinatorWrapper extends ContractWrapper {
     public abi: ContractAbi = Coordinator.compilerOutput.abi;
@@ -42,23 +33,19 @@ export class CoordinatorWrapper extends ContractWrapper {
     public address: string;
     public exchangeAddress: string;
     public registryAddress: string;
-    private _contractInstance: CoordinatorContract;
-    private _registryInstance: CoordinatorRegistryContract;
-    private _exchangeInstance: ExchangeContract;
-    private _transactionEncoder: TransactionEncoder;
+    private readonly _contractInstance: CoordinatorContract;
+    private readonly _registryInstance: CoordinatorRegistryContract;
+    private readonly _exchangeInstance: ExchangeContract;
+    private readonly _transactionEncoder: TransactionEncoder;
 
     /**
-     * Instantiate ExchangeWrapper
+     * Instantiate CoordinatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
      * @param networkId Desired networkId.
      * @param address The address of the Coordinator contract. If undefined, will
      * default to the known address corresponding to the networkId.
-     * @param registryAddress The address of the Coordinator contract. If undefined, will
+     * @param registryAddress The address of the CoordinatorRegistry contract. If undefined, will
      * default to the known address corresponding to the networkId.
-     * @param zrxTokenAddress The address of the ZRXToken contract. If
-     * undefined, will default to the known address corresponding to the
-     * networkId.
-     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions.
      */
     constructor(
         web3Wrapper: Web3Wrapper,
@@ -66,17 +53,16 @@ export class CoordinatorWrapper extends ContractWrapper {
         address?: string,
         exchangeAddress?: string,
         registryAddress?: string,
-        blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+        super(web3Wrapper, networkId);
         this.networkId = networkId;
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).coordinator : address;
-        this.exchangeAddress = exchangeAddress === undefined
-            ? _getDefaultContractAddresses(networkId).coordinator
-            : exchangeAddress;
-        this.registryAddress = registryAddress === undefined
-            ? _getDefaultContractAddresses(networkId).coordinatorRegistry
-            : registryAddress;
+        this.exchangeAddress =
+            exchangeAddress === undefined ? _getDefaultContractAddresses(networkId).coordinator : exchangeAddress;
+        this.registryAddress =
+            registryAddress === undefined
+                ? _getDefaultContractAddresses(networkId).coordinatorRegistry
+                : registryAddress;
 
         this._contractInstance = new CoordinatorContract(
             this.abi,
@@ -354,47 +340,119 @@ export class CoordinatorWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('leftSignedOrder', leftSignedOrder, schemas.signedOrderSchema);
         assert.doesConformToSchema('rightSignedOrder', rightSignedOrder, schemas.signedOrderSchema);
-        const feeRecipientAddress = getFeeRecipientOrThrow([leftSignedOrder, rightSignedOrder]);
+
         const data = this._transactionEncoder.matchOrdersTx(leftSignedOrder, rightSignedOrder);
-        return this._handleFillAsync(data, takerAddress, feeRecipientAddress, orderTransactionOpts);
+        const transaction = await this._toSignedZeroExTransactionAsync(data, takerAddress);
+        return this._sendTransactionAsync(
+            transaction,
+            takerAddress,
+            transaction.signature,
+            [],
+            [],
+            orderTransactionOpts,
+        );
     }
 
     /**
-     * Cancel a given order.
+     * Soft cancel a given order. See [soft cancels](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#soft-cancels).
+     * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
+     * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
+     */
+    @decorators.asyncZeroExErrorHandler
+    public async softCancelOrderAsync(order: Order | SignedOrder): Promise<CoordinatorServerCancellationResponse> {
+        assert.doesConformToSchema('order', order, schemas.orderSchema);
+        assert.isETHAddressHex('feeRecipientAddress', order.feeRecipientAddress);
+        assert.isSenderAddressAsync('makerAddress', order.makerAddress, this._web3Wrapper);
+        const data = this._transactionEncoder.cancelOrderTx(order);
+
+        const transaction = await this._toSignedZeroExTransactionAsync(data, order.makerAddress);
+        return (await this._requestServerResponseAsync(
+            transaction,
+            order.makerAddress,
+            order.feeRecipientAddress,
+        )) as CoordinatorServerCancellationResponse;
+    }
+
+    /**
+     * Batch version of softCancelOrderAsync. Requests multiple soft cancels
+     * @param   orders                An array of orders to cancel.
+     * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
+     */
+    @decorators.asyncZeroExErrorHandler
+    public async batchSoftCancelOrdersAsync(orders: SignedOrder[]): Promise<CoordinatorServerCancellationResponse> {
+        assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
+        const feeRecipientAddress = getFeeRecipientOrThrow(orders);
+        const makerAddress = getMakerAddressOrThrow(orders);
+        assert.isETHAddressHex('feeRecipientAddress', feeRecipientAddress);
+        assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
+
+        const data = this._transactionEncoder.batchCancelOrdersTx(orders);
+        const transaction = await this._toSignedZeroExTransactionAsync(data, makerAddress);
+        return (await this._requestServerResponseAsync(
+            transaction,
+            makerAddress,
+            feeRecipientAddress,
+        )) as CoordinatorServerCancellationResponse;
+    }
+
+    /**
+     * Hard cancellation on Exchange contract. Cancels a single order.
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
      * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async cancelOrderAsync(
+    public async hardCancelOrderAsync(
         order: Order | SignedOrder,
         orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
+        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
+        await assert.isSenderAddressAsync('makerAddress', order.makerAddress, this._web3Wrapper);
+
         const data = this._transactionEncoder.cancelOrderTx(order);
-        return this._handleFillAsync(data, order.makerAddress, order.feeRecipientAddress, orderTransactionOpts); // todo: is this the right taker address?
+        const transaction = await this._toSignedZeroExTransactionAsync(data, order.makerAddress);
+        return this._sendTransactionAsync(
+            transaction,
+            order.makerAddress,
+            transaction.signature,
+            [],
+            [],
+            orderTransactionOpts,
+        );
     }
 
     /**
+     * Hard cancellation on Exchange contract.
      * Batch version of cancelOrderAsync. Executes multiple cancels atomically in a single transaction.
      * @param   orders                An array of orders to cancel.
      * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async batchCancelOrdersAsync(
+    public async batchHardCancelOrdersAsync(
         orders: SignedOrder[],
         orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
-        const makerAddresses = orders.map(o => o.makerAddress);
-        const makerAddress = makerAddresses[0];
-        const feeRecipientAddress = getFeeRecipientOrThrow(orders);
+        const makerAddress = getMakerAddressOrThrow(orders);
+        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
+        await assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
+
         const data = this._transactionEncoder.batchCancelOrdersTx(orders);
-        return this._handleFillAsync(data, makerAddress, feeRecipientAddress, orderTransactionOpts);
+        const transaction = await this._toSignedZeroExTransactionAsync(data, makerAddress);
+        return this._sendTransactionAsync(
+            transaction,
+            makerAddress,
+            transaction.signature,
+            [],
+            [],
+            orderTransactionOpts,
+        );
     }
 
     /**
+     * Hard cancellation on Exchange contract.
      * Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
      * and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).
      * @param   targetOrderEpoch             Target order epoch.
@@ -403,47 +461,136 @@ export class CoordinatorWrapper extends ContractWrapper {
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
-    public async cancelOrdersUpToAsync(
+    public async hardCancelOrdersUpToAsync(
         targetOrderEpoch: BigNumber,
         senderAddress: string,
-        coordinatorOperatorAddress: string,
         orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-        const data = this._transactionEncoder.cancelOrdersUpToTx(targetOrderEpoch);
-        return this._handleFillAsync(data, senderAddress, coordinatorOperatorAddress, orderTransactionOpts);
+        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        return this._exchangeInstance.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, {
+            from: senderAddress,
+            gas: orderTransactionOpts.gasLimit,
+            gasPrice: orderTransactionOpts.gasPrice,
+            nonce: orderTransactionOpts.nonce,
+        });
+        // // todo: find out why this doesn't work (xianny)
+        // const data = this._transactionEncoder.cancelOrdersUpToTx(targetOrderEpoch);
+        // const transaction = await this._toSignedZeroExTransactionAsync(data, senderAddress);
+        // return this._sendTransactionAsync(
+        //     transaction,
+        //     senderAddress,
+        //     transaction.signature,
+        //     [],
+        //     [],
+        //     orderTransactionOpts,
+        // );
     }
 
-    /**
-     * Executes a 0x transaction. Transaction messages exist for the purpose of calling methods on the Exchange contract
-     * in the context of another address (see [ZEIP18](https://github.com/0xProject/ZEIPs/issues/18)).
-     * This is especially useful for implementing filter contracts.
-     * @param   salt                  Salt
-     * @param   signerAddress         Signer address
-     * @param   data                  Transaction data
-     * @param   signature             Signature
-     * @param   takerAddress          Sender address
-     * @param   feeRecipientAddress   Coordinator operator address registered in CoordinatorRegistryContract
-     * @param   orderTransactionOpts  Optional arguments this method accepts.
-     * @return  Transaction hash.
-     */
-    @decorators.asyncZeroExErrorHandler
-    public async executeTransactionWithApprovalAsync(
-        salt: BigNumber,
-        signerAddress: string,
-        data: string,
+    public async assertValidCoordinatorApprovalsAsync(
+        transaction: ZeroExTransaction,
+        txOrigin: string,
         signature: string,
-        takerAddress: string,
-        feeRecipientAddress: string,
+        approvalExpirationTimeSeconds: BigNumber[],
+        approvalSignatures: string[],
+    ): Promise<void> {
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema);
+        assert.isETHAddressHex('txOrigin', txOrigin);
+        assert.isHexString('signature', signature);
+        for (const expirationTime of approvalExpirationTimeSeconds) {
+            assert.isBigNumber('expirationTime', expirationTime);
+        }
+        for (const approvalSignature of approvalSignatures) {
+            assert.isHexString('approvalSignature', approvalSignature);
+        }
+
+        return this._contractInstance.assertValidCoordinatorApprovals.callAsync(
+            transaction,
+            txOrigin,
+            signature,
+            approvalExpirationTimeSeconds,
+            approvalSignatures,
+        );
+    }
+
+    public async getSignerAddressAsync(hash: string, signature: string): Promise<string> {
+        assert.isHexString('hash', hash);
+        assert.isHexString('signature', signature);
+        return this._contractInstance.getSignerAddress.callAsync(hash, signature);
+    }
+
+    private async _sendTransactionAsync(
+        transaction: { salt: BigNumber; signerAddress: string; data: string },
+        txOrigin: string,
+        transactionSignature: string,
+        approvalExpirationTimeSeconds: BigNumber[],
+        approvalSignatures: string[],
         orderTransactionOpts: OrderTransactionOpts,
     ): Promise<string> {
-        assert.isBigNumber('salt', salt);
-        assert.isETHAddressHex('signerAddress', signerAddress);
-        assert.isHexString('data', data);
-        assert.isHexString('signature', signature);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        if (orderTransactionOpts.shouldValidate) {
+            await this._contractInstance.executeTransaction.callAsync(
+                transaction,
+                txOrigin,
+                transactionSignature,
+                approvalExpirationTimeSeconds,
+                approvalSignatures,
+                {
+                    from: txOrigin,
+                    gas: orderTransactionOpts.gasLimit,
+                    gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
+                },
+            );
+        }
+        const txHash = await this._contractInstance.executeTransaction.sendTransactionAsync(
+            transaction,
+            txOrigin,
+            transactionSignature,
+            approvalExpirationTimeSeconds,
+            approvalSignatures,
+            {
+                from: txOrigin,
+                gas: orderTransactionOpts.gasLimit,
+                gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
+            },
+        );
+        return txHash;
+    }
+
+    private async _toSignedZeroExTransactionAsync(
+        data: string,
+        senderAddress: string,
+    ): Promise<SignedZeroExTransaction> {
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        const normalizedSenderAddress = senderAddress.toLowerCase();
+
+        const transaction: ZeroExTransaction = {
+            salt: generatePseudoRandomSalt(),
+            signerAddress: normalizedSenderAddress,
+            data,
+            verifyingContractAddress: this.exchangeAddress,
+        };
+        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+        const signature = await signatureUtils.ecSignHashAsync(
+            this._web3Wrapper.getProvider(),
+            transactionHash,
+            transaction.signerAddress,
+        );
+        return {
+            ...transaction,
+            signature,
+        };
+    }
+
+    private async _requestServerResponseAsync(
+        transaction: SignedZeroExTransaction,
+        senderAddress: string,
+        feeRecipientAddress: string,
+    ): Promise<CoordinatorServerApprovalResponse | CoordinatorServerCancellationResponse> {
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema);
         assert.isETHAddressHex('feeRecipientAddress', feeRecipientAddress);
-        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
 
         const coordinatorOperatorEndpoint = await this._registryInstance.getCoordinatorEndpoint.callAsync(
             feeRecipientAddress,
@@ -456,20 +603,9 @@ export class CoordinatorWrapper extends ContractWrapper {
             );
         }
 
-        const txOrigin = takerAddress;
-        const zeroExTransaction = {
-            salt,
-            signerAddress,
-            data,
-        };
-
         const requestPayload = {
-            signedTransaction: {
-                ...zeroExTransaction,
-                signature,
-                verifyingContractAddress: this.exchangeAddress,
-            },
-            txOrigin,
+            signedTransaction: transaction,
+            txOrigin: senderAddress,
         };
         const response = await fetchAsync(
             `${coordinatorOperatorEndpoint}/v1/request_transaction?networkId=${this.networkId}`,
@@ -483,25 +619,10 @@ export class CoordinatorWrapper extends ContractWrapper {
         );
 
         if (response.status !== HTTP_OK) {
-            throw new Error(``); // todo
+            throw new Error(`${response.status}: ${JSON.stringify(await response.json())}`); // todo
         }
 
-        const { signatures, expirationTimeSeconds } = (await response.json()) as CoordinatorServerResponse;
-
-        console.log(`signatures, expiration: ${JSON.stringify(signatures)}, ${JSON.stringify(expirationTimeSeconds)}`);
-        return this._contractInstance.executeTransaction.sendTransactionAsync(
-            zeroExTransaction,
-            txOrigin,
-            signature,
-            [expirationTimeSeconds],
-            signatures,
-            {
-                from: txOrigin,
-                gas: orderTransactionOpts.gasLimit,
-                gasPrice: orderTransactionOpts.gasPrice,
-                nonce: orderTransactionOpts.nonce,
-            },
-        );
+        return (await response.json()) as CoordinatorServerApprovalResponse | CoordinatorServerCancellationResponse;
     }
 
     private async _handleFillAsync(
@@ -512,28 +633,20 @@ export class CoordinatorWrapper extends ContractWrapper {
     ): Promise<string> {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
-        const normalizedTakerAddress = takerAddress.toLowerCase();
 
-        const transaction: ZeroExTransaction = {
-            salt: generatePseudoRandomSalt(),
-            signerAddress: normalizedTakerAddress,
-            data,
-            verifyingContractAddress: this.exchangeAddress,
-        };
-        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-        const signature = await signatureUtils.ecSignHashAsync(
-            this._web3Wrapper.getProvider(),
-            transactionHash,
-            transaction.signerAddress,
-        );
-
-        return this.executeTransactionWithApprovalAsync(
-            transaction.salt,
-            normalizedTakerAddress,
-            data,
-            signature,
-            normalizedTakerAddress,
+        const transaction = await this._toSignedZeroExTransactionAsync(data, takerAddress);
+        const { signatures, expirationTimeSeconds } = (await this._requestServerResponseAsync(
+            transaction,
+            takerAddress,
             feeRecipientAddress,
+        )) as CoordinatorServerApprovalResponse;
+
+        return this._sendTransactionAsync(
+            transaction,
+            takerAddress,
+            transaction.signature,
+            [expirationTimeSeconds],
+            signatures,
             orderTransactionOpts,
         );
     }
@@ -542,7 +655,17 @@ export class CoordinatorWrapper extends ContractWrapper {
 function getFeeRecipientOrThrow(orders: Array<Order | SignedOrder>): string {
     const uniqueFeeRecipients = new Set(orders.map(o => o.feeRecipientAddress));
     if (uniqueFeeRecipients.size > 1) {
-        throw new Error(`All orders in a batch must have the same feeRecipientAddress (a valid coordinator operator address)`);
+        throw new Error(
+            `All orders in a batch must have the same feeRecipientAddress (a valid coordinator operator address)`,
+        );
     }
     return orders[0].feeRecipientAddress;
+}
+
+function getMakerAddressOrThrow(orders: Array<Order | SignedOrder>): string {
+    const uniqueMakerAddresses = new Set(orders.map(o => o.makerAddress));
+    if (uniqueMakerAddresses.size > 1) {
+        throw new Error(`All orders in a batch must have the same makerAddress`);
+    }
+    return orders[0].makerAddress;
 }

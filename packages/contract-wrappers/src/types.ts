@@ -226,7 +226,19 @@ export interface DutchAuctionData {
     beginAmount: BigNumber;
 }
 
-export interface CoordinatorServerResponse {
+export interface CoordinatorServerApprovalResponse {
     signatures: string[];
     expirationTimeSeconds: BigNumber;
+}
+
+export interface CoordinatorServerCancellationResponse {
+    outstandingFillSignatures: [
+        {
+            orderHash: string;
+            approvalSignatures: string[];
+            expirationTimeSeconds: BigNumber;
+            takerAssetFillAmount: BigNumber;
+        }
+    ];
+    cancellationSignatures: string[];
 }

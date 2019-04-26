@@ -169,7 +169,6 @@ export class ContractWrappers {
             contractAddresses.coordinator,
             contractAddresses.exchange,
             contractAddresses.coordinatorRegistry,
-            blockPollingIntervalMs,
         );
     }
     /**

@@ -24,7 +24,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const coordinatorEndpoint = 'http://localhost:3000';
 
 // tslint:disable:custom-no-magic-numbers
-describe.only('CoordinatorWrapper', () => {
+describe('CoordinatorWrapper', () => {
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let app: http.Server;
@@ -44,7 +44,6 @@ describe.only('CoordinatorWrapper', () => {
     let txHash: string;
     let signedOrder: SignedOrder;
     let anotherSignedOrder: SignedOrder;
-    let signedOrderWithoutFeeRecipient: SignedOrder;
     let coordinatorRegistryInstance: CoordinatorRegistryContract;
     before(async () => {
         const contractAddresses = await migrateOnceAsync();
@@ -67,39 +66,11 @@ describe.only('CoordinatorWrapper', () => {
             contractWrappers.erc721Proxy.address,
         );
         [, makerAddress, takerAddress, feeRecipientAddress, anotherFeeRecipientAddress] = userAddresses.slice(0, 5);
-        [makerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
-        takerTokenAddress = contractWrappers.forwarder.etherTokenAddress;
+        [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
         ];
-        signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
-            makerAssetData,
-            takerAssetData,
-            new BigNumber(1),
-            new BigNumber(1),
-            makerAddress,
-            constants.NULL_ADDRESS,
-            fillableAmount,
-            feeRecipientAddress,
-        );
-        anotherSignedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
-            makerAssetData,
-            takerAssetData,
-            new BigNumber(1),
-            new BigNumber(1),
-            makerAddress,
-            constants.NULL_ADDRESS,
-            fillableAmount,
-            feeRecipientAddress,
-        );
-        signedOrderWithoutFeeRecipient = await fillScenarios.createFillableSignedOrderAsync(
-            makerAssetData,
-            takerAssetData,
-            makerAddress,
-            constants.NULL_ADDRESS,
-            fillableAmount,
-        );
 
         // set up mock coordinator server
         const coordinatorServerConfigs = {
@@ -109,11 +80,15 @@ describe.only('CoordinatorWrapper', () => {
                     FEE_RECIPIENTS: [
                         {
                             ADDRESS: feeRecipientAddress,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddress)].toString('hex'),
+                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
+                                userAddresses.indexOf(feeRecipientAddress)
+                            ].toString('hex'),
                         },
                         {
                             ADDRESS: anotherFeeRecipientAddress,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(anotherFeeRecipientAddress)].toString('hex'),
+                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
+                                userAddresses.indexOf(anotherFeeRecipientAddress)
+                            ].toString('hex'),
                         },
                     ],
                     // Ethereum RPC url, only used in the default instantiation in server.js of 0x-coordinator-server
@@ -132,7 +107,8 @@ describe.only('CoordinatorWrapper', () => {
             coordinatorServerConfigs,
         );
 
-        await app.listen(coordinatorServerConfigs.HTTP_PORT, () => { // tslint:disable-line:await-promise
+        await app.listen(coordinatorServerConfigs.HTTP_PORT, () => {
+            // tslint:disable-line:await-promise
             console.log(`Coordinator SERVER API (HTTP) listening on port ${coordinatorServerConfigs.HTTP_PORT}!`); // tslint:disable-line:no-console
         });
 
@@ -141,13 +117,13 @@ describe.only('CoordinatorWrapper', () => {
             CoordinatorRegistry.compilerOutput.abi,
             contractAddresses.coordinatorRegistry,
             provider,
-            {gas: 6000000});
+            { gas: 6000000 },
+        );
 
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
-                coordinatorEndpoint,
-                { from: feeRecipientAddress },
-            ),
+            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, {
+                from: feeRecipientAddress,
+            }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     });
@@ -156,6 +132,26 @@ describe.only('CoordinatorWrapper', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
+        signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+            makerAssetData,
+            takerAssetData,
+            new BigNumber(1),
+            new BigNumber(1),
+            makerAddress,
+            takerAddress,
+            fillableAmount,
+            feeRecipientAddress,
+        );
+        anotherSignedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+            makerAssetData,
+            takerAssetData,
+            new BigNumber(1),
+            new BigNumber(1),
+            makerAddress,
+            takerAddress,
+            fillableAmount,
+            feeRecipientAddress,
+        );
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
@@ -219,7 +215,7 @@ describe.only('CoordinatorWrapper', () => {
             });
         });
         describe('#marketBuyOrdersAsync', () => {
-            it('should maker buy', async () => {
+            it('should market buy', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const makerAssetFillAmount = takerTokenFillAmount;
                 txHash = await contractWrappers.coordinator.marketBuyOrdersAsync(
@@ -231,7 +227,7 @@ describe.only('CoordinatorWrapper', () => {
             });
         });
         describe('#marketBuyOrdersNoThrowAsync', () => {
-            it('should no throw maker buy', async () => {
+            it('should no throw market buy', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const makerAssetFillAmount = takerTokenFillAmount;
                 txHash = await contractWrappers.coordinator.marketBuyOrdersNoThrowAsync(
@@ -245,7 +241,7 @@ describe.only('CoordinatorWrapper', () => {
             });
         });
         describe('#marketSellOrdersAsync', () => {
-            it('should maker sell', async () => {
+            it('should market sell', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmount = takerTokenFillAmount;
                 txHash = await contractWrappers.coordinator.marketSellOrdersAsync(
@@ -257,7 +253,7 @@ describe.only('CoordinatorWrapper', () => {
             });
         });
         describe('#marketSellOrdersNoThrowAsync', () => {
-            it('should no throw maker sell', async () => {
+            it('should no throw market sell', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmount = takerTokenFillAmount;
                 txHash = await contractWrappers.coordinator.marketSellOrdersNoThrowAsync(
@@ -307,7 +303,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerAddress,
                     fillableAmount,
                 );
-                txHash = await contractWrappers.coordinator.matchOrdersAsync(
+                txHash = await contractWrappers.exchange.matchOrdersAsync(
                     signedOrder,
                     matchingSignedOrder,
                     takerAddress,
@@ -316,31 +312,48 @@ describe.only('CoordinatorWrapper', () => {
             });
         });
     });
-    // describe('cancel order(s)', () => {
-    //     describe('#cancelOrderAsync', () => {
-    //         it('should cancel a valid order', async () => {
-    //             txHash = await contractWrappers.coordinator.cancelOrderAsync(signedOrder);
-    //             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-    //         });
-    //     });
-    //     describe('#batchCancelOrdersAsync', () => {
-    //         it('should cancel a batch of valid orders', async () => {
-    //             const orders = [signedOrder, anotherSignedOrder];
-    //             txHash = await contractWrappers.coordinator.batchCancelOrdersAsync(orders);
-    //             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-    //         });
-    //     });
-        // describe('#cancelOrdersUpTo/getOrderEpochAsync', () => {
-        //     it('should cancel orders up to target order epoch', async () => {
-        //         const targetOrderEpoch = new BigNumber(42);
-        //         txHash = await contractWrappers.coordinator.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
-        //         await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-        //         const orderEpoch = await contractWrappers.coordinator.getOrderEpochAsync(
-        //             makerAddress,
-        //             constants.NULL_ADDRESS,
-        //         );
-        //         expect(orderEpoch).to.be.bignumber.equal(targetOrderEpoch.plus(1));
-        //     });
-        // });
-    // });
+    describe('soft cancel order(s)', () => {
+        describe('#softCancelOrderAsync', () => {
+            it('should cancel a valid order', async () => {
+                const response = await contractWrappers.coordinator.softCancelOrderAsync(signedOrder);
+                expect(response.outstandingFillSignatures).to.have.lengthOf(0);
+                expect(response.cancellationSignatures).to.have.lengthOf(1);
+            });
+        });
+        describe('#batchSoftCancelOrdersAsync', () => {
+            it('should cancel a batch of valid orders', async () => {
+                const orders = [signedOrder, anotherSignedOrder];
+                const response = await contractWrappers.coordinator.batchSoftCancelOrdersAsync(orders);
+                expect(response.outstandingFillSignatures).to.have.lengthOf(0);
+                expect(response.cancellationSignatures).to.have.lengthOf(1);
+            });
+        });
+    });
+    describe('hard cancel order(s)', () => {
+        describe('#hardCancelOrderAsync', () => {
+            it('should cancel a valid order', async () => {
+                txHash = await contractWrappers.coordinator.hardCancelOrderAsync(signedOrder);
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            });
+        });
+        describe('#batchHardCancelOrdersAsync', () => {
+            it('should cancel a batch of valid orders', async () => {
+                const orders = [signedOrder, anotherSignedOrder];
+                txHash = await contractWrappers.coordinator.batchHardCancelOrdersAsync(orders);
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            });
+        });
+        describe('#cancelOrdersUpTo/getOrderEpochAsync', () => {
+            it('should cancel orders up to target order epoch', async () => {
+                const targetOrderEpoch = new BigNumber(42);
+                txHash = await contractWrappers.coordinator.hardCancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
+                    makerAddress,
+                    constants.NULL_ADDRESS,
+                );
+                expect(orderEpoch).to.be.bignumber.equal(targetOrderEpoch.plus(1));
+            });
+        });
+    });
 });
