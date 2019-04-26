@@ -28,11 +28,16 @@ public {{this.tsName}} = {
     async awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
         pollingIntervalMs?: number,
+        timeoutMs?: number,
     ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
         const self = this as any as {{contractName}}Contract;
         const txHash = await self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}});
         // tslint:disable-next-line: no-unnecessary-type-assertion
-        const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+        const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
+            txHash,
+            pollingIntervalMs,
+            timeoutMs,
+        ) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
         receiptPromise.txHash = txHash;
         return receiptPromise;
     },
