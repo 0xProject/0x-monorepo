@@ -122,7 +122,8 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self.approve.sendTransactionAsync(guy,
     wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -251,7 +252,8 @@ export class WETH9Contract extends BaseContract {
     dst,
     wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -350,7 +352,8 @@ export class WETH9Contract extends BaseContract {
             const self = this as any as WETH9Contract;
             const txHash = await self.withdraw.sendTransactionAsync(wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -522,7 +525,8 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self.transfer.sendTransactionAsync(dst,
     wad
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -610,7 +614,8 @@ export class WETH9Contract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = this as any as WETH9Contract;
             const txHash = await self.deposit.sendTransactionAsync();
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

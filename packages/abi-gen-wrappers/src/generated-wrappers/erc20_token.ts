@@ -82,7 +82,8 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self.approve.sendTransactionAsync(_spender,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -211,7 +212,8 @@ export class ERC20TokenContract extends BaseContract {
     _to,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -343,7 +345,8 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self.transfer.sendTransactionAsync(_to,
     _value
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

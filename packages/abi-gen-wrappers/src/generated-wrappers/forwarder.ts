@@ -86,7 +86,8 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -214,7 +215,8 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self.withdrawAsset.sendTransactionAsync(assetData,
     amount
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -358,7 +360,8 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -475,7 +478,8 @@ export class ForwarderContract extends BaseContract {
             const self = this as any as ForwarderContract;
             const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

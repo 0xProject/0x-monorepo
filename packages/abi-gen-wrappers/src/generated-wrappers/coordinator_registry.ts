@@ -68,7 +68,8 @@ export class CoordinatorRegistryContract extends BaseContract {
             const self = this as any as CoordinatorRegistryContract;
             const txHash = await self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },

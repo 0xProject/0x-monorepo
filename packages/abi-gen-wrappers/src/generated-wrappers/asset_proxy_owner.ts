@@ -166,7 +166,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.removeOwner.sendTransactionAsync(owner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -253,7 +254,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.revokeConfirmation.sendTransactionAsync(transactionId
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -398,7 +400,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(transactionId
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -546,7 +549,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self.registerAssetProxy.sendTransactionAsync(assetProxyContract,
     isRegistered
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -639,7 +643,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.addOwner.sendTransactionAsync(owner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -754,7 +759,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1039,7 +1045,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.changeRequirement.sendTransactionAsync(_required
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1126,7 +1133,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.confirmTransaction.sendTransactionAsync(transactionId
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1223,7 +1231,8 @@ export class AssetProxyOwnerContract extends BaseContract {
     value,
     data
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1407,7 +1416,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self.replaceOwner.sendTransactionAsync(owner,
     newOwner
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
@@ -1500,7 +1510,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = this as any as AssetProxyOwnerContract;
             const txHash = await self.executeTransaction.sendTransactionAsync(transactionId
     );
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs);
+            // tslint:disable-next-line: no-unnecessary-type-assertion
+            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
             receiptPromise.txHash = txHash;
             return receiptPromise;
         },
