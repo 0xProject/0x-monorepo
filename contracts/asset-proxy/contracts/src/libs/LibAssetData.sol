@@ -232,7 +232,7 @@ library LibAssetData {
     {
         proxyId = LibBytes.readBytes4(assetData, 0);
 
-        require(proxyId == ERC20_PROXY_ID);
+        require(proxyId == ERC20_PROXY_ID, "WRONG_PROXY_ID");
 
         tokenAddress = LibBytes.readAddress(assetData, 16);
     }
@@ -272,7 +272,7 @@ library LibAssetData {
     {
         proxyId = LibBytes.readBytes4(assetData, 0);
 
-        require(proxyId == ERC721_PROXY_ID);
+        require(proxyId == ERC721_PROXY_ID, "WRONG_PROXY_ID");
 
         tokenAddress = LibBytes.readAddress(assetData, 16);
         tokenId = LibBytes.readUint256(assetData, 36);
@@ -321,7 +321,7 @@ library LibAssetData {
     {
         proxyId = LibBytes.readBytes4(assetData, 0);
 
-        require(proxyId == ERC1155_PROXY_ID);
+        require(proxyId == ERC1155_PROXY_ID, "WRONG_PROXY_ID");
 
         (tokenAddress, tokenIds, tokenValues, callbackData) = abi.decode( // solhint-disable-line indent
             LibBytes.slice(assetData, 4, assetData.length), (address, uint256[], uint256[], bytes)
@@ -362,7 +362,7 @@ library LibAssetData {
     {
         proxyId = LibBytes.readBytes4(assetData, 0);
 
-        require(proxyId == MULTI_ASSET_PROXY_ID);
+        require(proxyId == MULTI_ASSET_PROXY_ID, "WRONG_PROXY_ID");
 
         // solhint-disable-next-line indent
         (amounts, nestedAssetData) = abi.decode(LibBytes.slice(assetData, 4, assetData.length), (uint256[], bytes[]));
