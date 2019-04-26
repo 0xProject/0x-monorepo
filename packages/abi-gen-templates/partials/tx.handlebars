@@ -25,6 +25,16 @@ public {{this.tsName}} = {
         const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         return txHash;
     },
+    async awaitTransactionSuccessAsync(
+    {{> typed_params inputs=inputs}}
+        pollingIntervalMs?: number,
+    ):  PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        const self = this as any as {{contractName}}Contract;
+        const txHash = await self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}});
+        const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(txHash, pollingIntervalMs) as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+        receiptPromise.txHash = txHash;
+        return receiptPromise;
+    },
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}
         txData: Partial<TxData> = {},
