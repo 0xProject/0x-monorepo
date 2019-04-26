@@ -2,7 +2,6 @@ import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/cont
 import { constants, ERC721TokenIdsByOwner, txDefaults } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -11,14 +10,12 @@ import { artifacts, ERC721ProxyContract } from '../../src';
 export class ERC721Wrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _contractOwnerAddress: string;
-    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: ZeroExProvider;
     private readonly _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(provider: ZeroExProvider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
-        this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._dummyTokenContracts = [];
         this._tokenOwnerAddresses = tokenOwnerAddresses;
@@ -91,20 +88,20 @@ export class ERC721Wrapper {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
         const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.setApprovalForAll.sendTransactionAsync(proxyAddress, isApproved, {
-                from: tokenOwner,
-            }),
+        await tokenContract.setApprovalForAll.awaitTransactionSuccessAsync(
+            proxyAddress,
+            isApproved,
+            { from: tokenOwner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
     public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.approve.sendTransactionAsync(to, tokenId, {
-                from: tokenOwner,
-            }),
+        await tokenContract.approve.awaitTransactionSuccessAsync(
+            to,
+            tokenId,
+            { from: tokenOwner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
@@ -115,28 +112,29 @@ export class ERC721Wrapper {
         userAddress: string,
     ): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.transferFrom.sendTransactionAsync(currentOwner, userAddress, tokenId, {
-                from: currentOwner,
-            }),
+        await tokenContract.transferFrom.awaitTransactionSuccessAsync(
+            currentOwner,
+            userAddress,
+            tokenId,
+            { from: currentOwner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
     public async mintAsync(tokenAddress: string, tokenId: BigNumber, userAddress: string): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.mint.sendTransactionAsync(userAddress, tokenId, {
-                from: this._contractOwnerAddress,
-            }),
+        await tokenContract.mint.awaitTransactionSuccessAsync(
+            userAddress,
+            tokenId,
+            { from: this._contractOwnerAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
     public async burnAsync(tokenAddress: string, tokenId: BigNumber, owner: string): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.burn.sendTransactionAsync(owner, tokenId, {
-                from: this._contractOwnerAddress,
-            }),
+        await tokenContract.burn.awaitTransactionSuccessAsync(
+            owner,
+            tokenId,
+            { from: this._contractOwnerAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }

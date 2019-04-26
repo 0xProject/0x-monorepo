@@ -2,7 +2,6 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contra
 import { constants, ERC20BalancesByOwner, txDefaults } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -11,7 +10,6 @@ import { artifacts, ERC20ProxyContract } from '../../src';
 export class ERC20Wrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _contractOwnerAddress: string;
-    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: ZeroExProvider;
     private readonly _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
@@ -25,7 +23,6 @@ export class ERC20Wrapper {
      */
     constructor(provider: ZeroExProvider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
-        this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
@@ -67,20 +64,16 @@ export class ERC20Wrapper {
         this._validateProxyContractExistsOrThrow();
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                await this._web3Wrapper.awaitTransactionSuccessAsync(
-                    await dummyTokenContract.setBalance.sendTransactionAsync(
-                        tokenOwnerAddress,
-                        constants.INITIAL_ERC20_BALANCE,
-                        { from: this._contractOwnerAddress },
-                    ),
+                await dummyTokenContract.setBalance.awaitTransactionSuccessAsync(
+                    tokenOwnerAddress,
+                    constants.INITIAL_ERC20_BALANCE,
+                    { from: this._contractOwnerAddress },
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                await this._web3Wrapper.awaitTransactionSuccessAsync(
-                    await dummyTokenContract.approve.sendTransactionAsync(
-                        (this._proxyContract as ERC20ProxyContract).address,
-                        constants.INITIAL_ERC20_ALLOWANCE,
-                        { from: tokenOwnerAddress },
-                    ),
+                await dummyTokenContract.approve.awaitTransactionSuccessAsync(
+                    (this._proxyContract as ERC20ProxyContract).address,
+                    constants.INITIAL_ERC20_ALLOWANCE,
+                    { from: tokenOwnerAddress },
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
             }
@@ -93,10 +86,10 @@ export class ERC20Wrapper {
     }
     public async setBalanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.setBalance.sendTransactionAsync(userAddress, amount, {
-                from: this._contractOwnerAddress,
-            }),
+        await tokenContract.setBalance.awaitTransactionSuccessAsync(
+            userAddress,
+            amount,
+            { from: this._contractOwnerAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
@@ -109,10 +102,10 @@ export class ERC20Wrapper {
     public async setAllowanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
         const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await tokenContract.approve.sendTransactionAsync(proxyAddress, amount, {
-                from: userAddress,
-            }),
+        await tokenContract.approve.awaitTransactionSuccessAsync(
+            proxyAddress,
+            amount,
+            { from: userAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
