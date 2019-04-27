@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Update contracts to solidity ^0.5.5 and unpin dependencies",
-                "pr": TODO
+                "pr": 1796
             }
         ]
     },
