@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "add `awaitTransactionSuccessAsync()` to `tx.handlebars`",
-                "pr": TODO
+                "pr": 1797
             }
         ]
     },

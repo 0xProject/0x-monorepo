@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Update tests to use contract-built-in `awaitTransactionSuccessAsync`",
-                "pr": TODO
+                "pr": 1797
             }
         ]
     },

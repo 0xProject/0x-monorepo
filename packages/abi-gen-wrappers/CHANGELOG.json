@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods",
-                "pr": TODO
+                "pr": 1797
             }
         ]
     },
