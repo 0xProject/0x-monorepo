@@ -30,10 +30,7 @@ export interface AbiEncoderByFunctionSignature {
 export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
     public readonly txHashPromise: Promise<string>;
     private readonly _promise: Promise<T>;
-    constructor(
-        txHashPromise: Promise<string>,
-        promise: Promise<T>,
-    ) {
+    constructor(txHashPromise: Promise<string>, promise: Promise<T>) {
         this.txHashPromise = txHashPromise;
         this._promise = promise;
     }
