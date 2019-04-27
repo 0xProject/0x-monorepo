@@ -76,7 +76,7 @@ export class ContractWrappers {
     public dutchAuction: DutchAuctionWrapper;
 
     /**
-     * An instance of the CoordinatorWrapper class containing methods for interacting with any Coordinator smart contract.
+     * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
      */
     public coordinator: CoordinatorWrapper;
 
