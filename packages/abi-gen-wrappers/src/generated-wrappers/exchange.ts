@@ -138,7 +138,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
@@ -146,25 +146,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.batchFillOrders.sendTransactionAsync(orders,
+            const txHashPromise = self.batchFillOrders.sendTransactionAsync(orders,
     takerAssetFillAmounts,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -288,7 +292,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             hash: string,
             signerAddress: string,
             signature: string,
@@ -296,25 +300,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.preSign.sendTransactionAsync(hash,
+            const txHashPromise = self.preSign.sendTransactionAsync(hash,
     signerAddress,
     signature
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             hash: string,
@@ -413,7 +421,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             leftSignature: string,
@@ -422,26 +430,30 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.matchOrders.sendTransactionAsync(leftOrder,
+            const txHashPromise = self.matchOrders.sendTransactionAsync(leftOrder,
     rightOrder,
     leftSignature,
     rightSignature
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -543,7 +555,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
@@ -551,25 +563,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.fillOrderNoThrow.sendTransactionAsync(order,
+            const txHashPromise = self.fillOrderNoThrow.sendTransactionAsync(order,
     takerAssetFillAmount,
     signature
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -687,29 +703,33 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.batchCancelOrders.sendTransactionAsync(orders
+            const txHashPromise = self.batchCancelOrders.sendTransactionAsync(orders
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -793,7 +813,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
@@ -801,25 +821,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.batchFillOrKillOrders.sendTransactionAsync(orders,
+            const txHashPromise = self.batchFillOrKillOrders.sendTransactionAsync(orders,
     takerAssetFillAmounts,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -909,29 +933,33 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             targetOrderEpoch: BigNumber,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch
+            const txHashPromise = self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             targetOrderEpoch: BigNumber,
@@ -1015,7 +1043,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
@@ -1023,25 +1051,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.batchFillOrdersNoThrow.sendTransactionAsync(orders,
+            const txHashPromise = self.batchFillOrdersNoThrow.sendTransactionAsync(orders,
     takerAssetFillAmounts,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -1193,7 +1225,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
@@ -1201,25 +1233,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.fillOrKillOrder.sendTransactionAsync(order,
+            const txHashPromise = self.fillOrKillOrder.sendTransactionAsync(order,
     takerAssetFillAmount,
     signature
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -1312,31 +1348,35 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             validatorAddress: string,
             approval: boolean,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.setSignatureValidatorApproval.sendTransactionAsync(validatorAddress,
+            const txHashPromise = self.setSignatureValidatorApproval.sendTransactionAsync(validatorAddress,
     approval
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             validatorAddress: string,
@@ -1456,7 +1496,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
@@ -1464,25 +1504,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.marketSellOrders.sendTransactionAsync(orders,
+            const txHashPromise = self.marketSellOrders.sendTransactionAsync(orders,
     takerAssetFillAmount,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -1694,7 +1738,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
@@ -1702,25 +1746,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.marketBuyOrdersNoThrow.sendTransactionAsync(orders,
+            const txHashPromise = self.marketBuyOrdersNoThrow.sendTransactionAsync(orders,
     makerAssetFillAmount,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -1816,7 +1864,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
@@ -1824,25 +1872,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.fillOrder.sendTransactionAsync(order,
+            const txHashPromise = self.fillOrder.sendTransactionAsync(order,
     takerAssetFillAmount,
     signature
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -1941,7 +1993,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             salt: BigNumber,
             signerAddress: string,
             data: string,
@@ -1950,26 +2002,30 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.executeTransaction.sendTransactionAsync(salt,
+            const txHashPromise = self.executeTransaction.sendTransactionAsync(salt,
     signerAddress,
     data,
     signature
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             salt: BigNumber,
@@ -2065,29 +2121,33 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.registerAssetProxy.sendTransactionAsync(assetProxy
+            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             assetProxy: string,
@@ -2193,29 +2253,33 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.cancelOrder.sendTransactionAsync(order
+            const txHashPromise = self.cancelOrder.sendTransactionAsync(order
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -2355,7 +2419,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
@@ -2363,25 +2427,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.marketSellOrdersNoThrow.sendTransactionAsync(orders,
+            const txHashPromise = self.marketSellOrdersNoThrow.sendTransactionAsync(orders,
     takerAssetFillAmount,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -2503,7 +2571,7 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
@@ -2511,25 +2579,29 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.marketBuyOrders.sendTransactionAsync(orders,
+            const txHashPromise = self.marketBuyOrders.sendTransactionAsync(orders,
     makerAssetFillAmount,
     signatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
@@ -2645,29 +2717,33 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as ExchangeContract;
-            const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             newOwner: string,

@@ -91,7 +91,7 @@ export class CoordinatorContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             transaction: {salt: BigNumber;signerAddress: string;data: string},
             txOrigin: string,
             transactionSignature: string,
@@ -101,27 +101,31 @@ export class CoordinatorContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as CoordinatorContract;
-            const txHash = await self.executeTransaction.sendTransactionAsync(transaction,
+            const txHashPromise = self.executeTransaction.sendTransactionAsync(transaction,
     txOrigin,
     transactionSignature,
     approvalExpirationTimeSeconds,
     approvalSignatures
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             transaction: {salt: BigNumber;signerAddress: string;data: string},

@@ -103,29 +103,33 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as MultiAssetProxyContract;
-            const txHash = await self.addAuthorizedAddress.sendTransactionAsync(target
+            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             target: string,
@@ -259,29 +263,33 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as MultiAssetProxyContract;
-            const txHash = await self.removeAuthorizedAddress.sendTransactionAsync(target
+            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             target: string,
@@ -388,31 +396,35 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             target: string,
             index: BigNumber,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as MultiAssetProxyContract;
-            const txHash = await self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
+            const txHashPromise = self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
     index
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             target: string,
@@ -550,29 +562,33 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as MultiAssetProxyContract;
-            const txHash = await self.registerAssetProxy.sendTransactionAsync(assetProxy
+            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             assetProxy: string,
@@ -676,29 +692,33 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
-        async awaitTransactionSuccessAsync(
+        awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData> | number,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` is optional, so it might be set to `pollingIntervalMs`.
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
             if (typeof(txData) === 'number') {
                 pollingIntervalMs = txData;
                 timeoutMs = pollingIntervalMs;
                 txData = {};
             }
+            //
             const self = this as any as MultiAssetProxyContract;
-            const txHash = await self.transferOwnership.sendTransactionAsync(newOwner
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner
     , txData);
-            // tslint:disable-next-line: no-unnecessary-type-assertion
-            const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-                txHash,
-                pollingIntervalMs,
-                timeoutMs,
-            ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-            receiptPromise.txHash = txHash;
-            return receiptPromise;
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             newOwner: string,
