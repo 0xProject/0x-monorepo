@@ -26,14 +26,16 @@ export interface AbiEncoderByFunctionSignature {
  *      Not used by BaseContract, but generated contracts will return it in
  *      `awaitTransactionSuccessAsync()`.
  *      Maybe there's a better place for this.
- *      If you're wondering why this class is not simpler, it's to get around
- *      Typescript/ES5 transpiling issues.
  */
 export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
-    public txHash: string = '';
+    public readonly txHashPromise: Promise<string>;
     private readonly _promise: Promise<T>;
-    constructor(handler: (resolve: (value?: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
-        this._promise = new Promise(handler);
+    constructor(
+        txHashPromise: Promise<string>,
+        promise: Promise<T>,
+    ) {
+        this.txHashPromise = txHashPromise;
+        this._promise = promise;
     }
     public then<TResult>(
         onFulfilled?: (v: T) => TResult | PromiseLike<TResult>,

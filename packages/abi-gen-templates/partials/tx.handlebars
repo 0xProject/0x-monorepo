@@ -25,7 +25,7 @@ public {{this.tsName}} = {
         const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         return txHash;
     },
-    async awaitTransactionSuccessAsync(
+    awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
     {{#this.payable}}
         txData?: Partial<TxDataPayable> | number,
@@ -36,26 +36,30 @@ public {{this.tsName}} = {
         pollingIntervalMs?: number,
         timeoutMs?: number,
     ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-        // `txData` is optional, so it might be set to `pollingIntervalMs`.
+        // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
         if (typeof(txData) === 'number') {
             pollingIntervalMs = txData;
             timeoutMs = pollingIntervalMs;
             txData = {};
         }
+        //
         const self = this as any as {{contractName}}Contract;
         {{#if inputs}}
-        const txHash = await self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
+        const txHashPromise = self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
         {{else}}
-        const txHash = await self.{{this.tsName}}.sendTransactionAsync(txData);
+        const txHashPromise = self.{{this.tsName}}.sendTransactionAsync(txData);
         {{/if}}
-        // tslint:disable-next-line: no-unnecessary-type-assertion
-        const receiptPromise = self._web3Wrapper.awaitTransactionSuccessAsync(
-            txHash,
-            pollingIntervalMs,
-            timeoutMs,
-        ) as any as PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-        receiptPromise.txHash = txHash;
-        return receiptPromise;
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
     },
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}
