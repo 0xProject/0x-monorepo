@@ -42,6 +42,7 @@ contract MixinTransactions is
     /// @dev Executes an Exchange method call in the context of signer.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param signature Proof that transaction has been signed by signer.
+    /// @return ABI encoded return data of the underlying Exchange function call.
     function executeTransaction(
         ZeroExTransaction memory transaction,
         bytes memory signature
@@ -55,6 +56,7 @@ contract MixinTransactions is
     /// @dev Executes a batch of Exchange method calls in the context of signer(s).
     /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
     /// @param signatures Array of proofs that transactions have been signed by signer(s).
+    /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
     function batchExecuteTransactions(
         ZeroExTransaction[] memory transactions,
         bytes[] memory signatures
@@ -73,6 +75,7 @@ contract MixinTransactions is
     /// @dev Executes an Exchange method call in the context of signer.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param signature Proof that transaction has been signed by signer.
+    /// @return ABI encoded return data of the underlying Exchange function call.
     function _executeTransaction(
         ZeroExTransaction memory transaction,
         bytes memory signature
