@@ -20,6 +20,8 @@ pragma solidity ^0.5.5;
 
 
 contract MRichErrorTypes {
+    // bytes4(keccak256("Error(string)"))
     bytes4 internal constant STANDARD_ERROR_SELECTOR =
-        bytes4(keccak256("Error(string)"));
+        0x08c379a0;
+
 }
