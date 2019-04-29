@@ -24,21 +24,26 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 contract ISignatureValidator {
 
-    /// @dev Approves a hash on-chain using any valid signature type.
+    /// @dev Approves a hash on-chain.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    function preSign(
-        bytes32 hash,
-        address signerAddress,
-        bytes calldata signature
-    )
+    /// @param hash Any 32-byte hash.
+    function preSign(bytes32 hash)
         external;
 
     /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
     /// @param validatorAddress Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
     function setSignatureValidatorApproval(
+        address validatorAddress,
+        bool approval
+    )
+        external;
+
+    /// @dev Approves/unnapproves an OrderValidator contract to verify signatures on signer's behalf
+    ///      using the `OrderValidator` signature type.
+    /// @param validatorAddress Address of Validator contract.
+    /// @param approval Approval or disapproval of  Validator contract.
+    function setOrderValidatorApproval(
         address validatorAddress,
         bool approval
     )

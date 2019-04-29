@@ -2,14 +2,17 @@ import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
+    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
     ExchangeContract,
+    exchangeDataEncoder,
     ExchangeFillEventArgs,
+    ExchangeFunctionName,
 } from '@0x/contracts-exchange';
 import {
     chaiSetup,
-    constants as devConstants,
+    constants,
     expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     OrderFactory,
@@ -20,12 +23,12 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { RevertReason, SignedOrder } from '@0x/types';
+import { RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
-import { ApprovalFactory, artifacts, constants, CoordinatorContract, exchangeDataEncoder } from '../src';
+import { ApprovalFactory, artifacts, CoordinatorContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -68,7 +71,7 @@ describe('Coordinator tests', () => {
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
-            devConstants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_DECIMALS,
         );
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -82,12 +85,12 @@ describe('Coordinator tests', () => {
 
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
-            devConstants.AWAIT_TRANSACTION_MINED_MS,
+            constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         await web3Wrapper.awaitTransactionSuccessAsync(
             await exchange.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
-            devConstants.AWAIT_TRANSACTION_MINED_MS,
+            constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
@@ -100,7 +103,7 @@ describe('Coordinator tests', () => {
 
         // Configure order defaults
         const defaultOrderParams = {
-            ...devConstants.STATIC_ORDER_PARAMS,
+            ...constants.STATIC_ORDER_PARAMS,
             senderAddress: coordinatorContract.address,
             makerAddress,
             feeRecipientAddress,
@@ -111,9 +114,9 @@ describe('Coordinator tests', () => {
                 chainId,
             },
         };
-        const makerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        const takerPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
-        const feeRecipientPrivateKey = devConstants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(feeRecipientAddress)];
+        const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
+        const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
+        const feeRecipientPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(feeRecipientAddress)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
@@ -127,7 +130,7 @@ describe('Coordinator tests', () => {
     });
 
     describe('single order fills', () => {
-        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
             it(`${fnName} should fill the order with a signed approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -148,7 +151,7 @@ describe('Coordinator tests', () => {
                         [approval.signature],
                         { from: takerAddress },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -180,7 +183,7 @@ describe('Coordinator tests', () => {
                         [],
                         { from: feeRecipientAddress },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -212,7 +215,7 @@ describe('Coordinator tests', () => {
                         [],
                         {
                             from: takerAddress,
-                            gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS,
+                            gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
                         },
                     ),
                     RevertReason.InvalidApprovalSignature,
@@ -291,7 +294,7 @@ describe('Coordinator tests', () => {
         }
     });
     describe('batch order fills', () => {
-        for (const fnName of [...constants.MARKET_FILL_FN_NAMES, ...constants.BATCH_FILL_FN_NAMES]) {
+        for (const fnName of [...exchangeConstants.MARKET_FILL_FN_NAMES, ...exchangeConstants.BATCH_FILL_FN_NAMES]) {
             it(`${fnName} should fill the orders with a signed approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -310,9 +313,9 @@ describe('Coordinator tests', () => {
                         transaction.signature,
                         [approvalExpirationTimeSeconds],
                         [approval.signature],
-                        { from: takerAddress, gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS },
+                        { from: takerAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -344,9 +347,9 @@ describe('Coordinator tests', () => {
                         transaction.signature,
                         [],
                         [],
-                        { from: feeRecipientAddress, gas: devConstants.MAX_EXECUTE_TRANSACTION_GAS },
+                        { from: feeRecipientAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
                     ),
-                    devConstants.AWAIT_TRANSACTION_MINED_MS,
+                    constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
@@ -442,7 +445,7 @@ describe('Coordinator tests', () => {
     describe('cancels', () => {
         it('cancelOrder call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync()];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDER, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
@@ -470,7 +473,7 @@ describe('Coordinator tests', () => {
         });
         it('batchCancelOrders call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.BATCH_CANCEL_ORDERS, orders);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
@@ -499,8 +502,8 @@ describe('Coordinator tests', () => {
             });
         });
         it('cancelOrdersUpTo call should be successful without an approval', async () => {
-            const orders: SignedOrder[] = [];
-            const data = exchangeDataEncoder.encodeOrdersToExchangeData(constants.CANCEL_ORDERS_UP_TO, orders);
+            const targetEpoch = constants.ZERO_AMOUNT;
+            const data = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
             const transaction = makerTransactionFactory.newSignedTransaction(data);
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
@@ -521,7 +524,7 @@ describe('Coordinator tests', () => {
             const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
             expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
             expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
-            expect(cancelLogArgs.orderEpoch).to.bignumber.eq(new BigNumber(1));
+            expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
         });
     });
 });

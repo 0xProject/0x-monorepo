@@ -24,12 +24,25 @@ import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 contract ITransactions {
 
-    /// @dev Executes an exchange method call in the context of signer.
+    /// @dev Executes an Exchange method call in the context of signer.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @param signature Proof of signer transaction by signer.
+    /// @param signature Proof that transaction has been signed by signer.
+    /// @return ABI encoded return data of the underlying Exchange function call.
     function executeTransaction(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
     )
-        public;
+        public
+        returns (bytes memory);
+
+    /// @dev Executes a batch of Exchange method calls in the context of signer(s).
+    /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
+    /// @param signatures Array of proofs that transactions have been signed by signer(s).
+    /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
+    function batchExecuteTransactions(
+        LibZeroExTransaction.ZeroExTransaction[] memory transactions,
+        bytes[] memory signatures
+    )
+        public
+        returns (bytes[] memory);
 }
