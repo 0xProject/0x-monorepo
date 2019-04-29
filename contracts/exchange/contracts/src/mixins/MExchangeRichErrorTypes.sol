@@ -50,60 +50,80 @@ contract MExchangeRichErrorTypes is
         ALREADY_EXECUTED
     }
 
+    // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"));
+        0x7e5a2318;
 
+    // bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"));
+        0x169fad8c;
 
+    // bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_WALLET_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"));
+        0x1b8388f7;
 
+    // bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"));
+        0xfabf4577;
 
+    // bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
-        bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"));
+        0xa85f3360;
 
+    // bytes4(keccak256("OrderStatusError(bytes32,uint8)"))
     bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
-        bytes4(keccak256("OrderStatusError(bytes32,uint8)"));
+        0xfdb6ca8d;
 
+    // bytes4(keccak256("InvalidSenderError(bytes32,address)"))
     bytes4 internal constant INVALID_SENDER_ERROR_SELECTOR =
-        bytes4(keccak256("InvalidSenderError(bytes32,address)"));
+        0x95b59997;
 
+    // bytes4(keccak256("InvalidMakerError(bytes32,address)"))
     bytes4 internal constant INVALID_MAKER_ERROR_SELECTOR =
-        bytes4(keccak256("InvalidMakerError(bytes32,address)"));
+        0x26bf55d9;
 
+    // bytes4(keccak256("FillError(uint8,bytes32)"))
     bytes4 internal constant FILL_ERROR_SELECTOR =
-        bytes4(keccak256("FillError(uint8,bytes32)"));
+        0xe94a7ed0;
 
+    // bytes4(keccak256("InvalidTakerError(bytes32,address)"))
     bytes4 internal constant INVALID_TAKER_ERROR_SELECTOR =
-        bytes4(keccak256("InvalidTakerError(bytes32,address)"));
+        0xfdb328be;
 
+    // bytes4(keccak256("OrderEpochError(address,address,uint256)"))
     bytes4 internal constant ORDER_EPOCH_ERROR_SELECTOR =
-        bytes4(keccak256("OrderEpochError(address,address,uint256)"));
+        0x4ad31275;
 
+    // bytes4(keccak256("AssetProxyExistsError(address)"))
     bytes4 internal constant ASSET_PROXY_EXISTS_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyExistsError(address)"));
+        0xcc8b3b53;
 
+    // bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"))
     bytes4 internal constant ASSET_PROXY_DISPATCH_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"));
+        0x488219a6;
 
+    // bytes4(keccak256("AssetProxyTransferError(bytes32,bytes,bytes)"))
     bytes4 internal constant ASSET_PROXY_TRANSFER_ERROR_SELECTOR =
-        bytes4(keccak256("AssetProxyTransferError(bytes32,bytes,bytes)"));
+        0x4678472b;
 
+    // bytes4(keccak256("NegativeSpreadError(bytes32,bytes32)"))
     bytes4 internal constant NEGATIVE_SPREAD_ERROR_SELECTOR =
-        bytes4(keccak256("NegativeSpreadError(bytes32,bytes32)"));
+        0xb6555d6f;
 
+    // bytes4(keccak256("TransactionError(uint8,bytes32)"))
     bytes4 internal constant TRANSACTION_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionError(uint8,bytes32)"));
+        0xf5985184;
 
+    // bytes4(keccak256("TransactionSignatureError(bytes32,address,bytes)"))
     bytes4 internal constant TRANSACTION_SIGNATURE_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionSignatureError(bytes32,address,bytes)"));
+        0xbfd56ef6;
 
+    // bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"))
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
-        bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"));
+        0x20d11f61;
 
+    // bytes4(keccak256("IncompleteFillError(bytes32)"))
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
-        bytes4(keccak256("IncompleteFillError(bytes32)"));
+        0x152aa60e;
+
 }
