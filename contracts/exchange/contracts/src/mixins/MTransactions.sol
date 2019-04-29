@@ -29,6 +29,7 @@ contract MTransactions is
     /// @dev Executes an Exchange method call in the context of signer.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param signature Proof that transaction has been signed by signer.
+    /// @return ABI encoded return data of the underlying Exchange function call.
     function _executeTransaction(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
