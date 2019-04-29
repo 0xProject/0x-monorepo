@@ -151,8 +151,12 @@ describe('Exchange transactions', () => {
         taker2TransactionFactory = new TransactionFactory(taker2PrivateKey, exchangeInstance.address, chainId);
     });
     describe('executeTransaction', () => {
-        describe('single order fills', () => {
-            for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
+        describe('fill methods', () => {
+            for (const fnName of [
+                ...exchangeConstants.SINGLE_FILL_FN_NAMES,
+                ...exchangeConstants.BATCH_FILL_FN_NAMES,
+                ...exchangeConstants.MARKET_FILL_FN_NAMES,
+            ]) {
                 it(`${fnName} should revert if signature is invalid and not called by signer`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -236,7 +240,11 @@ describe('Exchange transactions', () => {
                     const abi = artifacts.Exchange.compilerOutput.abi;
                     const methodAbi = abi.filter(abiItem => (abiItem as MethodAbi).name === fnName)[0] as MethodAbi;
                     const abiEncoder = new AbiEncoder.Method(methodAbi);
-                    const fillResults: FillResults = abiEncoder.decodeReturnValues(returnData).fillResults;
+                    const decodedReturnData = abiEncoder.decodeReturnValues(returnData);
+                    const fillResults: FillResults =
+                        decodedReturnData.fillResults === undefined
+                            ? decodedReturnData.totalFillResults
+                            : decodedReturnData.fillResults;
                     expect(fillResults.makerAssetFilledAmount).to.be.bignumber.eq(order.makerAssetAmount);
                     expect(fillResults.takerAssetFilledAmount).to.be.bignumber.eq(order.takerAssetAmount);
                     expect(fillResults.makerFeePaid).to.be.bignumber.eq(order.makerFee);
@@ -309,7 +317,14 @@ describe('Exchange transactions', () => {
                     expect(fillLogArgs.takerFeePaid).to.bignumber.eq(orders[0].takerFee);
                     expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
                 });
-                if (fnName !== ExchangeFunctionName.FillOrderNoThrow) {
+                if (
+                    [
+                        ExchangeFunctionName.FillOrderNoThrow,
+                        ExchangeFunctionName.BatchFillOrdersNoThrow,
+                        ExchangeFunctionName.MarketBuyOrdersNoThrow,
+                        ExchangeFunctionName.MarketSellOrdersNoThrow,
+                    ].indexOf(fnName) === -1
+                ) {
                     it(`${fnName} should revert and rethrow error if the underlying function reverts`, async () => {
                         const order = await orderFactory.newSignedOrderAsync();
                         order.signature = constants.NULL_BYTES;
