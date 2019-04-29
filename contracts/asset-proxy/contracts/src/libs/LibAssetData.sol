@@ -77,7 +77,7 @@ library LibAssetData {
             }
             return lowestAssetBalance;
         } else {
-            revert("Unsupported proxy identifier");
+            revert("UNSUPPORTED_PROXY_IDENTIFIER");
         }
     }
 
@@ -145,7 +145,7 @@ library LibAssetData {
             }
             return lowestAssetAllowance;
         } else {
-            revert("Unsupported proxy identifier");
+            revert("UNSUPPORTED_PROXY_IDENTIFIER");
         }
     }
 
