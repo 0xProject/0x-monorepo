@@ -372,7 +372,7 @@ describe('LibAssetData', () => {
 
     it('should query balances for a batch of asset data strings', async () => {
         expect(
-            await libAssetData.getBatchBalance.callAsync(tokenOwnerAddress, [
+            await libAssetData.getBatchBalances.callAsync(tokenOwnerAddress, [
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ]),
@@ -383,7 +383,7 @@ describe('LibAssetData', () => {
         await setERC20AllowanceAsync();
         await setERC721AllowanceAsync();
         expect(
-            await libAssetData.getBatchAllowance.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
+            await libAssetData.getBatchAllowances.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ]),
@@ -418,7 +418,7 @@ describe('LibAssetData', () => {
     it('should query balances and allowances together, from an asset data array', async () => {
         await setERC20AllowanceAsync();
         expect(
-            await libAssetData.getBatchBalanceAndAllowance.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
+            await libAssetData.getBatchBalancesAndAllowances.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
                 await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
             ]),
         ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [new BigNumber(1)]]);

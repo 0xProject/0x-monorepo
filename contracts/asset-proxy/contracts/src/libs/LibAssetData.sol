@@ -87,7 +87,7 @@ library LibAssetData {
     ///     AssetProxy contract specification.
     /// @return Array of token balances from getBalance(), with each element
     ///     corresponding to the same-indexed element in the assetData input.
-    function getBatchBalance(address owner, bytes[] memory assetData)
+    function getBatchBalances(address owner, bytes[] memory assetData)
         public
         view
         returns (uint256[] memory balances)
@@ -157,7 +157,7 @@ library LibAssetData {
     /// @return An array of token allowances from getAllowance(), with each
     ///     element corresponding to the same-indexed element in the assetData
     ///     input.
-    function getBatchAllowance(address owner, address spender, bytes[] memory assetData)
+    function getBatchAllowances(address owner, address spender, bytes[] memory assetData)
         public
         view
         returns (uint256[] memory allowances)
@@ -185,7 +185,7 @@ library LibAssetData {
         allowance = getAllowance(owner, spender, assetData);
     }
 
-    /// @dev Calls getBatchBalance() and getBatchAllowance() for each element
+    /// @dev Calls getBatchBalances() and getBatchAllowances() for each element
     ///     of assetData.
     /// @param owner Owner of the tokens specified by assetData.
     /// @param spender Address whose authority to spend is in question.
@@ -194,13 +194,13 @@ library LibAssetData {
     /// @return An array of token balances from getBalance(), and an array of
     ///     token allowances from getAllowance(), with each element
     ///     corresponding to the same-indexed element in the assetData input.
-    function getBatchBalanceAndAllowance(address owner, address spender, bytes[] memory assetData)
+    function getBatchBalancesAndAllowances(address owner, address spender, bytes[] memory assetData)
         public
         view
         returns (uint256[] memory balances, uint256[] memory allowances)
     {
-        balances = getBatchBalance(owner, assetData);
-        allowances = getBatchAllowance(owner, spender, assetData);
+        balances = getBatchBalances(owner, assetData);
+        allowances = getBatchAllowances(owner, spender, assetData);
     }
 
     /// @dev Encode ERC-20 asset data into the format described in the
