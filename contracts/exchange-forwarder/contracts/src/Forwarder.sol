@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "./MixinWeth.sol";
@@ -40,6 +40,7 @@ contract Forwarder is
         bytes memory _wethAssetData
     )
         public
+        Ownable()
         LibConstants(
             _exchange,
             _zrxAssetData,
