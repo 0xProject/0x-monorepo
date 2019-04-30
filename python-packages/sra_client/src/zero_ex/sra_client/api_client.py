@@ -14,9 +14,9 @@ import tempfile
 import six
 from six.moves.urllib.parse import quote
 
-from sra_client.configuration import Configuration
-import sra_client.models
-from sra_client import rest
+from zero_ex.sra_client.configuration import Configuration
+import zero_ex.sra_client.models
+from zero_ex.sra_client import rest
 
 
 class ApiClient(object):
@@ -300,7 +300,7 @@ class ApiClient(object):
             if klass in self.NATIVE_TYPES_MAPPING:
                 klass = self.NATIVE_TYPES_MAPPING[klass]
             else:
-                klass = getattr(sra_client.models, klass)
+                klass = getattr(zero_ex.sra_client.models, klass)
 
         if klass in self.PRIMITIVE_TYPES:
             return self.__deserialize_primitive(data, klass)

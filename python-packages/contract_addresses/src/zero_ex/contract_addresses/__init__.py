@@ -1,22 +1,50 @@
-"""Addresses at which the 0x smart contracts have been deployed."""
+"""Addresses at which the 0x smart contracts have been deployed.
+
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-contract-addresses
+
+"""
 
 from enum import Enum
 from typing import Dict, NamedTuple
 
 
-class ContractAddresses(NamedTuple):  # noqa
+class ContractAddresses(NamedTuple):
     """An abstract record listing all the contracts that have addresses."""
 
     erc20_proxy: str
+    """Address of the ERC20Proxy contract."""
+
     erc721_proxy: str
+    """Address of the ERC20Proxy contract."""
+
     zrx_token: str
+    """Address of the ZRX token contract."""
+
     ether_token: str
+    """Address of the WETH token contract."""
+
     exchange: str
+    """Address of the Exchange contract."""
+
     asset_proxy_owner: str
+    """Address of the AssetProxyOwner contract."""
+
     forwarder: str
+    """Address of the Forwarder contract."""
+
     order_validator: str
+    """Address of the OrderValidator contract."""
+
     coordinator_registry: str
+    """Address of the CoordinatorRegistry contract."""
+
     coordinator: str
+    """Address of the Coordinator contract."""
 
 
 class NetworkId(Enum):
@@ -24,6 +52,9 @@ class NetworkId(Enum):
 
     >>> NetworkId.MAINNET
     <NetworkId.MAINNET: 1>
+
+    >>> NetworkId.MAINNET.value
+    1
     """
 
     MAINNET = 1
@@ -98,7 +129,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
 """A mapping from instances of NetworkId to instances of ContractAddresses.
 
 Addresses under NetworkId.Ganache are from our Ganache snapshot generated from
-migrations.
+npm package @0x/migrations.
 
 >>> NETWORK_TO_ADDRESSES[NetworkId.MAINNET].exchange
 0x4f833a24e1f95d70f028921e27040ca56e09ab0b

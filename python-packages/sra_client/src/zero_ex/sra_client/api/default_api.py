@@ -8,8 +8,8 @@ import re  # noqa: F401
 # python 2 and python 3 compatibility library
 import six
 
-from sra_client.api_client import ApiClient
-from sra_client.models.relayer_api_order_config_payload_schema import (
+from zero_ex.sra_client.api_client import ApiClient
+from zero_ex.sra_client.models.relayer_api_order_config_payload_schema import (
     RelayerApiOrderConfigPayloadSchema,
 )
 
@@ -42,9 +42,9 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
         :return: :class:`RelayerApiAssetDataPairsResponseSchema`.
             If the method is called asynchronously returns the request thread.
@@ -71,12 +71,14 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
-        :return: :class:`RelayerApiAssetDataPairsResponseSchema`.
-            If the method is called asynchronously returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiAssetDataPairsResponseSchema`, an HTTP status
+            code integer, and a collection of HTTP headers.  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -168,9 +170,9 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
         :return: :class:`RelayerApiFeeRecipientsResponseSchema`.
             If the method is called asynchronously, returns the request thread.
@@ -194,12 +196,14 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
-        :return: :class:`RelayerApiFeeRecipientsResponseSchema`.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiFeeRecipientsResponseSchema`, an HTTP status
+            code integer, and a collection of HTTP headers.  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -277,7 +281,7 @@ class DefaultApi(object):
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
-        :param float network_id: The id of the Ethereum network
+        :param int network_id: The id of the Ethereum network
 
         :return: :class:`RelayerApiOrderSchema`.
             If the method is called asynchronously, returns the request thread.
@@ -301,10 +305,12 @@ class DefaultApi(object):
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
-        :param float network_id: The id of the Ethereum network
+        :param int network_id: The id of the Ethereum network
 
-        :return: :class:`RelayerApiOrderSchema`.
-            If the method is called asynchronously returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrderSchema`, an HTTP status code integer, and a
+            collection of HTTP headers.  If the method is called
+            asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -395,7 +401,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param float network_id: The id of the Ethereum network
+        :param int network_id: The id of the Ethereum network
         :param relayer_api_order_config_payload_schema: instance of
             :class:`RelayerApiOrderConfigPayloadSchema`. The fields of a 0x
             order the relayer may want to decide what configuration to send
@@ -430,14 +436,16 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param float network_id: The id of the Ethereum network
+        :param int network_id: The id of the Ethereum network
         :param relayer_api_order_config_payload_schema: instance of
             :class: `RelayerApiOrderConfigPayloadSchema`. The fields of a 0x
             order the relayer may want to decide what configuration to send
             back.
 
-        :return: :class:`RelayerApiOrderConfigResponseSchema`.
-            If the method is called asynchronously returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrderConfigResponseSchema`, an HTTP status code
+            integer, and a collection of HTTP headers.  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -537,9 +545,9 @@ class DefaultApi(object):
         :param str quote_asset_data: assetData (makerAssetData or
             takerAssetData) designated as the quote currency in the currency
             pair calculation of price. (required)
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
         :return: :class:`RelayerApiOrderbookResponseSchema`.
             If the method is called asynchronously, returns the request thread.
@@ -586,12 +594,14 @@ class DefaultApi(object):
         :param str quote_asset_data: assetData (makerAssetData or
             takerAssetData) designated as the quote currency in the currency
             pair calculation of price. (required)
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
-        :return: :class:`RelayerApiOrderbookResponseSchema`.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrderbookResponseSchema`, an HTTP status code
+            integer, and a collection of HTTP headers.  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -752,9 +762,9 @@ class DefaultApi(object):
             `0x Protocol v2 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
             master/v2/v2-specification.md#order-message-format>`__
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
         :return: :class:`RelayerApiOrdersResponseSchema`.
             If the method is called asynchronously, returns the request thread.
@@ -829,12 +839,14 @@ class DefaultApi(object):
             `0x Protocol v2 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
             master/v2/v2-specification.md#order-message-format>`__
-        :param float network_id: The id of the Ethereum network
-        :param float page: The number of the page to request in the collection.
-        :param float per_page: The number of records to return per page.
+        :param int network_id: The id of the Ethereum network
+        :param int page: The number of the page to request in the collection.
+        :param int per_page: The number of records to return per page.
 
-        :return: RelayerApiOrdersResponseSchema.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of a
+            :class:`RelayerApiOrdersResponseSchema`, an HTTP status code
+            integer, and a collection of HTTP headers.  If the method is
+            called asynchronously returns the request thread.
         """
 
         local_var_params = locals()
@@ -983,7 +995,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param float network_id: The id of the Ethereum network
+        :param int network_id: The id of the Ethereum network
         :param signed_order_schema: Instance of :class:`SignedOrderSchema`.
             A valid signed 0x order based on the schema.
 
@@ -1008,12 +1020,14 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param float network_id: The id of the Ethereum network
+        :param int network_id: The id of the Ethereum network
         :param signed_order_schema: Instance of :class:`SignedOrderSchema`
             A valid signed 0x order based on the schema.
 
-        :return: None.
-            If the method is called asynchronously, returns the request thread.
+        :return: A tuple consisting of the response data (always empty for this
+            method), an HTTP status code integer, and a collection of HTTP
+            headers.  If the method is called asynchronously returns the
+            request thread.
         """
 
         local_var_params = locals()

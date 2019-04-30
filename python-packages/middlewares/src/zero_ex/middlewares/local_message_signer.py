@@ -60,22 +60,20 @@ def construct_local_message_signer(
         list, or set of private keys. Keys can be any of the following
         formats:
 
-            - An `eth_account.LocalAccount` object
-            - An `eth_keys.PrivateKey` object
-            - A raw private key as a hex `string` or `bytes`
+            - An `eth_account.LocalAccount`:code: object
+            - An `eth_keys.PrivateKey`:code: object
+            - A raw private key as a hex `string`:code: or as `bytes`:code:
     :returns: callable local_message_signer_middleware
 
-    :Example:
-
-    >>> from web3 import Web3
-    >>> from zero_ex.middlewares.local_message_signer import (
-    ...     construct_local_message_signer)
-    >>> WEB3_RPC_URL="https://mainnet.infura.io/v3/INFURA_API_KEY"
-    >>> PRIVATE_KEY=(
-    ...     "f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d")
-    >>> web3_instance = Web3.HTTPProvider(WEB3_RPC_URL)
-    >>> web3_instance.middlewares.add(
-    ...     construct_local_message_signer(PRIVATE_KEY))
+    >>> private_key=(
+    ...     "f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d"
+    ... )
+    >>> from web3 import Web3, HTTPProvider
+    >>> Web3(
+    ...     HTTPProvider("https://mainnet.infura.io/v3/API_KEY")
+    ... ).middleware_stack.add(
+    ...     construct_local_message_signer(private_key)
+    ... )
 
     """
     if not isinstance(private_key_or_account, (list, tuple, set)):
