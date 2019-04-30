@@ -1,7 +1,7 @@
 import { CoordinatorRegistryContract } from '@0x/abi-gen-wrappers';
 import { CoordinatorRegistry } from '@0x/contract-artifacts';
 import { constants } from '@0x/contracts-test-utils';
-import { getAppAsync } from '@0x/coordinator-server';
+import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
@@ -12,6 +12,7 @@ import * as http from 'http';
 import 'mocha';
 
 import { ContractWrappers, OrderStatus } from '../src';
+import { CoordinatorError, CoordinatorServerCancellationResponse } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -38,17 +39,20 @@ describe.only('CoordinatorWrapper', () => {
     let userAddresses: string[];
     let makerAddress: string;
     let takerAddress: string;
-    let feeRecipientAddress: string;
-    let anotherFeeRecipientAddress: string;
-    let unknownAddress: string;
+    let feeRecipientAddressOne: string;
+    let feeRecipientAddressTwo: string;
+    let feeRecipientAddressThree: string;
+    let feeRecipientAddressFour: string;
+
     let makerTokenAddress: string;
     let takerTokenAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
-    let txHash: string;
+    let txHash: string | CoordinatorError;
     let signedOrder: SignedOrder;
     let anotherSignedOrder: SignedOrder;
     let signedOrderWithDifferentFeeRecipient: SignedOrder;
+    let signedOrderWithDifferentCoordinatorOperator: SignedOrder;
     let coordinatorRegistryInstance: CoordinatorRegistryContract;
     before(async () => {
         const contractAddresses = await migrateOnceAsync();
@@ -70,7 +74,15 @@ describe.only('CoordinatorWrapper', () => {
             contractWrappers.erc20Proxy.address,
             contractWrappers.erc721Proxy.address,
         );
-        [, makerAddress, takerAddress, feeRecipientAddress, anotherFeeRecipientAddress, unknownAddress] = userAddresses.slice(0, 6);
+        [
+            ,
+            makerAddress,
+            takerAddress,
+            feeRecipientAddressOne,
+            feeRecipientAddressTwo,
+            feeRecipientAddressThree,
+            feeRecipientAddressFour,
+        ] = userAddresses.slice(0, 7);
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
@@ -78,24 +90,31 @@ describe.only('CoordinatorWrapper', () => {
         ];
 
         // set up mock coordinator server
+        const feeRecipientConfigs = [
+            {
+                ADDRESS: feeRecipientAddressOne,
+                PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddressOne)].toString(
+                    'hex',
+                ),
+            },
+            {
+                ADDRESS: feeRecipientAddressTwo,
+                PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddressTwo)].toString(
+                    'hex',
+                ),
+            },
+            {
+                ADDRESS: feeRecipientAddressThree,
+                PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddressThree)].toString(
+                    'hex',
+                ),
+            },
+        ];
         const coordinatorServerConfigs = {
             HTTP_PORT: 3000, // Only used in default instantiation in 0x-coordinator-server/server.js; not used here
             NETWORK_ID_TO_SETTINGS: {
                 50: {
-                    FEE_RECIPIENTS: [
-                        {
-                            ADDRESS: feeRecipientAddress,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
-                                userAddresses.indexOf(feeRecipientAddress)
-                            ].toString('hex'),
-                        },
-                        {
-                            ADDRESS: anotherFeeRecipientAddress,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
-                                userAddresses.indexOf(anotherFeeRecipientAddress)
-                            ].toString('hex'),
-                        },
-                    ],
+                    FEE_RECIPIENTS: [feeRecipientConfigs[0], feeRecipientConfigs[1]],
                     // Ethereum RPC url, only used in the default instantiation in 0x-coordinator-server/server.js
                     // Not used here when instantiating with the imported app
                     RPC_URL: 'http://ignore',
@@ -110,9 +129,13 @@ describe.only('CoordinatorWrapper', () => {
                 [config.networkId]: provider,
             },
             coordinatorServerConfigs,
+            {
+                ...defaultOrmConfig,
+                logging: false,
+            },
         );
 
-        await coordinatorServerApp.listen(coordinatorPort, () => {
+        coordinatorServerApp.listen(coordinatorPort, () => {
             logUtils.log(`Coordinator SERVER API (HTTP) listening on port ${coordinatorPort}!`);
         });
 
@@ -120,10 +143,26 @@ describe.only('CoordinatorWrapper', () => {
             {
                 [config.networkId]: provider,
             },
-            coordinatorServerConfigs,
+            {
+                ...coordinatorServerConfigs,
+                NETWORK_ID_TO_SETTINGS: {
+                    50: {
+                        FEE_RECIPIENTS: [feeRecipientConfigs[2]],
+                        RPC_URL: 'http://ignore',
+                    },
+                },
+            },
+            {
+                type: 'sqlite',
+                database: 'database.sqlite_2',
+                entities: defaultOrmConfig.entities,
+                cli: defaultOrmConfig.cli,
+                logging: defaultOrmConfig.logging,
+                synchronize: defaultOrmConfig.synchronize,
+            },
         );
 
-        await anotherCoordinatorServerApp.listen(anotherCoordinatorPort, () => {
+        anotherCoordinatorServerApp.listen(anotherCoordinatorPort, () => {
             logUtils.log(`Coordinator SERVER API (HTTP) listening on port ${anotherCoordinatorPort}!`);
         });
 
@@ -134,17 +173,34 @@ describe.only('CoordinatorWrapper', () => {
             provider,
         );
 
+        // register coordinator server
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(`${coordinatorEndpoint}${coordinatorPort}`, {
-                from: feeRecipientAddress,
-            }),
+            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
+                `${coordinatorEndpoint}${coordinatorPort}`,
+                {
+                    from: feeRecipientAddressOne,
+                },
+            ),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
+                `${coordinatorEndpoint}${coordinatorPort}`,
+                {
+                    from: feeRecipientAddressTwo,
+                },
+            ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
+        // register another coordinator server
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(`${coordinatorEndpoint}${anotherCoordinatorPort}`, {
-                from: anotherFeeRecipientAddress,
-            }),
+            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
+                `${coordinatorEndpoint}${anotherCoordinatorPort}`,
+                {
+                    from: feeRecipientAddressThree,
+                },
+            ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     });
@@ -161,7 +217,7 @@ describe.only('CoordinatorWrapper', () => {
             makerAddress,
             takerAddress,
             fillableAmount,
-            feeRecipientAddress,
+            feeRecipientAddressOne,
         );
         anotherSignedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
             makerAssetData,
@@ -171,7 +227,7 @@ describe.only('CoordinatorWrapper', () => {
             makerAddress,
             takerAddress,
             fillableAmount,
-            feeRecipientAddress,
+            feeRecipientAddressOne,
         );
         signedOrderWithDifferentFeeRecipient = await fillScenarios.createFillableSignedOrderWithFeesAsync(
             makerAssetData,
@@ -181,7 +237,17 @@ describe.only('CoordinatorWrapper', () => {
             makerAddress,
             takerAddress,
             fillableAmount,
-            anotherFeeRecipientAddress,
+            feeRecipientAddressTwo,
+        );
+        signedOrderWithDifferentCoordinatorOperator = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+            makerAssetData,
+            takerAssetData,
+            new BigNumber(1),
+            new BigNumber(1),
+            makerAddress,
+            takerAddress,
+            fillableAmount,
+            feeRecipientAddressThree,
         );
     });
     afterEach(async () => {
@@ -190,10 +256,10 @@ describe.only('CoordinatorWrapper', () => {
     describe('test setup', () => {
         it('should have coordinator registry which returns an endpoint', async () => {
             const setCoordinatorEndpoint = await coordinatorRegistryInstance.getCoordinatorEndpoint.callAsync(
-                feeRecipientAddress,
+                feeRecipientAddressOne,
             );
             const anotherSetCoordinatorEndpoint = await coordinatorRegistryInstance.getCoordinatorEndpoint.callAsync(
-                anotherFeeRecipientAddress,
+                feeRecipientAddressThree,
             );
             expect(setCoordinatorEndpoint).to.be.equal(`${coordinatorEndpoint}${coordinatorPort}`);
             expect(anotherSetCoordinatorEndpoint).to.be.equal(`${coordinatorEndpoint}${anotherCoordinatorPort}`);
@@ -216,6 +282,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerTokenFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -226,6 +293,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerTokenFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
@@ -238,6 +306,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerTokenFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -250,9 +319,10 @@ describe.only('CoordinatorWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
-            it.skip('should fill a batch of orders with different feeRecipientAddresses', async () => {
+            it('should fill a batch of orders with different feeRecipientAddresses with the same coordinator server', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder, signedOrderWithDifferentFeeRecipient];
                 const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
                 txHash = await contractWrappers.coordinator.batchFillOrdersAsync(
@@ -260,6 +330,31 @@ describe.only('CoordinatorWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
+
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            });
+            // coordinator-server, as currently implemented, shares a singleton database connection across
+            // all instantiations. Making the request to two different mocked server endpoints still hits the
+            // same database and fails because of the uniqueness constraint on transactions in the database.
+            it.skip('should fill a batch of orders with different feeRecipientAddresses with different coordinator servers', async () => {
+                const signedOrders = [
+                    signedOrder,
+                    anotherSignedOrder,
+                    signedOrderWithDifferentFeeRecipient,
+                    signedOrderWithDifferentCoordinatorOperator,
+                ];
+                const takerAssetFillAmounts = [
+                    takerTokenFillAmount,
+                    takerTokenFillAmount,
+                    takerTokenFillAmount,
+                    takerTokenFillAmount,
+                ];
+                txHash = await contractWrappers.coordinator.batchFillOrdersAsync(
+                    signedOrders,
+                    takerAssetFillAmounts,
+                    takerAddress,
+                );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -272,6 +367,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 let orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
@@ -288,6 +384,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -300,6 +397,7 @@ describe.only('CoordinatorWrapper', () => {
                     makerAssetFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -312,6 +410,7 @@ describe.only('CoordinatorWrapper', () => {
                     makerAssetFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
@@ -326,6 +425,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerAssetFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -338,6 +438,7 @@ describe.only('CoordinatorWrapper', () => {
                     takerAssetFillAmount,
                     takerAddress,
                 );
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
@@ -348,6 +449,7 @@ describe.only('CoordinatorWrapper', () => {
         describe('#softCancelOrderAsync', () => {
             it('should soft cancel a valid order', async () => {
                 const response = await contractWrappers.coordinator.softCancelOrderAsync(signedOrder);
+                expect(response.hasOwnProperty('errors')).to.be.false();
                 expect(response.outstandingFillSignatures).to.have.lengthOf(0);
                 expect(response.cancellationSignatures).to.have.lengthOf(1);
             });
@@ -356,16 +458,38 @@ describe.only('CoordinatorWrapper', () => {
             it('should soft cancel a batch of valid orders', async () => {
                 const orders = [signedOrder, anotherSignedOrder];
                 const response = await contractWrappers.coordinator.batchSoftCancelOrdersAsync(orders);
-                expect(response).to.have.lengthOf(1);
-                expect(response[0].outstandingFillSignatures).to.have.lengthOf(0);
-                expect(response[0].cancellationSignatures).to.have.lengthOf(1);
+
+                expect(response.hasOwnProperty('errors')).to.be.false();
+                const success = response;
+                expect(success).to.have.lengthOf(1);
+                expect(success[0].outstandingFillSignatures).to.have.lengthOf(0);
+                expect(success[0].cancellationSignatures).to.have.lengthOf(1);
             });
-            it.skip('should soft cancel a batch of orders with different feeRecipientAddresses', async () => {
-                const orders = [signedOrder, anotherSignedOrder];
+            it('should soft cancel a batch of orders with different feeRecipientAddresses', async () => {
+                const orders = [signedOrder, anotherSignedOrder, signedOrderWithDifferentFeeRecipient];
                 const response = await contractWrappers.coordinator.batchSoftCancelOrdersAsync(orders);
-                expect(response).to.have.lengthOf(1);
-                expect(response[0].outstandingFillSignatures).to.have.lengthOf(0);
-                expect(response[0].cancellationSignatures).to.have.lengthOf(1);
+
+                expect(response.hasOwnProperty('errors')).to.be.false();
+                const success = response;
+                expect(success).to.have.lengthOf(1);
+                expect(success[0].outstandingFillSignatures).to.have.lengthOf(0);
+                expect(success[0].cancellationSignatures).to.have.lengthOf(2);
+            });
+            it('should soft cancel a batch of orders with different coordinatorOperator and concatenate responses', async () => {
+                const orders = [
+                    signedOrder,
+                    anotherSignedOrder,
+                    signedOrderWithDifferentFeeRecipient,
+                    signedOrderWithDifferentCoordinatorOperator,
+                ];
+                const response = await contractWrappers.coordinator.batchSoftCancelOrdersAsync(orders);
+
+                expect(response.hasOwnProperty('errors')).to.be.false();
+                const success = response;
+                expect(success).to.have.lengthOf(2);
+                expect(success[0].outstandingFillSignatures).to.have.lengthOf(0);
+                expect(success[0].cancellationSignatures).to.have.lengthOf(2);
+                expect(success[1].cancellationSignatures).to.have.lengthOf(1);
             });
         });
     });
@@ -373,6 +497,7 @@ describe.only('CoordinatorWrapper', () => {
         describe('#hardCancelOrderAsync', () => {
             it('should hard cancel a valid order', async () => {
                 txHash = await contractWrappers.coordinator.hardCancelOrderAsync(signedOrder);
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -380,6 +505,7 @@ describe.only('CoordinatorWrapper', () => {
             it('should hard cancel a batch of valid orders', async () => {
                 const orders = [signedOrder, anotherSignedOrder];
                 txHash = await contractWrappers.coordinator.batchHardCancelOrdersAsync(orders);
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
@@ -387,10 +513,11 @@ describe.only('CoordinatorWrapper', () => {
             it('should hard cancel orders up to target order epoch', async () => {
                 const targetOrderEpoch = new BigNumber(42);
                 txHash = await contractWrappers.coordinator.hardCancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
+
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
                     makerAddress,
-                    constants.NULL_ADDRESS,
+                    contractWrappers.coordinator.address,
                 );
                 expect(orderEpoch).to.be.bignumber.equal(targetOrderEpoch.plus(1));
             });
@@ -398,7 +525,7 @@ describe.only('CoordinatorWrapper', () => {
     });
     describe('coordinator edge cases', () => {
         it('should throw error when feeRecipientAddress is not in registry', async () => {
-            const badOrder = fillScenarios.createFillableSignedOrderWithFeesAsync(
+            const badOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                 makerAssetData,
                 takerAssetData,
                 new BigNumber(1),
@@ -406,18 +533,24 @@ describe.only('CoordinatorWrapper', () => {
                 makerAddress,
                 takerAddress,
                 fillableAmount,
-                unknownAddress,
+                feeRecipientAddressFour,
             );
+
+            expect(
+                contractWrappers.coordinator.fillOrderAsync(badOrder, takerTokenFillAmount, takerAddress),
+            ).to.be.rejected();
         });
         it('should throw error when coordinator endpoint is malformed', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync('localhost', {
-                    from: unknownAddress,
+                    from: feeRecipientAddressFour,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-
+            expect(
+                contractWrappers.coordinator.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress),
+            ).to.be.rejected();
         });
-
     });
 });
+// tslint:disable:max-file-line-count

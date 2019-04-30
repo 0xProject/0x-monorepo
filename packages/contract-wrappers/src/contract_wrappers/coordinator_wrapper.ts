@@ -10,8 +10,11 @@ import { ContractAbi } from 'ethereum-types';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import {
+    CoordinatorError,
+    CoordinatorServerApprovalRawResponse,
     CoordinatorServerApprovalResponse,
     CoordinatorServerCancellationResponse,
+    CoordinatorServerResponse,
     OrderTransactionOpts,
 } from '../types';
 import { assert } from '../utils/assert';
@@ -26,6 +29,9 @@ const HTTP_OK = 200;
 /**
  * This class includes all the functionality related to filling or cancelling orders through
  * the 0x V2 Coordinator smart contract.
+ * All logic related to filling orders is implemented in the private method `_handleFillsAsync`.
+ * Fill methods mirroring exchange fill method names are publicly exposed for convenience and
+ * to ensure type safety.
  */
 export class CoordinatorWrapper extends ContractWrapper {
     public abi: ContractAbi = Coordinator.compilerOutput.abi;
@@ -115,7 +121,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const data = this._transactionEncoder.fillOrderTx(signedOrder, takerAssetFillAmount);
-        return this._handleFillsAsync(data, takerAddress, [signedOrder.feeRecipientAddress], orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
     }
 
     /**
@@ -141,7 +147,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const data = this._transactionEncoder.fillOrderNoThrowTx(signedOrder, takerAssetFillAmount);
-        return this._handleFillsAsync(data, takerAddress, [signedOrder.feeRecipientAddress], orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
     }
 
     /**
@@ -168,7 +174,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const data = this._transactionEncoder.fillOrKillOrderTx(signedOrder, takerAssetFillAmount);
-        return this._handleFillsAsync(data, takerAddress, [signedOrder.feeRecipientAddress], orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
     }
 
     /**
@@ -201,9 +207,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const feeRecipientAddresses = signedOrders.map(o => o.feeRecipientAddress);
         const data = this._transactionEncoder.batchFillOrdersTx(signedOrders, takerAssetFillAmounts);
-        return this._handleFillsAsync(data, takerAddress, feeRecipientAddresses, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -230,9 +235,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const feeRecipientAddresses = signedOrders.map(o => o.feeRecipientAddress);
         const data = this._transactionEncoder.batchFillOrdersNoThrowTx(signedOrders, takerAssetFillAmounts);
-        return this._handleFillsAsync(data, takerAddress, feeRecipientAddresses, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -259,9 +263,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const feeRecipientAddresses = signedOrders.map(o => o.feeRecipientAddress);
         const data = this._transactionEncoder.batchFillOrKillOrdersTx(signedOrders, takerAssetFillAmounts);
-        return this._handleFillsAsync(data, takerAddress, feeRecipientAddresses, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -292,9 +295,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const feeRecipientAddresses = signedOrders.map(o => o.feeRecipientAddress);
         const data = this._transactionEncoder.marketBuyOrdersTx(signedOrders, makerAssetFillAmount);
-        return this._handleFillsAsync(data, takerAddress, feeRecipientAddresses, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -326,8 +328,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const data = this._transactionEncoder.marketSellOrdersTx(signedOrders, takerAssetFillAmount);
-        const feeRecipients = signedOrders.map(o => o.feeRecipientAddress);
-        return this._handleFillsAsync(data, takerAddress, feeRecipients, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -352,9 +353,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const feeRecipientAddresses = signedOrders.map(o => o.feeRecipientAddress);
         const data = this._transactionEncoder.marketBuyOrdersNoThrowTx(signedOrders, makerAssetFillAmount);
-        return this._handleFillsAsync(data, takerAddress, feeRecipientAddresses, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -379,9 +379,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const feeRecipientAddresses = signedOrders.map(o => o.feeRecipientAddress);
         const data = this._transactionEncoder.marketSellOrdersNoThrowTx(signedOrders, takerAssetFillAmount);
-        return this._handleFillsAsync(data, takerAddress, feeRecipientAddresses, orderTransactionOpts);
+        return this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
     }
 
     /**
@@ -397,12 +396,24 @@ export class CoordinatorWrapper extends ContractWrapper {
 
         const data = this._transactionEncoder.cancelOrderTx(order);
         const transaction = await this._generateSignedZeroExTransactionAsync(data, order.makerAddress);
-        const endpoints = await this._getServerEndpointsOrThrowAsync([order.feeRecipientAddress]);
-        return (await this._executeServerRequestAsync(
-            transaction,
-            order.makerAddress,
-            endpoints[0],
-        )) as CoordinatorServerCancellationResponse;
+        const endpoint = await this._getServerEndpointOrThrowAsync(order.feeRecipientAddress);
+
+        const response = await this._executeServerRequestAsync(transaction, order.makerAddress, endpoint);
+        if (response.isError) {
+            const error: CoordinatorError = {
+                message: `Could not cancel order, see 'errors' for more info`,
+                cancellations: [],
+                errors: [
+                    {
+                        ...response,
+                        orders: [order],
+                    },
+                ],
+            };
+            throw new Error(JSON.stringify(error));
+        } else {
+            return response.body as CoordinatorServerCancellationResponse;
+        }
     }
 
     /**
@@ -415,15 +426,68 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         const makerAddress = getMakerAddressOrThrow(orders);
         assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
-
         const data = this._transactionEncoder.batchCancelOrdersTx(orders);
+
+        // create lookup tables to match server endpoints to orders
+        const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
+        for (const order of orders) {
+            if (feeRecipientsToOrders[order.feeRecipientAddress] === undefined) {
+                feeRecipientsToOrders[order.feeRecipientAddress] = [] as SignedOrder[];
+            }
+            feeRecipientsToOrders[order.feeRecipientAddress].push(order);
+        }
+
+        const serverEndpointsToFeeRecipients: { [feeRecipient: string]: string[] } = {};
+        for (const feeRecipient of Object.keys(feeRecipientsToOrders)) {
+            const endpoint = await this._getServerEndpointOrThrowAsync(feeRecipient);
+            if (serverEndpointsToFeeRecipients[endpoint] === undefined) {
+                serverEndpointsToFeeRecipients[endpoint] = [];
+            }
+            serverEndpointsToFeeRecipients[endpoint].push(feeRecipient);
+        }
+
+        // make server requests
+        let numErrors = 0;
+        let errorResponses: CoordinatorServerResponse[] = [];
+        let successResponses: CoordinatorServerCancellationResponse[] = [];
         const transaction = await this._generateSignedZeroExTransactionAsync(data, makerAddress);
-        const endpoints = await this._getServerEndpointsOrThrowAsync(orders.map(o => o.feeRecipientAddress));
-        return (await this._batchExecuteServerRequestAsync(
-            transaction,
-            makerAddress,
-            endpoints,
-        )) as CoordinatorServerCancellationResponse[];
+        for (const endpoint of Object.keys(serverEndpointsToFeeRecipients)) {
+            const response = await this._executeServerRequestAsync(transaction, makerAddress, endpoint);
+            if (response.isError) {
+                errorResponses = errorResponses.concat(response);
+                numErrors++;
+            } else {
+                successResponses = successResponses.concat({
+                    ...(response.body as CoordinatorServerCancellationResponse),
+                });
+            }
+        }
+
+        // if no errors
+        if (numErrors === 0) {
+            return successResponses;
+        } else {
+            // lookup orders with errors
+            const errorsWithOrders = errorResponses.map(resp => {
+                const endpoint = resp.coordinatorOperator;
+                const feeRecipients: string[] = serverEndpointsToFeeRecipients[endpoint];
+                const _orders = feeRecipients
+                    .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
+                    .reduce((acc, val) => acc.concat(val));
+                return {
+                    ...resp,
+                    orders: _orders,
+                };
+            });
+
+            // return errors and approvals
+            const error: CoordinatorError = {
+                message: `Only some orders were successfully cancelled. For more details, see 'errors'. Successful cancellations are shown in 'cancellations'.`,
+                cancellations: successResponses,
+                errors: errorsWithOrders,
+            };
+            throw new Error(JSON.stringify(error));
+        }
     }
 
     /**
@@ -500,23 +564,17 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
-        return this._exchangeInstance.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, {
-            from: senderAddress,
-            gas: orderTransactionOpts.gasLimit,
-            gasPrice: orderTransactionOpts.gasPrice,
-            nonce: orderTransactionOpts.nonce,
-        });
-        // // todo: find out why this doesn't work (xianny)
-        // const data = this._transactionEncoder.cancelOrdersUpToTx(targetOrderEpoch);
-        // const transaction = await this._generateSignedZeroExTransactionAsync(data, senderAddress);
-        // return this._submitCoordinatorTransactionAsync(
-        //     transaction,
-        //     senderAddress,
-        //     transaction.signature,
-        //     [],
-        //     [],
-        //     orderTransactionOpts,
-        // );
+
+        const data = this._transactionEncoder.cancelOrdersUpToTx(targetOrderEpoch);
+        const transaction = await this._generateSignedZeroExTransactionAsync(data, senderAddress);
+        return this._submitCoordinatorTransactionAsync(
+            transaction,
+            senderAddress,
+            transaction.signature,
+            [],
+            [],
+            orderTransactionOpts,
+        );
     }
 
     /**
@@ -570,55 +628,124 @@ export class CoordinatorWrapper extends ContractWrapper {
     private async _handleFillsAsync(
         data: string,
         takerAddress: string,
-        feeRecipientAddresses: string[],
+        signedOrders: SignedOrder[],
         orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
-        const uniqueFeeRecipients = [...new Set(feeRecipientAddresses)];
-        const endpoints = await this._getServerEndpointsOrThrowAsync(uniqueFeeRecipients);
-        const transaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
-        const approvalResponses = (await this._batchExecuteServerRequestAsync(
-            transaction,
-            takerAddress,
-            endpoints,
-        )) as CoordinatorServerApprovalResponse[];
-
-        // concatenate all approval responses
-        const { allSignatures, allExpirations } = approvalResponses.reduce(
-            (accumulator, { signatures, expirationTimeSeconds }) => {
-                const expirations = Array(signatures.length).fill(expirationTimeSeconds);
-                accumulator.allSignatures.concat(signatures);
-                accumulator.allExpirations.concat(expirations);
-                return accumulator;
-            },
-            { allSignatures: new Array(), allExpirations: new Array() },
-        );
-
-        // submit transaction with approvals
-        return this._submitCoordinatorTransactionAsync(
-            transaction,
-            takerAddress,
-            transaction.signature,
-            allSignatures,
-            allExpirations,
-            orderTransactionOpts,
-        );
-    }
-    private async _getServerEndpointsOrThrowAsync(feeRecipientAddresses: string[]): Promise<string[]> {
-        const uniqueFeeRecipients = [...new Set(feeRecipientAddresses)];
-        const endpoints = uniqueFeeRecipients.map(feeRecipientAddress => {
-            const coordinatorOperatorEndpoint = this._registryInstance.getCoordinatorEndpoint.callAsync(
-                feeRecipientAddress,
-            );
-            if (coordinatorOperatorEndpoint === undefined) {
-                throw new Error(
-                    `No Coordinator server endpoint found in Coordinator Registry for feeRecipientAddress: ${feeRecipientAddress}. Registry contract address: ${
-                        this.registryAddress
-                    }`,
-                );
+        // create lookup tables to match server endpoints to orders
+        const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
+        for (const order of signedOrders) {
+            const feeRecipient = order.feeRecipientAddress;
+            if (feeRecipientsToOrders[feeRecipient] === undefined) {
+                feeRecipientsToOrders[feeRecipient] = [] as SignedOrder[];
             }
-            return coordinatorOperatorEndpoint;
-        });
-        return Promise.all(endpoints);
+            feeRecipientsToOrders[feeRecipient] = feeRecipientsToOrders[feeRecipient].concat(order);
+        }
+
+        const serverEndpointsToFeeRecipients: { [feeRecipient: string]: string[] } = {};
+        for (const feeRecipient of Object.keys(feeRecipientsToOrders)) {
+            const endpoint = await this._getServerEndpointOrThrowAsync(feeRecipient);
+            if (serverEndpointsToFeeRecipients[endpoint] === undefined) {
+                serverEndpointsToFeeRecipients[endpoint] = [];
+            }
+            serverEndpointsToFeeRecipients[endpoint] = serverEndpointsToFeeRecipients[endpoint].concat(feeRecipient);
+        }
+
+        // make server requests
+        let numErrors = 0;
+        let errorResponses: CoordinatorServerResponse[] = [];
+        let approvalResponses: CoordinatorServerResponse[] = [];
+        const transaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
+        for (const endpoint of Object.keys(serverEndpointsToFeeRecipients)) {
+            const response = await this._executeServerRequestAsync(transaction, takerAddress, endpoint);
+            if (response.isError) {
+                errorResponses = errorResponses.concat(response);
+                numErrors++;
+            } else {
+                approvalResponses = approvalResponses.concat(response);
+            }
+        }
+
+        // if no errors
+        if (numErrors === 0) {
+            // concatenate all approval responses
+            const allApprovals = approvalResponses
+                .map(resp => formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse))
+                .reduce((previous, current) => {
+                    previous.signatures = previous.signatures.concat(current.signatures);
+                    previous.expirationTimeSeconds = previous.expirationTimeSeconds.concat(
+                        current.expirationTimeSeconds,
+                    );
+                    return previous;
+                });
+
+            // submit transaction with approvals
+            return this._submitCoordinatorTransactionAsync(
+                transaction,
+                takerAddress,
+                transaction.signature,
+                allApprovals.expirationTimeSeconds,
+                allApprovals.signatures,
+                orderTransactionOpts,
+            );
+        } else {
+            // format errors and approvals
+            // concatenate approvals
+            const approvedOrders = approvalResponses
+                .map(resp => {
+                    const endpoint = resp.coordinatorOperator;
+                    const feeRecipients: string[] = serverEndpointsToFeeRecipients[endpoint];
+                    const orders: SignedOrder[] = feeRecipients
+                        .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
+                        .reduce((acc, val) => acc.concat(val), []);
+                    return orders;
+                })
+                .reduce((acc, curr) => acc.concat(curr), []);
+
+            // lookup orders with errors
+            const errorsWithOrders = errorResponses.map(resp => {
+                const endpoint = resp.coordinatorOperator;
+                const feeRecipients: string[] = serverEndpointsToFeeRecipients[endpoint];
+                const orders: SignedOrder[] = feeRecipients
+                    .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
+                    .reduce((acc, val) => acc.concat(val), []);
+                return {
+                    ...resp,
+                    orders,
+                };
+            });
+
+            // return errors and approvals
+            const error: CoordinatorError = {
+                message: `Only some orders obtained approvals. Transaction has been abandoned. For more details, see 'errors'. Resolve errors or resubmit with only approved orders (a new ZeroEx Transaction will have to be signed). `,
+                approvedOrders,
+                errors: errorsWithOrders,
+            };
+            throw new Error(JSON.stringify(error));
+        }
+        function formatRawResponse(
+            rawResponse: CoordinatorServerApprovalRawResponse,
+        ): CoordinatorServerApprovalResponse {
+            return {
+                signatures: ([] as string[]).concat(rawResponse.signatures),
+                expirationTimeSeconds: ([] as BigNumber[]).concat(
+                    Array(rawResponse.signatures.length).fill(rawResponse.expirationTimeSeconds),
+                ),
+            };
+        }
+    }
+
+    private async _getServerEndpointOrThrowAsync(feeRecipientAddress: string): Promise<string> {
+        const coordinatorOperatorEndpoint = await this._registryInstance.getCoordinatorEndpoint.callAsync(
+            feeRecipientAddress,
+        );
+        if (coordinatorOperatorEndpoint === '') {
+            throw new Error(
+                `No Coordinator server endpoint found in Coordinator Registry for feeRecipientAddress: ${feeRecipientAddress}. Registry contract address: ${
+                    this.registryAddress
+                }`,
+            );
+        }
+        return coordinatorOperatorEndpoint;
     }
 
     private async _generateSignedZeroExTransactionAsync(
@@ -649,7 +776,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         signedTransaction: SignedZeroExTransaction,
         txOrigin: string,
         endpoint: string,
-    ): Promise<CoordinatorServerApprovalResponse | CoordinatorServerCancellationResponse> {
+    ): Promise<CoordinatorServerResponse> {
         const requestPayload = {
             signedTransaction,
             txOrigin,
@@ -662,36 +789,24 @@ export class CoordinatorWrapper extends ContractWrapper {
             },
         });
 
-        if (response.status !== HTTP_OK) {
-            if (response.status === 400) { // tslint:disable-line:custom-no-magic-numbers
-                const errorReport = await response.json();
-                const errorDetails = {
-                    ...errorReport,
-                    coordinatorOperator: endpoint,
-                    request: requestPayload,
-                };
-                throw new Error(JSON.stringify(errorDetails));
-            } else {
-                throw new Error(
-                    `Error response from coordinator operator at [${endpoint}]. Request payload: ${JSON.stringify(
-                        requestPayload,
-                    )}. Response: [${response.status}] ${JSON.stringify(await response.json())}`,
-                ); // todo (xianny)
-            }
+        const isError = response.status !== HTTP_OK;
+        let json;
+        try {
+            json = await response.json();
+        } catch (e) {
+            // ignore
         }
-        return (await response.json()) as CoordinatorServerApprovalResponse | CoordinatorServerCancellationResponse;
-    }
 
-    private async _batchExecuteServerRequestAsync(
-        signedTransaction: SignedZeroExTransaction,
-        txOrigin: string,
-        endpoints: string[],
-    ): Promise<Array<CoordinatorServerApprovalResponse | CoordinatorServerCancellationResponse>> {
-        const responses = endpoints.map(endpoint => {
-            const response = this._executeServerRequestAsync(signedTransaction, txOrigin, endpoint);
-            return response;
-        });
-        return Promise.all(responses);
+        const result = {
+            isError,
+            status: response.status,
+            body: isError ? undefined : json,
+            error: isError ? json : undefined,
+            request: requestPayload,
+            coordinatorOperator: endpoint,
+        };
+
+        return result;
     }
 
     private async _submitCoordinatorTransactionAsync(
