@@ -629,7 +629,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         data: string,
         takerAddress: string,
         signedOrders: SignedOrder[],
-        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
+        orderTransactionOpts: OrderTransactionOpts,
     ): Promise<string> {
         // create lookup tables to match server endpoints to orders
         const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
