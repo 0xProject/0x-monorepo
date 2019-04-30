@@ -135,7 +135,10 @@ setup(
     description="Web3 middlewares for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/middlewares",
+    url=(
+        "https://github.com/0xproject/0x-monorepo/tree/development"
+        "/python-packages/middlewares"
+    ),
     author="Michael Huang",
     author_email="michaelhly@users.noreply.github.com",
     cmdclass={
