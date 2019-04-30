@@ -1,3 +1,6 @@
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
+import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
+import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { constants, formatters, LogDecoder, MarketSellOrders, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -58,7 +61,12 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract, provider: Web3ProviderEngine) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, {
+            ...artifacts,
+            ...exchangeArtifacts,
+            ...erc20Artifacts,
+            ...erc721Artifacts,
+        });
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],
@@ -68,8 +76,8 @@ export class ForwarderWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = ForwarderWrapper._createOptimizedOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedZrxOrders(feeOrders);
-        const feePercentage = _.isUndefined(opts.feePercentage) ? constants.ZERO_AMOUNT : opts.feePercentage;
-        const feeRecipient = _.isUndefined(opts.feeRecipient) ? constants.NULL_ADDRESS : opts.feeRecipient;
+        const feePercentage = opts.feePercentage === undefined ? constants.ZERO_AMOUNT : opts.feePercentage;
+        const feeRecipient = opts.feeRecipient === undefined ? constants.NULL_ADDRESS : opts.feeRecipient;
         const txHash = await this._forwarderContract.marketSellOrdersWithEth.sendTransactionAsync(
             params.orders,
             params.signatures,
@@ -91,8 +99,8 @@ export class ForwarderWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = ForwarderWrapper._createOptimizedOrders(orders);
         const feeParams = ForwarderWrapper._createOptimizedZrxOrders(feeOrders);
-        const feePercentage = _.isUndefined(opts.feePercentage) ? constants.ZERO_AMOUNT : opts.feePercentage;
-        const feeRecipient = _.isUndefined(opts.feeRecipient) ? constants.NULL_ADDRESS : opts.feeRecipient;
+        const feePercentage = opts.feePercentage === undefined ? constants.ZERO_AMOUNT : opts.feePercentage;
+        const feeRecipient = opts.feeRecipient === undefined ? constants.NULL_ADDRESS : opts.feeRecipient;
         const txHash = await this._forwarderContract.marketBuyOrdersWithEth.sendTransactionAsync(
             params.orders,
             makerAssetFillAmount,

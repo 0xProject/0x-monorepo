@@ -48,7 +48,7 @@ export function parseSourceMap(
     const pcToInstructionIndex: { [programCounter: number]: number } = getPcToInstructionIndexMapping(bytecode);
     const fileIndexToOffsetToLocation: { [fileIndex: number]: OffsetToLocation } = {};
     _.map(sourceCodes, (sourceCode: string, fileIndex: number) => {
-        fileIndexToOffsetToLocation[fileIndex] = _.isUndefined(sourceCode) ? {} : getOffsetToLocation(sourceCode);
+        fileIndexToOffsetToLocation[fileIndex] = sourceCode === undefined ? {} : getOffsetToLocation(sourceCode);
     });
     const entries = srcMap.split(';');
     let lastParsedEntry: SourceLocation = {} as any;
@@ -69,7 +69,7 @@ export function parseSourceMap(
             length,
             fileIndex,
         };
-        if (parsedEntry.fileIndex !== -1 && !_.isUndefined(fileIndexToOffsetToLocation[parsedEntry.fileIndex])) {
+        if (parsedEntry.fileIndex !== -1 && fileIndexToOffsetToLocation[parsedEntry.fileIndex] !== undefined) {
             const offsetToLocation = fileIndexToOffsetToLocation[parsedEntry.fileIndex];
             const sourceRange = {
                 location: {

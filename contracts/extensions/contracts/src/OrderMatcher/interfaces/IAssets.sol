@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract IAssets {
@@ -27,7 +27,7 @@ contract IAssets {
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to withdraw.
     function withdrawAsset(
-        bytes assetData,
+        bytes calldata assetData,
         uint256 amount
     )
         external;
@@ -36,7 +36,7 @@ contract IAssets {
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to approve for respective proxy.
     function approveAssetProxy(
-        bytes assetData,
+        bytes calldata assetData,
         uint256 amount
     )
         external;

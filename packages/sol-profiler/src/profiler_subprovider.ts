@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import {
     AbstractArtifactAdapter,
     collectCoverageEntries,
@@ -8,11 +6,21 @@ import {
     SingleFileSubtraceHandler,
     SourceRange,
     Subtrace,
+    SubTraceInfo,
     TraceCollector,
     TraceInfo,
     TraceInfoSubprovider,
     utils,
 } from '@0x/sol-tracing-utils';
+import { logUtils } from '@0x/utils';
+import { stripHexPrefix } from 'ethereumjs-util';
+import * as _ from 'lodash';
+
+import { costUtils } from './cost_utils';
+
+const CREATE_COST = 32000;
+const BASE_COST = 21000;
+const DEPLOYED_BYTE_COST = 200;
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -35,8 +43,60 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
         super(defaultFromAddress, traceCollectionSubproviderConfig);
         this._profilerCollector = new TraceCollector(artifactAdapter, isVerbose, profilerHandler);
     }
+    protected async _handleSubTraceInfoAsync(subTraceInfo: SubTraceInfo): Promise<void> {
+        await this._profilerCollector.computeSingleTraceCoverageAsync(subTraceInfo);
+    }
+    // tslint:disable prefer-function-over-method
     protected async _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void> {
-        await this._profilerCollector.computeSingleTraceCoverageAsync(traceInfo);
+        const receipt = await this._web3Wrapper.getTransactionReceiptIfExistsAsync(traceInfo.txHash);
+        if (receipt === undefined) {
+            return;
+        }
+        if (receipt.gasUsed === BASE_COST) {
+            // Value transfer
+            return;
+        }
+        logUtils.header(`Profiling data for ${traceInfo.txHash}`);
+        const callDataCost = costUtils.reportCallDataCost(traceInfo);
+        const memoryCost = costUtils.reportMemoryCost(traceInfo);
+        const opcodesCost = costUtils.reportOpcodesCost(traceInfo);
+        const dataCopyingCost = costUtils.reportCopyingCost(traceInfo);
+        const newContractCost = CREATE_COST;
+        const transactionBaseCost = BASE_COST;
+        let totalCost = callDataCost + opcodesCost + BASE_COST;
+        logUtils.header('Final breakdown', '-');
+        if (_.isString(receipt.contractAddress)) {
+            const code = await this._web3Wrapper.getContractCodeAsync(receipt.contractAddress);
+            const codeBuff = Buffer.from(stripHexPrefix(code), 'hex');
+            const codeLength = codeBuff.length;
+            const contractSizeCost = codeLength * DEPLOYED_BYTE_COST;
+            totalCost += contractSizeCost + CREATE_COST;
+            logUtils.table({
+                'totalCost = callDataCost + opcodesCost + transactionBaseCost + newContractCost + contractSizeCost': totalCost,
+                callDataCost,
+                'opcodesCost (including memoryCost and dataCopyingCost)': opcodesCost,
+                memoryCost,
+                dataCopyingCost,
+                transactionBaseCost,
+                contractSizeCost,
+                newContractCost,
+            });
+        } else {
+            logUtils.table({
+                'totalCost = callDataCost + opcodesCost + transactionBaseCost': totalCost,
+                callDataCost,
+                'opcodesCost (including memoryCost and dataCopyingCost)': opcodesCost,
+                memoryCost,
+                dataCopyingCost,
+                transactionBaseCost,
+            });
+        }
+        const unknownGas = receipt.gasUsed - totalCost;
+        if (unknownGas !== 0) {
+            logUtils.warn(
+                `Unable to find the cause for ${unknownGas} gas. It's most probably an issue in sol-profiler. Please report on Github.`,
+            );
+        }
     }
     /**
      * Write the test profiler results to a file in Istanbul format.
@@ -65,17 +125,22 @@ export const profilerHandler: SingleFileSubtraceHandler = (
     const profilerEntriesDescription = collectCoverageEntries(contractData.sourceCodes[fileIndex]);
     const statementToGasConsumed: { [statementId: string]: number } = {};
     const statementIds = _.keys(profilerEntriesDescription.statementMap);
+    // `interestingStructLogs` are those that map back to source ranges within the current file.
+    // It also doesn't include any that cannot be mapped back
+    // This is a perf optimization reducing the work done in the loop over `statementIds`.
+    // TODO(logvinov): Optimize the loop below.
+    const interestingStructLogs = _.filter(subtrace, structLog => {
+        const sourceRange = pcToSourceRange[structLog.pc];
+        if (sourceRange === undefined) {
+            return false;
+        }
+        return sourceRange.fileName === absoluteFileName;
+    });
     for (const statementId of statementIds) {
         const statementDescription = profilerEntriesDescription.statementMap[statementId];
         const totalGasCost = _.sum(
-            _.map(subtrace, structLog => {
+            _.map(interestingStructLogs, structLog => {
                 const sourceRange = pcToSourceRange[structLog.pc];
-                if (_.isUndefined(sourceRange)) {
-                    return 0;
-                }
-                if (sourceRange.fileName !== absoluteFileName) {
-                    return 0;
-                }
                 if (utils.isRangeInside(sourceRange.location, statementDescription)) {
                     return structLog.gasCost;
                 } else {

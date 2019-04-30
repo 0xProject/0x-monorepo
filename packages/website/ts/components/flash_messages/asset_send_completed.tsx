@@ -17,7 +17,7 @@ interface AssetSendCompletedState {}
 
 export class AssetSendCompleted extends React.Component<AssetSendCompletedProps, AssetSendCompletedState> {
     public render(): React.ReactNode {
-        const etherScanLink = !_.isUndefined(this.props.etherScanLinkIfExists) && (
+        const etherScanLink = this.props.etherScanLinkIfExists !== undefined && (
             <a style={{ color: colors.white }} href={`${this.props.etherScanLinkIfExists}`} target="_blank">
                 Verify on Etherscan
             </a>

@@ -10,6 +10,7 @@ from sys import argv
 from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
+from setuptools.command.test import test as TestCommand
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -110,6 +111,16 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
         subprocess.check_call("discharge deploy".split())  # nosec
 
 
+class TestCommandExtension(TestCommand):
+    """Run pytest tests."""
+
+    def run_tests(self):
+        """Invoke pytest."""
+        import pytest
+
+        exit(pytest.main(["--doctest-modules"]))
+
+
 with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
@@ -129,6 +140,7 @@ setup(
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
+        "test": TestCommandExtension,
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
         "publish_docs": PublishDocsCommand,

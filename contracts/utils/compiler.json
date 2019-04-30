@@ -4,7 +4,12 @@
     "useDockerisedSolc": true,
     "isOfflineMode": false,
     "compilerSettings": {
-        "optimizer": { "enabled": true, "runs": 1000000 },
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
         "outputSelection": {
             "*": {
                 "*": [
@@ -18,12 +23,14 @@
         }
     },
     "contracts": [
+        "src/Address.sol",
         "src/LibBytes.sol",
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",
         "src/SafeMath.sol",
         "src/interfaces/IOwnable.sol",
         "test/TestConstants.sol",
+        "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol"
     ]
 }

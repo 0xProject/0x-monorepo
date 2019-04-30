@@ -64,6 +64,7 @@ export {
     AssetData,
     ERC20AssetData,
     ERC721AssetData,
+    ERC1155AssetData,
     SingleAssetData,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,

@@ -1,12 +1,66 @@
 [
     {
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added ERC1155 revert reasons",
+                "pr": 1657
+            },
+            {
+                "note": "Added `ERC1155AssetData`, `ERC1155AssetDataNoProxyId`, and `ERC1155AssetDataAbi`",
+                "pr": 1661
+            },
+            {
+                "note": "Add `InvalidOrigin` revert reason",
+                "pr": 1668
+            },
+            {
+                "note": "Add `RevertReason.SignatureInvalid` thrown by Coordinator",
+                "pr": 1705
+            },
+            {
+                "note": "Add `RevertReason.InvalidFreeMemoryPtr` thrown by LibAddressArray",
+                "pr": 1712
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
                 "note": "Add `FromLessThanToRequired` and `ToLessThanLengthRequired` revert reasons",
                 "pr": 1604
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "2.0.2",

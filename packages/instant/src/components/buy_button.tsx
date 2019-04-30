@@ -40,9 +40,9 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
     };
     public render(): React.ReactNode {
         const { buyQuote, accountAddress, selectedAsset } = this.props;
-        const shouldDisableButton = _.isUndefined(buyQuote) || _.isUndefined(accountAddress);
+        const shouldDisableButton = buyQuote === undefined || accountAddress === undefined;
         const buttonText =
-            !_.isUndefined(selectedAsset) && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+            selectedAsset !== undefined && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
                 ? `Buy ${selectedAsset.metaData.symbol.toUpperCase()}`
                 : 'Buy Now';
         return (
@@ -59,13 +59,13 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
         const { buyQuote, assetBuyer, affiliateInfo, accountAddress, accountEthBalanceInWei, web3Wrapper } = this.props;
-        if (_.isUndefined(buyQuote) || _.isUndefined(accountAddress)) {
+        if (buyQuote === undefined || accountAddress === undefined) {
             return;
         }
         this.props.onValidationPending(buyQuote);
         const ethNeededForBuy = buyQuote.worstCaseQuoteInfo.totalEthAmount;
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
-        const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
+        const hasSufficientEth = accountEthBalanceInWei === undefined || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
             analytics.trackBuyNotEnoughEth(buyQuote);
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);

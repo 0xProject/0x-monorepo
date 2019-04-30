@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IExchange.sol";
@@ -43,7 +43,7 @@ contract ExchangeWrapper {
     function cancelOrdersUpTo(
         uint256 targetOrderEpoch,
         uint256 salt,
-        bytes makerSignature
+        bytes calldata makerSignature
     )
         external
     {

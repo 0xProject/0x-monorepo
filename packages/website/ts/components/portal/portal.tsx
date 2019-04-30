@@ -2,9 +2,10 @@ import { colors, Link } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
+import { ANNOUNCEMENT_BANNER_HEIGHT, AnnouncementBanner } from 'ts/components/annoucement_banner';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
 import { LedgerConfigDialog } from 'ts/components/dialogs/ledger_config_dialog';
 import { PortalDisclaimerDialog } from 'ts/components/dialogs/portal_disclaimer_dialog';
@@ -12,7 +13,6 @@ import { EthWrappers } from 'ts/components/eth_wrappers';
 import { FillOrder } from 'ts/components/fill_order';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { MetaTags } from 'ts/components/meta_tags';
-import { BackButton } from 'ts/components/portal/back_button';
 import { Loading } from 'ts/components/portal/loading';
 import { Menu, MenuTheme } from 'ts/components/portal/menu';
 import { Section } from 'ts/components/portal/section';
@@ -88,6 +88,7 @@ interface PortalState {
     isLedgerDialogOpen: boolean;
     tokenManagementState: TokenManagementState;
     trackedTokenStateByAddress: TokenStateByAddress;
+    dismissBanner: boolean;
 }
 
 interface AccountManagementItem {
@@ -120,8 +121,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         this._sharedOrderIfExists = orderParser.parseQueryString(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
-        const hasAcceptedDisclaimer =
-            !_.isUndefined(didAcceptPortalDisclaimer) && !_.isEmpty(didAcceptPortalDisclaimer);
+        const hasAcceptedDisclaimer = didAcceptPortalDisclaimer !== undefined && !_.isEmpty(didAcceptPortalDisclaimer);
         const initialTrackedTokenStateByAddress = this._getInitialTrackedTokenStateByAddress(
             this._getCurrentTrackedTokens(),
         );
@@ -133,6 +133,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             isDisclaimerDialogOpen: !hasAcceptedDisclaimer,
             tokenManagementState: TokenManagementState.None,
             isLedgerDialogOpen: false,
+            dismissBanner: false,
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
@@ -233,6 +234,18 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         return (
             <Container>
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
+                <AnnouncementBanner
+                    dismissed={this.state.dismissBanner}
+                    onDismiss={this._dismissBanner.bind(this)}
+                    heading="Check out the new 0x Explore page"
+                    subline="Need more advanced functionality? Try our code sandbox."
+                    mainCta={{ text: 'Explore 0x', href: WebsitePaths.Explore }}
+                    secondaryCta={{
+                        text: 'Code Sandbox',
+                        href: constants.URL_SANDBOX,
+                        shouldOpenInNewTab: true,
+                    }}
+                />
                 <TopBar
                     userAddress={this.props.userAddress}
                     networkId={this.props.networkId}
@@ -248,18 +261,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     style={{
                         backgroundColor: colors.lightestGrey,
                         position: 'fixed',
+                        transition: '300ms top ease-in-out',
+                        top: this.state.dismissBanner ? '0' : ANNOUNCEMENT_BANNER_HEIGHT,
                         zIndex: zIndex.topBar,
                     }}
                     maxWidth={LARGE_LAYOUT_MAX_WIDTH}
                 />
-                <Container marginTop={TOP_BAR_HEIGHT} minHeight="100vh" backgroundColor={colors.lightestGrey}>
+                <Container
+                    marginTop={`calc(${TOP_BAR_HEIGHT}px + ${
+                        this.state.dismissBanner ? '0px' : ANNOUNCEMENT_BANNER_HEIGHT
+                    })`}
+                    minHeight="100vh"
+                    backgroundColor={colors.lightestGrey}
+                >
                     <Switch>
                         <Route path={`${WebsitePaths.Portal}/:route`} render={this._renderOtherRoutes.bind(this)} />
-                        <Route
-                            exact={true}
-                            path={`${WebsitePaths.Portal}/`}
-                            render={this._renderMainRoute.bind(this)}
-                        />
+                        <Redirect from={WebsitePaths.Portal} to={`/portal/account`} />
                     </Switch>
                     <BlockchainErrDialog
                         blockchain={this._blockchain}
@@ -295,6 +312,11 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </Container>
         );
     }
+    private _dismissBanner(): void {
+        this.setState({ dismissBanner: true });
+    }
+
+    // tslint:disable-next-line:no-unused-variable
     private _renderMainRoute(): React.ReactNode {
         if (this._isSmallScreen()) {
             return <SmallLayout content={this._renderRelayerIndexSection()} />;
@@ -317,12 +339,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             selectedIconColor: colors.yellow800,
             selectedBackgroundColor: 'transparent',
         };
-        return (
-            <Section
-                header={<BackButton to={WebsitePaths.Portal} labelText="Back to Relayers" />}
-                body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
-            />
-        );
+        return <Section body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />} />;
     }
     private _renderWallet(): React.ReactNode {
         const isMobile = utils.isMobileWidth(this.props.screenWidth);
@@ -459,7 +476,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private _renderAccountManagementItem(item: AccountManagementItem): React.ReactNode {
         return (
             <Section
-                header={!_.isUndefined(item.headerText) && <TextHeader labelText={item.headerText} />}
+                header={item.headerText !== undefined && <TextHeader labelText={item.headerText} />}
                 body={<Loading isLoading={!this.props.blockchainIsLoaded} content={item.render()} />}
             />
         );
@@ -502,15 +519,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         );
     }
     private _renderFillOrder(): React.ReactNode {
-        const initialFillOrder = !_.isUndefined(this.props.userSuppliedOrderCache)
-            ? this.props.userSuppliedOrderCache
-            : this._sharedOrderIfExists;
+        const initialFillOrder =
+            this.props.userSuppliedOrderCache !== undefined
+                ? this.props.userSuppliedOrderCache
+                : this._sharedOrderIfExists;
         return (
             <FillOrder
                 blockchain={this._blockchain}
                 blockchainErr={this.props.blockchainErr}
                 initialOrder={initialFillOrder}
-                isOrderInUrl={!_.isUndefined(this._sharedOrderIfExists)}
+                isOrderInUrl={this._sharedOrderIfExists !== undefined}
                 orderFillAmount={this.props.orderFillAmount}
                 networkId={this.props.networkId}
                 userAddress={this.props.userAddress}
@@ -683,7 +701,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         const tokenAddressBySymbol: { [symbol: string]: string } = {};
         _.each(tokenAddresses, address => {
             const tokenIfExists = _.get(this.props.tokenByAddress, address);
-            if (!_.isUndefined(tokenIfExists)) {
+            if (tokenIfExists !== undefined) {
                 const symbol = tokenIfExists.symbol;
                 tokenAddressBySymbol[symbol] = address;
             }

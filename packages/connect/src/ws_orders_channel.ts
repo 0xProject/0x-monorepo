@@ -67,7 +67,7 @@ export class WebSocketOrdersChannel implements OrdersChannel {
         this._client.close();
     }
     private _handleWebSocketMessage(message: any): void {
-        if (_.isUndefined(message.data)) {
+        if (message.data === undefined) {
             this._handler.onError(this, new Error(`Message does not contain data. Url: ${this._client.url}`));
             return;
         }
@@ -75,7 +75,7 @@ export class WebSocketOrdersChannel implements OrdersChannel {
             const data = message.data;
             const parserResult = ordersChannelMessageParser.parse(data);
             const subscriptionOpts = this._subscriptionOptsMap[parserResult.requestId];
-            if (_.isUndefined(subscriptionOpts)) {
+            if (subscriptionOpts === undefined) {
                 this._handler.onError(
                     this,
                     new Error(`Message has unknown requestId. Url: ${this._client.url} Message: ${data}`),

@@ -38,7 +38,7 @@ export class Credits extends React.Component<CreditsProps> {
                     actions={this._renderHeroActions()}
                 />
 
-                <Section bgColor="light" maxWidth="715px">
+                <Section bgColor="light" maxWidth="1200px">
                     <Heading
                         asElement="h2"
                         fontWeight={'400'}
@@ -69,23 +69,11 @@ export class Credits extends React.Component<CreditsProps> {
                             iconSize="medium"
                             isInline={true}
                         />
-                    </FlexWrap>
-
-                    <FlexWrap>
                         <CenteredDefinition
                             title="Digital Ocean"
                             titleSize="small"
                             description="$25,000 in cloud credits to get your relayer off the ground"
                             icon="digital_ocean"
-                            iconSize="medium"
-                            isInline={true}
-                        />
-
-                        <CenteredDefinition
-                            title="Facebook Ads"
-                            titleSize="small"
-                            description="Up to $2,000 in ad credits to bootstrap marketing"
-                            icon="facebook_ads"
                             iconSize="medium"
                             isInline={true}
                         />

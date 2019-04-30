@@ -181,6 +181,7 @@ setup(
             "black",
             "coverage",
             "coveralls",
+            "deprecated",
             "mypy",
             "mypy_extensions",
             "pycodestyle",

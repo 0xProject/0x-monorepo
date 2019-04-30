@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
@@ -58,7 +58,7 @@ contract MixinForwarderCore is
     ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
     ///      5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
     ///      Any ETH not spent will be refunded to sender.
-    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
+    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
     /// @param feeSignatures Proofs that feeOrders have been created by makers.
@@ -70,8 +70,8 @@ contract MixinForwarderCore is
         bytes[] memory signatures,
         LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256  feePercentage,
-        address feeRecipient
+        uint256 feePercentage,
+        address payable feeRecipient
     )
         public
         payable
@@ -142,7 +142,7 @@ contract MixinForwarderCore is
     /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
     ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
     ///      Any ETH not spent will be refunded to sender.
-    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset. 
+    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
@@ -156,8 +156,8 @@ contract MixinForwarderCore is
         bytes[] memory signatures,
         LibOrder.Order[] memory feeOrders,
         bytes[] memory feeSignatures,
-        uint256  feePercentage,
-        address feeRecipient
+        uint256 feePercentage,
+        address payable feeRecipient
     )
         public
         payable

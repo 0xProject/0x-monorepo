@@ -58,7 +58,7 @@ export class AbiDecoder {
     public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const eventId = log.topics[0];
         const numIndexedArgs = log.topics.length - 1;
-        if (_.isUndefined(this._eventIds[eventId]) || _.isUndefined(this._eventIds[eventId][numIndexedArgs])) {
+        if (this._eventIds[eventId] === undefined || this._eventIds[eventId][numIndexedArgs] === undefined) {
             return log;
         }
         const event = this._eventIds[eventId][numIndexedArgs];
@@ -84,7 +84,7 @@ export class AbiDecoder {
         _.forEach(event.inputs, (param: EventParameter, i: number) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
             let value: BigNumber | string | number = param.indexed ? log.topics[topicsIndex++] : decodedData[i];
-            if (_.isUndefined(value)) {
+            if (value === undefined) {
                 didFailToDecode = true;
                 return;
             }
@@ -118,19 +118,19 @@ export class AbiDecoder {
     public decodeCalldataOrThrow(calldata: string, contractName?: string): DecodedCalldata {
         const functionSelector = AbiDecoder._getFunctionSelector(calldata);
         const candidateFunctionInfos = this._selectorToFunctionInfo[functionSelector];
-        if (_.isUndefined(candidateFunctionInfos)) {
+        if (candidateFunctionInfos === undefined) {
             throw new Error(`No functions registered for selector '${functionSelector}'`);
         }
         const functionInfo = _.find(candidateFunctionInfos, candidateFunctionInfo => {
             return (
-                _.isUndefined(contractName) || _.toLower(contractName) === _.toLower(candidateFunctionInfo.contractName)
+                contractName === undefined || _.toLower(contractName) === _.toLower(candidateFunctionInfo.contractName)
             );
         });
-        if (_.isUndefined(functionInfo)) {
+        if (functionInfo === undefined) {
             throw new Error(
                 `No function registered with selector ${functionSelector} and contract name ${contractName}.`,
             );
-        } else if (_.isUndefined(functionInfo.abiEncoder)) {
+        } else if (functionInfo.abiEncoder === undefined) {
             throw new Error(
                 `Function ABI Encoder is not defined, for function registered with selector ${functionSelector} and contract name ${contractName}.`,
             );
@@ -156,7 +156,7 @@ export class AbiDecoder {
      *                     the same signature but different parameter names.
      */
     public addABI(abiArray: AbiDefinition[], contractName?: string): void {
-        if (_.isUndefined(abiArray)) {
+        if (abiArray === undefined) {
             return;
         }
         const ethersInterface = new ethers.utils.Interface(abiArray);

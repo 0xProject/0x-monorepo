@@ -10,7 +10,7 @@ export function promisify<T>(originalFn: (...args: any[]) => void, thisArg?: any
     const promisifiedFunction = async (...callArgs: any[]): Promise<T> => {
         return new Promise<T>((resolve, reject) => {
             const callback = (err: Error | null, data?: T) => {
-                _.isNull(err) || _.isUndefined(err) ? resolve(data) : reject(err);
+                err === null || err === undefined ? resolve(data) : reject(err);
             };
             originalFn.apply(thisArg, [...callArgs, callback]);
         });

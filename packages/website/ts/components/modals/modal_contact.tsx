@@ -18,20 +18,17 @@ export enum ModalContactType {
     General = 'GENERAL',
     MarketMaker = 'MARKET_MAKER',
     Credits = 'CREDITS',
+    Explore = 'EXPLORE',
 }
 
-interface ServiceOptionMetadata {
+interface OptionMetadata {
     label: string;
     name: string;
 }
-const CREDIT_SERVICES_OPTIONS: ServiceOptionMetadata[] = [
+const CREDIT_SERVICES_OPTIONS: OptionMetadata[] = [
     {
         label: 'AWS',
         name: 'aws',
-    },
-    {
-        label: 'Facebook Ads',
-        name: 'facebook_ads',
     },
     {
         label: 'Alchemy',
@@ -75,6 +72,7 @@ export class ModalContact extends React.Component<Props> {
     };
     public state = {
         creditLeadsServices: [] as string[],
+        exploreSupportInstant: false,
         isSubmitting: false,
         isSuccessful: false,
         errors: {},
@@ -89,6 +87,8 @@ export class ModalContact extends React.Component<Props> {
     // market maker lead fields
     public countryRef: React.RefObject<HTMLInputElement> = React.createRef();
     public fundSizeRef: React.RefObject<HTMLInputElement> = React.createRef();
+    // Explore lead fields
+    public themeColorRef: React.RefObject<HTMLInputElement> = React.createRef();
 
     public constructor(props: Props) {
         super(props);
@@ -146,6 +146,8 @@ export class ModalContact extends React.Component<Props> {
                 return this._renderMarketMakerFormContent(errors);
             case ModalContactType.Credits:
                 return this._renderCreditsFormContent(errors);
+            case ModalContactType.Explore:
+                return this._renderExploreFormContent(errors);
             case ModalContactType.General:
             default:
                 return this._renderGeneralFormContent(errors);
@@ -222,6 +224,104 @@ export class ModalContact extends React.Component<Props> {
         );
     }
 
+    private _renderExploreFormContent(errors: ErrorProps): React.ReactNode {
+        return (
+            <>
+                <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                    If you’re working on an awesome 0x project, we would love to share it on our explore page. Fill out
+                    the form so we can connect you with the right person to help you get started.
+                </Paragraph>
+                <InputRow>
+                    <Input
+                        name="name"
+                        label="Your name"
+                        type="text"
+                        width={InputWidth.Half}
+                        ref={this.nameRef}
+                        required={true}
+                        errors={errors}
+                    />
+                    <Input
+                        name="email"
+                        label="Your email"
+                        type="email"
+                        ref={this.emailRef}
+                        required={true}
+                        errors={errors}
+                        width={InputWidth.Half}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="companyOrProject"
+                        label="Name of your project / company"
+                        type="text"
+                        ref={this.companyProjectRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="comments"
+                        label="Description of your project / company"
+                        type="textarea"
+                        ref={this.commentsRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <Input
+                        name="link"
+                        label="Project / Company link"
+                        type="text"
+                        ref={this.linkRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <Paragraph isMuted={true} color={colors.textDarkPrimary}>
+                    Details for 0x Explore page:
+                </Paragraph>
+                <InputRow>
+                    <Input
+                        name="color"
+                        label="Theme Color (in hex)"
+                        type="text"
+                        ref={this.themeColorRef}
+                        required={true}
+                        errors={errors}
+                    />
+                </InputRow>
+                <InputRow>
+                    <OptionSelector
+                        isFlex={true}
+                        name="instant"
+                        label="Does your project support instant?"
+                        errors={errors}
+                    >
+                        {[{ label: 'Yes', name: 'yes' }, { label: 'No', name: 'no' }].map(
+                            (metadata: OptionMetadata) => {
+                                return (
+                                    <CheckBoxInput
+                                        onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
+                                        key={`checkbox-${metadata.name}`}
+                                        isSelected={
+                                            (this.state.exploreSupportInstant && metadata.name === 'yes') ||
+                                            (!this.state.exploreSupportInstant && metadata.name === 'no')
+                                        }
+                                        label={metadata.label}
+                                    />
+                                );
+                            },
+                        )}
+                    </OptionSelector>
+                </InputRow>
+            </>
+        );
+    }
+
     private _renderCreditsFormContent(errors: ErrorProps): React.ReactNode {
         return (
             <>
@@ -276,7 +376,7 @@ export class ModalContact extends React.Component<Props> {
                         label="Which credits are you interested in?"
                         errors={errors}
                     >
-                        {CREDIT_SERVICES_OPTIONS.map((metadata: ServiceOptionMetadata) => {
+                        {CREDIT_SERVICES_OPTIONS.map((metadata: OptionMetadata) => {
                             return (
                                 <CheckBoxInput
                                     onClick={this._handleCheckBoxInput.bind(this, metadata.name)}
@@ -293,10 +393,14 @@ export class ModalContact extends React.Component<Props> {
     }
 
     private _handleCheckBoxInput(checkBoxName: string): void {
-        const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
-            ? _.pull(this.state.creditLeadsServices, checkBoxName)
-            : _.concat(this.state.creditLeadsServices, checkBoxName);
-        this.setState({ creditLeadsServices: newCreditLeadsServices });
+        if (this.props.modalContactType === ModalContactType.Credits) {
+            const newCreditLeadsServices = _.includes(this.state.creditLeadsServices, checkBoxName)
+                ? _.pull(this.state.creditLeadsServices, checkBoxName)
+                : _.concat(this.state.creditLeadsServices, checkBoxName);
+            this.setState({ creditLeadsServices: newCreditLeadsServices });
+        } else if (this.props.modalContactType === ModalContactType.Explore) {
+            this.setState({ exploreSupportInstant: checkBoxName === 'no' ? false : true });
+        }
     }
 
     private _renderGeneralFormContent(errors: ErrorProps): React.ReactNode {
@@ -357,6 +461,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
+
     private async _onSubmitAsync(e: React.FormEvent): Promise<void> {
         e.preventDefault();
 
@@ -378,6 +483,16 @@ export class ModalContact extends React.Component<Props> {
                 project_description: this.commentsRef.current.value,
                 services: this.state.creditLeadsServices,
             };
+        } else if (this.props.modalContactType === ModalContactType.Explore) {
+            jsonBody = {
+                name: this.nameRef.current.value,
+                email: this.emailRef.current.value,
+                project_name: this.companyProjectRef.current.value,
+                project_description: this.commentsRef.current.value,
+                link: this.linkRef.current.value,
+                theme_color: this.themeColorRef.current.value,
+                supports_instant: this.state.exploreSupportInstant,
+            };
         } else {
             jsonBody = {
                 name: this.nameRef.current.value,
@@ -392,6 +507,9 @@ export class ModalContact extends React.Component<Props> {
 
         let endpoint;
         switch (this.props.modalContactType) {
+            case ModalContactType.Explore:
+                endpoint = '/explore_leads';
+                break;
             case ModalContactType.Credits:
                 endpoint = '/credit_leads';
                 break;

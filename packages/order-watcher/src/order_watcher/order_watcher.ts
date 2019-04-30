@@ -42,6 +42,7 @@ import {
     ZeroExProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
+import { Lock } from 'semaphore-async-await';
 
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
@@ -84,6 +85,7 @@ export class OrderWatcher {
     private readonly _dependentOrderHashesTracker: DependentOrderHashesTracker;
     private readonly _orderStateByOrderHashCache: OrderStateByOrderHash = {};
     private readonly _orderByOrderHash: OrderByOrderHash = {};
+    private readonly _lock = new Lock();
     private readonly _eventWatcher: EventWatcher;
     private readonly _provider: ZeroExProvider;
     private readonly _collisionResistantAbiDecoder: CollisionResistanceAbiDecoder;
@@ -140,7 +142,7 @@ export class OrderWatcher {
         const orderFilledCancelledFetcher = new OrderFilledCancelledFetcher(contractWrappers.exchange, STATE_LAYER);
         this._orderFilledCancelledLazyStore = new OrderFilledCancelledLazyStore(orderFilledCancelledFetcher);
         this._orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);
-        const expirationMarginIfExistsMs = _.isUndefined(config) ? undefined : config.expirationMarginMs;
+        const expirationMarginIfExistsMs = config === undefined ? undefined : config.expirationMarginMs;
         this._expirationWatcher = new ExpirationWatcher(
             expirationMarginIfExistsMs,
             config.orderExpirationCheckingIntervalMs,
@@ -176,7 +178,7 @@ export class OrderWatcher {
     public removeOrder(orderHash: string): void {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const signedOrder = this._orderByOrderHash[orderHash];
-        if (_.isUndefined(signedOrder)) {
+        if (signedOrder === undefined) {
             return; // noop
         }
         this._dependentOrderHashesTracker.removeFromDependentOrderHashes(signedOrder);
@@ -192,14 +194,16 @@ export class OrderWatcher {
      */
     public subscribe(callback: OnOrderStateChangeCallback): void {
         assert.isFunction('callback', callback);
-        if (!_.isUndefined(this._callbackIfExists)) {
+        if (this._callbackIfExists !== undefined) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
         this._callbackIfExists = callback;
-        this._eventWatcher.subscribe(this._onEventWatcherCallbackAsync.bind(this));
-        this._expirationWatcher.subscribe(this._onOrderExpired.bind(this));
+        this._eventWatcher.subscribe(
+            this._addLockToCallbackAsync.bind(this, this._onEventWatcherCallbackAsync.bind(this)),
+        );
+        this._expirationWatcher.subscribe(this._addLockToCallbackAsync.bind(this, this._onOrderExpired.bind(this)));
         this._cleanupJobIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
-            this._cleanupAsync.bind(this),
+            this._addLockToCallbackAsync.bind(this, this._cleanupAsync.bind(this)),
             this._cleanupJobInterval,
             (err: Error) => {
                 this.unsubscribe();
@@ -211,7 +215,7 @@ export class OrderWatcher {
      * Ends an orderWatcher subscription.
      */
     public unsubscribe(): void {
-        if (_.isUndefined(this._callbackIfExists) || _.isUndefined(this._cleanupJobIntervalIdIfExists)) {
+        if (this._callbackIfExists === undefined || this._cleanupJobIntervalIdIfExists === undefined) {
             throw new Error(OrderWatcherError.SubscriptionNotFound);
         }
         this._balanceAndProxyAllowanceLazyStore.deleteAll();
@@ -228,6 +232,17 @@ export class OrderWatcher {
         return {
             orderCount: _.size(this._orderByOrderHash),
         };
+    }
+    private async _addLockToCallbackAsync(cbAsync: any, ...params: any[]): Promise<void> {
+        await this._lock.acquire();
+        try {
+            await cbAsync(...params);
+            await this._lock.release();
+        } catch (err) {
+            // Make sure to releasee the lock if an error is thrown
+            await this._lock.release();
+            throw err;
+        }
     }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
@@ -308,16 +323,16 @@ export class OrderWatcher {
             orderHash,
             error: ExchangeContractErrs.OrderFillExpired,
         };
-        if (!_.isUndefined(this._orderByOrderHash[orderHash])) {
+        if (this._orderByOrderHash[orderHash] !== undefined) {
             this.removeOrder(orderHash);
-            if (!_.isUndefined(this._callbackIfExists)) {
+            if (this._callbackIfExists !== undefined) {
                 this._callbackIfExists(null, orderState);
             }
         }
     }
     private async _onEventWatcherCallbackAsync(err: Error | null, logIfExists?: LogEntryEvent): Promise<void> {
-        if (!_.isNull(err)) {
-            if (!_.isUndefined(this._callbackIfExists)) {
+        if (err !== null) {
+            if (this._callbackIfExists !== undefined) {
                 this._callbackIfExists(err);
             }
             return;
@@ -326,7 +341,7 @@ export class OrderWatcher {
             // At this moment we are sure that no error occured and log is defined.
             logIfExists as LogEntryEvent,
         );
-        const isLogDecoded = !_.isUndefined(((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event);
+        const isLogDecoded = ((maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>).event !== undefined;
         if (!isLogDecoded) {
             return; // noop
         }
@@ -336,7 +351,7 @@ export class OrderWatcher {
             case ERC20TokenEvents.Approval:
             case ERC721TokenEvents.Approval: {
                 // ERC20 and ERC721 Transfer events have the same name so we need to distinguish them by args
-                if (!_.isUndefined(decodedLog.args._value)) {
+                if (decodedLog.args._value !== undefined) {
                     // ERC20
                     // Invalidate cache
                     const args = decodedLog.args as ERC20TokenApprovalEventArgs;
@@ -367,7 +382,7 @@ export class OrderWatcher {
             case ERC20TokenEvents.Transfer:
             case ERC721TokenEvents.Transfer: {
                 // ERC20 and ERC721 Transfer events have the same name so we need to distinguish them by args
-                if (!_.isUndefined(decodedLog.args._value)) {
+                if (decodedLog.args._value !== undefined) {
                     // ERC20
                     // Invalidate cache
                     const args = decodedLog.args as ERC20TokenTransferEventArgs;
@@ -442,7 +457,7 @@ export class OrderWatcher {
                 this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
-                const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
+                const isOrderWatched = this._orderByOrderHash[orderHash] !== undefined;
                 if (isOrderWatched) {
                     await this._emitRevalidateOrdersAsync([orderHash], transactionHash);
                 }
@@ -454,7 +469,7 @@ export class OrderWatcher {
                 this._orderFilledCancelledLazyStore.deleteIsCancelled(args.orderHash);
                 // Revalidate orders
                 const orderHash = args.orderHash;
-                const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
+                const isOrderWatched = this._orderByOrderHash[orderHash] !== undefined;
                 if (isOrderWatched) {
                     await this._emitRevalidateOrdersAsync([orderHash], transactionHash);
                 }
@@ -478,10 +493,13 @@ export class OrderWatcher {
     private async _emitRevalidateOrdersAsync(orderHashes: string[], transactionHash?: string): Promise<void> {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash];
+            if (signedOrder === undefined) {
+                continue;
+            }
             // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
             const orderState = await this._orderStateUtils.getOpenOrderStateAsync(signedOrder, transactionHash);
-            if (_.isUndefined(this._callbackIfExists)) {
+            if (this._callbackIfExists === undefined) {
                 break; // Unsubscribe was called
             }
             if (_.isEqual(orderState, this._orderStateByOrderHashCache[orderHash])) {
@@ -493,4 +511,4 @@ export class OrderWatcher {
             this._callbackIfExists(null, orderState);
         }
     }
-}
+} // tslint:disable:max-file-line-count

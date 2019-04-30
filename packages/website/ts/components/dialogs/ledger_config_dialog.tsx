@@ -55,9 +55,8 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             stepIndex: LedgerSteps.Connect,
             userAddresses: [],
             addressBalances: [],
-            derivationPath: _.isUndefined(derivationPathIfExists)
-                ? configs.DEFAULT_DERIVATION_PATH
-                : derivationPathIfExists,
+            derivationPath:
+                derivationPathIfExists === undefined ? configs.DEFAULT_DERIVATION_PATH : derivationPathIfExists,
             derivationErrMsg: '',
             preferredNetworkId: props.networkId,
         };

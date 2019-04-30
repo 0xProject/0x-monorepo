@@ -27,7 +27,7 @@ export class UIntDataType extends AbstractBlobDataType {
     private static _decodeWidthFromType(type: string): number {
         const matches = UIntDataType._MATCHER.exec(type);
         const width =
-            !_.isNull(matches) && matches.length === 2 && !_.isUndefined(matches[1])
+            matches !== null && matches.length === 2 && matches[1] !== undefined
                 ? parseInt(matches[1], constants.DEC_BASE)
                 : UIntDataType._DEFAULT_WIDTH;
         return width;

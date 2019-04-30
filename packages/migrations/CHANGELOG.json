@@ -1,12 +1,72 @@
 [
     {
+        "version": "4.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script",
+                "pr": 1689
+            },
+            {
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551299797,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
                 "note": "Replace Provider param interface with Web3ProviderEngine",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,

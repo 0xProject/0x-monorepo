@@ -11,6 +11,11 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
             '0x is an open protocol that enables the peer-to-peer exchange of assets on the Ethereum blockchain.',
         keywords: '',
     },
+    EXPLORE: {
+        title: '0x Explore: Trade on 0x Relayers',
+        description: 'Check out the wide range of projects and businesses building in the 0x ecosystem!',
+        keywords: '',
+    },
     WHY: {
         title: '0x: Features and Benefits',
         description:
@@ -84,6 +89,11 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         title: '0x Governance: Vote on ZEIPs with ZRX',
         description:
             '0x is an open protocol that is governed by its users. Cast your votes with ZRX on 0x Improvement Proposals.',
+        keywords: '',
+    },
+    EXTENSIONS: {
+        title: '0x Extensions',
+        description: 'Support new types of trading on your relayer with 0x Extensions',
         keywords: '',
     },
 };

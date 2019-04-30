@@ -84,7 +84,7 @@ export const assert = {
                 allValues,
             )}`,
         );
-        if (!_.isUndefined(value)) {
+        if (value !== undefined) {
             const firstValue = _.head(allValues);
             sharedAssert.assert(
                 firstValue === value,

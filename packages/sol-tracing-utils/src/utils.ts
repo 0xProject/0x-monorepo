@@ -3,9 +3,8 @@ import { OpCode, StructLog } from 'ethereum-types';
 import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { ContractData, LineColumn, SingleFileSourceRange } from './types';
-
-const STATICCALL_GAS_COST = 40;
 
 const bytecodeToContractDataIfExists: { [bytecode: string]: ContractData | undefined } = {};
 
@@ -56,7 +55,7 @@ export const utils = {
             const runtimeBytecodeRegex = utils.bytecodeToBytecodeRegex(contractDataCandidate.runtimeBytecode);
             // We use that function to find by bytecode or runtimeBytecode. Those are quasi-random strings so
             // collisions are practically impossible and it allows us to reuse that code
-            return !_.isNull(bytecode.match(bytecodeRegex)) || !_.isNull(bytecode.match(runtimeBytecodeRegex));
+            return bytecode.match(bytecodeRegex) !== null || bytecode.match(runtimeBytecodeRegex) !== null;
         });
         if (contractDataCandidates.length > 1) {
             const candidates = contractDataCandidates.map(
@@ -81,27 +80,80 @@ export const utils = {
         return addressUtils.padZeros(new BigNumber(addHexPrefix(stackEntry)).toString(hexBase));
     },
     normalizeStructLogs(structLogs: StructLog[]): StructLog[] {
+        if (_.isEmpty(structLogs)) {
+            return structLogs;
+        }
+        const reduceDepthBy1 = (structLog: StructLog) => ({
+            ...structLog,
+            depth: structLog.depth - 1,
+        });
+        let normalizedStructLogs = structLogs;
+        // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+        const normalizeStaticCallCost = (structLog: StructLog) =>
+            structLog.op === OpCode.StaticCall
+                ? {
+                      ...structLog,
+                      gasCost: constants.opCodeToGasCost[structLog.op],
+                  }
+                : structLog;
+        // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
+        const normalizeCallCost = (structLog: StructLog, index: number) => {
+            if (structLog.op === OpCode.Call) {
+                const callAddress = parseInt(
+                    structLog.stack[structLog.stack.length - constants.opCodeToParamToStackOffset[OpCode.Call].to - 1],
+                    constants.HEX_BASE,
+                );
+                const MAX_REASONABLE_PRECOMPILE_ADDRESS = 100;
+                if (callAddress < MAX_REASONABLE_PRECOMPILE_ADDRESS) {
+                    const nextStructLog = normalizedStructLogs[index + 1];
+                    const gasCost = structLog.gas - nextStructLog.gas;
+                    return {
+                        ...structLog,
+                        gasCost,
+                    };
+                } else {
+                    return {
+                        ...structLog,
+                        gasCost: constants.opCodeToGasCost[structLog.op],
+                    };
+                }
+            } else {
+                return structLog;
+            }
+        };
+        const shiftGasCosts1Left = (structLog: StructLog, idx: number) => {
+            if (idx === structLogs.length - 1) {
+                return {
+                    ...structLog,
+                    gasCost: 0,
+                };
+            } else {
+                const nextStructLog = structLogs[idx + 1];
+                const gasCost = nextStructLog.gasCost;
+                return {
+                    ...structLog,
+                    gasCost,
+                };
+            }
+        };
         if (structLogs[0].depth === 1) {
             // Geth uses 1-indexed depth counter whilst ganache starts from 0
-            const newStructLogs = _.map(structLogs, structLog => {
-                const newStructLog = {
-                    ...structLog,
-                    depth: structLog.depth - 1,
-                };
-                if (newStructLog.op === 'STATICCALL') {
-                    // HACK(leo): Geth traces sometimes returns those gas costs incorrectly as very big numbers so we manually fix them.
-                    newStructLog.gasCost = STATICCALL_GAS_COST;
-                }
-                return newStructLog;
-            });
-            return newStructLogs;
+            normalizedStructLogs = _.map(normalizedStructLogs, reduceDepthBy1);
+            normalizedStructLogs = _.map(normalizedStructLogs, normalizeCallCost);
+            normalizedStructLogs = _.map(normalizedStructLogs, normalizeStaticCallCost);
+        } else {
+            // Ganache shifts opcodes gas costs so we need to unshift them
+            normalizedStructLogs = _.map(normalizedStructLogs, shiftGasCosts1Left);
         }
-        return structLogs;
+        return normalizedStructLogs;
     },
     getRange(sourceCode: string, range: SingleFileSourceRange): string {
         const lines = sourceCode.split('\n').slice(range.start.line - 1, range.end.line);
         lines[lines.length - 1] = lines[lines.length - 1].slice(0, range.end.column);
         lines[0] = lines[0].slice(range.start.column);
         return lines.join('\n');
+    },
+    shortenHex(hex: string, length: number): string {
+        return `${hex.substr(0, length + 2)}...${hex.substr(hex.length - length, length)}`;
     },
 };

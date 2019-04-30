@@ -294,6 +294,40 @@ except ApiException as e:
     print("Exception when calling DefaultApi->get_asset_pairs: %s\n" % e)
 ```
 
+## Contributing
+
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install Code and Dependencies
+
+Ensure that you have installed Python >=3.6, Docker, and docker-compose. Then:
+
+```bash
+pip install -e .[dev]
+```
+
+### Test
+
+Tests depend on a running instance of 0x-launch-kit, backed by a Ganache node with the 0x contracts deployed in it. For convenience, a docker-compose file is provided that creates this environment. And a shortcut is provided to interface with that file: `./setup.py start_test_relayer` will start those services. With them running, the tests can be run with `./setup.py test`. When you're done with testing, you can `./setup.py stop_test_relayer`.
+
+### Clean
+
+`./setup.py clean --all`
+
+### Lint
+
+`./setup.py lint`
+
+### Build Documentation
+
+`./setup.py build_sphinx`
+
+### More
+
+See `./setup.py --help-commands` for more info.
+
 ## Documentation for API Endpoints
 
 All URIs are relative to _http://localhost_

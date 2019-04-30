@@ -1,5 +1,4 @@
 import { intervalUtils, logUtils } from '@0x/utils';
-import * as _ from 'lodash';
 
 import { errorReporter } from './error_reporter';
 
@@ -29,7 +28,7 @@ export class DispatchQueue {
         return this.size() >= MAX_QUEUE_SIZE;
     }
     public stop(): void {
-        if (!_.isUndefined(this._queueIntervalIdIfExists)) {
+        if (this._queueIntervalIdIfExists !== undefined) {
             intervalUtils.clearAsyncExcludingInterval(this._queueIntervalIdIfExists);
         }
     }
@@ -37,7 +36,7 @@ export class DispatchQueue {
         this._queueIntervalIdIfExists = intervalUtils.setAsyncExcludingInterval(
             async () => {
                 const taskAsync = this._queue.shift();
-                if (_.isUndefined(taskAsync)) {
+                if (taskAsync === undefined) {
                     return Promise.resolve();
                 }
                 await taskAsync();

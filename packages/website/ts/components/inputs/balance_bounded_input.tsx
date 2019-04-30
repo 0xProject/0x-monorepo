@@ -51,7 +51,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             return;
         }
         const isCurrentAmountNumeric = utils.isNumeric(this.state.amountString);
-        if (!_.isUndefined(nextProps.amount)) {
+        if (nextProps.amount !== undefined) {
             let shouldResetState = false;
             if (!isCurrentAmountNumeric) {
                 shouldResetState = true;
@@ -79,7 +79,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
                     : this.state.errMsg;
         }
         let label: React.ReactNode | string = '';
-        if (!_.isUndefined(this.props.label)) {
+        if (this.props.label !== undefined) {
             label = <RequiredLabel label={this.props.label} />;
         }
         return (
@@ -102,7 +102,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
     }
     private _onValueChange(_event: any, amountString: string): void {
         this._setAmountState(amountString, this.props.balance, () => {
-            const isValid = _.isUndefined(this._validate(amountString, this.props.balance));
+            const isValid = this._validate(amountString, this.props.balance) === undefined;
             const isPositiveNumber = utils.isNumeric(amountString) && !_.includes(amountString, '-');
             if (isPositiveNumber) {
                 this.props.onChange(isValid, new BigNumber(amountString));
@@ -122,7 +122,7 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
         if (this.props.shouldCheckBalance && amount.gt(balance)) {
             return <span>Insufficient balance.</span>;
         }
-        const errMsg = _.isUndefined(this.props.validate) ? undefined : this.props.validate(amount);
+        const errMsg = this.props.validate === undefined ? undefined : this.props.validate(amount);
         return errMsg;
     }
     private _setAmountState(amount: string, balance: BigNumber, callback: () => void = _.noop.bind(_)): void {

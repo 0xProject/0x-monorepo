@@ -1,5 +1,56 @@
 [
     {
+        "version": "7.2.0",
+        "changes": [
+            {
+                "note": "Added `orderCalculationUtils`",
+                "pr": 1714
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "7.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add Coordinator EIP712 constants",
+                "pr": 1705
+            },
+            {
+                "note": "Added encoding/decoding for ERC1155 asset data",
+                "pr": 1661
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "7.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "7.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "7.0.0",
         "changes": [
             {
@@ -10,7 +61,8 @@
                 "note": "Update provider params to type SupportedProvider which outlines all supported providers",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "6.1.0",

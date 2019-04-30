@@ -1,4 +1,12 @@
-"""0x smart contract compilation artifacts."""
+"""0x smart contract compilation artifacts.
+
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-contract-artifacts
+"""
 
 import json
 from typing import Dict
@@ -31,5 +39,21 @@ class _ArtifactCache:
 
 
 def abi_by_name(contract_name: str) -> Dict:
-    """Return the ABI for the named contract."""
+    """Return the ABI for the named contract.
+
+    Contract names must correspond to files in the package's `artifacts`:code:
+    directory, without the `.json`:code: suffix.
+
+        >>> from pprint import pprint
+        >>> pprint(abi_by_name("IValidator"))
+        [{'constant': True,
+          'inputs': [{'name': 'hash', 'type': 'bytes32'},
+                     {'name': 'signerAddress', 'type': 'address'},
+                     {'name': 'signature', 'type': 'bytes'}],
+          'name': 'isValidSignature',
+          'outputs': [{'name': 'isValid', 'type': 'bool'}],
+          'payable': False,
+          'stateMutability': 'view',
+          'type': 'function'}]
+    """
     return _ArtifactCache.contract_name_to_abi(contract_name)

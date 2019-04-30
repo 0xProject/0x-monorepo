@@ -119,9 +119,9 @@ export class EvmDataTypeFactory implements DataTypeFactory {
             dataType = new String(dataItem);
         }
         // @TODO: DataTypeement Fixed/UFixed types
-        if (_.isUndefined(dataType)) {
+        if (dataType === undefined) {
             throw new Error(`Unrecognized data type: '${dataItem.type}'`);
-        } else if (!_.isUndefined(parentDataType) && !dataType.isStatic()) {
+        } else if (parentDataType !== undefined && !dataType.isStatic()) {
             const pointerToDataType = new Pointer(dataType, parentDataType);
             return pointerToDataType;
         }
@@ -176,8 +176,8 @@ export function createMethod(
     input?: DataItem | DataItem[] | string | string[],
     output?: DataItem | DataItem[] | string | string[],
 ): Method {
-    const methodInput = _.isUndefined(input) ? [] : consolidateDataItemsIntoArray(input);
-    const methodOutput = _.isUndefined(output) ? [] : consolidateDataItemsIntoArray(output);
+    const methodInput = input === undefined ? [] : consolidateDataItemsIntoArray(input);
+    const methodOutput = output === undefined ? [] : consolidateDataItemsIntoArray(output);
     const methodAbi: MethodAbi = {
         name: methodName,
         inputs: methodInput,

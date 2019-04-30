@@ -1,10 +1,15 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
-    "useDockerisedSolc": true,
+    "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {
-        "optimizer": { "enabled": true, "runs": 1000000 },
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
         "outputSelection": {
             "*": {
                 "*": [
@@ -18,7 +23,6 @@
         }
     },
     "contracts": [
-        "@0x/contracts-asset-proxy/contracts/src/MixinAuthorizable.sol",
         "src/AssetProxyOwner.sol",
         "src/MultiSigWallet.sol",
         "src/MultiSigWalletWithTimeLock.sol",

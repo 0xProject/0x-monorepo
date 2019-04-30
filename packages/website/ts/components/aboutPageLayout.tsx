@@ -6,7 +6,7 @@ import { Button } from 'ts/components/button';
 import { ChapterLink } from 'ts/components/chapter_link';
 import { Column, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
-import { Heading, Paragraph } from 'ts/components/text';
+import { Heading } from 'ts/components/text';
 
 import { addFadeInAnimation } from 'ts/constants/animations';
 import { WebsitePaths } from 'ts/types';
@@ -34,15 +34,13 @@ export const AboutPageLayout = (props: Props) => (
                 <Column width="100%" maxWidth="680px">
                     <AnimatedHeading size="medium">{props.title}</AnimatedHeading>
 
-                    <AnimatedParagraph size="medium" marginBottom="60px" isMuted={0.65}>
-                        {props.description}
-                    </AnimatedParagraph>
+                    <AnimatedIntro>{props.description}</AnimatedIntro>
 
                     {props.linkLabel && (props.href || props.to) && (
                         <AnimatedLink
                             to={props.to}
                             href={props.href}
-                            target={!_.isUndefined(props.href) ? '_blank' : undefined}
+                            target={props.href !== undefined ? '_blank' : undefined}
                             isWithArrow={true}
                             isAccentColor={true}
                         >
@@ -61,7 +59,7 @@ const AnimatedHeading = styled(Heading)`
     ${addFadeInAnimation('0.5s')};
 `;
 
-const AnimatedParagraph = styled(Paragraph)`
+const AnimatedIntro = styled.div`
     ${addFadeInAnimation('0.5s', '0.15s')};
 `;
 

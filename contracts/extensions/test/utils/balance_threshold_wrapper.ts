@@ -1,3 +1,4 @@
+import { ExchangeContract } from '@0x/contracts-exchange';
 import {
     FillResults,
     formatters,
@@ -11,9 +12,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import * as _ from 'lodash';
 
-import { artifacts, BalanceThresholdFilterContract, ExchangeContract } from '../../src';
+import { artifacts, BalanceThresholdFilterContract } from '../../src';
 
 export class BalanceThresholdWrapper {
     private readonly _balanceThresholdFilter: BalanceThresholdFilterContract;
@@ -263,7 +263,7 @@ export class BalanceThresholdWrapper {
         gas?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const signedExchangeTx = this._signerTransactionFactory.newSignedTransaction(abiEncodedExchangeTxData);
-        const txOpts = _.isUndefined(gas) ? { from } : { from, gas };
+        const txOpts = gas === undefined ? { from } : { from, gas };
         const txHash = await this._balanceThresholdFilter.executeTransaction.sendTransactionAsync(
             signedExchangeTx.salt,
             signedExchangeTx.signerAddress,

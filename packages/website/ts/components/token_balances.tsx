@@ -289,7 +289,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     title="Oh oh"
                     titleStyle={{ fontWeight: 100 }}
                     actions={errorDialogActions}
-                    open={!_.isUndefined(this.state.errorType)}
+                    open={this.state.errorType !== undefined}
                     onRequestClose={this._onErrorDialogToggle.bind(this, false)}
                 >
                     {this._renderErrorDialogBody()}
@@ -342,7 +342,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>
-                    {_.isUndefined(tokenLink) ? (
+                    {tokenLink === undefined ? (
                         this._renderTokenName(token)
                     ) : (
                         <a href={tokenLink} target="_blank" style={{ textDecoration: 'none' }}>

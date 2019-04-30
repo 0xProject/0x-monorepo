@@ -5,6 +5,36 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.0.0 - _April 11, 2019_
+
+    * Added a simulation to transfer from maker to taker during `exchange.validateOrderFillableOrThrowAsync` (#1714)
+    * Added additional properties to `ValidateOrderFillableOpts`. An order can now be validated to fill a non-zero amount by specifying `validateRemainingOrderAmountIsFillable` as `false`. The default `true` will continue to validate the entire remaining balance is fillable. (#1714)
+
+## v8.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v8.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v8.0.3 - _March 1, 2019_
+
+    * Move contracts-test-utils and fill-scenarios to dev dependency (#1657)
+
+## v8.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v8.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v8.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
 ## v7.1.0 - _February 9, 2019_
 
     * Added calldata decoding to ContractWrappers (#1569)
@@ -19,12 +49,13 @@ CHANGELOG
 
 ## v7.0.0 - _February 6, 2019_
 
-    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
     * Use new `ZeroExTransaction` interface (#1576)
     * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
+    * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
 
-## v6.0.0 - _Invalid date_
+## v6.0.0 - _February 5, 2019_
 
+    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
     * Upgrade the bignumber.js to v8.0.2 (#1517)
 
 ## v5.0.1 - _January 17, 2019_

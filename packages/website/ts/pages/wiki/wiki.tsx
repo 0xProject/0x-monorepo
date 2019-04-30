@@ -58,27 +58,28 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         clearTimeout(this._wikiBackoffTimeoutId);
     }
     public render(): React.ReactNode {
-        const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
-            ? {}
-            : this._getSectionNameToLinks(this.state.articlesBySection);
+        const sectionNameToLinks =
+            this.state.articlesBySection === undefined ? {} : this._getSectionNameToLinks(this.state.articlesBySection);
 
-        const mainContent = _.isUndefined(this.state.articlesBySection) ? (
-            <div className="flex justify-center">{this._renderLoading()}</div>
-        ) : (
-            <div id="wiki" style={{ paddingRight: 2 }}>
-                {this._renderWikiArticles()}
-            </div>
-        );
+        const mainContent =
+            this.state.articlesBySection === undefined ? (
+                <div className="flex justify-center">{this._renderLoading()}</div>
+            ) : (
+                <div id="wiki" style={{ paddingRight: 2 }}>
+                    {this._renderWikiArticles()}
+                </div>
+            );
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
-        const sidebar = _.isUndefined(this.state.articlesBySection) ? (
-            <div />
-        ) : (
-            <NestedSidebarMenu
-                sidebarHeader={isSmallScreen ? this._renderSidebarHeader() : undefined}
-                sectionNameToLinks={sectionNameToLinks}
-                screenWidth={this.props.screenWidth}
-            />
-        );
+        const sidebar =
+            this.state.articlesBySection === undefined ? (
+                <div />
+            ) : (
+                <NestedSidebarMenu
+                    sidebarHeader={isSmallScreen ? this._renderSidebarHeader() : undefined}
+                    sectionNameToLinks={sectionNameToLinks}
+                    screenWidth={this.props.screenWidth}
+                />
+            );
         return (
             <DevelopersPage
                 sidebar={sidebar}

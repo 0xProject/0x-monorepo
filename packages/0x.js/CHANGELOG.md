@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.6 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v6.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v6.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v6.0.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v6.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v6.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v6.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
 ## v5.0.0 - _February 9, 2019_
 
     * Export `transactionHashUtils`, `DecodedCalldata`, `ZeroExTransaction`, and `SignedZeroExTransaction` (#1569)

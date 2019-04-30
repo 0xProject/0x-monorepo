@@ -1,5 +1,52 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Added IAssetProxy wrapper",
+                "pr": 1714
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Add Coordinator and CoordinatorRegistry contract wrappers",
+                "pr": 1689
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
@@ -10,7 +57,8 @@
                 "note": "Update provider params to type SupportedProvider which outlines all supported providers",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,

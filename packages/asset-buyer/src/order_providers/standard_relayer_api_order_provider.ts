@@ -1,4 +1,5 @@
 import { HttpClient } from '@0x/connect';
+import { orderCalculationUtils } from '@0x/order-utils';
 import { APIOrder, AssetPairsResponse, OrderbookResponse } from '@0x/types';
 import * as _ from 'lodash';
 
@@ -10,7 +11,6 @@ import {
     SignedOrderWithRemainingFillableMakerAssetAmount,
 } from '../types';
 import { assert } from '../utils/assert';
-import { orderUtils } from '../utils/order_utils';
 
 export class StandardRelayerAPIOrderProvider implements OrderProvider {
     public readonly apiUrl: string;
@@ -31,7 +31,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
                 'remainingTakerAssetAmount',
                 order.takerAssetAmount,
             );
-            const remainingFillableMakerAssetAmount = orderUtils.getRemainingMakerAmount(
+            const remainingFillableMakerAssetAmount = orderCalculationUtils.getMakerFillAmount(
                 order,
                 remainingFillableTakerAssetAmount,
             );

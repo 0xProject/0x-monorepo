@@ -1,12 +1,64 @@
 [
     {
+        "version": "4.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "4.2.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.2.2",
+        "changes": [
+            {
+                "note": "Fix issue where process is not defined in browser context",
+                "pr": 1660
+            }
+        ],
+        "timestamp": 1551479279
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {
                 "note": "Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface",
                 "pr": 1627
+            },
+            {
+                "note": "Add `logUtils.table` and `logUtils.header`",
+                "pr": 1638
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "4.1.0",

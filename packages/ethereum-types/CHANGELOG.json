@@ -1,12 +1,35 @@
 [
     {
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
                 "note": "Added types SupportedProvider, GanacheProvider, Web3JsProvider, ZeroExProvider, EIP1193Provider",
                 "pr": 1627
+            },
+            {
+                "note": "Added all existing opcodes to `OpCode` type",
+                "pr": 1638
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "version": "2.0.0",

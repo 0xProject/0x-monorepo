@@ -1,4 +1,5 @@
 import { DoneCallback } from '@0x/types';
+import { providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as Sinon from 'sinon';
@@ -20,7 +21,7 @@ describe('RedundantSubprovider', () => {
         const subproviders = [ganacheSubprovider];
         const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
-        provider.start();
+        providerUtils.startProviderEngine(provider);
 
         const payload = {
             jsonrpc: '2.0',
@@ -44,7 +45,7 @@ describe('RedundantSubprovider', () => {
         const subproviders = [nonExistentSubprovider as Subprovider, ganacheSubprovider];
         const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
-        provider.start();
+        providerUtils.startProviderEngine(provider);
 
         const payload = {
             jsonrpc: '2.0',

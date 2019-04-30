@@ -1,4 +1,6 @@
 {
+    "artifactsDir": "artifacts",
+    "contractsDir": "contracts",
     "compilerSettings": {
         "outputSelection": {
             "*": {

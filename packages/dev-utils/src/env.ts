@@ -14,7 +14,7 @@ export const env = {
         const envVarValue = process.env[key];
         if (envVarValue === 'true') {
             isTrue = true;
-        } else if (envVarValue === 'false' || _.isUndefined(envVarValue)) {
+        } else if (envVarValue === 'false' || envVarValue === undefined) {
             isTrue = false;
         } else {
             throw new Error(

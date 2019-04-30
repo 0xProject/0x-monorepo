@@ -24,7 +24,7 @@ export type sendTransactionResult = Promise<TransactionReceipt | TransactionRece
  * node.
  */
 async function _getGanacheOrGethErrorAsync(ganacheError: string, gethError: string): Promise<string> {
-    if (_.isUndefined(nodeType)) {
+    if (nodeType === undefined) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
     }
     switch (nodeType) {
@@ -99,7 +99,7 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
         _.noop(e);
     });
 
-    if (_.isUndefined(nodeType)) {
+    if (nodeType === undefined) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
     }
     switch (nodeType) {

@@ -195,7 +195,7 @@ export class EtherTokenWrapper extends ContractWrapper {
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];
-        if (!_.isUndefined(etherTokenContract)) {
+        if (etherTokenContract !== undefined) {
             return etherTokenContract;
         }
         const contractInstance = new WETH9Contract(

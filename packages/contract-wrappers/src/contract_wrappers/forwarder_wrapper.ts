@@ -50,13 +50,11 @@ export class ForwarderWrapper extends ContractWrapper {
         etherTokenAddress?: string,
     ) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
-        this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
-            ? _getDefaultContractAddresses(networkId).zrxToken
-            : zrxTokenAddress;
-        this.etherTokenAddress = _.isUndefined(etherTokenAddress)
-            ? _getDefaultContractAddresses(networkId).etherToken
-            : etherTokenAddress;
+        this.address = address === undefined ? _getDefaultContractAddresses(networkId).exchange : address;
+        this.zrxTokenAddress =
+            zrxTokenAddress === undefined ? _getDefaultContractAddresses(networkId).zrxToken : zrxTokenAddress;
+        this.etherTokenAddress =
+            etherTokenAddress === undefined ? _getDefaultContractAddresses(networkId).etherToken : etherTokenAddress;
     }
     /**
      * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
@@ -239,7 +237,7 @@ export class ForwarderWrapper extends ContractWrapper {
         return txHash;
     }
     private async _getForwarderContractAsync(): Promise<ForwarderContract> {
-        if (!_.isUndefined(this._forwarderContractIfExists)) {
+        if (this._forwarderContractIfExists !== undefined) {
             return this._forwarderContractIfExists;
         }
         const contractInstance = new ForwarderContract(

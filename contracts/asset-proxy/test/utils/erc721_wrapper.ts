@@ -1,21 +1,23 @@
-import { constants, ERC721TokenIdsByOwner, txDefaults, Web3ProviderEngine } from '@0x/contracts-test-utils';
+import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { constants, ERC721TokenIdsByOwner, txDefaults } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, DummyERC721TokenContract, ERC721ProxyContract } from '../../src';
+import { artifacts, ERC721ProxyContract } from '../../src';
 
 export class ERC721Wrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _contractOwnerAddress: string;
     private readonly _web3Wrapper: Web3Wrapper;
-    private readonly _provider: Web3ProviderEngine;
+    private readonly _provider: ZeroExProvider;
     private readonly _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
-    constructor(provider: Web3ProviderEngine, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
+    constructor(provider: ZeroExProvider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._dummyTokenContracts = [];
@@ -27,7 +29,7 @@ export class ERC721Wrapper {
         for (const i of _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY)) {
             this._dummyTokenContracts.push(
                 await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                    artifacts.DummyERC721Token,
+                    erc721Artifacts.DummyERC721Token,
                     this._provider,
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,
@@ -60,12 +62,12 @@ export class ERC721Wrapper {
                 for (const i of _.times(constants.NUM_ERC721_TOKENS_TO_MINT)) {
                     const tokenId = generatePseudoRandomSalt();
                     await this.mintAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
-                    if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress])) {
+                    if (this._initialTokenIdsByOwner[tokenOwnerAddress] === undefined) {
                         this._initialTokenIdsByOwner[tokenOwnerAddress] = {
                             [dummyTokenContract.address]: [],
                         };
                     }
-                    if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address])) {
+                    if (this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] === undefined) {
                         this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address] = [];
                     }
                     this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address].push(tokenId);
@@ -187,12 +189,12 @@ export class ERC721Wrapper {
         _.forEach(tokenOwnerAddresses, (tokenOwnerAddress, ownerIndex) => {
             const tokenAddress = tokenInfo[ownerIndex].tokenAddress;
             const tokenId = tokenInfo[ownerIndex].tokenId;
-            if (_.isUndefined(tokenIdsByOwner[tokenOwnerAddress])) {
+            if (tokenIdsByOwner[tokenOwnerAddress] === undefined) {
                 tokenIdsByOwner[tokenOwnerAddress] = {
                     [tokenAddress]: [],
                 };
             }
-            if (_.isUndefined(tokenIdsByOwner[tokenOwnerAddress][tokenAddress])) {
+            if (tokenIdsByOwner[tokenOwnerAddress][tokenAddress] === undefined) {
                 tokenIdsByOwner[tokenOwnerAddress][tokenAddress] = [];
             }
             tokenIdsByOwner[tokenOwnerAddress][tokenAddress].push(tokenId);
@@ -208,18 +210,18 @@ export class ERC721Wrapper {
     }
     private _getTokenContractFromAssetData(tokenAddress: string): DummyERC721TokenContract {
         const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
-        if (_.isUndefined(tokenContractIfExists)) {
+        if (tokenContractIfExists === undefined) {
             throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);
         }
         return tokenContractIfExists;
     }
     private _validateDummyTokenContractsExistOrThrow(): void {
-        if (_.isUndefined(this._dummyTokenContracts)) {
+        if (this._dummyTokenContracts === undefined) {
             throw new Error('Dummy ERC721 tokens not yet deployed, please call "deployDummyTokensAsync"');
         }
     }
     private _validateProxyContractExistsOrThrow(): void {
-        if (_.isUndefined(this._proxyContract)) {
+        if (this._proxyContract === undefined) {
             throw new Error('ERC721 proxy contract not yet deployed, please call "deployProxyAsync"');
         }
     }

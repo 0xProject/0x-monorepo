@@ -33,9 +33,8 @@ export class EventWatcher {
     ) {
         this._isVerbose = isVerbose;
         this._web3Wrapper = new Web3Wrapper(supportedProvider);
-        this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
-            ? DEFAULT_EVENT_POLLING_INTERVAL_MS
-            : pollingIntervalIfExistsMs;
+        this._pollingIntervalMs =
+            pollingIntervalIfExistsMs === undefined ? DEFAULT_EVENT_POLLING_INTERVAL_MS : pollingIntervalIfExistsMs;
         this._blockAndLogStreamerIfExists = undefined;
         this._blockAndLogStreamIntervalIfExists = undefined;
         this._onLogAddedSubscriptionToken = undefined;
@@ -43,19 +42,19 @@ export class EventWatcher {
     }
     public subscribe(callback: EventWatcherCallback): void {
         assert.isFunction('callback', callback);
-        if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
+        if (this._blockAndLogStreamIntervalIfExists !== undefined) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
         this._startBlockAndLogStream(callback);
     }
     public unsubscribe(): void {
-        if (_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
+        if (this._blockAndLogStreamIntervalIfExists === undefined) {
             throw new Error(OrderWatcherError.SubscriptionNotFound);
         }
         this._stopBlockAndLogStream();
     }
     private _startBlockAndLogStream(callback: EventWatcherCallback): void {
-        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists !== undefined) {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
@@ -106,7 +105,7 @@ export class EventWatcher {
         return logs as RawLogEntry[];
     }
     private _stopBlockAndLogStream(): void {
-        if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists === undefined) {
             throw new Error(OrderWatcherError.SubscriptionNotFound);
         }
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
@@ -125,11 +124,11 @@ export class EventWatcher {
     }
     private async _reconcileBlockAsync(): Promise<void> {
         const latestBlockOrNull = await this._blockstreamGetLatestBlockOrNullAsync();
-        if (_.isNull(latestBlockOrNull)) {
+        if (latestBlockOrNull === null) {
             return; // noop
         }
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
-        if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
+        if (this._blockAndLogStreamerIfExists !== undefined) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
             await this._blockAndLogStreamerIfExists.reconcileNewBlock(latestBlockOrNull);
         }
@@ -143,7 +142,7 @@ export class EventWatcher {
             removed: logEventState === LogEventState.Removed,
             ...log,
         };
-        if (!_.isUndefined(this._blockAndLogStreamIntervalIfExists)) {
+        if (this._blockAndLogStreamIntervalIfExists !== undefined) {
             callback(null, logEvent);
         }
     }

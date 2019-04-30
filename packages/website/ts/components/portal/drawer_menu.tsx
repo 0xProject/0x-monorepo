@@ -45,7 +45,7 @@ export const DrawerMenu = (props: DrawerMenuProps) => {
     };
     const menuItemEntries = _.concat(relayerItemEntry, defaultMenuItemEntries);
     const accountState = utils.getAccountState(
-        props.blockchainIsLoaded && !_.isUndefined(props.blockchain),
+        props.blockchainIsLoaded && props.blockchain !== undefined,
         props.providerType,
         props.injectedProviderName,
         props.userAddress,

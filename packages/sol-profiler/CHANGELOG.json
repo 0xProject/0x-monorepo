@@ -1,5 +1,83 @@
 [
     {
+        "version": "3.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "3.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "3.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Bug fixes related to stack parameters parsing",
+                "pr": 1663
+            }
+        ],
+        "timestamp": 1551479279
+    },
+    {
+        "timestamp": 1551299797,
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add support for Ganache",
+                "pr": 1647
+            }
+        ],
+        "timestamp": 1551220833
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Big @0x/sol-profiler overhaul. It now has a bunch of new features",
+                "pr": 1638
+            },
+            {
+                "note": "Added a CLI interface for reporting non line-based profiling info",
+                "pr": 1638
+            },
+            {
+                "note": "Add memory consumption analysis",
+                "pr": 1638
+            },
+            {
+                "note": "Add calldata analysis",
+                "pr": 1638
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
         "timestamp": 1549733923,
         "version": "2.0.4",
         "changes": [

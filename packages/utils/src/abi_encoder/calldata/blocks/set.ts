@@ -14,7 +14,7 @@ export class SetCalldataBlock extends CalldataBlock {
 
     public getRawData(): Buffer {
         const rawDataComponents: Buffer[] = [];
-        if (!_.isUndefined(this._header)) {
+        if (this._header !== undefined) {
             rawDataComponents.push(this._header);
         }
         _.each(this._members, (member: CalldataBlock) => {
@@ -35,7 +35,7 @@ export class SetCalldataBlock extends CalldataBlock {
     }
 
     public toBuffer(): Buffer {
-        if (!_.isUndefined(this._header)) {
+        if (this._header !== undefined) {
             return this._header;
         }
         return new Buffer('');

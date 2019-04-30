@@ -114,7 +114,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         // check if there is only one different token, and if that token is a member of the current tracked tokens
         // this means that the token was added, not removed
         if (
-            !_.isUndefined(firstDifferentTrackedToken) &&
+            firstDifferentTrackedToken !== undefined &&
             _.size(differentTrackedTokens) === 1 &&
             _.includes(currentTrackedTokens, firstDifferentTrackedToken)
         ) {
@@ -293,7 +293,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             constants.ETHER_SYMBOL,
-            _.isUndefined(this.props.userEtherBalanceInWei),
+            this.props.userEtherBalanceInWei === undefined,
         );
         const etherToken = this._getEthToken();
         const etherTokenState = this.props.trackedTokenStateByAddress[etherToken.address];
@@ -302,7 +302,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
             this.props.userEtherBalanceInWei || new BigNumber(0),
             constants.DECIMAL_PLACES_ETH,
             etherPrice,
-            _.isUndefined(this.props.userEtherBalanceInWei) || !etherTokenState.isLoaded,
+            this.props.userEtherBalanceInWei === undefined || !etherTokenState.isLoaded,
         );
         const accessoryItemConfig = {
             wrappedEtherDirection: Side.Deposit,
@@ -321,7 +321,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
     }
     private _renderTokenRow(token: Token): React.ReactNode {
         const tokenState = this.props.trackedTokenStateByAddress[token.address];
-        if (_.isUndefined(tokenState)) {
+        if (tokenState === undefined) {
             return null;
         }
         const tokenLink = sharedUtils.getEtherScanLinkIfExists(
@@ -358,9 +358,9 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         className?: string,
     ): React.ReactNode {
         const shouldShowWrapEtherItem =
-            !_.isUndefined(this.state.wrappedEtherDirection) &&
+            this.state.wrappedEtherDirection !== undefined &&
             this.state.wrappedEtherDirection === accessoryItemConfig.wrappedEtherDirection &&
-            !_.isUndefined(this.props.userEtherBalanceInWei);
+            this.props.userEtherBalanceInWei !== undefined;
         const etherToken = this._getEthToken();
         const wrapEtherItem = shouldShowWrapEtherItem ? (
             <WrapEtherItem
@@ -395,8 +395,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         );
     }
     private _renderAccessoryItems(config: AccessoryItemConfig): React.ReactElement<{}> {
-        const shouldShowWrappedEtherAction = !_.isUndefined(config.wrappedEtherDirection);
-        const shouldShowToggle = !_.isUndefined(config.allowanceStateToggleConfig);
+        const shouldShowWrappedEtherAction = config.wrappedEtherDirection !== undefined;
+        const shouldShowToggle = config.allowanceStateToggleConfig !== undefined;
         // if we don't have a toggle, we still want some space to the right of the "wrap" button so that it aligns with
         // the "unwrap" button in the row below
         const isWrapEtherRow = shouldShowWrappedEtherAction && config.wrappedEtherDirection === Side.Deposit;
@@ -452,7 +452,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         isLoading: boolean = false,
     ): React.ReactNode {
         const result = !isLoading
-            ? _.isUndefined(price)
+            ? price === undefined
                 ? '--'
                 : utils.getUsdValueFormattedAmount(amount, decimals, price)
             : '$0.00';
@@ -512,7 +512,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         return utils.getEthToken(this.props.tokenByAddress);
     }
     private _isBlockchainReady(): boolean {
-        return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
+        return this.props.blockchainIsLoaded && this.props.blockchain !== undefined;
     }
     private _getAccountState(): AccountState {
         return utils.getAccountState(

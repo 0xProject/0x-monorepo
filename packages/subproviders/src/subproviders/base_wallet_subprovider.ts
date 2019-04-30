@@ -9,13 +9,13 @@ import { Subprovider } from './subprovider';
 
 export abstract class BaseWalletSubprovider extends Subprovider {
     protected static _validateTxParams(txParams: PartialTxParams): void {
-        if (!_.isUndefined(txParams.to)) {
+        if (txParams.to !== undefined) {
             assert.isETHAddressHex('to', txParams.to);
         }
         assert.isHexString('nonce', txParams.nonce);
     }
     private static _validateSender(sender: string): void {
-        if (_.isUndefined(sender) || !addressUtils.isAddress(sender)) {
+        if (sender === undefined || !addressUtils.isAddress(sender)) {
             throw new Error(WalletSubproviderErrors.SenderInvalidOrNotSupplied);
         }
     }
@@ -122,7 +122,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
     }
     private async _populateMissingTxParamsAsync(partialTxParams: PartialTxParams): Promise<PartialTxParams> {
         let txParams = partialTxParams;
-        if (_.isUndefined(partialTxParams.gasPrice)) {
+        if (partialTxParams.gasPrice === undefined) {
             const gasPriceResult = await this.emitPayloadAsync({
                 method: 'eth_gasPrice',
                 params: [],
@@ -130,7 +130,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
             const gasPrice = gasPriceResult.result.toString();
             txParams = { ...txParams, gasPrice };
         }
-        if (_.isUndefined(partialTxParams.nonce)) {
+        if (partialTxParams.nonce === undefined) {
             const nonceResult = await this.emitPayloadAsync({
                 method: 'eth_getTransactionCount',
                 params: [partialTxParams.from, 'pending'],
@@ -138,7 +138,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
             const nonce = nonceResult.result;
             txParams = { ...txParams, nonce };
         }
-        if (_.isUndefined(partialTxParams.gas)) {
+        if (partialTxParams.gas === undefined) {
             const gasResult = await this.emitPayloadAsync({
                 method: 'eth_estimateGas',
                 params: [partialTxParams],

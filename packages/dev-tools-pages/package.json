@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-tools-pages",
-    "version": "0.0.19",
+    "version": "0.0.25",
     "engines": {
         "node": ">=6.12"
     },
@@ -12,6 +12,7 @@
         "build:dev": "../../node_modules/.bin/webpack --mode development",
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
+        "fix": "tslint --fix --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "dev": "webpack-dev-server --mode development --content-base public",
         "deploy:all": "npm run build; npm run deploy:compiler; npm run deploy:compiler:index; npm run deploy:coverage; npm run deploy:coverage:index; npm run deploy:profiler; npm run deploy:profiler:index; npm run deploy:trace; npm run deploy:trace:index;",
         "deploy:compiler": "DIR_NAME=./public/. BUCKET=s3://sol-compiler.com yarn s3:sync --exclude 'bundle-cov*' --exclude 'bundle-trace*' --exclude 'bundle-profiler*'",
@@ -26,7 +27,7 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/react-shared": "^2.0.4",
+        "@0x/react-shared": "^2.0.10",
         "basscss": "^8.0.3",
         "bowser": "^1.9.4",
         "highlight.js": "^9.13.1",

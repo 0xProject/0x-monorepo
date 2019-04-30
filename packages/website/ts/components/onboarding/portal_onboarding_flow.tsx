@@ -256,7 +256,7 @@ class PlainPortalOnboardingFlow extends React.Component<PortalOnboardingFlowProp
             return null;
         }
         const tokenStateIfExists = this.props.trackedTokenStateByAddress[token.address];
-        if (_.isUndefined(tokenStateIfExists)) {
+        if (tokenStateIfExists === undefined) {
             return null;
         }
         return (

@@ -1,20 +1,23 @@
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { SelectedERC20AssetAmountInput } from '../containers/selected_erc20_asset_amount_input';
 import { ColorOption } from '../style/theme';
-import { AsyncProcessState, ERC20Asset, OrderProcessState, OrderState } from '../types';
+import { Asset, AsyncProcessState, ERC20Asset, ERC721Asset, OrderProcessState, OrderState } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Icon } from './ui/icon';
+import { Image } from './ui/image';
 import { Spinner } from './ui/spinner';
 import { Text } from './ui/text';
 
 export interface InstantHeadingProps {
+    selectedAsset?: Asset;
     selectedAssetUnitAmount?: BigNumber;
     totalEthBaseUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
@@ -30,6 +33,53 @@ const ICON_COLOR = ColorOption.white;
 
 export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
+        return this._renderAssetHeadingContent();
+    }
+
+    private _renderAssetHeadingContent(): React.ReactNode {
+        const { selectedAsset } = this.props;
+        if (selectedAsset === undefined) {
+            // TODO: Only the ERC20 flow supports selecting assets.
+            return this._renderERC20AssetHeading();
+        }
+        if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+            return this._renderERC20AssetHeading();
+        } else if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC721) {
+            return this._renderERC721AssetHeading(selectedAsset as ERC721Asset);
+        }
+        return null;
+    }
+    // tslint:disable-next-line:prefer-function-over-method
+    private _renderERC721AssetHeading(asset: ERC721Asset): React.ReactNode {
+        return (
+            <Container width="100%" padding="30px 0px 0px">
+                <Flex>
+                    <Text
+                        textTransform="uppercase"
+                        fontColor={ColorOption.primaryColor}
+                        fontWeight={700}
+                        fontSize="20px"
+                    >
+                        {asset.metaData.name}
+                    </Text>
+                </Flex>
+                <Flex>
+                    <Container
+                        marginTop="15px"
+                        width="200px"
+                        height="200px"
+                        position="relative"
+                        overflow="hidden"
+                        borderRadius="50%"
+                    >
+                        <Image src={asset.metaData.imageUrl} height="100%" objectFit="cover" />
+                    </Container>
+                </Flex>
+            </Container>
+        );
+    }
+
+    private _renderERC20AssetHeading(): React.ReactNode {
         const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
             <Container backgroundColor={ColorOption.primaryColor} width="100%" padding="20px">
@@ -62,7 +112,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
 
     private _renderAmountsSection(): React.ReactNode {
         if (
-            _.isUndefined(this.props.totalEthBaseUnitAmount) &&
+            this.props.totalEthBaseUnitAmount === undefined &&
             this.props.quoteRequestState !== AsyncProcessState.Pending
         ) {
             return null;
@@ -106,7 +156,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
         if (this.props.quoteRequestState === AsyncProcessState.Pending) {
             return <AmountPlaceholder isPulsating={true} color={PLACEHOLDER_COLOR} />;
         }
-        if (_.isUndefined(this.props.selectedAssetUnitAmount)) {
+        if (this.props.selectedAssetUnitAmount === undefined) {
             return <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />;
         }
         return amountFunction();

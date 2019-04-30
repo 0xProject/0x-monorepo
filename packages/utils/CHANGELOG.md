@@ -5,6 +5,31 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.3.0 - _March 21, 2019_
+
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v4.2.3 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v4.2.2 - _March 1, 2019_
+
+    * Fix issue where process is not defined in browser context (#1660)
+
+## v4.2.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v4.2.0 - _February 25, 2019_
+
+    * Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface (#1627)
+    * Add `logUtils.table` and `logUtils.header` (#1638)
+
 ## v4.1.0 - _February 9, 2019_
 
     * Added method decoding to AbiDecoder (#1569)

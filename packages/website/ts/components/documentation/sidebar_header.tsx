@@ -34,19 +34,17 @@ export const SidebarHeader: React.StatelessComponent<SidebarHeaderProps> = ({
                         {title}
                     </Text>
                 </Container>
-                {!_.isUndefined(docsVersion) &&
-                    !_.isUndefined(availableDocVersions) &&
-                    !_.isUndefined(onVersionSelected) && (
-                        <div className="col col-4 pl1" style={{ alignSelf: 'flex-end', paddingBottom: 4 }}>
-                            <Container className="right">
-                                <VersionDropDown
-                                    selectedVersion={docsVersion}
-                                    versions={availableDocVersions}
-                                    onVersionSelected={onVersionSelected}
-                                />
-                            </Container>
-                        </div>
-                    )}
+                {docsVersion !== undefined && availableDocVersions !== undefined && onVersionSelected !== undefined && (
+                    <div className="col col-4 pl1" style={{ alignSelf: 'flex-end', paddingBottom: 4 }}>
+                        <Container className="right">
+                            <VersionDropDown
+                                selectedVersion={docsVersion}
+                                versions={availableDocVersions}
+                                onVersionSelected={onVersionSelected}
+                            />
+                        </Container>
+                    </div>
+                )}
             </Container>
             <Container
                 width={'100%'}

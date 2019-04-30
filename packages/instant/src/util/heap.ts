@@ -29,7 +29,7 @@ const getWindow = (): ModifiedWindow => {
 };
 
 const setupZeroExInstantHeap = () => {
-    if (_.isUndefined(HEAP_ANALYTICS_ID)) {
+    if (HEAP_ANALYTICS_ID === undefined) {
         return;
     }
 
@@ -94,7 +94,7 @@ export const heapUtil = {
         return setupZeroExInstantHeap();
     },
     evaluateHeapCall: (heapFunctionCall: (heap: HeapAnalytics) => void): void => {
-        if (_.isUndefined(HEAP_ANALYTICS_ID)) {
+        if (HEAP_ANALYTICS_ID === undefined) {
             return;
         }
 

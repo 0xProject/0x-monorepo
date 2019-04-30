@@ -1,11 +1,35 @@
 [
     {
+        "version": "2.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Add addresses for coordinator extension contract and coordinator registry",
+                "pr": 1689
+            },
+            {
+                "note": "Added Dutch Auction mainnet address",
+                "pr": 1715
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
         "version": "2.2.2",
         "changes": [
             {
                 "note": "Fixed Ganache addresses for OrderValidator & Forwarder"
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549373905,

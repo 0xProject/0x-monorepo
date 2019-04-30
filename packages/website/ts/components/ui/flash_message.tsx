@@ -20,7 +20,7 @@ export class FlashMessage extends React.Component<FlashMessageProps, FlashMessag
         bodyStyle: {},
     };
     public render(): React.ReactNode {
-        if (!_.isUndefined(this.props.flashMessage)) {
+        if (this.props.flashMessage !== undefined) {
             return (
                 <Snackbar
                     open={true}

@@ -1,10 +1,15 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
-    "useDockerisedSolc": true,
+    "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {
-        "optimizer": { "enabled": true, "runs": 1000000 },
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
         "outputSelection": {
             "*": {
                 "*": [
@@ -18,11 +23,7 @@
         }
     },
     "contracts": [
-        "@0x/contracts-asset-proxy/contracts/src/ERC20Proxy.sol",
-        "@0x/contracts-asset-proxy/contracts/src/ERC721Proxy.sol",
         "@0x/contracts-erc20/contracts/src/WETH9.sol",
-        "@0x/contracts-erc20/contracts/test/DummyERC20Token.sol",
-        "@0x/contracts-erc721/contracts/test/DummyERC721Token.sol",
         "@0x/contracts-exchange/contracts/examples/ExchangeWrapper.sol",
         "@0x/contracts-exchange/contracts/src/Exchange.sol",
         "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",

@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.3;
+pragma solidity ^0.5.5;
 
 import "./LibBytes.sol";
 
@@ -27,10 +27,12 @@ library LibAddressArray {
     ///      The `addressArray` may need to be reallocated to make space
     ///      for the new address. Because of this we return the resulting
     ///      memory location of `addressArray`.
+    /// @param addressArray Array of addresses.
     /// @param addressToAppend  Address to append.
     /// @return Array of addresses: [... addressArray, addressToAppend]
-    function append(address[] memory addressArray, address addressToAppend) 
-        internal pure
+    function append(address[] memory addressArray, address addressToAppend)
+        internal
+        pure
         returns (address[] memory)
     {
         // Get stats on address array and free memory
@@ -80,5 +82,78 @@ library LibAddressArray {
         }
         addressArray[addressArrayLength - 1] = addressToAppend;
         return addressArray;
+    }
+
+    /// @dev Checks if an address array contains the target address.
+    /// @param addressArray Array of addresses.
+    /// @param target Address to search for in array.
+    /// @return True if the addressArray contains the target.
+    function contains(address[] memory addressArray, address target)
+        internal
+        pure
+        returns (bool success)
+    {
+        assembly {
+
+            // Calculate byte length of array
+            let arrayByteLen := mul(mload(addressArray), 32)
+            // Calculate beginning of array contents
+            let arrayContentsStart := add(addressArray, 32)
+            // Calclulate end of array contents
+            let arrayContentsEnd := add(arrayContentsStart, arrayByteLen)
+
+            // Loop through array
+            for {let i:= arrayContentsStart} lt(i, arrayContentsEnd) {i := add(i, 32)} {
+
+                // Load array element
+                let arrayElement := mload(i)
+
+                // Return true if array element equals target
+                if eq(target, arrayElement) {
+                    // Set success to true
+                    success := 1
+                    // Break loop
+                    i := arrayContentsEnd
+                }
+            }
+        }
+        return success;
+    }
+
+    /// @dev Finds the index of an address within an array.
+    /// @param addressArray Array of addresses.
+    /// @param target Address to search for in array.
+    /// @return Existence and index of the target in the array.
+    function indexOf(address[] memory addressArray, address target)
+        internal
+        pure
+        returns (bool success, uint256 index)
+    {
+        assembly {
+
+            // Calculate byte length of array
+            let arrayByteLen := mul(mload(addressArray), 32)
+            // Calculate beginning of array contents
+            let arrayContentsStart := add(addressArray, 32)
+            // Calclulate end of array contents
+            let arrayContentsEnd := add(arrayContentsStart, arrayByteLen)
+
+            // Loop through array
+            for {let i:= arrayContentsStart} lt(i, arrayContentsEnd) {i := add(i, 32)} {
+
+                // Load array element
+                let arrayElement := mload(i)
+
+                // Return true if array element equals target
+                if eq(target, arrayElement) {
+                    // Set success and index
+                    success := 1
+                    index := div(sub(i, arrayContentsStart), 32)
+                    // Break loop
+                    i := arrayContentsEnd
+                }
+            }
+        }
+        return (success, index);
     }
 }

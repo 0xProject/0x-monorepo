@@ -1,6 +1,6 @@
 {
     "name": "@0x/types",
-    "version": "2.0.2",
+    "version": "2.2.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -23,7 +23,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/types/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^3.0.0",
+        "@0x/tslint-config": "^3.0.1",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
@@ -32,7 +32,7 @@
     "dependencies": {
         "@types/node": "*",
         "bignumber.js": "~8.0.2",
-        "ethereum-types": "^2.0.0"
+        "ethereum-types": "^2.1.2"
     },
     "publishConfig": {
         "access": "public"

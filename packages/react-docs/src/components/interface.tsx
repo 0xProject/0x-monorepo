@@ -24,7 +24,7 @@ export const Interface: React.SFC<InterfaceProps> = (props: InterfaceProps): any
         return (
             <span key={`property-${property.name}-${property.type}-${type.name}-${i}`}>
                 {property.name}:{' '}
-                {property.type && !_.isUndefined(property.type.method) ? (
+                {property.type && property.type.method !== undefined ? (
                     <Signature
                         name={property.type.method.name}
                         returnType={property.type.method.returnType}
@@ -50,7 +50,7 @@ export const Interface: React.SFC<InterfaceProps> = (props: InterfaceProps): any
             </span>
         );
     });
-    const hasIndexSignature = !_.isUndefined(type.indexSignature);
+    const hasIndexSignature = type.indexSignature !== undefined;
     if (hasIndexSignature) {
         const is = type.indexSignature;
         const param = (

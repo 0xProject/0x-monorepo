@@ -1,12 +1,69 @@
 [
     {
+        "version": "3.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "3.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "3.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "3.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Remove redundant log message",
+                "pr": 1652
+            }
+        ],
+        "timestamp": 1551299797
+    },
+    {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Fix a bug when combining compilerSettings from different sources",
+                "pr": 1652
+            }
+        ],
+        "timestamp": 1551220833
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {
                 "note": "Add `isOfflineMode` flag to sol-compiler`",
                 "pr": 1625
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,

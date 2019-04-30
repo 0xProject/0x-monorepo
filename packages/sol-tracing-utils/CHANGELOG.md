@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.10 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v6.0.9 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v6.0.8 - _March 20, 2019_
+
+    * Update solidity-parser-antlr to 0.4.2 (#1719)
+
+## v6.0.7 - _March 1, 2019_
+
+    * Fix a bug when `TruffleArtifactAdapter` wasn't correctly parsing solc config in pre-5.0 versions of Truffle (#1663)
+    * Fix a bug when `opCodes` gas costs were incorrect or `NaN` (#1663)
+
+## v6.0.6 - _February 27, 2019_
+
+    * Fix a bug when `TruffleArtifactAdapter` wasn't parsing solc config in the newest version of trufle (#1654)
+
+## v6.0.5 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v6.0.4 - _February 25, 2019_
+
+    * Dependencies updated
+
 ## v6.0.3 - _February 9, 2019_
 
     * Dependencies updated

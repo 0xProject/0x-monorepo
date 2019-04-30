@@ -44,7 +44,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
         const method = this.props.method;
 
         const isFallback = (method as SolidityMethod).isFallback;
-        const hasExclusivelyNamedParams = !_.isUndefined(_.find(method.parameters, p => !_.isEmpty(p.name)));
+        const hasExclusivelyNamedParams = _.find(method.parameters, p => !_.isEmpty(p.name)) !== undefined;
         return (
             <div
                 id={`${this.props.sectionName}-${method.name}`}

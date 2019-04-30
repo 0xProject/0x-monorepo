@@ -241,6 +241,96 @@ export enum Environments {
 
 export type ContractInstance = any; // TODO: add type definition for Contract
 
+export interface ExploreProjectInstantMetadata {
+    orderSource: string;
+    availableAssetDatas?: string[];
+}
+
+export interface ExploreProject {
+    name: string;
+    label: string;
+    description: string;
+    logo_url: string;
+    theme_color: string;
+    url: string;
+    keywords: string[];
+    instant?: ExploreProjectInstantMetadata;
+    onInstantClick?(): void;
+    onAnalytics?(action: ExploreAnalyticAction): void;
+}
+
+export enum ExploreAnalyticAction {
+    InstantClick = 'INSTANT_CLICK',
+    LinkClick = 'LINK_CLICK',
+    FilterClick = 'FILTER_CLICK',
+    QuerySearched = 'QUERY_SEARCHED',
+}
+
+export enum ExploreTilesOrdering {
+    Alphabetical = 'ALPHABETICAL',
+    RecentlyAdded = 'RECENTLY_ADDED',
+    Popular = 'POPULAR',
+}
+
+export enum ExploreTilesOrderingType {
+    HardCodedByName = 'HARDCODED_BY_NAME',
+    // for other ordering logics in the future
+    DynamicBySortFunction = 'DYNAMIC_BY_SORT',
+}
+
+export interface ExploreTilesOrderingMetadata {
+    label: string;
+    ordering: ExploreTilesOrdering;
+    type: ExploreTilesOrderingType;
+    hardCoded?: string[];
+    sort?(tiles: ExploreTile[]): ExploreTile[];
+}
+
+export enum ExploreTilesModifiers {
+    Filter = 'FILTER',
+    Search = 'SEARCH',
+    Editorial = 'EDITORIAL',
+    Ordering = 'ORDERING',
+}
+
+export enum ExploreFilterType {
+    All = 'ALL',
+    Keyword = 'Keyword',
+}
+
+export interface ExploreFilterMetadata {
+    label: string;
+    filterType: ExploreFilterType;
+    name: string;
+    active?: boolean;
+}
+
+export enum ExploreTileVisibility {
+    Hidden = 'HIDDEN',
+    Visible = 'VISIBLE',
+}
+
+export enum ExploreTileWidth {
+    OneThird = 'ONE_THIRD',
+    FullWidth = 'FULL_WIDTH',
+    Half = 'HALF',
+    TwoThirds = 'TWO_THIRDS',
+}
+
+export enum ExploreTileGridWidth {
+    ThreeColumn = 6,
+    TwoColumn = 4,
+    OneColumn = 2,
+}
+
+export interface ExploreTile {
+    name: string;
+    visibility: ExploreTileVisibility;
+    width?: ExploreTileWidth;
+    exploreProject?: ExploreProject;
+    component?: React.ReactNode;
+}
+
 export interface FAQQuestion {
     prompt: string;
     answer: React.ReactNode;
@@ -386,6 +476,8 @@ export enum WebsitePaths {
     Careers = '/careers',
     Credits = '/credits',
     Vote = '/vote',
+    Extensions = '/extensions',
+    Explore = '/explore',
 }
 
 export enum DocPackages {

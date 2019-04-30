@@ -8,10 +8,10 @@ In order to use `RevertTraceSubprovider` with your favorite framework you need t
 
 ### Sol-compiler
 
-If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
+If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactAdapter` we've implemented for you.
 
 ```typescript
-import { SolCompilerArtifactsAdapter } from '@0x/sol-trace';
+import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
 // Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
 const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);
 ```

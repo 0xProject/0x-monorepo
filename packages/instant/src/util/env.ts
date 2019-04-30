@@ -51,9 +51,9 @@ export const envUtil = {
             return ProviderType.Parity;
         } else if (anyProvider.isMetaMask) {
             return ProviderType.MetaMask;
-        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+        } else if (_.get(window, 'SOFA') !== undefined) {
             return ProviderType.CoinbaseWallet;
-        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+        } else if (_.get(window, '__CIPHER__') !== undefined) {
             return ProviderType.Cipher;
         } else if (envUtil.getBrowser() === Browser.Opera && !anyProvider.isMetaMask) {
             return ProviderType.Opera;
@@ -62,14 +62,14 @@ export const envUtil = {
     },
     getProviderName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);
-        if (_.isUndefined(providerTypeIfExists)) {
+        if (providerTypeIfExists === undefined) {
             return provider.constructor.name;
         }
         return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
     },
     getProviderDisplayName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);
-        if (_.isUndefined(providerTypeIfExists)) {
+        if (providerTypeIfExists === undefined) {
             return 'Wallet';
         }
         return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];

@@ -1,8 +1,11 @@
+import * as _ from 'lodash';
 import * as React from 'react';
-import { Footer } from 'ts/components/old_footer';
-import { TopBar } from 'ts/components/top_bar/top_bar';
+
+import { DocumentTitle } from 'ts/components/document_title';
+import { SiteWrap } from 'ts/components/siteWrap';
 import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 
 export interface NotFoundProps {
@@ -11,15 +14,17 @@ export interface NotFoundProps {
     dispatcher: Dispatcher;
 }
 
-export const NotFound = (props: NotFoundProps) => {
-    return (
-        <div>
-            <TopBar blockchainIsLoaded={false} location={props.location} translate={props.translate} />
-            <FullscreenMessage
-                headerText={'404 Not Found'}
-                bodyText={"Hm... looks like we couldn't find what you are looking for."}
-            />
-            <Footer translate={props.translate} dispatcher={props.dispatcher} />
-        </div>
-    );
-};
+export class NotFound extends React.Component<NotFoundProps> {
+    public render(): React.ReactNode {
+        return (
+            <SiteWrap isFullScreen={true}>
+                <DocumentTitle {...documentConstants.LANDING} />
+
+                <FullscreenMessage
+                    headerText={'404'}
+                    bodyText={"Hm... looks like we couldn't find what you are looking for."}
+                />
+            </SiteWrap>
+        );
+    }
+}

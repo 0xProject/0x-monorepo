@@ -7,10 +7,10 @@ import { LandingAnimation } from 'ts/components/heroImage';
 import { HeroAnimation } from 'ts/components/heroAnimation';
 import { WebsitePaths } from 'ts/types';
 
-const announcement = {
-    headline: 'Vote on ZEIP-23 MultiAssetProxy',
-    href: '/vote',
-};
+// const announcement = {
+//     headline: 'Vote on ZEIP-23 MultiAssetProxy',
+//     href: '/vote',
+// };
 
 export const SectionLandingHero = () => (
     <Hero
@@ -20,7 +20,6 @@ export const SectionLandingHero = () => (
         description="0x is an open protocol that enables the peer-to-peer exchange of assets on the Ethereum blockchain."
         figure={<LandingAnimation image={<HeroAnimation />} />}
         actions={<HeroActions />}
-        announcement={announcement}
     />
 );
 

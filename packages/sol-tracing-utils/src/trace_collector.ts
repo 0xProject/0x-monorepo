@@ -15,9 +15,9 @@ import {
     Coverage,
     SourceRange,
     Subtrace,
-    TraceInfo,
-    TraceInfoExistingContract,
-    TraceInfoNewContract,
+    SubTraceInfo,
+    SubTraceInfoExistingContract,
+    SubTraceInfoNewContract,
 } from './types';
 import { utils } from './utils';
 
@@ -62,32 +62,43 @@ export class TraceCollector {
         await mkdirpAsync('coverage');
         fs.writeFileSync('coverage/coverage.json', stringifiedCoverage);
     }
-    public async computeSingleTraceCoverageAsync(traceInfo: TraceInfo): Promise<void> {
-        if (_.isUndefined(this._contractsData)) {
+    public async getContractDataByTraceInfoIfExistsAsync(
+        address: string,
+        bytecode: string,
+        isContractCreation: boolean,
+    ): Promise<ContractData | undefined> {
+        if (this._contractsData === undefined) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
-        const isContractCreation = traceInfo.address === constants.NEW_CONTRACT;
-        const bytecode = isContractCreation
-            ? (traceInfo as TraceInfoNewContract).bytecode
-            : (traceInfo as TraceInfoExistingContract).runtimeBytecode;
         const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
-        if (_.isUndefined(contractData)) {
-            const shortenHex = (hex: string) => {
-                /**
-                 * Length chooses so that both error messages are of the same length
-                 * and it's enough data to figure out which artifact has a problem.
-                 */
-                const length = 18;
-                return `${hex.substr(0, length + 2)}...${hex.substr(hex.length - length, length)}`;
-            };
+        if (contractData === undefined) {
+            /**
+             * Length chooses so that both error messages are of the same length
+             * and it's enough data to figure out which artifact has a problem.
+             */
+            const HEX_LENGTH = 16;
             const errMsg = isContractCreation
                 ? `Unable to find matching bytecode for contract creation ${chalk.bold(
-                      shortenHex(bytecode),
+                      utils.shortenHex(bytecode, HEX_LENGTH),
                   )}, please check your artifacts. Ignoring...`
                 : `Unable to find matching bytecode for contract address ${chalk.bold(
-                      traceInfo.address,
+                      address,
                   )}, please check your artifacts. Ignoring...`;
             this._logger.warn(errMsg);
+        }
+        return contractData;
+    }
+    public async computeSingleTraceCoverageAsync(subTraceInfo: SubTraceInfo): Promise<void> {
+        const isContractCreation = subTraceInfo.address === constants.NEW_CONTRACT;
+        const bytecode = isContractCreation
+            ? (subTraceInfo as SubTraceInfoNewContract).bytecode
+            : (subTraceInfo as SubTraceInfoExistingContract).runtimeBytecode;
+        const contractData = await this.getContractDataByTraceInfoIfExistsAsync(
+            subTraceInfo.address,
+            bytecode,
+            isContractCreation,
+        );
+        if (contractData === undefined) {
             return;
         }
         const bytecodeHex = stripHexPrefix(bytecode);
@@ -96,7 +107,7 @@ export class TraceCollector {
         _.map(contractData.sources, (_sourcePath: string, fileIndex: string) => {
             const singleFileCoverageForTrace = this._singleFileSubtraceHandler(
                 contractData,
-                traceInfo.subtrace,
+                subTraceInfo.subtrace,
                 pcToSourceRange,
                 _.parseInt(fileIndex),
             );

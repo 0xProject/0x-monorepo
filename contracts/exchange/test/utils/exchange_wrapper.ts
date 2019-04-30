@@ -1,3 +1,6 @@
+import { artifacts as erc1155Artifacts } from '@0x/contracts-erc1155';
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
+import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import {
     FillResults,
     formatters,
@@ -23,7 +26,12 @@ export class ExchangeWrapper {
     constructor(exchangeContract: ExchangeContract, provider: Web3ProviderEngine | ZeroExProvider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, {
+            ...artifacts,
+            ...erc20Artifacts,
+            ...erc721Artifacts,
+            ...erc1155Artifacts,
+        });
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,

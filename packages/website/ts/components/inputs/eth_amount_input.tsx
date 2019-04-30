@@ -54,12 +54,11 @@ export class EthAmountInput extends React.Component<EthAmountInputProps, EthAmou
         );
     }
     private _onChange(isValid: boolean, amount?: BigNumber): void {
-        const baseUnitAmountIfExists = _.isUndefined(amount)
-            ? undefined
-            : Web3Wrapper.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
+        const baseUnitAmountIfExists =
+            amount === undefined ? undefined : Web3Wrapper.toBaseUnitAmount(amount, constants.DECIMAL_PLACES_ETH);
         this.props.onChange(isValid, baseUnitAmountIfExists);
     }
     private _getLabelStyle(): React.CSSProperties {
-        return this.props.labelStyle || { paddingTop: _.isUndefined(this.props.label) ? 15 : 40 };
+        return this.props.labelStyle || { paddingTop: this.props.label === undefined ? 15 : 40 };
     }
 }

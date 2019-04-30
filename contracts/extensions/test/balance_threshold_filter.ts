@@ -1,4 +1,4 @@
-import { ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
@@ -24,7 +24,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 
-import { artifacts, BalanceThresholdFilterContract, BalanceThresholdWrapper, ExchangeContract } from '../src';
+import { artifacts, BalanceThresholdFilterContract, BalanceThresholdWrapper } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

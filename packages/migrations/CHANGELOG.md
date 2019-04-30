@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.1.0 - _March 21, 2019_
+
+    * Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script (#1689)
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v4.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v4.0.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 25, 2019_
+
+    * Replace Provider param interface with Web3ProviderEngine (#1627)
+
 ## v3.0.4 - _February 9, 2019_
 
     * Dependencies updated

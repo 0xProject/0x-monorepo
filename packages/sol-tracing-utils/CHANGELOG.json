@@ -1,5 +1,75 @@
 [
     {
+        "version": "6.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "6.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.8",
+        "changes": [
+            {
+                "note": "Update solidity-parser-antlr to 0.4.2",
+                "pr": 1719
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "version": "6.0.7",
+        "changes": [
+            {
+                "note": "Fix a bug when `TruffleArtifactAdapter` wasn't correctly parsing solc config in pre-5.0 versions of Truffle",
+                "pr": 1663
+            },
+            {
+                "note": "Fix a bug when `opCodes` gas costs were incorrect or `NaN`",
+                "pr": 1663
+            }
+        ],
+        "timestamp": 1551479279
+    },
+    {
+        "version": "6.0.6",
+        "changes": [
+            {
+                "note": "Fix a bug when `TruffleArtifactAdapter` wasn't parsing solc config in the newest version of trufle",
+                "pr": 1654
+            }
+        ],
+        "timestamp": 1551299797
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "6.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551130135,
+        "version": "6.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1549733923,
         "version": "6.0.3",
         "changes": [

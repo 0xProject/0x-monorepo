@@ -1,5 +1,81 @@
 [
     {
+        "version": "4.0.7",
+        "changes": [
+            {
+                "note": "Fix race-condition bug due to async callback modifying shared state",
+                "pr": 1789
+            }
+        ]
+    },
+    {
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Update websocket from ^1.0.25 to ^1.0.26",
+                "pr": 1685
+            },
+            {
+                "note": "Fix issue where ERC721 Approval events could cause a lookup on undefined object",
+                "pr": 1692
+            },
+            {
+                "note": "Fix race-condition bugs due to async event callbacks modifying shared state",
+                "pr": 1718
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551299797,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
@@ -10,7 +86,8 @@
                 "note": "Update provider params to type SupportedProvider which outlines all supported providers",
                 "pr": 1627
             }
-        ]
+        ],
+        "timestamp": 1551130135
     },
     {
         "timestamp": 1549733923,
