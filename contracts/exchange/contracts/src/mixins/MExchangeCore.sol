@@ -55,7 +55,7 @@ contract MExchangeCore is
     // CancelUpTo event is emitted whenever `cancelOrdersUpTo` is executed succesfully.
     event CancelUpTo(
         address indexed makerAddress,         // Orders cancelled must have been created by this address.
-        address indexed senderAddress,        // Orders cancelled must have a `senderAddress` equal to this address.
+        address indexed orderSenderAddress,   // Orders cancelled must have a `senderAddress` equal to this address.
         uint256 orderEpoch                    // Orders with specified makerAddress and senderAddress with a salt less than this value are considered cancelled.
     );
 
@@ -64,7 +64,7 @@ contract MExchangeCore is
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
-    function fillOrderInternal(
+    function _fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
@@ -74,7 +74,7 @@ contract MExchangeCore is
 
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
-    function cancelOrderInternal(LibOrder.Order memory order)
+    function _cancelOrder(LibOrder.Order memory order)
         internal;
 
     /// @dev Updates state with results of a fill order.
@@ -82,7 +82,7 @@ contract MExchangeCore is
     /// @param takerAddress Address of taker who filled the order.
     /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function updateFilledState(
+    function _updateFilledState(
         LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
@@ -96,7 +96,7 @@ contract MExchangeCore is
     ///      Otherwise, updating state would have no effect.
     /// @param order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    function updateCancelledState(
+    function _updateCancelledState(
         LibOrder.Order memory order,
         bytes32 orderHash
     )
@@ -107,7 +107,7 @@ contract MExchangeCore is
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     /// @param takerAddress Address of order taker.
     /// @param signature Proof that the orders was created by its maker.
-    function assertFillableOrder(
+    function _assertFillableOrder(
         LibOrder.Order memory order,
         LibOrder.OrderInfo memory orderInfo,
         address takerAddress,
@@ -122,7 +122,7 @@ contract MExchangeCore is
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
-    function assertValidFill(
+    function _assertValidFill(
         LibOrder.Order memory order,
         LibOrder.OrderInfo memory orderInfo,
         uint256 takerAssetFillAmount,
@@ -135,7 +135,7 @@ contract MExchangeCore is
     /// @dev Validates context for cancelOrder. Succeeds or throws.
     /// @param order to be cancelled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
-    function assertValidCancel(
+    function _assertValidCancel(
         LibOrder.Order memory order,
         LibOrder.OrderInfo memory orderInfo
     )
@@ -146,7 +146,7 @@ contract MExchangeCore is
     /// @param order to be filled.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillResults(
+    function _calculateFillResults(
         LibOrder.Order memory order,
         uint256 takerAssetFilledAmount
     )

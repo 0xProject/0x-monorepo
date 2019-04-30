@@ -51,7 +51,7 @@ contract MixinWrapperFunctions is
         nonReentrant
         returns (FillResults memory fillResults)
     {
-        fillResults = fillOrKillOrderInternal(
+        fillResults = _fillOrKillOrder(
             order,
             takerAssetFillAmount,
             signature
@@ -74,7 +74,7 @@ contract MixinWrapperFunctions is
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = abiEncodeFillOrder(
+        bytes memory fillOrderCalldata = _abiEncodeFillOrder(
             order,
             takerAssetFillAmount,
             signature
@@ -118,12 +118,12 @@ contract MixinWrapperFunctions is
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = fillOrderInternal(
+            FillResults memory singleFillResults = _fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
         }
         return totalFillResults;
     }
@@ -145,12 +145,12 @@ contract MixinWrapperFunctions is
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = fillOrKillOrderInternal(
+            FillResults memory singleFillResults = _fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
         }
         return totalFillResults;
     }
@@ -177,7 +177,7 @@ contract MixinWrapperFunctions is
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
         }
         return totalFillResults;
     }
@@ -206,17 +206,17 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderInternal(
+            FillResults memory singleFillResults = _fillOrder(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
@@ -250,7 +250,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
@@ -260,7 +260,7 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
@@ -294,25 +294,25 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = getPartialAmountFloor(
+            uint256 remainingTakerAssetFillAmount = _getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderInternal(
+            FillResults memory singleFillResults = _fillOrder(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
@@ -346,11 +346,11 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = getPartialAmountFloor(
+            uint256 remainingTakerAssetFillAmount = _getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
@@ -364,7 +364,7 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
@@ -382,7 +382,7 @@ contract MixinWrapperFunctions is
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            cancelOrderInternal(orders[i]);
+            _cancelOrder(orders[i]);
         }
     }
 
@@ -406,7 +406,7 @@ contract MixinWrapperFunctions is
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
-    function fillOrKillOrderInternal(
+    function _fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
@@ -414,13 +414,13 @@ contract MixinWrapperFunctions is
         internal
         returns (FillResults memory fillResults)
     {
-        fillResults = fillOrderInternal(
+        fillResults = _fillOrder(
             order,
             takerAssetFillAmount,
             signature
         );
         if (fillResults.takerAssetFilledAmount != takerAssetFillAmount) {
-            rrevert(IncompleteFillError(getOrderInfo(order).orderHash));
+            _rrevert(IncompleteFillError(getOrderInfo(order).orderHash));
         }
         return fillResults;
     }

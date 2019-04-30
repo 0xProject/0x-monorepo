@@ -29,7 +29,7 @@ contract LibAbiEncoder {
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return ABI encoded calldata for `fillOrder`.
-    function abiEncodeFillOrder(
+    function _abiEncodeFillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature

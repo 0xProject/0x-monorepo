@@ -39,7 +39,7 @@ contract TestLibs is
         LibEIP712ExchangeDomain(chainId, address(0))
     {}
 
-    function publicAbiEncodeFillOrder(
+    function abiEncodeFillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
@@ -48,7 +48,7 @@ contract TestLibs is
         pure
         returns (bytes memory fillOrderCalldata)
     {
-        fillOrderCalldata = abiEncodeFillOrder(
+        fillOrderCalldata = _abiEncodeFillOrder(
             order,
             takerAssetFillAmount,
             signature
@@ -56,7 +56,7 @@ contract TestLibs is
         return fillOrderCalldata;
     }
 
-    function publicGetPartialAmountFloor(
+    function getPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -65,7 +65,7 @@ contract TestLibs is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = getPartialAmountFloor(
+        partialAmount = _getPartialAmountFloor(
             numerator,
             denominator,
             target
@@ -73,7 +73,7 @@ contract TestLibs is
         return partialAmount;
     }
 
-    function publicGetPartialAmountCeil(
+    function getPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -82,7 +82,7 @@ contract TestLibs is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = getPartialAmountCeil(
+        partialAmount = _getPartialAmountCeil(
             numerator,
             denominator,
             target
@@ -90,7 +90,7 @@ contract TestLibs is
         return partialAmount;
     }
 
-    function publicIsRoundingErrorFloor(
+    function isRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -99,7 +99,7 @@ contract TestLibs is
         pure
         returns (bool isError)
     {
-        isError = isRoundingErrorFloor(
+        isError = _isRoundingErrorFloor(
             numerator,
             denominator,
             target
@@ -107,7 +107,7 @@ contract TestLibs is
         return isError;
     }
 
-    function publicIsRoundingErrorCeil(
+    function isRoundingErrorCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -116,7 +116,7 @@ contract TestLibs is
         pure
         returns (bool isError)
     {
-        isError = isRoundingErrorCeil(
+        isError = _isRoundingErrorCeil(
             numerator,
             denominator,
             target
@@ -124,7 +124,7 @@ contract TestLibs is
         return isError;
     }
 
-    function publicGetOrderHash(Order memory order)
+    function getOrderHash(Order memory order)
         public
         view
         returns (bytes32 orderHash)
@@ -157,12 +157,12 @@ contract TestLibs is
         return EIP712_EXCHANGE_DOMAIN_HASH;
     }
 
-    function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         public
         pure
         returns (FillResults memory)
     {
-        addFillResults(totalFillResults, singleFillResults);
+        _addFillResults(totalFillResults, singleFillResults);
         return totalFillResults;
     }
 }

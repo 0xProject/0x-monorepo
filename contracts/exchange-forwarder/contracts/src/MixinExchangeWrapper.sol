@@ -40,7 +40,7 @@ contract MixinExchangeWrapper is
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
-    function fillOrderNoThrow(
+    function _fillOrderNoThrow(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
@@ -49,7 +49,7 @@ contract MixinExchangeWrapper is
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = abiEncodeFillOrder(
+        bytes memory fillOrderCalldata = _abiEncodeFillOrder(
             order,
             takerAssetFillAmount,
             signature
@@ -85,7 +85,7 @@ contract MixinExchangeWrapper is
     /// @param wethSellAmount Desired amount of WETH to sell.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellWeth(
+    function _marketSellWeth(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
         bytes[] memory signatures
@@ -105,17 +105,17 @@ contract MixinExchangeWrapper is
             orders[i].takerAssetData = wethAssetData;
 
             // Calculate the remaining amount of WETH to sell
-            uint256 remainingTakerAssetFillAmount = safeSub(wethSellAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(wethSellAmount, totalFillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of WETH
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            FillResults memory singleFillResults = _fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (totalFillResults.takerAssetFilledAmount >= wethSellAmount) {
@@ -132,7 +132,7 @@ contract MixinExchangeWrapper is
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyExactAmountWithWeth(
+    function _marketBuyExactAmountWithWeth(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures
@@ -153,27 +153,27 @@ contract MixinExchangeWrapper is
             orders[i].takerAssetData = wethAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order.
             // We round up because the exchange rate computed by fillOrder rounds in favor
             // of the Maker. In this case we want to overestimate the amount of takerAsset.
-            uint256 remainingTakerAssetFillAmount = getPartialAmountCeil(
+            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            FillResults memory singleFillResults = _fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount;
@@ -198,7 +198,7 @@ contract MixinExchangeWrapper is
     /// @param zrxBuyAmount Desired amount of ZRX to buy.
     /// @param signatures Proofs that orders have been created by makers.
     /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function marketBuyExactZrxWithWeth(
+    function _marketBuyExactZrxWithWeth(
         LibOrder.Order[] memory orders,
         uint256 zrxBuyAmount,
         bytes[] memory signatures
@@ -223,28 +223,28 @@ contract MixinExchangeWrapper is
             orders[i].takerAssetData = wethAssetData;
 
             // Calculate the remaining amount of ZRX to buy.
-            uint256 remainingZrxBuyAmount = safeSub(zrxBuyAmount, zrxPurchased);
+            uint256 remainingZrxBuyAmount = _safeSub(zrxBuyAmount, zrxPurchased);
 
             // Convert the remaining amount of ZRX to buy into remaining amount
             // of WETH to sell, assuming entire amount can be sold in the current order.
             // We round up because the exchange rate computed by fillOrder rounds in favor
             // of the Maker. In this case we want to overestimate the amount of takerAsset.
-            uint256 remainingWethSellAmount = getPartialAmountCeil(
+            uint256 remainingWethSellAmount = _getPartialAmountCeil(
                 orders[i].takerAssetAmount,
-                safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees
+                _safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees
                 remainingZrxBuyAmount
             );
 
             // Attempt to sell the remaining amount of WETH.
-            FillResults memory singleFillResult = fillOrderNoThrow(
+            FillResults memory singleFillResult = _fillOrderNoThrow(
                 orders[i],
                 remainingWethSellAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker.
-            addFillResults(totalFillResults, singleFillResult);
-            zrxPurchased = safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
+            _addFillResults(totalFillResults, singleFillResult);
+            zrxPurchased = _safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
 
             // Stop execution if the entire amount of ZRX has been bought.
             if (zrxPurchased >= zrxBuyAmount) {
