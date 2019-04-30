@@ -70,16 +70,14 @@ describe('ERC1155Proxy', () => {
         const usedAddresses = ([owner, notAuthorized, authorized, spender, receiver] = _.slice(accounts, 0, 5));
         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
-                from: owner,
-            }),
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            authorized,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(erc1155Proxy.address, {
-                from: owner,
-            }),
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            erc1155Proxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         // deploy & configure ERC1155 tokens and receiver
@@ -596,8 +594,8 @@ describe('ERC1155Proxy', () => {
         it('should propagate revert reason from erc1155 contract failure', async () => {
             // disable transfers
             const shouldRejectTransfer = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc1155Receiver.setRejectTransferFlag.sendTransactionAsync(shouldRejectTransfer),
+            await erc1155Receiver.setRejectTransferFlag.awaitTransactionSuccessAsync(
+                shouldRejectTransfer,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // setup test parameters

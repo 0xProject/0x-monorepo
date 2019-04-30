@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods",
+                "pr": 1797
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {

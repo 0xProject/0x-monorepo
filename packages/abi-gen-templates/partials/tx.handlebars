@@ -25,6 +25,42 @@ public {{this.tsName}} = {
         const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         return txHash;
     },
+    awaitTransactionSuccessAsync(
+    {{> typed_params inputs=inputs}}
+    {{#this.payable}}
+        txData?: Partial<TxDataPayable> | number,
+    {{/this.payable}}
+    {{^this.payable}}
+        txData?: Partial<TxData> | number,
+    {{/this.payable}}
+        pollingIntervalMs?: number,
+        timeoutMs?: number,
+    ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+        if (typeof(txData) === 'number') {
+            pollingIntervalMs = txData;
+            timeoutMs = pollingIntervalMs;
+            txData = {};
+        }
+        //
+        const self = this as any as {{contractName}}Contract;
+        {{#if inputs}}
+        const txHashPromise = self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
+        {{else}}
+        const txHashPromise = self.{{this.tsName}}.sendTransactionAsync(txData);
+        {{/if}}
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
+    },
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}
         txData: Partial<TxData> = {},
