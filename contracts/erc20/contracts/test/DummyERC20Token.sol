@@ -55,9 +55,9 @@ contract DummyERC20Token is
     {
         uint256 currBalance = balances[_target];
         if (_value < currBalance) {
-            _totalSupply = safeSub(_totalSupply, safeSub(currBalance, _value));
+            _totalSupply = _safeSub(_totalSupply, _safeSub(currBalance, _value));
         } else {
-            _totalSupply = safeAdd(_totalSupply, safeSub(_value, currBalance));
+            _totalSupply = _safeAdd(_totalSupply, _safeSub(_value, currBalance));
         }
         balances[_target] = _value;
     }

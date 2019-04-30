@@ -57,7 +57,7 @@ contract Wallet is
             "LENGTH_65_REQUIRED"
         );
 
-        return validateEIP712Signature(hash, signature);
+        return _validateEIP712Signature(hash, signature);
     }
 
     /// @dev Validates an order AND EIP712 signature.
@@ -80,10 +80,10 @@ contract Wallet is
             order.makerAddress == WALLET_OWNER,
             "INVALID_ORDER_MAKER"
         );
-        return validateEIP712Signature(orderHash, signature);
+        return _validateEIP712Signature(orderHash, signature);
     }
 
-    function validateEIP712Signature(
+    function _validateEIP712Signature(
         bytes32 hash,
         bytes memory signature
     )

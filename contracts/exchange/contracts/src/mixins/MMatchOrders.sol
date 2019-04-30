@@ -30,7 +30,7 @@ contract MMatchOrders is
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
-    function assertValidMatch(
+    function _assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
     )
@@ -46,7 +46,7 @@ contract MMatchOrders is
     /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
     /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function calculateMatchedFillResults(
+    function _calculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,

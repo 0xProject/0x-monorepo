@@ -50,14 +50,14 @@ contract LibZeroExTransaction is
         returns (bytes32 transactionHash)
     {
         // Hash the transaction with the domain separator of the Exchange contract.
-        transactionHash = hashEIP712ExchangeMessage(hashZeroExTransaction(transaction));
+        transactionHash = _hashEIP712ExchangeMessage(_hashZeroExTransaction(transaction));
         return transactionHash;
     }
 
     /// @dev Calculates EIP712 hash of the 0x transaction with no domain separator.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @return EIP712 hash of the transaction with no domain separator.
-    function hashZeroExTransaction(ZeroExTransaction memory transaction)
+    function _hashZeroExTransaction(ZeroExTransaction memory transaction)
         internal
         pure
         returns (bytes32 result)

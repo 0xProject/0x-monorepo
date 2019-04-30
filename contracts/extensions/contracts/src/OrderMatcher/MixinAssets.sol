@@ -45,7 +45,7 @@ contract MixinAssets is
         external
         onlyOwner
     {
-        transferAssetToSender(assetData, amount);
+        _transferAssetToSender(assetData, amount);
     }
 
     /// @dev Approves or disapproves an AssetProxy to spend asset.
@@ -72,7 +72,7 @@ contract MixinAssets is
     /// @dev Transfers given amount of asset to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferAssetToSender(
+    function _transferAssetToSender(
         bytes memory assetData,
         uint256 amount
     )
@@ -81,9 +81,9 @@ contract MixinAssets is
         bytes4 proxyId = assetData.readBytes4(0);
 
         if (proxyId == ERC20_DATA_ID) {
-            transferERC20Token(assetData, amount);
+            _transferERC20Token(assetData, amount);
         } else if (proxyId == ERC721_DATA_ID) {
-            transferERC721Token(assetData, amount);
+            _transferERC721Token(assetData, amount);
         } else {
             revert("UNSUPPORTED_ASSET_PROXY");
         }
@@ -92,7 +92,7 @@ contract MixinAssets is
     /// @dev Decodes ERC20 assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferERC20Token(
+    function _transferERC20Token(
         bytes memory assetData,
         uint256 amount
     )
@@ -139,7 +139,7 @@ contract MixinAssets is
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferERC721Token(
+    function _transferERC721Token(
         bytes memory assetData,
         uint256 amount
     )

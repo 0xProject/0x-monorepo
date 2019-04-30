@@ -31,7 +31,7 @@ contract MExchangeRichErrors is
     function SignatureError(
         SignatureErrorCodes errorCode,
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature
     )
         internal
@@ -40,7 +40,7 @@ contract MExchangeRichErrors is
 
     function SignatureValidatorError(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -50,7 +50,7 @@ contract MExchangeRichErrors is
 
     function SignatureWalletError(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -60,7 +60,7 @@ contract MExchangeRichErrors is
 
     function SignatureOrderValidatorError(
         bytes32 orderHash,
-        address signer,
+        address signerAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -88,7 +88,7 @@ contract MExchangeRichErrors is
 
     function InvalidSenderError(
         bytes32 orderHash,
-        address sender
+        address senderAddress
     )
         internal
         pure
@@ -96,7 +96,7 @@ contract MExchangeRichErrors is
 
     function InvalidMakerError(
         bytes32 orderHash,
-        address maker
+        address makerAddress
     )
         internal
         pure
@@ -112,15 +112,15 @@ contract MExchangeRichErrors is
 
     function InvalidTakerError(
         bytes32 orderHash,
-        address taker
+        address takerAddress
     )
         internal
         pure
         returns (bytes memory);
 
     function OrderEpochError(
-        address maker,
-        address sender,
+        address makerAddress,
+        address senderAddress,
         uint256 currentEpoch
     )
         internal
@@ -170,7 +170,7 @@ contract MExchangeRichErrors is
 
     function TransactionSignatureError(
         bytes32 transactionHash,
-        address signer,
+        address signerAddress,
         bytes memory signature
     )
         internal

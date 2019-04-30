@@ -22,7 +22,7 @@ pragma solidity ^0.5.5;
 contract MWeth {
 
     /// @dev Converts message call's ETH value into WETH.
-    function convertEthToWeth()
+    function _convertEthToWeth()
         internal;
 
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
@@ -31,7 +31,7 @@ contract MWeth {
     /// @param wethSoldForZrx Amount of WETH sold when purchasing ZRX required for primary order fees.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    function transferEthFeeAndRefund(
+    function _transferEthFeeAndRefund(
         uint256 wethSoldExcludingFeeOrders,
         uint256 wethSoldForZrx,
         uint256 feePercentage,

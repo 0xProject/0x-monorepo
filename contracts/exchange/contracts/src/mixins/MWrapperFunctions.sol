@@ -31,7 +31,7 @@ contract MWrapperFunctions is
     /// @param order LibOrder.Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
-    function fillOrKillOrderInternal(
+    function _fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
