@@ -41,7 +41,7 @@ contract TestStaticCallReceiver {
         external
         returns (bool isValid)
     {
-        updateState();
+        _updateState();
         return true;
     }
 
@@ -56,7 +56,7 @@ contract TestStaticCallReceiver {
         external
         returns (bool isValid)
     {
-        updateState();
+        _updateState();
         return true;
     }
 
@@ -73,7 +73,7 @@ contract TestStaticCallReceiver {
         external
         returns (bool isValid)
     {
-        updateState();
+        _updateState();
         return true;
     }
 
@@ -92,7 +92,7 @@ contract TestStaticCallReceiver {
     }
 
     /// @dev Increments state variable.
-    function updateState()
+    function _updateState()
         internal
     {
         state++;

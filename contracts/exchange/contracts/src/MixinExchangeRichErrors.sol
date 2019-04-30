@@ -31,7 +31,7 @@ contract MixinExchangeRichErrors is
     function SignatureError(
         SignatureErrorCodes errorCode,
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature
     )
         internal
@@ -42,14 +42,14 @@ contract MixinExchangeRichErrors is
             SIGNATURE_ERROR_SELECTOR,
             errorCode,
             hash,
-            signer,
+            signerAddress,
             signature
         );
     }
 
     function SignatureValidatorError(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -60,7 +60,7 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             SIGNATURE_VALIDATOR_ERROR_SELECTOR,
             hash,
-            signer,
+            signerAddress,
             signature,
             errorData
         );
@@ -68,7 +68,7 @@ contract MixinExchangeRichErrors is
 
     function SignatureWalletError(
         bytes32 hash,
-        address signer,
+        address signerAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -79,7 +79,7 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             SIGNATURE_WALLET_ERROR_SELECTOR,
             hash,
-            signer,
+            signerAddress,
             signature,
             errorData
         );
@@ -87,7 +87,7 @@ contract MixinExchangeRichErrors is
 
     function SignatureOrderValidatorError(
         bytes32 orderHash,
-        address signer,
+        address signerAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -98,7 +98,7 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR,
             orderHash,
-            signer,
+            signerAddress,
             signature,
             errorData
         );
@@ -140,7 +140,7 @@ contract MixinExchangeRichErrors is
 
     function InvalidSenderError(
         bytes32 orderHash,
-        address sender
+        address senderAddress
     )
         internal
         pure
@@ -149,13 +149,13 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             INVALID_SENDER_ERROR_SELECTOR,
             orderHash,
-            sender
+            senderAddress
         );
     }
 
     function InvalidMakerError(
         bytes32 orderHash,
-        address maker
+        address makerAddress
     )
         internal
         pure
@@ -164,7 +164,7 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             INVALID_MAKER_ERROR_SELECTOR,
             orderHash,
-            maker
+            makerAddress
         );
     }
 
@@ -185,7 +185,7 @@ contract MixinExchangeRichErrors is
 
     function InvalidTakerError(
         bytes32 orderHash,
-        address taker
+        address takerAddress
     )
         internal
         pure
@@ -194,13 +194,13 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             INVALID_TAKER_ERROR_SELECTOR,
             orderHash,
-            taker
+            takerAddress
         );
     }
 
     function OrderEpochError(
-        address maker,
-        address sender,
+        address makerAddress,
+        address orderSenderAddress,
         uint256 currentEpoch
     )
         internal
@@ -209,8 +209,8 @@ contract MixinExchangeRichErrors is
     {
         return abi.encodeWithSelector(
             ORDER_EPOCH_ERROR_SELECTOR,
-            maker,
-            sender,
+            makerAddress,
+            orderSenderAddress,
             currentEpoch
         );
     }
@@ -294,7 +294,7 @@ contract MixinExchangeRichErrors is
 
     function TransactionSignatureError(
         bytes32 transactionHash,
-        address signer,
+        address signerAddress,
         bytes memory signature
     )
         internal
@@ -304,7 +304,7 @@ contract MixinExchangeRichErrors is
         return abi.encodeWithSelector(
             TRANSACTION_SIGNATURE_ERROR_SELECTOR,
             transactionHash,
-            signer,
+            signerAddress,
             signature
         );
     }

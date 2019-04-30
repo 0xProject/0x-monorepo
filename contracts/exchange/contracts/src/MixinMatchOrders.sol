@@ -66,25 +66,25 @@ contract MixinMatchOrders is
         LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
 
         // Fetch taker address
-        address takerAddress = getCurrentContextAddress();
+        address takerAddress = _getCurrentContextAddress();
 
         // Either our context is valid or we revert
-        assertFillableOrder(
+        _assertFillableOrder(
             leftOrder,
             leftOrderInfo,
             takerAddress,
             leftSignature
         );
-        assertFillableOrder(
+        _assertFillableOrder(
             rightOrder,
             rightOrderInfo,
             takerAddress,
             rightSignature
         );
-        assertValidMatch(leftOrder, rightOrder);
+        _assertValidMatch(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
-        matchedFillResults = calculateMatchedFillResults(
+        matchedFillResults = _calculateMatchedFillResults(
             leftOrder,
             rightOrder,
             leftOrderInfo.orderTakerAssetFilledAmount,
@@ -92,14 +92,14 @@ contract MixinMatchOrders is
         );
 
         // Validate fill contexts
-        assertValidFill(
+        _assertValidFill(
             leftOrder,
             leftOrderInfo,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.makerAssetFilledAmount
         );
-        assertValidFill(
+        _assertValidFill(
             rightOrder,
             rightOrderInfo,
             matchedFillResults.right.takerAssetFilledAmount,
@@ -108,14 +108,14 @@ contract MixinMatchOrders is
         );
 
         // Update exchange state
-        updateFilledState(
+        _updateFilledState(
             leftOrder,
             takerAddress,
             leftOrderInfo.orderHash,
             leftOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.left
         );
-        updateFilledState(
+        _updateFilledState(
             rightOrder,
             takerAddress,
             rightOrderInfo.orderHash,
@@ -139,7 +139,7 @@ contract MixinMatchOrders is
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
-    function assertValidMatch(
+    function _assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
     )
@@ -154,9 +154,9 @@ contract MixinMatchOrders is
         // AND
         // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
         // These equations can be combined to get the following:
-        if (safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
-            safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
-            rrevert(NegativeSpreadError(
+        if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
+            _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+            _rrevert(NegativeSpreadError(
                 getOrderHash(leftOrder),
                 getOrderHash(rightOrder)
             ));
@@ -172,7 +172,7 @@ contract MixinMatchOrders is
     /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
     /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function calculateMatchedFillResults(
+    function _calculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
@@ -183,14 +183,14 @@ contract MixinMatchOrders is
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         // Derive maker asset amounts for left & right orders, given store taker assert amounts
-        uint256 leftTakerAssetAmountRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
-        uint256 leftMakerAssetAmountRemaining = safeGetPartialAmountFloor(
+        uint256 leftTakerAssetAmountRemaining = _safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
+        uint256 leftMakerAssetAmountRemaining = _safeGetPartialAmountFloor(
             leftOrder.makerAssetAmount,
             leftOrder.takerAssetAmount,
             leftTakerAssetAmountRemaining
         );
-        uint256 rightTakerAssetAmountRemaining = safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
-        uint256 rightMakerAssetAmountRemaining = safeGetPartialAmountFloor(
+        uint256 rightTakerAssetAmountRemaining = _safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
+        uint256 rightMakerAssetAmountRemaining = _safeGetPartialAmountFloor(
             rightOrder.makerAssetAmount,
             rightOrder.takerAssetAmount,
             rightTakerAssetAmountRemaining
@@ -212,7 +212,7 @@ contract MixinMatchOrders is
             matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
             // Round down to ensure the maker's exchange rate does not exceed the price specified by the order.
             // We favor the maker when the exchange rate must be rounded.
-            matchedFillResults.left.makerAssetFilledAmount = safeGetPartialAmountFloor(
+            matchedFillResults.left.makerAssetFilledAmount = _safeGetPartialAmountFloor(
                 leftOrder.makerAssetAmount,
                 leftOrder.takerAssetAmount,
                 matchedFillResults.left.takerAssetFilledAmount
@@ -224,7 +224,7 @@ contract MixinMatchOrders is
             matchedFillResults.right.makerAssetFilledAmount = matchedFillResults.left.takerAssetFilledAmount;
             // Round up to ensure the maker's exchange rate does not exceed the price specified by the order.
             // We favor the maker when the exchange rate must be rounded.
-            matchedFillResults.right.takerAssetFilledAmount = safeGetPartialAmountCeil(
+            matchedFillResults.right.takerAssetFilledAmount = _safeGetPartialAmountCeil(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
                 matchedFillResults.right.makerAssetFilledAmount
@@ -232,30 +232,30 @@ contract MixinMatchOrders is
         }
 
         // Calculate amount given to taker
-        matchedFillResults.leftMakerAssetSpreadAmount = safeSub(
+        matchedFillResults.leftMakerAssetSpreadAmount = _safeSub(
             matchedFillResults.left.makerAssetFilledAmount,
             matchedFillResults.right.takerAssetFilledAmount
         );
 
         // Compute fees for left order
-        matchedFillResults.left.makerFeePaid = safeGetPartialAmountFloor(
+        matchedFillResults.left.makerFeePaid = _safeGetPartialAmountFloor(
             matchedFillResults.left.makerAssetFilledAmount,
             leftOrder.makerAssetAmount,
             leftOrder.makerFee
         );
-        matchedFillResults.left.takerFeePaid = safeGetPartialAmountFloor(
+        matchedFillResults.left.takerFeePaid = _safeGetPartialAmountFloor(
             matchedFillResults.left.takerAssetFilledAmount,
             leftOrder.takerAssetAmount,
             leftOrder.takerFee
         );
 
         // Compute fees for right order
-        matchedFillResults.right.makerFeePaid = safeGetPartialAmountFloor(
+        matchedFillResults.right.makerFeePaid = _safeGetPartialAmountFloor(
             matchedFillResults.right.makerAssetFilledAmount,
             rightOrder.makerAssetAmount,
             rightOrder.makerFee
         );
-        matchedFillResults.right.takerFeePaid = safeGetPartialAmountFloor(
+        matchedFillResults.right.takerFeePaid = _safeGetPartialAmountFloor(
             matchedFillResults.right.takerAssetFilledAmount,
             rightOrder.takerAssetAmount,
             rightOrder.takerFee
@@ -284,21 +284,21 @@ contract MixinMatchOrders is
     {
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             leftOrderHash,
             leftOrder.makerAssetData,
             leftOrder.makerAddress,
             rightOrder.makerAddress,
             matchedFillResults.right.takerAssetFilledAmount
         );
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerAssetData,
             rightOrder.makerAddress,
             leftOrder.makerAddress,
             matchedFillResults.left.takerAssetFilledAmount
         );
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             leftOrderHash,
             leftOrder.makerAssetData,
             leftOrder.makerAddress,
@@ -307,14 +307,14 @@ contract MixinMatchOrders is
         );
 
         // Maker fees
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             leftOrderHash,
             zrxAssetData,
             leftOrder.makerAddress,
             leftOrder.feeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             rightOrderHash,
             zrxAssetData,
             rightOrder.makerAddress,
@@ -324,25 +324,25 @@ contract MixinMatchOrders is
 
         // Taker fees
         if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
-            dispatchTransferFrom(
+            _dispatchTransferFrom(
                 leftOrderHash,
                 zrxAssetData,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
-                safeAdd(
+                _safeAdd(
                     matchedFillResults.left.takerFeePaid,
                     matchedFillResults.right.takerFeePaid
                 )
             );
         } else {
-            dispatchTransferFrom(
+            _dispatchTransferFrom(
                 leftOrderHash,
                 zrxAssetData,
                 takerAddress,
                 leftOrder.feeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
-            dispatchTransferFrom(
+            _dispatchTransferFrom(
                 rightOrderHash,
                 zrxAssetData,
                 takerAddress,

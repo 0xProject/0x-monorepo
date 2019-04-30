@@ -24,7 +24,6 @@
     },
     "contracts": [
         "src/LibAbiEncoder.sol",
-        "src/LibAssetProxyErrors.sol",
         "src/LibConstants.sol",
         "src/LibEIP712ExchangeDomain.sol",
         "src/LibFillResults.sol",

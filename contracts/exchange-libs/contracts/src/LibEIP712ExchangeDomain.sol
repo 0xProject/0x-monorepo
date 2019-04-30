@@ -43,7 +43,7 @@ contract LibEIP712ExchangeDomain is
         public
     {
         address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
-        EIP712_EXCHANGE_DOMAIN_HASH = hashEIP712Domain(
+        EIP712_EXCHANGE_DOMAIN_HASH = _hashEIP712Domain(
             EIP712_EXCHANGE_DOMAIN_NAME,
             EIP712_EXCHANGE_DOMAIN_VERSION,
             chainId,
@@ -55,11 +55,11 @@ contract LibEIP712ExchangeDomain is
     ///      of the Exchange contract.
     /// @param hashStruct The EIP712 hash struct.
     /// @return EIP712 hash applied to the Exchange EIP712 Domain.
-    function hashEIP712ExchangeMessage(bytes32 hashStruct)
+    function _hashEIP712ExchangeMessage(bytes32 hashStruct)
         internal
         view
         returns (bytes32 result)
     {
-        return hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashStruct);
+        return _hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashStruct);
     }
 }

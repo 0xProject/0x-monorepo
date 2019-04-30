@@ -40,7 +40,7 @@ contract MixinWeth is
     }
 
     /// @dev Converts message call's ETH value into WETH.
-    function convertEthToWeth()
+    function _convertEthToWeth()
         internal
     {
         require(
@@ -56,7 +56,7 @@ contract MixinWeth is
     /// @param wethSoldForZrx Amount of WETH sold when purchasing ZRX required for primary order fees.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    function transferEthFeeAndRefund(
+    function _transferEthFeeAndRefund(
         uint256 wethSoldExcludingFeeOrders,
         uint256 wethSoldForZrx,
         uint256 feePercentage,
@@ -71,17 +71,17 @@ contract MixinWeth is
         );
 
         // Ensure that no extra WETH owned by this contract has been sold.
-        uint256 wethSold = safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx);
+        uint256 wethSold = _safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx);
         require(
             wethSold <= msg.value,
             "OVERSOLD_WETH"
         );
 
         // Calculate amount of WETH that hasn't been sold.
-        uint256 wethRemaining = safeSub(msg.value, wethSold);
+        uint256 wethRemaining = _safeSub(msg.value, wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
-        uint256 ethFee = getPartialAmountFloor(
+        uint256 ethFee = _getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
             wethSoldExcludingFeeOrders
@@ -104,7 +104,7 @@ contract MixinWeth is
             }
 
             // Refund remaining ETH to msg.sender.
-            uint256 ethRefund = safeSub(wethRemaining, ethFee);
+            uint256 ethRefund = _safeSub(wethRemaining, ethFee);
             if (ethRefund > 0) {
                 msg.sender.transfer(ethRefund);
             }

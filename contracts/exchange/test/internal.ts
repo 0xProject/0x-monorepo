@@ -196,7 +196,7 @@ describe('Exchange core internal functions', () => {
         async function testAddFillResultsAsync(totalValue: BigNumber, singleValue: BigNumber): Promise<FillResults> {
             const totalFillResults = makeFillResults(totalValue);
             const singleFillResults = makeFillResults(singleValue);
-            return testExchange.publicAddFillResults.callAsync(totalFillResults, singleFillResults);
+            return testExchange.addFillResults.callAsync(totalFillResults, singleFillResults);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'addFillResults',
@@ -260,7 +260,7 @@ describe('Exchange core internal functions', () => {
             otherAmount: BigNumber,
         ): Promise<FillResults> {
             const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
-            return testExchange.publicCalculateFillResults.callAsync(order, takerAssetFilledAmount);
+            return testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'calculateFillResults',
@@ -290,7 +290,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<BigNumber> {
-            return testExchange.publicGetPartialAmountFloor.callAsync(numerator, denominator, target);
+            return testExchange.getPartialAmountFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'getPartialAmountFloor',
@@ -327,7 +327,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<BigNumber> {
-            return testExchange.publicGetPartialAmountCeil.callAsync(numerator, denominator, target);
+            return testExchange.getPartialAmountCeil.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'getPartialAmountCeil',
@@ -343,7 +343,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<BigNumber> {
-            return testExchange.publicSafeGetPartialAmountFloor.callAsync(numerator, denominator, target);
+            return testExchange.safeGetPartialAmountFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'safeGetPartialAmountFloor',
@@ -384,7 +384,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<BigNumber> {
-            return testExchange.publicSafeGetPartialAmountCeil.callAsync(numerator, denominator, target);
+            return testExchange.safeGetPartialAmountCeil.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'safeGetPartialAmountCeil',
@@ -400,7 +400,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<boolean> {
-            return testExchange.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+            return testExchange.isRoundingErrorFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'isRoundingErrorFloor',
@@ -416,7 +416,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<boolean> {
-            return testExchange.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+            return testExchange.isRoundingErrorCeil.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'isRoundingErrorCeil',
@@ -459,7 +459,7 @@ describe('Exchange core internal functions', () => {
                 takerFeePaid: new BigNumber(0),
             };
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await testExchange.publicUpdateFilledState.sendTransactionAsync(
+                await testExchange.updateFilledState.sendTransactionAsync(
                     emptySignedOrder,
                     constants.NULL_ADDRESS,
                     orderHash,
