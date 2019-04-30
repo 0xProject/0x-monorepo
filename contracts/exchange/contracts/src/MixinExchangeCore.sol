@@ -60,25 +60,25 @@ contract MixinExchangeCore is
         external
         nonReentrant
     {
-        address makerAddress = getCurrentContextAddress();
+        address makerAddress = _getCurrentContextAddress();
         // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
         // This allows external filter contracts to add rules to how orders are cancelled via this function.
-        address senderAddress = makerAddress == msg.sender ? address(0) : msg.sender;
+        address orderSenderAddress = makerAddress == msg.sender ? address(0) : msg.sender;
 
         // orderEpoch is initialized to 0, so to cancelUpTo we need salt + 1
         uint256 newOrderEpoch = targetOrderEpoch + 1;
-        uint256 oldOrderEpoch = orderEpoch[makerAddress][senderAddress];
+        uint256 oldOrderEpoch = orderEpoch[makerAddress][orderSenderAddress];
 
         // Ensure orderEpoch is monotonically increasing
         if (newOrderEpoch <= oldOrderEpoch) {
-            rrevert(OrderEpochError(makerAddress, senderAddress, oldOrderEpoch));
+            _rrevert(OrderEpochError(makerAddress, orderSenderAddress, oldOrderEpoch));
         }
 
         // Update orderEpoch
-        orderEpoch[makerAddress][senderAddress] = newOrderEpoch;
+        orderEpoch[makerAddress][orderSenderAddress] = newOrderEpoch;
         emit CancelUpTo(
             makerAddress,
-            senderAddress,
+            orderSenderAddress,
             newOrderEpoch
         );
     }
@@ -97,7 +97,7 @@ contract MixinExchangeCore is
         nonReentrant
         returns (FillResults memory fillResults)
     {
-        fillResults = fillOrderInternal(
+        fillResults = _fillOrder(
             order,
             takerAssetFillAmount,
             signature
@@ -112,7 +112,7 @@ contract MixinExchangeCore is
         public
         nonReentrant
     {
-        cancelOrderInternal(order);
+        _cancelOrder(order);
     }
 
     /// @dev Gets information about an order: status, hash, and amount filled.
@@ -181,7 +181,7 @@ contract MixinExchangeCore is
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
-    function fillOrderInternal(
+    function _fillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
@@ -193,10 +193,10 @@ contract MixinExchangeCore is
         OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Fetch taker address
-        address takerAddress = getCurrentContextAddress();
+        address takerAddress = _getCurrentContextAddress();
 
         // Assert that the order is fillable by taker
-        assertFillableOrder(
+        _assertFillableOrder(
             order,
             orderInfo,
             takerAddress,
@@ -204,11 +204,11 @@ contract MixinExchangeCore is
         );
 
         // Get amount of takerAsset to fill
-        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
-        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+        uint256 remainingTakerAssetAmount = _safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
+        uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Validate context
-        assertValidFill(
+        _assertValidFill(
             order,
             orderInfo,
             takerAssetFillAmount,
@@ -217,12 +217,12 @@ contract MixinExchangeCore is
         );
 
         // Compute proportional fill amounts
-        fillResults = calculateFillResults(order, takerAssetFilledAmount);
+        fillResults = _calculateFillResults(order, takerAssetFilledAmount);
 
         bytes32 orderHash = orderInfo.orderHash;
 
         // Update exchange internal state
-        updateFilledState(
+        _updateFilledState(
             order,
             takerAddress,
             orderHash,
@@ -244,24 +244,24 @@ contract MixinExchangeCore is
     /// @dev After calling, the order can not be filled anymore.
     ///      Throws if order is invalid or sender does not have permission to cancel.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
-    function cancelOrderInternal(Order memory order)
+    function _cancelOrder(Order memory order)
         internal
     {
         // Fetch current order status
         OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Validate context
-        assertValidCancel(order, orderInfo);
+        _assertValidCancel(order, orderInfo);
 
         // Perform cancel
-        updateCancelledState(order, orderInfo.orderHash);
+        _updateCancelledState(order, orderInfo.orderHash);
     }
 
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
     /// @param orderTakerAssetFilledAmount Amount of order already filled.
-    function updateFilledState(
+    function _updateFilledState(
         Order memory order,
         address takerAddress,
         bytes32 orderHash,
@@ -271,7 +271,7 @@ contract MixinExchangeCore is
         internal
     {
         // Update state
-        filled[orderHash] = safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
+        filled[orderHash] = _safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
 
         // Log order
         emit Fill(
@@ -294,7 +294,7 @@ contract MixinExchangeCore is
     ///      Otherwise, updating state would have no effect.
     /// @param order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
-    function updateCancelledState(
+    function _updateCancelledState(
         Order memory order,
         bytes32 orderHash
     )
@@ -319,7 +319,7 @@ contract MixinExchangeCore is
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     /// @param takerAddress Address of order taker.
     /// @param signature Proof that the orders was created by its maker.
-    function assertFillableOrder(
+    function _assertFillableOrder(
         Order memory order,
         OrderInfo memory orderInfo,
         address takerAddress,
@@ -330,7 +330,7 @@ contract MixinExchangeCore is
     {
         // An order can only be filled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
-            rrevert(OrderStatusError(
+            _rrevert(OrderStatusError(
                 orderInfo.orderHash,
                 OrderStatus(orderInfo.orderStatus)
             ));
@@ -339,26 +339,26 @@ contract MixinExchangeCore is
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                rrevert(InvalidSenderError(orderInfo.orderHash, msg.sender));
+                _rrevert(InvalidSenderError(orderInfo.orderHash, msg.sender));
             }
         }
 
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
             if (order.takerAddress != takerAddress) {
-                rrevert(InvalidTakerError(orderInfo.orderHash, takerAddress));
+                _rrevert(InvalidTakerError(orderInfo.orderHash, takerAddress));
             }
         }
 
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             address makerAddress = order.makerAddress;
-            if (!isValidOrderWithHashSignature(
+            if (!_isValidOrderWithHashSignature(
                     order,
                     orderInfo.orderHash,
                     makerAddress,
                     signature)) {
-                rrevert(SignatureError(
+                _rrevert(SignatureError(
                     SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
@@ -374,7 +374,7 @@ contract MixinExchangeCore is
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
-    function assertValidFill(
+    function _assertValidFill(
         Order memory order,
         OrderInfo memory orderInfo,
         uint256 takerAssetFillAmount,  // TODO: use FillResults
@@ -387,22 +387,22 @@ contract MixinExchangeCore is
         // Revert if fill amount is invalid
         // TODO: reconsider necessity for v2.1
         if (takerAssetFillAmount == 0) {
-            rrevert(FillError(FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
+            _rrevert(FillError(FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
         }
 
         // Make sure taker does not pay more than desired amount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
         if (takerAssetFilledAmount > takerAssetFillAmount) {
-            rrevert(FillError(FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
+            _rrevert(FillError(FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
         }
 
         // Make sure order is not overfilled
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        if (safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
+        if (_safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
             > order.takerAssetAmount) {
-            rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
+            _rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
         }
 
         // Make sure order is filled at acceptable price.
@@ -422,16 +422,16 @@ contract MixinExchangeCore is
         //     order.makerAssetAmount * takerAssetFilledAmount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        if (safeMul(makerAssetFilledAmount, order.takerAssetAmount)
-            > safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
-            rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
+        if (_safeMul(makerAssetFilledAmount, order.takerAssetAmount)
+            > _safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
+            _rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
         }
     }
 
     /// @dev Validates context for cancelOrder. Succeeds or throws.
     /// @param order to be cancelled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
-    function assertValidCancel(
+    function _assertValidCancel(
         Order memory order,
         OrderInfo memory orderInfo
     )
@@ -441,7 +441,7 @@ contract MixinExchangeCore is
         // Ensure order is valid
         // An order can only be cancelled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
-            rrevert(OrderStatusError(
+            _rrevert(OrderStatusError(
                 orderInfo.orderHash,
                 OrderStatus(orderInfo.orderStatus)
             ));
@@ -450,14 +450,14 @@ contract MixinExchangeCore is
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                rrevert(InvalidSenderError(orderInfo.orderHash, msg.sender));
+                _rrevert(InvalidSenderError(orderInfo.orderHash, msg.sender));
             }
         }
 
         // Validate transaction signed by maker
-        address makerAddress = getCurrentContextAddress();
+        address makerAddress = _getCurrentContextAddress();
         if (order.makerAddress != makerAddress) {
-            rrevert(InvalidMakerError(orderInfo.orderHash, makerAddress));
+            _rrevert(InvalidMakerError(orderInfo.orderHash, makerAddress));
         }
     }
 
@@ -465,7 +465,7 @@ contract MixinExchangeCore is
     /// @param order to be filled.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillResults(
+    function _calculateFillResults(
         Order memory order,
         uint256 takerAssetFilledAmount
     )
@@ -475,17 +475,17 @@ contract MixinExchangeCore is
     {
         // Compute proportional transfer amounts
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = safeGetPartialAmountFloor(
+        fillResults.makerAssetFilledAmount = _safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount
         );
-        fillResults.makerFeePaid = safeGetPartialAmountFloor(
+        fillResults.makerFeePaid = _safeGetPartialAmountFloor(
             fillResults.makerAssetFilledAmount,
             order.makerAssetAmount,
             order.makerFee
         );
-        fillResults.takerFeePaid = safeGetPartialAmountFloor(
+        fillResults.takerFeePaid = _safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.takerFee
@@ -508,28 +508,28 @@ contract MixinExchangeCore is
         private
     {
         bytes memory zrxAssetData = ZRX_ASSET_DATA;
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             orderHash,
             order.makerAssetData,
             order.makerAddress,
             takerAddress,
             fillResults.makerAssetFilledAmount
         );
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             orderHash,
             order.takerAssetData,
             takerAddress,
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             orderHash,
             zrxAssetData,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
-        dispatchTransferFrom(
+        _dispatchTransferFrom(
             orderHash,
             zrxAssetData,
             takerAddress,

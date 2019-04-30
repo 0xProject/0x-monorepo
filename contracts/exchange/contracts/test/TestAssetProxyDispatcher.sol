@@ -26,7 +26,7 @@ contract TestAssetProxyDispatcher is
     MixinAssetProxyDispatcher,
     MixinExchangeRichErrors
 {
-    function publicDispatchTransferFrom(
+    function dispatchTransferFrom(
         bytes32 orderHash,
         bytes memory assetData,
         address from,
@@ -35,6 +35,6 @@ contract TestAssetProxyDispatcher is
     )
         public
     {
-        dispatchTransferFrom(orderHash, assetData, from, to, amount);
+        _dispatchTransferFrom(orderHash, assetData, from, to, amount);
     }
 }

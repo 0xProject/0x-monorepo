@@ -32,8 +32,8 @@ contract MintableERC20Token is
     function _mint(address _to, uint256 _value)
         internal
     {
-        balances[_to] = safeAdd(_value, balances[_to]);
-        _totalSupply = safeAdd(_totalSupply, _value);
+        balances[_to] = _safeAdd(_value, balances[_to]);
+        _totalSupply = _safeAdd(_totalSupply, _value);
 
         emit Transfer(
             address(0),
@@ -48,8 +48,8 @@ contract MintableERC20Token is
     function _burn(address _owner, uint256 _value)
         internal
     {
-        balances[_owner] = safeSub(balances[_owner], _value);
-        _totalSupply = safeSub(_totalSupply, _value);
+        balances[_owner] = _safeSub(balances[_owner], _value);
+        _totalSupply = _safeSub(_totalSupply, _value);
 
         emit Transfer(
             _owner,

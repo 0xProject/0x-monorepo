@@ -87,7 +87,7 @@ contract MixinTransactions is
 
         // Prevent reentrancy
         if (currentContextAddress != address(0)) {
-            rrevert(TransactionError(
+            _rrevert(TransactionError(
                 TransactionErrorCodes.NO_REENTRANCY,
                 transactionHash
             ));
@@ -95,7 +95,7 @@ contract MixinTransactions is
 
         // Validate transaction has not been executed
         if (transactions[transactionHash]) {
-            rrevert(TransactionError(
+            _rrevert(TransactionError(
                 TransactionErrorCodes.ALREADY_EXECUTED,
                 transactionHash
             ));
@@ -109,7 +109,7 @@ contract MixinTransactions is
                     transactionHash,
                     signerAddress,
                     signature)) {
-                rrevert(TransactionSignatureError(
+                _rrevert(TransactionSignatureError(
                     transactionHash,
                     signerAddress,
                     signature
@@ -124,7 +124,7 @@ contract MixinTransactions is
         transactions[transactionHash] = true;
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(transaction.data);
         if (!didSucceed) {
-            rrevert(TransactionExecutionError(
+            _rrevert(TransactionExecutionError(
                 transactionHash,
                 returnData
             ));
@@ -143,7 +143,7 @@ contract MixinTransactions is
     ///      If calling a cancel function, this address will represent the maker.
     /// @return Signer of 0x transaction if entry point is `executeTransaction`.
     ///         `msg.sender` if entry point is any other function.
-    function getCurrentContextAddress()
+    function _getCurrentContextAddress()
         internal
         view
         returns (address)
