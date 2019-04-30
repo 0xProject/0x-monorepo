@@ -148,7 +148,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 setup(
     name=NAME,
     version=VERSION,
-    description="Standard Relayer REST API",
+    description="Standard Relayer REST API Client",
     author_email="",
     url=(
         "https://github.com/0xproject/0x-monorepo/tree/development/python-packages/sra_client"
