@@ -150,7 +150,9 @@ setup(
     version=VERSION,
     description="Standard Relayer REST API",
     author_email="",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/sra_client",
+    url=(
+        "https://github.com/0xproject/0x-monorepo/tree/development/python-packages/sra_client"
+    ),
     keywords=["OpenAPI", "OpenAPI-Generator", "Standard Relayer REST API"],
     install_requires=REQUIRES,
     namespace_packages=["zero_ex"],
