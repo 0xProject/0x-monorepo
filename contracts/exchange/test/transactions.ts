@@ -860,8 +860,8 @@ describe('Exchange transactions', () => {
                 const transaction2 = takerTransactionFactory.newSignedTransaction(data2);
                 const tx = exchangeWrapper.batchExecuteTransactionsAsync([transaction1, transaction2], senderAddress);
                 const nestedError = new ExchangeRevertErrors.OrderStatusError(
-                    OrderStatus.Cancelled,
                     orderHashUtils.getOrderHashHex(order),
+                    OrderStatus.Cancelled,
                 ).encode();
                 const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                     transactionHashUtils.getTransactionHashHex(transaction2),
@@ -913,7 +913,7 @@ describe('Exchange transactions', () => {
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(fillTransaction);
                     const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                         transactionHashHex,
-                        new ExchangeRevertErrors.OrderStatusError(OrderStatus.Cancelled, orderHashHex).encode(),
+                        new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.Cancelled).encode(),
                     );
                     const tx = exchangeWrapperContract.fillOrder.sendTransactionAsync(
                         signedOrder,
