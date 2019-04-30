@@ -558,9 +558,10 @@ workflows:
             - test-contracts-ganache:
                   requires:
                       - build-3.0
-            - test-contracts-geth:
-                  requires:
-                      - build-3.0
+            # Disabled until geth docker image is fixed.
+            # - test-contracts-geth:
+            #       requires:
+            #           - build-3.0
             # Disabled for 3.0
             # - test-pipeline:
             #       requires:
