@@ -58,7 +58,7 @@ contract LibExchangeErrors {
     /// registerAssetProxy errors ///
     string constant internal ASSET_PROXY_ALREADY_EXISTS = "ASSET_PROXY_ALREADY_EXISTS";          // AssetProxy with same id already exists.
 
-    /// dispatchTransferFrom errors ///
+    /// _dispatchTransferFrom errors ///
     string constant internal ASSET_PROXY_DOES_NOT_EXIST = "ASSET_PROXY_DOES_NOT_EXIST";          // No assetProxy registered at given id.
     string constant internal TRANSFER_FAILED = "TRANSFER_FAILED";                                // Asset transfer unsuccesful.
 

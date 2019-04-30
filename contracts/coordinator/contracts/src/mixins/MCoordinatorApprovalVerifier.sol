@@ -33,7 +33,7 @@ contract MCoordinatorApprovalVerifier is
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
-    function assertValidTransactionOrdersApproval(
+    function _assertValidTransactionOrdersApproval(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         LibOrder.Order[] memory orders,
         address txOrigin,

@@ -36,7 +36,7 @@ contract LibEIP712 {
     /// @param version The EIP712 domain version.
     /// @param verifyingContractAddress The EIP712 verifying contract.
     /// @return EIP712 domain separator.
-    function hashEIP712Domain(
+    function _hashEIP712Domain(
         string memory name,
         string memory version,
         uint256 chainId,
@@ -60,7 +60,7 @@ contract LibEIP712 {
     ///                         with getDomainHash().
     /// @param hashStruct The EIP712 hash struct.
     /// @return EIP712 hash applied to the given EIP712 Domain.
-    function hashEIP712Message(bytes32 eip712DomainHash, bytes32 hashStruct)
+    function _hashEIP712Message(bytes32 eip712DomainHash, bytes32 hashStruct)
         internal
         pure
         returns (bytes32 result)

@@ -614,7 +614,7 @@ export class FillOrderCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
         const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
-        const abiDataEncodedByContract = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
+        const abiDataEncodedByContract = await this.testLibsContract.abiEncodeFillOrder.callAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,

@@ -55,7 +55,7 @@ contract MixinSignatureValidator is
         external
         nonReentrant
     {
-        address signerAddress = getCurrentContextAddress();
+        address signerAddress = _getCurrentContextAddress();
         preSigned[hash][signerAddress] = true;
     }
 
@@ -70,7 +70,7 @@ contract MixinSignatureValidator is
         external
         nonReentrant
     {
-        address signerAddress = getCurrentContextAddress();
+        address signerAddress = _getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;
         emit SignatureValidatorApproval(
             signerAddress,
@@ -90,7 +90,7 @@ contract MixinSignatureValidator is
         external
         nonReentrant
     {
-        address signerAddress = getCurrentContextAddress();
+        address signerAddress = _getCurrentContextAddress();
         allowedOrderValidators[signerAddress][validatorAddress] = approval;
         emit SignatureValidatorApproval(
             signerAddress,
@@ -114,7 +114,7 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         bytes32 orderHash = getOrderHash(order);
-        return isValidOrderWithHashSignature(
+        return _isValidOrderWithHashSignature(
             order,
             orderHash,
             signerAddress,
@@ -145,7 +145,7 @@ contract MixinSignatureValidator is
         // function.
         if (signatureType == SignatureType.OrderValidator ||
             signatureType == SignatureType.WalletOrderValidator) {
-            rrevert(SignatureError(
+            _rrevert(SignatureError(
                 SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
                 hash,
                 signerAddress,
@@ -167,7 +167,7 @@ contract MixinSignatureValidator is
     /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the signature is valid for the given hash and signer.
-    function isValidOrderWithHashSignature(
+    function _isValidOrderWithHashSignature(
         Order memory order,
         bytes32 orderHash,
         address signerAddress,
@@ -221,7 +221,7 @@ contract MixinSignatureValidator is
         returns (SignatureType signatureType)
     {
         if (signature.length == 0) {
-            rrevert(SignatureError(
+            _rrevert(SignatureError(
                 SignatureErrorCodes.INVALID_LENGTH,
                 hash,
                 signerAddress,
@@ -234,7 +234,7 @@ contract MixinSignatureValidator is
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
-            rrevert(SignatureError(
+            _rrevert(SignatureError(
                 SignatureErrorCodes.UNSUPPORTED,
                 hash,
                 signerAddress,
@@ -248,7 +248,7 @@ contract MixinSignatureValidator is
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
-            rrevert(SignatureError(
+            _rrevert(SignatureError(
                 SignatureErrorCodes.ILLEGAL,
                 hash,
                 signerAddress,
@@ -296,7 +296,7 @@ contract MixinSignatureValidator is
             return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
-        rrevert(SignatureWalletError(
+        _rrevert(SignatureWalletError(
             hash,
             walletAddress,
             signature,
@@ -355,7 +355,7 @@ contract MixinSignatureValidator is
             return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
-        rrevert(SignatureValidatorError(
+        _rrevert(SignatureValidatorError(
             hash,
             signerAddress,
             signature,
@@ -403,7 +403,7 @@ contract MixinSignatureValidator is
             return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
-        rrevert(SignatureWalletOrderValidatorError(
+        _rrevert(SignatureWalletOrderValidatorError(
             orderHash,
             walletAddress,
             signature,
@@ -463,7 +463,7 @@ contract MixinSignatureValidator is
             return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
-        rrevert(SignatureOrderValidatorError(
+        _rrevert(SignatureOrderValidatorError(
             orderHash,
             signerAddress,
             signature,
@@ -489,7 +489,7 @@ contract MixinSignatureValidator is
         // a correctly formatted but incorrect signature.
         if (signatureType == SignatureType.Invalid) {
             if (signature.length != 1) {
-                rrevert(SignatureError(
+                _rrevert(SignatureError(
                     SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
@@ -502,7 +502,7 @@ contract MixinSignatureValidator is
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
             if (signature.length != 66) {
-                rrevert(SignatureError(
+                _rrevert(SignatureError(
                     SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
@@ -524,7 +524,7 @@ contract MixinSignatureValidator is
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
             if (signature.length != 66) {
-                rrevert(SignatureError(
+                _rrevert(SignatureError(
                     SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,

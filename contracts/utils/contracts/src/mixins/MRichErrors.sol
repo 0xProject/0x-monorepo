@@ -40,7 +40,7 @@ contract MRichErrors is
 
     /// @dev Reverts an encoded rich revert reason `errorData`.
     /// @param errorData ABI encoded error data.
-    function rrevert(bytes memory errorData)
+    function _rrevert(bytes memory errorData)
         internal
         pure;
 }

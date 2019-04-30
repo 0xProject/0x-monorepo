@@ -53,7 +53,7 @@ contract MSignatureValidator is
     /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the signature is valid for the given hash and signer.
-    function isValidOrderWithHashSignature(
+    function _isValidOrderWithHashSignature(
         LibOrder.Order memory order,
         bytes32 orderHash,
         address signerAddress,

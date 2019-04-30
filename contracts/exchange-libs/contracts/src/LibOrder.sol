@@ -86,14 +86,14 @@ contract LibOrder is
         view
         returns (bytes32 orderHash)
     {
-        orderHash = hashEIP712ExchangeMessage(hashOrder(order));
+        orderHash = _hashEIP712ExchangeMessage(_hashOrder(order));
         return orderHash;
     }
 
     /// @dev Calculates EIP712 hash of the order.
     /// @param order The order structure.
     /// @return EIP712 hash of the order.
-    function hashOrder(Order memory order)
+    function _hashOrder(Order memory order)
         internal
         pure
         returns (bytes32 result)

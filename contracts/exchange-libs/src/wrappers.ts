@@ -4,7 +4,6 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/lib_abi_encoder';
-export * from '../generated-wrappers/lib_asset_proxy_errors';
 export * from '../generated-wrappers/lib_constants';
 export * from '../generated-wrappers/lib_e_i_p712_exchange_domain';
 export * from '../generated-wrappers/lib_fill_results';
