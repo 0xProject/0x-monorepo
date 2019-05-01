@@ -3,7 +3,7 @@ pragma solidity ^0.5.5;
 
 contract SafeMath {
 
-    function safeMul(uint256 a, uint256 b)
+    function _safeMul(uint256 a, uint256 b)
         internal
         pure
         returns (uint256)
@@ -19,7 +19,7 @@ contract SafeMath {
         return c;
     }
 
-    function safeDiv(uint256 a, uint256 b)
+    function _safeDiv(uint256 a, uint256 b)
         internal
         pure
         returns (uint256)
@@ -28,7 +28,7 @@ contract SafeMath {
         return c;
     }
 
-    function safeSub(uint256 a, uint256 b)
+    function _safeSub(uint256 a, uint256 b)
         internal
         pure
         returns (uint256)
@@ -40,7 +40,7 @@ contract SafeMath {
         return a - b;
     }
 
-    function safeAdd(uint256 a, uint256 b)
+    function _safeAdd(uint256 a, uint256 b)
         internal
         pure
         returns (uint256)
@@ -53,7 +53,7 @@ contract SafeMath {
         return c;
     }
 
-    function max64(uint64 a, uint64 b)
+    function _max256(uint256 a, uint256 b)
         internal
         pure
         returns (uint256)
@@ -61,23 +61,7 @@ contract SafeMath {
         return a >= b ? a : b;
     }
 
-    function min64(uint64 a, uint64 b)
-        internal
-        pure
-        returns (uint256)
-    {
-        return a < b ? a : b;
-    }
-
-    function max256(uint256 a, uint256 b)
-        internal
-        pure
-        returns (uint256)
-    {
-        return a >= b ? a : b;
-    }
-
-    function min256(uint256 a, uint256 b)
+    function _min256(uint256 a, uint256 b)
         internal
         pure
         returns (uint256)
