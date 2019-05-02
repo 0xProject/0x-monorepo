@@ -13,7 +13,9 @@ import 'mocha';
 import * as nock from 'nock';
 
 import { ContractWrappers } from '../src';
-import { CoordinatorServerApprovalRawResponse, CoordinatorServerCancellationResponse, CoordinatorServerError, CoordinatorServerErrorMsg } from '../src/types';
+import {
+    CoordinatorServerErrorMsg,
+} from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -57,12 +59,9 @@ describe('CoordinatorWrapper', () => {
     let coordinatorRegistryInstance: CoordinatorRegistryContract;
 
     // for testing server error responses
-    let serverInternalError: any;
     let serverValidationError: any;
     let serverCancellationSuccess: any;
     let serverApprovalSuccess: any;
-    let expectedCancellationError: any;
-    let expectedSuccessError: any;
 
     before(async () => {
         const contractAddresses = await migrateOnceAsync();
@@ -107,21 +106,21 @@ describe('CoordinatorWrapper', () => {
                     FEE_RECIPIENTS: [
                         {
                             ADDRESS: feeRecipientAddressOne,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddressOne)].toString(
-                                'hex',
-                            ),
+                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
+                                userAddresses.indexOf(feeRecipientAddressOne)
+                            ].toString('hex'),
                         },
                         {
                             ADDRESS: feeRecipientAddressTwo,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddressTwo)].toString(
-                                'hex',
-                            ),
+                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
+                                userAddresses.indexOf(feeRecipientAddressTwo)
+                            ].toString('hex'),
                         },
                         {
                             ADDRESS: feeRecipientAddressThree,
-                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(feeRecipientAddressThree)].toString(
-                                'hex',
-                            ),
+                            PRIVATE_KEY: constants.TESTRPC_PRIVATE_KEYS[
+                                userAddresses.indexOf(feeRecipientAddressThree)
+                            ].toString('hex'),
                         },
                     ],
                     // Ethereum RPC url, only used in the default instantiation in 0x-coordinator-server/server.js
@@ -431,29 +430,40 @@ describe('CoordinatorWrapper', () => {
     });
     describe('coordinator server errors', () => {
         beforeEach('setup', () => {
-            serverValidationError = {'code': 100, 'reason': 'Validation Failed', 'validationErrors': [{'field': 'signedTransaction', 'code': 1011, 'reason': 'A transaction can only be approved once. To request approval to perform the same actions, generate and sign an identical transaction with a different salt value.'}]};
+            serverValidationError = {
+                code: 100,
+                reason: 'Validation Failed',
+                validationErrors: [
+                    {
+                        field: 'signedTransaction',
+                        code: 1011,
+                        reason:
+                            'A transaction can only be approved once. To request approval to perform the same actions, generate and sign an identical transaction with a different salt value.',
+                    },
+                ],
+            };
             serverInternalError = {};
             serverCancellationSuccess = {
-                'outstandingFillSignatures': [
-                  {
-                    'orderHash': '0xd1dc61f3e7e5f41d72beae7863487beea108971de678ca00d903756f842ef3ce',
-                    'approvalSignatures': [
-                      '0x1c7383ca8ebd6de8b5b20b1c2d49bea166df7dfe4af1932c9c52ec07334e859cf2176901da35f4480ceb3ab63d8d0339d851c31929c40d88752689b9a8a535671303',
-                    ],
-                    'expirationTimeSeconds': 1552390380,
-                    'takerAssetFillAmount': 100000000000000000000,
-                  },
+                outstandingFillSignatures: [
+                    {
+                        orderHash: '0xd1dc61f3e7e5f41d72beae7863487beea108971de678ca00d903756f842ef3ce',
+                        approvalSignatures: [
+                            '0x1c7383ca8ebd6de8b5b20b1c2d49bea166df7dfe4af1932c9c52ec07334e859cf2176901da35f4480ceb3ab63d8d0339d851c31929c40d88752689b9a8a535671303',
+                        ],
+                        expirationTimeSeconds: 1552390380,
+                        takerAssetFillAmount: 100000000000000000000,
+                    },
                 ],
-                'cancellationSignatures': [
-                  '0x2ea3117a8ebd6de8b5b20b1c2d49bea166df7dfe4af1932c9c52ec07334e859cf2176901da35f4480ceb3ab63d8d0339d851c31929c40d88752689b9a855b5a7b401',
+                cancellationSignatures: [
+                    '0x2ea3117a8ebd6de8b5b20b1c2d49bea166df7dfe4af1932c9c52ec07334e859cf2176901da35f4480ceb3ab63d8d0339d851c31929c40d88752689b9a855b5a7b401',
                 ],
-              };
+            };
             serverApprovalSuccess = {
-                'signatures': [
-                  '0x1cc07d7ae39679690a91418d46491520f058e4fb14debdf2e98f2376b3970de8512ace44af0be6d1c65617f7aae8c2364ff63f241515ee1559c3eeecb0f671d9e903',
+                signatures: [
+                    '0x1cc07d7ae39679690a91418d46491520f058e4fb14debdf2e98f2376b3970de8512ace44af0be6d1c65617f7aae8c2364ff63f241515ee1559c3eeecb0f671d9e903',
                 ],
-                'expirationTimeSeconds': 1552390014,
-              };
+                expirationTimeSeconds: 1552390014,
+            };
 
             nock(`${coordinatorEndpoint}${coordinatorPort}`)
                 .post('/v1/request_transaction', () => true)
@@ -463,42 +473,45 @@ describe('CoordinatorWrapper', () => {
                 .reply(400, serverValidationError);
         });
         it('should throw error when softCancel fails', done => {
-            contractWrappers.coordinator.softCancelOrderAsync(signedOrder)
-            .then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
-                expect(err.approvedOrders).to.be.empty('array');
-                expect(err.cancellations).to.be.empty('array');
+            contractWrappers.coordinator
+                .softCancelOrderAsync(signedOrder)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
+                    expect(err.approvedOrders).to.be.empty('array');
+                    expect(err.cancellations).to.be.empty('array');
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal([signedOrder]);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                done()
-            });
-
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal([signedOrder]);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    done();
+                });
         });
         it('should throw error when batch soft cancel fails with single coordinator operator', done => {
             const orders = [signedOrder, signedOrderWithDifferentFeeRecipient];
-            contractWrappers.coordinator.batchSoftCancelOrdersAsync(orders)
-            .then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
-                expect(err.approvedOrders).to.be.empty('array');
-                expect(err.cancellations).to.be.empty('array');
+            contractWrappers.coordinator
+                .batchSoftCancelOrdersAsync(orders)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
+                    expect(err.approvedOrders).to.be.empty('array');
+                    expect(err.cancellations).to.be.empty('array');
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal(orders);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                done()
-            });
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal(orders);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    done();
+                });
         });
         it('should throw consolidated error when batch soft cancel partially fails with different coordinator operators', done => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
@@ -509,24 +522,24 @@ describe('CoordinatorWrapper', () => {
                 .reply(200, serverCancellationSuccess);
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
-            contractWrappers.coordinator.batchSoftCancelOrdersAsync(
-                signedOrders,
-            ).then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
-                expect(err.approvedOrders).to.be.empty('array');
-                expect(err.cancellations).to.deep.equal([serverCancellationSuccess]);
+            contractWrappers.coordinator
+                .batchSoftCancelOrdersAsync(signedOrders)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
+                    expect(err.approvedOrders).to.be.empty('array');
+                    expect(err.cancellations).to.deep.equal([serverCancellationSuccess]);
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal([signedOrder]);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                done();
-            });
-
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal([signedOrder]);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    done();
+                });
         });
         it('should throw consolidated error when batch soft cancel totally fails with different coordinator operators', done => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
@@ -537,10 +550,12 @@ describe('CoordinatorWrapper', () => {
                 .reply(400, serverValidationError);
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
-            contractWrappers.coordinator.batchSoftCancelOrdersAsync(signedOrders)
+            contractWrappers.coordinator
+                .batchSoftCancelOrdersAsync(signedOrders)
                 .then(res => {
                     expect(res).to.be.undefined();
-                }).catch(err => {
+                })
+                .catch(err => {
                     expect(err.message).equal(CoordinatorServerErrorMsg.CancellationFailed);
                     expect(err.approvedOrders).to.be.empty('array');
                     expect(err.cancellations).to.be.empty('array');
@@ -557,53 +572,53 @@ describe('CoordinatorWrapper', () => {
                     expect(anotherErrorBody.status).to.equal(400);
                     expect(anotherErrorBody.error).to.deep.equal(serverValidationError);
                     expect(anotherErrorBody.orders).to.deep.equal([signedOrderWithDifferentCoordinatorOperator]);
-                    expect(anotherErrorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${anotherCoordinatorPort}`);
-                    done()
+                    expect(anotherErrorBody.coordinatorOperator).to.equal(
+                        `${coordinatorEndpoint}${anotherCoordinatorPort}`,
+                    );
+                    done();
                 });
-
         });
         it('should throw error when a fill fails', done => {
-            contractWrappers.coordinator.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress)
-            .then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
-                expect(err.approvedOrders).to.be.empty('array');
-                expect(err.cancellations).to.be.empty('array');
+            contractWrappers.coordinator
+                .fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
+                    expect(err.approvedOrders).to.be.empty('array');
+                    expect(err.cancellations).to.be.empty('array');
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal([signedOrder]);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                done()
-            });
-
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal([signedOrder]);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    done();
+                });
         });
         it('should throw error when batch fill fails with single coordinator operator', done => {
             const signedOrders = [signedOrder, signedOrderWithDifferentFeeRecipient];
             const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
-            contractWrappers.coordinator.batchFillOrdersAsync(
-                signedOrders,
-                takerAssetFillAmounts,
-                takerAddress,
-            ).then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
-                expect(err.approvedOrders).to.be.empty('array');
-                expect(err.cancellations).to.be.empty('array');
+            contractWrappers.coordinator
+                .batchFillOrdersAsync(signedOrders, takerAssetFillAmounts, takerAddress)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
+                    expect(err.approvedOrders).to.be.empty('array');
+                    expect(err.cancellations).to.be.empty('array');
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal(signedOrders);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                done()
-            });
-
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal(signedOrders);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    done();
+                });
         });
         it('should throw consolidated error when batch fill partially fails with different coordinator operators', done => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
@@ -615,25 +630,24 @@ describe('CoordinatorWrapper', () => {
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
             const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
-            contractWrappers.coordinator.batchFillOrdersAsync(
-                signedOrders,
-                takerAssetFillAmounts,
-                takerAddress,
-            ).then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
-                expect(err.approvedOrders).to.deep.equal([signedOrderWithDifferentCoordinatorOperator]);
-                expect(err.cancellations).to.be.empty('array');
+            contractWrappers.coordinator
+                .batchFillOrdersAsync(signedOrders, takerAssetFillAmounts, takerAddress)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
+                    expect(err.approvedOrders).to.deep.equal([signedOrderWithDifferentCoordinatorOperator]);
+                    expect(err.cancellations).to.be.empty('array');
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal([signedOrder]);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                done()
-            });
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal([signedOrder]);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    done();
+                });
         });
         it('should throw consolidated error when batch fill totally fails with different coordinator operators', done => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
@@ -645,32 +659,33 @@ describe('CoordinatorWrapper', () => {
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
             const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
-            contractWrappers.coordinator.batchFillOrdersAsync(
-                signedOrders,
-                takerAssetFillAmounts,
-                takerAddress,
-            ).then(res => {
-                expect(res).to.be.undefined();
-            }).catch(err => {
-                expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
-                expect(err.approvedOrders).to.be.empty('array');
-                expect(err.cancellations).to.be.empty('array');
+            contractWrappers.coordinator
+                .batchFillOrdersAsync(signedOrders, takerAssetFillAmounts, takerAddress)
+                .then(res => {
+                    expect(res).to.be.undefined();
+                })
+                .catch(err => {
+                    expect(err.message).equal(CoordinatorServerErrorMsg.FillFailed);
+                    expect(err.approvedOrders).to.be.empty('array');
+                    expect(err.cancellations).to.be.empty('array');
 
-                const errorBody = err.errors[0];
-                expect(errorBody.isError).to.be.true();
-                expect(errorBody.status).to.equal(400);
-                expect(errorBody.error).to.deep.equal(serverValidationError);
-                expect(errorBody.orders).to.deep.equal([signedOrder]);
-                expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
+                    const errorBody = err.errors[0];
+                    expect(errorBody.isError).to.be.true();
+                    expect(errorBody.status).to.equal(400);
+                    expect(errorBody.error).to.deep.equal(serverValidationError);
+                    expect(errorBody.orders).to.deep.equal([signedOrder]);
+                    expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
 
-                const anotherErrorBody = err.errors[1];
-                expect(anotherErrorBody.isError).to.be.true();
-                expect(anotherErrorBody.status).to.equal(400);
-                expect(anotherErrorBody.error).to.deep.equal(serverValidationError);
-                expect(anotherErrorBody.orders).to.deep.equal([signedOrderWithDifferentCoordinatorOperator]);
-                expect(anotherErrorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${anotherCoordinatorPort}`);
-                done()
-            });
+                    const anotherErrorBody = err.errors[1];
+                    expect(anotherErrorBody.isError).to.be.true();
+                    expect(anotherErrorBody.status).to.equal(400);
+                    expect(anotherErrorBody.error).to.deep.equal(serverValidationError);
+                    expect(anotherErrorBody.orders).to.deep.equal([signedOrderWithDifferentCoordinatorOperator]);
+                    expect(anotherErrorBody.coordinatorOperator).to.equal(
+                        `${coordinatorEndpoint}${anotherCoordinatorPort}`,
+                    );
+                    done();
+                });
         });
     });
 });

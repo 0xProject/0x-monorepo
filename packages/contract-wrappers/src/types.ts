@@ -265,7 +265,12 @@ export class CoordinatorServerError extends Error {
     public approvedOrders?: SignedOrder[] = [];
     public cancellations?: CoordinatorServerCancellationResponse[] = [];
     public errors: CoordinatorServerResponse[];
-    constructor(message: CoordinatorServerErrorMsg, approvedOrders: SignedOrder[], cancellations: CoordinatorServerCancellationResponse[], errors: CoordinatorServerResponse[]) {
+    constructor(
+        message: CoordinatorServerErrorMsg,
+        approvedOrders: SignedOrder[],
+        cancellations: CoordinatorServerCancellationResponse[],
+        errors: CoordinatorServerResponse[],
+    ) {
         super();
         this.message = message;
         this.approvedOrders = approvedOrders;

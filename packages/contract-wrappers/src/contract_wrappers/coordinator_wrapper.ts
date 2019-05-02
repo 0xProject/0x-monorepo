@@ -456,8 +456,6 @@ export class CoordinatorWrapper extends ContractWrapper {
                 errorResponses = errorResponses.concat(response);
                 numErrors++;
             } else {
-
-
                 successResponses = successResponses.concat(response.body as CoordinatorServerCancellationResponse);
             }
         }
