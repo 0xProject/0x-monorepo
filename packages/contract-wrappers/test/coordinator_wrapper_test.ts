@@ -442,7 +442,6 @@ describe('CoordinatorWrapper', () => {
                     },
                 ],
             };
-            serverInternalError = {};
             serverCancellationSuccess = {
                 outstandingFillSignatures: [
                     {
