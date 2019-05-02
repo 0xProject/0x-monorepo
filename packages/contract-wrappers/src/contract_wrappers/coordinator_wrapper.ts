@@ -10,10 +10,11 @@ import { ContractAbi } from 'ethereum-types';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import {
-    CoordinatorError,
     CoordinatorServerApprovalRawResponse,
     CoordinatorServerApprovalResponse,
     CoordinatorServerCancellationResponse,
+    CoordinatorServerError,
+    CoordinatorServerErrorMsg,
     CoordinatorServerResponse,
     OrderTransactionOpts,
 } from '../types';
@@ -388,7 +389,6 @@ export class CoordinatorWrapper extends ContractWrapper {
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
      * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
      */
-    @decorators.asyncZeroExErrorHandler
     public async softCancelOrderAsync(order: Order | SignedOrder): Promise<CoordinatorServerCancellationResponse> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isETHAddressHex('feeRecipientAddress', order.feeRecipientAddress);
@@ -400,17 +400,17 @@ export class CoordinatorWrapper extends ContractWrapper {
 
         const response = await this._executeServerRequestAsync(transaction, order.makerAddress, endpoint);
         if (response.isError) {
-            const error: CoordinatorError = {
-                message: `Could not cancel order, see 'errors' for more info`,
-                cancellations: [],
-                errors: [
+            throw new CoordinatorServerError(
+                CoordinatorServerErrorMsg.CancellationFailed,
+                [],
+                [],
+                [
                     {
                         ...response,
                         orders: [order],
                     },
                 ],
-            };
-            throw new Error(JSON.stringify(error));
+            );
         } else {
             return response.body as CoordinatorServerCancellationResponse;
         }
@@ -421,7 +421,6 @@ export class CoordinatorWrapper extends ContractWrapper {
      * @param   orders                An array of orders to cancel.
      * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
      */
-    @decorators.asyncZeroExErrorHandler
     public async batchSoftCancelOrdersAsync(orders: SignedOrder[]): Promise<CoordinatorServerCancellationResponse[]> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         const makerAddress = getMakerAddressOrThrow(orders);
@@ -457,9 +456,9 @@ export class CoordinatorWrapper extends ContractWrapper {
                 errorResponses = errorResponses.concat(response);
                 numErrors++;
             } else {
-                successResponses = successResponses.concat({
-                    ...(response.body as CoordinatorServerCancellationResponse),
-                });
+
+
+                successResponses = successResponses.concat(response.body as CoordinatorServerCancellationResponse);
             }
         }
 
@@ -481,12 +480,12 @@ export class CoordinatorWrapper extends ContractWrapper {
             });
 
             // return errors and approvals
-            const error: CoordinatorError = {
-                message: `Only some orders were successfully cancelled. For more details, see 'errors'. Successful cancellations are shown in 'cancellations'.`,
-                cancellations: successResponses,
-                errors: errorsWithOrders,
-            };
-            throw new Error(JSON.stringify(error));
+            throw new CoordinatorServerError(
+                CoordinatorServerErrorMsg.CancellationFailed,
+                [],
+                successResponses,
+                errorsWithOrders,
+            );
         }
     }
 
@@ -715,12 +714,12 @@ export class CoordinatorWrapper extends ContractWrapper {
             });
 
             // return errors and approvals
-            const error: CoordinatorError = {
-                message: `Only some orders obtained approvals. Transaction has been abandoned. For more details, see 'errors'. Resolve errors or resubmit with only approved orders (a new ZeroEx Transaction will have to be signed). `,
+            throw new CoordinatorServerError(
+                CoordinatorServerErrorMsg.FillFailed,
                 approvedOrders,
-                errors: errorsWithOrders,
-            };
-            throw new Error(JSON.stringify(error));
+                [],
+                errorsWithOrders,
+            );
         }
         function formatRawResponse(
             rawResponse: CoordinatorServerApprovalRawResponse,
@@ -790,6 +789,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         });
 
         const isError = response.status !== HTTP_OK;
+
         let json;
         try {
             json = await response.json();
