@@ -12,9 +12,8 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         keywords: '',
     },
     EXPLORE: {
-        title: 'Explore the 0x Ecosystem',
-        description:
-            '0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.',
+        title: '0x Explore: Trade on 0x Relayers',
+        description: 'Check out the wide range of projects and businesses building in the 0x ecosystem!',
         keywords: '',
     },
     WHY: {

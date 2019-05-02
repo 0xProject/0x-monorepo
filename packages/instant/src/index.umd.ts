@@ -1,5 +1,6 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { assetDataUtils } from '@0x/order-utils';
+import { AssetProxyId } from '@0x/types';
 import { providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -151,9 +152,18 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     window.onpopstate = onPopStateHandler;
 };
 
+export const ERC721_PROXY_ID = AssetProxyId.ERC721;
+
+export const ERC20_PROXY_ID = AssetProxyId.ERC20;
+
 export const assetDataForERC20TokenAddress = (tokenAddress: string): string => {
     assert.isETHAddressHex('tokenAddress', tokenAddress);
     return assetDataUtils.encodeERC20AssetData(tokenAddress);
+};
+
+export const assetDataForERC721TokenAddress = (tokenAddress: string, tokenId: string | number): string => {
+    assert.isETHAddressHex('tokenAddress', tokenAddress);
+    return assetDataUtils.encodeERC721AssetData(tokenAddress, new BigNumber(tokenId));
 };
 
 export const hasMetaDataForAssetData = (assetData: string): boolean => {

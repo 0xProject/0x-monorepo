@@ -9,6 +9,7 @@
         "generated-artifacts/IAssetData.json",
         "generated-artifacts/IAssetProxy.json",
         "generated-artifacts/IAuthorizable.json",
+        "generated-artifacts/LibAssetData.json",
         "generated-artifacts/MixinAuthorizable.json",
         "generated-artifacts/MultiAssetProxy.json"
     ],

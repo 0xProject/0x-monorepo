@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Update tests to use contract-built-in `awaitTransactionSuccessAsync`",
+                "pr": 1797
+            }
+        ]
+    },
+    {
         "version": "2.1.1",
         "changes": [
             {

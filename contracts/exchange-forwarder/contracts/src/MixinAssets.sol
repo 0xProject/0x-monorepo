@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
@@ -35,13 +35,13 @@ contract MixinAssets is
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
 
-    /// @dev Withdraws assets from this contract. The contract requires a ZRX balance in order to 
+    /// @dev Withdraws assets from this contract. The contract requires a ZRX balance in order to
     ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
     ///      used to withdraw assets that were accidentally sent to this contract.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of ERC20 token to withdraw.
     function withdrawAsset(
-        bytes assetData,
+        bytes calldata assetData,
         uint256 amount
     )
         external
@@ -84,7 +84,7 @@ contract MixinAssets is
         // Transfer tokens.
         // We do a raw call so we can check the success separate
         // from the return data.
-        bool success = token.call(abi.encodeWithSelector(
+        (bool success,) = token.call(abi.encodeWithSelector(
             ERC20_TRANSFER_SELECTOR,
             msg.sender,
             amount
@@ -93,7 +93,7 @@ contract MixinAssets is
             success,
             "TRANSFER_FAILED"
         );
-        
+
         // Check return data.
         // If there is no return data, we assume the token incorrectly
         // does not return a bool. In this case we expect it to revert

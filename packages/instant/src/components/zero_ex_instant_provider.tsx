@@ -1,3 +1,4 @@
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -46,22 +47,34 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             ..._.mapKeys(props.additionalAssetMetaDataMap || {}, (value, key) => key.toLowerCase()),
             ...defaultState.assetMetaDataMap,
         };
+
+        const selectedAsset =
+            props.defaultSelectedAssetData === undefined
+                ? undefined
+                : assetUtils.createAssetFromAssetDataOrThrow(
+                      props.defaultSelectedAssetData,
+                      completeAssetMetaDataMap,
+                      networkId,
+                  );
+
+        let selectedAssetUnitAmount: BigNumber | undefined;
+        if (selectedAsset !== undefined) {
+            if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+                selectedAssetUnitAmount =
+                    props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount);
+            } else if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC721) {
+                selectedAssetUnitAmount = new BigNumber(1);
+            }
+        }
+
         // construct the final state
         const storeStateFromProps: State = {
             ...defaultState,
             providerState,
             network: networkId,
             walletDisplayName: props.walletDisplayName,
-            selectedAsset:
-                props.defaultSelectedAssetData === undefined
-                    ? undefined
-                    : assetUtils.createAssetFromAssetDataOrThrow(
-                          props.defaultSelectedAssetData,
-                          completeAssetMetaDataMap,
-                          networkId,
-                      ),
-            selectedAssetUnitAmount:
-                props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount),
+            selectedAsset,
+            selectedAssetUnitAmount,
             availableAssets:
                 props.availableAssetDatas === undefined
                     ? undefined

@@ -9,6 +9,7 @@ export interface FlexProps {
     align?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
     width?: MediaChoice;
     height?: MediaChoice;
+    overflow?: string;
     backgroundColor?: ColorOption;
     inline?: boolean;
     flexGrow?: number | string;
@@ -25,6 +26,7 @@ export const Flex = styled.div<FlexProps>`
         background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
         ${props => (props.width ? stylesForMedia('width', props.width) : '')}
         ${props => (props.height ? stylesForMedia('height', props.height) : '')}
+        ${props => (props.overflow ? `overflow: ${props.overflow}` : '')};
     }
 `;
 

@@ -21,21 +21,7 @@ class OrderSchema(object):
       attribute_map (dict): The key is attribute name
                             and the value is json key in definition.
     """
-    openapi_types = {
-        "maker_address": "str",
-        "taker_address": "str",
-        "maker_fee": "str",
-        "taker_fee": "str",
-        "sender_address": "str",
-        "maker_asset_amount": "str",
-        "taker_asset_amount": "str",
-        "maker_asset_data": "str",
-        "taker_asset_data": "str",
-        "salt": "str",
-        "exchange_address": "str",
-        "fee_recipient_address": "str",
-        "expiration_time_seconds": "str",
-    }
+    openapi_types = {}
 
     attribute_map = {
         "maker_address": "makerAddress",

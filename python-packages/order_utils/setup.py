@@ -148,11 +148,14 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-order-utils",
-    version="1.0.1",
+    version="2.0.0",
     description="Order utilities for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
+    url=(
+        "https://github.com/0xProject/0x-monorepo/tree/development"
+        "/python-packages/order_utils"
+    ),
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
@@ -181,6 +184,7 @@ setup(
             "black",
             "coverage",
             "coveralls",
+            "deprecated",
             "mypy",
             "mypy_extensions",
             "pycodestyle",

@@ -1,3 +1,4 @@
+import { AssetProxyId } from '@0x/types';
 import * as React from 'react';
 
 import PoweredByLogo from '../assets/powered_by_0x.svg';
@@ -11,7 +12,7 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
-import { SlideAnimationState } from '../types';
+import { Asset, SlideAnimationState } from '../types';
 import { analytics, TokenSelectorClosedVia } from '../util/analytics';
 
 import { CSSReset } from './css_reset';
@@ -84,11 +85,14 @@ export class ZeroExInstantContainer extends React.PureComponent<
             </React.Fragment>
         );
     }
-    private readonly _handleSymbolClick = (): void => {
-        analytics.trackTokenSelectorOpened();
-        this.setState({
-            tokenSelectionPanelAnimationState: 'slidIn',
-        });
+    private readonly _handleSymbolClick = (asset?: Asset): void => {
+        // TODO: If ERC721 link open sea or allow to choose another ERC721?
+        if (asset === undefined || asset.metaData.assetProxyId === AssetProxyId.ERC20) {
+            analytics.trackTokenSelectorOpened();
+            this.setState({
+                tokenSelectionPanelAnimationState: 'slidIn',
+            });
+        }
     };
     private readonly _handlePanelCloseClickedX = (): void => {
         this._handlePanelClose(TokenSelectorClosedVia.ClickedX);

@@ -1,20 +1,18 @@
 .. source for the sphinx-generated build/docs/web/index.html
 
-Python zero_ex.sra_client.api_client
-====================================
+Python zero_ex.sra_client
+=========================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: sra_client
+.. automodule:: zero_ex.sra_client
 
-----
+zero_ex.sra_client.DefaultApi
+=============================
 
-API
----
-
-.. automodule:: sra_client.api.default_api
+.. autoclass:: zero_ex.sra_client.DefaultApi
    :members:
 
 Indices and tables

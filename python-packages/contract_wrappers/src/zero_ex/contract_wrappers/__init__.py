@@ -1,350 +1,290 @@
 """Python wrappers for interacting with 0x smart contracts.
 
-The smart contract wrappers have simplified interfaces,
-and perform client-side validation on transactions and throw
-helpful error messages.
+The smart contract wrappers have simplified interfaces, performing client-side
+validation on transactions, and throwing helpful error messages.
 
-Installing
-==========
-Install the 0x-contract-wrappers with pip:
+Setup
+-----
 
-``pip install 0x-contract-wrappers``
+Install the 0x-contract-wrappers with pip::
 
-Demo
-====
-We will demonstrate some basic steps to help you get started trading on 0x.
+    pip install 0x-contract-wrappers
 
-Importing packages
-------------------
+We need a Web3 provider to allow us to talk to the blockchain. You can
+read `more about providers in the Web3.py documentation
+<https://web3py.readthedocs.io/en/stable/providers.htm>`_.  The examples below
+assume there's a local instance of Ganache listening on port 8545:
 
-The first step to interact with the 0x smart contract is to import
-the following relevant packages:
+>>> from web3 import HTTPProvider
+>>> ganache = HTTPProvider("http://localhost:8545")
 
->>> import random
->>> from eth_utils import to_checksum_address
->>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
->>> from zero_ex.contract_wrappers import (
-...     ERC20Token, Exchange, TxParams
-... )
->>> from zero_ex.order_utils import(
-...     sign_hash, generate_order_hash_hex)
+To replicate these examples, one can use the `0xorg/ganache-cli`:code: docker
+image, which comes with the 0x contracts pre-deployed.  To start it::
 
-Provider
+    docker run docker run -d -p 8545:8545 0xorg/ganache-cli
+
+Accounts
 --------
 
-We need a web3 provider to allow us to talk to the blockchain. You can
-read more about providers
-`here <https://web3py.readthedocs.io/en/stable/providers.htm>`__.  In our
-case, we are using our local node (ganache), we will connect to our provider
-at http://localhost:8545.
+In the examples below, we will use the accounts provided by Ganache, which are
+accessible through the Web3 instance. The first account will be the maker, and
+the second account will be the taker.
 
->>> from web3 import HTTPProvider, Web3
->>> provider = HTTPProvider("http://localhost:8545")
->>> # Create a web3 instance from the provider
->>> web3_instance = Web3(provider)
+>>> from web3 import Web3
+>>> accounts = Web3(ganache).eth.accounts
+>>> maker_address = accounts[0].lower()
+>>> taker_address = accounts[1].lower()
 
-Declaring Decimals and Addresses
----------------------------------
+In the examples below, we'll use the optional `tx_params`:code: parameter to
+the contract calls, in order to specify which account each transaction is to
+originate from.  Under normal circumstances, your provider will have a default
+account which will be used if you decline to specify an originating address.
+For convenience, a `TxParams`:code: class is provided:
 
-Since we are dealing with a few contracts, we will specify them now to
-reduce the syntax load. Fortunately for us, the 0x python packages comes
-with a couple of contract addresses that can be useful to have on hand.
-One thing that is important to remember is that there are no decimals in
-the Ethereum virtual machine (EVM), which means you always need to keep
-track of how many "decimals" each token possesses. Since we will sell some
-ZRX for some ETH and since they both have 18 decimals, we can use a shared
-constant. Let us first get the addresses of the WETH and ZRX tokens on
-the test network Ganache:
+>>> from zero_ex.contract_wrappers import TxParams
 
->>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
->>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
+Contract Addresses
+------------------
 
-Approvals and WETH Balance
---------------------------
+The `0x-contract-addresses`:code: package (which is used by
+`0x-contract-wrappers`:code: and thus gets installed along with it) provides
+the addresses of the 0x contracts on each network, including those that come
+pre-deployed deployed in the `0xorg/ganache-cli`:code: docker image.  Let's
+capture the addresses we'll use throughout the examples below:
 
-To trade on 0x, the participants (maker and taker) require a small
-amount of initial set up. They need to approve the 0x smart contracts
-to move funds on their behalf. In order to give 0x protocol smart contract
-access to funds, we need to set allowances (you can read about allowances
-`here <https://tokenallowance.io/>`__).
-In our demo the taker asset is WETH (or Wrapped ETH, you can read about WETH
-`here <https://weth.io/>`__).,
-as ETH is not an ERC20 token it must first be converted into WETH to be
-used by 0x. Concretely, "converting" ETH to WETH means that we will deposit
-some ETH in a smart contract acting as a ERC20 wrapper. In exchange of
-depositing ETH, we will get some ERC20 compliant tokens called WETH at a
-1:1 conversion rate. For example, depositing 10 ETH will give us back 10 WETH
-and we can revert the process at any time.
+>>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+>>> weth_address     = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+>>> zrx_address      = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
+>>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
 
-In this demo, we will use test accounts on Ganache, which are accessible
-through the Web3 instance. The first account will be the maker, and the second
-account will be the taker.
+Wrapping ETH
+------------
 
->>> import pprint
->>> # Instantiate an instance of the erc20_wrapper with the provider
->>> erc20_wrapper = ERC20Token(provider)
->>> # Get accounts from the web 3 instance
->>> accounts = web3_instance.eth.accounts
->>> pprint.pprint(accounts)
-['0x5409ED021D9299bf6814279A6A1411A7e866A631',
- '0x6Ecbe1DB9EF729CBe972C83Fb886247691Fb6beb',
- '0xE36Ea790bc9d7AB70C55260C66D52b1eca985f84',
- '0xE834EC434DABA538cd1b9Fe1582052B880BD7e63',
- '0x78dc5D2D739606d31509C31d654056A45185ECb6',
- '0xA8dDa8d7F5310E4A9E24F8eBA77E091Ac264f872',
- '0x06cEf8E666768cC40Cc78CF93d9611019dDcB628',
- '0x4404ac8bd8F9618D27Ad2f1485AA1B2cFD82482D',
- '0x7457d5E02197480Db681D3fdF256c7acA21bDc12',
- '0x91c987bf62D25945dB517BDAa840A6c661374402']
+The examples below demonstrate constructing an order with the maker providing
+ZRX in exchange for the taker providing some WETH.  For the order to be valid,
+our Taker first needs to wrap some ether as WETH.
 
->>> maker = accounts[0]
->>> taker = accounts[1]
-
-Now we need to allow the 0x ERC20 Proxy to move WETH on behalf of our
-maker and taker accounts. Let's let our maker and taker here approve
-the 0x ERC20 Proxy an allowance of 100 WETH.
-
->>> # Multiplying by 10 ** 18 to account for decimals
->>> ALLOWANCE = (100) * 10 ** 18
->>> erc20_proxy = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
-
->>> # Set allowance to the erc20_proxy from maker account
->>> tx = erc20_wrapper.approve(
-...     weth_address,
-...     erc20_proxy,
-...     ALLOWANCE,
-...     tx_params=TxParams(from_=maker),
-... )
->>> # Check the allowance given to the 0x ERC20 Proxy
->>> maker_allowance = erc20_wrapper.allowance(
-...     weth_address,
-...     maker,
-...     erc20_proxy,
-... )
->>> (maker_allowance) // 10 ** 18
-100
-
->>> # Set allowance to the erc20_proxy from taker account
->>> tx = erc20_wrapper.approve(
-...     weth_address,
-...     erc20_proxy,
-...     ALLOWANCE,
-...     tx_params=TxParams(from_=taker),
-... )
->>> # Check the allowance given to the 0x ERC20 Proxy
->>> taker_allowance = erc20_wrapper.allowance(
-...     weth_address,
-...     taker,
-...     erc20_proxy,
-... )
->>> (taker_allowance) // 10 ** 18
-100
-
-To give our accounts some initial WETH balance, we'll need
-to *wrap* some ETH to get WETH. The WETH token contract
-contains two extra methods, not included in the ERC20 token
-standard, so we will grab the ABI for the WETH Token contract
-and call the deposit method to wrap our ETH. Here is how we do so.
+First get an instance of the WETH contract on the network:
 
 >>> from zero_ex.contract_artifacts import abi_by_name
->>> # Converting 0.5 ETH to base unit wei
->>> deposit_amount = int(0.5 * 10 ** 18)
+>>> weth_instance = Web3(ganache).eth.contract(
+...    address=Web3.toChecksumAddress(weth_address),
+...    abi=abi_by_name("WETH9")
+... )
 
->>> # Let's have our maker wrap 1 ETH for 1 WETH
->>> tx = erc20_wrapper.execute_method(
-... address=weth_address,
-... abi=abi_by_name("WETH9"),
-... method="deposit",
-... tx_params=TxParams(from_=maker, value=deposit_amount))
->>> # Checking our maker's WETH balance
->>> maker_balance = erc20_wrapper.balance_of(
-...     token_address=weth_address, owner_address=maker)
->>> (maker_balance) / 10 ** 18  # doctest: +SKIP
-0.5
+Then have the Taker deposit some ETH into that contract, which will result in
+it receiving WETH:
 
->>> # Let's have our taker wrap 0.5 ETH as well
->>> tx = erc20_wrapper.execute_method(
-... address=weth_address,
-... abi=abi_by_name("WETH9"),
-... method="deposit",
-... tx_params=TxParams(from_=taker, value=deposit_amount))
->>> # Checking our taker's WETH balance
->>> taker_balance = erc20_wrapper.balance_of(
-...     token_address=weth_address, owner_address=taker)
->>> (taker_balance) / 10 ** 18  # doctest: +SKIP
-0.5
+>>> from eth_utils import to_wei
+>>> weth_instance.functions.deposit().transact(
+...     {"from": Web3.toChecksumAddress(taker_address),
+...      "value": to_wei(1, 'ether')}
+... )
+HexBytes('0x...')
 
-Now we can trade our WETH tokens on 0x!
+Approvals
+---------
 
-Signing an order
-----------------
+In order to trade on 0x, one must approve the 0x smart contracts to transfer
+their tokens.  Because the order constructed below has the maker giving WETH,
+we need to tell the WETH token contract to let the 0x contracts transfer our
+balance:
 
-Here is an example of a JSON order previously generated by our maker
-to sell 0.1 WETH. To confirm his intent to sell and recieve the described
-token amounts in this order, our maker must first sign the order by
-creating a signature with the given order data.
+>>> from zero_ex.contract_wrappers import ERC20Token
+>>> erc20_wrapper = ERC20Token(ganache)
 
->>> maker
-'0x5409ED021D9299bf6814279A6A1411A7e866A631'
+>>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
->>> example_order = {
-... 'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
-... 'takerAddress': '0x0000000000000000000000000000000000000000',
-... 'senderAddress': '0x0000000000000000000000000000000000000000',
-... 'exchangeAddress': '0x48bacb9266a570d521063ef5dd96e61686dbe788',
-... 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
-... 'makerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'takerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'salt': random.randint(1, 100000000000000000),
-... 'makerFee': 0,
-... 'takerFee': 0,
-... 'makerAssetAmount': 100000000000000000,
-... 'takerAssetAmount': 100000000000000000,
-... 'expirationTimeSeconds': 999999999999999999999}
+>>> tx = erc20_wrapper.approve(
+...     zrx_address,
+...     erc20_proxy_addr,
+...     to_wei(100, 'ether'),
+...     tx_params=TxParams(from_=maker_address),
+... )
 
-Please checkout our demo `here
-<http://0x-demos-py.s3-website-us-east-1.amazonaws.com/>`__
-if you would like to see how you can create an 0x order
-with our python packages.
+>>> tx = erc20_wrapper.approve(
+...     weth_address,
+...     erc20_proxy_addr,
+...     to_wei(100, 'ether'),
+...     tx_params=TxParams(from_=taker_address),
+... )
 
-To sign this order, we first need to generate the order hash.
+Constructing an order
+---------------------
 
->>> order_hash = generate_order_hash_hex(
-...     example_order, example_order["exchangeAddress"])
+>>> from zero_ex.order_utils import asset_data_utils, Order
+>>> from eth_utils import remove_0x_prefix
+>>> from datetime import datetime, timedelta
+>>> import random
+>>> order = Order(
+...     makerAddress=maker_address,
+...     takerAddress='0x0000000000000000000000000000000000000000',
+...     senderAddress='0x0000000000000000000000000000000000000000',
+...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     salt=random.randint(1, 100000000000000000),
+...     makerFee=0,
+...     takerFee=0,
+...     makerAssetAmount=to_wei(0.1, 'ether'),
+...     takerAssetAmount=to_wei(0.1, 'ether'),
+...     expirationTimeSeconds=round(
+...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+...     )
+... )
 
-Now our maker can sign this order hash with our web3 provider and
-the `sign_hash` function from the order utils package.
+For this order to be valid, our Maker must sign a hash of it:
 
+>>> from zero_ex.order_utils import generate_order_hash_hex
+>>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
+
+>>> from zero_ex.order_utils import sign_hash
 >>> maker_signature = sign_hash(
-...     provider, to_checksum_address(maker), order_hash)
+...     ganache, Web3.toChecksumAddress(maker_address), order_hash_hex
+... )
 
-Now our maker can either deliver his signature and example order
-directly to the taker, or he can choose to broadcast the order
-with his signature to a 0x-relayer.
+Now our Maker can either deliver this order, along with his signature, directly
+to the taker, or he can choose to broadcast the order to a 0x Relayer.  For
+more information on working with Relayers, see `the documentation for
+0x-sra-client <http://0x-sra-client-py.s3-website-us-east-1.amazonaws.com/>`_.
 
 Filling an order
 ----------------
 
-We finally have a valid order! We can now have our taker try
-to fill the example order. The *takerAssetAmount* is simply the
-amount of tokens (in our case WETH) the taker wants to fill.
-For this demonstration, we will be completely filling the order.
-Orders may also be partially filled.
+Now our Taker will fill the order.  The `takerAssetAmount`:code: parameter
+specifies the amount of tokens (in this case WETH) that the taker wants to
+fill.  This example fills the order completely, but partial fills are possible
+too.
 
-Now let's fill the example order:
-
->>> # Instantiate an instance of the exchange_wrapper with
->>> # the provider
->>> zero_ex_exchange = Exchange(provider)
->>> tx_hash = zero_ex_exchange.fill_order(
-...     order=example_order,
-...     taker_amount=example_order["takerAssetAmount"],
+>>> from zero_ex.contract_wrappers import Exchange
+>>> exchange_contract = Exchange(ganache)
+>>> tx_hash = exchange_contract.fill_order(
+...     order=order,
+...     taker_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
-...     tx_params=TxParams(from_=taker))
+...     tx_params=TxParams(from_=taker_address)
+... )
 
-Once the transaction is mined, we can get the details of
-our exchange through the exchange wrapper.
+Once the transaction is mined, we can get the details of our exchange through
+the exchange wrapper:
 
->>> fill_event = zero_ex_exchange.get_fill_event(tx_hash)
->>> taker_filled_amount = fill_event[0].args.takerAssetFilledAmount
->>> taker_filled_amount / 10 ** 18
-0.1
+>>> exchange_contract.get_fill_event(tx_hash)
+(AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Fill', ...}),)
+>>> from pprint import pprint
+>>> pprint(exchange_contract.get_fill_event(tx_hash)[0].args.__dict__)
+{'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+ 'makerAddress': '0x...',
+ 'makerAssetData': b...,
+ 'makerAssetFilledAmount': 100000000000000000,
+ 'makerFeePaid': 0,
+ 'orderHash': b...,
+ 'senderAddress': '0x...',
+ 'takerAddress': '0x...',
+ 'takerAssetData': b...,
+ 'takerAssetFilledAmount': 100000000000000000,
+ 'takerFeePaid': 0}
+>>> exchange_contract.get_fill_event(tx_hash)[0].args.takerAssetFilledAmount
+100000000000000000
 
 Cancelling an order
 --------------------
 
-Now we will show how to cancel an order if the maker no
-long wishes to exchange his WETH tokens. We will use a second example
-order to demonstrate.
+A Maker can cancel an order that has yet to be filled.
 
->>> example_order_2 = {
-... 'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
-... 'takerAddress': '0x0000000000000000000000000000000000000000',
-... 'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
-... 'senderAddress': '0x0000000000000000000000000000000000000000',
-... 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
-... 'makerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'takerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'e41d2489571d322189246dafa5ebde1f4699f498'),
-... 'salt': random.randint(1, 100000000000000000),
-... 'makerFee': 0,
-... 'takerFee': 0,
-... 'makerAssetAmount': 1000000000000000000,
-... 'takerAssetAmount': 500000000000000000000,
-... 'expirationTimeSeconds': 999999999999999999999}
->>> tx_hash = zero_ex_exchange.cancel_order(
-...     order=example_order_2, tx_params=TxParams(from_=maker))
+>>> order = Order(
+...     makerAddress=maker_address,
+...     takerAddress='0x0000000000000000000000000000000000000000',
+...     exchangeAddress=exchange_address,
+...     senderAddress='0x0000000000000000000000000000000000000000',
+...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
+...     makerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     salt=random.randint(1, 100000000000000000),
+...     makerFee=0,
+...     takerFee=0,
+...     makerAssetAmount=1000000000000000000,
+...     takerAssetAmount=500000000000000000000,
+...     expirationTimeSeconds=round(
+...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+...     )
+... )
 
-Once the transaction is mined, we can get the details of
-our cancellation through the exchange wrapper.
+>>> tx_hash = exchange_contract.cancel_order(
+...     order=order, tx_params=TxParams(from_=maker_address)
+... )
 
->>> cancel_event = zero_ex_exchange.get_cancel_event(tx_hash);
->>> cancelled_order_hash = cancel_event[0].args.orderHash.hex()
+Once the transaction is mined, we can get the details of the cancellation
+through the Exchange wrapper:
+
+>>> exchange_contract.get_cancel_event(tx_hash)
+(AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Cancel', ...}),)
+>>> pprint(exchange_contract.get_cancel_event(tx_hash)[0].args.__dict__)
+{'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+ 'makerAddress': '0x...',
+ 'makerAssetData': b...,
+ 'orderHash': b...,
+ 'senderAddress': '0x...',
+ 'takerAssetData': b...}
+>>> exchange_contract.get_cancel_event(tx_hash)[0].args.feeRecipientAddress
+'0x0000000000000000000000000000000000000000'
 
 Batching orders
 ----------------
 
-The 0x exchange contract can also process multiple orders at
-the same time. Here is an example where the taker fills
-two orders in one transaction.
+The Exchange contract can also process multiple orders at the same time. Here
+is an example where the taker fills two orders in one transaction:
 
->>> order_1 = {
-... 'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
-... 'takerAddress': '0x0000000000000000000000000000000000000000',
-... 'senderAddress': '0x0000000000000000000000000000000000000000',
-... 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
-... 'makerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'takerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'salt': random.randint(1, 100000000000000000),
-... 'makerFee': 0,
-... 'takerFee': 0,
-... 'makerAssetAmount': 100,
-... 'takerAssetAmount': 100,
-... 'expirationTimeSeconds': 1000000000000000000}
->>> order_hash_1 = generate_order_hash_hex(
-...     order_1, zero_ex_exchange.address)
+>>> order_1 = Order(
+...     makerAddress=maker_address,
+...     takerAddress='0x0000000000000000000000000000000000000000',
+...     senderAddress='0x0000000000000000000000000000000000000000',
+...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     salt=random.randint(1, 100000000000000000),
+...     makerFee=0,
+...     takerFee=0,
+...     makerAssetAmount=100,
+...     takerAssetAmount=100,
+...     expirationTimeSeconds=round(
+...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+...     )
+... )
 >>> signature_1 = sign_hash(
-...     provider, to_checksum_address(maker), order_hash_1)
->>> order_2 = {
-... 'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
-... 'takerAddress': '0x0000000000000000000000000000000000000000',
-... 'senderAddress': '0x0000000000000000000000000000000000000000',
-... 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
-... 'makerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'takerAssetData': bytes.fromhex(
-...     'f47261b0000000000000000000000000'
-...     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
-... 'salt': random.randint(1, 100000000000000000),
-... 'makerFee': 0,
-... 'takerFee': 0,
-... 'makerAssetAmount': 200,
-... 'takerAssetAmount': 200,
-... 'expirationTimeSeconds': 2000000000000000000}
->>> order_hash_2 = generate_order_hash_hex(
-...     order_2, zero_ex_exchange.address)
+...     ganache,
+...     Web3.toChecksumAddress(maker_address),
+...     generate_order_hash_hex(order_1, exchange_contract.address)
+... )
+>>> order_2 = Order(
+...     makerAddress=maker_address,
+...     takerAddress='0x0000000000000000000000000000000000000000',
+...     senderAddress='0x0000000000000000000000000000000000000000',
+...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
+...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     salt=random.randint(1, 100000000000000000),
+...     makerFee=0,
+...     takerFee=0,
+...     makerAssetAmount=200,
+...     takerAssetAmount=200,
+...     expirationTimeSeconds=round(
+...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+...     )
+... )
 >>> signature_2 = sign_hash(
-...     provider, to_checksum_address(maker), order_hash_2)
+...     ganache,
+...     Web3.toChecksumAddress(maker_address),
+...     generate_order_hash_hex(order_2, exchange_contract.address)
+... )
 
 Fill order_1 and order_2 together:
 
->>> tx_hash = zero_ex_exchange.batch_fill_orders(
+>>> exchange_contract.batch_fill_orders(
 ...     orders=[order_1, order_2],
 ...     taker_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
-...     tx_params=TxParams(from_=taker))
+...     tx_params=TxParams(from_=taker_address))
+HexBytes('0x...')
 """
 
 from .tx_params import TxParams

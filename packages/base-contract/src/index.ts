@@ -20,6 +20,28 @@ export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
 }
 
+// tslint:disable: max-classes-per-file
+/**
+ * @dev A promise-compatible type that exposes a `txHash` field.
+ *      Not used by BaseContract, but generated contracts will return it in
+ *      `awaitTransactionSuccessAsync()`.
+ *      Maybe there's a better place for this.
+ */
+export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
+    public readonly txHashPromise: Promise<string>;
+    private readonly _promise: Promise<T>;
+    constructor(txHashPromise: Promise<string>, promise: Promise<T>) {
+        this.txHashPromise = txHashPromise;
+        this._promise = promise;
+    }
+    public then<TResult>(
+        onFulfilled?: (v: T) => TResult | PromiseLike<TResult>,
+        onRejected?: (reason: any) => PromiseLike<never>,
+    ): PromiseLike<TResult> {
+        return this._promise.then<TResult>(onFulfilled, onRejected);
+    }
+}
+
 const REVERT_ERROR_SELECTOR = '08c379a0';
 const REVERT_ERROR_SELECTOR_OFFSET = 2;
 const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;

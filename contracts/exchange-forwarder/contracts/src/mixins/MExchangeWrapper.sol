@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
@@ -72,7 +72,7 @@ contract MExchangeWrapper {
     ///      that at least zrxBuyAmount of ZRX is purchased (sometimes slightly over due to rounding issues).
     ///      It is possible that a request to buy 200 ZRX will require purchasing 202 ZRX
     ///      as 2 ZRX is required to purchase the 200 ZRX fee tokens. This guarantees at least 200 ZRX for future purchases.
-    ///      The asset being sold by taker must always be WETH. 
+    ///      The asset being sold by taker must always be WETH.
     /// @param orders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset.
     /// @param zrxBuyAmount Desired amount of ZRX to buy.
     /// @param signatures Proofs that orders have been created by makers.

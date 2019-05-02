@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
@@ -30,7 +30,7 @@ contract MixinWeth is
 {
     /// @dev Default payabale function, this allows us to withdraw WETH
     function ()
-        public
+        external
         payable
     {
         require(
@@ -60,7 +60,7 @@ contract MixinWeth is
         uint256 wethSoldExcludingFeeOrders,
         uint256 wethSoldForZrx,
         uint256 feePercentage,
-        address feeRecipient
+        address payable feeRecipient
     )
         internal
     {
@@ -92,7 +92,7 @@ contract MixinWeth is
             ethFee <= wethRemaining,
             "INSUFFICIENT_ETH_REMAINING"
         );
-    
+
         // Do nothing if no WETH remaining
         if (wethRemaining > 0) {
             // Convert remaining WETH to ETH

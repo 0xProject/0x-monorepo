@@ -33,6 +33,7 @@
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
         "clean": "wsrun clean $PKG --fast-exit -r --parallel --exclude-missing",
+        "clean:contracts": "wsrun clean -p ${npm_package_config_contractsPackages} -c --fast-exit -r --parallel --exclude-missing",
         "contracts:gen": "wsrun contracts:gen $PKG --fast-exit -r --parallel --exclude-missing",
         "contracts:compile": "wsrun compile $PKG --fast-exit -r --stages --exclude-missing",
         "contracts:watch": "wsrun watch $PKG --parallel --exclude-missing",

@@ -20,7 +20,7 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
     return (
         <ZeroExInstantProvider {...rest}>
             <Overlay zIndex={zIndex} className={OVERLAY_DIV_CLASS}>
-                <Flex height="100vh">
+                <Flex height="100vh" overflow="scroll">
                     <Container
                         className={OVERLAY_CLOSE_BUTTON_DIV_CLASS}
                         position="absolute"

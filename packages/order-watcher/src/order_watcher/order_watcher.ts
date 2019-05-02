@@ -493,6 +493,9 @@ export class OrderWatcher {
     private async _emitRevalidateOrdersAsync(orderHashes: string[], transactionHash?: string): Promise<void> {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash];
+            if (signedOrder === undefined) {
+                continue;
+            }
             // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
             const orderState = await this._orderStateUtils.getOpenOrderStateAsync(signedOrder, transactionHash);

@@ -1,13 +1,24 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
-import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type DummyERC721TokenEventArgs =
@@ -124,6 +135,36 @@ export class DummyERC721TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        awaitTransactionSuccessAsync(
+            _approved: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.approve.sendTransactionAsync(_approved,
+    _tokenId
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
         async estimateGasAsync(
             _approved: string,
             _tokenId: BigNumber,
@@ -211,6 +252,38 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.transferFrom.sendTransactionAsync(_from,
+    _to,
+    _tokenId
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             _from: string,
@@ -303,6 +376,36 @@ export class DummyERC721TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        awaitTransactionSuccessAsync(
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.mint.sendTransactionAsync(_to,
+    _tokenId
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
         async estimateGasAsync(
             _to: string,
             _tokenId: BigNumber,
@@ -390,6 +493,38 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.safeTransferFrom1.sendTransactionAsync(_from,
+    _to,
+    _tokenId
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             _from: string,
@@ -590,6 +725,36 @@ export class DummyERC721TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        awaitTransactionSuccessAsync(
+            _owner: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.burn.sendTransactionAsync(_owner,
+    _tokenId
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
         async estimateGasAsync(
             _owner: string,
             _tokenId: BigNumber,
@@ -674,6 +839,36 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        awaitTransactionSuccessAsync(
+            _operator: string,
+            _approved: boolean,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.setApprovalForAll.sendTransactionAsync(_operator,
+    _approved
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             _operator: string,
@@ -765,6 +960,40 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
+        },
+        awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.safeTransferFrom2.sendTransactionAsync(_from,
+    _to,
+    _tokenId,
+    _data
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
         },
         async estimateGasAsync(
             _from: string,
@@ -890,6 +1119,34 @@ export class DummyERC721TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        awaitTransactionSuccessAsync(
+            newOwner: string,
+            txData?: Partial<TxData> | number,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
+            if (typeof(txData) === 'number') {
+                pollingIntervalMs = txData;
+                timeoutMs = pollingIntervalMs;
+                txData = {};
+            }
+            //
+            const self = this as any as DummyERC721TokenContract;
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner
+    , txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
         async estimateGasAsync(
             newOwner: string,
             txData: Partial<TxData> = {},
@@ -1001,7 +1258,7 @@ _symbol
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('DummyERC721Token', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('DummyERC721Token', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

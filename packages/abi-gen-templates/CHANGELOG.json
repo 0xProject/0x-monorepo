@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "add `awaitTransactionSuccessAsync()` to `tx.handlebars`",
+                "pr": 1797
+            }
+        ]
+    },
+    {
         "version": "2.0.2",
         "changes": [
             {

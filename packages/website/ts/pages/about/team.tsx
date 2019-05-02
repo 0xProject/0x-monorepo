@@ -173,6 +173,16 @@ const team: TeamMember[] = [
         name: 'Paul Vienhage',
         title: 'Research Engineer',
     },
+    {
+        imageUrl: '/images/team/ruiz.jpg',
+        name: 'Rui Zhang',
+        title: 'Corporate Counsel',
+    },
+    {
+        imageUrl: '/images/team/masonl.jpg',
+        name: 'Mason Liang',
+        title: 'Research Engineer',
+    },
 ];
 
 const advisors: TeamMember[] = [

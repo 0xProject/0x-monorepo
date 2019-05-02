@@ -1,7 +1,7 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
-    "useDockerisedSolc": true,
+    "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {
         "evmVersion": "constantinople",
@@ -30,6 +30,7 @@
         "src/MultiAssetProxy.sol",
         "src/interfaces/IAssetData.sol",
         "src/interfaces/IAssetProxy.sol",
-        "src/interfaces/IAuthorizable.sol"
+        "src/interfaces/IAuthorizable.sol",
+        "src/libs/LibAssetData.sol"
     ]
 }
