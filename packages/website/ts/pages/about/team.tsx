@@ -183,6 +183,11 @@ const team: TeamMember[] = [
         name: 'Mason Liang',
         title: 'Research Engineer',
     },
+    {
+        imageUrl: '/images/team/patryka.jpg',
+        name: 'Patryk Adaś',
+        title: 'Designer',
+    },
 ];
 
 const advisors: TeamMember[] = [
