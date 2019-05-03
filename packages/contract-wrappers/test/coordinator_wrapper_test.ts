@@ -13,9 +13,7 @@ import 'mocha';
 import * as nock from 'nock';
 
 import { ContractWrappers } from '../src';
-import {
-    CoordinatorServerErrorMsg,
-} from '../src/types';
+import { CoordinatorServerErrorMsg } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
