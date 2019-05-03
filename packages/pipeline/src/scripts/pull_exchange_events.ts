@@ -96,7 +96,7 @@ async function saveEventsAsync<T extends ExchangeEvent>(
         // Split data into numChunks pieces of maximum size BATCH_SAVE_SIZE
         // each.
         for (const eventsBatch of R.splitEvery(BATCH_SAVE_SIZE, events)) {
-            await repository.insert(eventsBatch);
+            await repository.insert(eventsBatch as any); // hack to get around bug in typescript. alternative is to downgrade tsc version. see https://github.com/typeorm/typeorm/issues/1544
         }
     } else {
         // If we possibly have some overlap where we need to update some
@@ -118,7 +118,7 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
     for (const event of events) {
         try {
             // First try an insert.
-            await repository.insert(event);
+            await repository.insert(event as any); // hack to get around typescript bug. https://github.com/typeorm/typeorm/issues/1544
         } catch (err) {
             if (err.message.includes('duplicate key value violates unique constraint')) {
                 logUtils.log("Ignore the preceeding INSERT failure; it's not unexpected");
