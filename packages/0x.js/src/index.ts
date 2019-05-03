@@ -10,6 +10,7 @@ export {
 
 export {
     ContractWrappers,
+    CoordinatorWrapper,
     DutchAuctionWrapper,
     ERC20TokenWrapper,
     ERC721TokenWrapper,
