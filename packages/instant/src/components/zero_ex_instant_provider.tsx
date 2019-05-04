@@ -3,14 +3,16 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
+import { Unsubscribe } from 'redux';
 
 import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
+import { actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig, OrderProcessState } from '../types';
+import { AccountState, Network, OrderProcessState, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -19,8 +21,6 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
-import { ActionTypes, actions } from '../redux/actions';
-import { Unsubscribe } from 'redux';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
@@ -106,14 +106,14 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             const currentState = this._store.getState();
             if (
                 (currentState.buyOrderState.processState === OrderProcessState.Success) &&
-                (currentState.buyOrderState.performedCallback === false) &&
+                (!currentState.buyOrderState.performedCallback) &&
                 (this.props.onSuccess !== undefined)
             ) {
-                const txHash = currentState.buyOrderState.txHash
-                this.props.onSuccess(txHash)
-                this._store.dispatch(actions.setBuyOrderStateSuccess(txHash, true))
+                const txHash = currentState.buyOrderState.txHash;
+                this.props.onSuccess(txHash);
+                this._store.dispatch(actions.setBuyOrderStateSuccess(txHash, true));
             }
-        })
+        });
         const dispatch = this._store.dispatch;
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchEthPriceAndDispatchToStore(dispatch);
@@ -170,7 +170,7 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             this._buyQuoteHeartbeat.stop();
         }
         if (this._unsubscribeHandler) {
-            this._unsubscribeHandler()
+            this._unsubscribeHandler();
         }
     }
     public render(): React.ReactNode {

@@ -43,7 +43,7 @@ interface OrderStatePostTx {
     processState: OrderProcessState.Processing | OrderProcessState.Success | OrderProcessState.Failure;
     txHash: string;
     progress: SimulatedProgress;
-    performedCallback: boolean
+    performedCallback: boolean;
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;
 
