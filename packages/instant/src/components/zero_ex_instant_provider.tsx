@@ -20,6 +20,7 @@ import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 import { ActionTypes, actions } from '../redux/actions';
+import { Unsubscribe } from 'redux';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
@@ -27,6 +28,7 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
     private _buyQuoteHeartbeat?: Heartbeater;
+    private _unsubscribeHandler?: Unsubscribe;
 
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
@@ -95,10 +97,12 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
+
     }
     public componentDidMount(): void {
+
         const state = this._store.getState();
-        this._store.subscribe(() => {
+        this._unsubscribeHandler = this._store.subscribe(() => {
             const currentState = this._store.getState();
             if (
                 (currentState.buyOrderState.processState === OrderProcessState.Success) &&
@@ -164,6 +168,9 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         }
         if (this._buyQuoteHeartbeat) {
             this._buyQuoteHeartbeat.stop();
+        }
+        if (this._unsubscribeHandler) {
+            this._unsubscribeHandler()
         }
     }
     public render(): React.ReactNode {
