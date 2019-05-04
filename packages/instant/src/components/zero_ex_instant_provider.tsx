@@ -10,7 +10,7 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
+import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig, OrderProcessState } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -19,6 +19,7 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
+import { ActionTypes, actions } from '../redux/actions';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
@@ -97,6 +98,18 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
     }
     public componentDidMount(): void {
         const state = this._store.getState();
+        this._store.subscribe(() => {
+            const currentState = this._store.getState();
+            if (
+                (currentState.buyOrderState.processState === OrderProcessState.Success) &&
+                (currentState.buyOrderState.performedCallback === false) &&
+                (this.props.onSuccess !== undefined)
+            ) {
+                const txHash = currentState.buyOrderState.txHash
+                this.props.onSuccess(txHash)
+                this._store.dispatch(actions.setBuyOrderStateSuccess(txHash, true))
+            }
+        })
         const dispatch = this._store.dispatch;
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchEthPriceAndDispatchToStore(dispatch);

@@ -43,6 +43,7 @@ interface OrderStatePostTx {
     processState: OrderProcessState.Processing | OrderProcessState.Success | OrderProcessState.Failure;
     txHash: string;
     progress: SimulatedProgress;
+    performedCallback: boolean
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;
 
@@ -201,6 +202,7 @@ export interface ZeroExInstantOptionalBaseConfig {
     networkId: Network;
     affiliateInfo: AffiliateInfo;
     shouldDisableAnalyticsTracking: boolean;
+    onSuccess?: (txHash: string) => void;
 }
 
 export type ZeroExInstantBaseConfig = ZeroExInstantRequiredBaseConfig & Partial<ZeroExInstantOptionalBaseConfig>;

@@ -157,6 +157,7 @@ export const createReducer = (initialState: State) => {
                     buyOrderState: {
                         processState: OrderProcessState.Processing,
                         txHash: processingData.txHash,
+                        performedCallback: false,
                         progress: {
                             startTimeUnix,
                             expectedEndTimeUnix,
@@ -171,6 +172,7 @@ export const createReducer = (initialState: State) => {
                         return {
                             ...state,
                             buyOrderState: {
+                                performedCallback: false,
                                 processState: OrderProcessState.Failure,
                                 txHash,
                                 progress,
@@ -180,13 +182,14 @@ export const createReducer = (initialState: State) => {
                 }
                 return state;
             case ActionTypes.SetBuyOrderStateSuccess:
-                const successTxHash = action.data;
+                const successTxHash = action.data.txHash;
                 if ('txHash' in state.buyOrderState) {
                     if (state.buyOrderState.txHash === successTxHash) {
                         const { txHash, progress } = state.buyOrderState;
                         return {
                             ...state,
                             buyOrderState: {
+                                performedCallback: action.data.performedCallback,
                                 processState: OrderProcessState.Success,
                                 txHash,
                                 progress,

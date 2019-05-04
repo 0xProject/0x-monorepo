@@ -203,6 +203,9 @@
                     onClose: () => {
                         console.log('0x Instant Closed');
                     },
+                    onSuccess: (txHash) => {
+                        console.log(`Success! Transaction hash is: ${txHash}`)
+                    }
                 };
                 const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
                 zeroExInstant.render(renderOptions);

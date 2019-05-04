@@ -58,7 +58,7 @@ export const actions = {
     setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         createAction(ActionTypes.SetBuyOrderStateProcessing, { txHash, startTimeUnix, expectedEndTimeUnix }),
     setBuyOrderStateFailure: (txHash: string) => createAction(ActionTypes.SetBuyOrderStateFailure, txHash),
-    setBuyOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SetBuyOrderStateSuccess, txHash),
+    setBuyOrderStateSuccess: (txHash: string, performedCallback: boolean) => createAction(ActionTypes.SetBuyOrderStateSuccess, {txHash, performedCallback}),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UpdateLatestBuyQuote, buyQuote),
     updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UpdateSelectedAsset, asset),
     setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SetAvailableAssets, availableAssets),
