@@ -44,11 +44,6 @@ export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
     }
 }
 
-const REVERT_ERROR_SELECTOR = '08c379a0';
-const REVERT_ERROR_SELECTOR_OFFSET = 2;
-const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
-const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SELECTOR_BYTES_LENGTH * 2;
-
 export class BaseContract {
     protected _abiEncoderByFunctionSignature: AbiEncoderByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
