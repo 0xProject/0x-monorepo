@@ -97,17 +97,15 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
-
     }
     public componentDidMount(): void {
-
         const state = this._store.getState();
         this._unsubscribeHandler = this._store.subscribe(() => {
             const currentState = this._store.getState();
             if (
-                (currentState.buyOrderState.processState === OrderProcessState.Success) &&
-                (!currentState.buyOrderState.performedCallback) &&
-                (this.props.onSuccess !== undefined)
+                currentState.buyOrderState.processState === OrderProcessState.Success &&
+                !currentState.buyOrderState.performedCallback &&
+                this.props.onSuccess !== undefined
             ) {
                 const txHash = currentState.buyOrderState.txHash;
                 this.props.onSuccess(txHash);
