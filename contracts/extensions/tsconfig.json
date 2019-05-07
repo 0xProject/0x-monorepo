@@ -8,8 +8,11 @@
         "generated-artifacts/DutchAuction.json",
         "generated-artifacts/Exchange.json",
         "generated-artifacts/ExchangeWrapper.json",
+        "generated-artifacts/NotCoin.json",
         "generated-artifacts/OrderMatcher.json",
-        "generated-artifacts/WETH9.json"
+        "generated-artifacts/TakerToken.json",
+        "generated-artifacts/WETH9.json",
+        "generated-artifacts/WrappedOrderTokens.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

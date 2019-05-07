@@ -29,6 +29,9 @@
         "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",
         "src/DevUtils/DevUtils.sol",
         "src/DutchAuction/DutchAuction.sol",
-        "src/OrderMatcher/OrderMatcher.sol"
+        "src/OrderMatcher/OrderMatcher.sol",
+        "src/TakerToken/NotCoin.sol",
+        "src/TakerToken/TakerToken.sol",
+        "src/WrappedOrderTokens/WrappedOrderTokens.sol"
     ]
 }

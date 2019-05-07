@@ -8,5 +8,8 @@ export * from '../generated-wrappers/dev_utils';
 export * from '../generated-wrappers/dutch_auction';
 export * from '../generated-wrappers/exchange';
 export * from '../generated-wrappers/exchange_wrapper';
+export * from '../generated-wrappers/not_coin';
 export * from '../generated-wrappers/order_matcher';
+export * from '../generated-wrappers/taker_token';
 export * from '../generated-wrappers/weth9';
+export * from '../generated-wrappers/wrapped_order_tokens';

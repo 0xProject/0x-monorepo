@@ -10,8 +10,11 @@ import * as DevUtils from '../generated-artifacts/DevUtils.json';
 import * as DutchAuction from '../generated-artifacts/DutchAuction.json';
 import * as Exchange from '../generated-artifacts/Exchange.json';
 import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
+import * as NotCoin from '../generated-artifacts/NotCoin.json';
 import * as OrderMatcher from '../generated-artifacts/OrderMatcher.json';
+import * as TakerToken from '../generated-artifacts/TakerToken.json';
 import * as WETH9 from '../generated-artifacts/WETH9.json';
+import * as WrappedOrderTokens from '../generated-artifacts/WrappedOrderTokens.json';
 export const artifacts = {
     WETH9: WETH9 as ContractArtifact,
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
@@ -20,4 +23,7 @@ export const artifacts = {
     DutchAuction: DutchAuction as ContractArtifact,
     OrderMatcher: OrderMatcher as ContractArtifact,
     DevUtils: DevUtils as ContractArtifact,
+    NotCoin: NotCoin as ContractArtifact,
+    TakerToken: TakerToken as ContractArtifact,
+    WrappedOrderTokens: WrappedOrderTokens as ContractArtifact,
 };
