@@ -231,7 +231,7 @@ contract MixinExchangeCore is
         );
 
         // Settle order
-        settleOrder(
+        _settleOrder(
             orderHash,
             order,
             takerAddress,
@@ -499,7 +499,7 @@ contract MixinExchangeCore is
     /// @param order Order struct containing order specifications.
     /// @param takerAddress Address selling takerAsset and buying makerAsset.
     /// @param fillResults Amounts to be filled and fees paid by maker and taker.
-    function settleOrder(
+    function _settleOrder(
         bytes32 orderHash,
         LibOrder.Order memory order,
         address takerAddress,

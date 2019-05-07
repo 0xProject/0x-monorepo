@@ -136,7 +136,7 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        SignatureType signatureType = readValidSignatureType(
+        SignatureType signatureType = _readValidSignatureType(
             hash,
             signerAddress,
             signature
@@ -152,7 +152,7 @@ contract MixinSignatureValidator is
                 signature
             ));
         }
-        return validateHashSignatureTypes(
+        return _validateHashSignatureTypes(
             signatureType,
             hash,
             signerAddress,
@@ -177,14 +177,14 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        SignatureType signatureType = readValidSignatureType(
+        SignatureType signatureType = _readValidSignatureType(
             orderHash,
             signerAddress,
             signature
         );
         if (signatureType == SignatureType.OrderValidator) {
             // The entire order is verified by validator contract.
-            isValid = validateOrderWithValidator(
+            isValid = _validateOrderWithValidator(
                 order,
                 orderHash,
                 signerAddress,
@@ -193,7 +193,7 @@ contract MixinSignatureValidator is
             return isValid;
         } else if (signatureType == SignatureType.WalletOrderValidator) {
             // The entire order is verified by a wallet contract.
-            isValid = validateOrderWithWallet(
+            isValid = _validateOrderWithWallet(
                 order,
                 orderHash,
                 signerAddress,
@@ -202,7 +202,7 @@ contract MixinSignatureValidator is
             return isValid;
         }
         // Otherwise, it's one of the hash-compatible signature types.
-        return validateHashSignatureTypes(
+        return _validateHashSignatureTypes(
             signatureType,
             orderHash,
             signerAddress,
@@ -211,7 +211,7 @@ contract MixinSignatureValidator is
     }
 
     /// Reads the `SignatureType` from the end of a signature and validates it.
-    function readValidSignatureType(
+    function _readValidSignatureType(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
@@ -265,7 +265,7 @@ contract MixinSignatureValidator is
     ///                      and defines its own signature verification method.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the signature is validated by the Walidator.
-    function validateHashWithWallet(
+    function _validateHashWithWallet(
         bytes32 hash,
         address walletAddress,
         bytes memory signature
@@ -310,7 +310,7 @@ contract MixinSignatureValidator is
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if the signature is validated by the Validator.
-    function validateHashWithValidator(
+    function _validateHashWithValidator(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
@@ -370,7 +370,7 @@ contract MixinSignatureValidator is
     ///                      and defines its own order/signature verification method.
     /// @param signature Proof that the order has been signed by signer.
     /// @return True if order and signature are validated by the Wallet.
-    function validateOrderWithWallet(
+    function _validateOrderWithWallet(
         Order memory order,
         bytes32 orderHash,
         address walletAddress,
@@ -418,7 +418,7 @@ contract MixinSignatureValidator is
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if order and signature are validated by the Validator.
-    function validateOrderWithValidator(
+    function _validateOrderWithValidator(
         Order memory order,
         bytes32 orderHash,
         address signerAddress,
@@ -473,7 +473,7 @@ contract MixinSignatureValidator is
 
     /// Validates a hash-compatible signature type
     /// (anything but `OrderValidator` and `WalletOrderValidator`).
-    function validateHashSignatureTypes(
+    function _validateHashSignatureTypes(
         SignatureType signatureType,
         bytes32 hash,
         address signerAddress,
@@ -549,7 +549,7 @@ contract MixinSignatureValidator is
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = validateHashWithWallet(
+            isValid = _validateHashWithWallet(
                 hash,
                 signerAddress,
                 signature
@@ -559,7 +559,7 @@ contract MixinSignatureValidator is
         // Signature verified by validator contract.
         // If used with an order, the maker of the order can still be an EOA.
         } else if (signatureType == SignatureType.Validator) {
-            isValid = validateHashWithValidator(
+            isValid = _validateHashWithValidator(
                 hash,
                 signerAddress,
                 signature
