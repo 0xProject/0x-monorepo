@@ -61,9 +61,9 @@ contract MixinAssets is
         bytes4 proxyId = assetData.readBytes4(0);
 
         if (proxyId == ERC20_DATA_ID) {
-            approveERC20Token(assetData, amount);
+            _approveERC20Token(assetData, amount);
         } else if (proxyId == ERC721_DATA_ID) {
-            approveERC721Token(assetData, amount);
+            _approveERC721Token(assetData, amount);
         } else {
             revert("UNSUPPORTED_ASSET_PROXY");
         }
@@ -166,7 +166,7 @@ contract MixinAssets is
     /// @dev Sets approval for ERC20 AssetProxy.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to approve for respective proxy.
-    function approveERC20Token(
+    function _approveERC20Token(
         bytes memory assetData,
         uint256 amount
     )
@@ -182,7 +182,7 @@ contract MixinAssets is
     /// @dev Sets approval for ERC721 AssetProxy.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to approve for respective proxy.
-    function approveERC721Token(
+    function _approveERC721Token(
         bytes memory assetData,
         uint256 amount
     )

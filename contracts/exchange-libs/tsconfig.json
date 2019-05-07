@@ -4,7 +4,6 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/LibAbiEncoder.json",
-        "generated-artifacts/LibAssetProxyErrors.json",
         "generated-artifacts/LibConstants.json",
         "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibFillResults.json",

@@ -102,7 +102,7 @@ contract ERC1155Mintable is
             );
 
             // if `to` is a contract then trigger its callback
-            if (dst.isContract()) {
+            if (dst._isContract()) {
                 bytes4 callbackReturnValue = IERC1155Receiver(dst).onERC1155Received(
                     msg.sender,
                     msg.sender,
@@ -151,7 +151,7 @@ contract ERC1155Mintable is
             emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
 
             // if `to` is a contract then trigger its callback
-            if (dst.isContract()) {
+            if (dst._isContract()) {
                 bytes4 callbackReturnValue = IERC1155Receiver(dst).onERC1155Received(
                     msg.sender,
                     msg.sender,
