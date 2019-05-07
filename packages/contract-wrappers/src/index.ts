@@ -59,6 +59,8 @@ export {
     TraderInfo,
     ValidateOrderFillableOpts,
     DutchAuctionData,
+    CoordinatorServerCancellationResponse,
+    CoordinatorServerError,
 } from './types';
 
 export {
