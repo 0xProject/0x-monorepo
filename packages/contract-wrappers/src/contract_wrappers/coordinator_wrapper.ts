@@ -7,6 +7,7 @@ import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '
 import { BigNumber, fetchAsync, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
 import * as HttpStatus from 'http-status-codes';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
@@ -138,10 +139,23 @@ export class CoordinatorWrapper extends ContractWrapper {
         console.log(JSON.stringify(json));
 
         const {signatures, expirationTimeSeconds} = json;
+        console.log(`feeRecipient: ${signedOrder.feeRecipientAddress}`);
         console.log(signatures);
         console.log(expirationTimeSeconds);
-        const txHash = await this._submitCoordinatorTransactionAsync(signedTransaction, takerAddress, signedTransaction.signature,
-            [expirationTimeSeconds], signatures, orderTransactionOpts);
+
+        const typedData = eip712Utils.createCoordinatorApprovalTypedData(
+            signedTransaction,
+            this.address,
+            takerAddress,
+            expirationTimeSeconds,
+        );
+        const approvalHashBuff =  signTypedDataUtils.generateTypedDataHash(typedData);
+        const recoveredSignerAddress = await this.getSignerAddressAsync(`0x${approvalHashBuff.toString('hex')}`, signatures[0]);
+
+        console.log(`recovered signer: ${recoveredSignerAddress}; feeRecipient: ${signedOrder.feeRecipientAddress}`);
+
+        const txHash = await this._contractInstance.executeTransaction.sendTransactionAsync(signedTransaction, takerAddress, signedTransaction.signature,
+            [expirationTimeSeconds], signatures, { from: txOrigin });
         return txHash;
     }
 
@@ -807,13 +821,11 @@ export class CoordinatorWrapper extends ContractWrapper {
 
     private async _generateSignedZeroExTransactionAsync(
         data: string,
-        senderAddress: string,
+        signerAddress: string,
     ): Promise<SignedZeroExTransaction> {
-        const normalizedSenderAddress = senderAddress.toLowerCase();
-
         const transaction: ZeroExTransaction = {
             salt: generatePseudoRandomSalt(),
-            signerAddress: normalizedSenderAddress,
+            signerAddress,
             data,
             verifyingContractAddress: this.address,
         };
