@@ -124,15 +124,6 @@ contract TestLibs is
         return isError;
     }
 
-    function getOrderHash(Order memory order)
-        public
-        view
-        returns (bytes32 orderHash)
-    {
-        orderHash = getOrderHash(order);
-        return orderHash;
-    }
-
     function getOrderSchemaHash()
         public
         pure
