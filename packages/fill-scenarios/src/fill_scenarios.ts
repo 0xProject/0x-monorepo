@@ -18,6 +18,7 @@ export class FillScenarios {
     private readonly _exchangeAddress: string;
     private readonly _erc20ProxyAddress: string;
     private readonly _erc721ProxyAddress: string;
+    private readonly _senderAddress?: string;
     constructor(
         supportedProvider: SupportedProvider,
         userAddresses: string[],
@@ -25,6 +26,7 @@ export class FillScenarios {
         exchangeAddress: string,
         erc20ProxyAddress: string,
         erc721ProxyAddress: string,
+        senderAddress?: string,
     ) {
         this._web3Wrapper = new Web3Wrapper(supportedProvider);
         this._userAddresses = userAddresses;
@@ -33,6 +35,7 @@ export class FillScenarios {
         this._exchangeAddress = exchangeAddress;
         this._erc20ProxyAddress = erc20ProxyAddress;
         this._erc721ProxyAddress = erc721ProxyAddress;
+        this._senderAddress = senderAddress;
     }
     public async createFillableSignedOrderAsync(
         makerAssetData: string,
@@ -157,8 +160,7 @@ export class FillScenarios {
             this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, makerAddress, makerFee),
             this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, takerAddress, takerFee),
         ]);
-        const senderAddress = constants.NULL_ADDRESS;
-
+        const senderAddress = this._senderAddress;
         const signedOrder = await orderFactory.createSignedOrderAsync(
             this._web3Wrapper.getProvider(),
             makerAddress,

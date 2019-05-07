@@ -13,7 +13,7 @@ import 'mocha';
 import * as nock from 'nock';
 
 import { ContractWrappers } from '../src';
-import { CoordinatorServerErrorMsg } from '../src/types';
+import { CoordinatorServerErrorMsg } from '../src/utils/coordinator_server_types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -80,6 +80,7 @@ describe('CoordinatorWrapper', () => {
             exchangeContractAddress,
             contractWrappers.erc20Proxy.address,
             contractWrappers.erc721Proxy.address,
+            contractAddresses.coordinator,
         );
         [
             ,

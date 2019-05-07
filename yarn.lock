@@ -634,18 +634,17 @@
     ethereumjs-util "^5.1.1"
     lodash "^4.17.11"
 
-"@0x/coordinator-server@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-0.1.0.tgz#1b955b03760657c3d9082cc82be641d35a07d064"
-  integrity sha512-YsCWb/eJ11NZIFxJAdXrRhPIseAxoHUf68rXSHmqcZhth28SX0tkZOcH3dlKNfE7eGTgpbircti7C+CfxXo3/g==
+"@0x/coordinator-server@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-0.1.1.tgz#7eeb74959dc72b76756b95ccd14fd9fa8d072ede"
+  integrity sha512-KxdZO93TigDyVRC90DMrQDIxjNTq3zMgmW9j8AVzx78nWXiRrUknYnkPP2a1Fp53H6Ngilc33zFjysR+QgrZPA==
   dependencies:
     "@0x/assert" "^2.0.8"
-    "@0x/asset-buyer" "^6.0.5"
     "@0x/contract-addresses" "^2.3.0"
     "@0x/contract-wrappers" "^8.0.5"
     "@0x/contracts-erc20" "^2.1.0"
     "@0x/json-schemas" "^3.0.8"
-    "@0x/order-utils" "^7.1.1"
+    "@0x/order-utils" "^7.2.0"
     "@0x/subproviders" "^4.0.4"
     "@0x/types" "^2.2.1"
     "@0x/typescript-typings" "^4.2.1"
@@ -8244,10 +8243,22 @@ got@^6.7.1:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@4.1.15, graceful-fs@^3.0.0, graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@~1.2.0:
+graceful-fs@^3.0.0:
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-3.0.11.tgz#7613c778a1afea62f25c630a086d7f3acbbdd818"
+  integrity sha1-dhPHeKGv6mLyXGMKCG1/Osu92Bg=
+  dependencies:
+    natives "^1.1.0"
+
+graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.15"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
   integrity sha512-6uHUhOPEBgQ24HM+r6b/QwWfZq+yiFcipKFrOFiBEnWdy5sdzYoi+pJeQaPI5qOLRFqWmAXUPQNsielzdLoecA==
+
+graceful-fs@~1.2.0:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-1.2.3.tgz#15a4806a57547cb2d2dbf27f42e89a8c3451b364"
+  integrity sha1-FaSAaldUfLLS2/J/QuiajDRRs2Q=
 
 "graceful-readlink@>= 1.0.0":
   version "1.0.1"
@@ -8763,7 +8774,7 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-http-status-codes@^1.3.0:
+http-status-codes@^1.3.0, http-status-codes@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/http-status-codes/-/http-status-codes-1.3.2.tgz#181dfa4455ef454e5e4d827718fca3936680d10d"
   integrity sha512-nDUtj0ltIt08tGi2VWSpSzNNFye0v3YSe9lX3lIqLTuVvvRiYCvs4QQBSHo0eomFYw1wlUuofurUAlTm+vHnXg==
@@ -11708,6 +11719,11 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+natives@^1.1.0:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/natives/-/natives-1.1.6.tgz#a603b4a498ab77173612b9ea1acdec4d980f00bb"
+  integrity sha512-6+TDFewD4yxY14ptjKaS63GVdtKiES1pTPyxn9Jb0rBqPMZ7VcCiooEhPNsr+mqHtMGxa/5c/HhcC4uPEUw/nA==
 
 natural-compare@^1.4.0:
   version "1.4.0"
