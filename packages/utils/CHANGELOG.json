@@ -1,5 +1,13 @@
 [
     {
+        "version": "4.3.2",
+        "changes": [
+            {
+                "note": "Support for ABI encoding multibyte strings (fixes issue #1723)"
+            }
+        ]
+    },
+    {
         "version": "4.3.1",
         "changes": [
             {
