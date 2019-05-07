@@ -27,6 +27,12 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 contract LibTransactionDecoder is LibExchangeSelectors {
     using LibBytes for bytes;
 
+    /// @dev Decodes the call data for an Exchange contract method call.
+    /// @param signedTransactionData ABI-encoded calldata for an Exchange
+    ///     contract method call.
+    /// @return The name of the function called, and the parameters it was
+    ///     given.  For single-order fills and cancels, the arrays will have
+    ///     just one element.
     function decodeTransaction(bytes memory signedTransactionData)
         public
         view
