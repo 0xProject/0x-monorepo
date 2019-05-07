@@ -63,10 +63,11 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionName = "marketSellOrders";
         } else if (functionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR) {
             functionName = "marketSellOrdersNoThrow";
+        } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
+            functionName = "matchOrders";
         } else if (
             functionSelector == CANCEL_ORDERS_UP_TO_SELECTOR ||
-            functionSelector == EXECUTE_TRANSACTION_SELECTOR ||
-            functionSelector == MATCH_ORDERS_SELECTOR
+            functionSelector == EXECUTE_TRANSACTION_SELECTOR
             // TODO: add new noThrow cancel functions when https://github.com/0xProject/ZEIPs/issues/35 is merged.
         ) {
             revert("Unimplemented");
@@ -103,6 +104,28 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
             (orders, takerAssetFillAmounts, signatures) = makeReturnValuesForMarketFill(signedTransactionData);
+        } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
+            (
+                LibOrder.Order memory leftOrder,
+                LibOrder.Order memory rightOrder,
+                bytes memory leftSignature,
+                bytes memory rightSignature
+            ) = abi.decode(
+                signedTransactionData.slice(4, signedTransactionData.length),
+                (LibOrder.Order, LibOrder.Order, bytes, bytes)
+            );
+
+            orders = new LibOrder.Order[](2);
+            orders[0] = leftOrder;
+            orders[1] = rightOrder;
+
+            takerAssetFillAmounts = new uint256[](2);
+            takerAssetFillAmounts[0] = leftOrder.takerAssetAmount;
+            takerAssetFillAmounts[1] = rightOrder.takerAssetAmount;
+
+            signatures = new bytes[](2);
+            signatures[0] = leftSignature;
+            signatures[1] = rightSignature;
         }
     }
 
