@@ -63,7 +63,7 @@ contract MixinBalanceThresholdFilterCore is
         external
     {
         // Get accounts whose balances must be validated
-        address[] memory addressesToValidate = getAddressesToValidate(signerAddress);
+        address[] memory addressesToValidate = _getAddressesToValidate(signerAddress);
 
         // Validate account balances
         uint256 balanceThreshold = BALANCE_THRESHOLD;
@@ -92,12 +92,12 @@ contract MixinBalanceThresholdFilterCore is
     ///      (defined by `signedExchangeTransaction` above).
     /// @param signerAddress Address of transaction signer.
     /// @return addressesToValidate Array of addresses to validate.
-    function getAddressesToValidate(address signerAddress)
+    function _getAddressesToValidate(address signerAddress)
         internal
         pure
         returns (address[] memory addressesToValidate)
     {
-        bytes4 exchangeFunctionSelector = bytes4(exchangeCalldataload(0));
+        bytes4 exchangeFunctionSelector = bytes4(_exchangeCalldataload(0));
         // solhint-disable expression-indent
         if (
             exchangeFunctionSelector == BATCH_FILL_ORDERS_SELECTOR              ||
@@ -108,20 +108,20 @@ contract MixinBalanceThresholdFilterCore is
             exchangeFunctionSelector == MARKET_SELL_ORDERS_SELECTOR             ||
             exchangeFunctionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
-            addressesToValidate = loadMakerAddressesFromOrderArray(0);
+            addressesToValidate = _loadMakerAddressesFromOrderArray(0);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (
             exchangeFunctionSelector == FILL_ORDER_SELECTOR             ||
             exchangeFunctionSelector == FILL_ORDER_NO_THROW_SELECTOR    ||
             exchangeFunctionSelector == FILL_OR_KILL_ORDER_SELECTOR
         ) {
-            address makerAddress = loadMakerAddressFromOrder(0);
+            address makerAddress = _loadMakerAddressFromOrder(0);
             addressesToValidate = addressesToValidate.append(makerAddress);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (exchangeFunctionSelector == MATCH_ORDERS_SELECTOR) {
-            address leftMakerAddress = loadMakerAddressFromOrder(0);
+            address leftMakerAddress = _loadMakerAddressFromOrder(0);
             addressesToValidate = addressesToValidate.append(leftMakerAddress);
-            address rightMakerAddress = loadMakerAddressFromOrder(1);
+            address rightMakerAddress = _loadMakerAddressFromOrder(1);
             addressesToValidate = addressesToValidate.append(rightMakerAddress);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (
