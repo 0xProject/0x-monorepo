@@ -120,7 +120,28 @@ export class CoordinatorWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const data = this._transactionEncoder.fillOrderTx(signedOrder, takerAssetFillAmount);
-        const txHash = await this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
+        const signedTransaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
+        const txOrigin = takerAddress;
+        const body = {
+            signedTransaction,
+            txOrigin,
+        };
+        const endpoint = await this._getServerEndpointOrThrowAsync(signedOrder.feeRecipientAddress);
+        const response = await fetchAsync(`${endpoint}/v1/request_transaction?networkId=${this.networkId}`, {
+            body: JSON.stringify(body),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+        });
+        const json = await response.json();
+        console.log(JSON.stringify(json));
+
+        const {signatures, expirationTimeSeconds} = json;
+        console.log(signatures);
+        console.log(expirationTimeSeconds);
+        const txHash = await this._submitCoordinatorTransactionAsync(signedTransaction, takerAddress, signedTransaction.signature,
+            [expirationTimeSeconds], signatures, orderTransactionOpts);
         return txHash;
     }
 
