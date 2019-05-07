@@ -191,7 +191,7 @@ contract MultiSigWallet {
         public
         returns (uint transactionId)
     {
-        transactionId = addTransaction(destination, value, data);
+        transactionId = _addTransaction(destination, value, data);
         confirmTransaction(transactionId);
     }
 
@@ -231,7 +231,7 @@ contract MultiSigWallet {
         if (isConfirmed(transactionId)) {
             Transaction storage txn = transactions[transactionId];
             txn.executed = true;
-            if (external_call(txn.destination, txn.value, txn.data.length, txn.data))
+            if (_external_call(txn.destination, txn.value, txn.data.length, txn.data))
                 Execution(transactionId);
             else {
                 ExecutionFailure(transactionId);
@@ -242,7 +242,7 @@ contract MultiSigWallet {
 
     // call has been separated into its own function in order to take advantage
     // of the Solidity's code generator to produce a loop that copies tx.data into memory.
-    function external_call(address destination, uint value, uint dataLength, bytes data) internal returns (bool) {
+    function _external_call(address destination, uint value, uint dataLength, bytes data) internal returns (bool) {
         bool result;
         assembly {
             let x := mload(0x40)   // "Allocate" memory for output (0x40 is where "free memory" pointer is stored by convention)
@@ -287,7 +287,7 @@ contract MultiSigWallet {
     /// @param value Transaction ether value.
     /// @param data Transaction data payload.
     /// @return Returns transaction ID.
-    function addTransaction(address destination, uint value, bytes data)
+    function _addTransaction(address destination, uint value, bytes data)
         internal
         notNull(destination)
         returns (uint transactionId)

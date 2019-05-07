@@ -124,7 +124,7 @@ contract MixinMatchOrders is
         );
 
         // Settle matched orders. Succeeds or throws.
-        settleMatchedOrders(
+        _settleMatchedOrders(
             leftOrderInfo.orderHash,
             rightOrderInfo.orderHash,
             leftOrder,
@@ -272,7 +272,7 @@ contract MixinMatchOrders is
     /// @param rightOrder Second matched order.
     /// @param takerAddress Address that matched the orders. The taker receives the spread between orders as profit.
     /// @param matchedFillResults Struct holding amounts to transfer between makers, taker, and fee recipients.
-    function settleMatchedOrders(
+    function _settleMatchedOrders(
         bytes32 leftOrderHash,
         bytes32 rightOrderHash,
         LibOrder.Order memory leftOrder,

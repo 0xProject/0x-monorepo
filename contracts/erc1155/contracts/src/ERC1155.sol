@@ -97,7 +97,7 @@ contract ERC1155 is
         emit TransferSingle(msg.sender, from, to, id, value);
 
         // if `to` is a contract then trigger its callback
-        if (to.isContract()) {
+        if (to._isContract()) {
             bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155Received(
                 msg.sender,
                 from,
@@ -177,7 +177,7 @@ contract ERC1155 is
         emit TransferBatch(msg.sender, from, to, ids, values);
 
         // if `to` is a contract then trigger its callback
-        if (to.isContract()) {
+        if (to._isContract()) {
             bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155BatchReceived(
                 msg.sender,
                 from,
