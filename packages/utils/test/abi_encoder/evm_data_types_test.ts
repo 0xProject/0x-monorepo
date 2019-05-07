@@ -1327,7 +1327,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const testDataItem = { name: 'String', type: 'string' };
             const dataType = new AbiEncoder.String(testDataItem);
             // Construct args to be encoded
-            const args = "👴🏼";
+            const args = '👴🏼';
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
@@ -1346,7 +1346,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const testDataItem = { name: 'String', type: 'string' };
             const dataType = new AbiEncoder.String(testDataItem);
             // Construct args to be encoded
-            const args = "Hello 😀👴🏼😁😂😃 world!";
+            const args = 'Hello 😀👴🏼😁😂😃 world!';
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
