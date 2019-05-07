@@ -91,7 +91,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionSelector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
             functionSelector == BATCH_FILL_ORDERS_SELECTOR
         ) {
-            (orders, takerAssetFillAmounts, signatures) = makeReturnValuesForBatchFill(signedTransactionData);
+            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForBatchFill(signedTransactionData);
         } else if (functionSelector == CANCEL_ORDER_SELECTOR) {
             orders = new LibOrder.Order[](1);
             orders[0] = abi.decode(signedTransactionData.slice(4, signedTransactionData.length), (LibOrder.Order));
@@ -102,14 +102,14 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionSelector == FILL_ORDER_SELECTOR ||
             functionSelector == FILL_ORDER_NO_THROW_SELECTOR
         ) {
-            (orders, takerAssetFillAmounts, signatures) = makeReturnValuesForSingleOrderFill(signedTransactionData);
+            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(signedTransactionData);
         } else if (
             functionSelector == MARKET_BUY_ORDERS_SELECTOR ||
             functionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
             functionSelector == MARKET_SELL_ORDERS_SELECTOR ||
             functionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
-            (orders, takerAssetFillAmounts, signatures) = makeReturnValuesForMarketFill(signedTransactionData);
+            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForMarketFill(signedTransactionData);
         } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
             (
                 LibOrder.Order memory leftOrder,
@@ -135,7 +135,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
         }
     }
 
-    function makeReturnValuesForSingleOrderFill(bytes memory signedTransactionData)
+    function _makeReturnValuesForSingleOrderFill(bytes memory signedTransactionData)
         internal
         pure
         returns(
@@ -154,7 +154,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
         );
     }
 
-    function makeReturnValuesForBatchFill(bytes memory signedTransactionData)
+    function _makeReturnValuesForBatchFill(bytes memory signedTransactionData)
         internal
         pure
         returns(
@@ -171,7 +171,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
         );
     }
 
-    function makeReturnValuesForMarketFill(bytes memory signedTransactionData)
+    function _makeReturnValuesForMarketFill(bytes memory signedTransactionData)
         internal
         pure
         returns(
