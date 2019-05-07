@@ -274,6 +274,7 @@ describe('CoordinatorWrapper', () => {
     describe('fill order(s)', () => {
         describe('#fillOrderAsync', () => {
             it.only('should fill a valid order', async () => {
+                console.log(`feeRecipientOne: ${feeRecipientAddressOne}`);
                 txHash = await contractWrappers.coordinator.fillOrderAsync(
                     signedOrder,
                     takerTokenFillAmount,

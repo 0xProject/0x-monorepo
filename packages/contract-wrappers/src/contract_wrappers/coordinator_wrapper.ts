@@ -6,6 +6,7 @@ import { eip712Utils, generatePseudoRandomSalt, signatureUtils, transactionHashU
 import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, fetchAsync, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import * as ethSigUtil from 'eth-sig-util';
 import { ContractAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as HttpStatus from 'http-status-codes';
@@ -139,7 +140,6 @@ export class CoordinatorWrapper extends ContractWrapper {
         console.log(JSON.stringify(json));
 
         const {signatures, expirationTimeSeconds} = json;
-        console.log(`feeRecipient: ${signedOrder.feeRecipientAddress}`);
         console.log(signatures);
         console.log(expirationTimeSeconds);
 
@@ -150,10 +150,15 @@ export class CoordinatorWrapper extends ContractWrapper {
             expirationTimeSeconds,
         );
         const approvalHashBuff =  signTypedDataUtils.generateTypedDataHash(typedData);
-        const recoveredSignerAddress = await this.getSignerAddressAsync(`0x${approvalHashBuff.toString('hex')}`, signatures[0]);
+        const approvalHashHex = `0x${approvalHashBuff.toString('hex')}`;
+        const recoveredSignerAddress = await this.getSignerAddressAsync(approvalHashHex, signatures[0]);
 
         console.log(`recovered signer: ${recoveredSignerAddress}; feeRecipient: ${signedOrder.feeRecipientAddress}`);
 
+        // const rsv = signatureUtils.parseSignatureHexAsRSV(sig.slice(2));
+
+        // const recoveredTwo = ethUtil.ecrecover(approvalHashBuff, rsv.v, rsv.r, rsv.s);
+        // console.log(`recovered two: ${recoveredTwo}`);
         const txHash = await this._contractInstance.executeTransaction.sendTransactionAsync(signedTransaction, takerAddress, signedTransaction.signature,
             [expirationTimeSeconds], signatures, { from: txOrigin });
         return txHash;
@@ -829,16 +834,13 @@ export class CoordinatorWrapper extends ContractWrapper {
             data,
             verifyingContractAddress: this.address,
         };
-        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-        const signature = await signatureUtils.ecSignHashAsync(
+        const signedTransaction = await signatureUtils.ecSignTypedDataTransactionAsync(
             this._web3Wrapper.getProvider(),
-            transactionHash,
+            transaction,
             transaction.signerAddress,
         );
-        return {
-            ...transaction,
-            signature,
-        };
+
+        return signedTransaction;
     }
 
     private async _executeServerRequestAsync(
