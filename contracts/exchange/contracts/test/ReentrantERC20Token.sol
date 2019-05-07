@@ -111,7 +111,7 @@ contract ReentrantERC20Token is
             callData = abi.encodeWithSelector(
                 exchange.batchFillOrders.selector,
                 orders,
-                getTakerFillAmounts(orders),
+                _getTakerFillAmounts(orders),
                 _createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_OR_KILL_ORDERS)) {
@@ -119,7 +119,7 @@ contract ReentrantERC20Token is
             callData = abi.encodeWithSelector(
                 exchange.batchFillOrKillOrders.selector,
                 orders,
-                getTakerFillAmounts(orders),
+                _getTakerFillAmounts(orders),
                 _createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS)) {
@@ -139,7 +139,7 @@ contract ReentrantERC20Token is
                 _createWalletSignatures(BATCH_SIZE)
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS)) {
-            LibOrder.Order[2] memory orders = createMatchedOrders();
+            LibOrder.Order[2] memory orders = _createMatchedOrders();
             bytes[] memory signatures = _createWalletSignatures(2);
             callData = abi.encodeWithSelector(
                 exchange.matchOrders.selector,
@@ -232,7 +232,7 @@ contract ReentrantERC20Token is
     }
 
     /// @dev Create two complementary test orders.
-    function createMatchedOrders()
+    function _createMatchedOrders()
         internal
         view
         returns (LibOrder.Order[2] memory orders)
@@ -245,7 +245,7 @@ contract ReentrantERC20Token is
         orders[1].makerAssetAmount = orders[0].takerAssetAmount;
     }
 
-    function getTakerFillAmounts(
+    function _getTakerFillAmounts(
         LibOrder.Order[] memory orders
     )
         internal

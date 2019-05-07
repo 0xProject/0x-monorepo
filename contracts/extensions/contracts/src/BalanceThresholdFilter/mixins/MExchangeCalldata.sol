@@ -26,7 +26,7 @@ contract MExchangeCalldata {
     ///      which is accessed through `signedExchangeTransaction`.
     /// @param offset  Offset into the Exchange calldata.
     /// @return value  Corresponding 32 byte value stored at `offset`.
-    function exchangeCalldataload(uint256 offset)
+    function _exchangeCalldataload(uint256 offset)
         internal pure
         returns (bytes32 value);
 
@@ -34,7 +34,7 @@ contract MExchangeCalldata {
     ///      from the embedded Exchange calldata.
     /// @param offset  Offset into the Exchange calldata (minus the 4 byte selector)
     /// @return value  Corresponding 32 byte value stored at `offset` + 4.
-    function loadExchangeData(uint256 offset)
+    function _loadExchangeData(uint256 offset)
         internal pure
         returns (bytes32 value);
 
@@ -42,7 +42,7 @@ contract MExchangeCalldata {
     ///      (which is embedded in `signedExchangeTransaction`).
     /// @param orderParamIndex  Index of the order in the Exchange function's signature.
     /// @return makerAddress The extracted maker address.
-    function loadMakerAddressFromOrder(uint256 orderParamIndex)
+    function _loadMakerAddressFromOrder(uint256 orderParamIndex)
         internal pure
         returns (address makerAddress);
 
@@ -50,7 +50,7 @@ contract MExchangeCalldata {
     ///      (which is embedded in `signedExchangeTransaction`).
     /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
     /// @return makerAddresses The extracted maker addresses.
-    function loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
+    function _loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
         internal
         pure
         returns (address[] memory makerAddresses);

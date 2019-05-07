@@ -56,7 +56,7 @@ contract LibEIP712CoordinatorDomain is
     ///      of this contract.
     /// @param hashStruct The EIP712 hash struct.
     /// @return EIP712 hash applied to this EIP712 Domain.
-    function hashEIP712CoordinatorMessage(bytes32 hashStruct)
+    function _hashEIP712CoordinatorMessage(bytes32 hashStruct)
         internal
         view
         returns (bytes32 result)
