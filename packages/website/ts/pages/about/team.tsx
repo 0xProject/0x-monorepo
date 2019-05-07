@@ -64,6 +64,11 @@ const team: TeamMember[] = [
         title: 'Ecosystem Engineer',
     },
     {
+        imageUrl: '/images/team/greg.jpg',
+        name: 'Greg Hysen',
+        title: 'Blockchain Engineer',
+    },
+    {
         imageUrl: '/images/team/blake.jpg',
         name: 'Blake Henderson',
         title: 'Ecosystem Programs Lead',
@@ -72,11 +77,6 @@ const team: TeamMember[] = [
         imageUrl: '/images/team/zack.jpg',
         name: 'Zack Skelly',
         title: 'Lead Recruiter',
-    },
-    {
-        imageUrl: '/images/team/greg.jpg',
-        name: 'Greg Hysen',
-        title: 'Blockchain Engineer',
     },
     {
         imageUrl: '/images/team/remcoB.jpg',
@@ -182,6 +182,11 @@ const team: TeamMember[] = [
         imageUrl: '/images/team/masonl.jpg',
         name: 'Mason Liang',
         title: 'Research Engineer',
+    },
+    {
+        imageUrl: '/images/team/patryka.jpg',
+        name: 'Patryk Adaś',
+        title: 'Designer',
     },
 ];
 
