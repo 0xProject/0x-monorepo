@@ -28,7 +28,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signerAddress The expected signerAddress of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature.
     function decodeSignatureError(bytes memory encoded)
         public
@@ -49,7 +49,7 @@ contract LibExchangeRichErrorDecoder is
 
     /// @dev Decompose an ABI-encoded SignatureValidatorError.
     /// @param encoded ABI-encoded revert error.
-    /// @return signerAddress The expected signerAddress of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureValidatorError(bytes memory encoded)
@@ -72,7 +72,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureWalletError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signerAddress The expected signerAddress of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureWalletError(bytes memory encoded)
@@ -95,7 +95,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureOrderValidatorError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signerAddress The expected signerAddress of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureOrderValidatorError(bytes memory encoded)
@@ -118,7 +118,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureWalletOrderValidatorError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signerAddress The expected signerAddress of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureWalletOrderValidatorError(bytes memory encoded)
@@ -158,7 +158,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded InvalidSenderError.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
-    /// @return senderAddress The senderAddress.
+    /// @return senderAddress The sender.
     function decodeInvalidSenderError(bytes memory encoded)
         public
         pure
@@ -175,7 +175,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded InvalidMakerError.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
-    /// @return makerAddress The makerAddress of the order.
+    /// @return makerAddress The maker of the order.
     function decodeInvalidMakerError(bytes memory encoded)
         public
         pure
@@ -192,7 +192,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded InvalidTaker.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
-    /// @return takerAddress The takerAddress of the order.
+    /// @return takerAddress The taker of the order.
     function decodeInvalidTakerError(bytes memory encoded)
         public
         pure
@@ -225,9 +225,9 @@ contract LibExchangeRichErrorDecoder is
 
     /// @dev Decompose an ABI-encoded OrderEpochError.
     /// @param encoded ABI-encoded revert error.
-    /// @return makerAddress The order makerAddress.
-    /// @return orderSenderAddress The senderAddress.
-    /// @return currentEpoch The current epoch for the makerAddress.
+    /// @return makerAddress The order maker.
+    /// @return orderSenderAddress The order sender.
+    /// @return currentEpoch The current epoch for the maker.
     function decodeOrderEpochError(bytes memory encoded)
         public
         pure
