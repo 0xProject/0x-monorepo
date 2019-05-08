@@ -226,7 +226,4 @@ export interface DutchAuctionData {
     beginAmount: BigNumber;
 }
 
-export {
-    CoordinatorServerCancellationResponse,
-    CoordinatorServerError,
-} from './utils/coordinator_server_types';
+export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';

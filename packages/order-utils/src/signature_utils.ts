@@ -2,7 +2,15 @@ import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-g
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import { ECSignature, Order, SignatureType, SignedOrder, SignedZeroExTransaction, ValidatorSignature, ZeroExTransaction } from '@0x/types';
+import {
+    ECSignature,
+    Order,
+    SignatureType,
+    SignedOrder,
+    SignedZeroExTransaction,
+    ValidatorSignature,
+    ZeroExTransaction,
+} from '@0x/types';
 import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';

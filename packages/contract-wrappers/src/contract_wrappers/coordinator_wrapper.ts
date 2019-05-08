@@ -2,18 +2,17 @@ import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } fr
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { Coordinator, CoordinatorRegistry, Exchange } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import { eip712Utils, generatePseudoRandomSalt, signatureUtils, transactionHashUtils } from '@0x/order-utils';
+import { eip712Utils, generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
 import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, fetchAsync, signTypedDataUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as ethSigUtil from 'eth-sig-util';
 import { ContractAbi } from 'ethereum-types';
-import * as ethUtil from 'ethereumjs-util';
 import * as HttpStatus from 'http-status-codes';
+import * as _ from 'lodash';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
-import {OrderTransactionOpts} from '../types';
+import { OrderTransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import {
     CoordinatorServerApprovalRawResponse,
@@ -27,7 +26,6 @@ import { decorators } from '../utils/decorators';
 import { TransactionEncoder } from '../utils/transaction_encoder';
 
 import { ContractWrapper } from './contract_wrapper';
-
 /**
  * This class includes all the functionality related to filling or cancelling orders through
  * the 0x V2 Coordinator extension contract.
@@ -66,12 +64,8 @@ export class CoordinatorWrapper extends ContractWrapper {
 
         const contractAddresses = getContractAddressesForNetworkOrThrow(networkId);
         this.address = address === undefined ? contractAddresses.coordinator : address;
-        this.exchangeAddress =
-            exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
-        this.registryAddress =
-            registryAddress === undefined
-                ? contractAddresses.coordinatorRegistry
-                : registryAddress;
+        this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
+        this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
 
         this._contractInstance = new CoordinatorContract(
             this.abi,
@@ -122,45 +116,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const data = this._transactionEncoder.fillOrderTx(signedOrder, takerAssetFillAmount);
-        const signedTransaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
-        const txOrigin = takerAddress;
-        const body = {
-            signedTransaction,
-            txOrigin,
-        };
-        const endpoint = await this._getServerEndpointOrThrowAsync(signedOrder.feeRecipientAddress);
-        const response = await fetchAsync(`${endpoint}/v1/request_transaction?networkId=${this.networkId}`, {
-            body: JSON.stringify(body),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-        });
-        const json = await response.json();
-        console.log(JSON.stringify(json));
-
-        const {signatures, expirationTimeSeconds} = json;
-        console.log(signatures);
-        console.log(expirationTimeSeconds);
-
-        const typedData = eip712Utils.createCoordinatorApprovalTypedData(
-            signedTransaction,
-            this.address,
-            takerAddress,
-            expirationTimeSeconds,
-        );
-        const approvalHashBuff =  signTypedDataUtils.generateTypedDataHash(typedData);
-        const approvalHashHex = `0x${approvalHashBuff.toString('hex')}`;
-        const recoveredSignerAddress = await this.getSignerAddressAsync(approvalHashHex, signatures[0]);
-
-        console.log(`recovered signer: ${recoveredSignerAddress}; feeRecipient: ${signedOrder.feeRecipientAddress}`);
-
-        // const rsv = signatureUtils.parseSignatureHexAsRSV(sig.slice(2));
-
-        // const recoveredTwo = ethUtil.ecrecover(approvalHashBuff, rsv.v, rsv.r, rsv.s);
-        // console.log(`recovered two: ${recoveredTwo}`);
-        const txHash = await this._contractInstance.executeTransaction.sendTransactionAsync(signedTransaction, takerAddress, signedTransaction.signature,
-            [expirationTimeSeconds], signatures, { from: txOrigin });
+        const txHash = await this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
         return txHash;
     }
 
@@ -693,7 +649,6 @@ export class CoordinatorWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         orderTransactionOpts: OrderTransactionOpts,
     ): Promise<string> {
-
         // const coordinatorOrders = signedOrders.filter(o => o.senderAddress === this.address);
 
         // create lookup tables to match server endpoints to orders
@@ -732,15 +687,13 @@ export class CoordinatorWrapper extends ContractWrapper {
 
         // if no errors
         if (numErrors === 0) {
-
             // concatenate all approval responses
-            const allApprovals = approvalResponses
-                .map(resp => formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse));
-            console.log(JSON.stringify(allApprovals));
+            const allApprovals = approvalResponses.map(resp =>
+                formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse),
+            );
+
             const allSignatures = allApprovals.map(a => a.signatures).reduce(flatten, []);
             const allExpirationTimes = allApprovals.map(a => a.expirationTimeSeconds).reduce(flatten, []);
-            console.log(`all signatures: ${JSON.stringify(allSignatures)}`);
-            console.log(allExpirationTimes);
 
             const typedData = eip712Utils.createCoordinatorApprovalTypedData(
                 transaction,
@@ -748,10 +701,11 @@ export class CoordinatorWrapper extends ContractWrapper {
                 takerAddress,
                 allExpirationTimes[0],
             );
-            const approvalHashBuff =  signTypedDataUtils.generateTypedDataHash(typedData);
-            const recoveredSignerAddress = await this.getSignerAddressAsync(`0x${approvalHashBuff.toString('hex')}`, allSignatures[0]);
-
-            console.log(`recovered signer: ${recoveredSignerAddress}; feeRecipient: ${JSON.stringify(Object.keys(feeRecipientsToOrders))}`);
+            const approvalHashBuff = signTypedDataUtils.generateTypedDataHash(typedData);
+            const recoveredSignerAddress = await this.getSignerAddressAsync(
+                `0x${approvalHashBuff.toString('hex')}`,
+                allSignatures[0],
+            );
 
             // submit transaction with approvals
             const txHash = await this._submitCoordinatorTransactionAsync(
@@ -774,7 +728,8 @@ export class CoordinatorWrapper extends ContractWrapper {
                         .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
                         .reduce(flatten, []);
                     return orders;
-                }).reduce(flatten, []);
+                })
+                .reduce(flatten, []);
 
             // lookup orders with errors
             const errorsWithOrders = errorResponses.map(resp => {
@@ -832,7 +787,7 @@ export class CoordinatorWrapper extends ContractWrapper {
             salt: generatePseudoRandomSalt(),
             signerAddress,
             data,
-            verifyingContractAddress: this.address,
+            verifyingContractAddress: this.exchangeAddress,
         };
         const signedTransaction = await signatureUtils.ecSignTypedDataTransactionAsync(
             this._web3Wrapper.getProvider(),
@@ -868,7 +823,6 @@ export class CoordinatorWrapper extends ContractWrapper {
         } catch (e) {
             // ignore
         }
-        console.log(JSON.stringify(json));
 
         const result = {
             isError,

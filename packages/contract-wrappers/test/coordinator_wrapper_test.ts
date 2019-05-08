@@ -28,7 +28,7 @@ const anotherCoordinatorPort = '4000';
 const coordinatorEndpoint = 'http://localhost:';
 
 // tslint:disable:custom-no-magic-numbers
-describe('CoordinatorWrapper', () => {
+describe.only('CoordinatorWrapper', () => {
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let coordinatorServerApp: http.Server;
@@ -273,8 +273,7 @@ describe('CoordinatorWrapper', () => {
     // fill handling is the same for all fill methods so we can test them all through the fillOrder and batchFillOrders interfaces
     describe('fill order(s)', () => {
         describe('#fillOrderAsync', () => {
-            it.only('should fill a valid order', async () => {
-                console.log(`feeRecipientOne: ${feeRecipientAddressOne}`);
+            it('should fill a valid order', async () => {
                 txHash = await contractWrappers.coordinator.fillOrderAsync(
                     signedOrder,
                     takerTokenFillAmount,
