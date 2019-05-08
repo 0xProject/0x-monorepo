@@ -649,11 +649,11 @@ export class CoordinatorWrapper extends ContractWrapper {
         signedOrders: SignedOrder[],
         orderTransactionOpts: OrderTransactionOpts,
     ): Promise<string> {
-        // const coordinatorOrders = signedOrders.filter(o => o.senderAddress === this.address);
+        const coordinatorOrders = signedOrders.filter(o => o.senderAddress === this.address);
 
         // create lookup tables to match server endpoints to orders
         const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
-        for (const order of signedOrders) {
+        for (const order of coordinatorOrders) {
             const feeRecipient = order.feeRecipientAddress;
             if (feeRecipientsToOrders[feeRecipient] === undefined) {
                 feeRecipientsToOrders[feeRecipient] = [] as SignedOrder[];
@@ -695,18 +695,6 @@ export class CoordinatorWrapper extends ContractWrapper {
             const allSignatures = allApprovals.map(a => a.signatures).reduce(flatten, []);
             const allExpirationTimes = allApprovals.map(a => a.expirationTimeSeconds).reduce(flatten, []);
 
-            const typedData = eip712Utils.createCoordinatorApprovalTypedData(
-                transaction,
-                this.address,
-                takerAddress,
-                allExpirationTimes[0],
-            );
-            const approvalHashBuff = signTypedDataUtils.generateTypedDataHash(typedData);
-            const recoveredSignerAddress = await this.getSignerAddressAsync(
-                `0x${approvalHashBuff.toString('hex')}`,
-                allSignatures[0],
-            );
-
             // submit transaction with approvals
             const txHash = await this._submitCoordinatorTransactionAsync(
                 transaction,
@@ -720,6 +708,7 @@ export class CoordinatorWrapper extends ContractWrapper {
         } else {
             // format errors and approvals
             // concatenate approvals
+            const notCoordinatorOrders = signedOrders.filter(o => o.senderAddress !== this.address);
             const approvedOrders = approvalResponses
                 .map(resp => {
                     const endpoint = resp.coordinatorOperator;
@@ -729,7 +718,8 @@ export class CoordinatorWrapper extends ContractWrapper {
                         .reduce(flatten, []);
                     return orders;
                 })
-                .reduce(flatten, []);
+                .reduce(flatten, [])
+                .concat(notCoordinatorOrders);
 
             // lookup orders with errors
             const errorsWithOrders = errorResponses.map(resp => {

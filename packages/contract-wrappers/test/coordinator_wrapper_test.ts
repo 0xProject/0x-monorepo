@@ -273,7 +273,7 @@ describe.only('CoordinatorWrapper', () => {
     // fill handling is the same for all fill methods so we can test them all through the fillOrder and batchFillOrders interfaces
     describe('fill order(s)', () => {
         describe('#fillOrderAsync', () => {
-            it('should fill a valid order', async () => {
+            it.only('should fill a valid order', async () => {
                 txHash = await contractWrappers.coordinator.fillOrderAsync(
                     signedOrder,
                     takerTokenFillAmount,
