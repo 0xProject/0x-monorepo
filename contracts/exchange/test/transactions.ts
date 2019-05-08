@@ -480,7 +480,7 @@ describe('Exchange transactions', () => {
                 expect(cancelLogs.length).to.eq(1);
                 const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
                 expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-                expect(cancelLogArgs.senderAddress).to.eq(senderAddress);
+                expect(cancelLogArgs.orderSenderAddress).to.eq(senderAddress);
                 expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
             });
             it('should be successful if called by maker without a signature', async () => {
@@ -494,7 +494,7 @@ describe('Exchange transactions', () => {
                 expect(cancelLogs.length).to.eq(1);
                 const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
                 expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-                expect(cancelLogArgs.senderAddress).to.eq(constants.NULL_ADDRESS);
+                expect(cancelLogArgs.orderSenderAddress).to.eq(constants.NULL_ADDRESS);
                 expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
             });
         });
