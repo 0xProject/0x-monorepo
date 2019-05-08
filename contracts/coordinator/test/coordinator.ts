@@ -523,7 +523,7 @@ describe('Coordinator tests', () => {
             expect(cancelLogs.length).to.eq(1);
             const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
             expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-            expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
+            expect(cancelLogArgs.orderSenderAddress).to.eq(coordinatorContract.address);
             expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
         });
     });
