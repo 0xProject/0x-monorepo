@@ -136,7 +136,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     }
 
     function _makeReturnValuesForSingleOrderFill(bytes memory signedTransactionData)
-        internal
+        private
         pure
         returns(
             LibOrder.Order[] memory orders,
@@ -155,7 +155,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     }
 
     function _makeReturnValuesForBatchFill(bytes memory signedTransactionData)
-        internal
+        private
         pure
         returns(
             LibOrder.Order[] memory orders,
@@ -172,7 +172,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     }
 
     function _makeReturnValuesForMarketFill(bytes memory signedTransactionData)
-        internal
+        private
         pure
         returns(
             LibOrder.Order[] memory orders,
