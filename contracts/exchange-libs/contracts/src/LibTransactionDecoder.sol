@@ -76,9 +76,9 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionSelector == EXECUTE_TRANSACTION_SELECTOR
             // TODO: add new noThrow cancel functions when https://github.com/0xProject/ZEIPs/issues/35 is merged.
         ) {
-            revert("Unimplemented");
+            revert("UNIMPLEMENTED");
         } else {
-            revert("Unrecognized function selector");
+            revert("UNKNOWN_FUNCTION_SELECTOR");
         }
 
         if (functionSelector == BATCH_CANCEL_ORDERS_SELECTOR) {
