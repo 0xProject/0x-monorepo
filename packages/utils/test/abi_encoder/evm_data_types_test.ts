@@ -1121,7 +1121,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args, encodingRules);
-            }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
+            }).to.throw("Tried to encode non-hex value. Value must include '0x' prefix.");
         });
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
             // Create DataType object
@@ -1235,7 +1235,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args, encodingRules);
-            }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
+            }).to.throw("Tried to encode non-hex value. Value must include '0x' prefix.");
         });
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
             // Create DataType object
