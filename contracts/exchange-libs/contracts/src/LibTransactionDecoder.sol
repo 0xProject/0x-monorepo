@@ -35,7 +35,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     ///     just one element.
     function decodeTransaction(bytes memory signedTransactionData)
         public
-        view
+        pure
         returns(
             string memory functionName,
             LibOrder.Order[] memory orders,
