@@ -69,6 +69,8 @@ contract LibOrder is
         uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.
         bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The last byte references the id of this proxy.
         bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The last byte references the id of this proxy.
+        bytes makerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset fees. The last byte references the id of this proxy.
+        bytes takerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset fees. The last byte references the id of this proxy.
     }
     // solhint-enable max-line-length
 
@@ -118,7 +120,9 @@ contract LibOrder is
         //     order.expirationTimeSeconds,
         //     order.salt,
         //     keccak256(order.makerAssetData),
-        //     keccak256(order.takerAssetData)
+        //     keccak256(order.takerAssetData),
+        //     keccak256(order.makerFeeAssetData),
+        //     keccak256(order.takerFeeAssetData)
         // ));
 
         assembly {
