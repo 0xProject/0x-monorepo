@@ -24,7 +24,7 @@
         }
     },
     "contracts": [
-        "src/Address.sol",
+        "src/LibAddress.sol",
         "src/LibBytes.sol",
         "src/LibEIP712.sol",
         "src/Ownable.sol",
