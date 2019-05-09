@@ -3,7 +3,7 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/Address.json",
+        "generated-artifacts/LibAddress.json",
         "generated-artifacts/IOwnable.json",
         "generated-artifacts/LibBytes.json",
         "generated-artifacts/LibEIP712.json",
