@@ -75,6 +75,8 @@ export {
     Order,
     SignedOrder,
     AssetProxyId,
+    SignedZeroExTransaction,
+    ZeroExTransaction,
 } from '@0x/types';
 
 export {
