@@ -2,7 +2,15 @@ import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-g
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
+import {
+    ECSignature,
+    Order,
+    SignatureType,
+    SignedOrder,
+    SignedZeroExTransaction,
+    ValidatorSignature,
+    ZeroExTransaction,
+} from '@0x/types';
 import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
@@ -12,7 +20,7 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
 import { orderHashUtils } from './order_hash';
-import { OrderError } from './types';
+import { TypedDataError } from './types';
 import { utils } from './utils';
 
 export const signatureUtils = {
@@ -278,7 +286,50 @@ export const signatureUtils = {
         } catch (err) {
             // Detect if Metamask to transition users to the MetamaskSubprovider
             if ((provider as any).isMetaMask) {
-                throw new Error(OrderError.InvalidMetamaskSigner);
+                throw new Error(TypedDataError.InvalidMetamaskSigner);
+            } else {
+                throw err;
+            }
+        }
+    },
+    /**
+     * Signs a ZeroExTransaction using `eth_signTypedData` and returns a SignedZeroExTransaction.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
+     * @param   transaction            The ZeroEx Transaction to sign.
+     * @param   signerAddress          The hex encoded Ethereum address you wish to sign it with. This address
+     *          must be available via the supplied Provider.
+     * @return  A SignedZeroExTransaction containing the ZeroExTransaction and Elliptic curve signature with Signature Type.
+     */
+    async ecSignTypedDataTransactionAsync(
+        supportedProvider: SupportedProvider,
+        transaction: ZeroExTransaction,
+        signerAddress: string,
+    ): Promise<SignedZeroExTransaction> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        assert.isETHAddressHex('signerAddress', signerAddress);
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        const web3Wrapper = new Web3Wrapper(provider);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
+        const normalizedSignerAddress = signerAddress.toLowerCase();
+        const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
+        try {
+            const signature = await web3Wrapper.signTypedDataAsync(normalizedSignerAddress, typedData);
+            const ecSignatureRSV = parseSignatureHexAsRSV(signature);
+            const signatureBuffer = Buffer.concat([
+                ethUtil.toBuffer(ecSignatureRSV.v),
+                ethUtil.toBuffer(ecSignatureRSV.r),
+                ethUtil.toBuffer(ecSignatureRSV.s),
+                ethUtil.toBuffer(SignatureType.EIP712),
+            ]);
+            const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+            return {
+                ...transaction,
+                signature: signatureHex,
+            };
+        } catch (err) {
+            // Detect if Metamask to transition users to the MetamaskSubprovider
+            if ((provider as any).isMetaMask) {
+                throw new Error(TypedDataError.InvalidMetamaskSigner);
             } else {
                 throw err;
             }
@@ -339,9 +390,9 @@ export const signatureUtils = {
         }
         // Detect if Metamask to transition users to the MetamaskSubprovider
         if ((provider as any).isMetaMask) {
-            throw new Error(OrderError.InvalidMetamaskSigner);
+            throw new Error(TypedDataError.InvalidMetamaskSigner);
         } else {
-            throw new Error(OrderError.InvalidSignature);
+            throw new Error(TypedDataError.InvalidSignature);
         }
     },
     /**

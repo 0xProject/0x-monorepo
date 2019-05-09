@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.0.0",
+        "changes": [
+            {
+                "note": "Renamed `OrderError` to `TypedDataError`",
+                "pr": 1792
+            }
+        ]
+    },
+    {
         "version": "7.2.0",
         "changes": [
             {

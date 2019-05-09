@@ -225,3 +225,11 @@ export interface DutchAuctionData {
     beginTimeSeconds: BigNumber;
     beginAmount: BigNumber;
 }
+
+export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';
+
+export interface CoordinatorTransaction {
+    salt: BigNumber;
+    signerAddress: string;
+    data: string;
+}
