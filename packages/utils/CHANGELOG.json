@@ -1,5 +1,23 @@
 [
     {
+        "version": "4.3.3",
+        "changes": [
+            {
+                "note": "Fixed spelling error in ABI Encoder error message",
+                "pr": 1808
+            }
+        ]
+    },
+    {
+        "version": "4.3.2",
+        "changes": [
+            {
+                "note": "Support for ABI encoding multibyte strings (fixes issue #1723)",
+                "pr": 1806
+            }
+        ]
+    },
+    {
         "version": "4.3.1",
         "changes": [
             {

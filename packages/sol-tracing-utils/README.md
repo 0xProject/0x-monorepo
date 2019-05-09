@@ -5,7 +5,7 @@ Common code for all solidity trace-based tools (sol-coverage, sol-profiler, sol-
 ## Installation
 
 ```bash
-yarn add @0x/sol-sol-tracing-utils
+yarn add @0x/sol-tracing-utils
 ```
 
 ## Contributing

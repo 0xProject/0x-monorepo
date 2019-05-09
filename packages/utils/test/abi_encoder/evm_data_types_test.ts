@@ -1121,7 +1121,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args, encodingRules);
-            }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
+            }).to.throw("Tried to encode non-hex value. Value must include '0x' prefix.");
         });
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
             // Create DataType object
@@ -1235,7 +1235,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args, encodingRules);
-            }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
+            }).to.throw("Tried to encode non-hex value. Value must include '0x' prefix.");
         });
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
             // Create DataType object
@@ -1313,6 +1313,44 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000002a30786161616161616161616161616161616161616161616161616161616161616161616161616161616100000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
+        });
+        it('String that has a multibyte UTF-8 character', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'String', type: 'string' };
+            const dataType = new AbiEncoder.String(testDataItem);
+            // Construct args to be encoded
+            const args = '👴🏼';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args, encodingRules);
+            const expectedEncodedArgs =
+                '0x0000000000000000000000000000000000000000000000000000000000000008f09f91b4f09f8fbc000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            expect(decodedArgs).to.be.deep.equal(args);
+            // Validate signature
+            const dataTypeFromSignature = AbiEncoder.create(dataType.getSignature(true));
+            const argsEncodedFromSignature = dataTypeFromSignature.encode(args);
+            expect(argsEncodedFromSignature).to.be.deep.equal(expectedEncodedArgs);
+        });
+        it('String that combines single and multibyte UTF-8 characters', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'String', type: 'string' };
+            const dataType = new AbiEncoder.String(testDataItem);
+            // Construct args to be encoded
+            const args = 'Hello 😀👴🏼😁😂😃 world!';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args, encodingRules);
+            const expectedEncodedArgs =
+                '0x000000000000000000000000000000000000000000000000000000000000002548656c6c6f20f09f9880f09f91b4f09f8fbcf09f9881f09f9882f09f988320776f726c6421000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
