@@ -55,8 +55,9 @@ function logIfDefined(x: any): void {
         packages,
         pkg => !pkg.packageJson.private && pkg.packageJson.main !== undefined && pkg.packageJson.main.endsWith('.js'),
     );
-    const CHUNK_SIZE = 5;
-    const chunkedInstallablePackages = _.chunk(installablePackages, CHUNK_SIZE);
+    const CHUNK_SIZE = 15;
+    // const chunkedInstallablePackages = _.chunk(installablePackages, CHUNK_SIZE);
+    const chunkedInstallablePackages = [installablePackages.filter(p => p.packageJson.name === '@0x/contract-wrappers')];
     utils.log(`Testing all packages in ${chunkedInstallablePackages.length} chunks`);
     for (const installablePackagesChunk of chunkedInstallablePackages) {
         utils.log('Testing packages:');
