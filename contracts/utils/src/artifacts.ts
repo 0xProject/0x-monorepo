@@ -5,8 +5,8 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as LibAddress from '../generated-artifacts/LibAddress.json';
 import * as IOwnable from '../generated-artifacts/IOwnable.json';
+import * as LibAddress from '../generated-artifacts/LibAddress.json';
 import * as LibBytes from '../generated-artifacts/LibBytes.json';
 import * as LibEIP712 from '../generated-artifacts/LibEIP712.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
