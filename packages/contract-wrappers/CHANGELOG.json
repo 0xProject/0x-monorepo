@@ -1,14 +1,5 @@
 [
     {
-        "version": "9.1.0",
-        "changes": [
-            {
-                "note": "Added CoordinatorWrapper to support orders with the Coordinator extension contract",
-                "pr": 1792
-            }
-        ]
-    },
-    {
         "version": "9.0.0",
         "changes": [
             {
