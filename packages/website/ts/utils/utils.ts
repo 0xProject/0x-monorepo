@@ -1,5 +1,5 @@
 import { ContractWrappersError } from '@0x/contract-wrappers';
-import { assetDataUtils, OrderError } from '@0x/order-utils';
+import { assetDataUtils, TypedDataError } from '@0x/order-utils';
 import { constants as sharedConstants, Networks } from '@0x/react-shared';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -232,7 +232,7 @@ export const utils = {
     zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
         const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
             [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
-            [OrderError.InvalidSignature]: 'Order signature is not valid',
+            [TypedDataError.InvalidSignature]: 'Order signature is not valid',
             [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
             [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
             [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',

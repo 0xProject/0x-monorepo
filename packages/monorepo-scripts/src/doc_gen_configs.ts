@@ -57,7 +57,7 @@ export const docGenConfigs: DocGenConfigs = {
         'NonceSubproviderErrors',
         'Web3WrapperErrors',
         'ContractWrappersError',
-        'OrderError',
+        'TypedDataError',
         'AssetBuyerError',
         'ForwarderWrapperError',
         'CoordinatorServerError',
