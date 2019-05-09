@@ -434,30 +434,14 @@ export class CoordinatorWrapper extends ContractWrapper {
         assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
         const data = this._transactionEncoder.batchCancelOrdersTx(orders);
 
-        // create lookup tables to match server endpoints to orders
-        const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
-        for (const order of orders) {
-            if (feeRecipientsToOrders[order.feeRecipientAddress] === undefined) {
-                feeRecipientsToOrders[order.feeRecipientAddress] = [] as SignedOrder[];
-            }
-            feeRecipientsToOrders[order.feeRecipientAddress].push(order);
-        }
-
-        const serverEndpointsToFeeRecipients: { [feeRecipient: string]: string[] } = {};
-        for (const feeRecipient of Object.keys(feeRecipientsToOrders)) {
-            const endpoint = await this._getServerEndpointOrThrowAsync(feeRecipient);
-            if (serverEndpointsToFeeRecipients[endpoint] === undefined) {
-                serverEndpointsToFeeRecipients[endpoint] = [];
-            }
-            serverEndpointsToFeeRecipients[endpoint].push(feeRecipient);
-        }
+        const serverEndpointsToOrders = await this._mapServerEndpointsToOrdersAsync(orders);
 
         // make server requests
         let numErrors = 0;
         const errorResponses: CoordinatorServerResponse[] = [];
         const successResponses: CoordinatorServerCancellationResponse[] = [];
         const transaction = await this._generateSignedZeroExTransactionAsync(data, makerAddress);
-        for (const endpoint of Object.keys(serverEndpointsToFeeRecipients)) {
+        for (const endpoint of Object.keys(serverEndpointsToOrders)) {
             const response = await this._executeServerRequestAsync(transaction, makerAddress, endpoint);
             if (response.isError) {
                 errorResponses.push(response);
@@ -474,10 +458,7 @@ export class CoordinatorWrapper extends ContractWrapper {
             // lookup orders with errors
             const errorsWithOrders = errorResponses.map(resp => {
                 const endpoint = resp.coordinatorOperator;
-                const feeRecipients: string[] = serverEndpointsToFeeRecipients[endpoint];
-                const _orders = feeRecipients
-                    .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
-                    .reduce(flatten, []);
+                const _orders = serverEndpointsToOrders[endpoint];
                 return {
                     ...resp,
                     orders: _orders,
@@ -650,32 +631,14 @@ export class CoordinatorWrapper extends ContractWrapper {
         orderTransactionOpts: OrderTransactionOpts,
     ): Promise<string> {
         const coordinatorOrders = signedOrders.filter(o => o.senderAddress === this.address);
-
-        // create lookup tables to match server endpoints to orders
-        const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
-        for (const order of coordinatorOrders) {
-            const feeRecipient = order.feeRecipientAddress;
-            if (feeRecipientsToOrders[feeRecipient] === undefined) {
-                feeRecipientsToOrders[feeRecipient] = [] as SignedOrder[];
-            }
-            feeRecipientsToOrders[feeRecipient].push(order);
-        }
-
-        const serverEndpointsToFeeRecipients: { [endpoint: string]: string[] } = {};
-        for (const feeRecipient of Object.keys(feeRecipientsToOrders)) {
-            const endpoint = await this._getServerEndpointOrThrowAsync(feeRecipient);
-            if (serverEndpointsToFeeRecipients[endpoint] === undefined) {
-                serverEndpointsToFeeRecipients[endpoint] = [];
-            }
-            serverEndpointsToFeeRecipients[endpoint].push(feeRecipient);
-        }
+        const serverEndpointsToOrders = await this._mapServerEndpointsToOrdersAsync(coordinatorOrders);
 
         // make server requests
         let numErrors = 0;
         const errorResponses: CoordinatorServerResponse[] = [];
         const approvalResponses: CoordinatorServerResponse[] = [];
         const transaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
-        for (const endpoint of Object.keys(serverEndpointsToFeeRecipients)) {
+        for (const endpoint of Object.keys(serverEndpointsToOrders)) {
             const response = await this._executeServerRequestAsync(transaction, takerAddress, endpoint);
             if (response.isError) {
                 errorResponses.push(response);
@@ -712,10 +675,7 @@ export class CoordinatorWrapper extends ContractWrapper {
             const approvedOrders = approvalResponses
                 .map(resp => {
                     const endpoint = resp.coordinatorOperator;
-                    const feeRecipients = serverEndpointsToFeeRecipients[endpoint];
-                    const orders = feeRecipients
-                        .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
-                        .reduce(flatten, []);
+                    const orders = serverEndpointsToOrders[endpoint];
                     return orders;
                 })
                 .reduce(flatten, [])
@@ -724,10 +684,7 @@ export class CoordinatorWrapper extends ContractWrapper {
             // lookup orders with errors
             const errorsWithOrders = errorResponses.map(resp => {
                 const endpoint = resp.coordinatorOperator;
-                const feeRecipients = serverEndpointsToFeeRecipients[endpoint];
-                const orders = feeRecipients
-                    .map(feeRecipient => feeRecipientsToOrders[feeRecipient])
-                    .reduce(flatten, []);
+                const orders = serverEndpointsToOrders[endpoint];
                 return {
                     ...resp,
                     orders,
@@ -864,6 +821,28 @@ export class CoordinatorWrapper extends ContractWrapper {
         );
         return txHash;
     }
+
+    private async _mapServerEndpointsToOrdersAsync(coordinatorOrders: SignedOrder[]): Promise<{ [endpoint: string]: SignedOrder[] }> {
+        const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
+        for (const order of coordinatorOrders) {
+            const feeRecipient = order.feeRecipientAddress;
+            if (feeRecipientsToOrders[feeRecipient] === undefined) {
+                feeRecipientsToOrders[feeRecipient] = [] as SignedOrder[];
+            }
+            feeRecipientsToOrders[feeRecipient].push(order);
+        }
+        const serverEndpointsToOrders: { [endpoint: string]: SignedOrder[] } = {};
+        for (const feeRecipient of Object.keys(feeRecipientsToOrders)) {
+            const endpoint = await this._getServerEndpointOrThrowAsync(feeRecipient);
+            const orders = feeRecipientsToOrders[feeRecipient];
+            if (serverEndpointsToOrders[endpoint] === undefined) {
+                serverEndpointsToOrders[endpoint] = [];
+            }
+            serverEndpointsToOrders[endpoint] = serverEndpointsToOrders[endpoint].concat(orders);
+        }
+        return serverEndpointsToOrders;
+    }
+
 }
 
 function getMakerAddressOrThrow(orders: Array<Order | SignedOrder>): string {
