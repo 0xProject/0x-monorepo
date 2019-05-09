@@ -20,7 +20,6 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
 import { orderHashUtils } from './order_hash';
-import { transactionHashUtils } from './transaction_hash';
 import { TypedDataError } from './types';
 import { utils } from './utils';
 
