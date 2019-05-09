@@ -8,7 +8,7 @@ import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
-import * as _ from 'lodash';
+import flatten from 'ramda/src/flatten';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
@@ -656,8 +656,8 @@ export class CoordinatorWrapper extends ContractWrapper {
                 formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse),
             );
 
-            const allSignatures = allApprovals.map(a => a.signatures).reduce(flatten, []);
-            const allExpirationTimes = allApprovals.map(a => a.expirationTimeSeconds).reduce(flatten, []);
+            const allSignatures = flatten<string>(allApprovals.map(a => a.signatures));
+            const allExpirationTimes = flatten<BigNumber>(allApprovals.map(a => a.expirationTimeSeconds));
 
             // submit transaction with approvals
             const txHash = await this._submitCoordinatorTransactionAsync(
@@ -673,14 +673,13 @@ export class CoordinatorWrapper extends ContractWrapper {
             // format errors and approvals
             // concatenate approvals
             const notCoordinatorOrders = signedOrders.filter(o => o.senderAddress !== this.address);
-            const approvedOrders = approvalResponses
+            const approvedOrdersNested = approvalResponses
                 .map(resp => {
                     const endpoint = resp.coordinatorOperator;
                     const orders = serverEndpointsToOrders[endpoint];
                     return orders;
-                })
-                .reduce(flatten, [])
-                .concat(notCoordinatorOrders);
+                });
+            const approvedOrders = flatten<SignedOrder>(approvedOrdersNested.concat(notCoordinatorOrders));
 
             // lookup orders with errors
             const errorsWithOrders = errorResponses.map(resp => {
@@ -855,8 +854,5 @@ function getMakerAddressOrThrow(orders: Array<Order | SignedOrder>): string {
     }
     return orders[0].makerAddress;
 }
-function flatten<T>(acc: T[], val: T | T[]): T[] {
-    acc.push(...val);
-    return acc;
-}
+
 // tslint:disable:max-file-line-count

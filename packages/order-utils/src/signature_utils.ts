@@ -293,12 +293,12 @@ export const signatureUtils = {
         }
     },
     /**
-     * Signs an order using `eth_signTypedData` and returns a SignedOrder.
+     * Signs a ZeroExTransaction using `eth_signTypedData` and returns a SignedZeroExTransaction.
      * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
-     * @param   transaction The ZeroEx Transaction to sign.
-     * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
+     * @param   transaction            The ZeroEx Transaction to sign.
+     * @param   signerAddress          The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the supplied Provider.
-     * @return  A SignedOrder containing the order and Elliptic curve signature with Signature Type.
+     * @return  A SignedZeroExTransaction containing the ZeroExTransaction and Elliptic curve signature with Signature Type.
      */
     async ecSignTypedDataTransactionAsync(
         supportedProvider: SupportedProvider,
