@@ -8,7 +8,7 @@ import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
-import flatten from 'ramda/src/flatten';
+import { flatten } from 'ramda';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
