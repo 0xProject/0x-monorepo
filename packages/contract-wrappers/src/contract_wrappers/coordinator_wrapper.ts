@@ -8,7 +8,7 @@ import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
-import { flatten } from 'ramda';
+import { flatten } from 'lodash';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
@@ -651,8 +651,8 @@ export class CoordinatorWrapper extends ContractWrapper {
                 formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse),
             );
 
-            const allSignatures = flatten<string>(allApprovals.map(a => a.signatures));
-            const allExpirationTimes = flatten<BigNumber>(allApprovals.map(a => a.expirationTimeSeconds));
+            const allSignatures = flatten(allApprovals.map(a => a.signatures));
+            const allExpirationTimes = flatten(allApprovals.map(a => a.expirationTimeSeconds));
 
             // submit transaction with approvals
             const txHash = await this._submitCoordinatorTransactionAsync(
@@ -673,7 +673,7 @@ export class CoordinatorWrapper extends ContractWrapper {
                 const orders = serverEndpointsToOrders[endpoint];
                 return orders;
             });
-            const approvedOrders = flatten<SignedOrder>(approvedOrdersNested.concat(notCoordinatorOrders));
+            const approvedOrders = flatten(approvedOrdersNested.concat(notCoordinatorOrders));
 
             // lookup orders with errors
             const errorsWithOrders = errorResponses.map(resp => {
