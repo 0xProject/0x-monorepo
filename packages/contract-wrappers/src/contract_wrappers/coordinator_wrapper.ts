@@ -763,13 +763,8 @@ export class CoordinatorWrapper extends ContractWrapper {
         });
 
         const isError = response.status !== HttpStatus.OK;
-
-        let json;
-        try {
-            json = await response.json();
-        } catch (e) {
-            // ignore
-        }
+        const isValidationError = response.status === HttpStatus.BAD_REQUEST;
+        const json = isError && !isValidationError ? undefined : await response.json();
 
         const result = {
             isError,
