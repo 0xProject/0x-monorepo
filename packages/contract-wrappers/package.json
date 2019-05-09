@@ -81,8 +81,6 @@
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.1",
         "@0x/web3-wrapper": "^6.0.5",
-        "@types/eth-sig-util": "^2.1.0",
-        "eth-sig-util": "^2.1.2",
         "ethereum-types": "^2.1.2",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-blockstream": "6.0.0",

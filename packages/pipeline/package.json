@@ -63,6 +63,6 @@
         "ramda": "^0.25.0",
         "reflect-metadata": "^0.1.12",
         "sqlite3": "^4.0.2",
-        "typeorm": "0.2.7"
+        "typeorm": "^0.2.7"
     }
 }
