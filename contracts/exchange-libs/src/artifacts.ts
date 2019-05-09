@@ -20,6 +20,5 @@ export const artifacts = {
     LibOrder: LibOrder as ContractArtifact,
     LibTransactionDecoder: LibTransactionDecoder as ContractArtifact,
     LibZeroExTransaction: LibZeroExTransaction as ContractArtifact,
-    LibEIP712ExchangeDomain: LibEIP712ExchangeDomain as ContractArtifact,
     TestLibs: TestLibs as ContractArtifact,
 };
