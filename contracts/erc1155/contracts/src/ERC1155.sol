@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "@0x/contracts-utils/contracts/src/Address.sol";
+import "@0x/contracts-utils/contracts/src/LibAddress.sol";
 import "./interfaces/IERC1155.sol";
 import "./interfaces/IERC1155Receiver.sol";
 import "./MixinNonFungibleToken.sol";
@@ -30,7 +30,7 @@ contract ERC1155 is
     IERC1155,
     MixinNonFungibleToken
 {
-    using Address for address;
+    using LibAddress for address;
 
     // selectors for receiver callbacks
     bytes4 constant public ERC1155_RECEIVED       = 0xf23a6e61;
@@ -97,7 +97,7 @@ contract ERC1155 is
         emit TransferSingle(msg.sender, from, to, id, value);
 
         // if `to` is a contract then trigger its callback
-        if (to._isContract()) {
+        if (to.isContract()) {
             bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155Received(
                 msg.sender,
                 from,
@@ -177,7 +177,7 @@ contract ERC1155 is
         emit TransferBatch(msg.sender, from, to, ids, values);
 
         // if `to` is a contract then trigger its callback
-        if (to._isContract()) {
+        if (to.isContract()) {
             bytes4 callbackReturnValue = IERC1155Receiver(to).onERC1155BatchReceived(
                 msg.sender,
                 from,

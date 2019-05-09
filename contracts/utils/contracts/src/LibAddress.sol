@@ -22,7 +22,7 @@ pragma solidity ^0.5.5;
 /**
  * Utility library of inline functions on addresses
  */
-library Address {
+library LibAddress {
 
     /**
      * Returns whether the target address is a contract
@@ -31,7 +31,7 @@ library Address {
      * @param account address of the account to check
      * @return whether the target address is a contract
      */
-    function _isContract(address account) internal view returns (bool) {
+    function isContract(address account) internal view returns (bool) {
         uint256 size;
         // XXX Currently there is no better way to check if there is a contract in an address
         // than to check the size of the code at that address.
