@@ -137,7 +137,7 @@ async function testInstallPackageAsync(
     await writeFileAsync(tsconfigFilePath, JSON.stringify(tsConfig, null, '\t'));
     utils.log(`Compiling ${packageName}`);
     const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
-    await execAsync(tscBinaryPath, { cwd: testDirectory });
+    await execAsync(`node --max-old-space-size=4096 ${tscBinaryPath}`, { cwd: testDirectory });
     utils.log(`Successfully compiled with ${packageName} as a dependency`);
     const isUnrunnablePkg = _.includes(UNRUNNABLE_PACKAGES, packageName);
     if (!isUnrunnablePkg) {
