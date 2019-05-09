@@ -28,7 +28,7 @@ const anotherCoordinatorPort = '4000';
 const coordinatorEndpoint = 'http://localhost:';
 
 // tslint:disable:custom-no-magic-numbers
-describe('CoordinatorWrapper', () => {
+describe.only('CoordinatorWrapper', () => {
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let coordinatorServerApp: http.Server;
@@ -80,7 +80,6 @@ describe('CoordinatorWrapper', () => {
             exchangeContractAddress,
             contractWrappers.erc20Proxy.address,
             contractWrappers.erc721Proxy.address,
-            contractAddresses.coordinator,
         );
         [
             ,
@@ -205,6 +204,7 @@ describe('CoordinatorWrapper', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
+
         signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
             makerAssetData,
             takerAssetData,
@@ -214,6 +214,8 @@ describe('CoordinatorWrapper', () => {
             takerAddress,
             fillableAmount,
             feeRecipientAddressOne,
+            undefined,
+            contractWrappers.coordinator.address,
         );
         anotherSignedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
             makerAssetData,
@@ -224,6 +226,8 @@ describe('CoordinatorWrapper', () => {
             takerAddress,
             fillableAmount,
             feeRecipientAddressOne,
+            undefined,
+            contractWrappers.coordinator.address,
         );
         signedOrderWithDifferentFeeRecipient = await fillScenarios.createFillableSignedOrderWithFeesAsync(
             makerAssetData,
@@ -234,6 +238,8 @@ describe('CoordinatorWrapper', () => {
             takerAddress,
             fillableAmount,
             feeRecipientAddressTwo,
+            undefined,
+            contractWrappers.coordinator.address,
         );
         signedOrderWithDifferentCoordinatorOperator = await fillScenarios.createFillableSignedOrderWithFeesAsync(
             makerAssetData,
@@ -244,6 +250,8 @@ describe('CoordinatorWrapper', () => {
             takerAddress,
             fillableAmount,
             feeRecipientAddressThree,
+            undefined,
+            contractWrappers.coordinator.address,
         );
     });
     afterEach(async () => {
@@ -286,7 +294,7 @@ describe('CoordinatorWrapper', () => {
         describe('#batchFillOrdersAsync', () => {
             it('should fill a batch of valid orders', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
-                const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount];
+                const takerAssetFillAmounts = Array(2).fill(takerTokenFillAmount);
                 txHash = await contractWrappers.coordinator.batchFillOrdersAsync(
                     signedOrders,
                     takerAssetFillAmounts,
@@ -297,7 +305,7 @@ describe('CoordinatorWrapper', () => {
             });
             it('should fill a batch of orders with different feeRecipientAddresses with the same coordinator server', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder, signedOrderWithDifferentFeeRecipient];
-                const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
+                const takerAssetFillAmounts = Array(3).fill(takerTokenFillAmount);
                 txHash = await contractWrappers.coordinator.batchFillOrdersAsync(
                     signedOrders,
                     takerAssetFillAmounts,
@@ -316,18 +324,35 @@ describe('CoordinatorWrapper', () => {
                     signedOrderWithDifferentFeeRecipient,
                     signedOrderWithDifferentCoordinatorOperator,
                 ];
-                const takerAssetFillAmounts = [
-                    takerTokenFillAmount,
-                    takerTokenFillAmount,
-                    takerTokenFillAmount,
-                    takerTokenFillAmount,
-                ];
+                const takerAssetFillAmounts = Array(4).fill(takerTokenFillAmount);
                 txHash = await contractWrappers.coordinator.batchFillOrdersAsync(
                     signedOrders,
                     takerAssetFillAmounts,
                     takerAddress,
                 );
 
+                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            });
+
+            it('should fill a batch of mixed coordinator and non-coordinator orders', async () => {
+                const nonCoordinatorOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                    makerAssetData,
+                    takerAssetData,
+                    new BigNumber(1),
+                    new BigNumber(1),
+                    makerAddress,
+                    takerAddress,
+                    fillableAmount,
+                    feeRecipientAddressOne,
+                    undefined,
+                );
+                const signedOrders = [signedOrder, nonCoordinatorOrder];
+                const takerAssetFillAmounts = Array(2).fill(takerTokenFillAmount);
+                txHash = await contractWrappers.coordinator.batchFillOrdersAsync(
+                    signedOrders,
+                    takerAssetFillAmounts,
+                    takerAddress,
+                );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });

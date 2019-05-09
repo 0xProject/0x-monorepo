@@ -40,6 +40,7 @@ export class CoordinatorWrapper extends ContractWrapper {
     private readonly _registryInstance: CoordinatorRegistryContract;
     private readonly _exchangeInstance: ExchangeContract;
     private readonly _transactionEncoder: TransactionEncoder;
+    private readonly _feeRecipientToEndpoint: { [feeRecipient: string]: string } = {};
 
     /**
      * Instantiate CoordinatorWrapper
@@ -713,17 +714,23 @@ export class CoordinatorWrapper extends ContractWrapper {
     }
 
     private async _getServerEndpointOrThrowAsync(feeRecipientAddress: string): Promise<string> {
-        const coordinatorOperatorEndpoint = await this._registryInstance.getCoordinatorEndpoint.callAsync(
-            feeRecipientAddress,
-        );
-        if (coordinatorOperatorEndpoint === '') {
-            throw new Error(
-                `No Coordinator server endpoint found in Coordinator Registry for feeRecipientAddress: ${feeRecipientAddress}. Registry contract address: ${
-                    this.registryAddress
-                }`,
+        const cached = this._feeRecipientToEndpoint[feeRecipientAddress];
+        const endpoint = cached !== undefined ? cached : await _fetchServerEndpointOrThrowAsync(feeRecipientAddress, this._registryInstance);
+        return endpoint;
+
+        async function _fetchServerEndpointOrThrowAsync(feeRecipient: string, registryInstance: CoordinatorRegistryContract): Promise<string> {
+            const coordinatorOperatorEndpoint = await registryInstance.getCoordinatorEndpoint.callAsync(
+                feeRecipient,
             );
+            if (coordinatorOperatorEndpoint === '' || coordinatorOperatorEndpoint === undefined) {
+                throw new Error(
+                    `No Coordinator server endpoint found in Coordinator Registry for feeRecipientAddress: ${feeRecipient}. Registry contract address: ${
+                        registryInstance.address
+                    }`,
+                );
+            }
+            return coordinatorOperatorEndpoint;
         }
-        return coordinatorOperatorEndpoint;
     }
 
     private async _generateSignedZeroExTransactionAsync(

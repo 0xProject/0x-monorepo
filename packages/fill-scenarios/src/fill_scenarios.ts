@@ -18,7 +18,6 @@ export class FillScenarios {
     private readonly _exchangeAddress: string;
     private readonly _erc20ProxyAddress: string;
     private readonly _erc721ProxyAddress: string;
-    private readonly _senderAddress?: string;
     constructor(
         supportedProvider: SupportedProvider,
         userAddresses: string[],
@@ -26,7 +25,6 @@ export class FillScenarios {
         exchangeAddress: string,
         erc20ProxyAddress: string,
         erc721ProxyAddress: string,
-        senderAddress?: string,
     ) {
         this._web3Wrapper = new Web3Wrapper(supportedProvider);
         this._userAddresses = userAddresses;
@@ -35,7 +33,6 @@ export class FillScenarios {
         this._exchangeAddress = exchangeAddress;
         this._erc20ProxyAddress = erc20ProxyAddress;
         this._erc721ProxyAddress = erc721ProxyAddress;
-        this._senderAddress = senderAddress;
     }
     public async createFillableSignedOrderAsync(
         makerAssetData: string,
@@ -65,6 +62,7 @@ export class FillScenarios {
         fillableAmount: BigNumber,
         feeRecipientAddress: string,
         expirationTimeSeconds?: BigNumber,
+        senderAddress?: string,
     ): Promise<SignedOrder> {
         return this._createAsymmetricFillableSignedOrderWithFeesAsync(
             makerAssetData,
@@ -77,6 +75,7 @@ export class FillScenarios {
             fillableAmount,
             feeRecipientAddress,
             expirationTimeSeconds,
+            senderAddress,
         );
     }
     public async createAsymmetricFillableSignedOrderAsync(
@@ -152,6 +151,7 @@ export class FillScenarios {
         takerFillableAmount: BigNumber,
         feeRecipientAddress: string,
         expirationTimeSeconds?: BigNumber,
+        senderAddress?: string,
     ): Promise<SignedOrder> {
         await this._increaseBalanceAndAllowanceWithAssetDataAsync(makerAssetData, makerAddress, makerFillableAmount);
         await this._increaseBalanceAndAllowanceWithAssetDataAsync(takerAssetData, takerAddress, takerFillableAmount);
@@ -160,7 +160,8 @@ export class FillScenarios {
             this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, makerAddress, makerFee),
             this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, takerAddress, takerFee),
         ]);
-        const senderAddress = this._senderAddress;
+        const _senderAddress = senderAddress ? senderAddress : constants.NULL_ADDRESS;
+
         const signedOrder = await orderFactory.createSignedOrderAsync(
             this._web3Wrapper.getProvider(),
             makerAddress,
@@ -171,7 +172,7 @@ export class FillScenarios {
             this._exchangeAddress,
             {
                 takerAddress,
-                senderAddress,
+                senderAddress: _senderAddress,
                 makerFee,
                 takerFee,
                 feeRecipientAddress,
