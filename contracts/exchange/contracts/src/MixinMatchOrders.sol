@@ -15,7 +15,6 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibConstants.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
@@ -28,7 +27,6 @@ import "./mixins/MExchangeRichErrors.sol";
 
 contract MixinMatchOrders is
     ReentrancyGuard,
-    LibConstants,
     LibMath,
     LibOrder,
     MAssetProxyDispatcher,
@@ -282,7 +280,6 @@ contract MixinMatchOrders is
     )
         private
     {
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
         // Order makers and taker
         _dispatchTransferFrom(
             leftOrderHash,
@@ -306,47 +303,59 @@ contract MixinMatchOrders is
             matchedFillResults.leftMakerAssetSpreadAmount
         );
 
+        address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
+        address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;
+
         // Maker fees
         _dispatchTransferFrom(
             leftOrderHash,
-            zrxAssetData,
+            leftOrder.makerFeeAssetData,
             leftOrder.makerAddress,
-            leftOrder.feeRecipientAddress,
+            leftFeeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
         _dispatchTransferFrom(
             rightOrderHash,
-            zrxAssetData,
+            rightOrder.makerFeeAssetData,
             rightOrder.makerAddress,
-            rightOrder.feeRecipientAddress,
+            rightFeeRecipientAddress,
             matchedFillResults.right.makerFeePaid
         );
 
         // Taker fees
-        if (leftOrder.feeRecipientAddress == rightOrder.feeRecipientAddress) {
-            _dispatchTransferFrom(
-                leftOrderHash,
-                zrxAssetData,
-                takerAddress,
-                leftOrder.feeRecipientAddress,
-                _safeAdd(
-                    matchedFillResults.left.takerFeePaid,
-                    matchedFillResults.right.takerFeePaid
-                )
-            );
+        bytes memory leftTakerFeeAssetData = leftOrder.takerFeeAssetData;
+        bytes memory rightTakerFeeAssetData = rightOrder.takerFeeAssetData;
+
+        if (leftFeeRecipientAddress == rightFeeRecipientAddress) {
+            bytes32 leftTakerFeeAssetDataHash = keccak256(leftTakerFeeAssetData);
+            bytes32 rightTakerFeeAssetDataHash = keccak256(rightTakerFeeAssetData);
+            if (leftTakerFeeAssetDataHash == rightTakerFeeAssetDataHash) {
+                // Fee recipients and taker fee assets are identical, so we can
+                // transfer them in one go.
+                _dispatchTransferFrom(
+                    leftOrderHash,
+                    leftTakerFeeAssetData,
+                    takerAddress,
+                    leftFeeRecipientAddress,
+                    _safeAdd(
+                        matchedFillResults.left.takerFeePaid,
+                        matchedFillResults.right.takerFeePaid
+                        )
+                    );
+            }
         } else {
             _dispatchTransferFrom(
                 leftOrderHash,
-                zrxAssetData,
+                leftTakerFeeAssetData,
                 takerAddress,
-                leftOrder.feeRecipientAddress,
+                leftFeeRecipientAddress,
                 matchedFillResults.left.takerFeePaid
             );
             _dispatchTransferFrom(
                 rightOrderHash,
-                zrxAssetData,
+                rightTakerFeeAssetData,
                 takerAddress,
-                rightOrder.feeRecipientAddress,
+                rightFeeRecipientAddress,
                 matchedFillResults.right.takerFeePaid
             );
         }

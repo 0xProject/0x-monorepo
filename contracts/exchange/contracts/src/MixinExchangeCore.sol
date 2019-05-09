@@ -20,7 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -33,7 +33,6 @@ import "./mixins/MExchangeRichErrors.sol";
 
 contract MixinExchangeCore is
     ReentrancyGuard,
-    LibConstants,
     LibMath,
     LibOrder,
     LibFillResults,
@@ -43,6 +42,8 @@ contract MixinExchangeCore is
     MTransactions,
     MExchangeRichErrors
 {
+    using LibBytes for bytes;
+
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -273,20 +274,99 @@ contract MixinExchangeCore is
         // Update state
         filled[orderHash] = _safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
 
-        // Log order
-        emit Fill(
-            order.makerAddress,
-            order.feeRecipientAddress,
-            takerAddress,
-            msg.sender,
-            fillResults.makerAssetFilledAmount,
-            fillResults.takerAssetFilledAmount,
-            fillResults.makerFeePaid,
-            fillResults.takerFeePaid,
-            orderHash,
-            order.makerAssetData,
-            order.takerAssetData
+        // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
+        // All this logic is equivalent to:
+        // emit Fill(
+        //     order.makerAddress,
+        //     order.feeRecipientAddress,
+        //     takerAddress,
+        //     msg.sender,
+        //     fillResults.makerAssetFilledAmount,
+        //     fillResults.takerAssetFilledAmount,
+        //     fillResults.makerFeePaid,
+        //     fillResults.takerFeePaid,
+        //     orderHash,
+        //     order.makerAssetData,
+        //     order.takerAssetData,
+        //     order.makerFeeAssetData,
+        //     order.takerFeeAssetData
+        // );
+
+        // First we need to ABI encode the (10) non-indexed event arguments
+        // into `logData`.
+        bytes memory logData = new bytes(
+            448 // 10 * 32 + 32 * 4 = 448
+            + order.makerAssetData.length
+            + order.takerAssetData.length
+            + order.makerFeeAssetData.length
+            + order.takerFeeAssetData.length
         );
+        uint256 argOffset = logData.rawAddress();
+        // takerAddress
+        logData.writeAddress(argOffset, takerAddress);
+        argOffset += 32;
+        // senderAddress
+        logData.writeAddress(argOffset, msg.sender);
+        argOffset += 32;
+        // makerAssetFilledAmount
+        logData.writeUint256(argOffset, fillResults.makerAssetFilledAmount);
+        argOffset += 32;
+        // takerAssetFilledAmount
+        logData.writeUint256(argOffset, fillResults.takerAssetFilledAmount);
+        argOffset += 32;
+        // makerFeePaid
+        logData.writeUint256(argOffset, fillResults.makerFeePaid);
+        argOffset += 32;
+        // takerFeePaid
+        logData.writeUint256(argOffset, fillResults.takerFeePaid);
+        argOffset += 32;
+
+        // The last 4 arguments are `bytes` types, so we need to build and track
+        // their calldata payloads.
+        // 320 is the offset to the end of all the argument values (10 * 32),
+        // and where we'll start writing payloads.
+        uint256 dataOffset = logData.rawAddress() + 320;
+        // makerAssetData
+        logData.writeUint256(argOffset, dataOffset);
+        logData.writeBytesWithLength(dataOffset, order.makerAssetData);
+        argOffset += 32;
+        dataOffset += 32 + order.makerAssetData.length;
+        // takerAssetData
+        logData.writeUint256(argOffset, dataOffset);
+        logData.writeBytesWithLength(dataOffset, order.takerAssetData);
+        argOffset += 32;
+        dataOffset += 32 + order.takerAssetData.length;
+        // makerFeeAssetData
+        logData.writeUint256(argOffset, dataOffset);
+        logData.writeBytesWithLength(dataOffset, order.makerFeeAssetData);
+        argOffset += 32;
+        dataOffset += 32 + order.makerFeeAssetData.length;
+        // takerFeeAssetData
+        logData.writeUint256(argOffset, dataOffset);
+        logData.writeBytesWithLength(dataOffset, order.takerFeeAssetData);
+
+        // We could save even more stack space here if we're willing to
+        // embed these values/offsets.
+        bytes32 eventSignature = FILL_EVENT_SIGNATURE;
+        address makerAddress = order.makerAddress;
+        address feeRecipient = order.feeRecipientAddress;
+
+        // Need to dip into assembly because the high-level log4() won't
+        // accept a `bytes` payload for `logData`.
+        assembly {
+            log4(
+                // The ABI-encoded non-indexed args.
+                add(logData, 32),
+                // Length of the above.
+                mload(logData),
+                // The bytes32 signature of this event (keccak('Fill(...)'))
+                eventSignature,
+                // The 3 indexed parameters, in order.
+                makerAddress,
+                feeRecipient,
+                orderHash
+            )
+        }
     }
 
     /// @dev Updates state with results of cancelling an order.
@@ -507,7 +587,6 @@ contract MixinExchangeCore is
     )
         private
     {
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
         _dispatchTransferFrom(
             orderHash,
             order.makerAssetData,
@@ -524,14 +603,14 @@ contract MixinExchangeCore is
         );
         _dispatchTransferFrom(
             orderHash,
-            zrxAssetData,
+            order.makerFeeAssetData,
             order.makerAddress,
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
         _dispatchTransferFrom(
             orderHash,
-            zrxAssetData,
+            order.takerFeeAssetData,
             takerAddress,
             order.feeRecipientAddress,
             fillResults.takerFeePaid
