@@ -25,23 +25,27 @@ import "./LibEIP712ExchangeDomain.sol";
 contract LibOrder is
     LibEIP712ExchangeDomain
 {
-    // Hash for the EIP712 Order Schema
-    bytes32 constant internal EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "Order(",
-        "address makerAddress,",
-        "address takerAddress,",
-        "address feeRecipientAddress,",
-        "address senderAddress,",
-        "uint256 makerAssetAmount,",
-        "uint256 takerAssetAmount,",
-        "uint256 makerFee,",
-        "uint256 takerFee,",
-        "uint256 expirationTimeSeconds,",
-        "uint256 salt,",
-        "bytes makerAssetData,",
-        "bytes takerAssetData",
-        ")"
-    ));
+    // Hash for the EIP712 Order Schema:
+    // keccak256(abi.encodePacked(
+    //     "Order(",
+    //     "address makerAddress,",
+    //     "address takerAddress,",
+    //     "address feeRecipientAddress,",
+    //     "address senderAddress,",
+    //     "uint256 makerAssetAmount,",
+    //     "uint256 takerAssetAmount,",
+    //     "uint256 makerFee,",
+    //     "uint256 takerFee,",
+    //     "uint256 expirationTimeSeconds,",
+    //     "uint256 salt,",
+    //     "bytes makerAssetData,",
+    //     "bytes takerAssetData,",
+    //     "bytes makerFeeAssetData,",
+    //     "bytes takerFeeAssetData",
+    //     ")"
+    // ))
+    bytes32 constant internal EIP712_ORDER_SCHEMA_HASH =
+        0xf80322eb8376aafb64eadf8f0d7623f22130fd9491a221e902b713cb984a7534;
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
     // An order's state is unaffected by external factors, like account balances.
@@ -67,10 +71,10 @@ contract LibOrder is
         uint256 takerFee;               // Amount of ZRX paid to feeRecipient by taker when order is filled. If set to 0, no transfer of ZRX from taker to feeRecipient will be attempted.
         uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.
         uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.
-        bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The last byte references the id of this proxy.
-        bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The last byte references the id of this proxy.
-        bytes makerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset fees. The last byte references the id of this proxy.
-        bytes takerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset fees. The last byte references the id of this proxy.
+        bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The leading bytes4 references the id of the asset proxy.
+        bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The leading bytes4 references the id of the asset proxy.
+        bytes makerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset fees. The leading bytes4 references the id of the asset proxy.
+        bytes takerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset fees. The leading bytes4 references the id of the asset proxy.
     }
     // solhint-enable max-line-length
 
