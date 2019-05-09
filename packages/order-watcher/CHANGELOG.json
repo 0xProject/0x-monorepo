@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.8",
+        "changes": [
+            {
+                "note": "Fix bug where WETH deposit/withdraw events would not trigger a order state update",
+                "pr": 1809
+            }
+        ]
+    },
+    {
         "version": "4.0.7",
         "changes": [
             {
