@@ -68,7 +68,7 @@ export {
 } from '@0x/types';
 
 export {
-    TypedDataError as OrderError,
+    TypedDataError,
     TradeSide,
     TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
