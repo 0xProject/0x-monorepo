@@ -38,6 +38,7 @@ export const docGenConfigs: DocGenConfigs = {
     // and getting confused. Any class name in this list will not have it's constructor rendered in our docs.
     CLASSES_WITH_HIDDEN_CONSTRUCTORS: [
         'AssetBuyer',
+        'CoordinatorWrapper',
         'DutchAuctionWrapper',
         'ERC20ProxyWrapper',
         'ERC20TokenWrapper',
@@ -59,6 +60,8 @@ export const docGenConfigs: DocGenConfigs = {
         'OrderError',
         'AssetBuyerError',
         'ForwarderWrapperError',
+        'CoordinatorServerError',
+        'CoordinatorServerCancellationResponse',
     ],
     // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
     // "exported public interface". Thus we add them here and skip those checks.
