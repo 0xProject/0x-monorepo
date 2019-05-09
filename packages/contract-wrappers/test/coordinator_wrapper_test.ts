@@ -28,7 +28,7 @@ const anotherCoordinatorPort = '4000';
 const coordinatorEndpoint = 'http://localhost:';
 
 // tslint:disable:custom-no-magic-numbers
-describe.only('CoordinatorWrapper', () => {
+describe('CoordinatorWrapper', () => {
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let coordinatorServerApp: http.Server;
