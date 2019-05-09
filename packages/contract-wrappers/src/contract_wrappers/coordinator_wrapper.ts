@@ -178,9 +178,8 @@ export class CoordinatorWrapper extends ContractWrapper {
 
     /**
      * Batch version of fillOrderAsync. Executes multiple fills atomically in a single transaction.
-     *  Under-the-hood, this
-     * method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints registered in the
-     * coordinator registry contract. It requests a signature from each coordinator server before
+     * Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
+     * registered in the coordinator registry contract. It requests a signature from each coordinator server before
      * submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
      * signatures and then fills the order through the Exchange contract.
      * If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
@@ -271,9 +270,8 @@ export class CoordinatorWrapper extends ContractWrapper {
 
     /**
      * Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
-     *  Under-the-hood, this
-     * method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints registered in the
-     * coordinator registry contract. It requests a signature from each coordinator server before
+     * Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
+     * registered in the coordinator registry contract. It requests a signature from each coordinator server before
      * submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
      * signatures and then fills the order through the Exchange contract.
      * If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
@@ -304,9 +302,8 @@ export class CoordinatorWrapper extends ContractWrapper {
 
     /**
      * Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
-     * Under-the-hood, this
-     * method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints registered in the
-     * coordinator registry contract. It requests a signature from each coordinator server before
+     * Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
+     * registered in the coordinator registry contract. It requests a signature from each coordinator server before
      * submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
      * signatures and then fills the order through the Exchange contract.
      * If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
@@ -390,7 +387,9 @@ export class CoordinatorWrapper extends ContractWrapper {
     }
 
     /**
-     * Soft cancel a given order. See [soft cancels](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#soft-cancels).
+     * Soft cancel a given order.
+     * Soft cancels are recorded only on coordinator operator servers and do not involve an Ethereum transaction.
+     * See [soft cancels](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#soft-cancels).
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
      * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
      */
@@ -438,7 +437,6 @@ export class CoordinatorWrapper extends ContractWrapper {
         const serverEndpointsToOrders = await this._mapServerEndpointsToOrdersAsync(orders);
 
         // make server requests
-        let numErrors = 0;
         const errorResponses: CoordinatorServerResponse[] = [];
         const successResponses: CoordinatorServerCancellationResponse[] = [];
         const transaction = await this._generateSignedZeroExTransactionAsync(data, makerAddress);
@@ -446,14 +444,13 @@ export class CoordinatorWrapper extends ContractWrapper {
             const response = await this._executeServerRequestAsync(transaction, makerAddress, endpoint);
             if (response.isError) {
                 errorResponses.push(response);
-                numErrors++;
             } else {
                 successResponses.push(response.body as CoordinatorServerCancellationResponse);
             }
         }
 
         // if no errors
-        if (numErrors === 0) {
+        if (errorResponses.length === 0) {
             return successResponses;
         } else {
             // lookup orders with errors
@@ -635,7 +632,6 @@ export class CoordinatorWrapper extends ContractWrapper {
         const serverEndpointsToOrders = await this._mapServerEndpointsToOrdersAsync(coordinatorOrders);
 
         // make server requests
-        let numErrors = 0;
         const errorResponses: CoordinatorServerResponse[] = [];
         const approvalResponses: CoordinatorServerResponse[] = [];
         const transaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
@@ -643,14 +639,13 @@ export class CoordinatorWrapper extends ContractWrapper {
             const response = await this._executeServerRequestAsync(transaction, takerAddress, endpoint);
             if (response.isError) {
                 errorResponses.push(response);
-                numErrors++;
             } else {
                 approvalResponses.push(response);
             }
         }
 
         // if no errors
-        if (numErrors === 0) {
+        if (errorResponses.length === 0) {
             // concatenate all approval responses
             const allApprovals = approvalResponses.map(resp =>
                 formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse),
@@ -673,12 +668,11 @@ export class CoordinatorWrapper extends ContractWrapper {
             // format errors and approvals
             // concatenate approvals
             const notCoordinatorOrders = signedOrders.filter(o => o.senderAddress !== this.address);
-            const approvedOrdersNested = approvalResponses
-                .map(resp => {
-                    const endpoint = resp.coordinatorOperator;
-                    const orders = serverEndpointsToOrders[endpoint];
-                    return orders;
-                });
+            const approvedOrdersNested = approvalResponses.map(resp => {
+                const endpoint = resp.coordinatorOperator;
+                const orders = serverEndpointsToOrders[endpoint];
+                return orders;
+            });
             const approvedOrders = flatten<SignedOrder>(approvedOrdersNested.concat(notCoordinatorOrders));
 
             // lookup orders with errors
@@ -714,13 +708,17 @@ export class CoordinatorWrapper extends ContractWrapper {
 
     private async _getServerEndpointOrThrowAsync(feeRecipientAddress: string): Promise<string> {
         const cached = this._feeRecipientToEndpoint[feeRecipientAddress];
-        const endpoint = cached !== undefined ? cached : await _fetchServerEndpointOrThrowAsync(feeRecipientAddress, this._registryInstance);
+        const endpoint =
+            cached !== undefined
+                ? cached
+                : await _fetchServerEndpointOrThrowAsync(feeRecipientAddress, this._registryInstance);
         return endpoint;
 
-        async function _fetchServerEndpointOrThrowAsync(feeRecipient: string, registryInstance: CoordinatorRegistryContract): Promise<string> {
-            const coordinatorOperatorEndpoint = await registryInstance.getCoordinatorEndpoint.callAsync(
-                feeRecipient,
-            );
+        async function _fetchServerEndpointOrThrowAsync(
+            feeRecipient: string,
+            registryInstance: CoordinatorRegistryContract,
+        ): Promise<string> {
+            const coordinatorOperatorEndpoint = await registryInstance.getCoordinatorEndpoint.callAsync(feeRecipient);
             if (coordinatorOperatorEndpoint === '' || coordinatorOperatorEndpoint === undefined) {
                 throw new Error(
                     `No Coordinator server endpoint found in Coordinator Registry for feeRecipientAddress: ${feeRecipient}. Registry contract address: ${
