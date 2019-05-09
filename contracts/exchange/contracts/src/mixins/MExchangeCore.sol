@@ -27,28 +27,34 @@ import "../interfaces/IExchangeCore.sol";
 contract MExchangeCore is
     IExchangeCore
 {
+    // Fill event signature.
+    // keccak(Fill(address,address,address,address,uint256,uint256,uint256,uint256,bytes32,bytes,bytes,bytes,bytes))
+    bytes32 constant FILL_EVENT_SIGNATURE = 0xcb32b586b1d019abfd3dfc2d45e7275f145185e9d53359e9b99521ca88cea0e8;
+
     // Fill event is emitted whenever an order is filled.
     event Fill(
-        address indexed makerAddress,         // Address that created the order.      
+        address indexed makerAddress,         // Address that created the order.
         address indexed feeRecipientAddress,  // Address that received fees.
         address takerAddress,                 // Address that filled the order.
         address senderAddress,                // Address that called the Exchange contract (msg.sender).
-        uint256 makerAssetFilledAmount,       // Amount of makerAsset sold by maker and bought by taker. 
+        uint256 makerAssetFilledAmount,       // Amount of makerAsset sold by maker and bought by taker.
         uint256 takerAssetFilledAmount,       // Amount of takerAsset sold by taker and bought by maker.
-        uint256 makerFeePaid,                 // Amount of ZRX paid to feeRecipient by maker.
-        uint256 takerFeePaid,                 // Amount of ZRX paid to feeRecipient by taker.
+        uint256 makerFeePaid,                 // Amount of makerFeeAssetData paid to feeRecipient by maker.
+        uint256 takerFeePaid,                 // Amount of takerFeeAssetData paid to feeRecipient by taker.
         bytes32 indexed orderHash,            // EIP712 hash of order (see LibOrder.getOrderHash).
-        bytes makerAssetData,                 // Encoded data specific to makerAsset. 
-        bytes takerAssetData                  // Encoded data specific to takerAsset.
+        bytes makerAssetData,                 // Encoded data specific to makerAsset.
+        bytes takerAssetData,                 // Encoded data specific to takerAsset.
+        bytes makerFeeAssetData,              // Encoded data specific to makerFeeAsset.
+        bytes takerFeeAssetData               // Encoded data specific to takerFeeAsset.
     );
 
     // Cancel event is emitted whenever an individual order is cancelled.
     event Cancel(
-        address indexed makerAddress,         // Address that created the order.      
-        address indexed feeRecipientAddress,  // Address that would have recieved fees if order was filled.   
+        address indexed makerAddress,         // Address that created the order.
+        address indexed feeRecipientAddress,  // Address that would have recieved fees if order was filled.
         address senderAddress,                // Address that called the Exchange contract (msg.sender).
         bytes32 indexed orderHash,            // EIP712 hash of order (see LibOrder.getOrderHash).
-        bytes makerAssetData,                 // Encoded data specific to makerAsset. 
+        bytes makerAssetData,                 // Encoded data specific to makerAsset.
         bytes takerAssetData                  // Encoded data specific to takerAsset.
     );
 
@@ -101,7 +107,7 @@ contract MExchangeCore is
         bytes32 orderHash
     )
         internal;
-    
+
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
@@ -115,7 +121,7 @@ contract MExchangeCore is
     )
         internal
         view;
-    
+
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderInfo Status, orderHash, and amount already filled of order.

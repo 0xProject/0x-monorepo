@@ -28,7 +28,7 @@ contract TestExchangeInternals is
 {
     constructor (uint256 chainId)
         public
-        Exchange("", chainId)
+        Exchange(chainId)
     {}
 
     /// @dev Adds properties of both FillResults instances.
