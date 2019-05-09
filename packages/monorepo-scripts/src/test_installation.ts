@@ -55,7 +55,7 @@ function logIfDefined(x: any): void {
         packages,
         pkg => !pkg.packageJson.private && pkg.packageJson.main !== undefined && pkg.packageJson.main.endsWith('.js'),
     );
-    const CHUNK_SIZE = 15;
+    const CHUNK_SIZE = 12;
     const chunkedInstallablePackages = _.chunk(installablePackages, CHUNK_SIZE);
     utils.log(`Testing all packages in ${chunkedInstallablePackages.length} chunks`);
     for (const installablePackagesChunk of chunkedInstallablePackages) {
@@ -137,7 +137,7 @@ async function testInstallPackageAsync(
     await writeFileAsync(tsconfigFilePath, JSON.stringify(tsConfig, null, '\t'));
     utils.log(`Compiling ${packageName}`);
     const tscBinaryPath = path.join(monorepoRootPath, './node_modules/typescript/bin/tsc');
-    await execAsync(`node --max-old-space-size=4096 ${tscBinaryPath}`, { cwd: testDirectory });
+    await execAsync(tscBinaryPath, { cwd: testDirectory });
     utils.log(`Successfully compiled with ${packageName} as a dependency`);
     const isUnrunnablePkg = _.includes(UNRUNNABLE_PACKAGES, packageName);
     if (!isUnrunnablePkg) {
