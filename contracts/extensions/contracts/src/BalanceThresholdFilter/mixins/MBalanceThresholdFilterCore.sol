@@ -48,7 +48,7 @@ contract MBalanceThresholdFilterCore is
     ///      (defined by `signedExchangeTransaction` above).
     /// @param signerAddress Address of transaction signer.
     /// @return addressesToValidate Array of addresses to validate.
-    function getAddressesToValidate(address signerAddress)
+    function _getAddressesToValidate(address signerAddress)
         internal
         pure
         returns (address[] memory addressesToValidate);

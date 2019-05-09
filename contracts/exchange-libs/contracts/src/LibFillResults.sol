@@ -41,13 +41,13 @@ contract LibFillResults is
     ///      Modifies the first FillResults instance specified.
     /// @param totalFillResults Fill results instance that will be added onto.
     /// @param singleFillResults Fill results instance that will be added to totalFillResults.
-    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+    function _addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         internal
         pure
     {
-        totalFillResults.makerAssetFilledAmount = safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);
-        totalFillResults.takerAssetFilledAmount = safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
-        totalFillResults.makerFeePaid = safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
-        totalFillResults.takerFeePaid = safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
+        totalFillResults.makerAssetFilledAmount = _safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);
+        totalFillResults.takerAssetFilledAmount = _safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
+        totalFillResults.makerFeePaid = _safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
+        totalFillResults.takerFeePaid = _safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
     }
 }

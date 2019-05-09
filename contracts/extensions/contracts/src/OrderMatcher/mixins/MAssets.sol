@@ -27,7 +27,7 @@ contract MAssets is
     /// @dev Transfers given amount of asset to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferAssetToSender(
+    function _transferAssetToSender(
         bytes memory assetData,
         uint256 amount
     )
@@ -36,7 +36,7 @@ contract MAssets is
     /// @dev Decodes ERC20 assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferERC20Token(
+    function _transferERC20Token(
         bytes memory assetData,
         uint256 amount
     )
@@ -45,7 +45,7 @@ contract MAssets is
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
-    function transferERC721Token(
+    function _transferERC721Token(
         bytes memory assetData,
         uint256 amount
     )
@@ -54,7 +54,7 @@ contract MAssets is
     /// @dev Sets approval for ERC20 AssetProxy.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to approve for respective proxy.
-    function approveERC20Token(
+    function _approveERC20Token(
         bytes memory assetData,
         uint256 amount
     )
@@ -63,7 +63,7 @@ contract MAssets is
     /// @dev Sets approval for ERC721 AssetProxy.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to approve for respective proxy.
-    function approveERC721Token(
+    function _approveERC721Token(
         bytes memory assetData,
         uint256 amount
     )

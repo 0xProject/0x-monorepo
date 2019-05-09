@@ -30,7 +30,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded down.
-    function safeGetPartialAmountFloor(
+    function _safeGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -45,7 +45,7 @@ contract LibMath is
         );
 
         require(
-            !isRoundingErrorFloor(
+            !_isRoundingErrorFloor(
                 numerator,
                 denominator,
                 target
@@ -53,8 +53,8 @@ contract LibMath is
             "ROUNDING_ERROR"
         );
         
-        partialAmount = safeDiv(
-            safeMul(numerator, target),
+        partialAmount = _safeDiv(
+            _safeMul(numerator, target),
             denominator
         );
         return partialAmount;
@@ -66,7 +66,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded up.
-    function safeGetPartialAmountCeil(
+    function _safeGetPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -81,7 +81,7 @@ contract LibMath is
         );
 
         require(
-            !isRoundingErrorCeil(
+            !_isRoundingErrorCeil(
                 numerator,
                 denominator,
                 target
@@ -89,13 +89,13 @@ contract LibMath is
             "ROUNDING_ERROR"
         );
         
-        // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
+        // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
-        // To implement `ceil(a / b)` using safeDiv.
-        partialAmount = safeDiv(
-            safeAdd(
-                safeMul(numerator, target),
-                safeSub(denominator, 1)
+        // To implement `ceil(a / b)` using _safeDiv.
+        partialAmount = _safeDiv(
+            _safeAdd(
+                _safeMul(numerator, target),
+                _safeSub(denominator, 1)
             ),
             denominator
         );
@@ -107,7 +107,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded down.
-    function getPartialAmountFloor(
+    function _getPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -121,8 +121,8 @@ contract LibMath is
             "DIVISION_BY_ZERO"
         );
 
-        partialAmount = safeDiv(
-            safeMul(numerator, target),
+        partialAmount = _safeDiv(
+            _safeMul(numerator, target),
             denominator
         );
         return partialAmount;
@@ -133,7 +133,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded up.
-    function getPartialAmountCeil(
+    function _getPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -147,13 +147,13 @@ contract LibMath is
             "DIVISION_BY_ZERO"
         );
 
-        // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
+        // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
-        // To implement `ceil(a / b)` using safeDiv.
-        partialAmount = safeDiv(
-            safeAdd(
-                safeMul(numerator, target),
-                safeSub(denominator, 1)
+        // To implement `ceil(a / b)` using _safeDiv.
+        partialAmount = _safeDiv(
+            _safeAdd(
+                _safeMul(numerator, target),
+                _safeSub(denominator, 1)
             ),
             denominator
         );
@@ -165,7 +165,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function isRoundingErrorFloor(
+    function _isRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -210,7 +210,7 @@ contract LibMath is
             numerator,
             denominator
         );
-        isError = safeMul(1000, remainder) >= safeMul(numerator, target);
+        isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
         return isError;
     }
     
@@ -219,7 +219,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function isRoundingErrorCeil(
+    function _isRoundingErrorCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -246,8 +246,8 @@ contract LibMath is
             numerator,
             denominator
         );
-        remainder = safeSub(denominator, remainder) % denominator;
-        isError = safeMul(1000, remainder) >= safeMul(numerator, target);
+        remainder = _safeSub(denominator, remainder) % denominator;
+        isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
         return isError;
     }
 }

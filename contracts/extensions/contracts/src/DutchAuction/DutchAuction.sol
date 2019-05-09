@@ -120,8 +120,8 @@ contract DutchAuction is
             address token = assetData.readAddress(16);
             // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
             // amount than the calculated current amount
-            uint256 buyerExcessAmount = safeSub(buyOrder.makerAssetAmount, auctionDetails.currentAmount);
-            uint256 sellerExcessAmount = safeSub(leftMakerAssetSpreadAmount, buyerExcessAmount);
+            uint256 buyerExcessAmount = _safeSub(buyOrder.makerAssetAmount, auctionDetails.currentAmount);
+            uint256 sellerExcessAmount = _safeSub(leftMakerAssetSpreadAmount, buyerExcessAmount);
             // Return the difference between auctionDetails.currentAmount and sellOrder.takerAssetAmount
             // to the seller
             if (sellerExcessAmount > 0) {
@@ -190,10 +190,10 @@ contract DutchAuction is
             // Auction end time is guaranteed by 0x Exchange due to the order expiration
             auctionDetails.currentAmount = minAmount;
         } else {
-            auctionDetails.currentAmount = safeAdd(
+            auctionDetails.currentAmount = _safeAdd(
                 minAmount,
-                safeDiv(
-                    safeMul(remainingDurationSeconds, amountDelta),
+                _safeDiv(
+                    _safeMul(remainingDurationSeconds, amountDelta),
                     auctionDurationSeconds
                 )
             );

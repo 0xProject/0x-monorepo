@@ -22,7 +22,7 @@ pragma solidity ^0.5.5;
 /**
  * Utility library of inline functions on addresses
  */
-library Address {
+library LibAddress {
 
     /**
      * Returns whether the target address is a contract

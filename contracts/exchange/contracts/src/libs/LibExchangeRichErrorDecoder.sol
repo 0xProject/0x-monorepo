@@ -28,7 +28,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signer The expected signer of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature.
     function decodeSignatureError(bytes memory encoded)
         public
@@ -36,20 +36,20 @@ contract LibExchangeRichErrorDecoder is
         returns (
             SignatureErrorCodes errorCode,
             bytes32 hash,
-            address signer,
+            address signerAddress,
             bytes memory signature
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_ERROR_SELECTOR);
         errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
-        signer = _readErrorParameterAsAddress(encoded, 2);
+        signerAddress = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
     }
 
     /// @dev Decompose an ABI-encoded SignatureValidatorError.
     /// @param encoded ABI-encoded revert error.
-    /// @return signer The expected signer of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureValidatorError(bytes memory encoded)
@@ -57,14 +57,14 @@ contract LibExchangeRichErrorDecoder is
         pure
         returns (
             bytes32 hash,
-            address signer,
+            address signerAddress,
             bytes memory signature,
             bytes memory errorData
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_VALIDATOR_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
-        signer = _readErrorParameterAsAddress(encoded, 1);
+        signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
         errorData = _readErrorParameterAsBytes(encoded, 3);
     }
@@ -72,7 +72,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureWalletError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signer The expected signer of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureWalletError(bytes memory encoded)
@@ -80,14 +80,14 @@ contract LibExchangeRichErrorDecoder is
         pure
         returns (
             bytes32 hash,
-            address signer,
+            address signerAddress,
             bytes memory signature,
             bytes memory errorData
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_WALLET_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
-        signer = _readErrorParameterAsAddress(encoded, 1);
+        signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
         errorData = _readErrorParameterAsBytes(encoded, 3);
     }
@@ -95,7 +95,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureOrderValidatorError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signer The expected signer of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureOrderValidatorError(bytes memory encoded)
@@ -103,14 +103,14 @@ contract LibExchangeRichErrorDecoder is
         pure
         returns (
             bytes32 hash,
-            address signer,
+            address signerAddress,
             bytes memory signature,
             bytes memory errorData
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
-        signer = _readErrorParameterAsAddress(encoded, 1);
+        signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
         errorData = _readErrorParameterAsBytes(encoded, 3);
     }
@@ -118,7 +118,7 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded SignatureWalletOrderValidatorError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
-    /// @return signer The expected signer of the hash.
+    /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureWalletOrderValidatorError(bytes memory encoded)
@@ -126,14 +126,14 @@ contract LibExchangeRichErrorDecoder is
         pure
         returns (
             bytes32 hash,
-            address signer,
+            address signerAddress,
             bytes memory signature,
             bytes memory errorData
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
-        signer = _readErrorParameterAsAddress(encoded, 1);
+        signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
         errorData = _readErrorParameterAsBytes(encoded, 3);
     }
@@ -158,52 +158,52 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded InvalidSenderError.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
-    /// @return sender The sender.
+    /// @return senderAddress The sender.
     function decodeInvalidSenderError(bytes memory encoded)
         public
         pure
         returns (
             bytes32 orderHash,
-            address sender
+            address senderAddress
         )
     {
         _assertSelectorBytes(encoded, INVALID_SENDER_ERROR_SELECTOR);
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        sender = _readErrorParameterAsAddress(encoded, 1);
+        senderAddress = _readErrorParameterAsAddress(encoded, 1);
     }
 
     /// @dev Decompose an ABI-encoded InvalidMakerError.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
-    /// @return maker The maker of the order.
+    /// @return makerAddress The maker of the order.
     function decodeInvalidMakerError(bytes memory encoded)
         public
         pure
         returns (
             bytes32 orderHash,
-            address maker
+            address makerAddress
         )
     {
         _assertSelectorBytes(encoded, INVALID_MAKER_ERROR_SELECTOR);
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        maker = _readErrorParameterAsAddress(encoded, 1);
+        makerAddress = _readErrorParameterAsAddress(encoded, 1);
     }
 
     /// @dev Decompose an ABI-encoded InvalidTaker.
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash The order hash.
-    /// @return taker The taker of the order.
+    /// @return takerAddress The taker of the order.
     function decodeInvalidTakerError(bytes memory encoded)
         public
         pure
         returns (
             bytes32 orderHash,
-            address taker
+            address takerAddress
         )
     {
         _assertSelectorBytes(encoded, INVALID_TAKER_ERROR_SELECTOR);
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        taker = _readErrorParameterAsAddress(encoded, 1);
+        takerAddress = _readErrorParameterAsAddress(encoded, 1);
     }
 
     /// @dev Decompose an ABI-encoded FillError.
@@ -225,21 +225,21 @@ contract LibExchangeRichErrorDecoder is
 
     /// @dev Decompose an ABI-encoded OrderEpochError.
     /// @param encoded ABI-encoded revert error.
-    /// @return maker The order maker.
-    /// @return sender The sender.
+    /// @return makerAddress The order maker.
+    /// @return orderSenderAddress The order sender.
     /// @return currentEpoch The current epoch for the maker.
     function decodeOrderEpochError(bytes memory encoded)
         public
         pure
         returns (
-            address maker,
-            address sender,
+            address makerAddress,
+            address orderSenderAddress,
             uint256 currentEpoch
         )
     {
         _assertSelectorBytes(encoded, ORDER_EPOCH_ERROR_SELECTOR);
-        maker = _readErrorParameterAsAddress(encoded, 0);
-        sender = _readErrorParameterAsAddress(encoded, 1);
+        makerAddress = _readErrorParameterAsAddress(encoded, 0);
+        orderSenderAddress = _readErrorParameterAsAddress(encoded, 1);
         currentEpoch = _readErrorParameterAsUint256(encoded, 2);
     }
 
@@ -332,20 +332,20 @@ contract LibExchangeRichErrorDecoder is
     /// @dev Decompose an ABI-encoded TransactionSignatureError.
     /// @param encoded ABI-encoded revert error.
     /// @return transactionHash Hash of the transaction.
-    /// @return signer Signer of the transaction.
+    /// @return signerAddress Signer of the transaction.
     /// @return signature Full signature for the transaction.
     function decodeTransactionSignatureError(bytes memory encoded)
         public
         pure
         returns (
             bytes32 transactionHash,
-            address signer,
+            address signerAddress,
             bytes memory signature
         )
     {
         _assertSelectorBytes(encoded, TRANSACTION_SIGNATURE_ERROR_SELECTOR);
         transactionHash = _readErrorParameterAsBytes32(encoded, 0);
-        signer = _readErrorParameterAsAddress(encoded, 1);
+        signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
     }
 

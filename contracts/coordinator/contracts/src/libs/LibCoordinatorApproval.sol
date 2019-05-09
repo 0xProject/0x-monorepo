@@ -51,14 +51,14 @@ contract LibCoordinatorApproval is
         view
         returns (bytes32 approvalHash)
     {
-        approvalHash = hashEIP712CoordinatorMessage(hashCoordinatorApproval(approval));
+        approvalHash = _hashEIP712CoordinatorMessage(_hashCoordinatorApproval(approval));
         return approvalHash;
     }
 
     /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage with no domain separator.
     /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
     /// @return EIP712 hash of the Coordinator approval message with no domain separator.
-    function hashCoordinatorApproval(CoordinatorApproval memory approval)
+    function _hashCoordinatorApproval(CoordinatorApproval memory approval)
         internal
         pure
         returns (bytes32 result)

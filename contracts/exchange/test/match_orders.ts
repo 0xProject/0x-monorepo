@@ -220,13 +220,13 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchange.publicIsRoundingErrorCeil.callAsync(
+            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
                 numerator,
                 denominator,
                 target,
             );
             expect(isRoundingErrorCeil).to.be.true();
-            const isRoundingErrorFloor = await testExchange.publicIsRoundingErrorFloor.callAsync(
+            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
                 target,
@@ -284,13 +284,13 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.takerAssetAmount;
             const denominator = signedOrderRight.makerAssetAmount;
             const target = signedOrderLeft.takerAssetAmount;
-            const isRoundingErrorFloor = await testExchange.publicIsRoundingErrorFloor.callAsync(
+            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
                 target,
             );
             expect(isRoundingErrorFloor).to.be.true();
-            const isRoundingErrorCeil = await testExchange.publicIsRoundingErrorCeil.callAsync(
+            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
                 numerator,
                 denominator,
                 target,

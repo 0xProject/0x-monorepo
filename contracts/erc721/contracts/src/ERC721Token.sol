@@ -223,8 +223,8 @@ contract ERC721Token is
         }
 
         owners[_tokenId] = _to;
-        balances[_from] = safeSub(balances[_from], 1);
-        balances[_to] = safeAdd(balances[_to], 1);
+        balances[_from] = _safeSub(balances[_from], 1);
+        balances[_to] = _safeAdd(balances[_to], 1);
     
         emit Transfer(
             _from,

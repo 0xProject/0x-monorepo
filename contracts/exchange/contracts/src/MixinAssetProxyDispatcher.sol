@@ -43,7 +43,7 @@ contract MixinAssetProxyDispatcher is
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
         if (currentAssetProxy != address(0)) {
-            rrevert(AssetProxyExistsError(currentAssetProxy));
+            _rrevert(AssetProxyExistsError(currentAssetProxy));
         }
 
         // Add asset proxy and log registration.
@@ -71,7 +71,7 @@ contract MixinAssetProxyDispatcher is
     /// @param from Address to transfer token from.
     /// @param to Address to transfer token to.
     /// @param amount Amount of token to transfer.
-    function dispatchTransferFrom(
+    function _dispatchTransferFrom(
         bytes32 orderHash,
         bytes memory assetData,
         address from,
@@ -84,7 +84,7 @@ contract MixinAssetProxyDispatcher is
         if (amount > 0 && from != to) {
             // Ensure assetData length is valid
             if (assetData.length <= 3) {
-                rrevert(AssetProxyDispatchError(
+                _rrevert(AssetProxyDispatchError(
                     AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
                     orderHash,
                     assetData
@@ -103,7 +103,7 @@ contract MixinAssetProxyDispatcher is
 
             // Ensure that assetProxy exists
             if (assetProxy == address(0)) {
-                rrevert(AssetProxyDispatchError(
+                _rrevert(AssetProxyDispatchError(
                     AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
                     orderHash,
                     assetData
@@ -194,7 +194,7 @@ contract MixinAssetProxyDispatcher is
             }
 
             if (!didSucceed) {
-                rrevert(AssetProxyTransferError(
+                _rrevert(AssetProxyTransferError(
                     orderHash,
                     assetData,
                     revertData

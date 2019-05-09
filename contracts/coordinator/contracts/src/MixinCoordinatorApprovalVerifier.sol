@@ -63,7 +63,7 @@ contract MixinCoordinatorApprovalVerifier is
         // No approval is required for non-fill methods
         if (orders.length > 0) {
             // Revert if approval is invalid for transaction orders
-            assertValidTransactionOrdersApproval(
+            _assertValidTransactionOrdersApproval(
                 transaction,
                 orders,
                 txOrigin,
@@ -132,7 +132,7 @@ contract MixinCoordinatorApprovalVerifier is
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
     /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
-    function assertValidTransactionOrdersApproval(
+    function _assertValidTransactionOrdersApproval(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         LibOrder.Order[] memory orders,
         address txOrigin,

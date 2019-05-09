@@ -88,7 +88,7 @@ describe('Exchange libs', () => {
                 const denominator = new BigNumber(999);
                 const target = new BigNumber(50);
                 // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
-                const isRoundingError = await libs.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+                const isRoundingError = await libs.isRoundingErrorFloor.callAsync(numerator, denominator, target);
                 expect(isRoundingError).to.be.true();
             });
             it('should return false if there is a rounding of 0.09%', async () => {
@@ -96,7 +96,7 @@ describe('Exchange libs', () => {
                 const denominator = new BigNumber(9991);
                 const target = new BigNumber(500);
                 // rounding error = ((20*500/9991) - floor(20*500/9991)) / (20*500/9991) = 0.09%
-                const isRoundingError = await libs.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+                const isRoundingError = await libs.isRoundingErrorFloor.callAsync(numerator, denominator, target);
                 expect(isRoundingError).to.be.false();
             });
             it('should return true if there is a rounding error of 0.11%', async () => {
@@ -104,7 +104,7 @@ describe('Exchange libs', () => {
                 const denominator = new BigNumber(9989);
                 const target = new BigNumber(500);
                 // rounding error = ((20*500/9989) - floor(20*500/9989)) / (20*500/9989) = 0.011%
-                const isRoundingError = await libs.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+                const isRoundingError = await libs.isRoundingErrorFloor.callAsync(numerator, denominator, target);
                 expect(isRoundingError).to.be.true();
             });
         });
@@ -114,7 +114,7 @@ describe('Exchange libs', () => {
                 const denominator = new BigNumber(1001);
                 const target = new BigNumber(50);
                 // rounding error = (ceil(20*50/1001) - (20*50/1001)) / (20*50/1001) = 0.1%
-                const isRoundingError = await libs.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+                const isRoundingError = await libs.isRoundingErrorCeil.callAsync(numerator, denominator, target);
                 expect(isRoundingError).to.be.true();
             });
             it('should return false if there is a rounding of 0.09%', async () => {
@@ -122,7 +122,7 @@ describe('Exchange libs', () => {
                 const denominator = new BigNumber(10009);
                 const target = new BigNumber(500);
                 // rounding error = (ceil(20*500/10009) - (20*500/10009)) / (20*500/10009) = 0.09%
-                const isRoundingError = await libs.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+                const isRoundingError = await libs.isRoundingErrorCeil.callAsync(numerator, denominator, target);
                 expect(isRoundingError).to.be.false();
             });
             it('should return true if there is a rounding error of 0.11%', async () => {
@@ -130,7 +130,7 @@ describe('Exchange libs', () => {
                 const denominator = new BigNumber(10011);
                 const target = new BigNumber(500);
                 // rounding error = (ceil(20*500/10011) - (20*500/10011)) / (20*500/10011) = 0.11%
-                const isRoundingError = await libs.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+                const isRoundingError = await libs.isRoundingErrorCeil.callAsync(numerator, denominator, target);
                 expect(isRoundingError).to.be.true();
             });
         });
@@ -140,13 +140,13 @@ describe('Exchange libs', () => {
         describe('getOrderHash', () => {
             it('should output the correct orderHash', async () => {
                 signedOrder = await orderFactory.newSignedOrderAsync();
-                const orderHashHex = await libs.publicGetOrderHash.callAsync(signedOrder);
+                const orderHashHex = await libs.getOrderHash.callAsync(signedOrder);
                 expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
             });
             it('orderHash should differ if chainId is different', async () => {
                 signedOrder = await orderFactory.newSignedOrderAsync();
-                const orderHashHex1 = await libsAlternateChain.publicGetOrderHash.callAsync(signedOrder);
-                const orderHashHex2 = await libs.publicGetOrderHash.callAsync(signedOrder);
+                const orderHashHex1 = await libsAlternateChain.getOrderHash.callAsync(signedOrder);
+                const orderHashHex2 = await libs.getOrderHash.callAsync(signedOrder);
                 expect(orderHashHex1).to.be.not.equal(orderHashHex2);
             });
         });

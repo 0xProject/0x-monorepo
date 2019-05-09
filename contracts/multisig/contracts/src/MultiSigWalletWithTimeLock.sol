@@ -95,7 +95,7 @@ contract MultiSigWalletWithTimeLock is
         confirmations[transactionId][msg.sender] = true;
         emit Confirmation(msg.sender, transactionId);
         if (isConfirmed(transactionId)) {
-            setConfirmationTime(transactionId, block.timestamp);
+            _setConfirmationTime(transactionId, block.timestamp);
         }
     }
 
@@ -109,7 +109,7 @@ contract MultiSigWalletWithTimeLock is
     {
         Transaction storage txn = transactions[transactionId];
         txn.executed = true;
-        if (external_call(txn.destination, txn.value, txn.data.length, txn.data)) {
+        if (_externalCall(txn.destination, txn.value, txn.data.length, txn.data)) {
             emit Execution(transactionId);
         } else {
             emit ExecutionFailure(transactionId);
@@ -118,7 +118,7 @@ contract MultiSigWalletWithTimeLock is
     }
 
     /// @dev Sets the time of when a submission first passed.
-    function setConfirmationTime(uint256 transactionId, uint256 confirmationTime)
+    function _setConfirmationTime(uint256 transactionId, uint256 confirmationTime)
         internal
     {
         confirmationTimes[transactionId] = confirmationTime;

@@ -38,12 +38,12 @@ contract TestExchangeInternals is
     /// @param totalFillResults Fill results instance that will be added onto.
     /// @param singleFillResults Fill results instance that will be added to totalFillResults.
     /// @return newTotalFillResults The result of adding singleFillResults to totalFilResults.
-    function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
         public
         pure
         returns (FillResults memory)
     {
-        addFillResults(totalFillResults, singleFillResults);
+        _addFillResults(totalFillResults, singleFillResults);
         return totalFillResults;
     }
 
@@ -51,7 +51,7 @@ contract TestExchangeInternals is
     /// @param order to be filled.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function publicCalculateFillResults(
+    function calculateFillResults(
         Order memory order,
         uint256 takerAssetFilledAmount
     )
@@ -59,7 +59,7 @@ contract TestExchangeInternals is
         pure
         returns (FillResults memory fillResults)
     {
-        return calculateFillResults(order, takerAssetFilledAmount);
+        return _calculateFillResults(order, takerAssetFilledAmount);
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -68,7 +68,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
-    function publicSafeGetPartialAmountFloor(
+    function safeGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -77,7 +77,7 @@ contract TestExchangeInternals is
         pure
         returns (uint256 partialAmount)
     {
-        return safeGetPartialAmountFloor(numerator, denominator, target);
+        return _safeGetPartialAmountFloor(numerator, denominator, target);
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -86,7 +86,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
-    function publicSafeGetPartialAmountCeil(
+    function safeGetPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -95,7 +95,7 @@ contract TestExchangeInternals is
         pure
         returns (uint256 partialAmount)
     {
-        return safeGetPartialAmountCeil(numerator, denominator, target);
+        return _safeGetPartialAmountCeil(numerator, denominator, target);
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -103,7 +103,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
-    function publicGetPartialAmountFloor(
+    function getPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -112,7 +112,7 @@ contract TestExchangeInternals is
         pure
         returns (uint256 partialAmount)
     {
-        return getPartialAmountFloor(numerator, denominator, target);
+        return _getPartialAmountFloor(numerator, denominator, target);
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -120,7 +120,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
-    function publicGetPartialAmountCeil(
+    function getPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -129,7 +129,7 @@ contract TestExchangeInternals is
         pure
         returns (uint256 partialAmount)
     {
-        return getPartialAmountCeil(numerator, denominator, target);
+        return _getPartialAmountCeil(numerator, denominator, target);
     }
 
     /// @dev Checks if rounding error >= 0.1%.
@@ -137,7 +137,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function publicIsRoundingErrorFloor(
+    function isRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -146,7 +146,7 @@ contract TestExchangeInternals is
         pure
         returns (bool isError)
     {
-        return isRoundingErrorFloor(numerator, denominator, target);
+        return _isRoundingErrorFloor(numerator, denominator, target);
     }
 
     /// @dev Checks if rounding error >= 0.1%.
@@ -154,7 +154,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function publicIsRoundingErrorCeil(
+    function isRoundingErrorCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -163,7 +163,7 @@ contract TestExchangeInternals is
         pure
         returns (bool isError)
     {
-        return isRoundingErrorCeil(numerator, denominator, target);
+        return _isRoundingErrorCeil(numerator, denominator, target);
     }
 
     /// @dev Updates state with results of a fill order.
@@ -171,7 +171,7 @@ contract TestExchangeInternals is
     /// @param takerAddress Address of taker who filled the order.
     /// @param orderTakerAssetFilledAmount Amount of order already filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function publicUpdateFilledState(
+    function updateFilledState(
         Order memory order,
         address takerAddress,
         bytes32 orderHash,
@@ -180,7 +180,7 @@ contract TestExchangeInternals is
     )
         public
     {
-        updateFilledState(
+        _updateFilledState(
             order,
             takerAddress,
             orderHash,

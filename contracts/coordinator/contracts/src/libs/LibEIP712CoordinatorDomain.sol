@@ -44,7 +44,7 @@ contract LibEIP712CoordinatorDomain is
         public
     {
         address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
-        EIP712_COORDINATOR_DOMAIN_HASH = hashEIP712Domain(
+        EIP712_COORDINATOR_DOMAIN_HASH = _hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
             chainId,
@@ -56,11 +56,11 @@ contract LibEIP712CoordinatorDomain is
     ///      of this contract.
     /// @param hashStruct The EIP712 hash struct.
     /// @return EIP712 hash applied to this EIP712 Domain.
-    function hashEIP712CoordinatorMessage(bytes32 hashStruct)
+    function _hashEIP712CoordinatorMessage(bytes32 hashStruct)
         internal
         view
         returns (bytes32 result)
     {
-        return hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
+        return _hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
     }
 }

@@ -192,7 +192,7 @@ describe('AssetProxyDispatcher', () => {
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                await assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
                     orderHash,
                     encodedAssetData,
                     makerAddress,
@@ -225,7 +225,7 @@ describe('AssetProxyDispatcher', () => {
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = constants.ZERO_AMOUNT;
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                await assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
                     orderHash,
                     encodedAssetData,
                     makerAddress,
@@ -253,7 +253,7 @@ describe('AssetProxyDispatcher', () => {
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
             const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                await assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
                     orderHash,
                     encodedAssetData,
                     makerAddress,
@@ -278,7 +278,7 @@ describe('AssetProxyDispatcher', () => {
                 orderHash,
                 encodedAssetData,
             );
-            const tx = assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+            const tx = assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
                 orderHash,
                 encodedAssetData,
                 makerAddress,
