@@ -9,7 +9,7 @@ import {
     WETH9Events,
 } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { AssetData, Order, OrderState, SignedOrder, SignedZeroExTransaction } from '@0x/types';
+import { AssetData, OrderState, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
@@ -228,4 +228,8 @@ export interface DutchAuctionData {
 
 export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';
 
-export interface CoordinatorTransaction { salt: BigNumber; signerAddress: string; data: string; }
+export interface CoordinatorTransaction {
+    salt: BigNumber;
+    signerAddress: string;
+    data: string;
+}

@@ -2,9 +2,9 @@ import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } fr
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { Coordinator, CoordinatorRegistry, Exchange } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import { eip712Utils, generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
+import { generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
 import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
-import { BigNumber, fetchAsync, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
@@ -817,7 +817,9 @@ export class CoordinatorWrapper extends ContractWrapper {
         return txHash;
     }
 
-    private async _mapServerEndpointsToOrdersAsync(coordinatorOrders: SignedOrder[]): Promise<{ [endpoint: string]: SignedOrder[] }> {
+    private async _mapServerEndpointsToOrdersAsync(
+        coordinatorOrders: SignedOrder[],
+    ): Promise<{ [endpoint: string]: SignedOrder[] }> {
         const feeRecipientsToOrders: { [feeRecipient: string]: SignedOrder[] } = {};
         for (const order of coordinatorOrders) {
             const feeRecipient = order.feeRecipientAddress;
@@ -837,7 +839,6 @@ export class CoordinatorWrapper extends ContractWrapper {
         }
         return serverEndpointsToOrders;
     }
-
 }
 
 function getMakerAddressOrThrow(orders: Array<Order | SignedOrder>): string {
