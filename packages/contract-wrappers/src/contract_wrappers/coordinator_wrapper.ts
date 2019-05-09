@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
-import { OrderTransactionOpts } from '../types';
+import { CoordinatorTransaction, OrderTransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import {
     CoordinatorServerApprovalRawResponse,
@@ -784,7 +784,7 @@ export class CoordinatorWrapper extends ContractWrapper {
     }
 
     private async _submitCoordinatorTransactionAsync(
-        transaction: { salt: BigNumber; signerAddress: string; data: string },
+        transaction: CoordinatorTransaction,
         txOrigin: string,
         transactionSignature: string,
         approvalExpirationTimeSeconds: BigNumber[],
