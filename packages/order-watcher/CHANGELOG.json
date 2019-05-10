@@ -1,19 +1,14 @@
 [
     {
-        "version": "4.0.8",
-        "changes": [
-            {
-                "note": "Fix bug where WETH deposit/withdrawal events would not trigger an order state update",
-                "pr": 1809
-            }
-        ]
-    },
-    {
         "version": "4.0.7",
         "changes": [
             {
                 "note": "Fix race-condition bug due to async callback modifying shared state",
                 "pr": 1789
+            },
+            {
+                "note": "Fix bug where WETH deposit/withdrawal events would not trigger an order state update",
+                "pr": 1809
             }
         ]
     },
