@@ -17,7 +17,7 @@
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
         "test:circleci": "run-s test:coverage",
-        "test": "",
+        "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
