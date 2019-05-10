@@ -26,19 +26,16 @@ export class CollisionResistanceAbiDecoder {
         this._restAbiDecoder = new AbiDecoder(abis);
     }
     public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
-        let maybeDecodedLog = log;
         if (this._knownERC20Tokens.has(log.address)) {
-            maybeDecodedLog = this._erc20AbiDecoder.tryToDecodeLogOrNoop(log);
+            const maybeDecodedERC20Log = this._erc20AbiDecoder.tryToDecodeLogOrNoop(log);
+            return maybeDecodedERC20Log;
         } else if (this._knownERC721Tokens.has(log.address)) {
-            maybeDecodedLog = this._erc721AbiDecoder.tryToDecodeLogOrNoop(log);
+            const maybeDecodedERC721Log = this._erc721AbiDecoder.tryToDecodeLogOrNoop(log);
+            return maybeDecodedERC721Log;
+        } else {
+            const maybeDecodedLog = this._restAbiDecoder.tryToDecodeLogOrNoop(log);
+            return maybeDecodedLog;
         }
-        // Fall back to the supplied ABIs for decoding if the ERC20/ERC721 decoding fails
-        // This ensures we hit events like Deposit and Withdraw given WETH can be a known ERC20Token
-        const isLogDecoded = ((maybeDecodedLog as any) as LogWithDecodedArgs<DecodedLogArgs>).event !== undefined;
-        if (!isLogDecoded) {
-            maybeDecodedLog = this._restAbiDecoder.tryToDecodeLogOrNoop(log);
-        }
-        return maybeDecodedLog;
     }
     // Hints the ABI decoder that a particular token address is ERC20 and events from it should be decoded as ERC20 events
     public addERC20Token(address: string): void {
