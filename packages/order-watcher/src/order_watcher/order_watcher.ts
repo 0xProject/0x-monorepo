@@ -119,20 +119,10 @@ export class OrderWatcher {
         };
 
         this._provider = provider;
-        const wethDepositEvent = _.find(
-            artifacts.WETH9.compilerOutput.abi,
-            item => item.type === 'event' && item.name === 'Deposit',
-        );
-        const wethWithdrawEvent = _.find(
-            artifacts.WETH9.compilerOutput.abi,
-            item => item.type === 'event' && item.name === 'Withdrawal',
-        );
-        // Combine ERC20 and WETH events into a single ABI. This is used as the default ERC20 ABI when decoding
-        const combinedWETHERC20Abi = [...artifacts.ERC20Token.compilerOutput.abi, wethDepositEvent, wethWithdrawEvent];
         this._collisionResistantAbiDecoder = new CollisionResistanceAbiDecoder(
-            combinedWETHERC20Abi,
+            artifacts.ERC20Token.compilerOutput.abi,
             artifacts.ERC721Token.compilerOutput.abi,
-            [artifacts.Exchange.compilerOutput.abi],
+            [artifacts.WETH9.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
         );
         const contractWrappers = new ContractWrappers(provider, {
             networkId,
@@ -160,7 +150,6 @@ export class OrderWatcher {
         this._cleanupJobInterval = config.cleanupJobIntervalMs;
         const zrxTokenAddress = assetDataUtils.decodeERC20AssetData(orderFilledCancelledFetcher.getZRXAssetData())
             .tokenAddress;
-        this._collisionResistantAbiDecoder.addERC20Token(zrxTokenAddress);
         this._dependentOrderHashesTracker = new DependentOrderHashesTracker(zrxTokenAddress);
     }
     /**
