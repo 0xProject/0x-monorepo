@@ -6,7 +6,8 @@
                 "note": "Fixed spelling error in ABI Encoder error message",
                 "pr": 1808
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "4.3.2",

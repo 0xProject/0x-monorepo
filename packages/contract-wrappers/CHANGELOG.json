@@ -6,7 +6,8 @@
                 "note": "Added CoordinatorWrapper to support orders with the Coordinator extension contract",
                 "pr": 1792
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "9.0.0",

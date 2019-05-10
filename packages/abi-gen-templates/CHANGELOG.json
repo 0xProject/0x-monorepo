@@ -6,7 +6,8 @@
                 "note": "add `awaitTransactionSuccessAsync()` to `tx.handlebars`",
                 "pr": 1797
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "2.0.2",

@@ -6,7 +6,8 @@
                 "note": "Update contracts to solidity ^0.5.5 and unpin dependencies",
                 "pr": 1796
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "2.1.1",

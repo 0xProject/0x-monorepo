@@ -6,7 +6,8 @@
                 "note": "Update tests to use contract-built-in `awaitTransactionSuccessAsync`",
                 "pr": 1797
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "2.1.1",

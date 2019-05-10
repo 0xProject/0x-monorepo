@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.1 - _May 10, 2019_
+
+    * Dependencies updated
+
 ## v6.1.0 - _April 11, 2019_
 
     * Moved order_utils into `@0x/order-utils` package as `orderCalculationUtils` (#1714)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.2 - _May 10, 2019_
+
+    * Update tests to use contract-built-in `awaitTransactionSuccessAsync` (#1797)
+
 ## v2.1.1 - _April 11, 2019_
 
     * Dependencies updated

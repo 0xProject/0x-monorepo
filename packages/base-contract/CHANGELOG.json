@@ -6,7 +6,8 @@
                 "note": "Export `PromiseWithTransactionHash` type",
                 "pr": 1797
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "5.0.5",

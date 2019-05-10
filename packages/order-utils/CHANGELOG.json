@@ -6,7 +6,8 @@
                 "note": "Renamed `OrderError` to `TypedDataError`",
                 "pr": 1792
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "7.2.0",

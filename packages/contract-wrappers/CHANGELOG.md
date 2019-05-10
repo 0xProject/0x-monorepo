@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.1.0 - _May 10, 2019_
+
+    * Added CoordinatorWrapper to support orders with the Coordinator extension contract (#1792)
+
 ## v9.0.0 - _April 11, 2019_
 
     * Added a simulation to transfer from maker to taker during `exchange.validateOrderFillableOrThrowAsync` (#1714)
