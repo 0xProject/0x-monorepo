@@ -23,7 +23,7 @@ import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibAbiEncoder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MWrapperFunctions.sol";
 import "./mixins/MExchangeRichErrors.sol";
@@ -74,7 +74,8 @@ contract MixinWrapperFunctions is
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = _abiEncodeFillOrder(
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            FILL_ORDER_SELECTOR,
             order,
             takerAssetFillAmount,
             signature
@@ -381,8 +382,7 @@ contract MixinWrapperFunctions is
         public
         returns (bool didCancel)
     {
-        // bytes4(keccak256("cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))")) = 0xd46b02c3
-        bytes memory cancelOrderCallData = abi.encodeWithSelector(0xd46b02c3, order);
+        bytes memory cancelOrderCallData = abi.encodeWithSelector(CANCEL_ORDER_SELECTOR, order);
         (didCancel,) = address(this).delegatecall(cancelOrderCallData);
         return didCancel;
     }
