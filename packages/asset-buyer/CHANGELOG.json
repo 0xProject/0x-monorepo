@@ -1,5 +1,13 @@
 [
     {
+        "version": "6.1.2",
+        "changes": [
+            {
+                "note": "Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder"
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "6.1.1",
         "changes": [
