@@ -3,7 +3,8 @@
         "version": "6.1.2",
         "changes": [
             {
-                "note": "Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder"
+                "note": "Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder",
+                "pr": 1810
             }
         ]
     },
