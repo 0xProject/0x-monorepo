@@ -14,14 +14,12 @@ export class FillScenarios {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _userAddresses: string[];
     private readonly _coinbase: string;
-    private readonly _zrxTokenAddress: string;
     private readonly _exchangeAddress: string;
     private readonly _erc20ProxyAddress: string;
     private readonly _erc721ProxyAddress: string;
     constructor(
         supportedProvider: SupportedProvider,
         userAddresses: string[],
-        zrxTokenAddress: string,
         exchangeAddress: string,
         erc20ProxyAddress: string,
         erc721ProxyAddress: string,
@@ -29,7 +27,6 @@ export class FillScenarios {
         this._web3Wrapper = new Web3Wrapper(supportedProvider);
         this._userAddresses = userAddresses;
         this._coinbase = userAddresses[0];
-        this._zrxTokenAddress = zrxTokenAddress;
         this._exchangeAddress = exchangeAddress;
         this._erc20ProxyAddress = erc20ProxyAddress;
         this._erc721ProxyAddress = erc721ProxyAddress;
@@ -55,6 +52,8 @@ export class FillScenarios {
     public async createFillableSignedOrderWithFeesAsync(
         makerAssetData: string,
         takerAssetData: string,
+        makerFeeAssetData: string,
+        takerFeeAssetData: string,
         makerFee: BigNumber,
         takerFee: BigNumber,
         makerAddress: string,
@@ -66,6 +65,8 @@ export class FillScenarios {
         return this._createAsymmetricFillableSignedOrderWithFeesAsync(
             makerAssetData,
             takerAssetData,
+            makerFeeAssetData,
+            takerFeeAssetData,
             makerFee,
             takerFee,
             makerAddress,
@@ -85,12 +86,16 @@ export class FillScenarios {
         takerFillableAmount: BigNumber,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
+        const makerFeeAssetData = constants.NULL_BYTES;
+        const takerFeeAssetData = constants.NULL_BYTES;
         const makerFee = new BigNumber(0);
         const takerFee = new BigNumber(0);
         const feeRecipientAddress = constants.NULL_ADDRESS;
         return this._createAsymmetricFillableSignedOrderWithFeesAsync(
             makerAssetData,
             takerAssetData,
+            makerFeeAssetData,
+            takerFeeAssetData,
             makerFee,
             takerFee,
             makerAddress,
@@ -138,6 +143,8 @@ export class FillScenarios {
     private async _createAsymmetricFillableSignedOrderWithFeesAsync(
         makerAssetData: string,
         takerAssetData: string,
+        makerFeeAssetData: string,
+        takerFeeAssetData: string,
         makerFee: BigNumber,
         takerFee: BigNumber,
         makerAddress: string,
@@ -151,8 +158,8 @@ export class FillScenarios {
         await this._increaseBalanceAndAllowanceWithAssetDataAsync(takerAssetData, takerAddress, takerFillableAmount);
         // Fees
         await Promise.all([
-            this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, makerAddress, makerFee),
-            this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, takerAddress, takerFee),
+            this._increaseERC20BalanceAndAllowanceAsync(makerFeeAssetData, makerAddress, makerFee),
+            this._increaseERC20BalanceAndAllowanceAsync(takerFeeAssetData, takerAddress, takerFee),
         ]);
         const senderAddress = constants.NULL_ADDRESS;
 
@@ -167,6 +174,8 @@ export class FillScenarios {
             {
                 takerAddress,
                 senderAddress,
+                makerFeeAssetData,
+                takerFeeAssetData,
                 makerFee,
                 takerFee,
                 feeRecipientAddress,
