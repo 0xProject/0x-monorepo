@@ -1,6 +1,7 @@
 import { HttpClient } from '@0x/connect';
-import { orderCalculationUtils, orderParsingUtils } from '@0x/order-utils';
+import { orderCalculationUtils } from '@0x/order-utils';
 import { APIOrder, AssetPairsResponse, OrderbookResponse } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
@@ -27,15 +28,10 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
             const { order, metaData } = apiOrder;
             // The contents of metaData is not explicity defined in the spec
             // We check for remainingTakerAssetAmount as a string and use this value if populated
-            const convertedMetaData = orderParsingUtils.convertStringsFieldsToBigNumbers(metaData, [
-                'remainingTakerAssetAmount',
-            ]);
-            // calculate remainingFillableMakerAssetAmount from api metadata, else assume order is completely fillable
-            const remainingFillableTakerAssetAmount = _.get(
-                convertedMetaData,
-                'remainingTakerAssetAmount',
-                order.takerAssetAmount,
-            );
+            const metaDataRemainingTakerAssetAmount = _.get(metaData, 'remainingTakerAssetAmount');
+            const remainingFillableTakerAssetAmount = metaDataRemainingTakerAssetAmount
+                ? new BigNumber(metaDataRemainingTakerAssetAmount)
+                : order.takerAssetAmount;
             const remainingFillableMakerAssetAmount = orderCalculationUtils.getMakerFillAmount(
                 order,
                 remainingFillableTakerAssetAmount,
