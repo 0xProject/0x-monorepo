@@ -56,14 +56,12 @@ export class OrderValidationUtils {
      * @param signedOrder SignedOrder to test
      * @param fillTakerAssetAmount Amount of takerAsset to fill the signedOrder
      * @param senderAddress Sender of the fillOrder tx
-     * @param zrxAssetData AssetData for the ZRX token
      */
     public static async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         signedOrder: SignedOrder,
         fillTakerAssetAmount: BigNumber,
         senderAddress: string,
-        zrxAssetData: string,
     ): Promise<void> {
         const fillMakerTokenAmount = utils.getPartialAmountFloor(
             fillTakerAssetAmount,
@@ -92,7 +90,7 @@ export class OrderValidationUtils {
             signedOrder.makerFee,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            zrxAssetData,
+            signedOrder.makerFeeAssetData,
             signedOrder.makerAddress,
             signedOrder.feeRecipientAddress,
             makerFeeAmount,
@@ -105,7 +103,7 @@ export class OrderValidationUtils {
             signedOrder.takerFee,
         );
         await exchangeTradeEmulator.transferFromAsync(
-            zrxAssetData,
+            signedOrder.takerFeeAssetData,
             senderAddress,
             signedOrder.feeRecipientAddress,
             takerFeeAmount,
@@ -177,14 +175,12 @@ export class OrderValidationUtils {
      * Validate if the supplied order is fillable, and throw if it isn't
      * @param exchangeTradeEmulator ExchangeTradeEmulator instance
      * @param signedOrder SignedOrder of interest
-     * @param zrxAssetData ZRX assetData
      * @param expectedFillTakerTokenAmount If supplied, this call will make sure this amount is fillable.
      * If it isn't supplied, we check if the order is fillable for a non-zero amount
      */
     public async validateOrderFillableOrThrowAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         signedOrder: SignedOrder,
-        zrxAssetData: string,
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
@@ -220,7 +216,6 @@ export class OrderValidationUtils {
             signedOrder,
             fillTakerAssetAmount,
             signedOrder.takerAddress,
-            zrxAssetData,
         );
     }
     /**
@@ -229,14 +224,12 @@ export class OrderValidationUtils {
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
      * @param takerAddress The taker of the order
-     * @param zrxAssetData ZRX asset data
      */
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         signedOrder: SignedOrder,
         fillTakerAssetAmount: BigNumber,
         takerAddress: string,
-        zrxAssetData: string,
     ): Promise<BigNumber> {
         if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
             throw new Error(RevertReason.OrderUnfillable);
@@ -273,7 +266,6 @@ export class OrderValidationUtils {
                 signedOrder,
                 desiredFillTakerTokenAmount,
                 takerAddress,
-                zrxAssetData,
             );
         } catch (err) {
             const transferFailedErrorMessages = [

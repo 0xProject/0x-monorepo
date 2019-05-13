@@ -37,9 +37,6 @@ describe('OrderStateUtils', () => {
                 async isOrderCancelledAsync(_signedOrder: SignedOrder): Promise<boolean> {
                     return cancelled;
                 },
-                getZRXAssetData(): string {
-                    return '';
-                },
             };
             return orderFetcher;
         };
