@@ -5,6 +5,10 @@
             {
                 "note": "Use new `Order` structure with `domain` field",
                 "pr": 1742
+            },
+            {
+                "note": "Use arbitrary fee tokens instead of ZRX (ZEIP-28)",
+                "pr": "TODO"
             }
         ]
     },
