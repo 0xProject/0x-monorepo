@@ -103,11 +103,4 @@ export class OrderFilledCancelledLazyStore implements AbstractOrderFilledCancell
     public deleteAllFilled(): void {
         this._filledTakerAmount = {};
     }
-    /**
-     * Get the ZRX assetData
-     */
-    public getZRXAssetData(): string {
-        const zrxAssetData = this._orderFilledCancelledFetcher.getZRXAssetData();
-        return zrxAssetData;
-    }
 }
