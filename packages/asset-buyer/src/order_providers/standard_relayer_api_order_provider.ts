@@ -28,7 +28,9 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
             const { order, metaData } = apiOrder;
             // The contents of metaData is not explicity defined in the spec
             // We check for remainingTakerAssetAmount as a string and use this value if populated
-            const metaDataRemainingTakerAssetAmount = _.get(metaData, 'remainingTakerAssetAmount');
+            const metaDataRemainingTakerAssetAmount = _.get(metaData, 'remainingTakerAssetAmount') as
+                | string
+                | undefined;
             const remainingFillableTakerAssetAmount = metaDataRemainingTakerAssetAmount
                 ? new BigNumber(metaDataRemainingTakerAssetAmount)
                 : order.takerAssetAmount;

@@ -124,6 +124,7 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
+            - run: yarn wsrun test:circleci @0x/asset-buyer
             - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
@@ -149,6 +150,10 @@ jobs:
                   key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/assert/coverage/lcov.info
+            - save_cache:
+                  key: coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/packages/asset-buyer/coverage/lcov.info
             - save_cache:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -327,6 +332,9 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
+                      - coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
