@@ -3,7 +3,8 @@
         "version": "2.3.2",
         "changes": [
             {
-                "note": "Redeploy Coordinator contract"
+                "note": "Redeploy Coordinator contract",
+                "pr": 1812
             }
         ]
     },
