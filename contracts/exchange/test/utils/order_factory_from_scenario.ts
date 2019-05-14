@@ -4,6 +4,7 @@ import {
     constants,
     ERC721TokenIdsByOwner,
     ExpirationTimeSecondsScenario,
+    FeeAssetDataScenario,
     FeeRecipientAddressScenario,
     OrderAssetAmountScenario,
     OrderScenario,
@@ -13,20 +14,23 @@ import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { BigNumber, errorUtils } from '@0x/utils';
 
-const TEN_UNITS_EIGHTEEN_DECIMALS = new BigNumber(10_000_000_000_000_000_000);
-const FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(5_000_000_000_000_000_000);
-const POINT_ONE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(100_000_000_000_000_000);
-const POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(50_000_000_000_000_000);
-const TEN_UNITS_FIVE_DECIMALS = new BigNumber(1_000_000);
-const FIVE_UNITS_FIVE_DECIMALS = new BigNumber(500_000);
+const TEN_UNITS_EIGHTEEN_DECIMALS = new BigNumber('10e18');
+const FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber('5e18');
+const POINT_ONE_UNITS_EIGHTEEN_DECIMALS = new BigNumber('0.1e18');
+const POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber('0.05e18');
+const TEN_UNITS_FIVE_DECIMALS = new BigNumber('10e5');
+const FIVE_UNITS_FIVE_DECIMALS = new BigNumber('5e5');
+const POINT_ONE_UNITS_FIVE_DECIMALS = new BigNumber('0.1e5');
+const POINT_ZERO_FIVE_UNITS_FIVE_DECIMALS = new BigNumber('0.05e5');
 const TEN_UNITS_ZERO_DECIMALS = new BigNumber(10);
 const ONE_THOUSAND_UNITS_ZERO_DECIMALS = new BigNumber(1000);
+const ONE_UNITS_ZERO_DECIMALS = new BigNumber(1);
 const ONE_NFT_UNIT = new BigNumber(1);
+const ZERO_UNITS = new BigNumber(0);
 
 export class OrderFactoryFromScenario {
     private readonly _userAddresses: string[];
-    private readonly _zrxAddress: string;
-    private readonly _nonZrxERC20EighteenDecimalTokenAddresses: string[];
+    private readonly _erc20EighteenDecimalTokenAddresses: string[];
     private readonly _erc20FiveDecimalTokenAddresses: string[];
     private readonly _erc20ZeroDecimalTokenAddresses: string[];
     private readonly _erc721Token: DummyERC721TokenContract;
@@ -35,8 +39,7 @@ export class OrderFactoryFromScenario {
     private readonly _chainId: number;
     constructor(
         userAddresses: string[],
-        zrxAddress: string,
-        nonZrxERC20EighteenDecimalTokenAddresses: string[],
+        erc20EighteenDecimalTokenAddresses: string[],
         erc20FiveDecimalTokenAddresses: string[],
         erc20ZeroDecimalTokenAddresses: string[],
         erc721Token: DummyERC721TokenContract,
@@ -45,8 +48,7 @@ export class OrderFactoryFromScenario {
         chainId: number,
     ) {
         this._userAddresses = userAddresses;
-        this._zrxAddress = zrxAddress;
-        this._nonZrxERC20EighteenDecimalTokenAddresses = nonZrxERC20EighteenDecimalTokenAddresses;
+        this._erc20EighteenDecimalTokenAddresses = erc20EighteenDecimalTokenAddresses;
         this._erc20FiveDecimalTokenAddresses = erc20FiveDecimalTokenAddresses;
         this._erc20ZeroDecimalTokenAddresses = erc20ZeroDecimalTokenAddresses;
         this._erc721Token = erc721Token;
@@ -65,8 +67,10 @@ export class OrderFactoryFromScenario {
         let makerFee;
         let takerFee;
         let expirationTimeSeconds;
-        let makerAssetData;
-        let takerAssetData;
+        let makerAssetData = constants.NULL_BYTES;
+        let takerAssetData = constants.NULL_BYTES;
+        let makerFeeAssetData = constants.NULL_BYTES;
+        let takerFeeAssetData = constants.NULL_BYTES;
 
         switch (orderScenario.feeRecipientScenario) {
             case FeeRecipientAddressScenario.BurnAddress:
@@ -80,11 +84,8 @@ export class OrderFactoryFromScenario {
         }
 
         switch (orderScenario.makerAssetDataScenario) {
-            case AssetDataScenario.ZRXFeeToken:
-                makerAssetData = assetDataUtils.encodeERC20AssetData(this._zrxAddress);
-                break;
-            case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                makerAssetData = assetDataUtils.encodeERC20AssetData(this._nonZrxERC20EighteenDecimalTokenAddresses[0]);
+            case AssetDataScenario.ERC20EighteenDecimals:
+                makerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[0]);
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
                 makerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]);
@@ -103,11 +104,8 @@ export class OrderFactoryFromScenario {
         }
 
         switch (orderScenario.takerAssetDataScenario) {
-            case AssetDataScenario.ZRXFeeToken:
-                takerAssetData = assetDataUtils.encodeERC20AssetData(this._zrxAddress);
-                break;
-            case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                takerAssetData = assetDataUtils.encodeERC20AssetData(this._nonZrxERC20EighteenDecimalTokenAddresses[1]);
+            case AssetDataScenario.ERC20EighteenDecimals:
+                takerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[1]);
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
                 takerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]);
@@ -128,8 +126,7 @@ export class OrderFactoryFromScenario {
         switch (orderScenario.makerAssetAmountScenario) {
             case OrderAssetAmountScenario.Large:
                 switch (orderScenario.makerAssetDataScenario) {
-                    case AssetDataScenario.ZRXFeeToken:
-                    case AssetDataScenario.ERC20NonZRXEighteenDecimals:
+                    case AssetDataScenario.ERC20EighteenDecimals:
                         makerAssetAmount = TEN_UNITS_EIGHTEEN_DECIMALS;
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
@@ -147,8 +144,7 @@ export class OrderFactoryFromScenario {
                 break;
             case OrderAssetAmountScenario.Small:
                 switch (orderScenario.makerAssetDataScenario) {
-                    case AssetDataScenario.ZRXFeeToken:
-                    case AssetDataScenario.ERC20NonZRXEighteenDecimals:
+                    case AssetDataScenario.ERC20EighteenDecimals:
                         makerAssetAmount = FIVE_UNITS_EIGHTEEN_DECIMALS;
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
@@ -174,8 +170,7 @@ export class OrderFactoryFromScenario {
         switch (orderScenario.takerAssetAmountScenario) {
             case OrderAssetAmountScenario.Large:
                 switch (orderScenario.takerAssetDataScenario) {
-                    case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                    case AssetDataScenario.ZRXFeeToken:
+                    case AssetDataScenario.ERC20EighteenDecimals:
                         takerAssetAmount = TEN_UNITS_EIGHTEEN_DECIMALS;
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
@@ -193,8 +188,7 @@ export class OrderFactoryFromScenario {
                 break;
             case OrderAssetAmountScenario.Small:
                 switch (orderScenario.takerAssetDataScenario) {
-                    case AssetDataScenario.ERC20NonZRXEighteenDecimals:
-                    case AssetDataScenario.ZRXFeeToken:
+                    case AssetDataScenario.ERC20EighteenDecimals:
                         takerAssetAmount = FIVE_UNITS_EIGHTEEN_DECIMALS;
                         break;
                     case AssetDataScenario.ERC20FiveDecimals:
@@ -217,33 +211,68 @@ export class OrderFactoryFromScenario {
                 throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.takerAssetAmountScenario);
         }
 
-        switch (orderScenario.makerFeeScenario) {
-            case OrderAssetAmountScenario.Large:
-                makerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
-                break;
-            case OrderAssetAmountScenario.Small:
-                makerFee = POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
-                break;
-            case OrderAssetAmountScenario.Zero:
-                makerFee = new BigNumber(0);
-                break;
-            default:
-                throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.makerFeeScenario);
+        const feeFromScenario = (
+            feeAmountScenario : OrderAssetAmountScenario,
+            feeAssetDataScenario: FeeAssetDataScenario,
+            erc20EighteenDecimalTokenAddress: string,
+            erc20FiveDecimalTokenAddress: string,
+            erc20ZeroDecimalTokenAddress: string,
+            erc721AssetId: BigNumber,
+        ): [BigNumber, string] => {
+            const feeAmount = getFeeAmountFromScenario(
+                orderScenario,
+                orderScenario.takerAssetDataScenario,
+                feeAmountScenario,
+            );
+            switch (feeAssetDataScenario) {
+                case FeeAssetDataScenario.MakerToken:
+                    return [ feeAmount, makerAssetData ];
+                case FeeAssetDataScenario.TakerToken:
+                    return [ feeAmount, takerAssetData ];
+                case FeeAssetDataScenario.ERC20EighteenDecimals:
+                    return [
+                        feeAmount,
+                        assetDataUtils.encodeERC20AssetData(erc20EighteenDecimalTokenAddress),
+                    ];
+                case FeeAssetDataScenario.ERC20FiveDecimals:
+                    return [
+                        feeAmount,
+                        assetDataUtils.encodeERC20AssetData(erc20FiveDecimalTokenAddress),
+                    ];
+                case FeeAssetDataScenario.ERC20ZeroDecimals:
+                    return [
+                        feeAmount,
+                        assetDataUtils.encodeERC20AssetData(erc20ZeroDecimalTokenAddress),
+                    ];
+                case FeeAssetDataScenario.ERC721:
+                    return [
+                        feeAmount,
+                        assetDataUtils.encodeERC721AssetData(
+                            this._erc721Token.address,
+                            erc721AssetId,
+                        ),
+                    ];
+                default:
+                    throw errorUtils.spawnSwitchErr('FeeAssetDataScenario', feeAssetDataScenario);
+            }
         }
 
-        switch (orderScenario.takerFeeScenario) {
-            case OrderAssetAmountScenario.Large:
-                takerFee = POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
-                break;
-            case OrderAssetAmountScenario.Small:
-                takerFee = POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
-                break;
-            case OrderAssetAmountScenario.Zero:
-                takerFee = new BigNumber(0);
-                break;
-            default:
-                throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', orderScenario.takerFeeScenario);
-        }
+        [ makerFee, makerFeeAssetData ] = feeFromScenario(
+            orderScenario.makerFeeScenario,
+            orderScenario.makerFeeAssetDataScenario,
+            this._erc20EighteenDecimalTokenAddresses[2],
+            this._erc20FiveDecimalTokenAddresses[2],
+            this._erc20ZeroDecimalTokenAddresses[2],
+            erc721MakerAssetIds[1],
+        );
+        [ takerFee, takerFeeAssetData ] = feeFromScenario(
+            orderScenario.takerFeeScenario,
+            orderScenario.takerFeeAssetDataScenario,
+            this._erc20EighteenDecimalTokenAddresses[3],
+            this._erc20FiveDecimalTokenAddresses[3],
+            this._erc20ZeroDecimalTokenAddresses[3],
+            erc721TakerAssetIds[2],
+        );
 
         switch (orderScenario.expirationTimeSecondsScenario) {
             case ExpirationTimeSecondsScenario.InFuture:
@@ -286,6 +315,8 @@ export class OrderFactoryFromScenario {
             takerAssetAmount,
             makerAssetData,
             takerAssetData,
+            makerFeeAssetData,
+            takerFeeAssetData,
             salt: generatePseudoRandomSalt(),
             feeRecipientAddress,
             expirationTimeSeconds,
@@ -296,5 +327,70 @@ export class OrderFactoryFromScenario {
         };
 
         return order;
+    }
+}
+
+function getFeeAmountFromScenario(
+    orderScenario: OrderScenario,
+    feeAssetDataScenario: AssetDataScenario | FeeAssetDataScenario,
+    feeAmountScenario: OrderAssetAmountScenario,
+): BigNumber {
+    switch (feeAssetDataScenario) {
+        case FeeAssetDataScenario.ERC721:
+            switch (feeAmountScenario) {
+                case OrderAssetAmountScenario.Zero:
+                    return ZERO_UNITS;
+                case OrderAssetAmountScenario.Small:
+                case OrderAssetAmountScenario.Large:
+                    return ONE_NFT_UNIT;
+                default:
+                    throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', feeAmountScenario);
+            }
+        case FeeAssetDataScenario.ERC20ZeroDecimals:
+            switch (feeAmountScenario) {
+                case OrderAssetAmountScenario.Zero:
+                    return ZERO_UNITS;
+                case OrderAssetAmountScenario.Small:
+                case OrderAssetAmountScenario.Large:
+                    return ONE_UNITS_ZERO_DECIMALS;
+                default:
+                    throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', feeAmountScenario);
+            }
+        case FeeAssetDataScenario.ERC20FiveDecimals:
+            switch (feeAmountScenario) {
+                case OrderAssetAmountScenario.Zero:
+                    return ZERO_UNITS;
+                case OrderAssetAmountScenario.Small:
+                    return POINT_ZERO_FIVE_UNITS_FIVE_DECIMALS;
+                case OrderAssetAmountScenario.Large:
+                    return POINT_ONE_UNITS_FIVE_DECIMALS;
+                default:
+                    throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', feeAmountScenario);
+            }
+        case FeeAssetDataScenario.ERC20EighteenDecimals:
+            switch (feeAmountScenario) {
+                case OrderAssetAmountScenario.Zero:
+                    return ZERO_UNITS;
+                case OrderAssetAmountScenario.Small:
+                    return POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS;
+                case OrderAssetAmountScenario.Large:
+                    return POINT_ONE_UNITS_EIGHTEEN_DECIMALS;
+                default:
+                    throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', feeAmountScenario);
+            }
+        case FeeAssetDataScenario.MakerToken:
+            return getFeeAmountFromScenario(
+                orderScenario,
+                orderScenario.makerAssetDataScenario,
+                feeAmountScenario
+            );
+        case FeeAssetDataScenario.TakerToken:
+            return getFeeAmountFromScenario(
+                orderScenario,
+                orderScenario.takerAssetDataScenario,
+                feeAmountScenario
+            );
+        default:
+            throw errorUtils.spawnSwitchErr('FeeAssetDataScenario', feeAssetDataScenario);
     }
 }
