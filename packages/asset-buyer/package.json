@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "6.1.1",
+    "version": "6.1.2",
     "engines": {
         "node": ">=6.12"
     },
