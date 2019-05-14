@@ -4,6 +4,7 @@ import {
     BalanceAmountScenario,
     chaiSetup,
     ExpirationTimeSecondsScenario,
+    FeeAssetDataScenario,
     FeeRecipientAddressScenario,
     FillScenario,
     OrderAssetAmountScenario,
@@ -30,21 +31,23 @@ const defaultFillScenario = {
         makerFeeScenario: OrderAssetAmountScenario.Large,
         takerFeeScenario: OrderAssetAmountScenario.Large,
         expirationTimeSecondsScenario: ExpirationTimeSecondsScenario.InFuture,
-        makerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
-        takerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
+        makerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
+        takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
+        makerFeeAssetDataScenario: FeeAssetDataScenario.ERC20EighteenDecimals,
+        takerFeeAssetDataScenario: FeeAssetDataScenario.ERC20EighteenDecimals,
     },
     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
     makerStateScenario: {
         traderAssetBalance: BalanceAmountScenario.Higher,
         traderAssetAllowance: AllowanceAmountScenario.Higher,
-        zrxFeeBalance: BalanceAmountScenario.Higher,
-        zrxFeeAllowance: AllowanceAmountScenario.Higher,
+        feeBalance: BalanceAmountScenario.Higher,
+        feeAllowance: AllowanceAmountScenario.Higher,
     },
     takerStateScenario: {
         traderAssetBalance: BalanceAmountScenario.Higher,
         traderAssetAllowance: AllowanceAmountScenario.Higher,
-        zrxFeeBalance: BalanceAmountScenario.Higher,
-        zrxFeeAllowance: AllowanceAmountScenario.Higher,
+        feeBalance: BalanceAmountScenario.Higher,
+        feeAllowance: AllowanceAmountScenario.Higher,
     },
 };
 
@@ -250,7 +253,7 @@ describe('FillOrder Tests', () => {
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
                     makerAssetDataScenario: AssetDataScenario.ERC721,
-                    takerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
+                    takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
             };
@@ -262,7 +265,7 @@ describe('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
-                    makerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
+                    makerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
                     takerAssetDataScenario: AssetDataScenario.ERC721,
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
@@ -276,7 +279,7 @@ describe('FillOrder Tests', () => {
                 orderScenario: {
                     ...defaultFillScenario.orderScenario,
                     makerAssetDataScenario: AssetDataScenario.ERC721,
-                    takerAssetDataScenario: AssetDataScenario.ERC20NonZRXEighteenDecimals,
+                    takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
                 makerStateScenario: {
