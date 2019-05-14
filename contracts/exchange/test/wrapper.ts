@@ -96,7 +96,6 @@ describe('Exchange wrappers', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetDataUtils.encodeERC20AssetData(zrxToken.address),
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);

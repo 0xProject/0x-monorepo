@@ -129,7 +129,6 @@ describe('Exchange core', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetDataUtils.encodeERC20AssetData(zrxToken.address),
             new BigNumber(chainId),
         );
         maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(

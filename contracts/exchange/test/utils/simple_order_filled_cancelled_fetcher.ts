@@ -6,10 +6,8 @@ import { ExchangeWrapper } from './exchange_wrapper';
 
 export class SimpleOrderFilledCancelledFetcher implements AbstractOrderFilledCancelledFetcher {
     private readonly _exchangeWrapper: ExchangeWrapper;
-    private readonly _zrxAssetData: string;
-    constructor(exchange: ExchangeWrapper, zrxAssetData: string) {
+    constructor(exchange: ExchangeWrapper) {
         this._exchangeWrapper = exchange;
-        this._zrxAssetData = zrxAssetData;
     }
     public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         const filledTakerAmount = new BigNumber(await this._exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash));
@@ -24,8 +22,5 @@ export class SimpleOrderFilledCancelledFetcher implements AbstractOrderFilledCan
         );
         const isCancelledByOrderEpoch = orderEpoch > signedOrder.salt;
         return isCancelled || isCancelledByOrderEpoch;
-    }
-    public getZRXAssetData(): string {
-        return this._zrxAssetData;
     }
 }
