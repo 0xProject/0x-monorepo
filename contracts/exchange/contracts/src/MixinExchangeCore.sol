@@ -301,7 +301,7 @@ contract MixinExchangeCore is
             + order.makerFeeAssetData.length
             + order.takerFeeAssetData.length
         );
-        uint256 argOffset = logData.rawAddress();
+        uint256 argOffset = 0;
         // takerAddress
         logData.writeAddress(argOffset, takerAddress);
         argOffset += 32;
@@ -325,7 +325,7 @@ contract MixinExchangeCore is
         // their calldata payloads.
         // 320 is the offset to the end of all the argument values (10 * 32),
         // and where we'll start writing payloads.
-        uint256 dataOffset = logData.rawAddress() + 320;
+        uint256 dataOffset = 320;
         // makerAssetData
         logData.writeUint256(argOffset, dataOffset);
         logData.writeBytesWithLength(dataOffset, order.makerAssetData);
