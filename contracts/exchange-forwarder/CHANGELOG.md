@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _May 14, 2019_
+
+    * Dependencies updated
+
 ## v3.0.0 - _May 10, 2019_
 
     * Update contracts to solidity ^0.5.5 and unpin dependencies (#1796)

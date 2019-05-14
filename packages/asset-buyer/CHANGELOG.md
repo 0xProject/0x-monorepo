@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.3 - _May 14, 2019_
+
+    * Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder (#1810)
+
 ## v6.1.1 - _May 10, 2019_
 
     * Dependencies updated

@@ -6,7 +6,8 @@
                 "note": "Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder",
                 "pr": 1810
             }
-        ]
+        ],
+        "timestamp": 1557799313
     },
     {
         "timestamp": 1557507213,

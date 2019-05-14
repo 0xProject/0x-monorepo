@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.1.2 - _May 14, 2019_
+
+    * Dependencies updated
+
 ## v9.1.0 - _May 10, 2019_
 
     * Added CoordinatorWrapper to support orders with the Coordinator extension contract (#1792)

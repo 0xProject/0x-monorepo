@@ -6,7 +6,8 @@
                 "note": "Add --pk flag to accept private key when migrating",
                 "pr": 1811
             }
-        ]
+        ],
+        "timestamp": 1557799313
     },
     {
         "timestamp": 1557507213,

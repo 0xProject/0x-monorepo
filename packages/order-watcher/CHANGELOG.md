@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.9 - _May 14, 2019_
+
+    * Dependencies updated
+
 ## v4.0.7 - _May 10, 2019_
 
     * Fix race-condition bug due to async callback modifying shared state (#1789)
