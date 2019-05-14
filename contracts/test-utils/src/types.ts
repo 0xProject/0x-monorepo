@@ -96,7 +96,6 @@ export enum ContractName {
     TokenRegistry = 'TokenRegistry',
     MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
     Exchange = 'Exchange',
-    ZRXToken = 'ZRXToken',
     DummyERC20Token = 'DummyERC20Token',
     EtherToken = 'WETH9',
     DutchAuction = 'DutchAuction',
@@ -188,10 +187,18 @@ export enum ExpirationTimeSecondsScenario {
 
 export enum AssetDataScenario {
     ERC20ZeroDecimals = 'ERC20_ZERO_DECIMALS',
-    ZRXFeeToken = 'ZRX_FEE_TOKEN',
     ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
-    ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
+    ERC20EighteenDecimals = 'ERC20_EIGHTEEN_DECIMALS',
     ERC721 = 'ERC721',
+}
+
+export enum FeeAssetDataScenario {
+    ERC20ZeroDecimals = 'ERC20_ZERO_DECIMALS',
+    ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
+    ERC20EighteenDecimals = 'ERC20_EIGHTEEN_DECIMALS',
+    ERC721 = 'ERC721',
+    MakerToken = 'MAKER_TOKEN',
+    TakerToken = 'TAKER_TOKEN',
 }
 
 export enum TakerAssetFillAmountScenario {
@@ -211,6 +218,8 @@ export interface OrderScenario {
     expirationTimeSecondsScenario: ExpirationTimeSecondsScenario;
     makerAssetDataScenario: AssetDataScenario;
     takerAssetDataScenario: AssetDataScenario;
+    makerFeeAssetDataScenario: FeeAssetDataScenario;
+    takerFeeAssetDataScenario: FeeAssetDataScenario;
 }
 
 export enum BalanceAmountScenario {
@@ -229,8 +238,8 @@ export enum AllowanceAmountScenario {
 export interface TraderStateScenario {
     traderAssetBalance: BalanceAmountScenario;
     traderAssetAllowance: AllowanceAmountScenario;
-    zrxFeeBalance: BalanceAmountScenario;
-    zrxFeeAllowance: AllowanceAmountScenario;
+    feeBalance: BalanceAmountScenario;
+    feeAllowance: AllowanceAmountScenario;
 }
 
 export interface FillScenario {
