@@ -1,5 +1,13 @@
 [
     {
+        "version": "9.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "9.1.0",
         "changes": [
             {
