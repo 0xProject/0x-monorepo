@@ -1,6 +1,6 @@
 {
     "name": "@0x/order-watcher",
-    "version": "4.0.8",
+    "version": "4.0.9",
     "description": "An order watcher daemon that watches for order validity",
     "keywords": [
         "0x",
@@ -40,7 +40,7 @@
     },
     "devDependencies": {
         "@0x/dev-utils": "^2.2.2",
-        "@0x/migrations": "^4.1.2",
+        "@0x/migrations": "^4.1.4",
         "@0x/subproviders": "^4.0.6",
         "@0x/tslint-config": "^3.0.1",
         "@types/bintrees": "^1.0.2",
@@ -67,12 +67,12 @@
         "@0x/abi-gen-wrappers": "^4.3.0",
         "@0x/assert": "^2.0.10",
         "@0x/base-contract": "^5.1.0",
-        "@0x/contract-addresses": "^2.3.1",
+        "@0x/contract-addresses": "^2.3.3",
         "@0x/contract-artifacts": "^1.5.1",
-        "@0x/contract-wrappers": "^9.1.0",
-        "@0x/fill-scenarios": "^3.0.6",
+        "@0x/contract-wrappers": "^9.1.2",
+        "@0x/fill-scenarios": "^3.0.8",
         "@0x/json-schemas": "^3.0.10",
-        "@0x/order-utils": "^8.0.0",
+        "@0x/order-utils": "^8.0.2",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.3",

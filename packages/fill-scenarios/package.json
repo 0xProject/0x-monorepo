@@ -1,6 +1,6 @@
 {
     "name": "@0x/fill-scenarios",
-    "version": "3.0.7",
+    "version": "3.0.8",
     "description": "0x order fill scenario generator",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -32,7 +32,7 @@
         "@0x/abi-gen-wrappers": "^4.3.0",
         "@0x/base-contract": "^5.1.0",
         "@0x/contract-artifacts": "^1.5.1",
-        "@0x/order-utils": "^8.0.0",
+        "@0x/order-utils": "^8.0.2",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.3",
