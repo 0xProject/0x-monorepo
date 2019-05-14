@@ -79,7 +79,6 @@ describe('Coordinator tests', () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
-            assetDataUtils.encodeERC20AssetData(zrxToken.address),
             new BigNumber(chainId),
         );
 
