@@ -91,14 +91,15 @@ describe('DutchAuctionWrapper', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe.only('.decodeDutchAuctionAssetData', () => {
-        it('encode and decode to the same values', async () => {
+    describe('.decodeDutchAuctionAssetData', () => {
+        it('decodes to the encoded values', async () => {
             const encodedAssetData = DutchAuctionWrapper.encodeDutchAuctionAssetData(
                 makerTokenAssetData,
                 auctionBeginTimeSeconds,
                 makerAssetAmount,
             );
             const decodedAssetData = DutchAuctionWrapper.decodeDutchAuctionData(encodedAssetData);
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             const erc20AssetData = decodedAssetData.assetData as ERC20AssetData;
             expect(erc20AssetData.tokenAddress).to.eq(makerTokenAddress);
             expect(decodedAssetData.beginAmount).to.be.bignumber.eq(makerAssetAmount);
