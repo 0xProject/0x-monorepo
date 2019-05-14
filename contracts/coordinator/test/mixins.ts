@@ -68,6 +68,8 @@ describe('Mixins tests', () => {
             takerAssetAmount: constants.ZERO_AMOUNT,
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
+            makerFeeAssetData: constants.NULL_BYTES,
+            takerFeeAssetData: constants.NULL_BYTES,
             expirationTimeSeconds: constants.ZERO_AMOUNT,
             salt: constants.ZERO_AMOUNT,
             signature: constants.NULL_BYTES,
