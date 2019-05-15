@@ -71,8 +71,8 @@ export class DutchAuctionWrapper extends ContractWrapper {
             ['uint256', 'uint256'],
             dutchAuctionDetailsBuffer,
         );
-        const beginTimeSeconds = new BigNumber(`0x${beginTimeSecondsAsBN.toString()}`);
-        const beginAmount = new BigNumber(`0x${beginAmountAsBN.toString()}`);
+        const beginTimeSeconds = new BigNumber(beginTimeSecondsAsBN.toString());
+        const beginAmount = new BigNumber(beginAmountAsBN.toString());
         return {
             assetData,
             beginTimeSeconds,
