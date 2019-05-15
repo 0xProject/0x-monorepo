@@ -212,7 +212,7 @@ export class OrderFactoryFromScenario {
         }
 
         const feeFromScenario = (
-            feeAmountScenario : OrderAssetAmountScenario,
+            feeAmountScenario: OrderAssetAmountScenario,
             feeAssetDataScenario: FeeAssetDataScenario,
             erc20EighteenDecimalTokenAddress: string,
             erc20FiveDecimalTokenAddress: string,
@@ -221,7 +221,7 @@ export class OrderFactoryFromScenario {
         ): [BigNumber, string] => {
             const feeAmount = getFeeAmountFromScenario(
                 orderScenario,
-                orderScenario.takerAssetDataScenario,
+                feeAssetDataScenario,
                 feeAmountScenario,
             );
             switch (feeAssetDataScenario) {
@@ -271,7 +271,7 @@ export class OrderFactoryFromScenario {
             this._erc20EighteenDecimalTokenAddresses[3],
             this._erc20FiveDecimalTokenAddresses[3],
             this._erc20ZeroDecimalTokenAddresses[3],
-            erc721TakerAssetIds[2],
+            erc721TakerAssetIds[1],
         );
 
         switch (orderScenario.expirationTimeSecondsScenario) {
