@@ -51,7 +51,7 @@ const defaultFillScenario = {
     },
 };
 
-describe.only('FillOrder Tests', () => {
+describe('FillOrder Tests', () => {
     let fillOrderCombinatorialUtils: FillOrderCombinatorialUtils;
 
     before(async () => {
@@ -71,7 +71,7 @@ describe.only('FillOrder Tests', () => {
         const test = (fillScenarios: FillScenario[]) => {
             _.forEach(fillScenarios, fillScenario => {
                 const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;
-                it.only(description, async () => {
+                it(description, async () => {
                     await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
                 });
             });
