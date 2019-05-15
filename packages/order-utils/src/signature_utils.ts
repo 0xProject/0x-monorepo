@@ -324,8 +324,8 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const orderHash = transactionHashUtils.getTransactionHashHex(transaction);
-            const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, transactionHash, signerAddress);
             const signedTransaction = {
                 ...transaction,
                 signature: signatureHex,
