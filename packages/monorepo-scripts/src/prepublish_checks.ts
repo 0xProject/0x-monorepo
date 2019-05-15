@@ -143,7 +143,7 @@ async function checkPublishRequiredSetupAsync(updatedPublicPackages: Package[]):
 
     // check to see that all required write permissions exist
     utils.log(`Checking that all necessary npm write permissions exist...`);
-    const pkgPermissionsResult = await execAsync(`npm access ls-packages`);
+    const pkgPermissionsResult = await execAsync(`sudo npm access ls-packages`);
     const pkgPermissions = JSON.parse(pkgPermissionsResult.stdout);
     const writePermissions = Object.keys(pkgPermissions).filter(pkgName => {
         return pkgPermissions[pkgName] === 'read-write';
