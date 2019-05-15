@@ -303,10 +303,10 @@ contract MixinExchangeCore is
         );
         uint256 argOffset = 0;
         // takerAddress
-        logData.writeAddress(argOffset, takerAddress);
+        logData.writeUint256(argOffset, uint256(takerAddress));
         argOffset += 32;
         // senderAddress
-        logData.writeAddress(argOffset, msg.sender);
+        logData.writeUint256(argOffset, uint256(msg.sender));
         argOffset += 32;
         // makerAssetFilledAmount
         logData.writeUint256(argOffset, fillResults.makerAssetFilledAmount);
