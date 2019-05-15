@@ -17,7 +17,7 @@ import { provider, web3Wrapper } from './utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe.only('Signature utils', () => {
+describe('Signature utils', () => {
     let makerAddress: string;
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
     let order: Order;
