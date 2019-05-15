@@ -3,7 +3,6 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/LibConstants.json",
         "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
