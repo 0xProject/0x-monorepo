@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-erc1155",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -68,8 +68,8 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.1.0",
-        "@0x/contracts-test-utils": "^3.1.5",
-        "@0x/contracts-utils": "^3.1.4",
+        "@0x/contracts-test-utils": "^3.1.6",
+        "@0x/contracts-utils": "^3.1.5",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.3",
