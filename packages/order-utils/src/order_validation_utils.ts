@@ -231,6 +231,7 @@ export class OrderValidationUtils {
         fillTakerAssetAmount: BigNumber,
         takerAddress: string,
     ): Promise<BigNumber> {
+        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
             throw new Error(RevertReason.OrderUnfillable);
         }
@@ -255,7 +256,6 @@ export class OrderValidationUtils {
         if (signedOrder.takerAddress !== constants.NULL_ADDRESS && signedOrder.takerAddress !== takerAddress) {
             throw new Error(RevertReason.InvalidTaker);
         }
-        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         const desiredFillTakerTokenAmount = remainingTakerTokenAmount.isLessThan(fillTakerAssetAmount)
             ? remainingTakerTokenAmount
