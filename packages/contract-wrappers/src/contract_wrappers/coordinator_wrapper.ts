@@ -740,7 +740,7 @@ export class CoordinatorWrapper extends ContractWrapper {
             data,
             verifyingContractAddress: this.exchangeAddress,
         };
-        const signedTransaction = await signatureUtils.ecSignTypedDataTransactionAsync(
+        const signedTransaction = await signatureUtils.ecSignTransactionAsync(
             this._web3Wrapper.getProvider(),
             transaction,
             transaction.signerAddress,
