@@ -10,7 +10,8 @@
                 "note": "Fallback to eth_sign if eth_signedTypedData fails",
                 "pr": 1817
             }
-        ]
+        ],
+        "timestamp": 1557961111
     },
     {
         "version": "9.1.2",
