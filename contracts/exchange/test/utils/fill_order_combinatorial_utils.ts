@@ -1,5 +1,4 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { artifacts as libsArtifacts, TestLibsContract } from '@0x/contracts-exchange-libs';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -134,13 +133,6 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         chainId,
     );
 
-    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-        libsArtifacts.TestLibs,
-        provider,
-        txDefaults,
-        new BigNumber(chainId),
-    );
-
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
         orderFactory,
         ownerAddress,
@@ -148,8 +140,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         makerPrivateKey,
         takerAddress,
         exchangeWrapper,
-        assetWrapper,
-        testLibsContract,
+        assetWrapper
     );
     return fillOrderCombinatorialUtils;
 }
@@ -162,7 +153,6 @@ export class FillOrderCombinatorialUtils {
     public takerAddress: string;
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
-    public testLibsContract: TestLibsContract;
     public static generateFillOrderCombinations(): FillScenario[] {
         const takerScenarios = [
             TakerScenario.Unspecified,
@@ -362,7 +352,6 @@ export class FillOrderCombinatorialUtils {
         takerAddress: string,
         exchangeWrapper: ExchangeWrapper,
         assetWrapper: AssetWrapper,
-        testLibsContract: TestLibsContract,
     ) {
         this.orderFactory = orderFactory;
         this.ownerAddress = ownerAddress;
@@ -371,7 +360,6 @@ export class FillOrderCombinatorialUtils {
         this.takerAddress = takerAddress;
         this.exchangeWrapper = exchangeWrapper;
         this.assetWrapper = assetWrapper;
-        this.testLibsContract = testLibsContract;
     }
     public async testFillOrderScenarioAsync(
         provider: Web3ProviderEngine,
@@ -529,7 +517,7 @@ export class FillOrderCombinatorialUtils {
         // tslint:disable-next-line:no-unnecessary-type-assertion
         const log = txReceipt.logs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
         expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');
-        expect(log.args.takerAddress).to.be.equal(this.takerAddress, 'log.args.this.takerAddress');
+        expect(log.args.takerAddress).to.be.equal(this.takerAddress, 'log.args.takerAddress');
         expect(log.args.feeRecipientAddress).to.be.equal(feeRecipient, 'log.args.feeRecipientAddress');
         expect(log.args.makerAssetFilledAmount).to.be.bignumber.equal(
             expFilledMakerAmount,
