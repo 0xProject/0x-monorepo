@@ -325,7 +325,11 @@ export const signatureUtils = {
                 throw err;
             }
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, transactionHash, signerAddress);
+            const signatureHex = await signatureUtils.ecSignHashAsync(
+                supportedProvider,
+                transactionHash,
+                signerAddress,
+            );
             const signedTransaction = {
                 ...transaction,
                 signature: signatureHex,
