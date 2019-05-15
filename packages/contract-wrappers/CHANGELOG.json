@@ -5,6 +5,10 @@
             {
                 "note": "Fix decoding bug in `DutchAuctionWrapper.decodeDutchAuctionData`",
                 "pr": 1815
+            },
+            {
+                "note": "Fallback to eth_sign if eth_signedTypedData fails",
+                "pr": 1817
             }
         ]
     },

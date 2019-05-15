@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.1.0",
+        "changes": [
+            {
+                "note": "Add `ecSignTransactionAsync`",
+                "pr": 1817
+            }
+        ]
+    },
+    {
         "version": "8.0.2",
         "changes": [
             {
