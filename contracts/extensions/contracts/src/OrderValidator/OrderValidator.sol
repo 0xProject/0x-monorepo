@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
@@ -58,30 +58,64 @@ contract OrderValidator {
 
     /// @dev Fetches information for order and maker/taker of order.
     /// @param order The order structure.
+    /// @param signature Proof that order has been created by maker.
     /// @param takerAddress Address that will be filling the order.
-    /// @return OrderInfo and TraderInfo instances for given order.
-    function getOrderAndTraderInfo(LibOrder.Order memory order, address takerAddress)
+    /// @return OrderInfo, TraderInfo, and validity of signature for given order.
+    function getOrderAndTraderInfo(
+        LibOrder.Order memory order,
+        bytes memory signature,
+        address takerAddress
+    )
         public
         view
-        returns (LibOrder.OrderInfo memory orderInfo, TraderInfo memory traderInfo)
+        returns (
+            LibOrder.OrderInfo memory orderInfo,
+            TraderInfo memory traderInfo,
+            bool isValidSignature
+        )
     {
         orderInfo = EXCHANGE.getOrderInfo(order);
+        isValidSignature = EXCHANGE.isValidSignature(
+            orderInfo.orderHash,
+            order.makerAddress,
+            signature
+        );
         traderInfo = getTraderInfo(order, takerAddress);
-        return (orderInfo, traderInfo);
+        return (orderInfo, traderInfo, isValidSignature);
     }
 
     /// @dev Fetches information for all passed in orders and the makers/takers of each order.
     /// @param orders Array of order specifications.
+    /// @param signatures Proofs that orders have been created by makers.
     /// @param takerAddresses Array of taker addresses corresponding to each order.
-    /// @return Arrays of OrderInfo and TraderInfo instances that correspond to each order.
-    function getOrdersAndTradersInfo(LibOrder.Order[] memory orders, address[] memory takerAddresses)
+    /// @return Arrays of OrderInfo, TraderInfo, and validity of signatures that correspond to each order.
+    function getOrdersAndTradersInfo(
+        LibOrder.Order[] memory orders,
+        bytes[] memory signatures,
+        address[] memory takerAddresses
+    )
         public
         view
-        returns (LibOrder.OrderInfo[] memory ordersInfo, TraderInfo[] memory tradersInfo)
+        returns (
+            LibOrder.OrderInfo[] memory ordersInfo,
+            TraderInfo[] memory tradersInfo,
+            bool[] memory isValidSignature
+        )
     {
         ordersInfo = EXCHANGE.getOrdersInfo(orders);
         tradersInfo = getTradersInfo(orders, takerAddresses);
-        return (ordersInfo, tradersInfo);
+
+        uint256 length = orders.length;
+        isValidSignature = new bool[](length);
+        for (uint256 i = 0; i != length; i++) {
+            isValidSignature[i] = EXCHANGE.isValidSignature(
+                ordersInfo[i].orderHash,
+                orders[i].makerAddress,
+                signatures[i]
+            );
+        }
+
+        return (ordersInfo, tradersInfo, isValidSignature);
     }
 
     /// @dev Fetches balance and allowances for maker and taker of order.
