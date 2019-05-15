@@ -44,7 +44,7 @@ describe('matchOrders', () => {
 
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
+    let feeToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let reentrantErc20Token: ReentrantERC20TokenContract;
     let exchange: ExchangeContract;
@@ -65,6 +65,7 @@ describe('matchOrders', () => {
     let defaultERC20MakerAssetAddress: string;
     let defaultERC20TakerAssetAddress: string;
     let defaultERC721AssetAddress: string;
+    let defaultFeeTokenAddress: string;
 
     let matchOrderTester: MatchOrderTester;
 
@@ -103,7 +104,7 @@ describe('matchOrders', () => {
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
         // Deploy ERC20 token & ERC20 proxy
         const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+        [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
@@ -150,6 +151,7 @@ describe('matchOrders', () => {
         // Set default addresses
         defaultERC20MakerAssetAddress = erc20TokenA.address;
         defaultERC20TakerAssetAddress = erc20TokenB.address;
+        defaultFeeTokenAddress = feeToken.address;
         defaultERC721AssetAddress = erc721Token.address;
         const domain = {
             verifyingContractAddress: exchange.address,
@@ -161,6 +163,8 @@ describe('matchOrders', () => {
             makerAddress: makerAddressLeft,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
             feeRecipientAddress: feeRecipientAddressLeft,
             domain,
         };
@@ -169,6 +173,8 @@ describe('matchOrders', () => {
             makerAddress: makerAddressRight,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
             feeRecipientAddress: feeRecipientAddressRight,
             domain,
         };
@@ -177,7 +183,7 @@ describe('matchOrders', () => {
         const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
         // Set match order tester
-        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, zrxToken.address);
+        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, feeToken.address);
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
             provider,

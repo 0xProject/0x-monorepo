@@ -113,6 +113,8 @@ describe('MixinSignatureValidator', () => {
             feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             domain: {
                 verifyingContractAddress: signatureValidator.address,
                 chainId,
