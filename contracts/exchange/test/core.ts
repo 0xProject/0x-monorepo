@@ -62,7 +62,7 @@ describe('Exchange core', () => {
 
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
+    let feeToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let noReturnErc20Token: DummyNoReturnERC20TokenContract;
     let reentrantErc20Token: ReentrantERC20TokenContract;
@@ -92,6 +92,7 @@ describe('Exchange core', () => {
 
     let defaultMakerAssetAddress: string;
     let defaultTakerAssetAddress: string;
+    let defaultFeeAssetAddress: string;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -117,7 +118,7 @@ describe('Exchange core', () => {
             txDefaults,
         );
         const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+        [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
@@ -240,12 +241,15 @@ describe('Exchange core', () => {
         // Configure order defaults
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
+        defaultFeeAssetAddress = feeToken.address;
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
             domain: {
                 verifyingContractAddress: exchange.address,
                 chainId,
@@ -377,7 +381,7 @@ describe('Exchange core', () => {
             );
             expect(transferLogs.length).to.be.equal(2);
             expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                zrxToken.address,
+                feeToken.address,
             );
             expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
                 makerAddress,
@@ -389,7 +393,7 @@ describe('Exchange core', () => {
                 (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
             ).to.be.bignumber.equal(signedOrder.makerFee);
             expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                zrxToken.address,
+                feeToken.address,
             );
             expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
                 makerAddress,
@@ -436,21 +440,21 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
 
             const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
             expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
@@ -471,21 +475,21 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
 
             const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
             expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
@@ -506,21 +510,21 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
 
             const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
             expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
@@ -710,8 +714,8 @@ describe('Exchange core', () => {
             expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
                 erc20Balances[makerAddress][defaultTakerAssetAddress].plus(fillTakerAssetAmount),
             );
-            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][zrxToken.address].minus(makerFee),
+            expect(newBalances[makerAddress][feeToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][feeToken.address].minus(makerFee),
             );
             expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
                 erc20Balances[takerAddress][defaultTakerAssetAddress].minus(fillTakerAssetAmount),
@@ -719,11 +723,11 @@ describe('Exchange core', () => {
             expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                 erc20Balances[takerAddress][defaultMakerAssetAddress].plus(fillMakerAssetAmount),
             );
-            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][zrxToken.address].minus(takerFee),
+            expect(newBalances[takerAddress][feeToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][feeToken.address].minus(takerFee),
             );
-            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFee.plus(takerFee)),
+            expect(newBalances[feeRecipientAddress][feeToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][feeToken.address].plus(makerFee.plus(takerFee)),
             );
         });
     });
@@ -862,7 +866,7 @@ describe('Exchange core', () => {
             ];
             const makerAssetData = assetDataUtils.encodeMultiAssetData(makerAmounts, makerNestedAssetData);
             const makerAssetAmount = new BigNumber(1);
-            const takerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
             const takerAssetAmount = new BigNumber(10);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -875,19 +879,19 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
 
             const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(
                 initialMakerBalanceA.minus(makerAmounts[0].times(makerAssetAmount)),
@@ -915,7 +919,7 @@ describe('Exchange core', () => {
             const takerAmounts = [new BigNumber(10), new BigNumber(1)];
             const takerAssetId = erc721TakerAssetIds[0];
             const takerNestedAssetData = [
-                assetDataUtils.encodeERC20AssetData(zrxToken.address),
+                assetDataUtils.encodeERC20AssetData(feeToken.address),
                 assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
             ];
             const takerAssetData = assetDataUtils.encodeMultiAssetData(takerAmounts, takerNestedAssetData);
@@ -931,10 +935,10 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
             const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
 
@@ -942,10 +946,10 @@ describe('Exchange core', () => {
 
             const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
             const finalOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(
@@ -976,7 +980,7 @@ describe('Exchange core', () => {
             ];
             const makerAssetData = assetDataUtils.encodeMultiAssetData(makerAmounts, makerNestedAssetData);
             const makerAssetAmount = new BigNumber(30);
-            const takerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
             const takerAssetAmount = new BigNumber(10);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -989,10 +993,10 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
 
             const takerAssetFillAmount = takerAssetAmount.dividedToIntegerBy(2);
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
@@ -1001,10 +1005,10 @@ describe('Exchange core', () => {
 
             const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(
                 initialMakerBalanceA.minus(
@@ -1053,7 +1057,7 @@ describe('Exchange core', () => {
             ];
             const takerAssetData = assetDataUtils.encodeMultiAssetData(takerAmounts, takerNestedAssetData);
             const takerAssetAmount = new BigNumber(30);
-            const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+            const makerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
             const makerAssetAmount = new BigNumber(10);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -1066,10 +1070,10 @@ describe('Exchange core', () => {
 
             const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
 
             const takerAssetFillAmount = takerAssetAmount.dividedToIntegerBy(2);
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
@@ -1078,10 +1082,10 @@ describe('Exchange core', () => {
 
             const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
             const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await feeToken.balanceOf.callAsync(makerAddress);
             const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
             const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await feeToken.balanceOf.callAsync(takerAddress);
 
             expect(finalMakerBalanceA).to.be.bignumber.equal(
                 initialMakerBalanceA.plus(
