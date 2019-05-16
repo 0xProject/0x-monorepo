@@ -33,6 +33,10 @@
             {
                 "note": "Remove LibZeroExTransaction contract",
                 "pr": 1753
+            },
+            {
+                "note": "Update tests for arbitrary fee tokens (ZEIP-28).",
+                "pr": "TODO"
             }
         ],
         "timestamp": 1554997931
