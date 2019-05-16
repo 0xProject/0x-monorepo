@@ -32,14 +32,22 @@ export interface FillEventArgs {
 }
 
 export interface MatchTransferAmounts {
-    leftMakerAssetReceivedByRightMakerAmount: BigNumber;
-    rightMakerAssetReceivedByLeftMakerAmount: BigNumber;
-    leftMakerFeeAssetPaidByLeftMakerAmount: BigNumber;
-    rightMakerFeeAssetPaidByRightMakerAmount: BigNumber;
-    leftMakerAssetReceivedByTakerAmount: BigNumber;
-    rightMakerAssetReceivedByTakerAmount: BigNumber;
-    leftTakerFeeAssetPaidByTakerAmount: BigNumber;
-    rightTakerFeeAssetPaidByTakerAmount: BigNumber;
+    // Assets being traded.
+    leftMakerAssetSoldByLeftMakerAmount: BigNumber; // leftMakerAssetBoughtByRightMakerAmount if omitted.
+    rightMakerAssetSoldByRightMakerAmount: BigNumber; // rightMakerAssetBoughtByLeftMakerAmount if omitted.
+    rightMakerAssetBoughtByLeftMakerAmount: BigNumber; // rightMakerAssetSoldByRightMakerAmount if omitted.
+    leftMakerAssetBoughtByRightMakerAmount: BigNumber; // leftMakerAssetSoldByLeftMakerAmount if omitted.
+
+    // Taker profit.
+    leftMakerAssetReceivedByTakerAmount: BigNumber; // 0 if omitted.
+    rightMakerAssetReceivedByTakerAmount: BigNumber; // 0 if omitted.
+
+    // Maker fees.
+    leftMakerFeeAssetPaidByLeftMakerAmount: BigNumber; // 0 if omitted.
+    rightMakerFeeAssetPaidByRightMakerAmount: BigNumber; // 0 if omitted.
+    // Taker fees.
+    leftTakerFeeAssetPaidByTakerAmount: BigNumber; // 0 if omitted.
+    rightTakerFeeAssetPaidByTakerAmount: BigNumber; // 0 if omitted.
 }
 
 export interface MatchResults {
@@ -64,6 +72,7 @@ export class MatchOrderTester {
     public erc20Wrapper: ERC20Wrapper;
     public erc721Wrapper: ERC721Wrapper;
     public matchOrdersCallAsync?: MatchOrdersAsyncCall;
+    private readonly _initialTokenBalancesPromise: Promise<TokenBalancesByOwner>;
 
     /**
      * @dev Constructs new MatchOrderTester.
@@ -83,6 +92,7 @@ export class MatchOrderTester {
         this.erc20Wrapper = erc20Wrapper;
         this.erc721Wrapper = erc721Wrapper;
         this.matchOrdersCallAsync = matchOrdersCallAsync;
+        this._initialTokenBalancesPromise = this.getBalancesAsync();
     }
 
     /**
@@ -90,16 +100,20 @@ export class MatchOrderTester {
      * @param orders The matched orders and filled states.
      * @param takerAddress Address of taker (the address who matched the two orders)
      * @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
+     *                                Omitted fields are either set to 0 or their complementary
+     *                                field.
      * @return Results of `matchOrders()`.
      */
     public async matchOrdersAndAssertEffectsAsync(
         orders: MatchedOrders,
         takerAddress: string,
         expectedTransferAmounts: Partial<MatchTransferAmounts>,
+        initialTokenBalances?: TokenBalancesByOwner,
     ): Promise<MatchResults> {
         await assertInitialOrderStatesAsync(orders, this.exchangeWrapper);
         // Get the token balances before executing `matchOrders()`.
-        const initialTokenBalances = await this._getBalancesAsync();
+        const _initialTokenBalances = initialTokenBalances ?
+            initialTokenBalances : await this._initialTokenBalancesPromise;
         // Execute `matchOrders()`
         const transactionReceipt = await this._executeMatchOrdersAsync(
             orders.leftOrder,
@@ -110,14 +124,14 @@ export class MatchOrderTester {
         const matchResults = simulateMatchOrders(
             orders,
             takerAddress,
-            initialTokenBalances,
+            _initialTokenBalances,
             toFullMatchTransferAmounts(expectedTransferAmounts),
         );
         // Validate the simulation against realit.
         await assertMatchResultsAsync(
             matchResults,
             transactionReceipt,
-            await this._getBalancesAsync(),
+            await this.getBalancesAsync(),
             this.exchangeWrapper,
         );
         return matchResults;
@@ -126,15 +140,8 @@ export class MatchOrderTester {
     /**
      * @dev Fetch the current token balances of all known accounts.
      */
-    private async _getBalancesAsync(): Promise<TokenBalancesByOwner> {
-        const [ erc20, erc721 ] = await Promise.all([
-            this.erc20Wrapper.getBalancesAsync(),
-            this.erc721Wrapper.getBalancesAsync(),
-        ]);
-        return {
-            erc20,
-            erc721,
-        };
+    public async getBalancesAsync(): Promise<TokenBalancesByOwner> {
+        return getTokenBalancesAsync(this.erc20Wrapper, this.erc721Wrapper);
     }
 
     private async _executeMatchOrdersAsync(
@@ -161,15 +168,36 @@ export class MatchOrderTester {
 function toFullMatchTransferAmounts(
     partial: Partial<MatchTransferAmounts>,
 ): MatchTransferAmounts {
+    // prettier-ignore
     return {
-        leftMakerAssetReceivedByRightMakerAmount: partial.leftMakerAssetReceivedByRightMakerAmount || ZERO,
-        rightMakerAssetReceivedByLeftMakerAmount: partial.rightMakerAssetReceivedByLeftMakerAmount || ZERO,
-        leftMakerFeeAssetPaidByLeftMakerAmount: partial.leftMakerFeeAssetPaidByLeftMakerAmount || ZERO,
-        rightMakerFeeAssetPaidByRightMakerAmount: partial.rightMakerFeeAssetPaidByRightMakerAmount || ZERO,
-        leftMakerAssetReceivedByTakerAmount: partial.leftMakerAssetReceivedByTakerAmount || ZERO,
-        rightMakerAssetReceivedByTakerAmount: partial.rightMakerAssetReceivedByTakerAmount || ZERO,
-        leftTakerFeeAssetPaidByTakerAmount: partial.leftTakerFeeAssetPaidByTakerAmount || ZERO,
-        rightTakerFeeAssetPaidByTakerAmount: partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
+        leftMakerAssetSoldByLeftMakerAmount:
+            partial.leftMakerAssetSoldByLeftMakerAmount ||
+            partial.leftMakerAssetBoughtByRightMakerAmount ||
+            ZERO,
+        rightMakerAssetSoldByRightMakerAmount:
+            partial.rightMakerAssetSoldByRightMakerAmount ||
+            partial.rightMakerAssetBoughtByLeftMakerAmount ||
+            ZERO,
+        rightMakerAssetBoughtByLeftMakerAmount:
+            partial.rightMakerAssetBoughtByLeftMakerAmount ||
+            partial.rightMakerAssetSoldByRightMakerAmount ||
+            ZERO,
+        leftMakerAssetBoughtByRightMakerAmount:
+            partial.leftMakerAssetBoughtByRightMakerAmount ||
+            partial.leftMakerAssetSoldByLeftMakerAmount ||
+            ZERO,
+        leftMakerFeeAssetPaidByLeftMakerAmount:
+            partial.leftMakerFeeAssetPaidByLeftMakerAmount || ZERO,
+        rightMakerFeeAssetPaidByRightMakerAmount:
+            partial.rightMakerFeeAssetPaidByRightMakerAmount || ZERO,
+        leftMakerAssetReceivedByTakerAmount:
+            partial.leftMakerAssetReceivedByTakerAmount || ZERO,
+        rightMakerAssetReceivedByTakerAmount:
+            partial.rightMakerAssetReceivedByTakerAmount || ZERO,
+        leftTakerFeeAssetPaidByTakerAmount:
+            partial.leftTakerFeeAssetPaidByTakerAmount || ZERO,
+        rightTakerFeeAssetPaidByTakerAmount:
+            partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
     };
  }
 
@@ -188,17 +216,18 @@ function simulateMatchOrders(
     tokenBalances: TokenBalancesByOwner,
     transferAmounts: MatchTransferAmounts,
 ): MatchResults {
+    // prettier-ignore
     const matchResults = {
         orders: {
             leftOrder: orders.leftOrder,
             leftOrderTakerAssetFilledAmount:
                 (orders.leftOrderTakerAssetFilledAmount || ZERO).plus(
-                    transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+                    transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
                 ),
             rightOrder: orders.rightOrder,
             rightOrderTakerAssetFilledAmount:
                 (orders.rightOrderTakerAssetFilledAmount || ZERO).plus(
-                    transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+                    transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
                 ),
         },
         fills: simulateFillEvents(orders, takerAddress, transferAmounts),
@@ -208,7 +237,7 @@ function simulateMatchOrders(
     transferAsset(
         orders.leftOrder.makerAddress,
         orders.rightOrder.makerAddress,
-        transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+        transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
         orders.leftOrder.makerAssetData,
         matchResults,
     );
@@ -216,7 +245,7 @@ function simulateMatchOrders(
     transferAsset(
         orders.rightOrder.makerAddress,
         orders.leftOrder.makerAddress,
-        transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+        transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
         orders.rightOrder.makerAssetData,
         matchResults,
     );
@@ -364,13 +393,14 @@ function assertFillEvents(
     // Validate event arguments.
     const fillPairs = _.zip(expectedFills, actualFills) as Array<[FillEventArgs, FillEventArgs]>;
     for (const [expected, actual] of fillPairs) {
-        expect(actual.orderHash, 'Fill event: orderHash').to.equal(expected.orderHash);
-        expect(actual.makerAddress, 'Fill event: makerAddress').to.equal(expected.makerAddress);
-        expect(actual.takerAddress, 'Fill event: takerAddress').to.equal(expected.takerAddress);
-        expect(actual.makerAssetFilledAmount, 'Fill event: makerAssetFilledAmount').to.equal(expected.makerAssetFilledAmount);
-        expect(actual.takerAssetFilledAmount, 'Fill event: takerAssetFilledAmount').to.equal(expected.takerAssetFilledAmount);
-        expect(actual.makerFeePaid, 'Fill event: makerFeePaid').to.equal(expected.makerFeePaid);
-        expect(actual.takerFeePaid, 'Fill event: takerFeePaid').to.equal(expected.takerFeePaid);
+        const side = expected === expectedFills[0] ? 'Left' : 'Right';
+        expect(actual.orderHash, `${side} order Fill event orderHash`).to.equal(expected.orderHash);
+        expect(actual.makerAddress, `${side} order Fill event makerAddress`).to.equal(expected.makerAddress);
+        expect(actual.takerAddress, `${side} order Fill event takerAddress`).to.equal(expected.takerAddress);
+        expect(actual.makerAssetFilledAmount, `${side} order Fill event makerAssetFilledAmount`).to.bignumber.equal(expected.makerAssetFilledAmount);
+        expect(actual.takerAssetFilledAmount, `${side} order Fill event takerAssetFilledAmount`).to.bignumber.equal(expected.takerAssetFilledAmount);
+        expect(actual.makerFeePaid, `${side} order Fill event makerFeePaid`).to.bignumber.equal(expected.makerFeePaid);
+        expect(actual.takerFeePaid, `${side} order Fill event takerFeePaid`).to.bignumber.equal(expected.takerFeePaid);
     }
 }
 
@@ -382,14 +412,15 @@ function simulateFillEvents(
     takerAddress: string,
     transferAmounts: MatchTransferAmounts,
 ): [FillEventArgs, FillEventArgs] {
+    // prettier-ignore
     return [
         // Left order Fill
         {
             orderHash: orderHashUtils.getOrderHashHex(orders.leftOrder),
             makerAddress: orders.leftOrder.makerAddress,
             takerAddress,
-            makerAssetFilledAmount: transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
-            takerAssetFilledAmount: transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+            makerAssetFilledAmount: transferAmounts.leftMakerAssetSoldByLeftMakerAmount,
+            takerAssetFilledAmount: transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
             makerFeePaid: transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
             takerFeePaid: transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
         },
@@ -398,8 +429,8 @@ function simulateFillEvents(
             orderHash: orderHashUtils.getOrderHashHex(orders.rightOrder),
             makerAddress: orders.rightOrder.makerAddress,
             takerAddress,
-            makerAssetFilledAmount: transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
-            takerAssetFilledAmount: transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+            makerAssetFilledAmount: transferAmounts.rightMakerAssetSoldByRightMakerAmount,
+            takerAssetFilledAmount: transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
             makerFeePaid: transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
             takerFeePaid: transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
         },
@@ -505,20 +536,35 @@ async function assertPostExchangeStateAsync(
     ] as Array<[SignedOrder, BigNumber]>;
     await Promise.all(pairs.map(async ([ order, expectedFilledAmount ]) => {
         const side = order === matchResults.orders.leftOrder ? 'left' : 'right';
-        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const orderInfo = await exchangeWrapper.getOrderInfoAsync(order);
         // Check filled amount of order.
-        const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHash,
-        );
+        const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
         expect(actualFilledAmount, `${side} order final filled amount`)
             .to.be.bignumber.equal(expectedFilledAmount);
         // Check status of order.
         const expectedStatus =
             expectedFilledAmount.isGreaterThanOrEqualTo(order.takerAssetAmount) ?
             OrderStatus.FullyFilled : OrderStatus.Fillable;
-        const actualStatus = (await exchangeWrapper.getOrderInfoAsync(order)).orderStatus;
+        const actualStatus = orderInfo.orderStatus;
         expect(actualStatus, `${side} order final status`).to.equal(expectedStatus);
     }));
+}
+
+/**
+ * @dev Retrive the current token balances of all known addresses.
+ */
+export async function getTokenBalancesAsync(
+    erc20Wrapper: ERC20Wrapper,
+    erc721Wrapper: ERC721Wrapper,
+): Promise<TokenBalancesByOwner> {
+    const [ erc20, erc721 ] = await Promise.all([
+        erc20Wrapper.getBalancesAsync(),
+        erc721Wrapper.getBalancesAsync(),
+    ]);
+    return {
+        erc20,
+        erc721,
+    };
 }
 
 // tslint:disable-line:max-file-line-count
