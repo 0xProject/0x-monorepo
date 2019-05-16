@@ -342,22 +342,22 @@ contract MixinMatchOrders is
                         matchedFillResults.right.takerFeePaid
                         )
                     );
+                return;
             }
-        } else {
-            _dispatchTransferFrom(
-                leftOrderHash,
-                leftTakerFeeAssetData,
-                takerAddress,
-                leftFeeRecipientAddress,
-                matchedFillResults.left.takerFeePaid
-            );
-            _dispatchTransferFrom(
-                rightOrderHash,
-                rightTakerFeeAssetData,
-                takerAddress,
-                rightFeeRecipientAddress,
-                matchedFillResults.right.takerFeePaid
-            );
         }
+        _dispatchTransferFrom(
+            leftOrderHash,
+            leftTakerFeeAssetData,
+            takerAddress,
+            leftFeeRecipientAddress,
+            matchedFillResults.left.takerFeePaid
+        );
+        _dispatchTransferFrom(
+            rightOrderHash,
+            rightTakerFeeAssetData,
+            takerAddress,
+            rightFeeRecipientAddress,
+            matchedFillResults.right.takerFeePaid
+        );
     }
 }
