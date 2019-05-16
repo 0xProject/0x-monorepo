@@ -1,14 +1,7 @@
 import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import {
-    chaiSetup,
-    constants,
-    OrderFactory,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, OrderFactory, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { OrderStatus, RevertReason } from '@0x/types';
@@ -78,14 +71,14 @@ describe('matchOrders', () => {
         chainId = await providerUtils.getChainIdAsync(provider);
         // Create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = [
+        const usedAddresses = ([
             owner,
             makerAddressLeft,
             makerAddressRight,
             takerAddress,
             feeRecipientAddressLeft,
             feeRecipientAddressRight,
-        ] = accounts;
+        ] = accounts);
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
@@ -226,12 +219,18 @@ describe('matchOrders', () => {
             const expectedTransferAmounts = {
                 // Left Maker
                 leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('76.4705882352941176'),
+                    16,
+                ), // 76.47%
                 // Right Maker
                 rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
                 rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('76.5306122448979591'),
+                    16,
+                ), // 76.53%
                 rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -289,11 +288,17 @@ describe('matchOrders', () => {
                 // Right Maker
                 leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
                 rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.78%
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('92.7835051546391752'),
+                    16,
+                ), // 92.78%
                 // Taker
                 leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
                 leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('92.8571428571428571'),
+                    16,
+                ), // 92.85%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 {
@@ -335,11 +340,17 @@ describe('matchOrders', () => {
                 // Right Maker
                 rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
                 leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('26.5060240963855421'),
+                    16,
+                ), // 26.506%
                 // Taker
                 leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
                 leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('26.5306122448979591'),
+                    16,
+                ), // 26.531%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -375,14 +386,20 @@ describe('matchOrders', () => {
             const expectedTransferAmounts = {
                 // Left Maker
                 leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(11), 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('91.6666666666666666'),
+                    16,
+                ), // 91.6%
                 // Right Maker
                 rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
                 leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
                 rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
                 leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('91.7525773195876288'),
+                    16,
+                ), // 91.75%
                 rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
@@ -525,11 +542,17 @@ describe('matchOrders', () => {
                 //    The right maker always receives the better exchange and fee price.
                 rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
                 leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(503), 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('47.2718720602069614'),
+                    16,
+                ), // 47.27%
                 // Taker
                 leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(497), 0),
                 leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('47.3189087488240827'),
+                    16,
+                ), // 47.31%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(

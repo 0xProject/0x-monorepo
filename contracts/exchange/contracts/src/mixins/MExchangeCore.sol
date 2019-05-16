@@ -29,7 +29,7 @@ contract MExchangeCore is
 {
     // Fill event signature.
     // keccak("Fill(address,address,address,address,uint256,uint256,uint256,uint256,bytes32,bytes,bytes,bytes,bytes)")
-    bytes32 constant FILL_EVENT_SIGNATURE = 0xcb32b586b1d019abfd3dfc2d45e7275f145185e9d53359e9b99521ca88cea0e8;
+    bytes32 internal constant FILL_EVENT_SIGNATURE = 0xcb32b586b1d019abfd3dfc2d45e7275f145185e9d53359e9b99521ca88cea0e8;
 
     // Fill event is emitted whenever an order is filled.
     event Fill(

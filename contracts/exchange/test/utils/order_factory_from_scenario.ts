@@ -219,45 +219,26 @@ export class OrderFactoryFromScenario {
             erc20ZeroDecimalTokenAddress: string,
             erc721AssetId: BigNumber,
         ): [BigNumber, string] => {
-            const feeAmount = getFeeAmountFromScenario(
-                orderScenario,
-                feeAssetDataScenario,
-                feeAmountScenario,
-            );
+            const feeAmount = getFeeAmountFromScenario(orderScenario, feeAssetDataScenario, feeAmountScenario);
             switch (feeAssetDataScenario) {
                 case FeeAssetDataScenario.MakerToken:
-                    return [ feeAmount, makerAssetData ];
+                    return [feeAmount, makerAssetData];
                 case FeeAssetDataScenario.TakerToken:
-                    return [ feeAmount, takerAssetData ];
+                    return [feeAmount, takerAssetData];
                 case FeeAssetDataScenario.ERC20EighteenDecimals:
-                    return [
-                        feeAmount,
-                        assetDataUtils.encodeERC20AssetData(erc20EighteenDecimalTokenAddress),
-                    ];
+                    return [feeAmount, assetDataUtils.encodeERC20AssetData(erc20EighteenDecimalTokenAddress)];
                 case FeeAssetDataScenario.ERC20FiveDecimals:
-                    return [
-                        feeAmount,
-                        assetDataUtils.encodeERC20AssetData(erc20FiveDecimalTokenAddress),
-                    ];
+                    return [feeAmount, assetDataUtils.encodeERC20AssetData(erc20FiveDecimalTokenAddress)];
                 case FeeAssetDataScenario.ERC20ZeroDecimals:
-                    return [
-                        feeAmount,
-                        assetDataUtils.encodeERC20AssetData(erc20ZeroDecimalTokenAddress),
-                    ];
+                    return [feeAmount, assetDataUtils.encodeERC20AssetData(erc20ZeroDecimalTokenAddress)];
                 case FeeAssetDataScenario.ERC721:
-                    return [
-                        feeAmount,
-                        assetDataUtils.encodeERC721AssetData(
-                            this._erc721Token.address,
-                            erc721AssetId,
-                        ),
-                    ];
+                    return [feeAmount, assetDataUtils.encodeERC721AssetData(this._erc721Token.address, erc721AssetId)];
                 default:
                     throw errorUtils.spawnSwitchErr('FeeAssetDataScenario', feeAssetDataScenario);
             }
-        }
+        };
 
-        [ makerFee, makerFeeAssetData ] = feeFromScenario(
+        [makerFee, makerFeeAssetData] = feeFromScenario(
             orderScenario.makerFeeScenario,
             orderScenario.makerFeeAssetDataScenario,
             this._erc20EighteenDecimalTokenAddresses[2],
@@ -265,7 +246,7 @@ export class OrderFactoryFromScenario {
             this._erc20ZeroDecimalTokenAddresses[2],
             erc721MakerAssetIds[1],
         );
-        [ takerFee, takerFeeAssetData ] = feeFromScenario(
+        [takerFee, takerFeeAssetData] = feeFromScenario(
             orderScenario.takerFeeScenario,
             orderScenario.takerFeeAssetDataScenario,
             this._erc20EighteenDecimalTokenAddresses[3],
@@ -379,17 +360,9 @@ function getFeeAmountFromScenario(
                     throw errorUtils.spawnSwitchErr('OrderAssetAmountScenario', feeAmountScenario);
             }
         case FeeAssetDataScenario.MakerToken:
-            return getFeeAmountFromScenario(
-                orderScenario,
-                orderScenario.makerAssetDataScenario,
-                feeAmountScenario
-            );
+            return getFeeAmountFromScenario(orderScenario, orderScenario.makerAssetDataScenario, feeAmountScenario);
         case FeeAssetDataScenario.TakerToken:
-            return getFeeAmountFromScenario(
-                orderScenario,
-                orderScenario.takerAssetDataScenario,
-                feeAmountScenario
-            );
+            return getFeeAmountFromScenario(orderScenario, orderScenario.takerAssetDataScenario, feeAmountScenario);
         default:
             throw errorUtils.spawnSwitchErr('FeeAssetDataScenario', feeAssetDataScenario);
     }
