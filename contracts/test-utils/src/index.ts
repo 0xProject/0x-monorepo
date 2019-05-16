@@ -52,8 +52,7 @@ export {
     TakerAssetFillAmountScenario,
     TakerScenario,
     Token,
+    TokenBalancesByOwner,
     TraderStateScenario,
-    TransferAmountsByMatchOrders,
-    TransferAmountsLoggedByMatchOrders,
     TransactionDataParams,
 } from './types';
