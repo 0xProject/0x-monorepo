@@ -73,6 +73,7 @@ contract MixinWrapperFunctions is
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            // solhint-disable-next-line max-line-length
             // bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)"))
             // = 0x9b44d556
             0x9b44d556,
