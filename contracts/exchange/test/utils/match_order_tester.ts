@@ -1,563 +1,499 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import {
     chaiSetup,
-    ERC20BalancesByOwner,
-    ERC721TokenIdsByOwner,
-    OrderInfo,
     OrderStatus,
-    TransferAmountsByMatchOrders as TransferAmounts,
-    TransferAmountsLoggedByMatchOrders as LoggedTransferAmounts,
+    TokenBalancesByOwner,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
+import {
+    LogWithDecodedArgs,
+    TransactionReceiptWithDecodedLogs,
+} from 'ethereum-types';
 import * as _ from 'lodash';
-
-import { TransactionReceiptWithDecodedLogs } from '../../../../node_modules/ethereum-types';
 
 import { ExchangeWrapper } from './exchange_wrapper';
 
+const ZERO = new BigNumber(0);
+
 chaiSetup.configure();
 const expect = chai.expect;
+
+export interface FillEventArgs {
+    orderHash: string;
+    makerAddress: string;
+    takerAddress: string;
+    makerAssetFilledAmount: BigNumber;
+    takerAssetFilledAmount: BigNumber;
+    makerFeePaid: BigNumber;
+    takerFeePaid: BigNumber;
+}
+
+export interface MatchTransferAmounts {
+    leftMakerAssetReceivedByRightMakerAmount: BigNumber;
+    rightMakerAssetReceivedByLeftMakerAmount: BigNumber;
+    leftMakerFeeAssetPaidByLeftMakerAmount: BigNumber;
+    rightMakerFeeAssetPaidByRightMakerAmount: BigNumber;
+    leftMakerAssetReceivedByTakerAmount: BigNumber;
+    rightMakerAssetReceivedByTakerAmount: BigNumber;
+    leftTakerFeeAssetPaidByTakerAmount: BigNumber;
+    rightTakerFeeAssetPaidByTakerAmount: BigNumber;
+}
+
+export interface MatchResults {
+    orders: MatchedOrders;
+    fills: FillEventArgs[];
+    balances: TokenBalancesByOwner;
+}
+
+export interface MatchedOrders {
+    leftOrder: SignedOrder;
+    rightOrder: SignedOrder;
+    leftOrderTakerAssetFilledAmount?: BigNumber;
+    rightOrderTakerAssetFilledAmount?: BigNumber;
+}
 
 export class MatchOrderTester {
     private readonly _exchangeWrapper: ExchangeWrapper;
     private readonly _erc20Wrapper: ERC20Wrapper;
     private readonly _erc721Wrapper: ERC721Wrapper;
-    private readonly _feeTokenAddress: string;
-    /// @dev Checks values from the logs produced by Exchange.matchOrders against the expected transfer amounts.
-    ///      Values include the amounts transferred from the left/right makers and taker, along with
-    ///      the fees paid on each matched order. These are also the return values of MatchOrders.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param transactionReceipt Transaction receipt and logs produced by Exchange.matchOrders.
-    /// @param takerAddress Address of taker (account that called Exchange.matchOrders)
-    /// @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
-    private static async _assertLogsAsync(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        transactionReceipt: TransactionReceiptWithDecodedLogs,
-        takerAddress: string,
-        expectedTransferAmounts: TransferAmounts,
-    ): Promise<void> {
-        // Should have two fill event logs -- one for each order.
-        const transactionFillLogs = _.filter(transactionReceipt.logs, ['event', 'Fill']);
-        expect(transactionFillLogs.length, 'Checking number of logs').to.be.equal(2);
-        // First log is for left fill
-        const leftLog = (transactionFillLogs[0] as any).args as LoggedTransferAmounts;
-        expect(leftLog.makerAddress, 'Checking logged maker address of left order').to.be.equal(
-            signedOrderLeft.makerAddress,
-        );
-        expect(leftLog.takerAddress, 'Checking logged taker address of right order').to.be.equal(takerAddress);
-        const amountBoughtByLeftMaker = new BigNumber(leftLog.takerAssetFilledAmount);
-        const amountSoldByLeftMaker = new BigNumber(leftLog.makerAssetFilledAmount);
-        const feePaidByLeftMaker = new BigNumber(leftLog.makerFeePaid);
-        const feePaidByTakerLeft = new BigNumber(leftLog.takerFeePaid);
-        // Second log is for right fill
-        const rightLog = (transactionFillLogs[1] as any).args as LoggedTransferAmounts;
-        expect(rightLog.makerAddress, 'Checking logged maker address of right order').to.be.equal(
-            signedOrderRight.makerAddress,
-        );
-        expect(rightLog.takerAddress, 'Checking loggerd taker address of right order').to.be.equal(takerAddress);
-        const amountBoughtByRightMaker = new BigNumber(rightLog.takerAssetFilledAmount);
-        const amountSoldByRightMaker = new BigNumber(rightLog.makerAssetFilledAmount);
-        const feePaidByRightMaker = new BigNumber(rightLog.makerFeePaid);
-        const feePaidByTakerRight = new BigNumber(rightLog.takerFeePaid);
-        // Derive amount received by taker
-        const amountReceivedByTaker = amountSoldByLeftMaker.minus(amountBoughtByRightMaker);
-        // Assert log values - left order
-        expect(amountBoughtByLeftMaker, 'Checking logged amount bought by left maker').to.be.bignumber.equal(
-            expectedTransferAmounts.amountBoughtByLeftMaker,
-        );
-        expect(amountSoldByLeftMaker, 'Checking logged amount sold by left maker').to.be.bignumber.equal(
-            expectedTransferAmounts.amountSoldByLeftMaker,
-        );
-        expect(feePaidByLeftMaker, 'Checking logged fee paid by left maker').to.be.bignumber.equal(
-            expectedTransferAmounts.feePaidByLeftMaker,
-        );
-        expect(feePaidByTakerLeft, 'Checking logged fee paid on left order by taker').to.be.bignumber.equal(
-            expectedTransferAmounts.feePaidByTakerLeft,
-        );
-        // Assert log values - right order
-        expect(amountBoughtByRightMaker, 'Checking logged amount bought by right maker').to.be.bignumber.equal(
-            expectedTransferAmounts.amountBoughtByRightMaker,
-        );
-        expect(amountSoldByRightMaker, 'Checking logged amount sold by right maker').to.be.bignumber.equal(
-            expectedTransferAmounts.amountSoldByRightMaker,
-        );
-        expect(feePaidByRightMaker, 'Checking logged fee paid by right maker').to.be.bignumber.equal(
-            expectedTransferAmounts.feePaidByRightMaker,
-        );
-        expect(feePaidByTakerRight, 'Checking logged fee paid on right order by taker').to.be.bignumber.equal(
-            expectedTransferAmounts.feePaidByTakerRight,
-        );
-        // Assert derived amount received by taker
-        expect(amountReceivedByTaker, 'Checking logged amount received by taker').to.be.bignumber.equal(
-            expectedTransferAmounts.amountReceivedByTaker,
-        );
-    }
-    /// @dev Asserts all expected ERC20 and ERC721 account holdings match the real holdings.
-    /// @param expectedERC20BalancesByOwner Expected ERC20 balances.
-    /// @param realERC20BalancesByOwner Real ERC20 balances.
-    /// @param expectedERC721TokenIdsByOwner Expected ERC721 token owners.
-    /// @param realERC721TokenIdsByOwner Real ERC20 token owners.
-    private static async _assertAllKnownBalancesAsync(
-        expectedERC20BalancesByOwner: ERC20BalancesByOwner,
-        realERC20BalancesByOwner: ERC20BalancesByOwner,
-        expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        realERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-    ): Promise<void> {
-        // ERC20 Balances
-        const areERC20BalancesEqual = _.isEqual(expectedERC20BalancesByOwner, realERC20BalancesByOwner);
-        expect(areERC20BalancesEqual, 'Checking all known ERC20 account balances').to.be.true();
-        // ERC721 Token Ids
-        const sortedExpectedNewERC721TokenIdsByOwner = _.mapValues(expectedERC721TokenIdsByOwner, tokenIdsByOwner => {
-            _.mapValues(tokenIdsByOwner, tokenIds => {
-                _.sortBy(tokenIds);
-            });
-        });
-        const sortedNewERC721TokenIdsByOwner = _.mapValues(realERC721TokenIdsByOwner, tokenIdsByOwner => {
-            _.mapValues(tokenIdsByOwner, tokenIds => {
-                _.sortBy(tokenIds);
-            });
-        });
-        const areERC721TokenIdsEqual = _.isEqual(
-            sortedExpectedNewERC721TokenIdsByOwner,
-            sortedNewERC721TokenIdsByOwner,
-        );
-        expect(areERC721TokenIdsEqual, 'Checking all known ERC721 account balances').to.be.true();
-    }
-    /// @dev Constructs new MatchOrderTester.
-    /// @param exchangeWrapper Used to call to the Exchange.
-    /// @param erc20Wrapper Used to fetch ERC20 balances.
-    /// @param erc721Wrapper Used to fetch ERC721 token owners.
-    /// @param feeTokenAddress Address of ERC20 fee token.
+
+    /**
+     * @dev Constructs new MatchOrderTester.
+     * @param exchangeWrapper Used to call to the Exchange.
+     * @param erc20Wrapper Used to fetch ERC20 balances.
+     * @param erc721Wrapper Used to fetch ERC721 token owners.
+     */
     constructor(
         exchangeWrapper: ExchangeWrapper,
         erc20Wrapper: ERC20Wrapper,
         erc721Wrapper: ERC721Wrapper,
-        feeTokenAddress: string,
     ) {
         this._exchangeWrapper = exchangeWrapper;
         this._erc20Wrapper = erc20Wrapper;
         this._erc721Wrapper = erc721Wrapper;
-        this._feeTokenAddress = feeTokenAddress;
     }
-    /// @dev Matches two complementary orders and asserts results.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param takerAddress Address of taker (the address who matched the two orders)
-    /// @param erc20BalancesByOwner Current ERC20 balances.
-    /// @param erc721TokenIdsByOwner Current ERC721 token owners.
-    /// @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
-    /// @param initialLeftOrderFilledAmount How much left order has been filled, prior to matching orders.
-    /// @param initialRightOrderFilledAmount How much the right order has been filled, prior to matching orders.
-    /// @return New ERC20 balances & ERC721 token owners.
-    public async matchOrdersAndAssertEffectsAsync(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        takerAddress: string,
-        erc20BalancesByOwner: ERC20BalancesByOwner,
-        erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        expectedTransferAmounts: TransferAmounts,
-        initialLeftOrderFilledAmount: BigNumber = new BigNumber(0),
-        initialRightOrderFilledAmount: BigNumber = new BigNumber(0),
-    ): Promise<[ERC20BalancesByOwner, ERC721TokenIdsByOwner]> {
-        // Assert initial order states
-        await this._assertInitialOrderStatesAsync(
-            signedOrderLeft,
-            signedOrderRight,
-            initialLeftOrderFilledAmount,
-            initialRightOrderFilledAmount,
-        );
-        // Match left & right orders
-        const transactionReceipt = await this._exchangeWrapper.matchOrdersAsync(
-            signedOrderLeft,
-            signedOrderRight,
-            takerAddress,
-        );
-        const newERC20BalancesByOwner = await this._erc20Wrapper.getBalancesAsync();
-        const newERC721TokenIdsByOwner = await this._erc721Wrapper.getBalancesAsync();
-        // Assert logs
-        await MatchOrderTester._assertLogsAsync(
-            signedOrderLeft,
-            signedOrderRight,
-            transactionReceipt,
-            takerAddress,
-            expectedTransferAmounts,
-        );
-        // Assert exchange state
-        await this._assertExchangeStateAsync(
-            signedOrderLeft,
-            signedOrderRight,
-            initialLeftOrderFilledAmount,
-            initialRightOrderFilledAmount,
-            expectedTransferAmounts,
-        );
-        // Assert balances of makers, taker, and fee recipients
-        await this._assertBalancesAsync(
-            signedOrderLeft,
-            signedOrderRight,
-            erc20BalancesByOwner,
-            erc721TokenIdsByOwner,
-            newERC20BalancesByOwner,
-            newERC721TokenIdsByOwner,
-            expectedTransferAmounts,
-            takerAddress,
-        );
-        return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
-    }
-    /// @dev Asserts initial exchange state for the left and right orders.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param expectedOrderFilledAmountLeft How much left order has been filled, prior to matching orders.
-    /// @param expectedOrderFilledAmountRight How much the right order has been filled, prior to matching orders.
-    private async _assertInitialOrderStatesAsync(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        expectedOrderFilledAmountLeft: BigNumber,
-        expectedOrderFilledAmountRight: BigNumber,
-    ): Promise<void> {
-        // Assert left order initial state
-        const orderTakerAssetFilledAmountLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrderLeft),
-        );
-        expect(orderTakerAssetFilledAmountLeft, 'Checking inital state of left order').to.be.bignumber.equal(
-            expectedOrderFilledAmountLeft,
-        );
-        // Assert right order initial state
-        const orderTakerAssetFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrderRight),
-        );
-        expect(orderTakerAssetFilledAmountRight, 'Checking inital state of right order').to.be.bignumber.equal(
-            expectedOrderFilledAmountRight,
-        );
-    }
-    /// @dev Asserts the exchange state against the expected amounts transferred by from matching orders.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param initialLeftOrderFilledAmount How much left order has been filled, prior to matching orders.
-    /// @param initialRightOrderFilledAmount How much the right order has been filled, prior to matching orders.
-    /// @return TransferAmounts A struct containing the expected transfer amounts.
-    private async _assertExchangeStateAsync(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        initialLeftOrderFilledAmount: BigNumber,
-        initialRightOrderFilledAmount: BigNumber,
-        expectedTransferAmounts: TransferAmounts,
-    ): Promise<void> {
-        // Assert state for left order: amount bought by left maker
-        let amountBoughtByLeftMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrderLeft),
-        );
-        amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(initialLeftOrderFilledAmount);
-        expect(amountBoughtByLeftMaker, 'Checking exchange state for left order').to.be.bignumber.equal(
-            expectedTransferAmounts.amountBoughtByLeftMaker,
-        );
-        // Assert state for right order: amount bought by right maker
-        let amountBoughtByRightMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrderRight),
-        );
-        amountBoughtByRightMaker = amountBoughtByRightMaker.minus(initialRightOrderFilledAmount);
-        expect(amountBoughtByRightMaker, 'Checking exchange state for right order').to.be.bignumber.equal(
-            expectedTransferAmounts.amountBoughtByRightMaker,
-        );
-        // Assert left order status
-        const maxAmountBoughtByLeftMaker = signedOrderLeft.takerAssetAmount.minus(initialLeftOrderFilledAmount);
-        const leftOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-        const leftExpectedStatus = expectedTransferAmounts.amountBoughtByLeftMaker.isEqualTo(maxAmountBoughtByLeftMaker)
-            ? OrderStatus.FullyFilled
-            : OrderStatus.Fillable;
-        expect(leftOrderInfo.orderStatus, 'Checking exchange status for left order').to.be.equal(leftExpectedStatus);
-        // Assert right order status
-        const maxAmountBoughtByRightMaker = signedOrderRight.takerAssetAmount.minus(initialRightOrderFilledAmount);
-        const rightOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-        const rightExpectedStatus = expectedTransferAmounts.amountBoughtByRightMaker.isEqualTo(
-            maxAmountBoughtByRightMaker,
-        )
-            ? OrderStatus.FullyFilled
-            : OrderStatus.Fillable;
-        expect(rightOrderInfo.orderStatus, 'Checking exchange status for right order').to.be.equal(rightExpectedStatus);
-    }
-    /// @dev Asserts account balances after matching orders.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param initialERC20BalancesByOwner ERC20 balances prior to order matching.
-    /// @param initialERC721TokenIdsByOwner ERC721 token owners prior to order matching.
-    /// @param finalERC20BalancesByOwner ERC20 balances after order matching.
-    /// @param finalERC721TokenIdsByOwner ERC721 token owners after order matching.
-    /// @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
-    /// @param takerAddress Address of taker (account that called Exchange.matchOrders).
-    private async _assertBalancesAsync(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        initialERC20BalancesByOwner: ERC20BalancesByOwner,
-        initialERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        finalERC20BalancesByOwner: ERC20BalancesByOwner,
-        finalERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        expectedTransferAmounts: TransferAmounts,
-        takerAddress: string,
-    ): Promise<void> {
-        let expectedERC20BalancesByOwner: ERC20BalancesByOwner;
-        let expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
-        [expectedERC20BalancesByOwner, expectedERC721TokenIdsByOwner] = this._calculateExpectedBalances(
-            signedOrderLeft,
-            signedOrderRight,
-            takerAddress,
-            initialERC20BalancesByOwner,
-            initialERC721TokenIdsByOwner,
-            expectedTransferAmounts,
-        );
-        // Assert balances of makers, taker, and fee recipients
-        await this._assertMakerTakerAndFeeRecipientBalancesAsync(
-            signedOrderLeft,
-            signedOrderRight,
-            expectedERC20BalancesByOwner,
-            finalERC20BalancesByOwner,
-            expectedERC721TokenIdsByOwner,
-            finalERC721TokenIdsByOwner,
-            takerAddress,
-        );
-        // Assert balances for all known accounts
-        await MatchOrderTester._assertAllKnownBalancesAsync(
-            expectedERC20BalancesByOwner,
-            finalERC20BalancesByOwner,
-            expectedERC721TokenIdsByOwner,
-            finalERC721TokenIdsByOwner,
-        );
-    }
-    /// @dev Calculates the expected balances of order makers, fee recipients, and the taker,
-    ///      as a result of matching two orders.
-    /// @param signedOrderRight First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param takerAddress Address of taker (the address who matched the two orders)
-    /// @param erc20BalancesByOwner Current ERC20 balances.
-    /// @param erc721TokenIdsByOwner Current ERC721 token owners.
-    /// @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
-    /// @return Expected ERC20 balances & ERC721 token owners after orders have been matched.
-    private _calculateExpectedBalances(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        takerAddress: string,
-        erc20BalancesByOwner: ERC20BalancesByOwner,
-        erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        expectedTransferAmounts: TransferAmounts,
-    ): [ERC20BalancesByOwner, ERC721TokenIdsByOwner] {
-        const makerAddressLeft = signedOrderLeft.makerAddress;
-        const makerAddressRight = signedOrderRight.makerAddress;
-        const feeRecipientAddressLeft = signedOrderLeft.feeRecipientAddress;
-        const feeRecipientAddressRight = signedOrderRight.feeRecipientAddress;
-        // Operations are performed on copies of the balances
-        const expectedNewERC20BalancesByOwner = _.cloneDeep(erc20BalancesByOwner);
-        const expectedNewERC721TokenIdsByOwner = _.cloneDeep(erc721TokenIdsByOwner);
-        // Left Maker Asset (Right Taker Asset)
-        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
-        if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
-            // Decode asset data
-            const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData);
-            const makerAssetAddressLeft = erc20AssetData.tokenAddress;
-            const takerAssetAddressRight = makerAssetAddressLeft;
-            // Left Maker
-            expectedNewERC20BalancesByOwner[makerAddressLeft][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
-                makerAddressLeft
-            ][makerAssetAddressLeft].minus(expectedTransferAmounts.amountSoldByLeftMaker);
-            // Right Maker
-            expectedNewERC20BalancesByOwner[makerAddressRight][
-                takerAssetAddressRight
-            ] = expectedNewERC20BalancesByOwner[makerAddressRight][takerAssetAddressRight].plus(
-                expectedTransferAmounts.amountBoughtByRightMaker,
-            );
-            // Taker
-            expectedNewERC20BalancesByOwner[takerAddress][makerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
-                takerAddress
-            ][makerAssetAddressLeft].plus(expectedTransferAmounts.amountReceivedByTaker);
-        } else if (makerAssetProxyIdLeft === AssetProxyId.ERC721) {
-            // Decode asset data
-            const erc721AssetData = assetDataUtils.decodeERC721AssetData(signedOrderLeft.makerAssetData);
-            const makerAssetAddressLeft = erc721AssetData.tokenAddress;
-            const makerAssetIdLeft = erc721AssetData.tokenId;
-            const takerAssetAddressRight = makerAssetAddressLeft;
-            const takerAssetIdRight = makerAssetIdLeft;
-            // Left Maker
-            _.remove(expectedNewERC721TokenIdsByOwner[makerAddressLeft][makerAssetAddressLeft], makerAssetIdLeft);
-            // Right Maker
-            expectedNewERC721TokenIdsByOwner[makerAddressRight][takerAssetAddressRight].push(takerAssetIdRight);
-            // Taker: Since there is only 1 asset transferred, the taker does not receive any of the left maker asset.
-        }
-        // Left Taker Asset (Right Maker Asset)
-        // Note: This exchange is only between the order makers: the Taker does not receive any of the left taker asset.
-        const takerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.takerAssetData);
-        if (takerAssetProxyIdLeft === AssetProxyId.ERC20) {
-            // Decode asset data
-            const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.takerAssetData);
-            const takerAssetAddressLeft = erc20AssetData.tokenAddress;
-            const makerAssetAddressRight = takerAssetAddressLeft;
-            // Left Maker
-            expectedNewERC20BalancesByOwner[makerAddressLeft][takerAssetAddressLeft] = expectedNewERC20BalancesByOwner[
-                makerAddressLeft
-            ][takerAssetAddressLeft].plus(expectedTransferAmounts.amountBoughtByLeftMaker);
-            // Right Maker
-            expectedNewERC20BalancesByOwner[makerAddressRight][
-                makerAssetAddressRight
-            ] = expectedNewERC20BalancesByOwner[makerAddressRight][makerAssetAddressRight].minus(
-                expectedTransferAmounts.amountSoldByRightMaker,
-            );
-        } else if (takerAssetProxyIdLeft === AssetProxyId.ERC721) {
-            // Decode asset data
-            const erc721AssetData = assetDataUtils.decodeERC721AssetData(signedOrderRight.makerAssetData);
-            const makerAssetAddressRight = erc721AssetData.tokenAddress;
-            const makerAssetIdRight = erc721AssetData.tokenId;
-            const takerAssetAddressLeft = makerAssetAddressRight;
-            const takerAssetIdLeft = makerAssetIdRight;
-            // Right Maker
-            _.remove(expectedNewERC721TokenIdsByOwner[makerAddressRight][makerAssetAddressRight], makerAssetIdRight);
-            // Left Maker
-            expectedNewERC721TokenIdsByOwner[makerAddressLeft][takerAssetAddressLeft].push(takerAssetIdLeft);
-        }
-        // Left Maker Fees
-        expectedNewERC20BalancesByOwner[makerAddressLeft][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            makerAddressLeft
-        ][this._feeTokenAddress].minus(expectedTransferAmounts.feePaidByLeftMaker);
-        // Right Maker Fees
-        expectedNewERC20BalancesByOwner[makerAddressRight][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            makerAddressRight
-        ][this._feeTokenAddress].minus(expectedTransferAmounts.feePaidByRightMaker);
-        // Taker Fees
-        expectedNewERC20BalancesByOwner[takerAddress][this._feeTokenAddress] = expectedNewERC20BalancesByOwner[
-            takerAddress
-        ][this._feeTokenAddress].minus(
-            expectedTransferAmounts.feePaidByTakerLeft.plus(expectedTransferAmounts.feePaidByTakerRight),
-        );
-        // Left Fee Recipient Fees
-        expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][
-            this._feeTokenAddress
-        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressLeft][this._feeTokenAddress].plus(
-            expectedTransferAmounts.feePaidByLeftMaker.plus(expectedTransferAmounts.feePaidByTakerLeft),
-        );
-        // Right Fee Recipient Fees
-        expectedNewERC20BalancesByOwner[feeRecipientAddressRight][
-            this._feeTokenAddress
-        ] = expectedNewERC20BalancesByOwner[feeRecipientAddressRight][this._feeTokenAddress].plus(
-            expectedTransferAmounts.feePaidByRightMaker.plus(expectedTransferAmounts.feePaidByTakerRight),
-        );
 
-        return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];
-    }
-    /// @dev Asserts ERC20 account balances and ERC721 token holdings that result from order matching.
-    ///      Specifically checks balances of makers, taker and fee recipients.
-    /// @param signedOrderLeft First matched order.
-    /// @param signedOrderRight Second matched order.
-    /// @param expectedERC20BalancesByOwner Expected ERC20 balances.
-    /// @param realERC20BalancesByOwner Real ERC20 balances.
-    /// @param expectedERC721TokenIdsByOwner Expected ERC721 token owners.
-    /// @param realERC721TokenIdsByOwner Real ERC20 token owners.
-    /// @param takerAddress Address of taker (account that called Exchange.matchOrders).
-    private async _assertMakerTakerAndFeeRecipientBalancesAsync(
-        signedOrderLeft: SignedOrder,
-        signedOrderRight: SignedOrder,
-        expectedERC20BalancesByOwner: ERC20BalancesByOwner,
-        realERC20BalancesByOwner: ERC20BalancesByOwner,
-        expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
-        realERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
+    /**
+     * @dev Matches two complementary orders and asserts results.
+     * @param orders The matched orders and filled states.
+     * @param takerAddress Address of taker (the address who matched the two orders)
+     * @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
+     * @return Results of `matchOrders()`.
+     */
+    public async matchOrdersAndAssertEffectsAsync(
+        orders: MatchedOrders,
         takerAddress: string,
-    ): Promise<void> {
-        // Individual balance comparisons
-        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
-        const makerERC20AssetDataLeft =
-            makerAssetProxyIdLeft === AssetProxyId.ERC20
-                ? assetDataUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData)
-                : assetDataUtils.decodeERC721AssetData(signedOrderLeft.makerAssetData);
-        const makerAssetAddressLeft = makerERC20AssetDataLeft.tokenAddress;
-        const makerAssetProxyIdRight = assetDataUtils.decodeAssetProxyId(signedOrderRight.makerAssetData);
-        const makerERC20AssetDataRight =
-            makerAssetProxyIdRight === AssetProxyId.ERC20
-                ? assetDataUtils.decodeERC20AssetData(signedOrderRight.makerAssetData)
-                : assetDataUtils.decodeERC721AssetData(signedOrderRight.makerAssetData);
-        const makerAssetAddressRight = makerERC20AssetDataRight.tokenAddress;
-        if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
-            expect(
-                realERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft],
-                'Checking left maker egress ERC20 account balance',
-            ).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft]);
-            expect(
-                realERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft],
-                'Checking right maker ingress ERC20 account balance',
-            ).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft]);
-            expect(
-                realERC20BalancesByOwner[takerAddress][makerAssetAddressLeft],
-                'Checking taker ingress ERC20 account balance',
-            ).to.be.bignumber.equal(expectedERC20BalancesByOwner[takerAddress][makerAssetAddressLeft]);
-        } else if (makerAssetProxyIdLeft === AssetProxyId.ERC721) {
-            expect(
-                realERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft].sort(),
-                'Checking left maker egress ERC721 account holdings',
-            ).to.be.deep.equal(
-                expectedERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft].sort(),
-            );
-            expect(
-                realERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft].sort(),
-                'Checking right maker ERC721 account holdings',
-            ).to.be.deep.equal(
-                expectedERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft].sort(),
-            );
-            expect(
-                realERC721TokenIdsByOwner[takerAddress][makerAssetAddressLeft].sort(),
-                'Checking taker ingress ERC721 account holdings',
-            ).to.be.deep.equal(expectedERC721TokenIdsByOwner[takerAddress][makerAssetAddressLeft].sort());
-        } else {
-            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdLeft}`);
-        }
-        if (makerAssetProxyIdRight === AssetProxyId.ERC20) {
-            expect(
-                realERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight],
-                'Checking left maker ingress ERC20 account balance',
-            ).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight]);
-            expect(
-                realERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressRight],
-                'Checking right maker egress ERC20 account balance',
-            ).to.be.bignumber.equal(
-                expectedERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressRight],
-            );
-        } else if (makerAssetProxyIdRight === AssetProxyId.ERC721) {
-            expect(
-                realERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight].sort(),
-                'Checking left maker ingress ERC721 account holdings',
-            ).to.be.deep.equal(
-                expectedERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight].sort(),
-            );
-            expect(
-                realERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressRight],
-                'Checking right maker agress ERC721 account holdings',
-            ).to.be.deep.equal(expectedERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressRight]);
-        } else {
-            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdRight}`);
-        }
-        // Paid fees
-        expect(
-            realERC20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress],
-            'Checking left maker egress ERC20 account fees',
-        ).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress]);
-        expect(
-            realERC20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress],
-            'Checking right maker egress ERC20 account fees',
-        ).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress]);
-        expect(
-            realERC20BalancesByOwner[takerAddress][this._feeTokenAddress],
-            'Checking taker egress ERC20 account fees',
-        ).to.be.bignumber.equal(expectedERC20BalancesByOwner[takerAddress][this._feeTokenAddress]);
-        // Received fees
-        expect(
-            realERC20BalancesByOwner[signedOrderLeft.feeRecipientAddress][this._feeTokenAddress],
-            'Checking left fee recipient ingress ERC20 account fees',
-        ).to.be.bignumber.equal(
-            expectedERC20BalancesByOwner[signedOrderLeft.feeRecipientAddress][this._feeTokenAddress],
+        expectedTransferAmounts: Partial<MatchTransferAmounts>,
+    ): Promise<MatchResults> {
+        await assertInitialOrderStatesAsync(orders, this._exchangeWrapper);
+        // Get the token balances before executing `matchOrders()`.
+        const initialTokenBalances = await this._getBalancesAsync();
+        // Execute `matchOrders()`
+        const transactionReceipt = await this._exchangeWrapper.matchOrdersAsync(
+            orders.leftOrder,
+            orders.rightOrder,
+            takerAddress,
         );
-        expect(
-            realERC20BalancesByOwner[signedOrderRight.feeRecipientAddress][this._feeTokenAddress],
-            'Checking right fee receipient ingress ERC20 account fees',
-        ).to.be.bignumber.equal(
-            expectedERC20BalancesByOwner[signedOrderRight.feeRecipientAddress][this._feeTokenAddress],
+        // Simulate the fill.
+        const matchResults = simulateMatchOrders(
+            orders,
+            takerAddress,
+            initialTokenBalances,
+            toFullMatchTransferAmounts(expectedTransferAmounts),
+        );
+        // Validate the simulation against realit.
+        await assertMatchResultsAsync(
+            matchResults,
+            transactionReceipt,
+            await this._getBalancesAsync(),
+            this._exchangeWrapper,
+        );
+        return matchResults;
+    }
+
+    /**
+     * @dev Fetch the current token balances of all known accounts.
+     */
+    private async _getBalancesAsync(): Promise<TokenBalancesByOwner> {
+        const [ erc20, erc721 ] = await Promise.all([
+            this._erc20Wrapper.getBalancesAsync(),
+            this._erc721Wrapper.getBalancesAsync(),
+        ]);
+        return {
+            erc20,
+            erc721,
+        };
+    }
+}
+
+/**
+ * @dev Converts a `Partial<MatchTransferAmounts>` to a `MatchTransferAmounts` by
+ *      filling in missing fields with zero.
+ */
+function toFullMatchTransferAmounts(
+    partial: Partial<MatchTransferAmounts>,
+): MatchTransferAmounts {
+    return {
+        leftMakerAssetReceivedByRightMakerAmount: partial.leftMakerAssetReceivedByRightMakerAmount || ZERO,
+        rightMakerAssetReceivedByLeftMakerAmount: partial.rightMakerAssetReceivedByLeftMakerAmount || ZERO,
+        leftMakerFeeAssetPaidByLeftMakerAmount: partial.leftMakerFeeAssetPaidByLeftMakerAmount || ZERO,
+        rightMakerFeeAssetPaidByRightMakerAmount: partial.rightMakerFeeAssetPaidByRightMakerAmount || ZERO,
+        leftMakerAssetReceivedByTakerAmount: partial.leftMakerAssetReceivedByTakerAmount || ZERO,
+        rightMakerAssetReceivedByTakerAmount: partial.rightMakerAssetReceivedByTakerAmount || ZERO,
+        leftTakerFeeAssetPaidByTakerAmount: partial.leftTakerFeeAssetPaidByTakerAmount || ZERO,
+        rightTakerFeeAssetPaidByTakerAmount: partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
+    };
+ }
+
+/**
+ * @dev Simulates matching two orders by transferring amounts defined in
+ *      `transferAmounts` and returns the results.
+ * @param orders The orders being matched and their filled states.
+ * @param takerAddress Address of taker (the address who matched the two orders)
+ * @param tokenBalances Current token balances.
+ * @param transferAmounts Amounts to transfer during the simulation.
+ * @return The new account balances and fill events that occurred during the match.
+ */
+function simulateMatchOrders(
+    orders: MatchedOrders,
+    takerAddress: string,
+    tokenBalances: TokenBalancesByOwner,
+    transferAmounts: MatchTransferAmounts,
+): MatchResults {
+    const matchResults = {
+        orders: {
+            leftOrder: orders.leftOrder,
+            leftOrderTakerAssetFilledAmount:
+                (orders.leftOrderTakerAssetFilledAmount || ZERO).plus(
+                    transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+                ),
+            rightOrder: orders.rightOrder,
+            rightOrderTakerAssetFilledAmount:
+                (orders.rightOrderTakerAssetFilledAmount || ZERO).plus(
+                    transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+                ),
+        },
+        fills: simulateFillEvents(orders, takerAddress, transferAmounts),
+        balances: _.cloneDeep(tokenBalances),
+    };
+    // Left maker asset -> right maker
+    transferAsset(
+        orders.leftOrder.makerAddress,
+        orders.rightOrder.makerAddress,
+        transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+        orders.leftOrder.makerAssetData,
+        matchResults,
+    );
+    // Right maker asset -> left maker
+    transferAsset(
+        orders.rightOrder.makerAddress,
+        orders.leftOrder.makerAddress,
+        transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+        orders.rightOrder.makerAssetData,
+        matchResults,
+    );
+    // Left taker profit
+    transferAsset(
+        orders.leftOrder.makerAddress,
+        takerAddress,
+        transferAmounts.leftMakerAssetReceivedByTakerAmount,
+        orders.leftOrder.makerAssetData,
+        matchResults,
+    );
+    // Right taker profit
+    transferAsset(
+        orders.rightOrder.makerAddress,
+        takerAddress,
+        transferAmounts.rightMakerAssetReceivedByTakerAmount,
+        orders.rightOrder.makerAssetData,
+        matchResults,
+    );
+    // Left maker fees
+    transferAsset(
+        orders.leftOrder.makerAddress,
+        orders.leftOrder.feeRecipientAddress,
+        transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
+        orders.leftOrder.makerFeeAssetData,
+        matchResults,
+    );
+    // Right maker fees
+    transferAsset(
+        orders.rightOrder.makerAddress,
+        orders.rightOrder.feeRecipientAddress,
+        transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
+        orders.rightOrder.makerFeeAssetData,
+        matchResults,
+    );
+    // Taker fees.
+    if (orders.leftOrder.feeRecipientAddress === orders.rightOrder.feeRecipientAddress &&
+        orders.leftOrder.takerFeeAssetData === orders.rightOrder.takerFeeAssetData) {
+        // Same asset data and recipients, so combine into a single transfer.
+        const totalTakerFeeAssetPaidByTakerAmount =
+            transferAmounts.leftTakerFeeAssetPaidByTakerAmount.plus(
+                transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
+            );
+        transferAsset(
+            takerAddress,
+            orders.leftOrder.feeRecipientAddress,
+            totalTakerFeeAssetPaidByTakerAmount,
+            orders.leftOrder.takerFeeAssetData,
+            matchResults,
+        );
+    } else {
+        // Left taker fees
+        transferAsset(
+            takerAddress,
+            orders.leftOrder.feeRecipientAddress,
+            transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
+            orders.leftOrder.takerFeeAssetData,
+            matchResults,
+        );
+        // Right taker fees
+        transferAsset(
+            takerAddress,
+            orders.rightOrder.feeRecipientAddress,
+            transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
+            orders.rightOrder.takerFeeAssetData,
+            matchResults,
         );
     }
-} // tslint:disable-line:max-file-line-count
+    return matchResults;
+}
+
+/**
+ * @dev Simulates a transfer of assets from `fromAddress` to `toAddress`
+ *       by updating `matchResults`.
+ */
+function transferAsset(
+    fromAddress: string,
+    toAddress: string,
+    amount: BigNumber,
+    assetData: string,
+    matchResults: MatchResults,
+): void {
+    const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+    switch (assetProxyId) {
+        case AssetProxyId.ERC20: {
+            const erc20AssetData = assetDataUtils.decodeERC20AssetData(assetData);
+            const assetAddress = erc20AssetData.tokenAddress;
+            const fromBalances = matchResults.balances.erc20[fromAddress];
+            const toBalances = matchResults.balances.erc20[toAddress];
+            fromBalances[assetAddress] = fromBalances[assetAddress].minus(amount);
+            toBalances[assetAddress] = toBalances[assetAddress].plus(amount);
+            break;
+        }
+        case AssetProxyId.ERC721: {
+            const erc721AssetData = assetDataUtils.decodeERC721AssetData(assetData);
+            const assetAddress = erc721AssetData.tokenAddress;
+            const tokenId = erc721AssetData.tokenId;
+            const fromTokens = matchResults.balances.erc721[fromAddress][assetAddress];
+            const toTokens = matchResults.balances.erc721[toAddress][assetAddress];
+            _.remove(fromTokens, tokenId);
+            toTokens.push(tokenId);
+            break;
+        }
+        default:
+            throw new Error(`Unhandled asset proxy ID: ${assetProxyId}`);
+    }
+}
+
+/**
+ * @dev Checks that the results of `simulateMatchOrders()` agrees with reality.
+ * @param matchResults The results of a `simulateMatchOrders()`.
+ * @param transactionReceipt The transaction receipt of a call to `matchOrders()`.
+ * @param actualTokenBalances The actual, on-chain token balances of known addresses.
+ * @param exchangeWrapper The ExchangeWrapper instance.
+ */
+async function assertMatchResultsAsync(
+    matchResults: MatchResults,
+    transactionReceipt: TransactionReceiptWithDecodedLogs,
+    actualTokenBalances: TokenBalancesByOwner,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
+    // Check the fill events.
+    assertFillEvents(matchResults.fills, transactionReceipt);
+    // Check the token balances.
+    assertBalances(matchResults.balances, actualTokenBalances);
+    // Check the Exchange state.
+    await assertPostExchangeStateAsync(matchResults, exchangeWrapper);
+}
+
+/**
+ * @dev Checks values from the logs produced by Exchange.matchOrders against
+ *      the expected transfer amounts.
+ * @param orders The matched orders.
+ * @param takerAddress Address of taker (account that called Exchange.matchOrders)
+ * @param transactionReceipt Transaction receipt and logs produced by Exchange.matchOrders.
+ * @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
+ */
+function assertFillEvents(
+    expectedFills: FillEventArgs[],
+    transactionReceipt: TransactionReceiptWithDecodedLogs,
+): void {
+    // Extract the actual `Fill` events.
+    const actualFills = extractFillEventsfromReceipt(transactionReceipt);
+    expect(actualFills.length, 'wrong number of Fill events').to.be.equal(expectedFills.length);
+    // Validate event arguments.
+    const fillPairs = _.zip(expectedFills, actualFills) as Array<[FillEventArgs, FillEventArgs]>;
+    for (const [expected, actual] of fillPairs) {
+        expect(actual.orderHash, 'Fill event: orderHash').to.equal(expected.orderHash);
+        expect(actual.makerAddress, 'Fill event: makerAddress').to.equal(expected.makerAddress);
+        expect(actual.takerAddress, 'Fill event: takerAddress').to.equal(expected.takerAddress);
+        expect(actual.makerAssetFilledAmount, 'Fill event: makerAssetFilledAmount').to.equal(expected.makerAssetFilledAmount);
+        expect(actual.takerAssetFilledAmount, 'Fill event: takerAssetFilledAmount').to.equal(expected.takerAssetFilledAmount);
+        expect(actual.makerFeePaid, 'Fill event: makerFeePaid').to.equal(expected.makerFeePaid);
+        expect(actual.takerFeePaid, 'Fill event: takerFeePaid').to.equal(expected.takerFeePaid);
+    }
+}
+
+/**
+ *  @dev Create a pair of `Fill` events for a simulated `matchOrder()`.
+ */
+function simulateFillEvents(
+    orders: MatchedOrders,
+    takerAddress: string,
+    transferAmounts: MatchTransferAmounts,
+): [FillEventArgs, FillEventArgs] {
+    return [
+        // Left order Fill
+        {
+            orderHash: orderHashUtils.getOrderHashHex(orders.leftOrder),
+            makerAddress: orders.leftOrder.makerAddress,
+            takerAddress,
+            makerAssetFilledAmount: transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+            takerAssetFilledAmount: transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+            makerFeePaid: transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
+            takerFeePaid: transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
+        },
+        // Right order Fill
+        {
+            orderHash: orderHashUtils.getOrderHashHex(orders.rightOrder),
+            makerAddress: orders.rightOrder.makerAddress,
+            takerAddress,
+            makerAssetFilledAmount: transferAmounts.rightMakerAssetReceivedByLeftMakerAmount,
+            takerAssetFilledAmount: transferAmounts.leftMakerAssetReceivedByRightMakerAmount,
+            makerFeePaid: transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
+            takerFeePaid: transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
+        },
+    ];
+}
+
+/**
+ * @dev Extract `Fill` events from a transaction receipt.
+ */
+function extractFillEventsfromReceipt(
+    receipt: TransactionReceiptWithDecodedLogs,
+): FillEventArgs[] {
+    interface RawFillEventArgs {
+        orderHash: string;
+        makerAddress: string;
+        takerAddress: string;
+        makerAssetFilledAmount: string;
+        takerAssetFilledAmount: string;
+        makerFeePaid: string;
+        takerFeePaid: string;
+    }
+    const actualFills =
+        _.filter(receipt.logs, ['event', 'Fill']) as any as Array<LogWithDecodedArgs<RawFillEventArgs>>;
+    // Convert RawFillEventArgs to FillEventArgs.
+    return actualFills.map(fill => ({
+        orderHash: fill.args.orderHash,
+        makerAddress: fill.args.makerAddress,
+        takerAddress: fill.args.takerAddress,
+        makerAssetFilledAmount: new BigNumber(fill.args.makerAssetFilledAmount),
+        takerAssetFilledAmount: new BigNumber(fill.args.takerAssetFilledAmount),
+        makerFeePaid: new BigNumber(fill.args.makerFeePaid),
+        takerFeePaid: new BigNumber(fill.args.takerFeePaid),
+    }));
+}
+
+/**
+ * @dev Asserts that all expected token holdings match the actual holdings.
+ * @param expectedBalances Expected balances.
+ * @param actualBalances Actual balances.
+ */
+function assertBalances(
+    expectedBalances: TokenBalancesByOwner,
+    actualBalances: TokenBalancesByOwner,
+): void {
+    // ERC20 Balances
+    expect(actualBalances.erc20, 'ERC20 balances').to.deep.equal(expectedBalances.erc20);
+    // ERC721 Token Ids
+    const sortedExpectedERC721Balances = _.mapValues(
+        expectedBalances.erc721,
+        tokenIdsByOwner => {
+            _.mapValues(tokenIdsByOwner, tokenIds => {
+                _.sortBy(tokenIds);
+            });
+        },
+    );
+    const sortedActualERC721Balances = _.mapValues(
+        actualBalances.erc721,
+        tokenIdsByOwner => {
+            _.mapValues(tokenIdsByOwner, tokenIds => {
+                _.sortBy(tokenIds);
+            });
+        },
+    );
+    expect(sortedExpectedERC721Balances, 'ERC721 balances').to.deep.equal(sortedActualERC721Balances);
+}
+
+/**
+ * @dev Asserts initial exchange state for matched orders.
+ * @param orders Matched orders with intial filled amounts.
+ * @param exchangeWrapper ExchangeWrapper isntance.
+ */
+async function assertInitialOrderStatesAsync(
+    orders: MatchedOrders,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
+    const pairs = [
+        [ orders.leftOrder, orders.leftOrderTakerAssetFilledAmount || ZERO ],
+        [ orders.rightOrder, orders.rightOrderTakerAssetFilledAmount || ZERO ],
+    ] as Array<[SignedOrder, BigNumber]>;
+    await Promise.all(pairs.map(async ([ order, expectedFilledAmount ]) => {
+        const side = order === orders.leftOrder ? 'left' : 'right';
+        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(
+            orderHash,
+        );
+        expect(actualFilledAmount, `${side} order initial filled amount`)
+            .to.bignumber.equal(expectedFilledAmount);
+    }));
+}
+
+/**
+ * @dev Asserts the exchange state after a call to `matchOrders()`.
+ * @param matchResults Results from a call to `simulateMatchOrders()`.
+ * @param exchangeWrapper The ExchangeWrapper instance.
+ */
+async function assertPostExchangeStateAsync(
+    matchResults: MatchResults,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
+    const pairs = [
+        [ matchResults.orders.leftOrder, matchResults.orders.leftOrderTakerAssetFilledAmount ],
+        [ matchResults.orders.rightOrder, matchResults.orders.rightOrderTakerAssetFilledAmount ],
+    ] as Array<[SignedOrder, BigNumber]>;
+    await Promise.all(pairs.map(async ([ order, expectedFilledAmount ]) => {
+        const side = order === matchResults.orders.leftOrder ? 'left' : 'right';
+        const orderHash = orderHashUtils.getOrderHashHex(order);
+        // Check filled amount of order.
+        const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(
+            orderHash,
+        );
+        expect(actualFilledAmount, `${side} order final filled amount`)
+            .to.be.bignumber.equal(expectedFilledAmount);
+        // Check status of order.
+        const expectedStatus =
+            expectedFilledAmount.isGreaterThanOrEqualTo(order.takerAssetAmount) ?
+            OrderStatus.FullyFilled : OrderStatus.Fillable;
+        const actualStatus = (await exchangeWrapper.getOrderInfoAsync(order)).orderStatus;
+        expect(actualStatus, `${side} order final status`).to.equal(expectedStatus);
+    }));
+}
+
+// tslint:disable-line:max-file-line-count
