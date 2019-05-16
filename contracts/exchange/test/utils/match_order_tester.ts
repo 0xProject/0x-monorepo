@@ -1,17 +1,10 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import {
-    chaiSetup,
-    OrderStatus,
-    TokenBalancesByOwner,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, OrderStatus, TokenBalancesByOwner } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import {
-    LogWithDecodedArgs,
-    TransactionReceiptWithDecodedLogs,
-} from 'ethereum-types';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ExchangeWrapper } from './exchange_wrapper';
@@ -63,9 +56,11 @@ export interface MatchedOrders {
     rightOrderTakerAssetFilledAmount?: BigNumber;
 }
 
-export type MatchOrdersAsyncCall =
-    (leftOrder: SignedOrder, rightOrder: SignedOrder, takerAddress: string)
-    => Promise<TransactionReceiptWithDecodedLogs>;
+export type MatchOrdersAsyncCall = (
+    leftOrder: SignedOrder,
+    rightOrder: SignedOrder,
+    takerAddress: string,
+) => Promise<TransactionReceiptWithDecodedLogs>;
 
 export class MatchOrderTester {
     public exchangeWrapper: ExchangeWrapper;
@@ -75,7 +70,7 @@ export class MatchOrderTester {
     private readonly _initialTokenBalancesPromise: Promise<TokenBalancesByOwner>;
 
     /**
-     * @dev Constructs new MatchOrderTester.
+     * Constructs new MatchOrderTester.
      * @param exchangeWrapper Used to call to the Exchange.
      * @param erc20Wrapper Used to fetch ERC20 balances.
      * @param erc721Wrapper Used to fetch ERC721 token owners.
@@ -96,7 +91,7 @@ export class MatchOrderTester {
     }
 
     /**
-     * @dev Matches two complementary orders and asserts results.
+     * Matches two complementary orders and asserts results.
      * @param orders The matched orders and filled states.
      * @param takerAddress Address of taker (the address who matched the two orders)
      * @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
@@ -112,8 +107,9 @@ export class MatchOrderTester {
     ): Promise<MatchResults> {
         await assertInitialOrderStatesAsync(orders, this.exchangeWrapper);
         // Get the token balances before executing `matchOrders()`.
-        const _initialTokenBalances = initialTokenBalances ?
-            initialTokenBalances : await this._initialTokenBalancesPromise;
+        const _initialTokenBalances = initialTokenBalances
+            ? initialTokenBalances
+            : await this._initialTokenBalancesPromise;
         // Execute `matchOrders()`
         const transactionReceipt = await this._executeMatchOrdersAsync(
             orders.leftOrder,
@@ -138,7 +134,7 @@ export class MatchOrderTester {
     }
 
     /**
-     * @dev Fetch the current token balances of all known accounts.
+     * Fetch the current token balances of all known accounts.
      */
     public async getBalancesAsync(): Promise<TokenBalancesByOwner> {
         return getTokenBalancesAsync(this.erc20Wrapper, this.erc721Wrapper);
@@ -149,25 +145,19 @@ export class MatchOrderTester {
         rightOrder: SignedOrder,
         takerAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const caller = this.matchOrdersCallAsync ||
-            ((_leftOrder: SignedOrder, _rightOrder: SignedOrder, _takerAddress: string) =>
-                this.exchangeWrapper.matchOrdersAsync(
-                    _leftOrder,
-                    _rightOrder,
-                    _takerAddress,
-                )
-            );
+        const caller =
+            this.matchOrdersCallAsync ||
+            (async (_leftOrder: SignedOrder, _rightOrder: SignedOrder, _takerAddress: string) =>
+                this.exchangeWrapper.matchOrdersAsync(_leftOrder, _rightOrder, _takerAddress));
         return caller(leftOrder, rightOrder, takerAddress);
     }
 }
 
 /**
- * @dev Converts a `Partial<MatchTransferAmounts>` to a `MatchTransferAmounts` by
+ * Converts a `Partial<MatchTransferAmounts>` to a `MatchTransferAmounts` by
  *      filling in missing fields with zero.
  */
-function toFullMatchTransferAmounts(
-    partial: Partial<MatchTransferAmounts>,
-): MatchTransferAmounts {
+function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): MatchTransferAmounts {
     // prettier-ignore
     return {
         leftMakerAssetSoldByLeftMakerAmount:
@@ -199,11 +189,11 @@ function toFullMatchTransferAmounts(
         rightTakerFeeAssetPaidByTakerAmount:
             partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
     };
- }
+}
 
 /**
- * @dev Simulates matching two orders by transferring amounts defined in
- *      `transferAmounts` and returns the results.
+ * Simulates matching two orders by transferring amounts defined in
+ * `transferAmounts` and returns the results.
  * @param orders The orders being matched and their filled states.
  * @param takerAddress Address of taker (the address who matched the two orders)
  * @param tokenBalances Current token balances.
@@ -282,13 +272,14 @@ function simulateMatchOrders(
         matchResults,
     );
     // Taker fees.
-    if (orders.leftOrder.feeRecipientAddress === orders.rightOrder.feeRecipientAddress &&
-        orders.leftOrder.takerFeeAssetData === orders.rightOrder.takerFeeAssetData) {
+    if (
+        orders.leftOrder.feeRecipientAddress === orders.rightOrder.feeRecipientAddress &&
+        orders.leftOrder.takerFeeAssetData === orders.rightOrder.takerFeeAssetData
+    ) {
         // Same asset data and recipients, so combine into a single transfer.
-        const totalTakerFeeAssetPaidByTakerAmount =
-            transferAmounts.leftTakerFeeAssetPaidByTakerAmount.plus(
-                transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
-            );
+        const totalTakerFeeAssetPaidByTakerAmount = transferAmounts.leftTakerFeeAssetPaidByTakerAmount.plus(
+            transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
+        );
         transferAsset(
             takerAddress,
             orders.leftOrder.feeRecipientAddress,
@@ -318,7 +309,7 @@ function simulateMatchOrders(
 }
 
 /**
- * @dev Simulates a transfer of assets from `fromAddress` to `toAddress`
+ * Simulates a transfer of assets from `fromAddress` to `toAddress`
  *       by updating `matchResults`.
  */
 function transferAsset(
@@ -355,7 +346,7 @@ function transferAsset(
 }
 
 /**
- * @dev Checks that the results of `simulateMatchOrders()` agrees with reality.
+ * Checks that the results of `simulateMatchOrders()` agrees with reality.
  * @param matchResults The results of a `simulateMatchOrders()`.
  * @param transactionReceipt The transaction receipt of a call to `matchOrders()`.
  * @param actualTokenBalances The actual, on-chain token balances of known addresses.
@@ -376,17 +367,14 @@ async function assertMatchResultsAsync(
 }
 
 /**
- * @dev Checks values from the logs produced by Exchange.matchOrders against
+ * Checks values from the logs produced by Exchange.matchOrders against
  *      the expected transfer amounts.
  * @param orders The matched orders.
  * @param takerAddress Address of taker (account that called Exchange.matchOrders)
  * @param transactionReceipt Transaction receipt and logs produced by Exchange.matchOrders.
  * @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
  */
-function assertFillEvents(
-    expectedFills: FillEventArgs[],
-    transactionReceipt: TransactionReceiptWithDecodedLogs,
-): void {
+function assertFillEvents(expectedFills: FillEventArgs[], transactionReceipt: TransactionReceiptWithDecodedLogs): void {
     // Extract the actual `Fill` events.
     const actualFills = extractFillEventsfromReceipt(transactionReceipt);
     expect(actualFills.length, 'wrong number of Fill events').to.be.equal(expectedFills.length);
@@ -397,15 +385,19 @@ function assertFillEvents(
         expect(actual.orderHash, `${side} order Fill event orderHash`).to.equal(expected.orderHash);
         expect(actual.makerAddress, `${side} order Fill event makerAddress`).to.equal(expected.makerAddress);
         expect(actual.takerAddress, `${side} order Fill event takerAddress`).to.equal(expected.takerAddress);
-        expect(actual.makerAssetFilledAmount, `${side} order Fill event makerAssetFilledAmount`).to.bignumber.equal(expected.makerAssetFilledAmount);
-        expect(actual.takerAssetFilledAmount, `${side} order Fill event takerAssetFilledAmount`).to.bignumber.equal(expected.takerAssetFilledAmount);
+        expect(actual.makerAssetFilledAmount, `${side} order Fill event makerAssetFilledAmount`).to.bignumber.equal(
+            expected.makerAssetFilledAmount,
+        );
+        expect(actual.takerAssetFilledAmount, `${side} order Fill event takerAssetFilledAmount`).to.bignumber.equal(
+            expected.takerAssetFilledAmount,
+        );
         expect(actual.makerFeePaid, `${side} order Fill event makerFeePaid`).to.bignumber.equal(expected.makerFeePaid);
         expect(actual.takerFeePaid, `${side} order Fill event takerFeePaid`).to.bignumber.equal(expected.takerFeePaid);
     }
 }
 
 /**
- *  @dev Create a pair of `Fill` events for a simulated `matchOrder()`.
+ *  Create a pair of `Fill` events for a simulated `matchOrder()`.
  */
 function simulateFillEvents(
     orders: MatchedOrders,
@@ -438,11 +430,9 @@ function simulateFillEvents(
 }
 
 /**
- * @dev Extract `Fill` events from a transaction receipt.
+ * Extract `Fill` events from a transaction receipt.
  */
-function extractFillEventsfromReceipt(
-    receipt: TransactionReceiptWithDecodedLogs,
-): FillEventArgs[] {
+function extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs): FillEventArgs[] {
     interface RawFillEventArgs {
         orderHash: string;
         makerAddress: string;
@@ -452,8 +442,9 @@ function extractFillEventsfromReceipt(
         makerFeePaid: string;
         takerFeePaid: string;
     }
-    const actualFills =
-        _.filter(receipt.logs, ['event', 'Fill']) as any as Array<LogWithDecodedArgs<RawFillEventArgs>>;
+    const actualFills = (_.filter(receipt.logs, ['event', 'Fill']) as any) as Array<
+        LogWithDecodedArgs<RawFillEventArgs>
+    >;
     // Convert RawFillEventArgs to FillEventArgs.
     return actualFills.map(fill => ({
         orderHash: fill.args.orderHash,
@@ -467,62 +458,49 @@ function extractFillEventsfromReceipt(
 }
 
 /**
- * @dev Asserts that all expected token holdings match the actual holdings.
+ * Asserts that all expected token holdings match the actual holdings.
  * @param expectedBalances Expected balances.
  * @param actualBalances Actual balances.
  */
-function assertBalances(
-    expectedBalances: TokenBalancesByOwner,
-    actualBalances: TokenBalancesByOwner,
-): void {
+function assertBalances(expectedBalances: TokenBalancesByOwner, actualBalances: TokenBalancesByOwner): void {
     // ERC20 Balances
     expect(actualBalances.erc20, 'ERC20 balances').to.deep.equal(expectedBalances.erc20);
     // ERC721 Token Ids
-    const sortedExpectedERC721Balances = _.mapValues(
-        expectedBalances.erc721,
-        tokenIdsByOwner => {
-            _.mapValues(tokenIdsByOwner, tokenIds => {
-                _.sortBy(tokenIds);
-            });
-        },
-    );
-    const sortedActualERC721Balances = _.mapValues(
-        actualBalances.erc721,
-        tokenIdsByOwner => {
-            _.mapValues(tokenIdsByOwner, tokenIds => {
-                _.sortBy(tokenIds);
-            });
-        },
-    );
+    const sortedExpectedERC721Balances = _.mapValues(expectedBalances.erc721, tokenIdsByOwner => {
+        _.mapValues(tokenIdsByOwner, tokenIds => {
+            _.sortBy(tokenIds);
+        });
+    });
+    const sortedActualERC721Balances = _.mapValues(actualBalances.erc721, tokenIdsByOwner => {
+        _.mapValues(tokenIdsByOwner, tokenIds => {
+            _.sortBy(tokenIds);
+        });
+    });
     expect(sortedExpectedERC721Balances, 'ERC721 balances').to.deep.equal(sortedActualERC721Balances);
 }
 
 /**
- * @dev Asserts initial exchange state for matched orders.
+ * Asserts initial exchange state for matched orders.
  * @param orders Matched orders with intial filled amounts.
  * @param exchangeWrapper ExchangeWrapper isntance.
  */
-async function assertInitialOrderStatesAsync(
-    orders: MatchedOrders,
-    exchangeWrapper: ExchangeWrapper,
-): Promise<void> {
+async function assertInitialOrderStatesAsync(orders: MatchedOrders, exchangeWrapper: ExchangeWrapper): Promise<void> {
     const pairs = [
-        [ orders.leftOrder, orders.leftOrderTakerAssetFilledAmount || ZERO ],
-        [ orders.rightOrder, orders.rightOrderTakerAssetFilledAmount || ZERO ],
+        [orders.leftOrder, orders.leftOrderTakerAssetFilledAmount || ZERO],
+        [orders.rightOrder, orders.rightOrderTakerAssetFilledAmount || ZERO],
     ] as Array<[SignedOrder, BigNumber]>;
-    await Promise.all(pairs.map(async ([ order, expectedFilledAmount ]) => {
-        const side = order === orders.leftOrder ? 'left' : 'right';
-        const orderHash = orderHashUtils.getOrderHashHex(order);
-        const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHash,
-        );
-        expect(actualFilledAmount, `${side} order initial filled amount`)
-            .to.bignumber.equal(expectedFilledAmount);
-    }));
+    await Promise.all(
+        pairs.map(async ([order, expectedFilledAmount]) => {
+            const side = order === orders.leftOrder ? 'left' : 'right';
+            const orderHash = orderHashUtils.getOrderHashHex(order);
+            const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
+            expect(actualFilledAmount, `${side} order initial filled amount`).to.bignumber.equal(expectedFilledAmount);
+        }),
+    );
 }
 
 /**
- * @dev Asserts the exchange state after a call to `matchOrders()`.
+ * Asserts the exchange state after a call to `matchOrders()`.
  * @param matchResults Results from a call to `simulateMatchOrders()`.
  * @param exchangeWrapper The ExchangeWrapper instance.
  */
@@ -531,36 +509,37 @@ async function assertPostExchangeStateAsync(
     exchangeWrapper: ExchangeWrapper,
 ): Promise<void> {
     const pairs = [
-        [ matchResults.orders.leftOrder, matchResults.orders.leftOrderTakerAssetFilledAmount ],
-        [ matchResults.orders.rightOrder, matchResults.orders.rightOrderTakerAssetFilledAmount ],
+        [matchResults.orders.leftOrder, matchResults.orders.leftOrderTakerAssetFilledAmount],
+        [matchResults.orders.rightOrder, matchResults.orders.rightOrderTakerAssetFilledAmount],
     ] as Array<[SignedOrder, BigNumber]>;
-    await Promise.all(pairs.map(async ([ order, expectedFilledAmount ]) => {
-        const side = order === matchResults.orders.leftOrder ? 'left' : 'right';
-        const orderInfo = await exchangeWrapper.getOrderInfoAsync(order);
-        // Check filled amount of order.
-        const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
-        expect(actualFilledAmount, `${side} order final filled amount`)
-            .to.be.bignumber.equal(expectedFilledAmount);
-        // Check status of order.
-        const expectedStatus =
-            expectedFilledAmount.isGreaterThanOrEqualTo(order.takerAssetAmount) ?
-            OrderStatus.FullyFilled : OrderStatus.Fillable;
-        const actualStatus = orderInfo.orderStatus;
-        expect(actualStatus, `${side} order final status`).to.equal(expectedStatus);
-    }));
+    await Promise.all(
+        pairs.map(async ([order, expectedFilledAmount]) => {
+            const side = order === matchResults.orders.leftOrder ? 'left' : 'right';
+            const orderInfo = await exchangeWrapper.getOrderInfoAsync(order);
+            // Check filled amount of order.
+            const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
+            expect(actualFilledAmount, `${side} order final filled amount`).to.be.bignumber.equal(expectedFilledAmount);
+            // Check status of order.
+            const expectedStatus = expectedFilledAmount.isGreaterThanOrEqualTo(order.takerAssetAmount)
+                ? OrderStatus.FullyFilled
+                : OrderStatus.Fillable;
+            const actualStatus = orderInfo.orderStatus;
+            expect(actualStatus, `${side} order final status`).to.equal(expectedStatus);
+        }),
+    );
 }
 
 /**
- * @dev Retrive the current token balances of all known addresses.
+ * Retrive the current token balances of all known addresses.
+ * @param erc20Wrapper The ERC20Wrapper instance.
+ * @param erc721Wrapper The ERC721Wrapper instance.
+ * @return A promise that resolves to a `TokenBalancesByOwner`.
  */
 export async function getTokenBalancesAsync(
     erc20Wrapper: ERC20Wrapper,
     erc721Wrapper: ERC721Wrapper,
 ): Promise<TokenBalancesByOwner> {
-    const [ erc20, erc721 ] = await Promise.all([
-        erc20Wrapper.getBalancesAsync(),
-        erc721Wrapper.getBalancesAsync(),
-    ]);
+    const [erc20, erc721] = await Promise.all([erc20Wrapper.getBalancesAsync(), erc721Wrapper.getBalancesAsync()]);
     return {
         erc20,
         erc721,
