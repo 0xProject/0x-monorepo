@@ -17,19 +17,11 @@ const ERR_MSG_MAPPING = {
             [TransferType.Trade]: ExchangeContractErrs.InsufficientMakerBalance,
             [TransferType.Fee]: ExchangeContractErrs.InsufficientMakerFeeBalance,
         },
-        [TradeSide.Taker]: {
-            [TransferType.Trade]: ExchangeContractErrs.InsufficientTakerBalance,
-            [TransferType.Fee]: ExchangeContractErrs.InsufficientTakerFeeBalance,
-        },
     },
     [FailureReason.ProxyAllowance]: {
         [TradeSide.Maker]: {
             [TransferType.Trade]: ExchangeContractErrs.InsufficientMakerAllowance,
             [TransferType.Fee]: ExchangeContractErrs.InsufficientMakerFeeAllowance,
-        },
-        [TradeSide.Taker]: {
-            [TransferType.Trade]: ExchangeContractErrs.InsufficientTakerAllowance,
-            [TransferType.Fee]: ExchangeContractErrs.InsufficientTakerFeeAllowance,
         },
     },
 };
@@ -42,10 +34,10 @@ export class ExchangeTransferSimulator {
     private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
     private static _throwValidationError(
         failureReason: FailureReason,
-        tradeSide: TradeSide,
+        _tradeSide: TradeSide,
         transferType: TransferType,
     ): never {
-        const errMsg = ERR_MSG_MAPPING[failureReason][tradeSide][transferType];
+        const errMsg = ERR_MSG_MAPPING[failureReason][TradeSide.Maker][transferType];
         throw new Error(errMsg);
     }
     /**

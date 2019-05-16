@@ -71,14 +71,6 @@ export class OrderValidationUtils {
             TradeSide.Maker,
             TransferType.Trade,
         );
-        await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.takerAssetData,
-            senderAddress,
-            signedOrder.makerAddress,
-            fillTakerAssetAmount,
-            TradeSide.Taker,
-            TransferType.Trade,
-        );
         const makerFeeAmount = utils.getPartialAmountFloor(
             fillTakerAssetAmount,
             signedOrder.takerAssetAmount,
@@ -90,19 +82,6 @@ export class OrderValidationUtils {
             signedOrder.feeRecipientAddress,
             makerFeeAmount,
             TradeSide.Maker,
-            TransferType.Fee,
-        );
-        const takerFeeAmount = utils.getPartialAmountFloor(
-            fillTakerAssetAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
-        );
-        await exchangeTradeEmulator.transferFromAsync(
-            zrxAssetData,
-            senderAddress,
-            signedOrder.feeRecipientAddress,
-            takerFeeAmount,
-            TradeSide.Taker,
             TransferType.Fee,
         );
     }
@@ -237,12 +216,8 @@ export class OrderValidationUtils {
             const transferFailedErrorMessages = [
                 ExchangeContractErrs.InsufficientMakerBalance,
                 ExchangeContractErrs.InsufficientMakerFeeBalance,
-                ExchangeContractErrs.InsufficientTakerBalance,
-                ExchangeContractErrs.InsufficientTakerFeeBalance,
                 ExchangeContractErrs.InsufficientMakerAllowance,
                 ExchangeContractErrs.InsufficientMakerFeeAllowance,
-                ExchangeContractErrs.InsufficientTakerAllowance,
-                ExchangeContractErrs.InsufficientTakerFeeAllowance,
             ];
             if (_.includes(transferFailedErrorMessages, err.message)) {
                 throw new Error(RevertReason.TransferFailed);

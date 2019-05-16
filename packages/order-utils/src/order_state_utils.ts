@@ -57,32 +57,23 @@ export class OrderStateUtils {
             return { isValid: false, error: ExchangeContractErrs.OrderRemainingFillAmountZero };
         }
 
-        if (sidedOrderRelevantState.traderBalance.eq(0)) {
-            const error = isMakerSide
-                ? ExchangeContractErrs.InsufficientMakerBalance
-                : ExchangeContractErrs.InsufficientTakerBalance;
-            return { isValid: false, error };
-        }
-        if (sidedOrderRelevantState.traderProxyAllowance.eq(0)) {
-            const error = isMakerSide
-                ? ExchangeContractErrs.InsufficientMakerAllowance
-                : ExchangeContractErrs.InsufficientTakerAllowance;
-            return { isValid: false, error };
-        }
-        if (!signedOrder.makerFee.eq(0)) {
-            if (sidedOrderRelevantState.traderFeeBalance.eq(0)) {
-                const error = isMakerSide
-                    ? ExchangeContractErrs.InsufficientMakerFeeBalance
-                    : ExchangeContractErrs.InsufficientTakerFeeBalance;
-                return { isValid: false, error };
+        if (isMakerSide) {
+            if (sidedOrderRelevantState.traderBalance.eq(0)) {
+                return { isValid: false, error: ExchangeContractErrs.InsufficientMakerBalance };
             }
-            if (sidedOrderRelevantState.traderFeeProxyAllowance.eq(0)) {
-                const error = isMakerSide
-                    ? ExchangeContractErrs.InsufficientMakerFeeAllowance
-                    : ExchangeContractErrs.InsufficientTakerFeeAllowance;
-                return { isValid: false, error };
+            if (sidedOrderRelevantState.traderProxyAllowance.eq(0)) {
+                return { isValid: false, error: ExchangeContractErrs.InsufficientMakerAllowance };
+            }
+            if (!signedOrder.makerFee.eq(0)) {
+                if (sidedOrderRelevantState.traderFeeBalance.eq(0)) {
+                    return { isValid: false, error: ExchangeContractErrs.InsufficientMakerFeeBalance };
+                }
+                if (sidedOrderRelevantState.traderFeeProxyAllowance.eq(0)) {
+                    return { isValid: false, error: ExchangeContractErrs.InsufficientMakerFeeAllowance };
+                }
             }
         }
+
         const remainingTakerAssetAmount = signedOrder.takerAssetAmount.minus(
             sidedOrderRelevantState.filledTakerAssetAmount,
         );
