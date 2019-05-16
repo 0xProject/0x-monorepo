@@ -167,6 +167,11 @@ export interface OrderTransactionOpts extends TransactionOpts {
     shouldValidate?: boolean;
 }
 
+export enum TradeSide {
+    Maker = 'maker',
+    Taker = 'taker',
+}
+
 export enum TransferType {
     Trade = 'trade',
     Fee = 'fee',

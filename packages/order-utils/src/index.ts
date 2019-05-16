@@ -69,6 +69,7 @@ export {
 
 export {
     TypedDataError,
+    TradeSide,
     TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,

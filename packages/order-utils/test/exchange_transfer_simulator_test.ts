@@ -9,7 +9,7 @@ import { assetDataUtils } from '../src/asset_data_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
-import { TransferType } from '../src/types';
+import { TradeSide, TransferType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
@@ -97,6 +97,7 @@ describe('ExchangeTransferSimulator', async () => {
                     sender,
                     recipient,
                     transferAmount,
+                    TradeSide.Maker,
                     TransferType.Trade,
                 ),
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
@@ -117,6 +118,7 @@ describe('ExchangeTransferSimulator', async () => {
                 sender,
                 recipient,
                 transferAmount,
+                TradeSide.Maker,
                 TransferType.Trade,
             );
             const store = (exchangeTransferSimulator as any)._store;
@@ -145,6 +147,7 @@ describe('ExchangeTransferSimulator', async () => {
                 sender,
                 recipient,
                 transferAmount,
+                TradeSide.Maker,
                 TransferType.Trade,
             );
             const store = (exchangeTransferSimulator as any)._store;

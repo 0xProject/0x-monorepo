@@ -454,14 +454,6 @@ export class FillOrderCombinatorialUtils {
         const expTakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(takerAssetData, makerAddress);
         const expZRXAssetBalanceOfMaker = await lazyStore.getBalanceAsync(this.zrxAssetData, makerAddress);
         const expZRXAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(this.zrxAssetData, makerAddress);
-        const expTakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(takerAssetData, this.takerAddress);
-        const expTakerAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(takerAssetData, this.takerAddress);
-        const expMakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(makerAssetData, this.takerAddress);
-        const expZRXAssetBalanceOfTaker = await lazyStore.getBalanceAsync(this.zrxAssetData, this.takerAddress);
-        const expZRXAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(
-            this.zrxAssetData,
-            this.takerAddress,
-        );
         const expZRXAssetBalanceOfFeeRecipient = await lazyStore.getBalanceAsync(this.zrxAssetData, feeRecipient);
 
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
@@ -564,41 +556,6 @@ export class FillOrderCombinatorialUtils {
             expZRXAssetAllowanceOfMaker,
             'ZRXAssetAllowanceOfMaker',
         );
-
-        const actTakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, takerAssetData);
-        expect(actTakerAssetBalanceOfTaker).to.be.bignumber.equal(
-            expTakerAssetBalanceOfTaker,
-            'TakerAssetBalanceOfTaker',
-        );
-
-        const actTakerAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
-            this.takerAddress,
-            takerAssetData,
-        );
-
-        expect(actTakerAssetAllowanceOfTaker).to.be.bignumber.equal(
-            expTakerAssetAllowanceOfTaker,
-            'TakerAssetAllowanceOfTaker',
-        );
-
-        const actMakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, makerAssetData);
-        expect(actMakerAssetBalanceOfTaker).to.be.bignumber.equal(
-            expMakerAssetBalanceOfTaker,
-            'MakerAssetBalanceOfTaker',
-        );
-
-        const actZRXAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, this.zrxAssetData);
-        expect(actZRXAssetBalanceOfTaker).to.be.bignumber.equal(expZRXAssetBalanceOfTaker, 'ZRXAssetBalanceOfTaker');
-
-        const actZRXAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
-            this.takerAddress,
-            this.zrxAssetData,
-        );
-        expect(actZRXAssetAllowanceOfTaker).to.be.bignumber.equal(
-            expZRXAssetAllowanceOfTaker,
-            'ZRXAssetAllowanceOfTaker',
-        );
-
         const actZRXAssetBalanceOfFeeRecipient = await this.assetWrapper.getBalanceAsync(
             feeRecipient,
             this.zrxAssetData,

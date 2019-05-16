@@ -5,6 +5,10 @@ export enum TypedDataError {
     InvalidMetamaskSigner = "MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0x/subproviders' package) in order to work with this method.",
 }
 
+export enum TradeSide {
+    Maker = 'maker',
+    Taker = 'taker',
+}
 export enum TransferType {
     Trade = 'trade',
     Fee = 'fee',

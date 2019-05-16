@@ -196,32 +196,10 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
         });
 
-        it('should throw if taker erc20Balances are too low to fill order', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                takerStateScenario: {
-                    ...defaultFillScenario.makerStateScenario,
-                    traderAssetBalance: BalanceAmountScenario.TooLow,
-                },
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
-        });
-
         it('should throw if maker allowances are too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
-                    ...defaultFillScenario.makerStateScenario,
-                    traderAssetAllowance: AllowanceAmountScenario.TooLow,
-                },
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
-        });
-
-        it('should throw if taker allowances are too low to fill order', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                takerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
                     traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },

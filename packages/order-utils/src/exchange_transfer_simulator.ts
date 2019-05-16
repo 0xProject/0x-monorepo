@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { assetDataUtils } from './asset_data_utils';
 import { constants } from './constants';
-import { TransferType } from './types';
+import { TradeSide, TransferType } from './types';
 
 enum FailureReason {
     Balance = 'balance',
@@ -48,6 +48,7 @@ export class ExchangeTransferSimulator {
      * @param  from              Owner of the transferred tokens
      * @param  to                Recipient of the transferred tokens
      * @param  amountInBaseUnits The amount of tokens being transferred
+     * @param  tradeSide         Is Maker/Taker transferring
      * @param  transferType      Is it a fee payment or a value transfer
      */
     public async transferFromAsync(
@@ -55,12 +56,17 @@ export class ExchangeTransferSimulator {
         from: string,
         to: string,
         amountInBaseUnits: BigNumber,
+        tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:
             case AssetProxyId.ERC721:
+                if (tradeSide === TradeSide.Taker) {
+                    await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
+                    return;
+                }
                 const balance = await this._store.getBalanceAsync(assetData, from);
                 const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, from);
                 if (proxyAllowance.isLessThan(amountInBaseUnits)) {
@@ -78,7 +84,14 @@ export class ExchangeTransferSimulator {
                 for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
                     const amountsElement = decodedAssetData.amounts[index];
                     const totalAmount = amountInBaseUnits.times(amountsElement);
-                    await this.transferFromAsync(nestedAssetDataElement, from, to, totalAmount, transferType);
+                    await this.transferFromAsync(
+                        nestedAssetDataElement,
+                        from,
+                        to,
+                        totalAmount,
+                        tradeSide,
+                        transferType,
+                    );
                 }
                 break;
             default:
