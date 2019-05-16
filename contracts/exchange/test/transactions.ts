@@ -58,7 +58,8 @@ describe('Exchange transactions', () => {
 
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
+    let takerFeeToken: DummyERC20TokenContract;
+    let makerFeeToken: DummyERC20TokenContract;
     let exchangeInstance: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
 
@@ -72,6 +73,8 @@ describe('Exchange transactions', () => {
 
     let defaultMakerTokenAddress: string;
     let defaultTakerTokenAddress: string;
+    let defaultMakerFeeTokenAddress: string;
+    let defaultTakerFeeTokenAddress: string;
     let makerPrivateKey: Buffer;
     let takerPrivateKey: Buffer;
     let taker2PrivateKey: Buffer;
@@ -103,8 +106,8 @@ describe('Exchange transactions', () => {
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+        const numDummyErc20ToDeploy = 4;
+        [erc20TokenA, erc20TokenB, takerFeeToken, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
@@ -127,6 +130,8 @@ describe('Exchange transactions', () => {
 
         defaultMakerTokenAddress = erc20TokenA.address;
         defaultTakerTokenAddress = erc20TokenB.address;
+        defaultMakerFeeTokenAddress = makerFeeToken.address;
+        defaultTakerFeeTokenAddress = takerFeeToken.address;
 
         domain = {
             verifyingContractAddress: exchangeInstance.address,
@@ -139,6 +144,8 @@ describe('Exchange transactions', () => {
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerFeeTokenAddress),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerFeeTokenAddress),
             domain,
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
@@ -871,6 +878,9 @@ describe('Exchange transactions', () => {
         });
         describe('examples', () => {
             describe('ExchangeWrapper', () => {
+                // WARNING: Beware of order fields that can get deduped by the
+                // encoder, as this will produce a different order hash than
+                // what the Exchange contract generates.
                 let exchangeWrapperContract: ExchangeWrapperContract;
 
                 before(async () => {
@@ -891,13 +901,11 @@ describe('Exchange transactions', () => {
                     const targetOrderEpoch = orderSalt.plus(1);
                     const cancelData = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetOrderEpoch);
                     const cancelTransaction = makerTransactionFactory.newSignedTransaction(cancelData);
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await exchangeWrapperContract.cancelOrdersUpTo.sendTransactionAsync(
-                            targetOrderEpoch,
-                            cancelTransaction.salt,
-                            cancelTransaction.signature,
-                            { from: makerAddress },
-                        ),
+                    await exchangeWrapperContract.cancelOrdersUpTo.awaitTransactionSuccessAsync(
+                        targetOrderEpoch,
+                        cancelTransaction.salt,
+                        cancelTransaction.signature,
+                        { from: makerAddress },
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
 
