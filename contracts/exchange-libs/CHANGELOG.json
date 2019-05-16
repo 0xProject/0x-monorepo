@@ -59,6 +59,14 @@
             {
                 "note": "Reorder some revert error parameters for consistency",
                 "pr": 1790
+            },
+            {
+                "note": "Add new `Order` fields for arbitrary fee tokens (ZEIP-28).",
+                "pr": "TODO"
+            },
+            {
+                "note": "Remove `LibAbiEncoder` and `LibConstants`.",
+                "pr": "TODO"
             }
         ],
         "timestamp": 1563006338
