@@ -55,25 +55,34 @@ export interface MatchedOrders {
     rightOrderTakerAssetFilledAmount?: BigNumber;
 }
 
+export type MatchOrdersAsyncCall =
+    (leftOrder: SignedOrder, rightOrder: SignedOrder, takerAddress: string)
+    => Promise<TransactionReceiptWithDecodedLogs>;
+
 export class MatchOrderTester {
-    private readonly _exchangeWrapper: ExchangeWrapper;
-    private readonly _erc20Wrapper: ERC20Wrapper;
-    private readonly _erc721Wrapper: ERC721Wrapper;
+    public exchangeWrapper: ExchangeWrapper;
+    public erc20Wrapper: ERC20Wrapper;
+    public erc721Wrapper: ERC721Wrapper;
+    public matchOrdersCallAsync?: MatchOrdersAsyncCall;
 
     /**
      * @dev Constructs new MatchOrderTester.
      * @param exchangeWrapper Used to call to the Exchange.
      * @param erc20Wrapper Used to fetch ERC20 balances.
      * @param erc721Wrapper Used to fetch ERC721 token owners.
+     * @param matchOrdersCallAsync Optional, custom caller for
+     *                             `ExchangeWrapper.matchOrdersAsync()`.
      */
     constructor(
         exchangeWrapper: ExchangeWrapper,
         erc20Wrapper: ERC20Wrapper,
         erc721Wrapper: ERC721Wrapper,
+        matchOrdersCallAsync?: MatchOrdersAsyncCall,
     ) {
-        this._exchangeWrapper = exchangeWrapper;
-        this._erc20Wrapper = erc20Wrapper;
-        this._erc721Wrapper = erc721Wrapper;
+        this.exchangeWrapper = exchangeWrapper;
+        this.erc20Wrapper = erc20Wrapper;
+        this.erc721Wrapper = erc721Wrapper;
+        this.matchOrdersCallAsync = matchOrdersCallAsync;
     }
 
     /**
@@ -88,11 +97,11 @@ export class MatchOrderTester {
         takerAddress: string,
         expectedTransferAmounts: Partial<MatchTransferAmounts>,
     ): Promise<MatchResults> {
-        await assertInitialOrderStatesAsync(orders, this._exchangeWrapper);
+        await assertInitialOrderStatesAsync(orders, this.exchangeWrapper);
         // Get the token balances before executing `matchOrders()`.
         const initialTokenBalances = await this._getBalancesAsync();
         // Execute `matchOrders()`
-        const transactionReceipt = await this._exchangeWrapper.matchOrdersAsync(
+        const transactionReceipt = await this._executeMatchOrdersAsync(
             orders.leftOrder,
             orders.rightOrder,
             takerAddress,
@@ -109,7 +118,7 @@ export class MatchOrderTester {
             matchResults,
             transactionReceipt,
             await this._getBalancesAsync(),
-            this._exchangeWrapper,
+            this.exchangeWrapper,
         );
         return matchResults;
     }
@@ -119,13 +128,29 @@ export class MatchOrderTester {
      */
     private async _getBalancesAsync(): Promise<TokenBalancesByOwner> {
         const [ erc20, erc721 ] = await Promise.all([
-            this._erc20Wrapper.getBalancesAsync(),
-            this._erc721Wrapper.getBalancesAsync(),
+            this.erc20Wrapper.getBalancesAsync(),
+            this.erc721Wrapper.getBalancesAsync(),
         ]);
         return {
             erc20,
             erc721,
         };
+    }
+
+    private async _executeMatchOrdersAsync(
+        leftOrder: SignedOrder,
+        rightOrder: SignedOrder,
+        takerAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const caller = this.matchOrdersCallAsync ||
+            ((_leftOrder: SignedOrder, _rightOrder: SignedOrder, _takerAddress: string) =>
+                this.exchangeWrapper.matchOrdersAsync(
+                    _leftOrder,
+                    _rightOrder,
+                    _takerAddress,
+                )
+            );
+        return caller(leftOrder, rightOrder, takerAddress);
     }
 }
 
