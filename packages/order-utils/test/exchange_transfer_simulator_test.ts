@@ -9,7 +9,7 @@ import { assetDataUtils } from '../src/asset_data_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
-import { TradeSide, TransferType } from '../src/types';
+import { TransferType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
@@ -86,18 +86,6 @@ describe('ExchangeTransferSimulator', async () => {
             );
             exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
         });
-        it("throws if the user doesn't have enough allowance", async () => {
-            return expect(
-                exchangeTransferSimulator.transferFromAsync(
-                    exampleAssetData,
-                    sender,
-                    recipient,
-                    transferAmount,
-                    TradeSide.Taker,
-                    TransferType.Trade,
-                ),
-            ).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerAllowance);
-        });
         it("throws if the user doesn't have enough balance", async () => {
             txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
                 from: sender,
@@ -109,7 +97,6 @@ describe('ExchangeTransferSimulator', async () => {
                     sender,
                     recipient,
                     transferAmount,
-                    TradeSide.Maker,
                     TransferType.Trade,
                 ),
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
@@ -130,7 +117,6 @@ describe('ExchangeTransferSimulator', async () => {
                 sender,
                 recipient,
                 transferAmount,
-                TradeSide.Taker,
                 TransferType.Trade,
             );
             const store = (exchangeTransferSimulator as any)._store;
@@ -159,7 +145,6 @@ describe('ExchangeTransferSimulator', async () => {
                 sender,
                 recipient,
                 transferAmount,
-                TradeSide.Taker,
                 TransferType.Trade,
             );
             const store = (exchangeTransferSimulator as any)._store;

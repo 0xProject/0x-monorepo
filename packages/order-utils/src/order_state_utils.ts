@@ -56,7 +56,6 @@ export class OrderStateUtils {
         if (availableTakerAssetAmount.eq(0)) {
             return { isValid: false, error: ExchangeContractErrs.OrderRemainingFillAmountZero };
         }
-
         if (isMakerSide) {
             if (sidedOrderRelevantState.traderBalance.eq(0)) {
                 return { isValid: false, error: ExchangeContractErrs.InsufficientMakerBalance };
@@ -73,7 +72,6 @@ export class OrderStateUtils {
                 }
             }
         }
-
         const remainingTakerAssetAmount = signedOrder.takerAssetAmount.minus(
             sidedOrderRelevantState.filledTakerAssetAmount,
         );
@@ -103,7 +101,7 @@ export class OrderStateUtils {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
     /**
-     * Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
+     * Get the orderState for an order.
      * This method will only check the maker's balance/allowance to calculate the
      * OrderState.
      * @param signedOrder The order of interest

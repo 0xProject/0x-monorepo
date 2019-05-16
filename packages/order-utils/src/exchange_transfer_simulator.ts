@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { assetDataUtils } from './asset_data_utils';
 import { constants } from './constants';
-import { TradeSide, TransferType } from './types';
+import { TransferType } from './types';
 
 enum FailureReason {
     Balance = 'balance',
@@ -13,16 +13,12 @@ enum FailureReason {
 
 const ERR_MSG_MAPPING = {
     [FailureReason.Balance]: {
-        [TradeSide.Maker]: {
-            [TransferType.Trade]: ExchangeContractErrs.InsufficientMakerBalance,
-            [TransferType.Fee]: ExchangeContractErrs.InsufficientMakerFeeBalance,
-        },
+        [TransferType.Trade]: ExchangeContractErrs.InsufficientMakerBalance,
+        [TransferType.Fee]: ExchangeContractErrs.InsufficientMakerFeeBalance,
     },
     [FailureReason.ProxyAllowance]: {
-        [TradeSide.Maker]: {
-            [TransferType.Trade]: ExchangeContractErrs.InsufficientMakerAllowance,
-            [TransferType.Fee]: ExchangeContractErrs.InsufficientMakerFeeAllowance,
-        },
+        [TransferType.Trade]: ExchangeContractErrs.InsufficientMakerAllowance,
+        [TransferType.Fee]: ExchangeContractErrs.InsufficientMakerFeeAllowance,
     },
 };
 
@@ -32,12 +28,8 @@ const ERR_MSG_MAPPING = {
  */
 export class ExchangeTransferSimulator {
     private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
-    private static _throwValidationError(
-        failureReason: FailureReason,
-        _tradeSide: TradeSide,
-        transferType: TransferType,
-    ): never {
-        const errMsg = ERR_MSG_MAPPING[failureReason][TradeSide.Maker][transferType];
+    private static _throwValidationError(failureReason: FailureReason, transferType: TransferType): never {
+        const errMsg = ERR_MSG_MAPPING[failureReason][transferType];
         throw new Error(errMsg);
     }
     /**
@@ -56,7 +48,6 @@ export class ExchangeTransferSimulator {
      * @param  from              Owner of the transferred tokens
      * @param  to                Recipient of the transferred tokens
      * @param  amountInBaseUnits The amount of tokens being transferred
-     * @param  tradeSide         Is Maker/Taker transferring
      * @param  transferType      Is it a fee payment or a value transfer
      */
     public async transferFromAsync(
@@ -64,31 +55,19 @@ export class ExchangeTransferSimulator {
         from: string,
         to: string,
         amountInBaseUnits: BigNumber,
-        tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:
             case AssetProxyId.ERC721:
-                // HACK: When simulating an open order (e.g taker is NULL_ADDRESS), we don't want to adjust balances/
-                // allowances for the taker. We do however, want to increase the balance of the maker since the maker
-                // might be relying on those funds to fill subsequent orders or pay the order's fees.
-                if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
-                    await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
-                    return;
-                }
                 const balance = await this._store.getBalanceAsync(assetData, from);
                 const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, from);
                 if (proxyAllowance.isLessThan(amountInBaseUnits)) {
-                    ExchangeTransferSimulator._throwValidationError(
-                        FailureReason.ProxyAllowance,
-                        tradeSide,
-                        transferType,
-                    );
+                    ExchangeTransferSimulator._throwValidationError(FailureReason.ProxyAllowance, transferType);
                 }
                 if (balance.isLessThan(amountInBaseUnits)) {
-                    ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, tradeSide, transferType);
+                    ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, transferType);
                 }
                 await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);
                 await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
@@ -99,14 +78,7 @@ export class ExchangeTransferSimulator {
                 for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
                     const amountsElement = decodedAssetData.amounts[index];
                     const totalAmount = amountInBaseUnits.times(amountsElement);
-                    await this.transferFromAsync(
-                        nestedAssetDataElement,
-                        from,
-                        to,
-                        totalAmount,
-                        tradeSide,
-                        transferType,
-                    );
+                    await this.transferFromAsync(nestedAssetDataElement, from, to, totalAmount, transferType);
                 }
                 break;
             default:

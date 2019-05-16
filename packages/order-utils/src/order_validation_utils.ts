@@ -3,7 +3,7 @@ import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { TradeSide, TransferType, TypedDataError } from './types';
+import { TransferType, TypedDataError } from './types';
 
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 import { constants } from './constants';
@@ -68,7 +68,6 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
             senderAddress,
             fillMakerTokenAmount,
-            TradeSide.Maker,
             TransferType.Trade,
         );
         const makerFeeAmount = utils.getPartialAmountFloor(
@@ -81,7 +80,6 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
             signedOrder.feeRecipientAddress,
             makerFeeAmount,
-            TradeSide.Maker,
             TransferType.Fee,
         );
     }

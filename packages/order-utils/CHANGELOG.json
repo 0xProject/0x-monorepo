@@ -1,5 +1,14 @@
 [
     {
+        "version": "9.0.0",
+        "changes": [
+            {
+                "note": "Remove Taker balance and allowance validation",
+                "pr": 1818
+            }
+        ]
+    },
+    {
         "version": "8.1.0",
         "changes": [
             {
