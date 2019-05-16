@@ -36,11 +36,10 @@ export class NextLaunchKit extends React.Component {
             <SiteWrap theme="dark">
                 <DocumentTitle {...documentConstants.LAUNCH_KIT} />
                 <Hero
-                    isLargeTitle={false}
+                    isLargeTitle={true}
                     isFullWidth={false}
                     title="0x Launch Kit"
                     description="Launch a relayer in under a minute"
-                    figure={<Icon name="launchKit" size="hero" margin={['small', 0, 'small', 0]} />}
                     actions={<HeroActions />}
                 />
 
