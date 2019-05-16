@@ -82,6 +82,19 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-dev-utils @0x/contracts-staking
+    test-contracts-ganache-3.0:
+        docker:
+            - image: circleci/node:9-browsers
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-coordinator @0x/contracts-dev-utils @0x/contracts-staking
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - run: yarn wsrun test:circleci @0x/contracts-extensions
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
@@ -213,7 +226,8 @@ jobs:
             - run: yarn wsrun test:circleci @0x/abi-gen
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
-            - run: yarn wsrun test:circleci @0x/contract-wrappers
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - run: yarn wsrun test:circleci @0x/contract-wrappers
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
             - run: yarn wsrun test:circleci @0x/order-utils
@@ -234,10 +248,11 @@ jobs:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/base-contract/coverage/lcov.info
-            - save_cache:
-                  key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/contract-wrappers/coverage/lcov.info
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - save_cache:
+            #       key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/packages/contract-wrappers/coverage/lcov.info
             - save_cache:
                   key: coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -509,9 +524,10 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - restore_cache:
+            #       keys:
+            #           - coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
@@ -546,12 +562,7 @@ workflows:
             # - build-website:
             #       requires:
             #           - build
-            # Disabled for 3.0
-            # - test-rest:
-            #       requires:
-            #           - build
-            - static-tests:
-            - test-contracts-ganache:
+            - test-contracts-ganache-3.0:
                   requires:
                       - build-3.0
             # Disabled until geth docker image is fixed.
