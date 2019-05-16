@@ -37,6 +37,11 @@ export interface ERC1155HoldingsByOwner {
     nonFungible: ERC1155NonFungibleHoldingsByOwner;
 }
 
+export interface TokenBalancesByOwner {
+    erc20: ERC20BalancesByOwner;
+    erc721: ERC721TokenIdsByOwner;
+}
+
 export interface SubmissionContractEventArgs {
     transactionId: BigNumber;
 }
@@ -117,30 +122,6 @@ export enum ContractName {
     Whitelist = 'Whitelist',
     Forwarder = 'Forwarder',
     BalanceThresholdFilter = 'BalanceThresholdFilter',
-}
-
-export interface TransferAmountsByMatchOrders {
-    // Left Maker
-    amountBoughtByLeftMaker: BigNumber;
-    amountSoldByLeftMaker: BigNumber;
-    feePaidByLeftMaker: BigNumber;
-    // Right Maker
-    amountBoughtByRightMaker: BigNumber;
-    amountSoldByRightMaker: BigNumber;
-    feePaidByRightMaker: BigNumber;
-    // Taker
-    amountReceivedByTaker: BigNumber;
-    feePaidByTakerLeft: BigNumber;
-    feePaidByTakerRight: BigNumber;
-}
-
-export interface TransferAmountsLoggedByMatchOrders {
-    makerAddress: string;
-    takerAddress: string;
-    makerAssetFilledAmount: string;
-    takerAssetFilledAmount: string;
-    makerFeePaid: string;
-    takerFeePaid: string;
 }
 
 export interface OrderInfo {
