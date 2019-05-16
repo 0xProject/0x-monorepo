@@ -29,6 +29,10 @@
             {
                 "note": "Add `SignatureType.OrderValidator` and `SignatureType.WalletOrderValidator`",
                 "pr": 1774
+            },
+            {
+                "note": "Update `Order` type for arbitrary fee tokens (ZEIP-28).",
+                "pr": "TODO"
             }
         ]
     },
