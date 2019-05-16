@@ -312,7 +312,7 @@ pip install -e .[dev]
 
 ### Test
 
-Tests depend on a running instance of 0x-launch-kit, backed by a Ganache node with the 0x contracts deployed in it. For convenience, a docker-compose file is provided that creates this environment. And a shortcut is provided to interface with that file: `./setup.py start_test_relayer` will start those services. With them running, the tests can be run with `./setup.py test`. When you're done with testing, you can `./setup.py stop_test_relayer`.
+Tests depend on a running instance of 0x-launch-kit-backend, backed by a Ganache node with the 0x contracts deployed in it. For convenience, a docker-compose file is provided that creates this environment. And a shortcut is provided to interface with that file: `./setup.py start_test_relayer` will start those services. With them running, the tests can be run with `./setup.py test`. When you're done with testing, you can `./setup.py stop_test_relayer`.
 
 ### Clean
 
