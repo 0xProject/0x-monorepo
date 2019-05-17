@@ -67,6 +67,10 @@
             {
                 "note": "Remove `LibAbiEncoder` and `LibConstants`.",
                 "pr": "TODO"
+            },
+            {
+                "note": "Add `generate-exchange-selectors` package script.",
+                "pr": "TODO"
             }
         ],
         "timestamp": 1563006338
