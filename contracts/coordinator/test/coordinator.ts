@@ -45,7 +45,7 @@ describe('Coordinator tests', () => {
     let erc20Proxy: ERC20ProxyContract;
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
+    let makerFeeToken: DummyERC20TokenContract;
     let coordinatorContract: CoordinatorContract;
     let exchange: ExchangeContract;
 
@@ -69,7 +69,7 @@ describe('Coordinator tests', () => {
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+        [erc20TokenA, erc20TokenB, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
@@ -108,6 +108,8 @@ describe('Coordinator tests', () => {
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
             takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
             domain: {
                 verifyingContractAddress: exchange.address,
                 chainId,
