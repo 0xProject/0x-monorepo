@@ -879,8 +879,9 @@ describe('Exchange transactions', () => {
         describe('examples', () => {
             describe('ExchangeWrapper', () => {
                 // WARNING: Beware of order fields that can get deduped by the
-                // encoder, as this will produce a different order hash than
-                // what the Exchange contract generates.
+                // encoder, as this will produce different transaction data,
+                // and therefore transaction hash, from what the ExchangeWrapper
+                // contract generates.
                 let exchangeWrapperContract: ExchangeWrapperContract;
 
                 before(async () => {
