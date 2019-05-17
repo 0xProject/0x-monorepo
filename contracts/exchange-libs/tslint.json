@@ -4,8 +4,6 @@
         "custom-no-magic-numbers": false
     },
     "linterOptions": {
-        "exclude": [
-            "./scripts/**.js"
-        ]
+        "exclude": ["./scripts/**.js"]
     }
 }
