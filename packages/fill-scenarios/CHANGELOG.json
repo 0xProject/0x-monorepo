@@ -8,7 +8,7 @@
             },
             {
                 "note": "Use arbitrary fee tokens instead of ZRX (ZEIP-28)",
-                "pr": "TODO"
+                "pr": 1819
             }
         ]
     },

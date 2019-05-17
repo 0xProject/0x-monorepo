@@ -12,7 +12,7 @@
             },
             {
                 "note": "Add `makerAssetData` and `takerAssetData` to `Order` schemas",
-                "pr": "TODO"
+                "pr": 1819
             }
         ]
     },
