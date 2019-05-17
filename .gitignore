@@ -83,6 +83,7 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
+contracts/staking/generated-artifacts/
 contracts/coordinator/generated-artifacts/
 contracts/exchange/generated-artifacts/
 contracts/asset-proxy/generated-artifacts/
@@ -101,6 +102,7 @@ python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 # generated contract wrappers
 packages/abi-gen-wrappers/src/generated-wrappers/
 packages/python-contract-wrappers/generated/
+contracts/staking/generated-wrappers/
 contracts/coordinator/generated-wrappers/
 contracts/exchange/generated-wrappers/
 contracts/asset-proxy/generated-wrappers/
