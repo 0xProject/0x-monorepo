@@ -36,7 +36,7 @@
             },
             {
                 "note": "Use arbitrary fee tokens instead of ZRX (ZEIP-28) for tools needed by contracts packages.",
-                "pr": "TODO"
+                "pr": 1819
             }
         ]
     },
