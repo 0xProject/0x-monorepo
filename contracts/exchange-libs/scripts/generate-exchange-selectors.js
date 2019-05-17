@@ -21,7 +21,7 @@ const VISIBILITY = 'internal';
     );
     const contractDefinition = defineContract(contractName, functionsByName);
     const preamble = extractOutputFilePreamble(outputFile);
-    const outputFileContents = `${preamble}${contractDefinition}`;
+    const outputFileContents = `${preamble}${contractDefinition}${LINEBREAK}`;
     fs.writeFileSync(outputFile, outputFileContents);
     console.log(`Wrote exchange selectors to "${path.resolve(outputFile)}."`);
 })();
