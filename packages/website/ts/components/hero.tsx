@@ -14,6 +14,7 @@ interface Props {
     description: string;
     figure?: React.ReactNode;
     actions?: React.ReactNode;
+    background?: React.ReactNode;
     announcement?: AnnouncementProps;
 }
 
@@ -23,7 +24,7 @@ interface SectionProps {
 
 const Section = styled.section<SectionProps>`
     padding: ${props => (props.isAnnouncement ? '50px 0 120px 0' : '120px 0')};
-
+    position: relative;
     @media (max-width: 768px) {
         padding: 60px 0;
     }
@@ -126,8 +127,17 @@ const ButtonWrap = styled.div`
     }
 `;
 
+const BackgroundWrap = styled.div`
+    position: absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    top:0;
+`
+
 export const Hero: React.StatelessComponent<Props> = (props: Props) => (
     <Section isAnnouncement={!!props.announcement}>
+        {!!props.background && <BackgroundWrap>{props.background}</BackgroundWrap>}
         <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
             {props.figure && <Content width="400px">{props.figure}</Content>}
 
