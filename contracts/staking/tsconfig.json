@@ -1,0 +1,7 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
+    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "files": ["generated-artifacts/IStaking.json", "generated-artifacts/Staking.json"],
+    "exclude": ["./deploy/solc/solc_bin"]
+}
