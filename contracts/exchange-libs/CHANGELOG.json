@@ -40,15 +40,15 @@
             },
             {
                 "note": "Add new `Order` fields for arbitrary fee tokens (ZEIP-28).",
-                "pr": "TODO"
+                "pr": 1819
             },
             {
                 "note": "Remove `LibAbiEncoder` and `LibConstants`.",
-                "pr": "TODO"
+                "pr": 1819
             },
             {
                 "note": "Add `generate-exchange-selectors` package script.",
-                "pr": "TODO"
+                "pr": 1819
             }
         ]
     },

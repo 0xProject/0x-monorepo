@@ -72,7 +72,7 @@
             },
             {
                 "note": "Update tests for arbitrary fee tokens (ZEIP-28).",
-                "pr": "TODO"
+                "pr": 1819
             }
         ],
         "timestamp": 1554997931
