@@ -20,133 +20,131 @@ pragma solidity ^0.5.5;
 
 
 contract LibExchangeSelectors {
-
     // solhint-disable max-line-length
-    // allowedValidators
+
+    // allowedOrderValidators(address,address)
+    bytes4 constant internal ALLOWED_ORDER_VALIDATORS_SELECTOR = 0x3a0a355b;
+
+    // allowedValidators(address,address)
     bytes4 constant internal ALLOWED_VALIDATORS_SELECTOR = 0x7b8e3514;
-    bytes4 constant internal ALLOWED_VALIDATORS_SELECTOR_GENERATOR = bytes4(keccak256("allowedValidators(address,address)"));
 
-    // assetProxies
+    // assetProxies(bytes4)
     bytes4 constant internal ASSET_PROXIES_SELECTOR = 0x3fd3c997;
-    bytes4 constant internal ASSET_PROXIES_SELECTOR_GENERATOR = bytes4(keccak256("assetProxies(bytes4)"));
 
-    // batchCancelOrders
-    bytes4 constant internal BATCH_CANCEL_ORDERS_SELECTOR = 0x4ac14782;
-    bytes4 constant internal BATCH_CANCEL_ORDERS_SELECTOR_GENERATOR = bytes4(keccak256("batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])"));
+    // batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[])
+    bytes4 constant internal BATCH_CANCEL_ORDERS_SELECTOR = 0xdedfc1f1;
 
-    // batchFillOrKillOrders
-    bytes4 constant internal BATCH_FILL_OR_KILL_ORDERS_SELECTOR = 0x4d0ae546;
-    bytes4 constant internal BATCH_FILL_OR_KILL_ORDERS_SELECTOR_GENERATOR = bytes4(keccak256("batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])"));
+    // batchExecuteTransactions((uint256,address,bytes)[],bytes[])
+    bytes4 constant internal BATCH_EXECUTE_TRANSACTIONS_SELECTOR = 0x970d970c;
 
-    // batchFillOrders
-    bytes4 constant internal BATCH_FILL_ORDERS_SELECTOR = 0x297bb70b;
-    bytes4 constant internal BATCH_FILL_ORDERS_SELECTOR_GENERATOR = bytes4(keccak256("batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])"));
+    // batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])
+    bytes4 constant internal BATCH_FILL_ORDERS_SELECTOR = 0x9694a402;
 
-    // batchFillOrdersNoThrow
-    bytes4 constant internal BATCH_FILL_ORDERS_NO_THROW_SELECTOR = 0x50dde190;
-    bytes4 constant internal BATCH_FILL_ORDERS_NO_THROW_SELECTOR_GENERATOR = bytes4(keccak256("batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])"));
+    // batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])
+    bytes4 constant internal BATCH_FILL_ORDERS_NO_THROW_SELECTOR = 0x8ea8dfe4;
 
-    // cancelOrder
-    bytes4 constant internal CANCEL_ORDER_SELECTOR = 0xd46b02c3;
-    bytes4 constant internal CANCEL_ORDER_SELECTOR_GENERATOR = bytes4(keccak256("cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))"));
+    // batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])
+    bytes4 constant internal BATCH_FILL_OR_KILL_ORDERS_SELECTOR = 0xbeee2e14;
 
-    // cancelOrdersUpTo
-    bytes4 constant internal CANCEL_ORDERS_UP_TO_SELECTOR = 0x4f9559b1;
-    bytes4 constant internal CANCEL_ORDERS_UP_TO_SELECTOR_GENERATOR = bytes4(keccak256("cancelOrdersUpTo(uint256)"));
-
-    // cancelled
+    // cancelled(bytes32)
     bytes4 constant internal CANCELLED_SELECTOR = 0x2ac12622;
-    bytes4 constant internal CANCELLED_SELECTOR_GENERATOR = bytes4(keccak256("cancelled(bytes32)"));
 
-    // currentContextAddress
+    // cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes))
+    bytes4 constant internal CANCEL_ORDER_SELECTOR = 0x2da62987;
+
+    // cancelOrdersUpTo(uint256)
+    bytes4 constant internal CANCEL_ORDERS_UP_TO_SELECTOR = 0x4f9559b1;
+
+    // currentContextAddress()
     bytes4 constant internal CURRENT_CONTEXT_ADDRESS_SELECTOR = 0xeea086ba;
-    bytes4 constant internal CURRENT_CONTEXT_ADDRESS_SELECTOR_GENERATOR = bytes4(keccak256("currentContextAddress()"));
 
-    // executeTransaction
-    bytes4 constant internal EXECUTE_TRANSACTION_SELECTOR = 0xbfc8bfce;
-    bytes4 constant internal EXECUTE_TRANSACTION_SELECTOR_GENERATOR = bytes4(keccak256("executeTransaction(uint256,address,bytes,bytes)"));
+    // EIP712_EXCHANGE_DOMAIN_HASH()
+    bytes4 constant internal EIP_712_EXCHANGE_DOMAIN_HASH_SELECTOR = 0xc26cfecd;
 
-    // fillOrKillOrder
-    bytes4 constant internal FILL_OR_KILL_ORDER_SELECTOR = 0x64a3bc15;
-    bytes4 constant internal FILL_OR_KILL_ORDER_SELECTOR_GENERATOR = bytes4(keccak256("fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"));
+    // EIP712_EXCHANGE_DOMAIN_NAME()
+    bytes4 constant internal EIP_712_EXCHANGE_DOMAIN_NAME_SELECTOR = 0x63c4e8cc;
 
-    // fillOrder
-    bytes4 constant internal FILL_ORDER_SELECTOR = 0xb4be83d5;
-    bytes4 constant internal FILL_ORDER_SELECTOR_GENERATOR = bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"));
+    // EIP712_EXCHANGE_DOMAIN_VERSION()
+    bytes4 constant internal EIP_712_EXCHANGE_DOMAIN_VERSION_SELECTOR = 0x0f01323b;
 
-    // fillOrderNoThrow
-    bytes4 constant internal FILL_ORDER_NO_THROW_SELECTOR = 0x3e228bae;
-    bytes4 constant internal FILL_ORDER_NO_THROW_SELECTOR_GENERATOR = bytes4(keccak256("fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)"));
+    // executeTransaction((uint256,address,bytes),bytes)
+    bytes4 constant internal EXECUTE_TRANSACTION_SELECTOR = 0x965504f7;
 
-    // filled
+    // filled(bytes32)
     bytes4 constant internal FILLED_SELECTOR = 0x288cdc91;
-    bytes4 constant internal FILLED_SELECTOR_GENERATOR = bytes4(keccak256("filled(bytes32)"));
 
-    // getAssetProxy
+    // fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)
+    bytes4 constant internal FILL_ORDER_SELECTOR = 0x9b44d556;
+
+    // fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)
+    bytes4 constant internal FILL_ORDER_NO_THROW_SELECTOR = 0x01da61ae;
+
+    // fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)
+    bytes4 constant internal FILL_OR_KILL_ORDER_SELECTOR = 0xe14b58c4;
+
+    // getAssetProxy(bytes4)
     bytes4 constant internal GET_ASSET_PROXY_SELECTOR = 0x60704108;
-    bytes4 constant internal GET_ASSET_PROXY_SELECTOR_GENERATOR = bytes4(keccak256("getAssetProxy(bytes4)"));
 
-    // getOrderInfo
-    bytes4 constant internal GET_ORDER_INFO_SELECTOR = 0xc75e0a81;
-    bytes4 constant internal GET_ORDER_INFO_SELECTOR_GENERATOR = bytes4(keccak256("getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))"));
+    // getOrderHash((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes))
+    bytes4 constant internal GET_ORDER_HASH_SELECTOR = 0xad3449bd;
 
-    // getOrdersInfo
-    bytes4 constant internal GET_ORDERS_INFO_SELECTOR = 0x7e9d74dc;
-    bytes4 constant internal GET_ORDERS_INFO_SELECTOR_GENERATOR = bytes4(keccak256("getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])"));
+    // getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes))
+    bytes4 constant internal GET_ORDER_INFO_SELECTOR = 0x9d3fa4b9;
 
-    // isValidSignature
-    bytes4 constant internal IS_VALID_SIGNATURE_SELECTOR = 0x93634702;
-    bytes4 constant internal IS_VALID_SIGNATURE_SELECTOR_GENERATOR = bytes4(keccak256("isValidSignature(bytes32,address,bytes)"));
+    // getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[])
+    bytes4 constant internal GET_ORDERS_INFO_SELECTOR = 0x9dfac06d;
 
-    // marketBuyOrders
-    bytes4 constant internal MARKET_BUY_ORDERS_SELECTOR = 0xe5fa431b;
-    bytes4 constant internal MARKET_BUY_ORDERS_SELECTOR_GENERATOR = bytes4(keccak256("marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])"));
+    // getTransactionHash((uint256,address,bytes))
+    bytes4 constant internal GET_TRANSACTION_HASH_SELECTOR = 0x23872f55;
 
-    // marketBuyOrdersNoThrow
-    bytes4 constant internal MARKET_BUY_ORDERS_NO_THROW_SELECTOR = 0xa3e20380;
-    bytes4 constant internal MARKET_BUY_ORDERS_NO_THROW_SELECTOR_GENERATOR = bytes4(keccak256("marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])"));
+    // isValidHashSignature(bytes32,address,bytes)
+    bytes4 constant internal IS_VALID_HASH_SIGNATURE_SELECTOR = 0x8171c407;
 
-    // marketSellOrders
-    bytes4 constant internal MARKET_SELL_ORDERS_SELECTOR = 0x7e1d9808;
-    bytes4 constant internal MARKET_SELL_ORDERS_SELECTOR_GENERATOR = bytes4(keccak256("marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])"));
+    // isValidOrderSignature((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,bytes)
+    bytes4 constant internal IS_VALID_ORDER_SIGNATURE_SELECTOR = 0xf813e384;
 
-    // marketSellOrdersNoThrow
-    bytes4 constant internal MARKET_SELL_ORDERS_NO_THROW_SELECTOR = 0xdd1c7d18;
-    bytes4 constant internal MARKET_SELL_ORDERS_NO_THROW_SELECTOR_GENERATOR = bytes4(keccak256("marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])"));
+    // marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
+    bytes4 constant internal MARKET_BUY_ORDERS_SELECTOR = 0xdb702a9c;
 
-    // matchOrders
-    bytes4 constant internal MATCH_ORDERS_SELECTOR = 0x3c28d861;
-    bytes4 constant internal MATCH_ORDERS_SELECTOR_GENERATOR = bytes4(keccak256("matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)"));
+    // marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
+    bytes4 constant internal MARKET_BUY_ORDERS_NO_THROW_SELECTOR = 0x78d29ac1;
 
-    // orderEpoch
+    // marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
+    bytes4 constant internal MARKET_SELL_ORDERS_SELECTOR = 0x52b3ca9e;
+
+    // marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
+    bytes4 constant internal MARKET_SELL_ORDERS_NO_THROW_SELECTOR = 0x369da099;
+
+    // matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes,bytes)
+    bytes4 constant internal MATCH_ORDERS_SELECTOR = 0x88ec79fb;
+
+    // orderEpoch(address,address)
     bytes4 constant internal ORDER_EPOCH_SELECTOR = 0xd9bfa73e;
-    bytes4 constant internal ORDER_EPOCH_SELECTOR_GENERATOR = bytes4(keccak256("orderEpoch(address,address)"));
 
-    // owner
+    // owner()
     bytes4 constant internal OWNER_SELECTOR = 0x8da5cb5b;
-    bytes4 constant internal OWNER_SELECTOR_GENERATOR = bytes4(keccak256("owner()"));
 
-    // preSign
-    bytes4 constant internal PRE_SIGN_SELECTOR = 0x3683ef8e;
-    bytes4 constant internal PRE_SIGN_SELECTOR_GENERATOR = bytes4(keccak256("preSign(bytes32,address,bytes)"));
+    // preSign(bytes32)
+    bytes4 constant internal PRE_SIGN_SELECTOR = 0x46c02d7a;
 
-    // preSigned
+    // preSigned(bytes32,address)
     bytes4 constant internal PRE_SIGNED_SELECTOR = 0x82c174d0;
-    bytes4 constant internal PRE_SIGNED_SELECTOR_GENERATOR = bytes4(keccak256("preSigned(bytes32,address)"));
 
-    // registerAssetProxy
+    // registerAssetProxy(address)
     bytes4 constant internal REGISTER_ASSET_PROXY_SELECTOR = 0xc585bb93;
-    bytes4 constant internal REGISTER_ASSET_PROXY_SELECTOR_GENERATOR = bytes4(keccak256("registerAssetProxy(address)"));
 
-    // setSignatureValidatorApproval
+    // setOrderValidatorApproval(address,bool)
+    bytes4 constant internal SET_ORDER_VALIDATOR_APPROVAL_SELECTOR = 0x5972957b;
+
+    // setSignatureValidatorApproval(address,bool)
     bytes4 constant internal SET_SIGNATURE_VALIDATOR_APPROVAL_SELECTOR = 0x77fcce68;
-    bytes4 constant internal SET_SIGNATURE_VALIDATOR_APPROVAL_SELECTOR_GENERATOR = bytes4(keccak256("setSignatureValidatorApproval(address,bool)"));
 
-    // transactions
+    // transactions(bytes32)
     bytes4 constant internal TRANSACTIONS_SELECTOR = 0x642f2eaf;
-    bytes4 constant internal TRANSACTIONS_SELECTOR_GENERATOR = bytes4(keccak256("transactions(bytes32)"));
 
-    // transferOwnership
+    // transferOwnership(address)
     bytes4 constant internal TRANSFER_OWNERSHIP_SELECTOR = 0xf2fde38b;
-    bytes4 constant internal TRANSFER_OWNERSHIP_SELECTOR_GENERATOR = bytes4(keccak256("transferOwnership(address)"));
+
+    // VERSION()
+    bytes4 constant internal VERSION_SELECTOR = 0xffa1ad74;
 }
