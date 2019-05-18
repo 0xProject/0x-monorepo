@@ -1,4 +1,4 @@
-import { AnyRevertError, RevertError, StringRevertError } from '@0x/utils';
+import { coerceThrownErrorAsRevertError, RevertError, StringRevertError } from '@0x/utils';
 
 // tslint:disable only-arrow-functions prefer-conditional-expression
 
@@ -27,18 +27,6 @@ type ChaiAssert = (
     expected?: any,
     actual?: any,
 ) => void;
-
-interface GanacheTransactionRevertResult {
-    error: 'revert';
-    program_counter: number;
-    return?: string;
-    reason?: string;
-}
-
-interface GanacheTransactionRevertError extends Error {
-    results: { [hash: string]: GanacheTransactionRevertResult };
-    hashes: string[];
-}
 
 export function revertErrorHelper(_chai: Chai): void {
     const proto = _chai.Assertion;
@@ -111,7 +99,7 @@ function compareRevertErrors(
             if (typeof actual === 'string') {
                 actual = new StringRevertError(actual);
             } else if (actual instanceof Error) {
-                actual = coerceErrorToRevertError(actual);
+                actual = coerceThrownErrorAsRevertError(actual);
             } else {
                 chaiAssert(_chai, false, `Result is not of type RevertError: ${actual}`);
             }
@@ -134,57 +122,6 @@ function compareRevertErrors(
         return true;
     }
     return false;
-}
-
-const GANACHE_TRANSACTION_REVERT_ERROR_MESSAGE = /^VM Exception while processing transaction: revert/;
-const GETH_TRANSACTION_REVERT_ERROR_MESSAGE = /always failing transaction$/;
-
-function coerceErrorToRevertError(error: Error | GanacheTransactionRevertError): RevertError {
-    // Handle ganache transaction reverts.
-    if (isGanacheTransactionRevertError(error)) {
-        // Grab the first result attached.
-        const result = error.results[error.hashes[0]];
-        // If a reason is provided, just wrap it in a StringRevertError
-        if (result.reason !== undefined) {
-            return new StringRevertError(result.reason);
-        }
-        // If there is return data, try to decode it.
-        if (result.return !== undefined && result.return !== '0x') {
-            return RevertError.decode(result.return);
-        }
-        // Otherwise, return an AnyRevertError type.
-        return new AnyRevertError();
-    }
-
-    // Handle geth transaction reverts.
-    if (isGethTransactionRevertError(error)) {
-        // Geth transaction reverts are opaque, meaning no useful data is returned,
-        // so we just return an AnyRevertError type.
-        return new AnyRevertError();
-    }
-
-    // Handle call reverts.
-    // `BaseContract` will throw a plain `Error` type for `StringRevertErrors`
-    // in callAsync functions for backwards compatibility, and a proper RevertError
-    // for all others.
-    if (error instanceof RevertError) {
-        return error;
-    }
-    // Coerce plain errors into a StringRevertError.
-    return new StringRevertError(error.message);
-}
-
-function isGanacheTransactionRevertError(
-    error: Error | GanacheTransactionRevertError,
-): error is GanacheTransactionRevertError {
-    if (GANACHE_TRANSACTION_REVERT_ERROR_MESSAGE.test(error.message) && 'hashes' in error && 'results' in error) {
-        return true;
-    }
-    return false;
-}
-
-function isGethTransactionRevertError(error: Error | GanacheTransactionRevertError): boolean {
-    return GETH_TRANSACTION_REVERT_ERROR_MESSAGE.test(error.message);
 }
 
 function chaiAssert(_chai: Chai, condition: boolean, failMessage?: string, expected?: any, actual?: any): void {
