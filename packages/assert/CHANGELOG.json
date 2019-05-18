@@ -5,6 +5,10 @@
             {
                 "note": "Add new assertions: `isArray`, `isBlockParam` and `isNumberOrBigNumber`",
                 "pr": 1823
+            },
+            {
+                "note": "Add `isNumberLike()` assertion",
+                "pr": 1819
             }
         ]
     },
