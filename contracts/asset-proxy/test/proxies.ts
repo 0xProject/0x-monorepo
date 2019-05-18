@@ -674,7 +674,14 @@ describe('Asset Transfer Proxies', () => {
                 // Verify pre-condition
                 const ownerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
                 expect(ownerFromAsset).to.be.equal(fromAddress);
-                // Remove transfer approval for fromAddress.
+                // Remove blanket transfer approval for fromAddress.
+                await erc721TokenA.setApprovalForAll.awaitTransactionSuccessAsync(
+                    erc721Proxy.address,
+                    false,
+                    { from: fromAddress },
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+                // Remove token transfer approval for fromAddress.
                 await erc721TokenA.approve.awaitTransactionSuccessAsync(
                     constants.NULL_ADDRESS,
                     erc721AFromTokenId,
