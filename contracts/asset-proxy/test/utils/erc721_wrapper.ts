@@ -69,7 +69,7 @@ export class ERC721Wrapper {
                     }
                     this._initialTokenIdsByOwner[tokenOwnerAddress][dummyTokenContract.address].push(tokenId);
 
-                    await this.approveProxyAsync(dummyTokenContract.address, tokenId);
+                    await this.approveProxyForAllAsync(dummyTokenContract.address, tokenOwnerAddress, true);
                 }
             }
         }
@@ -84,14 +84,17 @@ export class ERC721Wrapper {
         const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
         await this.approveAsync(proxyAddress, tokenAddress, tokenId);
     }
-    public async approveProxyForAllAsync(tokenAddress: string, tokenId: BigNumber, isApproved: boolean): Promise<void> {
+    public async approveProxyForAllAsync(
+        tokenAddress: string,
+        ownerAddress: string,
+        isApproved: boolean,
+    ): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
         const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
         await tokenContract.setApprovalForAll.awaitTransactionSuccessAsync(
             proxyAddress,
             isApproved,
-            { from: tokenOwner },
+            { from: ownerAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
