@@ -1,14 +1,19 @@
 [
     {
+        "version": "2.0.11",
+        "changes": [
+            {
+                "note": "Add `isNumberLike()` assertion",
+                "pr": 1819
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "2.0.10",
         "changes": [
             {
                 "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
         "version": "2.0.9",
         "changes": [
             {
