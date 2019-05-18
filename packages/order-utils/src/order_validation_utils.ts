@@ -68,6 +68,16 @@ export class OrderValidationUtils {
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
+        const makerFeeAmount = utils.getPartialAmountFloor(
+            fillTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerFee,
+        );
+        const takerFeeAmount = utils.getPartialAmountFloor(
+            fillTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.takerFee,
+        );
         await exchangeTradeEmulator.transferFromAsync(
             signedOrder.makerAssetData,
             signedOrder.makerAddress,
@@ -84,11 +94,6 @@ export class OrderValidationUtils {
             TradeSide.Taker,
             TransferType.Trade,
         );
-        const makerFeeAmount = utils.getPartialAmountFloor(
-            fillTakerAssetAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerFee,
-        );
         await exchangeTradeEmulator.transferFromAsync(
             signedOrder.makerFeeAssetData,
             signedOrder.makerAddress,
@@ -96,11 +101,6 @@ export class OrderValidationUtils {
             makerFeeAmount,
             TradeSide.Maker,
             TransferType.Fee,
-        );
-        const takerFeeAmount = utils.getPartialAmountFloor(
-            fillTakerAssetAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
         );
         await exchangeTradeEmulator.transferFromAsync(
             signedOrder.takerFeeAssetData,

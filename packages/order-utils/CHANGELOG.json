@@ -33,6 +33,10 @@
             {
                 "note": "Use arbitrary fee tokens instead of ZRX (ZEIP-28) for tools needed by contracts packages.",
                 "pr": 1819
+            },
+            {
+                "note": "Update `RevertError` types for new base constructor",
+                "pr": 1819
             }
         ]
     },
