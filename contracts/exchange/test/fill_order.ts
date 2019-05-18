@@ -8,7 +8,6 @@ import {
     FeeRecipientAddressScenario,
     FillScenario,
     OrderAssetAmountScenario,
-    provider,
     TakerAssetFillAmountScenario,
     TakerScenario,
     txDefaults,
@@ -39,15 +38,15 @@ const defaultFillScenario = {
     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
     makerStateScenario: {
         traderAssetBalance: BalanceAmountScenario.Higher,
-        traderAssetAllowance: AllowanceAmountScenario.Higher,
+        traderAssetAllowance: AllowanceAmountScenario.Unlimited,
         feeBalance: BalanceAmountScenario.Higher,
-        feeAllowance: AllowanceAmountScenario.Higher,
+        feeAllowance: AllowanceAmountScenario.Unlimited,
     },
     takerStateScenario: {
         traderAssetBalance: BalanceAmountScenario.Higher,
-        traderAssetAllowance: AllowanceAmountScenario.Higher,
+        traderAssetAllowance: AllowanceAmountScenario.Unlimited,
         feeBalance: BalanceAmountScenario.Higher,
-        feeAllowance: AllowanceAmountScenario.Higher,
+        feeAllowance: AllowanceAmountScenario.Unlimited,
     },
 };
 
@@ -72,7 +71,7 @@ describe('FillOrder Tests', () => {
             _.forEach(fillScenarios, fillScenario => {
                 const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;
                 it(description, async () => {
-                    await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(fillScenario);
                 });
             });
         };
@@ -84,8 +83,9 @@ describe('FillOrder Tests', () => {
             const fillScenario = {
                 ...defaultFillScenario,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
         it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -94,8 +94,9 @@ describe('FillOrder Tests', () => {
                     takerAssetAmountScenario: OrderAssetAmountScenario.Small,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -104,8 +105,9 @@ describe('FillOrder Tests', () => {
                     makerAssetAmountScenario: OrderAssetAmountScenario.Small,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount with zero decimals', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -115,8 +117,9 @@ describe('FillOrder Tests', () => {
                     makerAssetDataScenario: AssetDataScenario.ERC20ZeroDecimals,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
         it('should transfer the correct amounts when taker is specified and order is claimed by taker', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -125,15 +128,49 @@ describe('FillOrder Tests', () => {
                     takerScenario: TakerScenario.CorrectlySpecified,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
         it('should fill remaining value if takerAssetFillAmount > remaining takerAssetAmount', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
+        it('should be able to pay maker fee with taker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with maker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
         it('should throw when taker is specified and order is claimed by other', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -142,7 +179,7 @@ describe('FillOrder Tests', () => {
                     takerScenario: TakerScenario.IncorrectlySpecified,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if makerAssetAmount is 0', async () => {
@@ -154,7 +191,7 @@ describe('FillOrder Tests', () => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if takerAssetAmount is 0', async () => {
@@ -166,7 +203,7 @@ describe('FillOrder Tests', () => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if takerAssetFillAmount is 0', async () => {
@@ -174,7 +211,7 @@ describe('FillOrder Tests', () => {
                 ...defaultFillScenario,
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.Zero,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if an order is expired', async () => {
@@ -185,7 +222,7 @@ describe('FillOrder Tests', () => {
                     expirationTimeSecondsScenario: ExpirationTimeSecondsScenario.InPast,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if maker erc20Balances are too low to fill order', async () => {
@@ -196,7 +233,7 @@ describe('FillOrder Tests', () => {
                     traderAssetBalance: BalanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if taker erc20Balances are too low to fill order', async () => {
@@ -207,7 +244,7 @@ describe('FillOrder Tests', () => {
                     traderAssetBalance: BalanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if maker allowances are too low to fill order', async () => {
@@ -218,7 +255,7 @@ describe('FillOrder Tests', () => {
                     traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
         it('should throw if taker allowances are too low to fill order', async () => {
@@ -229,7 +266,51 @@ describe('FillOrder Tests', () => {
                     traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should throw if maker fee erc20Balances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.TooLow,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should throw if taker fee erc20Balances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                takerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.TooLow,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should throw if maker fee allowances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeAllowance: AllowanceAmountScenario.TooLow,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should throw if taker fee allowances are too low to fill order', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                takerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeAllowance: AllowanceAmountScenario.TooLow,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
     });
 
@@ -244,7 +325,7 @@ describe('FillOrder Tests', () => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
         it('should successfully fill order when makerAsset is ERC721 and takerAsset is ERC20', async () => {
@@ -257,7 +338,7 @@ describe('FillOrder Tests', () => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario, true);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
         it('should successfully fill order when makerAsset is ERC20 and takerAsset is ERC721', async () => {
@@ -270,7 +351,7 @@ describe('FillOrder Tests', () => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
         it('should successfully fill order when makerAsset is ERC721 and approveAll is set for it', async () => {
@@ -287,7 +368,7 @@ describe('FillOrder Tests', () => {
                     traderAssetAllowance: AllowanceAmountScenario.Unlimited,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
         it('should successfully fill order when makerAsset and takerAsset are ERC721 and approveAll is set for them', async () => {
@@ -308,7 +389,43 @@ describe('FillOrder Tests', () => {
                     traderAssetAllowance: AllowanceAmountScenario.Unlimited,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should be able to pay maker fee with taker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerAssetDataScenario: AssetDataScenario.ERC721,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                    feeAllowance: AllowanceAmountScenario.Unlimited,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with maker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetDataScenario: AssetDataScenario.ERC721,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                    feeAllowance: AllowanceAmountScenario.Unlimited,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
     });
 });
