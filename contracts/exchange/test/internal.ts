@@ -3,6 +3,7 @@ import {
     chaiSetup,
     constants,
     FillResults,
+    getRevertReasonOrErrorMessageForSendTransactionAsync,
     provider,
     testCombinatoriallyWithReferenceFuncAsync,
     txDefaults,
@@ -11,7 +12,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -76,7 +77,9 @@ describe('Exchange core internal functions', () => {
             txDefaults,
             new BigNumber(chainId),
         );
-        overflowErrorForSendTransaction = new Error(RevertReason.Uint256Overflow);
+        overflowErrorForSendTransaction = new Error(
+            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
+        );
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         roundingErrorForCall = new Error(RevertReason.RoundingError);
     });
@@ -157,21 +160,6 @@ describe('Exchange core internal functions', () => {
         return product.dividedToIntegerBy(denominator);
     }
 
-    function wrapCallTestFunction<T>(
-        callAsync: (...args: any[]) => Promise<T>,
-    ): (...args: any[]) => Promise<T> {
-        return async (...args: any[]): Promise<T> => {
-            try {
-                return await callAsync(...args);
-            } catch (err) {
-                if (err instanceof StringRevertError) {
-                    throw new Error(err.values.message as string);
-                }
-                throw err;
-            }
-        };
-    }
-
     describe('addFillResults', async () => {
         function makeFillResults(value: BigNumber): FillResults {
             return {
@@ -215,7 +203,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'addFillResults',
             referenceAddFillResultsAsync,
-            wrapCallTestFunction(testAddFillResultsAsync),
+            testAddFillResultsAsync,
             [uint256Values, uint256Values],
         );
     });
@@ -279,7 +267,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'calculateFillResults',
             referenceCalculateFillResultsAsync,
-            wrapCallTestFunction(testCalculateFillResultsAsync),
+            testCalculateFillResultsAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -309,7 +297,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'getPartialAmountFloor',
             referenceGetPartialAmountFloorAsync,
-            wrapCallTestFunction(testGetPartialAmountFloorAsync),
+            testGetPartialAmountFloorAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -346,7 +334,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'getPartialAmountCeil',
             referenceGetPartialAmountCeilAsync,
-            wrapCallTestFunction(testGetPartialAmountCeilAsync),
+            testGetPartialAmountCeilAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -362,7 +350,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'safeGetPartialAmountFloor',
             referenceSafeGetPartialAmountFloorAsync,
-            wrapCallTestFunction(testSafeGetPartialAmountFloorAsync),
+            testSafeGetPartialAmountFloorAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -403,7 +391,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'safeGetPartialAmountCeil',
             referenceSafeGetPartialAmountCeilAsync,
-            wrapCallTestFunction(testSafeGetPartialAmountCeilAsync),
+            testSafeGetPartialAmountCeilAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -419,7 +407,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'isRoundingErrorFloor',
             referenceIsRoundingErrorFloorAsync,
-            wrapCallTestFunction(testIsRoundingErrorFloorAsync),
+            testIsRoundingErrorFloorAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -435,7 +423,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'isRoundingErrorCeil',
             referenceIsRoundingErrorCeilAsync,
-            wrapCallTestFunction(testIsRoundingErrorCeilAsync),
+            testIsRoundingErrorCeilAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -487,7 +475,7 @@ describe('Exchange core internal functions', () => {
         await testCombinatoriallyWithReferenceFuncAsync(
             'updateFilledState',
             referenceUpdateFilledStateAsync,
-            wrapCallTestFunction(testUpdateFilledStateAsync),
+            testUpdateFilledStateAsync,
             [uint256Values, uint256Values, bytes32Values],
         );
     });
