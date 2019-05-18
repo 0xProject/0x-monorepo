@@ -184,18 +184,10 @@ export class AssetWrapper {
                 );
                 if (!isProxyApprovedForAll && desiredAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
                     const isApproved = true;
-                    await erc721Wrapper.approveProxyForAllAsync(
-                        assetProxyData.tokenAddress,
-                        assetProxyData.tokenId,
-                        isApproved,
-                    );
+                    await erc721Wrapper.approveProxyForAllAsync(assetProxyData.tokenAddress, userAddress, isApproved);
                 } else if (isProxyApprovedForAll && desiredAllowance.eq(0)) {
                     const isApproved = false;
-                    await erc721Wrapper.approveProxyForAllAsync(
-                        assetProxyData.tokenAddress,
-                        assetProxyData.tokenId,
-                        isApproved,
-                    );
+                    await erc721Wrapper.approveProxyForAllAsync(assetProxyData.tokenAddress, userAddress, isApproved);
                 } else if (isProxyApprovedForAll && desiredAllowance.eq(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)) {
                     return; // Noop
                 }

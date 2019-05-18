@@ -405,6 +405,17 @@ describe('Exchange core', () => {
                 (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
             ).to.be.bignumber.equal(signedOrder.takerFee);
         });
+
+        it('should throw if order is expired', async () => {
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+            });
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Expired);
+            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
+        });
     });
 
     describe('Testing exchange of ERC20 tokens with no return values', () => {
