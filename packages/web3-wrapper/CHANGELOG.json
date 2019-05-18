@@ -1,14 +1,19 @@
 [
     {
+        "version": "6.0.7",
+        "changes": [
+            {
+                "note": "Let `toBaseUnitAmount()` accept a `number`",
+                "pr": 1819
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "6.0.6",
         "changes": [
             {
                 "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
         "version": "6.0.5",
         "changes": [
             {
