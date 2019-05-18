@@ -49,6 +49,14 @@
             {
                 "note": "Update tests to use contract-built-in `awaitTransactionSuccessAsync`",
                 "pr": 1797
+            },
+            {
+                "note": "Make `ERC721Wrapper.setApprovalForAll()` take an owner address instead of a token ID",
+                "pr": 1819
+            },
+            {
+                "note": "Automatically set unlimited proxy allowances in `ERC721.setBalancesAndAllowancesAsync()`",
+                "pr": 1819
             }
         ],
         "timestamp": 1557507213
