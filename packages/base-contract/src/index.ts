@@ -5,6 +5,7 @@ import {
     decodeBytesAsRevertError,
     decodeThrownErrorAsRevertError,
     RevertError,
+    StringRevertError,
 } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
@@ -123,6 +124,10 @@ export class BaseContract {
         let revertError: RevertError;
         try {
             revertError = decodeThrownErrorAsRevertError(error);
+            // Re-cast StringRevertErrors as plain Errors for backwards-compatibility.
+            if (revertError instanceof StringRevertError) {
+                throw new Error(revertError.values.message as string);
+            }
         } catch (err) {
             // Can't decode it.
             return;
