@@ -13,6 +13,14 @@
             {
                 "note": "Add `RevertError`, `StringRevertError`, `AnyRevertError` types and associated utilities",
                 "pr": 1761
+            },
+            {
+                "note": "Update `RevertError` construction to produce a readable `Error` message",
+                "pr": 1819
+            },
+            {
+                "note": "Add `Error` -> `RevertError` functions",
+                "pr": 1819
             }
         ]
     },
