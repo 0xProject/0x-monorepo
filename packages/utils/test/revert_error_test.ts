@@ -17,7 +17,7 @@ class DescendantRevertError extends StringRevertError {
 
 class CustomRevertError extends RevertError {
     public constructor(message?: string) {
-        super('CustomRevertError(string message)', { message });
+        super('CustomRevertError', 'CustomRevertError(string message)', { message });
     }
 }
 
@@ -56,7 +56,7 @@ describe('RevertError', () => {
         it('should throw when registering an already registered signature', () => {
             class CustomRevertError2 extends RevertError {
                 public constructor() {
-                    super(new CustomRevertError().signature, {});
+                    super('CustomRevertError2', new CustomRevertError().signature, {});
                 }
             }
             expect(() => RevertError.registerType(CustomRevertError2)).to.throw();
