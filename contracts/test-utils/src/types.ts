@@ -187,6 +187,7 @@ export enum TakerAssetFillAmountScenario {
     GreaterThanRemainingFillableTakerAssetAmount = 'GREATER_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
     LessThanRemainingFillableTakerAssetAmount = 'LESS_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
     ExactlyRemainingFillableTakerAssetAmount = 'EXACTLY_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
+    ExactlyTakerAssetAmount = 'EXACTLY_TAKER_ASSET_AMOUNT',
 }
 
 export interface OrderScenario {
@@ -204,12 +205,14 @@ export interface OrderScenario {
 }
 
 export enum BalanceAmountScenario {
+    Zero = 'ZERO',
     Exact = 'EXACT',
     TooLow = 'TOO_LOW',
     Higher = 'HIGHER',
 }
 
 export enum AllowanceAmountScenario {
+    Zero = 'ZERO',
     Exact = 'EXACT',
     TooLow = 'TOO_LOW',
     Higher = 'HIGHER',
