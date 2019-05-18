@@ -126,8 +126,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owners(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string
@@ -230,8 +236,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeOwner(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -334,8 +346,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('revokeConfirmation(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -362,8 +380,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isOwner(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
@@ -392,8 +416,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmations(uint256,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
@@ -496,8 +526,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -522,8 +558,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('secondsTimeLocked()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -552,8 +594,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionCount(bool,bool)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -667,8 +715,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -771,8 +825,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -799,8 +859,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isConfirmed(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
@@ -903,8 +969,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeTimeLock(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -931,8 +1003,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean
@@ -959,8 +1037,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmationCount(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -987,8 +1071,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactions(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[string, BigNumber, string, boolean]
@@ -1013,8 +1103,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getOwners()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string[]
@@ -1047,8 +1143,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionIds(uint256,uint256,bool,bool)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber[]
@@ -1075,8 +1177,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmations(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string[]
@@ -1101,8 +1209,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactionCount()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -1205,8 +1319,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeRequirement(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -1309,8 +1429,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmTransaction(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -1435,8 +1561,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('submitTransaction(address,uint256,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -1463,8 +1595,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmationTimes(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -1489,8 +1627,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('MAX_OWNER_COUNT()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -1515,8 +1659,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('required()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber
@@ -1630,8 +1780,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('replaceOwner(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
@@ -1734,8 +1890,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void
