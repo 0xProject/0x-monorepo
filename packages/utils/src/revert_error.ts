@@ -37,8 +37,47 @@ export function registerRevertErrorType(revertClass: RevertErrorType): void {
  * @param bytes The ABI encoded revert error. Either a hex string or a Buffer.
  * @return A RevertError object.
  */
-export function decodeRevertError(bytes: string | Buffer): RevertError {
+export function decodeBytesAsRevertError(bytes: string | Buffer): RevertError {
     return RevertError.decode(bytes);
+}
+
+/**
+ * Decode a thrown error.
+ * Throws if the data cannot be decoded as a known RevertError type.
+ * @param error Any thrown error.
+ * @return A RevertError object.
+ */
+export function decodeThrownErrorAsRevertError(error: Error): RevertError {
+    if (error instanceof RevertError) {
+        return error;
+    }
+    return RevertError.decode(getThrownErrorRevertErrorBytes(error));
+}
+
+/**
+ * Coerce a thrown error into a `RevertError`. Always succeeds.
+ * @param error Any thrown error.
+ * @return A RevertError object.
+ */
+export function coerceThrownErrorAsRevertError(error: Error): RevertError {
+    if (error instanceof RevertError) {
+        return error;
+    }
+    try {
+        return decodeThrownErrorAsRevertError(error);
+    } catch (err) {
+        if (isGanacheTransactionRevertError(error)) {
+            return new AnyRevertError();
+        }
+        // Handle geth transaction reverts.
+        if (isGethTransactionRevertError(error)) {
+            // Geth transaction reverts are opaque, meaning no useful data is returned,
+            // so we just return an AnyRevertError type.
+            return new AnyRevertError();
+        }
+        // Coerce plain errors into a StringRevertError.
+        return new StringRevertError(error.message);
+    }
 }
 
 /**
@@ -47,8 +86,8 @@ export function decodeRevertError(bytes: string | Buffer): RevertError {
 export abstract class RevertError extends Error {
     // Map of types registered via `registerType`.
     private static readonly _typeRegistry: ObjectMap<RevertErrorRegistryItem> = {};
-    public abi?: RevertErrorAbi;
-    public values: ValueMap = {};
+    public readonly abi?: RevertErrorAbi;
+    public readonly values: ValueMap = {};
 
     /**
      * Decode an ABI encoded revert error.
@@ -105,8 +144,8 @@ export abstract class RevertError extends Error {
      * @param declaration Function-style declaration of the revert (e.g., Error(string message))
      * @param values Optional mapping of parameters to values.
      */
-    protected constructor(declaration?: string, values?: ValueMap) {
-        super();
+    protected constructor(name: string, declaration?: string, values?: ValueMap) {
+        super(createErrorMessage(name, values));
         if (declaration !== undefined) {
             this.abi = declarationToAbi(declaration);
             if (values !== undefined) {
@@ -115,7 +154,6 @@ export abstract class RevertError extends Error {
         }
         // Extending Error is tricky; we need to explicitly set the prototype.
         Object.setPrototypeOf(this, new.target.prototype);
-        this.message = this.toString();
     }
 
     /**
@@ -248,12 +286,65 @@ export abstract class RevertError extends Error {
     }
 }
 
+const GANACHE_TRANSACTION_REVERT_ERROR_MESSAGE = /^VM Exception while processing transaction: revert/;
+const GETH_TRANSACTION_REVERT_ERROR_MESSAGE = /always failing transaction$/;
+
+interface GanacheTransactionRevertResult {
+    error: 'revert';
+    program_counter: number;
+    return?: string;
+    reason?: string;
+}
+
+interface GanacheTransactionRevertError extends Error {
+    results: { [hash: string]: GanacheTransactionRevertResult };
+    hashes: string[];
+}
+
+/**
+ * Try to extract the ecnoded revert error bytes from a thrown `Error`.
+ */
+export function getThrownErrorRevertErrorBytes(error: Error | GanacheTransactionRevertError): string {
+    // Handle ganache transaction reverts.
+    if (isGanacheTransactionRevertError(error)) {
+        // Grab the first result attached.
+        const result = error.results[error.hashes[0]];
+        // If a reason is provided, just wrap it in a StringRevertError
+        if (result.reason !== undefined) {
+            return new StringRevertError(result.reason).encode();
+        }
+        if (result.return !== undefined && result.return !== '0x') {
+            return result.return;
+        }
+    } else {
+        // Handle geth transaction reverts.
+        if (isGethTransactionRevertError(error)) {
+            // Geth transaction reverts are opaque, meaning no useful data is returned,
+            // so we do nothing.
+        }
+    }
+    throw new Error(`Cannot decode thrown Errror "${error.message}" as a RevertError`);
+}
+
+function isGanacheTransactionRevertError(
+    error: Error | GanacheTransactionRevertError,
+): error is GanacheTransactionRevertError {
+    if (GANACHE_TRANSACTION_REVERT_ERROR_MESSAGE.test(error.message) && 'hashes' in error && 'results' in error) {
+        return true;
+    }
+    return false;
+}
+
+function isGethTransactionRevertError(error: Error | GanacheTransactionRevertError): boolean {
+    return GETH_TRANSACTION_REVERT_ERROR_MESSAGE.test(error.message);
+}
+
 /**
  * RevertError type for standard string reverts.
  */
 export class StringRevertError extends RevertError {
     constructor(message?: string) {
-        super('Error(string message)', { message });
+        super('StringRevertError', 'Error(string message)', { message });
     }
 }
 
@@ -262,8 +353,22 @@ export class StringRevertError extends RevertError {
  */
 export class AnyRevertError extends RevertError {
     constructor() {
-        super();
+        super('AnyRevertError');
     }
+}
+
+/**
+ * Create an error message for a RevertError.
+ * @param name The name of the RevertError.
+ * @param values The values for the RevertError.
+ */
+function createErrorMessage(name: string, values?: ValueMap): string {
+    if (values === undefined) {
+        return `${name}()`;
+    }
+    const _values = _.omitBy(values, (v: any) => _.isNil(v));
+    const inner = _.isEmpty(_values) ? '' : inspect(_values);
+    return `${name}(${inner})`;
 }
 
 /**
