@@ -53,6 +53,10 @@
             {
                 "note": "add `awaitTransactionSuccessAsync()` to `tx.handlebars`",
                 "pr": 1797
+            },
+            {
+                "note": "Update `callAsync` to automatically transform Errors into RevertErrors, if possible.",
+                "pr": 1819
             }
         ],
         "timestamp": 1557507213

@@ -53,6 +53,10 @@
             {
                 "note": "Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods",
                 "pr": 1797
+            },
+            {
+                "note": "Update wrappers to automatically throw `RevertError` types when possible.",
+                "pr": 1819
             }
         ],
         "timestamp": 1557507213

@@ -57,9 +57,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getSignerAddress(bytes32,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -106,9 +111,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionHash((uint256,address,bytes))');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -159,9 +169,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -180,66 +195,6 @@ export class CoordinatorContract extends BaseContract {
                 [approval],
             );
             return abiEncodedTransactionData;
-        },
-    };
-    public getTransactionHash = {
-        async callAsync(
-            transaction: { salt: BigNumber; signerAddress: string; data: string },
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            const self = (this as any) as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments('getTransactionHash((uint256,address,bytes))', [
-                transaction,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getTransactionHash((uint256,address,bytes))');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
-    public getCoordinatorApprovalHash = {
-        async callAsync(
-            approval: {
-                txOrigin: string;
-                transactionHash: string;
-                transactionSignature: string;
-                approvalExpirationTimeSeconds: BigNumber;
-            },
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            const self = (this as any) as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments(
-                'getCoordinatorApprovalHash((address,bytes32,bytes,uint256))',
-                [approval],
-            );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
         },
     };
     public executeTransaction = {
@@ -405,9 +360,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
             );
@@ -464,9 +424,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_EXCHANGE_DOMAIN_HASH()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -477,27 +442,6 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_EXCHANGE_DOMAIN_HASH()', []);
             return abiEncodedTransactionData;
-        },
-    };
-    public EIP712_EXCHANGE_DOMAIN_HASH = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-            const self = (this as any) as CoordinatorContract;
-            const encodedData = self._strictEncodeArguments('EIP712_EXCHANGE_DOMAIN_HASH()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('EIP712_EXCHANGE_DOMAIN_HASH()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
         },
     };
     public assertValidCoordinatorApprovals = {
@@ -544,9 +488,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])',
             );
@@ -623,9 +572,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeOrdersFromFillData(bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<
@@ -677,9 +631,14 @@ export class CoordinatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_COORDINATOR_DOMAIN_HASH()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -696,8 +655,7 @@ export class CoordinatorContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        exchange: string,
-        chainId: BigNumber,
+        _exchange: string,
     ): Promise<CoordinatorContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -710,15 +668,14 @@ export class CoordinatorContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return CoordinatorContract.deployAsync(bytecode, abi, provider, txDefaults, exchange, chainId);
+        return CoordinatorContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        exchange: string,
-        chainId: BigNumber,
+        _exchange: string,
     ): Promise<CoordinatorContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -728,14 +685,14 @@ export class CoordinatorContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [exchange, chainId] = BaseContract._formatABIDataItemList(
+        [_exchange] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [exchange, chainId],
+            [_exchange],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [exchange, chainId]);
+        const txData = deployInfo.encode(bytecode, [_exchange]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             { data: txData },
@@ -746,13 +703,8 @@ export class CoordinatorContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Coordinator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new CoordinatorContract(
-            abi,
-            txReceipt.contractAddress as string,
-            provider,
-            txDefaults,
-        );
-        contractInstance.constructorArgs = [exchange, chainId];
+        const contractInstance = new CoordinatorContract(txReceipt.contractAddress as string, provider, txDefaults);
+        contractInstance.constructorArgs = [_exchange];
         return contractInstance;
     }
 
@@ -790,7 +742,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'salt',
@@ -824,7 +775,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'approval',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'txOrigin',
@@ -862,7 +812,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'salt',
@@ -921,7 +870,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'salt',
@@ -973,7 +921,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',

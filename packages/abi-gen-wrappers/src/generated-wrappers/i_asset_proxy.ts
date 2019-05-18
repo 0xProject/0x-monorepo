@@ -111,9 +111,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -213,9 +218,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -346,9 +356,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -505,9 +520,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -550,9 +570,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -588,9 +613,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
@@ -687,9 +717,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);

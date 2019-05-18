@@ -86,9 +86,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
             );
@@ -170,9 +175,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
@@ -250,9 +260,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
             );
@@ -359,9 +374,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
             );
@@ -441,9 +461,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -494,9 +519,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(rawCallResult);
@@ -568,9 +598,14 @@ export class OrderValidatorContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
             );
@@ -684,7 +719,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -746,7 +780,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'orderStatus',
@@ -765,7 +798,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerBalance',
@@ -839,7 +871,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -901,7 +932,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'ordersInfo',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'orderStatus',
@@ -920,7 +950,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'tradersInfo',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerBalance',
@@ -967,7 +996,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1029,7 +1057,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerBalance',
@@ -1126,7 +1153,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1188,7 +1214,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerBalance',

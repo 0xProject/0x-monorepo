@@ -185,9 +185,14 @@ export class DutchAuctionContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
             );
@@ -468,9 +473,14 @@ export class DutchAuctionContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
             );
@@ -603,7 +613,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -661,7 +670,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'auctionDetails',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'beginTimeSeconds',
@@ -700,7 +708,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'buyOrder',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -755,7 +762,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'sellOrder',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -821,12 +827,10 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'left',
                                 type: 'tuple',
-
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -849,7 +853,6 @@ export class DutchAuctionContract extends BaseContract {
                             {
                                 name: 'right',
                                 type: 'tuple',
-
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',

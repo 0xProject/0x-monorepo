@@ -79,9 +79,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -122,9 +127,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -249,9 +259,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -396,9 +411,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -520,9 +540,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -667,9 +692,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -717,9 +747,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -761,9 +796,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -800,9 +840,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -838,9 +883,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -955,9 +1005,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1090,9 +1145,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1255,9 +1315,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1310,9 +1375,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
@@ -1414,9 +1484,14 @@ export class DummyERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);

@@ -339,9 +339,14 @@ export class ForwarderContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
             );
@@ -525,9 +530,14 @@ export class ForwarderContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -568,9 +578,14 @@ export class ForwarderContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -861,9 +876,14 @@ export class ForwarderContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
                 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
             );
@@ -1019,9 +1039,14 @@ export class ForwarderContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1117,7 +1142,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1180,7 +1204,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1250,7 +1273,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orderFillResults',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1273,7 +1295,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrderFillResults',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1336,7 +1357,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1395,7 +1415,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1465,7 +1484,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orderFillResults',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1488,7 +1506,6 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrderFillResults',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',

@@ -9,6 +9,10 @@
             {
                 "note": "Remove dependency on ethers.js",
                 "pr": 1761
+            },
+            {
+                "note": "Add more RevertError decoding functions",
+                "pr": 1819
             }
         ]
     },
