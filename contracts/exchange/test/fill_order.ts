@@ -1,8 +1,11 @@
+import { chaiSetup, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import * as _ from 'lodash';
+
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
     BalanceAmountScenario,
-    chaiSetup,
     ExpirationTimeSecondsScenario,
     FeeAssetDataScenario,
     FeeRecipientAddressScenario,
@@ -10,13 +13,12 @@ import {
     OrderAssetAmountScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import * as _ from 'lodash';
+} from './utils/fill_order_scenarios';
 
-import { FillOrderCombinatorialUtils, fillOrderCombinatorialUtilsFactoryAsync } from '../src';
+import {
+    FillOrderCombinatorialUtils,
+    fillOrderCombinatorialUtilsFactoryAsync,
+} from './utils/fill_order_combinatorial_utils';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -35,7 +37,7 @@ const defaultFillScenario = {
         makerFeeAssetDataScenario: FeeAssetDataScenario.ERC20EighteenDecimals,
         takerFeeAssetDataScenario: FeeAssetDataScenario.ERC20EighteenDecimals,
     },
-    takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
+    takerAssetFillAmountScenario: TakerAssetFillAmountScenario.LessThanTakerAssetAmount,
     makerStateScenario: {
         traderAssetBalance: BalanceAmountScenario.Higher,
         traderAssetAllowance: AllowanceAmountScenario.Unlimited,
@@ -134,7 +136,7 @@ describe('FillOrder Tests', () => {
         it('should fill remaining value if takerAssetFillAmount > remaining takerAssetAmount', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
@@ -189,7 +191,7 @@ describe('FillOrder Tests', () => {
                     ...defaultFillScenario.orderScenario,
                     makerAssetAmountScenario: OrderAssetAmountScenario.Zero,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
@@ -201,7 +203,7 @@ describe('FillOrder Tests', () => {
                     ...defaultFillScenario.orderScenario,
                     takerAssetAmountScenario: OrderAssetAmountScenario.Zero,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
@@ -323,7 +325,7 @@ describe('FillOrder Tests', () => {
                     makerAssetDataScenario: AssetDataScenario.ERC721,
                     takerAssetDataScenario: AssetDataScenario.ERC721,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
@@ -336,7 +338,7 @@ describe('FillOrder Tests', () => {
                     makerAssetDataScenario: AssetDataScenario.ERC721,
                     takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
@@ -349,7 +351,7 @@ describe('FillOrder Tests', () => {
                     makerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
                     takerAssetDataScenario: AssetDataScenario.ERC721,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
@@ -362,7 +364,7 @@ describe('FillOrder Tests', () => {
                     makerAssetDataScenario: AssetDataScenario.ERC721,
                     takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
                 makerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
                     traderAssetAllowance: AllowanceAmountScenario.Unlimited,
@@ -379,7 +381,7 @@ describe('FillOrder Tests', () => {
                     makerAssetDataScenario: AssetDataScenario.ERC721,
                     takerAssetDataScenario: AssetDataScenario.ERC721,
                 },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
                 makerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
                     traderAssetAllowance: AllowanceAmountScenario.Unlimited,

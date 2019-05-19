@@ -1,30 +1,10 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import {
-    AllowanceAmountScenario,
-    AssetDataScenario,
-    BalanceAmountScenario,
-    chaiSetup,
-    constants,
-    ExpirationTimeSecondsScenario,
-    FeeAssetDataScenario,
-    FeeRecipientAddressScenario,
-    FillResults,
-    FillScenario,
-    OrderAssetAmountScenario,
-    OrderScenario,
-    orderUtils,
-    signingUtils,
-    TakerAssetFillAmountScenario,
-    TakerScenario,
-    TraderStateScenario,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, FillResults, orderUtils, signingUtils } from '@0x/contracts-test-utils';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeRevertErrors,
     orderHashUtils,
-    OrderStateUtils,
-    OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
@@ -38,6 +18,20 @@ import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
 
 import { AssetWrapper } from './asset_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
+import {
+    AllowanceAmountScenario,
+    AssetDataScenario,
+    BalanceAmountScenario,
+    ExpirationTimeSecondsScenario,
+    FeeAssetDataScenario,
+    FeeRecipientAddressScenario,
+    FillScenario,
+    OrderAssetAmountScenario,
+    OrderScenario,
+    TakerAssetFillAmountScenario,
+    TakerScenario,
+    TraderStateScenario,
+} from './fill_order_scenarios';
 import { FillOrderError, FillOrderSimulator } from './fill_order_simulator';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
@@ -159,7 +153,6 @@ export class FillOrderCombinatorialUtils {
     public assetWrapper: AssetWrapper;
     public balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher;
     public orderFilledCancelledFetcher: SimpleOrderFilledCancelledFetcher;
-    public orderValidationUtils: OrderValidationUtils;
 
     public static generateFillOrderCombinations(): FillScenario[] {
         const takerScenarios = [
@@ -220,10 +213,9 @@ export class FillOrderCombinatorialUtils {
             FeeAssetDataScenario.TakerToken,
         ];
         const takerAssetFillAmountScenario = [
-            TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
-            // TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
-            // TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
             TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+            // TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
+            // TakerAssetFillAmountScenario.LessThanTakerAssetAmount,
         ];
         const makerAssetBalanceScenario = [
             BalanceAmountScenario.Higher,
@@ -383,7 +375,6 @@ export class FillOrderCombinatorialUtils {
         this.assetWrapper = assetWrapper;
         this.balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(assetWrapper);
         this.orderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(exchangeWrapper);
-        this.orderValidationUtils = new OrderValidationUtils(this.orderFilledCancelledFetcher, provider);
     }
 
     public async testFillOrderScenarioAsync(fillScenario: FillScenario): Promise<void> {
@@ -408,7 +399,7 @@ export class FillOrderCombinatorialUtils {
     ): Promise<void> {
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(this.balanceAndProxyAllowanceFetcher);
         const signedOrder = await this._generateSignedOrder(fillScenario.orderScenario);
-        const takerAssetFillAmount = await this._getTakerAssetFillAmountAsync(
+        const takerAssetFillAmount = getTakerAssetFillAmountAsync(
             signedOrder,
             fillScenario.takerAssetFillAmountScenario,
         );
@@ -645,60 +636,6 @@ export class FillOrderCombinatorialUtils {
         expect(actTakerFeeAssetBalanceOfFeeRecipient, 'takerFeeAssetBalanceOfFeeRecipient').to.be.bignumber.equal(
             expTakerFeeAssetBalanceOfFeeRecipient,
         );
-    }
-
-    private async _getTakerAssetFillAmountAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmountScenario: TakerAssetFillAmountScenario,
-    ): Promise<BigNumber> {
-        const orderStateUtils = new OrderStateUtils(
-            this.balanceAndProxyAllowanceFetcher,
-            this.orderFilledCancelledFetcher,
-        );
-        // TODO: Write our own version of orderStateUtils.getMaxFillableTakerAssetAmountAsync
-        // because it doesn't properly take into account paying for maker/taker fees with received
-        // assets.
-        const fillableTakerAssetAmount = await orderStateUtils.getMaxFillableTakerAssetAmountAsync(
-            signedOrder,
-            this.takerAddress,
-        );
-
-        let takerAssetFillAmount;
-        switch (takerAssetFillAmountScenario) {
-            case TakerAssetFillAmountScenario.Zero:
-                takerAssetFillAmount = new BigNumber(0);
-                break;
-
-            case TakerAssetFillAmountScenario.ExactlyTakerAssetAmount:
-                takerAssetFillAmount = signedOrder.takerAssetAmount;
-                break;
-
-            case TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount;
-                break;
-
-            case TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount.plus(1);
-                break;
-
-            case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
-                const takerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.takerAssetData);
-                const makerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
-                const isEitherAssetERC721 =
-                    takerAssetProxyId === AssetProxyId.ERC721 || makerAssetProxyId === AssetProxyId.ERC721;
-                if (isEitherAssetERC721) {
-                    throw new Error(
-                        'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
-                    );
-                }
-                takerAssetFillAmount = fillableTakerAssetAmount.div(2).integerValue(BigNumber.ROUND_FLOOR);
-                break;
-
-            default:
-                throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', takerAssetFillAmountScenario);
-        }
-
-        return takerAssetFillAmount;
     }
 
     private async _modifyTraderStateAsync(
@@ -981,6 +918,44 @@ export class FillOrderCombinatorialUtils {
             );
         }
     }
+}
+
+function getTakerAssetFillAmountAsync(
+    signedOrder: SignedOrder,
+    takerAssetFillAmountScenario: TakerAssetFillAmountScenario,
+): BigNumber {
+    let takerAssetFillAmount;
+    switch (takerAssetFillAmountScenario) {
+        case TakerAssetFillAmountScenario.Zero:
+            takerAssetFillAmount = new BigNumber(0);
+            break;
+
+        case TakerAssetFillAmountScenario.ExactlyTakerAssetAmount:
+            takerAssetFillAmount = signedOrder.takerAssetAmount;
+            break;
+
+        case TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount:
+            takerAssetFillAmount = signedOrder.takerAssetAmount.plus(1);
+            break;
+
+        case TakerAssetFillAmountScenario.LessThanTakerAssetAmount:
+            const takerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.takerAssetData);
+            const makerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
+            const isEitherAssetERC721 =
+                takerAssetProxyId === AssetProxyId.ERC721 || makerAssetProxyId === AssetProxyId.ERC721;
+            if (isEitherAssetERC721) {
+                throw new Error(
+                    'Cannot test `TakerAssetFillAmountScenario.LessThanTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
+                );
+            }
+            takerAssetFillAmount = signedOrder.takerAssetAmount.div(2).integerValue(BigNumber.ROUND_FLOOR);
+            break;
+
+        default:
+            throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', takerAssetFillAmountScenario);
+    }
+
+    return takerAssetFillAmount;
 }
 
 function fillErrorToRevertError(order: Order, error: FillOrderError): RevertError {
