@@ -1,18 +1,18 @@
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { constants, ERC721TokenIdsByOwner } from '@0x/contracts-test-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
+import { Order } from '@0x/types';
+import { BigNumber, errorUtils } from '@0x/utils';
+
 import {
     AssetDataScenario,
-    constants,
-    ERC721TokenIdsByOwner,
     ExpirationTimeSecondsScenario,
     FeeAssetDataScenario,
     FeeRecipientAddressScenario,
     OrderAssetAmountScenario,
     OrderScenario,
     TakerScenario,
-} from '@0x/contracts-test-utils';
-import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { Order } from '@0x/types';
-import { BigNumber, errorUtils } from '@0x/utils';
+} from './fill_order_scenarios';
 
 const TEN_UNITS_EIGHTEEN_DECIMALS = new BigNumber('10e18');
 const FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber('5e18');
