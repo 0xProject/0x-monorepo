@@ -18,15 +18,9 @@
 
 pragma solidity ^0.5.9;
 
-import "./MixinStake.sol";
 
-
-contract Staking is
-    MixinStake
+contract MStake
 {
-    constructor(address zrxVault)
-        public
-        MixinStake(zrxVault)
-    {}
+    
 
 }

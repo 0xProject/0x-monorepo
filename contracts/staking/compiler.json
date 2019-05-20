@@ -22,5 +22,11 @@
             }
         }
     },
-    "contracts": ["src/IStaking.sol", "src/Staking.sol"]
+    "contracts": [
+        "src/MixinStake.sol",
+        "src/Staking.sol",
+        "src/libs/LibZrxToken.sol",
+        "src/vaults/MixinVaultCore.sol",
+        "src/vaults/ZrxVault.sol"
+    ]
 }
