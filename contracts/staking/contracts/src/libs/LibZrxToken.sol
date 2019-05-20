@@ -18,15 +18,16 @@
 
 pragma solidity ^0.5.5;
 
-import "./MixinStake.sol";
 
+library LibZrxToken {
 
-contract Staking is
-    MixinStake
-{
-    constructor(address zrxVault)
+    uint256 constant internal TOKEN_MULTIPLIER = 10**18;
+
+    function roundDownToNearestWholeToken(uint256 value)
         public
-        MixinStake(zrxVault)
-    {}
-
+        pure
+        returns (uint256)
+    {
+        return (value / TOKEN_MULTIPLIER) * TOKEN_MULTIPLIER;
+    }
 }
