@@ -39,11 +39,6 @@ const team: TeamMember[] = [
         title: 'Director of Operations',
     },
     {
-        imageUrl: '/images/team/leol.jpg',
-        name: 'Leonid Logvinov',
-        title: 'Engineer',
-    },
-    {
         imageUrl: '/images/team/benb.jpg',
         name: 'Ben Burns',
         title: 'Designer',
@@ -187,6 +182,11 @@ const team: TeamMember[] = [
         imageUrl: '/images/team/patryka.jpg',
         name: 'Patryk Adaś',
         title: 'Designer',
+    },
+    {
+        imageUrl: '/images/team/alexk.jpg',
+        name: 'Alex Kroeger',
+        title: 'Data Scientist',
     },
 ];
 
