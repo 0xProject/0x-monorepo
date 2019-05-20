@@ -33,6 +33,8 @@
     "devDependencies": {
         "@0x/abi-gen": "^2.0.10",
         "@0x/abi-gen-templates": "^2.1.0",
+        "@0x/assert": "^2.0.10",
+        "@0x/json-schemas": "^3.0.10",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.2.2",
         "@0x/utils": "^4.3.3",
