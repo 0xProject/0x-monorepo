@@ -8,11 +8,10 @@ public {{this.tsName}} = {
         {{/each}}
         const self = this as any as {{contractName}}Contract;
         const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const passedInTxData = txData === undefined ? {} : txData;
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 to: self.address,
-                ...passedInTxData,
+                ...txData,
                 data: encodedData,
             },
             self._web3Wrapper.getContractDefaults(),
@@ -60,11 +59,10 @@ public {{this.tsName}} = {
         {{/each}}
         const self = this as any as {{contractName}}Contract;
         const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const passedInTxData = txData === undefined ? {} : txData;
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 to: self.address,
-                ...passedInTxData,
+                ...txData,
                 data: encodedData,
             },
             self._web3Wrapper.getContractDefaults(),

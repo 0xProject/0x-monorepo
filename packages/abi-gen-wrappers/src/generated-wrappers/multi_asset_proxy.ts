@@ -1,6 +1,6 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-// tslint:disable:no-unbound-method
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
@@ -100,11 +100,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -146,11 +145,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -286,11 +284,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -332,11 +329,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -395,6 +391,7 @@ export class MultiAssetProxyContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -429,17 +426,15 @@ export class MultiAssetProxyContract extends BaseContract {
             index: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
+            assert.isString('target', target);assert.isBigNumber('index', index);
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -459,8 +454,7 @@ export class MultiAssetProxyContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
+            assert.isString('target', target);assert.isBigNumber('index', index);
             const self = this as any as MultiAssetProxyContract;
             const txHashPromise = self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target,
     index
@@ -482,17 +476,15 @@ export class MultiAssetProxyContract extends BaseContract {
             index: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
+            assert.isString('target', target);assert.isBigNumber('index', index);
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -504,8 +496,7 @@ export class MultiAssetProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
         ): string {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
+            assert.isString('target', target);assert.isBigNumber('index', index);
             const self = this as any as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
@@ -519,8 +510,7 @@ export class MultiAssetProxyContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
+            assert.isString('target', target);assert.isBigNumber('index', index);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -557,6 +547,7 @@ export class MultiAssetProxyContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -631,11 +622,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -677,11 +667,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -740,6 +729,7 @@ export class MultiAssetProxyContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string[]
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -777,11 +767,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -823,11 +812,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = this as any as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -904,7 +892,7 @@ export class MultiAssetProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<MultiAssetProxyContract> {
-        assert.isString('bytecode', bytecode);
+        assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -939,4 +927,5 @@ export class MultiAssetProxyContract extends BaseContract {
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
-// tslint:enable:no-unbound-method
+// tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
+// tslint:enable:trailing-comma whitespace no-trailing-whitespace

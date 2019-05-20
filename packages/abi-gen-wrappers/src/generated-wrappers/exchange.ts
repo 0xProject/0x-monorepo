@@ -1,6 +1,6 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-// tslint:disable:no-unbound-method
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
@@ -127,19 +127,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -161,9 +158,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.batchFillOrders.sendTransactionAsync(orders,
     takerAssetFillAmounts,
@@ -187,19 +182,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -212,9 +204,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
@@ -230,9 +220,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -308,19 +296,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
     signerAddress,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -342,9 +327,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.preSign.sendTransactionAsync(hash,
     signerAddress,
@@ -368,19 +351,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
     signerAddress,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -393,9 +373,7 @@ export class ExchangeContract extends BaseContract {
             signerAddress: string,
             signature: string,
         ): string {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
     signerAddress,
@@ -411,9 +389,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -453,21 +429,17 @@ export class ExchangeContract extends BaseContract {
             rightSignature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
+            assert.isString('leftSignature', leftSignature);assert.isString('rightSignature', rightSignature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
     rightOrder,
     leftSignature,
     rightSignature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -491,10 +463,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
+            assert.isString('leftSignature', leftSignature);assert.isString('rightSignature', rightSignature);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.matchOrders.sendTransactionAsync(leftOrder,
     rightOrder,
@@ -520,21 +489,17 @@ export class ExchangeContract extends BaseContract {
             rightSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
+            assert.isString('leftSignature', leftSignature);assert.isString('rightSignature', rightSignature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
     rightOrder,
     leftSignature,
     rightSignature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -548,10 +513,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
         ): string {
-
-
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
+            assert.isString('leftSignature', leftSignature);assert.isString('rightSignature', rightSignature);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
     rightOrder,
@@ -569,10 +531,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
-
-
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
+            assert.isString('leftSignature', leftSignature);assert.isString('rightSignature', rightSignature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -612,19 +571,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -646,9 +602,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.fillOrderNoThrow.sendTransactionAsync(order,
     takerAssetFillAmount,
@@ -672,19 +626,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -697,9 +648,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
         ): string {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
@@ -715,9 +664,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -795,11 +742,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -841,11 +787,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -905,19 +850,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -939,9 +881,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.batchFillOrKillOrders.sendTransactionAsync(orders,
     takerAssetFillAmounts,
@@ -965,19 +905,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -990,9 +927,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
@@ -1008,9 +943,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1051,11 +984,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1097,11 +1029,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1161,19 +1092,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1195,9 +1123,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.batchFillOrdersNoThrow.sendTransactionAsync(orders,
     takerAssetFillAmounts,
@@ -1221,19 +1147,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1246,9 +1169,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
     takerAssetFillAmounts,
@@ -1264,9 +1185,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1379,19 +1298,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1413,9 +1329,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.fillOrKillOrder.sendTransactionAsync(order,
     takerAssetFillAmount,
@@ -1439,19 +1353,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1464,9 +1375,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
         ): string {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
@@ -1482,9 +1391,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1522,17 +1429,15 @@ export class ExchangeContract extends BaseContract {
             approval: boolean,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
+            assert.isString('validatorAddress', validatorAddress);assert.isBoolean('approval', approval);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
     approval
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1552,8 +1457,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
+            assert.isString('validatorAddress', validatorAddress);assert.isBoolean('approval', approval);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.setSignatureValidatorApproval.sendTransactionAsync(validatorAddress,
     approval
@@ -1575,17 +1479,15 @@ export class ExchangeContract extends BaseContract {
             approval: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
+            assert.isString('validatorAddress', validatorAddress);assert.isBoolean('approval', approval);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
     approval
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1597,8 +1499,7 @@ export class ExchangeContract extends BaseContract {
             validatorAddress: string,
             approval: boolean,
         ): string {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
+            assert.isString('validatorAddress', validatorAddress);assert.isBoolean('approval', approval);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
     approval
@@ -1612,8 +1513,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
+            assert.isString('validatorAddress', validatorAddress);assert.isBoolean('approval', approval);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1652,8 +1552,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('index_0', index_0);
-            assert.isString('index_1', index_1);
+            assert.isString('index_0', index_0);assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1691,19 +1590,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1725,9 +1621,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.marketSellOrders.sendTransactionAsync(orders,
     takerAssetFillAmount,
@@ -1751,19 +1645,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1776,9 +1667,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
@@ -1794,9 +1683,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1873,8 +1760,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('index_0', index_0);
-            assert.isString('index_1', index_1);
+            assert.isString('index_0', index_0);assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1911,6 +1797,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1948,9 +1835,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1989,19 +1874,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2023,9 +1905,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.marketBuyOrdersNoThrow.sendTransactionAsync(orders,
     makerAssetFillAmount,
@@ -2049,19 +1929,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2074,9 +1951,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
@@ -2092,9 +1967,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2133,19 +2006,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2167,9 +2037,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.fillOrder.sendTransactionAsync(order,
     takerAssetFillAmount,
@@ -2193,19 +2061,16 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2218,9 +2083,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
         ): string {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
     takerAssetFillAmount,
@@ -2236,9 +2099,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2278,21 +2139,17 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
+            assert.isBigNumber('salt', salt);assert.isString('signerAddress', signerAddress);assert.isString('data', data);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
     signerAddress,
     data,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2316,10 +2173,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
+            assert.isBigNumber('salt', salt);assert.isString('signerAddress', signerAddress);assert.isString('data', data);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.executeTransaction.sendTransactionAsync(salt,
     signerAddress,
@@ -2345,21 +2199,17 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
+            assert.isBigNumber('salt', salt);assert.isString('signerAddress', signerAddress);assert.isString('data', data);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
     signerAddress,
     data,
     signature
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2373,10 +2223,7 @@ export class ExchangeContract extends BaseContract {
             data: string,
             signature: string,
         ): string {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
+            assert.isBigNumber('salt', salt);assert.isString('signerAddress', signerAddress);assert.isString('data', data);assert.isString('signature', signature);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
     signerAddress,
@@ -2394,10 +2241,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
+            assert.isBigNumber('salt', salt);assert.isString('signerAddress', signerAddress);assert.isString('data', data);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2439,11 +2283,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2485,11 +2328,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2588,11 +2430,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2634,11 +2475,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2699,8 +2539,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-            assert.isString('index_0', index_0);
-            assert.isString('index_1', index_1);
+            assert.isString('index_0', index_0);assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2737,6 +2576,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2772,19 +2612,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2806,9 +2643,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.marketSellOrdersNoThrow.sendTransactionAsync(orders,
     takerAssetFillAmount,
@@ -2832,19 +2667,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2857,9 +2689,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     takerAssetFillAmount,
@@ -2875,9 +2705,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2915,6 +2743,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2950,19 +2779,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -2984,9 +2810,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const txHashPromise = self.marketBuyOrders.sendTransactionAsync(orders,
     makerAssetFillAmount,
@@ -3010,19 +2834,16 @@ export class ExchangeContract extends BaseContract {
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
     signatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -3035,9 +2856,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
         ): string {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
     makerAssetFillAmount,
@@ -3053,9 +2872,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
+            assert.isArray('orders', orders);assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -3093,6 +2910,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -3130,11 +2948,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -3176,11 +2993,10 @@ export class ExchangeContract extends BaseContract {
             const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -3239,6 +3055,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -3294,7 +3111,7 @@ export class ExchangeContract extends BaseContract {
         txDefaults: Partial<TxData>,
             _zrxAssetData: string,
     ): Promise<ExchangeContract> {
-        assert.isString('bytecode', bytecode);
+        assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -3333,4 +3150,5 @@ export class ExchangeContract extends BaseContract {
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
-// tslint:enable:no-unbound-method
+// tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
+// tslint:enable:trailing-comma whitespace no-trailing-whitespace
