@@ -3,7 +3,8 @@
         "version": "2.2.0",
         "changes": [
             {
-                "note": "add parameter assertions to methods"
+                "note": "add parameter assertions to methods",
+                "pr": 1823
             }
         ]
     },
