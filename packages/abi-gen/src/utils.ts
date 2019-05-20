@@ -16,7 +16,7 @@ export const utils = {
             const solTypeRegexToTsType = [
                 {
                     regex: '^u?int(8|16|32)?$',
-                    assertion: '', // TODO(fabio): Create a combined assertion for `number|bigNumber`?
+                    assertion: `assert.isNumberOrBigNumber('${solName}', ${solName});`,
                 },
                 { regex: '^string$', assertion: `assert.isString('${solName}', ${solName});` },
                 { regex: '^address$', assertion: `assert.isString('${solName}', ${solName});` },
@@ -32,9 +32,8 @@ export const utils = {
             }
             const TUPLE_TYPE_REGEX = '^tuple$';
             if (solType.match(TUPLE_TYPE_REGEX)) {
-                // Omit assertions for complex types for now
-                // TODO(fabio): Figure out an elegant way to map complex types to JSON-schemas and
-                // add a schema assertion for that type here.
+                // NOTE(fabio): Omit assertions for complex types since this would require schema assertions
+                // and we currently do not want to make @0x/abi-gen a 0x-specific tool.
                 const assertion = '';
                 return assertion;
             }

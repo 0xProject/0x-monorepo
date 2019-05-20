@@ -3,7 +3,7 @@
         "version": "2.1.0",
         "changes": [
             {
-                "note": "Add new assertions: `isArray`, `isBlockParam`",
+                "note": "Add new assertions: `isArray`, `isBlockParam` and `isNumberOrBigNumber`",
                 "pr": 1823
             }
         ]

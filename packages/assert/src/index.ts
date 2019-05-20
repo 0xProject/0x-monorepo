@@ -56,6 +56,16 @@ export const assert = {
     isNumber(variableName: string, value: number): void {
         assert.assert(_.isFinite(value), assert.typeAssertionMessage(variableName, 'number', value));
     },
+    isNumberOrBigNumber(variableName: string, value: number): void {
+        if (_.isFinite(value)) {
+            return;
+        } else {
+            assert.assert(
+                BigNumber.isBigNumber(value),
+                assert.typeAssertionMessage(variableName, 'number or BigNumber', value),
+            );
+        }
+    },
     isBoolean(variableName: string, value: boolean): void {
         assert.assert(_.isBoolean(value), assert.typeAssertionMessage(variableName, 'boolean', value));
     },
