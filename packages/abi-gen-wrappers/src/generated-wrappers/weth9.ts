@@ -2,6 +2,7 @@
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -18,6 +19,7 @@ import {
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
@@ -67,6 +69,14 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('name()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -91,16 +101,19 @@ export class WETH9Contract extends BaseContract {
         async sendTransactionAsync(
             guy: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('guy', guy);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy,
     wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -116,17 +129,12 @@ export class WETH9Contract extends BaseContract {
         awaitTransactionSuccessAsync(
             guy: string,
             wad: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('guy', guy);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const txHashPromise = self.approve.sendTransactionAsync(guy,
     wad
@@ -146,16 +154,19 @@ export class WETH9Contract extends BaseContract {
         async estimateGasAsync(
             guy: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('guy', guy);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy,
     wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -167,6 +178,8 @@ export class WETH9Contract extends BaseContract {
             guy: string,
             wad: BigNumber,
         ): string {
+            assert.isString('guy', guy);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [guy,
     wad
@@ -180,6 +193,16 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
+            assert.isString('guy', guy);
+            assert.isBigNumber('wad', wad);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy,
         wad
@@ -208,6 +231,14 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('totalSupply()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -233,17 +264,21 @@ export class WETH9Contract extends BaseContract {
             src: string,
             dst: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('src', src);
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
     dst,
     wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -261,17 +296,13 @@ export class WETH9Contract extends BaseContract {
             src: string,
             dst: string,
             wad: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('src', src);
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const txHashPromise = self.transferFrom.sendTransactionAsync(src,
     dst,
@@ -293,17 +324,21 @@ export class WETH9Contract extends BaseContract {
             src: string,
             dst: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('src', src);
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
     dst,
     wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -316,6 +351,9 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
         ): string {
+            assert.isString('src', src);
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
     dst,
@@ -331,6 +369,17 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
+            assert.isString('src', src);
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
         dst,
@@ -357,15 +406,17 @@ export class WETH9Contract extends BaseContract {
     public withdraw = {
         async sendTransactionAsync(
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -379,17 +430,11 @@ export class WETH9Contract extends BaseContract {
         },
         awaitTransactionSuccessAsync(
             wad: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const txHashPromise = self.withdraw.sendTransactionAsync(wad
     , txData);
@@ -407,15 +452,17 @@ export class WETH9Contract extends BaseContract {
         },
         async estimateGasAsync(
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -426,6 +473,7 @@ export class WETH9Contract extends BaseContract {
         getABIEncodedTransactionData(
             wad: BigNumber,
         ): string {
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad
     ]);
@@ -437,6 +485,15 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isBigNumber('wad', wad);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad
         ]);
@@ -464,6 +521,14 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<number
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('decimals()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -491,6 +556,15 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
+            assert.isString('index_0', index_0);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('balanceOf(address)', [index_0
         ]);
@@ -518,6 +592,14 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('symbol()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -542,16 +624,19 @@ export class WETH9Contract extends BaseContract {
         async sendTransactionAsync(
             dst: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
     wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -567,17 +652,12 @@ export class WETH9Contract extends BaseContract {
         awaitTransactionSuccessAsync(
             dst: string,
             wad: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const txHashPromise = self.transfer.sendTransactionAsync(dst,
     wad
@@ -597,16 +677,19 @@ export class WETH9Contract extends BaseContract {
         async estimateGasAsync(
             dst: string,
             wad: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
     wad
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -618,6 +701,8 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
         ): string {
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
             const self = this as any as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
     wad
@@ -631,6 +716,16 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
         wad
@@ -655,14 +750,15 @@ export class WETH9Contract extends BaseContract {
     };
     public deposit = {
         async sendTransactionAsync(
-            txData: Partial<TxDataPayable> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -674,17 +770,10 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         awaitTransactionSuccessAsync(
-            txData?: Partial<TxDataPayable> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
             const self = this as any as WETH9Contract;
             const txHashPromise = self.deposit.sendTransactionAsync(txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -700,14 +789,15 @@ export class WETH9Contract extends BaseContract {
             );
         },
         async estimateGasAsync(
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -726,6 +816,14 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -754,6 +852,16 @@ export class WETH9Contract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
+            assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as WETH9Contract;
             const encodedData = self._strictEncodeArguments('allowance(address,address)', [index_0,
         index_1
@@ -781,6 +889,11 @@ export class WETH9Contract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<WETH9Contract> {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
@@ -795,6 +908,12 @@ export class WETH9Contract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<WETH9Contract> {
+        assert.isString('bytecode', bytecode);
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
         [] = BaseContract._formatABIDataItemList(

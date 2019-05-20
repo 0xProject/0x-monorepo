@@ -2,6 +2,7 @@
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -18,6 +19,7 @@ import {
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
@@ -61,6 +63,14 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('name()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -88,6 +98,15 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId
         ]);
@@ -113,16 +132,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async sendTransactionAsync(
             _approved: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_approved', _approved);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -138,17 +160,12 @@ export class DummyERC721TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _approved: string,
             _tokenId: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_approved', _approved);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.approve.sendTransactionAsync(_approved,
     _tokenId
@@ -168,16 +185,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async estimateGasAsync(
             _approved: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_approved', _approved);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -189,6 +209,8 @@ export class DummyERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
         ): string {
+            assert.isString('_approved', _approved);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
@@ -202,6 +224,16 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_approved', _approved);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
         _tokenId
@@ -229,17 +261,21 @@ export class DummyERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -257,17 +293,13 @@ export class DummyERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.transferFrom.sendTransactionAsync(_from,
     _to,
@@ -289,17 +321,21 @@ export class DummyERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -312,6 +348,9 @@ export class DummyERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
         ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
@@ -327,6 +366,17 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
         _to,
@@ -354,16 +404,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async sendTransactionAsync(
             _to: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -379,17 +432,12 @@ export class DummyERC721TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _to: string,
             _tokenId: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.mint.sendTransactionAsync(_to,
     _tokenId
@@ -409,16 +457,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async estimateGasAsync(
             _to: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -430,6 +481,8 @@ export class DummyERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
         ): string {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [_to,
     _tokenId
@@ -443,6 +496,16 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to,
         _tokenId
@@ -470,17 +533,21 @@ export class DummyERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -498,17 +565,13 @@ export class DummyERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.safeTransferFrom1.sendTransactionAsync(_from,
     _to,
@@ -530,17 +593,21 @@ export class DummyERC721TokenContract extends BaseContract {
             _from: string,
             _to: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -553,6 +620,9 @@ export class DummyERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
         ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
@@ -568,6 +638,17 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
         _to,
@@ -598,6 +679,15 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId
         ]);
@@ -626,6 +716,15 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
+            assert.isString('_owner', _owner);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner
         ]);
@@ -653,6 +752,14 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('owner()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -679,6 +786,14 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('symbol()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -703,16 +818,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async sendTransactionAsync(
             _owner: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_owner', _owner);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -728,17 +846,12 @@ export class DummyERC721TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _owner: string,
             _tokenId: BigNumber,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_owner', _owner);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.burn.sendTransactionAsync(_owner,
     _tokenId
@@ -758,16 +871,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async estimateGasAsync(
             _owner: string,
             _tokenId: BigNumber,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_owner', _owner);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -779,6 +895,8 @@ export class DummyERC721TokenContract extends BaseContract {
             _owner: string,
             _tokenId: BigNumber,
         ): string {
+            assert.isString('_owner', _owner);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
     _tokenId
@@ -792,6 +910,16 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_owner', _owner);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
         _tokenId
@@ -818,16 +946,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async sendTransactionAsync(
             _operator: string,
             _approved: boolean,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -843,17 +974,12 @@ export class DummyERC721TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _operator: string,
             _approved: boolean,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.setApprovalForAll.sendTransactionAsync(_operator,
     _approved
@@ -873,16 +999,19 @@ export class DummyERC721TokenContract extends BaseContract {
         async estimateGasAsync(
             _operator: string,
             _approved: boolean,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -894,6 +1023,8 @@ export class DummyERC721TokenContract extends BaseContract {
             _operator: string,
             _approved: boolean,
         ): string {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
@@ -907,6 +1038,16 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
         _approved
@@ -935,18 +1076,23 @@ export class DummyERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             _data: string,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -966,17 +1112,14 @@ export class DummyERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             _data: string,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.safeTransferFrom2.sendTransactionAsync(_from,
     _to,
@@ -1000,18 +1143,23 @@ export class DummyERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             _data: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1025,6 +1173,10 @@ export class DummyERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             _data: string,
         ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
@@ -1042,6 +1194,18 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
         _to,
@@ -1074,6 +1238,16 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
+            assert.isString('_owner', _owner);
+            assert.isString('_operator', _operator);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('isApprovedForAll(address,address)', [_owner,
         _operator
@@ -1099,15 +1273,17 @@ export class DummyERC721TokenContract extends BaseContract {
     public transferOwnership = {
         async sendTransactionAsync(
             newOwner: string,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('newOwner', newOwner);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1121,17 +1297,11 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         awaitTransactionSuccessAsync(
             newOwner: string,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
+            assert.isString('newOwner', newOwner);
             const self = this as any as DummyERC721TokenContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner
     , txData);
@@ -1149,15 +1319,17 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         async estimateGasAsync(
             newOwner: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('newOwner', newOwner);
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -1168,6 +1340,7 @@ export class DummyERC721TokenContract extends BaseContract {
         getABIEncodedTransactionData(
             newOwner: string,
         ): string {
+            assert.isString('newOwner', newOwner);
             const self = this as any as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
@@ -1179,6 +1352,15 @@ export class DummyERC721TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('newOwner', newOwner);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
         ]);
@@ -1207,6 +1389,11 @@ export class DummyERC721TokenContract extends BaseContract {
             _name: string,
             _symbol: string,
     ): Promise<DummyERC721TokenContract> {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
@@ -1225,6 +1412,12 @@ _symbol
             _name: string,
             _symbol: string,
     ): Promise<DummyERC721TokenContract> {
+        assert.isString('bytecode', bytecode);
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
         [_name,
