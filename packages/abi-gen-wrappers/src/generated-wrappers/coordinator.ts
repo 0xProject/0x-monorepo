@@ -36,8 +36,7 @@ export class CoordinatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
-            assert.isString('hash', hash);
-            assert.isString('signature', signature);
+            assert.isString('hash', hash);assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -151,11 +150,7 @@ export class CoordinatorContract extends BaseContract {
             approvalSignatures: string[],
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
+            assert.isString('txOrigin', txOrigin);assert.isString('transactionSignature', transactionSignature);assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);assert.isArray('approvalSignatures', approvalSignatures);
             const self = this as any as CoordinatorContract;
             const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
     txOrigin,
@@ -163,11 +158,10 @@ export class CoordinatorContract extends BaseContract {
     approvalExpirationTimeSeconds,
     approvalSignatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -193,11 +187,7 @@ export class CoordinatorContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
+            assert.isString('txOrigin', txOrigin);assert.isString('transactionSignature', transactionSignature);assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);assert.isArray('approvalSignatures', approvalSignatures);
             const self = this as any as CoordinatorContract;
             const txHashPromise = self.executeTransaction.sendTransactionAsync(transaction,
     txOrigin,
@@ -225,11 +215,7 @@ export class CoordinatorContract extends BaseContract {
             approvalSignatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
+            assert.isString('txOrigin', txOrigin);assert.isString('transactionSignature', transactionSignature);assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);assert.isArray('approvalSignatures', approvalSignatures);
             const self = this as any as CoordinatorContract;
             const encodedData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
     txOrigin,
@@ -237,11 +223,10 @@ export class CoordinatorContract extends BaseContract {
     approvalExpirationTimeSeconds,
     approvalSignatures
     ]);
-            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...passedInTxData,
+                    ...txData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -256,11 +241,7 @@ export class CoordinatorContract extends BaseContract {
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
         ): string {
-
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
+            assert.isString('txOrigin', txOrigin);assert.isString('transactionSignature', transactionSignature);assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);assert.isArray('approvalSignatures', approvalSignatures);
             const self = this as any as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
     txOrigin,
@@ -280,11 +261,7 @@ export class CoordinatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
+            assert.isString('txOrigin', txOrigin);assert.isString('transactionSignature', transactionSignature);assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);assert.isArray('approvalSignatures', approvalSignatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -324,6 +301,7 @@ export class CoordinatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -363,11 +341,7 @@ export class CoordinatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
+            assert.isString('txOrigin', txOrigin);assert.isString('transactionSignature', transactionSignature);assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);assert.isArray('approvalSignatures', approvalSignatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -444,6 +418,7 @@ export class CoordinatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -499,7 +474,7 @@ export class CoordinatorContract extends BaseContract {
         txDefaults: Partial<TxData>,
             _exchange: string,
     ): Promise<CoordinatorContract> {
-        assert.isString('bytecode', bytecode);
+        assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
