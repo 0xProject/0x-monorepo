@@ -32,8 +32,10 @@ export const utils = {
             }
             const TUPLE_TYPE_REGEX = '^tuple$';
             if (solType.match(TUPLE_TYPE_REGEX)) {
-                // NOTE(fabio): Omit assertions for complex types since this would require schema assertions
-                // and we currently do not want to make @0x/abi-gen a 0x-specific tool.
+                // NOTE(fabio): Omit assertions for complex types since this would require taking a type
+                // definition and generating an instance of that type programmatically and checking it
+                // against a list of know json-schemas in order to discover the correct schema assertion
+                // to use. This approach is brittle and error-prone.
                 const assertion = '';
                 return assertion;
             }
