@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "./IAuthorizable.sol";
+import "@0x/contracts-utils/contracts/src/interfaces/IAuthorizable.sol";
 
 
 contract IAssetProxy {

@@ -40,6 +40,10 @@
             {
                 "note": "Implement StaticCallProxy",
                 "pr": 1863
+            },
+            {
+                "note": "Moved MixinAuthorizable to `contracts-utils` pacakge",
+                "pr": "UPDATE Me"
             }
         ],
         "timestamp": 1563006338

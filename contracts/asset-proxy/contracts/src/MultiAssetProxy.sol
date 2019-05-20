@@ -24,7 +24,7 @@ import "../archive/MixinAuthorizable.sol";
 
 contract MultiAssetProxy is
     MixinAssetProxyDispatcher,
-    MixinAuthorizable
+    Authorizable
 {
     // Id of this proxy.
     bytes4 constant internal PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));

@@ -22,7 +22,7 @@ import "../archive/MixinAuthorizable.sol";
 
 
 contract ERC20Proxy is
-    MixinAuthorizable
+    Authorizable
 {
     // Id of this proxy.
     bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
