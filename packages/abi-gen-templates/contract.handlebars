@@ -79,7 +79,7 @@ export class {{contractName}}Contract extends BaseContract {
         txDefaults: Partial<TxData>,
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
-        assert.isString('bytecode', bytecode);
+        assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
