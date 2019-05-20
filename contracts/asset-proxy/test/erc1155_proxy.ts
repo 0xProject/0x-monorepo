@@ -596,6 +596,9 @@ describe('ERC1155Proxy', () => {
             const shouldRejectTransfer = true;
             await erc1155Receiver.setRejectTransferFlag.awaitTransactionSuccessAsync(
                 shouldRejectTransfer,
+                {
+                    from: owner,
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // setup test parameters

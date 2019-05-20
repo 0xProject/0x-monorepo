@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add new assertions: `isArray`, `isBlockParam`"
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "2.0.10",
         "changes": [

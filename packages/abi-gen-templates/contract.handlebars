@@ -2,6 +2,7 @@
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -18,6 +19,7 @@ import {
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
@@ -57,6 +59,11 @@ export class {{contractName}}Contract extends BaseContract {
         txDefaults: Partial<TxData>,
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
@@ -72,6 +79,12 @@ export class {{contractName}}Contract extends BaseContract {
         txDefaults: Partial<TxData>,
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
+        assert.isString('bytecode', bytecode);
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
         [{{> params inputs=ctor.inputs}}] = BaseContract._formatABIDataItemList(

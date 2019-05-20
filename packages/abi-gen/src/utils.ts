@@ -7,6 +7,40 @@ import toSnakeCase = require('to-snake-case');
 import { ContractsBackend, ParamKind } from './types';
 
 export const utils = {
+    solTypeToAssertion(solName: string, solType: string): string {
+        const trailingArrayRegex = /\[\d*\]$/;
+        if (solType.match(trailingArrayRegex)) {
+            const assertion = `assert.isArray('${solName}', ${solName});`;
+            return assertion;
+        } else {
+            const solTypeRegexToTsType = [
+                {
+                    regex: '^u?int(8|16|32)?$',
+                    assertion: '', // TODO(fabio): Create a combined assertion for `number|bigNumber`?
+                },
+                { regex: '^string$', assertion: `assert.isString('${solName}', ${solName});` },
+                { regex: '^address$', assertion: `assert.isString('${solName}', ${solName});` },
+                { regex: '^bool$', assertion: `assert.isBoolean('${solName}', ${solName});` },
+                { regex: '^u?int\\d*$', assertion: `assert.isBigNumber('${solName}', ${solName});` },
+                { regex: '^bytes\\d*$', assertion: `assert.isString('${solName}', ${solName});` },
+            ];
+            for (const regexAndTxType of solTypeRegexToTsType) {
+                const { regex, assertion } = regexAndTxType;
+                if (solType.match(regex)) {
+                    return assertion;
+                }
+            }
+            const TUPLE_TYPE_REGEX = '^tuple$';
+            if (solType.match(TUPLE_TYPE_REGEX)) {
+                // Omit assertions for complex types for now
+                // TODO(fabio): Figure out an elegant way to map complex types to JSON-schemas and
+                // add a schema assertion for that type here.
+                const assertion = '';
+                return assertion;
+            }
+            throw new Error(`Unknown Solidity type found: ${solType}`);
+        }
+    },
     solTypeToTsType(paramKind: ParamKind, backend: ContractsBackend, solType: string, components?: DataItem[]): string {
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {

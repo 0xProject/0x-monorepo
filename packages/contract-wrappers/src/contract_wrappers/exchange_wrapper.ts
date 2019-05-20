@@ -92,7 +92,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = {};
+        const txData = undefined;
         const assetProxy = await exchangeContract.getAssetProxy.callAsync(proxyId, txData, methodOpts.defaultBlock);
         return assetProxy;
     }
@@ -107,7 +107,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = {};
+        const txData = undefined;
         const filledTakerAssetAmountInBaseUnits = await exchangeContract.filled.callAsync(
             orderHash,
             txData,
@@ -124,7 +124,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = {};
+        const txData = undefined;
         const version = await exchangeContract.VERSION.callAsync(txData, methodOpts.defaultBlock);
         return version;
     }
@@ -146,7 +146,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = {};
+        const txData = undefined;
         const orderEpoch = await exchangeContract.orderEpoch.callAsync(
             makerAddress,
             senderAddress,
@@ -166,7 +166,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = {};
+        const txData = undefined;
         const isCancelled = await exchangeContract.cancelled.callAsync(orderHash, txData, methodOpts.defaultBlock);
         return isCancelled;
     }
@@ -836,7 +836,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isHexString('signature', signature);
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = {};
+        const txData = undefined;
         const isValidSignature = await exchangeInstance.isValidSignature.callAsync(
             hash,
             signerAddress,
@@ -867,7 +867,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedSignerAddress = signerAddress.toLowerCase();
         const normalizedValidatorAddress = validatorAddress.toLowerCase();
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = {};
+        const txData = undefined;
         const isValidSignature = await exchangeInstance.allowedValidators.callAsync(
             normalizedSignerAddress,
             normalizedValidatorAddress,
@@ -892,7 +892,7 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const txData = {};
+        const txData = undefined;
         const isPreSigned = await exchangeInstance.preSigned.callAsync(
             hash,
             signerAddress,
@@ -915,7 +915,7 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = {};
+        const txData = undefined;
         const isExecuted = await exchangeInstance.transactions.callAsync(
             transactionHash,
             txData,
@@ -936,7 +936,7 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = {};
+        const txData = undefined;
         const orderInfo = await exchangeInstance.getOrderInfo.callAsync(order, txData, methodOpts.defaultBlock);
         return orderInfo;
     }
@@ -956,7 +956,7 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = {};
+        const txData = undefined;
         const ordersInfo = await exchangeInstance.getOrdersInfo.callAsync(orders, txData, methodOpts.defaultBlock);
         return ordersInfo;
     }

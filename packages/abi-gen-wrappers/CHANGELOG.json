@@ -1,5 +1,13 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Update wrappers to include parameter assertions"
+            }
+        ]
+    },
+    {
         "version": "4.3.0",
         "changes": [
             {

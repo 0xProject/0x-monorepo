@@ -3,6 +3,17 @@ async callAsync(
     callData: Partial<CallData> = {},
     defaultBlock?: BlockParam,
 ): Promise<{{> return_type outputs=outputs}}> {
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+        schemas.addressSchema,
+        schemas.numberSchema,
+        schemas.jsNumber,
+    ]);
+    if (defaultBlock !== undefined) {
+        assert.isBlockParam('defaultBlock', defaultBlock);
+    }
     const self = this as any as {{contractName}}Contract;
     const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
     const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(

@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "add parameter assertions to methods"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

@@ -1,19 +1,18 @@
 public {{this.tsName}} = {
     async sendTransactionAsync(
     {{> typed_params inputs=inputs}}
-    {{#this.payable}}
-        txData: Partial<TxDataPayable> = {},
-    {{/this.payable}}
-    {{^this.payable}}
-        txData: Partial<TxData> = {},
-    {{/this.payable}}
+    txData?: Partial<TxData> | undefined,
     ): Promise<string> {
+        {{#each inputs}}
+        {{#assertionType name type}}{{/assertionType}}
+        {{/each}}
         const self = this as any as {{contractName}}Contract;
         const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+        const passedInTxData = txData === undefined ? {} : txData;
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 to: self.address,
-                ...txData,
+                ...passedInTxData,
                 data: encodedData,
             },
             self._web3Wrapper.getContractDefaults(),
@@ -27,22 +26,13 @@ public {{this.tsName}} = {
     },
     awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
-    {{#this.payable}}
-        txData?: Partial<TxDataPayable> | number,
-    {{/this.payable}}
-    {{^this.payable}}
-        txData?: Partial<TxData> | number,
-    {{/this.payable}}
+        txData?: Partial<TxData>,
         pollingIntervalMs?: number,
         timeoutMs?: number,
     ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-        // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-        if (typeof(txData) === 'number') {
-            pollingIntervalMs = txData;
-            timeoutMs = pollingIntervalMs;
-            txData = {};
-        }
-        //
+        {{#each inputs}}
+        {{#assertionType name type}}{{/assertionType}}
+        {{/each}}
         const self = this as any as {{contractName}}Contract;
         {{#if inputs}}
         const txHashPromise = self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
@@ -63,14 +53,18 @@ public {{this.tsName}} = {
     },
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}
-        txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
     ): Promise<number> {
+        {{#each inputs}}
+        {{#assertionType name type}}{{/assertionType}}
+        {{/each}}
         const self = this as any as {{contractName}}Contract;
         const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+        const passedInTxData = txData === undefined ? {} : txData;
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 to: self.address,
-                ...txData,
+                ...passedInTxData,
                 data: encodedData,
             },
             self._web3Wrapper.getContractDefaults(),
@@ -81,6 +75,9 @@ public {{this.tsName}} = {
     getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
     ): string {
+        {{#each inputs}}
+        {{#assertionType name type}}{{/assertionType}}
+        {{/each}}
         const self = this as any as {{contractName}}Contract;
         const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
         return abiEncodedTransactionData;
