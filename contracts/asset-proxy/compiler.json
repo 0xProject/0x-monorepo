@@ -26,11 +26,9 @@
         "src/ERC1155Proxy.sol",
         "src/ERC20Proxy.sol",
         "src/ERC721Proxy.sol",
-        "src/MixinAuthorizable.sol",
         "src/MultiAssetProxy.sol",
         "src/interfaces/IAssetData.sol",
         "src/interfaces/IAssetProxy.sol",
-        "src/interfaces/IAuthorizable.sol",
         "src/libs/LibAssetData.sol"
     ]
 }

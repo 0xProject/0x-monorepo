@@ -23,6 +23,7 @@
         }
     },
     "contracts": [
+        "src/Authorizable.sol",
         "src/LibAddress.sol",
         "src/LibBytes.sol",
         "src/LibEIP712.sol",
@@ -31,6 +32,7 @@
         "src/RichErrors.sol",
         "src/SafeMath.sol",
         "src/interfaces/IOwnable.sol",
+        "src/interfaces/IAuthorizable.sol",
         "test/TestConstants.sol",
         "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol"

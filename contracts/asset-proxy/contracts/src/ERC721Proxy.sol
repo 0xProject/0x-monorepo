@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.5;
 
-import "./MixinAuthorizable.sol";
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 
 
 contract ERC721Proxy is
-    MixinAuthorizable
+    Authorizable
 {
     // Id of this proxy.
     bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));

@@ -5,6 +5,10 @@
             {
                 "note": "Update tests to use contract-built-in `awaitTransactionSuccessAsync`",
                 "pr": 1797
+            },
+            {
+                "note": "Moved MixinAuthorizable to `contracts-utils` pacakge",
+                "pr": "UPDATE Me"
             }
         ]
     },
