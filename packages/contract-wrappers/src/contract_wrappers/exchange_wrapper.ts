@@ -92,8 +92,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = undefined;
-        const assetProxy = await exchangeContract.getAssetProxy.callAsync(proxyId, txData, methodOpts.defaultBlock);
+        const callData = {};
+        const assetProxy = await exchangeContract.getAssetProxy.callAsync(proxyId, callData, methodOpts.defaultBlock);
         return assetProxy;
     }
     /**
@@ -107,10 +107,10 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = undefined;
+        const callData = {};
         const filledTakerAssetAmountInBaseUnits = await exchangeContract.filled.callAsync(
             orderHash,
-            txData,
+            callData,
             methodOpts.defaultBlock,
         );
         return filledTakerAssetAmountInBaseUnits;
@@ -124,8 +124,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = undefined;
-        const version = await exchangeContract.VERSION.callAsync(txData, methodOpts.defaultBlock);
+        const callData = {};
+        const version = await exchangeContract.VERSION.callAsync(callData, methodOpts.defaultBlock);
         return version;
     }
     /**
@@ -146,11 +146,11 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = undefined;
+        const callData = {};
         const orderEpoch = await exchangeContract.orderEpoch.callAsync(
             makerAddress,
             senderAddress,
-            txData,
+            callData,
             methodOpts.defaultBlock,
         );
         return orderEpoch;
@@ -166,8 +166,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeContract = await this._getExchangeContractAsync();
 
-        const txData = undefined;
-        const isCancelled = await exchangeContract.cancelled.callAsync(orderHash, txData, methodOpts.defaultBlock);
+        const callData = {};
+        const isCancelled = await exchangeContract.cancelled.callAsync(orderHash, callData, methodOpts.defaultBlock);
         return isCancelled;
     }
     /**
@@ -836,12 +836,12 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isHexString('signature', signature);
         assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = undefined;
+        const callData = {};
         const isValidSignature = await exchangeInstance.isValidSignature.callAsync(
             hash,
             signerAddress,
             signature,
-            txData,
+            callData,
             methodOpts.defaultBlock,
         );
         return isValidSignature;
@@ -867,11 +867,11 @@ export class ExchangeWrapper extends ContractWrapper {
         const normalizedSignerAddress = signerAddress.toLowerCase();
         const normalizedValidatorAddress = validatorAddress.toLowerCase();
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = undefined;
+        const callData = {};
         const isValidSignature = await exchangeInstance.allowedValidators.callAsync(
             normalizedSignerAddress,
             normalizedValidatorAddress,
-            txData,
+            callData,
             methodOpts.defaultBlock,
         );
         return isValidSignature;
@@ -892,11 +892,11 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const exchangeInstance = await this._getExchangeContractAsync();
 
-        const txData = undefined;
+        const callData = {};
         const isPreSigned = await exchangeInstance.preSigned.callAsync(
             hash,
             signerAddress,
-            txData,
+            callData,
             methodOpts.defaultBlock,
         );
         return isPreSigned;
@@ -915,10 +915,10 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = undefined;
+        const callData = {};
         const isExecuted = await exchangeInstance.transactions.callAsync(
             transactionHash,
-            txData,
+            callData,
             methodOpts.defaultBlock,
         );
         return isExecuted;
@@ -936,8 +936,8 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = undefined;
-        const orderInfo = await exchangeInstance.getOrderInfo.callAsync(order, txData, methodOpts.defaultBlock);
+        const callData = {};
+        const orderInfo = await exchangeInstance.getOrderInfo.callAsync(order, callData, methodOpts.defaultBlock);
         return orderInfo;
     }
     /**
@@ -956,8 +956,8 @@ export class ExchangeWrapper extends ContractWrapper {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
-        const txData = undefined;
-        const ordersInfo = await exchangeInstance.getOrdersInfo.callAsync(orders, txData, methodOpts.defaultBlock);
+        const callData = {};
+        const ordersInfo = await exchangeInstance.getOrdersInfo.callAsync(orders, callData, methodOpts.defaultBlock);
         return ordersInfo;
     }
     /**
