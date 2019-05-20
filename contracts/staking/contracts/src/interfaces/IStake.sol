@@ -16,9 +16,12 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.5;
 
 
-interface IStaking {
-
+contract IStake
+{
+    function stake(uint256 amount) external returns (uint256);
+    function unstake(uint256 amount) external returns (uint256);
+    function getStakeBalance(address owner) external view returns (uint256);
 }
