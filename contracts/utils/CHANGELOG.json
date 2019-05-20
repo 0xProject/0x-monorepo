@@ -17,6 +17,10 @@
             {
                 "note": "Break out types/interaces from `MRichErrors` into `MRichErrorTypes`.",
                 "pr": 1790
+            },
+            {
+                "note": "Added Authorizable",
+                "pr": "CHANGE ME"
             }
         ]
     },

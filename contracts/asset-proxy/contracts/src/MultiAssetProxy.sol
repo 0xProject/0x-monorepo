@@ -19,12 +19,12 @@
 pragma solidity ^0.5.9;
 
 import "./MixinAssetProxyDispatcher.sol";
-import "./MixinAuthorizable.sol";
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 
 
 contract MultiAssetProxy is
     MixinAssetProxyDispatcher,
-    MixinAuthorizable
+    Authorizable
 {
     // Id of this proxy.
     bytes4 constant internal PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));

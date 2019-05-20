@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.9;
 
-import "./MixinAuthorizable.sol";
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 
 
 contract ERC1155Proxy is
-    MixinAuthorizable
+    Authorizable
 {
 
     // Id of this proxy.

@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "./Ownable.sol";
 import "./interfaces/IAuthorizable.sol";
 
 
-contract MixinAuthorizable is
+contract Authorizable is
     Ownable,
     IAuthorizable
 {
