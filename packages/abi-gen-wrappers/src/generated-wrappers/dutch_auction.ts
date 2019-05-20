@@ -37,10 +37,11 @@ export class DutchAuctionContract extends BaseContract {
             const self = this as any as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -82,10 +83,11 @@ export class DutchAuctionContract extends BaseContract {
             const self = this as any as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -146,17 +148,21 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('buySignature', buySignature);assert.isString('sellSignature', sellSignature);
+
+
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             const self = this as any as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -180,7 +186,10 @@ export class DutchAuctionContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('buySignature', buySignature);assert.isString('sellSignature', sellSignature);
+
+
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             const self = this as any as DutchAuctionContract;
             const txHashPromise = self.matchOrders.sendTransactionAsync(buyOrder,
     sellOrder,
@@ -206,17 +215,21 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('buySignature', buySignature);assert.isString('sellSignature', sellSignature);
+
+
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             const self = this as any as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -230,7 +243,10 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
         ): string {
-            assert.isString('buySignature', buySignature);assert.isString('sellSignature', sellSignature);
+
+
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             const self = this as any as DutchAuctionContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
@@ -248,7 +264,10 @@ export class DutchAuctionContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
-            assert.isString('buySignature', buySignature);assert.isString('sellSignature', sellSignature);
+
+
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -308,7 +327,7 @@ export class DutchAuctionContract extends BaseContract {
         txDefaults: Partial<TxData>,
             _exchange: string,
     ): Promise<DutchAuctionContract> {
-        assert.isHexString('bytecode', bytecode);
+        assert.isString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,

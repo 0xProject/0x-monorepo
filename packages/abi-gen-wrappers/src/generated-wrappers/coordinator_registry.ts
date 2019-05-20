@@ -49,10 +49,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             const self = this as any as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
@@ -94,10 +95,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             const self = this as any as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
+            const passedInTxData = txData === undefined ? {} : txData;
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
-                    ...txData,
+                    ...passedInTxData,
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
