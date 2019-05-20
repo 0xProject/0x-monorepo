@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 */
 
-pragma solidity ^0.5.9;
-
-import "./MixinStake.sol";
+pragma solidity ^0.5.5;
 
 
-contract Staking is
-    MixinStake
-{
-    constructor(address zrxVault)
+library LibZrxToken {
+
+    uint256 constant internal TOKEN_MULTIPLIER = 10**18;
+
+    function roundDownToNearestWholeToken(uint256 value)
         public
-        MixinStake(zrxVault)
-    {}
-
+        pure
+        returns (uint256)
+    {
+        return (value / TOKEN_MULTIPLIER) * TOKEN_MULTIPLIER;
+    }
 }

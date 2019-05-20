@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,17 +16,16 @@
 
 */
 
-pragma solidity ^0.5.9;
-
-import "./MixinStake.sol";
+pragma solidity ^0.5.5;
 
 
-contract Staking is
-    MixinStake
-{
-    constructor(address zrxVault)
-        public
-        MixinStake(zrxVault)
-    {}
+interface IVault {
 
+    function depositFrom(address owner, uint256 amount) external;
+
+    function withdrawFrom(address owner, uint256 amount) external;
+
+    function withdrawAllFrom(address owner) external returns (uint256);
+
+    function balanceOf(address owner) external view returns (uint256);
 }

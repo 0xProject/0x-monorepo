@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 */
 
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.5;
 
 
-interface IStaking {
-
+contract IStake
+{
+    function stake(uint256 amount) external returns (uint256);
+    function unstake(uint256 amount) external returns (uint256);
+    function getStakeBalance(address owner) external view returns (uint256);
 }
