@@ -21,17 +21,17 @@ pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
 import "./mixins/MExchangeWrapper.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibAbiEncoder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 
 
 contract MixinExchangeWrapper is
-    LibAbiEncoder,
     LibFillResults,
     LibMath,
     LibConstants,
+    LibExchangeSelectors,
     MExchangeWrapper
 {
     /// @dev Fills the input order.
@@ -49,7 +49,8 @@ contract MixinExchangeWrapper is
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = _abiEncodeFillOrder(
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            FILL_ORDER_SELECTOR,
             order,
             takerAssetFillAmount,
             signature
