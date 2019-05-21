@@ -58,7 +58,7 @@ contract ERC1155Proxy is
         // |          | 100         |         |   4. offset to data (*)             |
         // | Data     |             |         | ids:                                |
         // |          | 132         | 32      |   1. ids Length                     |
-        // |          | 164         | a       |   2. ids Contents                   | 
+        // |          | 164         | a       |   2. ids Contents                   |
         // |          |             |         | values:                             |
         // |          | 164 + a     | 32      |   1. values Length                  |
         // |          | 196 + a     | b       |   2. values Contents                |
@@ -76,31 +76,40 @@ contract ERC1155Proxy is
         // |          | 4           |         |   1. from address                   |
         // |          | 36          |         |   2. to address                     |
         // |          | 68          |         |   3. offset to ids (*)              |
-        // |          | 100         |         |   4. offset to values (*)           |
+        // |          | 100         |         |   4. offset to scaledValues (*)     |
         // |          | 132         |         |   5. offset to data (*)             |
         // | Data     |             |         | ids:                                |
         // |          | 164         | 32      |   1. ids Length                     |
-        // |          | 196         | a       |   2. ids Contents                   | 
+        // |          | 196         | a       |   2. ids Contents                   |
         // |          |             |         | values:                             |
         // |          | 196 + a     | 32      |   1. values Length                  |
         // |          | 228 + a     | b       |   2. values Contents                |
         // |          |             |         | data                                |
         // |          | 228 + a + b | 32      |   1. data Length                    |
         // |          | 260 + a + b | c       |   2. data Contents                  |
+        // |          |             |         | scaledValues: (***)                 |
+        // |          | 260 + a+b+c | 32      |   1. scaledValues Length            |
+        // |          | 292 + a+b+c | b       |   2. scaledValues Contents          |
         //
         //
         // (*): offset is computed from start of function parameters, so offset
         //      by an additional 4 bytes in the calldata.
-        // 
+        //
         // (**): the `Offset` column is computed assuming no calldata compression;
         //       offsets in the Data Area are dynamic and should be evaluated in
         //       real-time.
+        //
+        // (***): The contents of `values` are modified and stored separately, as `scaledValues`.
+        //        The `values` array cannot be overwritten, as other dynamically allocated fields
+        //        (`ids` and `data`) may resolve to the same array contents. For example, if
+        //        `ids` = [1,2] and `values` = [1,2], the asset data may be optimized
+        //        such that both arrays resolve to same entry of [1,2].
         //
         // WARNING: The ABIv2 specification allows additional padding between
         //          the Params and Data section. This will result in a larger
         //          offset to assetData.
         //
-        // Note: Table #1 and Table #2 exists in Calldata. We construct Table #3 in memory. 
+        // Note: Table #1 and Table #2 exist in Calldata. We construct Table #3 in memory.
         //
         //
         assembly {
@@ -133,7 +142,7 @@ contract ERC1155Proxy is
                 // Construct Table #3 in memory, starting at memory offset 0.
                 // The algorithm below maps asset data from Table #1 and Table #2 to Table #3, while
                 // scaling the `values` (Table #2) by `amount` (Table #1). Once Table #3 has
-                // been constructed in memory, the destination erc1155 contract is called using this 
+                // been constructed in memory, the destination erc1155 contract is called using this
                 // as its calldata. This process is divided into four steps, below.
 
                 ////////// STEP 1/4 //////////
@@ -176,17 +185,31 @@ contract ERC1155Proxy is
                 )
 
                 ////////// STEP 2/4 //////////
-                let amount := calldataload(100)
+                // Setup iterators for `values` array (Table #3)
                 let valuesOffset := add(mload(100), 4) // add 4 for calldata offset
-                let valuesLengthInBytes := mul(
-                    mload(valuesOffset),
-                    32
-                )
+                let valuesLength := mload(valuesOffset)
+                let valuesLengthInBytes := mul(valuesLength, 32)
                 let valuesBegin := add(valuesOffset, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
-                for { let tokenValueOffset := valuesBegin }
+
+                // Setup iterators for `scaledValues` array (Table #3).
+                // This array is placed at the end of the regular ERC1155 calldata,
+                // which is 32 bytes longer than `assetData` (Table #2).
+                let scaledValuesOffset := add(assetDataLength, 32)
+                let scaledValuesBegin := add(scaledValuesOffset, 32)
+                let scaledValuesEnd := add(scaledValuesBegin, valuesLengthInBytes)
+
+                // Scale `values` by `amount` and store the output in `scaledValues`
+                let amount := calldataload(100)
+                for {
+                        let tokenValueOffset := valuesBegin
+                        let scaledTokenValueOffset := scaledValuesBegin
+                    }
                     lt(tokenValueOffset, valuesEnd)
-                    { tokenValueOffset := add(tokenValueOffset, 32) }
+                    {
+                        tokenValueOffset := add(tokenValueOffset, 32)
+                        scaledTokenValueOffset := add(scaledTokenValueOffset, 32)
+                    }
                 {
                     // Load token value and generate scaled value
                     let tokenValue := mload(tokenValueOffset)
@@ -205,9 +228,16 @@ contract ERC1155Proxy is
                         revert(0, 100)
                     }
 
-                    // There was no overflow, update `tokenValue` with its scaled counterpart
-                    mstore(tokenValueOffset, scaledTokenValue)
+                    // There was no overflow, store the scaled token value
+                    mstore(scaledTokenValueOffset, scaledTokenValue)
                 }
+
+                // Store length of `scaledValues` (which is the same as `values`)
+                mstore(scaledValuesOffset, valuesLength)
+
+                // Point `values` to `scaledValues` (see Table #3);
+                // subtract 4 from memory location to account for selector
+                mstore(100, sub(scaledValuesOffset, 4))
 
                 ////////// STEP 3/4 //////////
                 // Store the safeBatchTransferFrom function selector,
@@ -231,7 +261,7 @@ contract ERC1155Proxy is
                     assetAddress,                           // call address of erc1155 asset
                     0,                                      // don't send any ETH
                     0,                                      // pointer to start of input
-                    add(assetDataLength, 32),               // length of input (Table #3) is 32 bytes longer than `assetData` (Table #2)
+                    scaledValuesEnd,                        // length of input (Table #3) is the end of the `scaledValues`
                     0,                                      // write output over memory that won't be reused
                     0                                       // don't copy output to memory
                 )
@@ -245,7 +275,7 @@ contract ERC1155Proxy is
                     )
                     revert(0, returndatasize())
                 }
-                
+
                 // Return if call was successful
                 return(0, 0)
             }
