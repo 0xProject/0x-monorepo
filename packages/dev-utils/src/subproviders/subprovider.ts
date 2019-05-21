@@ -1,11 +1,10 @@
 import { promisify } from '@0x/utils';
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
-import Web3ProviderEngine = require('web3-provider-engine');
 
-import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';
+import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from './types';
 /**
- * A altered version of the base class Subprovider found in [web3-provider-engine](https://github.com/MetaMask/provider-engine).
- * This one has an async/await `emitPayloadAsync` and also defined types.
+ * Use the subprovider in @0x/subproviders. This is internal for dev-utils only.
+ * Using any below avoiding types due to cyclic dependencies
  */
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
@@ -65,7 +64,7 @@ export abstract class Subprovider {
      * directly.
      * @param engine The ProviderEngine this subprovider is added to
      */
-    public setEngine(engine: Web3ProviderEngine): void {
+    public setEngine(engine: any): void {
         this.engine = engine;
     }
 }

@@ -1,16 +1,14 @@
-import {
-    EmptyWalletSubprovider,
-    FakeGasEstimateSubprovider,
-    GanacheSubprovider,
-    RPCSubprovider,
-    Web3ProviderEngine,
-} from '@0x/subproviders';
 import { providerUtils } from '@0x/utils';
 import * as fs from 'fs';
 import * as _ from 'lodash';
+import Web3ProviderEngine = require('web3-provider-engine');
+import RpcSubprovider = require('web3-provider-engine/subproviders/rpc');
 
 import { constants } from './constants';
 import { env, EnvVars } from './env';
+import { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
+import { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
+import { GanacheSubprovider } from './subproviders/ganache';
 
 export interface Web3Config {
     hasAddresses?: boolean; // default: true
@@ -42,7 +40,7 @@ export const web3Factory = {
         const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
             if (config.rpcUrl !== undefined) {
-                throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
+                throw new Error('Cannot use both GanacheSubrovider and RpcSubprovider');
             }
             const shouldThrowErrorsOnGanacheRPCResponse =
                 config.shouldThrowErrorsOnGanacheRPCResponse === undefined ||
@@ -64,10 +62,11 @@ export const web3Factory = {
                     port: 8545,
                     network_id: 50,
                     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
-                } as any), // TODO remove any once types are merged in DefinitelyTyped
+                }),
             );
         } else {
-            provider.addProvider(new RPCSubprovider(config.rpcUrl || constants.RPC_URL));
+            // Note we're using the Metamask RpcSubprovider not the @0x/subproviders RPCSubprovider
+            provider.addProvider(new RpcSubprovider({ rpcUrl: config.rpcUrl || constants.RPC_URL }));
         }
         providerUtils.startProviderEngine(provider);
         return provider;

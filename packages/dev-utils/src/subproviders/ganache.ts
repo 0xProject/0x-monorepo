@@ -1,8 +1,9 @@
 import { GanacheProvider, JSONRPCRequestPayload } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 
-import { Callback, ErrorCallback, Subprovider } from '@0x/subproviders';
+import { Callback, ErrorCallback } from './types';
 
+import { Subprovider } from './subprovider';
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
  * It intercepts all JSON RPC requests and relays them to an in-process ganache instance.
