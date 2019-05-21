@@ -22,6 +22,7 @@ import "./DummyERC20Token.sol";
 
 
 // solhint-disable no-empty-blocks
+// solhint-disable no-unused-vars
 contract UntransferrableDummyERC20Token is
     DummyERC20Token
 {
