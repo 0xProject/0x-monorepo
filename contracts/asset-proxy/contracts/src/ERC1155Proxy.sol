@@ -84,7 +84,7 @@ contract ERC1155Proxy is
         // |          |             |         | values:                             |
         // |          | 196 + a     | 32      |   1. values Length                  |
         // |          | 228 + a     | b       |   2. values Contents                |
-        // |          |             |         | data                                |
+        // |          |             |         | data:                               |
         // |          | 228 + a + b | 32      |   1. data Length                    |
         // |          | 260 + a + b | c       |   2. data Contents                  |
         // |          |             |         | scaledValues: (***)                 |
@@ -155,34 +155,22 @@ contract ERC1155Proxy is
                 // 2. Increment by 32 the offsets to `ids`, `values`, and `data`
 
                 // Load offset to `assetData`
-                let assetDataOffset := calldataload(4)
+                let assetDataOffset := add(calldataload(4), 4)
 
-                // Load length in bytes of `assetData`, computed by:
-                // 4 (function selector)
-                // + assetDataOffset
-                let assetDataLength := calldataload(add(4, assetDataOffset))
+                // Load length in bytes of `assetData`
+                let assetDataLength := calldataload(assetDataOffset)
 
-                // This corresponds to the beginning of the Data Area for Table #3.
-                // Computed by:
-                // 4 (function selector)
-                // + assetDataOffset
-                // + 32 (length of assetData)
+                // Copy the components of asset data (Table #2) that remain the same in Table #3.
                 calldatacopy(
-                    32,                         // aligned such that "offset to ids" is at the correct location for Table #3
-                    add(36, assetDataOffset),   // beginning of asset data contents
-                    assetDataLength             // length of asset data
+                    68,                         // aligned such that "offset to ids" is at the correct location for Table #3
+                    add(assetDataOffset, 68),   // beginning of `ids` in asset data (Table #2)
+                    sub(assetDataLength, 36)    // length of asset data, starting at `ids` (Table #2)
                 )
 
                 // Increment by 32 the offsets to `ids`, `values`, and `data`
                 mstore(68, add(mload(68), 32))
                 mstore(100, add(mload(100), 32))
                 mstore(132, add(mload(132), 32))
-
-                // Record the address of the destination erc1155 asset for later.
-                let assetAddress := and(
-                    mload(36),
-                    0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
-                )
 
                 ////////// STEP 2/4 //////////
                 // Setup iterators for `values` array (Table #3)
@@ -255,6 +243,14 @@ contract ERC1155Proxy is
                 )
 
                 ////////// STEP 4/4 //////////
+                // Load the address of the destination erc1155 contract from asset data (Table #2)
+                // +32 bytes for assetData Length
+                // +4 bytes for assetProxyId
+                let assetAddress := and(
+                    calldataload(add(assetDataOffset, 36)),
+                    0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
+                )
+
                 // Call into the destination erc1155 contract using as calldata Table #3 (constructed in-memory above)
                 let success := call(
                     gas,                                    // forward all gas
