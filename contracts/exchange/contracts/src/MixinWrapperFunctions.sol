@@ -23,7 +23,7 @@ import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibAbiEncoder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MWrapperFunctions.sol";
 import "./mixins/MExchangeRichErrors.sol";
@@ -33,7 +33,7 @@ contract MixinWrapperFunctions is
     ReentrancyGuard,
     LibMath,
     LibFillResults,
-    LibAbiEncoder,
+    LibExchangeSelectors,
     MExchangeCore,
     MWrapperFunctions,
     MExchangeRichErrors
@@ -74,7 +74,8 @@ contract MixinWrapperFunctions is
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = _abiEncodeFillOrder(
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            FILL_ORDER_SELECTOR,
             order,
             takerAssetFillAmount,
             signature
@@ -374,6 +375,18 @@ contract MixinWrapperFunctions is
         return totalFillResults;
     }
 
+    /// @dev After calling, the order can not be filled anymore.
+    /// @return True if the order was cancelled successfully. 
+    /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+    function cancelOrderNoThrow(LibOrder.Order memory order)
+        public
+        returns (bool didCancel)
+    {
+        bytes memory cancelOrderCallData = abi.encodeWithSelector(CANCEL_ORDER_SELECTOR, order);
+        (didCancel,) = address(this).delegatecall(cancelOrderCallData);
+        return didCancel;
+    }
+
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
@@ -384,6 +397,21 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i != ordersLength; i++) {
             _cancelOrder(orders[i]);
         }
+    }
+
+    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @param orders Array of order specifications.
+    /// @return Bool array containing results of each individual cancellation.
+    function batchCancelOrdersNoThrow(LibOrder.Order[] memory orders)
+        public
+        returns (bool[] memory)
+    {
+        uint256 ordersLength = orders.length;
+        bool[] memory didCancel = new bool[](ordersLength);
+        for (uint256 i = 0; i != ordersLength; i++) {
+            didCancel[i] = cancelOrderNoThrow(orders[i]);
+        }
+        return didCancel;
     }
 
     /// @dev Fetches information for all passed in orders.
