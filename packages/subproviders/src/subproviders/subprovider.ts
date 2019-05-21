@@ -9,7 +9,7 @@ import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../typ
  */
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
-    private engine!: any;
+    private engine!: Web3ProviderEngine;
     protected static _createFinalPayload(
         payload: Partial<JSONRPCRequestPayloadWithMethod>,
     ): Partial<JSONRPCRequestPayloadWithMethod> {
