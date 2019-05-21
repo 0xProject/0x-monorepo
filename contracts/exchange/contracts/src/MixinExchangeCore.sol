@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -33,6 +34,7 @@ import "./mixins/MExchangeRichErrors.sol";
 
 contract MixinExchangeCore is
     ReentrancyGuard,
+    LibExchangeSelectors,
     LibMath,
     LibOrder,
     LibFillResults,
@@ -293,9 +295,31 @@ contract MixinExchangeCore is
         // );
 
         // First we need to ABI encode the (10) non-indexed event arguments
-        // into `logData`.
+        // into `logData`. The memory layout of the contents of `logData` will look like:
+        // | Offset                 | Length  | Contents                       |
+        // |------------------------|---------|------------------------------- |
+        // | 0                      | 32      | takerAddress                   |
+        // | 32                     | 32      | senderAddress                  |
+        // | 64                     | 32      | makerAssetFilledAmount         |
+        // | 96                     | 32      | takerAssetFilledAmount         |
+        // | 128                    | 32      | makerFeePaid                   |
+        // | 160                    | 32      | takerFeePaid                   |
+        // | 192                    | 32      | offset to makerAssetData       |
+        // | 224                    | 32      | offset to takerAssetData       |
+        // | 256                    | 32      | offset to makerFeeAssetData    |
+        // | 288                    | 32      | offset to takerFeeAssetData    |
+        // | 320                    | 32      | makerAssetData length          |
+        // | 352                    | C1      | makerAssetData contents        |
+        // | 352 + C1               | 32      | takerAssetData length          |
+        // | 384 + C1               | C2      | takerAssetData contents        |
+        // | 384 + C1 + C2          | 32      | makerFeeAssetData length       |
+        // | 416 + C1 + C2          | C3      | makerFeeAssetData contents     |
+        // | 416 + C1 + C2          | 32      | takerFeeAssetData length       |
+        // | 448 + C1 + C2 + C3     | C4      | takerFeeAssetData contents     |
+        // |-------------------------------------------------------------------|
+        // | Total Length: 448 + C1 + C2 + C3                                  |
         bytes memory logData = new bytes(
-            448 // 10 * 32 + 32 * 4 = 448
+            448
             + order.makerAssetData.length
             + order.takerAssetData.length
             + order.makerFeeAssetData.length
@@ -347,7 +371,7 @@ contract MixinExchangeCore is
 
         // We could save even more stack space here if we're willing to
         // embed these values/offsets.
-        bytes32 eventSignature = FILL_EVENT_SIGNATURE;
+        bytes32 eventSelector = EVENT_FILL_SELECTOR;
         address makerAddress = order.makerAddress;
         address feeRecipient = order.feeRecipientAddress;
 
@@ -360,7 +384,7 @@ contract MixinExchangeCore is
                 // Length of the above.
                 mload(logData),
                 // The bytes32 signature of this event (keccak('Fill(...)'))
-                eventSignature,
+                eventSelector,
                 // The 3 indexed parameters, in order.
                 makerAddress,
                 feeRecipient,
