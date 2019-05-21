@@ -106,20 +106,20 @@ export class ERC1155ProxyWrapper {
         valueMultiplier: BigNumber,
         receiverCallbackData: string,
         authorizedSender: string,
-        extraData?: string,
+        assetData_?: string,
     ): Promise<string> {
         this._validateProxyContractExistsOrThrow();
-        let encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-            contractAddress,
-            tokensToTransfer,
-            valuesToTransfer,
-            receiverCallbackData,
-        );
-        if (extraData !== undefined) {
-            encodedAssetData = `${encodedAssetData}${extraData}`;
-        }
+        const assetData =
+            assetData_ === undefined
+                ? assetDataUtils.encodeERC1155AssetData(
+                      contractAddress,
+                      tokensToTransfer,
+                      valuesToTransfer,
+                      receiverCallbackData,
+                  )
+                : assetData_;
         const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-            encodedAssetData,
+            assetData,
             from,
             to,
             valueMultiplier,
@@ -128,6 +128,7 @@ export class ERC1155ProxyWrapper {
             to: (this._proxyContract as ERC1155ProxyContract).address,
             data,
             from: authorizedSender,
+            gas: 300000,
         });
         return txHash;
     }
@@ -153,7 +154,7 @@ export class ERC1155ProxyWrapper {
         valueMultiplier: BigNumber,
         receiverCallbackData: string,
         authorizedSender: string,
-        extraData?: string,
+        assetData?: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this.transferFromAsync(
@@ -165,7 +166,7 @@ export class ERC1155ProxyWrapper {
                 valueMultiplier,
                 receiverCallbackData,
                 authorizedSender,
-                extraData,
+                assetData,
             ),
         );
         return txReceipt;
