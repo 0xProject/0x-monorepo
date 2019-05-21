@@ -76,7 +76,7 @@ contract ERC1155Proxy is
         // |          | 4           |         |   1. from address                   |
         // |          | 36          |         |   2. to address                     |
         // |          | 68          |         |   3. offset to ids (*)              |
-        // |          | 100         |         |   4. offset scaledValues (*)        |
+        // |          | 100         |         |   4. offset to scaledValues (*)     |
         // |          | 132         |         |   5. offset to data (*)             |
         // | Data     |             |         | ids:                                |
         // |          | 164         | 32      |   1. ids Length                     |
@@ -87,6 +87,7 @@ contract ERC1155Proxy is
         // |          |             |         | data                                |
         // |          | 228 + a + b | 32      |   1. data Length                    |
         // |          | 260 + a + b | c       |   2. data Contents                  |
+        // |------------------------------------------------------------------------|
         // |          |             |         | scaledValues: (***)                 |
         // |          | 260 + a+b+c | 32      |   1. scaledValues Length            |
         // |          | 292 + a+b+c | b       |   2. scaledValues Contents          |
@@ -123,7 +124,7 @@ contract ERC1155Proxy is
             // amount Amount of asset to transfer.
             // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
             if eq(selector, 0xa85e59e400000000000000000000000000000000000000000000000000000000) {
-                
+
                 // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
                 // where k is the key left padded to 32 bytes and p is the storage slot
                 mstore(0, caller)
@@ -184,6 +185,10 @@ contract ERC1155Proxy is
                     0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
                 )
 
+                // Record the length of ERC1155 calldata (Table #3),
+                // which is 32 bytes longer than `assetData` (Table #2).
+                let erc1155CalldataLengthInBytes := add(assetDataLength, 32)
+
                 ////////// STEP 2/4 //////////
                 // Setup iterators for `values` array (table #3)
                 let valuesOffset := add(mload(100), 4) // add 4 for calldata offset
@@ -192,12 +197,34 @@ contract ERC1155Proxy is
                 let valuesBegin := add(valuesOffset, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
 
-                // Setup iterators for `scaledValues` array (Table #3).
-                // This array is placed at the end of the regular ERC1155 calldata,
-                // which is 32 bytes longer than `assetData` (Table #2).
-                let scaledValuesOffset := add(assetDataLength, 32)
-                let scaledValuesBegin := add(scaledValuesOffset, 32)
-                let scaledValuesEnd := add(scaledValuesBegin, valuesLengthInBytes)
+                // Setup default iterators for `scaledValues` array (Table #3).
+                let scaledValuesOffset := valuesOffset
+                let scaledValuesBegin := valuesBegin
+                let scaledValuesEnd := valuesEnd
+
+                // If `ids` or `data` points to `values` then store `scaledValues` separately.
+                let idsOffset := add(mload(68), 4)
+                let dataOffset := add(mload(132), 4)
+                let storeScaledValuesSeparately := or(
+                    eq(valuesOffset, idsOffset),
+                    eq(valuesOffset, dataOffset)
+                )
+                if gt(storeScaledValuesSeparately, 0) {
+                    // Store scaled values at the end of the regular ERC1155 calldata
+                    scaledValuesOffset := erc1155CalldataLengthInBytes
+                    scaledValuesBegin := add(scaledValuesOffset, 32)
+                    scaledValuesEnd := add(scaledValuesBegin, valuesLengthInBytes)
+
+                    // Store length of `scaledValues` (which is the same as `values`)
+                    mstore(scaledValuesOffset, valuesLength)
+
+                    // Point `values` to `scaledValues` (see Table #3);
+                    // subtract 4 from memory location to account for selector
+                    mstore(100, sub(scaledValuesOffset, 4))
+
+                    // Record the new length of ERC1155 calldata (Table #3)
+                    erc1155CalldataLengthInBytes := scaledValuesEnd
+                }
 
                 // Scale `values` by `amount` and store the output in `scaledValues`
                 let amount := calldataload(100)
@@ -232,13 +259,6 @@ contract ERC1155Proxy is
                     mstore(scaledTokenValueOffset, scaledTokenValue)
                 }
 
-                // Store length of `scaledValues` (which is the same as `values`)
-                mstore(scaledValuesOffset, valuesLength)
-
-                // Point `values` to `scaledValues` (see Table #3);
-                // subtract 4 from memory location to account for selector
-                mstore(100, sub(scaledValuesOffset, 4))
-
                 ////////// STEP 3/4 //////////
                 // Store the safeBatchTransferFrom function selector,
                 // and copy `from`/`to` fields from Table #1 to Table #3.
@@ -261,7 +281,7 @@ contract ERC1155Proxy is
                     assetAddress,                           // call address of erc1155 asset
                     0,                                      // don't send any ETH
                     0,                                      // pointer to start of input
-                    scaledValuesEnd,                        // length of input (Table #3) is the end of the `scaledValues`
+                    erc1155CalldataLengthInBytes,           // length of input (length of Table #3)
                     0,                                      // write output over memory that won't be reused
                     0                                       // don't copy output to memory
                 )
