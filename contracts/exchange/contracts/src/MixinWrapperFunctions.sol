@@ -33,7 +33,7 @@ contract MixinWrapperFunctions is
     ReentrancyGuard,
     LibMath,
     LibFillResults,
-    LibAbiEncoder,
+    LibExchangeSelectors,
     MExchangeCore,
     MWrapperFunctions,
     MExchangeRichErrors
