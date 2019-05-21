@@ -32,7 +32,7 @@
         "test:circleci": "yarn test",
         "contracts:gen": "contracts-gen",
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
-        "generate-exchange-selectors": "node scripts/generate-exchange-selectors.js ../../exchange/generated-artifacts/Exchange.json ./contracts/src/LibExchangeSelectors.sol"
+        "generate-exchange-selectors": "node lib/scripts/generate-exchange-selectors.js ../../../exchange/generated-artifacts/Exchange.json ./contracts/src/LibExchangeSelectors.sol"
     },
     "config": {
         "abis": "./generated-artifacts/@(LibEIP712ExchangeDomain|LibFillResults|LibMath|LibOrder|LibZeroExTransaction|TestLibs).json",

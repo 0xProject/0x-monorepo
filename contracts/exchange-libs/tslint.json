@@ -2,8 +2,5 @@
     "extends": ["@0x/tslint-config"],
     "rules": {
         "custom-no-magic-numbers": false
-    },
-    "linterOptions": {
-        "exclude": ["./scripts/**.js"]
     }
 }
