@@ -1,7 +1,7 @@
 {
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
-    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "include": ["./src/**/*", "./test/**/*", "./scripts/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibFillResults.json",
