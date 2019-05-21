@@ -1,8 +1,6 @@
 import { JSONRPCRequestPayload } from 'ethereum-types';
 
-import { Callback, ErrorCallback } from '../types';
-
-import { Subprovider } from './subprovider';
+import { Callback, ErrorCallback, Subprovider } from '@0x/subproviders';
 
 // HACK: We need this so that our tests don't use testrpc gas estimation which sometimes kills the node.
 // Source: https://github.com/trufflesuite/ganache-cli/issues/417

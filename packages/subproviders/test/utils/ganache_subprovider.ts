@@ -1,6 +1,6 @@
+import { GanacheSubprovider } from '@0x/dev-utils';
 import * as fs from 'fs';
 
-import { GanacheSubprovider } from '../../src/subproviders/ganache';
 import { configs } from '../utils/configs';
 
 const logger = {

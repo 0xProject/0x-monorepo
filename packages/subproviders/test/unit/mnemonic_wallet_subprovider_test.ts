@@ -1,9 +1,10 @@
+import { GanacheSubprovider } from '@0x/dev-utils';
 import { providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as ethUtils from 'ethereumjs-util';
 
-import { GanacheSubprovider, MnemonicWalletSubprovider, Web3ProviderEngine } from '../../src/';
+import { MnemonicWalletSubprovider, Web3ProviderEngine } from '../../src/';
 import { DoneCallback, WalletSubproviderErrors } from '../../src/types';
 import { chaiSetup } from '../chai_setup';
 import { fixtureData } from '../utils/fixture_data';

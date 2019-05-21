@@ -17,12 +17,10 @@ export async function ledgerEthereumBrowserClientFactoryAsync(): Promise<LedgerE
 export { prependSubprovider } from './utils/subprovider_utils';
 
 export { EmptyWalletSubprovider } from './subproviders/empty_wallet_subprovider';
-export { FakeGasEstimateSubprovider } from './subproviders/fake_gas_estimate_subprovider';
 export { SignerSubprovider } from './subproviders/signer';
 export { RedundantSubprovider } from './subproviders/redundant_subprovider';
 export { LedgerSubprovider } from './subproviders/ledger';
 export { RPCSubprovider } from './subproviders/rpc_subprovider';
-export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
 export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet';
