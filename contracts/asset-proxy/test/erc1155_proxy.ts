@@ -20,6 +20,7 @@ import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { ERC1155ProxyWrapper, ERC721ProxyContract } from '../src';
@@ -468,6 +469,157 @@ describe('ERC1155Proxy', () => {
             expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(totalValuesTransferred[0]);
             // note - if the `extraData` is ignored then the receiver log should ignore it as well.
             expect(receiverLog.args.data).to.be.deep.equal(nullReceiverCallbackData);
+            // check balances after transfer
+            const expectedFinalBalances = [
+                expectedInitialBalances[0].minus(totalValuesTransferred[0]),
+                expectedInitialBalances[1].plus(totalValuesTransferred[0]),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should successfully transfer value to a smart contract and trigger its callback, when callback `data` is one word', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiverContract];
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
+                return value.times(valueMultiplier);
+            });
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // create word of callback data
+            const customReceiverCallbackData = '0x0102030405060708091001020304050607080910010203040506070809100102';
+            const customReceiverCallbackDataAsBuffer = ethUtil.toBuffer(customReceiverCallbackData);
+            const oneWordInBytes = 32;
+            expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.equal(oneWordInBytes);
+            // execute transfer
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                customReceiverCallbackData,
+                authorized,
+            );
+            // check receiver log ignored extra asset data
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<
+                DummyERC1155ReceiverBatchTokenReceivedEventArgs
+            >;
+            expect(receiverLog.args.operator).to.be.equal(erc1155Proxy.address);
+            expect(receiverLog.args.from).to.be.equal(spender);
+            expect(receiverLog.args.tokenIds.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokensToTransfer[0]);
+            expect(receiverLog.args.tokenValues.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(totalValuesTransferred[0]);
+            // note - if the `extraData` is ignored then the receiver log should ignore it as well.
+            expect(receiverLog.args.data).to.be.deep.equal(customReceiverCallbackData);
+            // check balances after transfer
+            const expectedFinalBalances = [
+                expectedInitialBalances[0].minus(totalValuesTransferred[0]),
+                expectedInitialBalances[1].plus(totalValuesTransferred[0]),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should successfully transfer value to a smart contract and trigger its callback, when callback `data` is multiple words', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiverContract];
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
+                return value.times(valueMultiplier);
+            });
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // create word of callback data
+            const scalar = 5;
+            const customReceiverCallbackData = `0x${'0102030405060708091001020304050607080910010203040506070809100102'.repeat(
+                scalar,
+            )}`;
+            const customReceiverCallbackDataAsBuffer = ethUtil.toBuffer(customReceiverCallbackData);
+            const oneWordInBytes = 32;
+            expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.equal(oneWordInBytes * scalar);
+            // execute transfer
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                customReceiverCallbackData,
+                authorized,
+            );
+            // check receiver log ignored extra asset data
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<
+                DummyERC1155ReceiverBatchTokenReceivedEventArgs
+            >;
+            expect(receiverLog.args.operator).to.be.equal(erc1155Proxy.address);
+            expect(receiverLog.args.from).to.be.equal(spender);
+            expect(receiverLog.args.tokenIds.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokensToTransfer[0]);
+            expect(receiverLog.args.tokenValues.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(totalValuesTransferred[0]);
+            // note - if the `extraData` is ignored then the receiver log should ignore it as well.
+            expect(receiverLog.args.data).to.be.deep.equal(customReceiverCallbackData);
+            // check balances after transfer
+            const expectedFinalBalances = [
+                expectedInitialBalances[0].minus(totalValuesTransferred[0]),
+                expectedInitialBalances[1].plus(totalValuesTransferred[0]),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
+        });
+        it('should successfully transfer value to a smart contract and trigger its callback, when callback `data` is multiple words but not word-aligned', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiverContract];
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const totalValuesTransferred = _.map(valuesToTransfer, (value: BigNumber) => {
+                return value.times(valueMultiplier);
+            });
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            // create word of callback data
+            const scalar = 5;
+            const customReceiverCallbackData = `0x${'0102030405060708091001020304050607080910010203040506070809100102'.repeat(
+                scalar,
+            )}090807`;
+            const customReceiverCallbackDataAsBuffer = ethUtil.toBuffer(customReceiverCallbackData);
+            const oneWordInBytes = 32;
+            expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.greaterThan(oneWordInBytes * scalar);
+            expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.lessThan(oneWordInBytes * (scalar + 1));
+            // execute transfer
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                customReceiverCallbackData,
+                authorized,
+            );
+            // check receiver log ignored extra asset data
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<
+                DummyERC1155ReceiverBatchTokenReceivedEventArgs
+            >;
+            expect(receiverLog.args.operator).to.be.equal(erc1155Proxy.address);
+            expect(receiverLog.args.from).to.be.equal(spender);
+            expect(receiverLog.args.tokenIds.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokensToTransfer[0]);
+            expect(receiverLog.args.tokenValues.length).to.be.deep.equal(1);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(totalValuesTransferred[0]);
+            // note - if the `extraData` is ignored then the receiver log should ignore it as well.
+            expect(receiverLog.args.data).to.be.deep.equal(customReceiverCallbackData);
             // check balances after transfer
             const expectedFinalBalances = [
                 expectedInitialBalances[0].minus(totalValuesTransferred[0]),
