@@ -431,8 +431,6 @@ export class FillOrderCombinatorialUtils {
             lazyStore,
             fillRevertReasonIfExists,
         );
-
-        await this._abiEncodeFillOrderAndAssertOutcomeAsync(signedOrder, takerAssetFillAmount);
     }
     private async _fillOrderAndAssertOutcomeAsync(
         signedOrder: SignedOrder,
@@ -608,19 +606,6 @@ export class FillOrderCombinatorialUtils {
             expZRXAssetBalanceOfFeeRecipient,
             'ZRXAssetBalanceOfFeeRecipient',
         );
-    }
-    private async _abiEncodeFillOrderAndAssertOutcomeAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmount: BigNumber,
-    ): Promise<void> {
-        const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
-        const abiDataEncodedByContract = await this.testLibsContract.abiEncodeFillOrder.callAsync(
-            params.order,
-            params.takerAssetFillAmount,
-            params.signature,
-        );
-        const paramsDecodedByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
-        expect(paramsDecodedByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
     }
     private async _getTakerAssetFillAmountAsync(
         signedOrder: SignedOrder,

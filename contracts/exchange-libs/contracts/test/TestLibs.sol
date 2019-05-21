@@ -23,7 +23,6 @@ import "../src/LibEIP712ExchangeDomain.sol";
 import "../src/LibMath.sol";
 import "../src/LibOrder.sol";
 import "../src/LibFillResults.sol";
-import "../src/LibAbiEncoder.sol";
 
 
 // solhint-disable no-empty-blocks
@@ -31,30 +30,12 @@ contract TestLibs is
     LibEIP712ExchangeDomain,
     LibMath,
     LibOrder,
-    LibFillResults,
-    LibAbiEncoder
+    LibFillResults
 {
     constructor (uint256 chainId)
         public
         LibEIP712ExchangeDomain(chainId, address(0))
     {}
-
-    function abiEncodeFillOrder(
-        Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
-    )
-        public
-        pure
-        returns (bytes memory fillOrderCalldata)
-    {
-        fillOrderCalldata = _abiEncodeFillOrder(
-            order,
-            takerAssetFillAmount,
-            signature
-        );
-        return fillOrderCalldata;
-    }
 
     function getPartialAmountFloor(
         uint256 numerator,

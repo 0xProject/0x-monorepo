@@ -5,7 +5,6 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as LibAbiEncoder from '../generated-artifacts/LibAbiEncoder.json';
 import * as LibConstants from '../generated-artifacts/LibConstants.json';
 import * as LibEIP712ExchangeDomain from '../generated-artifacts/LibEIP712ExchangeDomain.json';
 import * as LibFillResults from '../generated-artifacts/LibFillResults.json';
@@ -14,7 +13,6 @@ import * as LibOrder from '../generated-artifacts/LibOrder.json';
 import * as LibZeroExTransaction from '../generated-artifacts/LibZeroExTransaction.json';
 import * as TestLibs from '../generated-artifacts/TestLibs.json';
 export const artifacts = {
-    LibAbiEncoder: LibAbiEncoder as ContractArtifact,
     LibConstants: LibConstants as ContractArtifact,
     LibFillResults: LibFillResults as ContractArtifact,
     LibMath: LibMath as ContractArtifact,
