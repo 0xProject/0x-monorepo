@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
@@ -30,6 +31,7 @@ import "./mixins/MExchangeRichErrors.sol";
 
 contract MixinWrapperFunctions is
     ReentrancyGuard,
+    LibExchangeSelectors,
     LibMath,
     LibFillResults,
     MExchangeCore,
@@ -73,10 +75,7 @@ contract MixinWrapperFunctions is
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            // solhint-disable-next-line max-line-length
-            // bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)"))
-            // = 0x9b44d556
-            0x9b44d556,
+            FILL_ORDER_SELECTOR,
             order,
             takerAssetFillAmount,
             signature
