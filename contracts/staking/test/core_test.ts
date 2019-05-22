@@ -60,7 +60,7 @@ describe('Staking Core', () => {
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract.address);
+        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract);
         await stakingWrapper.deployAndConfigureContracts();
     });
     beforeEach(async () => {
@@ -70,13 +70,23 @@ describe('Staking Core', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('end-to-end tests', () => {
-        it.skip('staking', async () => {
-            const stakeAmount = stakingWrapper.toBaseUnitAmount(10);
-            //await stakingWrapper.stake(stakers[0], stakeAmount);
-            //const stakeBalance = stakingWrapper.getStakeBalance(stakers[0]);
-            //expect(stakeBalance).to.be.equal(stakeAmount);
+        it('staking', async () => {
+            const amount = stakingWrapper.toBaseUnitAmount(10);
+            // check zrx token balance
+            const zrxTokenBalance = await stakingWrapper.getZrxTokenBalance(stakers[0]);
+            console.log(zrxTokenBalance);
+            expect(zrxTokenBalance).to.be.bignumber.gte(amount);
+            // mint stake
+            const stakeMinted = await stakingWrapper.stake(stakers[0], amount);
+            console.log(stakeMinted);
+            //expect(stakeMinted).to.be.equal(amount);
+            
+            /*
+            const stakeBalance = stakingWrapper.getStakeBalance(stakers[0]);
+            expect(stakeBalance).to.be.equal(stakeAmount);
             const vaultBalance = stakingWrapper.getZrxVaultBalance(stakers[0]);
             expect(vaultBalance).to.be.equal(stakeAmount);
+            */
         });
     });
 });

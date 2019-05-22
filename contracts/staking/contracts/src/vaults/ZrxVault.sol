@@ -37,7 +37,9 @@ contract ZrxVault is
 
     bytes internal zrxAssetData;
 
-    constructor(address _erc20ProxyAddress, bytes memory _zrxAssetData) public {
+    constructor(address _erc20ProxyAddress, bytes memory _zrxAssetData)
+        public
+    {
         erc20Proxy = IAssetProxy(_erc20ProxyAddress);
         zrxAssetData = _zrxAssetData;
     }
@@ -60,6 +62,7 @@ contract ZrxVault is
         external
         onlyStakingContract
     {
+        /*
         // deposit ZRX from owner
         erc20Proxy.transferFrom(
             zrxAssetData,
@@ -67,6 +70,7 @@ contract ZrxVault is
             owner,
             amount
         );
+        */
 
         // update balance
         balances[owner] = _safeAdd(balances[owner], amount);
