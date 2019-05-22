@@ -1374,11 +1374,11 @@ describe('matchOrders', () => {
             function getAssetData(tokenType: TokenType, ownerAddress: string): string {
                 const encodeERC20AssetData = assetDataUtils.encodeERC20AssetData;
                 const encodeERC721AssetData = assetDataUtils.encodeERC721AssetData;
-                if (tokenType in nameToERC20Tokens) {
+                if (nameToERC20Tokens[tokenType] !== undefined) {
                     const tokenAddress = nameToERC20Tokens[tokenType];
                     return encodeERC20AssetData(tokenAddress);
                 }
-                if (tokenType in nameToERC721Tokens) {
+                if (nameToERC721Tokens[tokenType] !== undefined) {
                     const tokenAddress = nameToERC721Tokens[tokenType];
                     const tokenIdx = tokenType.charCodeAt(tokenType.length - 1) - 'A'.charCodeAt(0);
                     const tokenId = erc721TokenIdsByOwner[ownerAddress][tokenAddress][tokenIdx];
