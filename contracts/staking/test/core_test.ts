@@ -71,22 +71,27 @@ describe('Staking Core', () => {
     });
     describe('end-to-end tests', () => {
         it('staking', async () => {
+            // setup tets parameters
             const amount = stakingWrapper.toBaseUnitAmount(10);
-            // check zrx token balance
-            const zrxTokenBalance = await stakingWrapper.getZrxTokenBalance(stakers[0]);
-            console.log(zrxTokenBalance);
-            expect(zrxTokenBalance).to.be.bignumber.gte(amount);
+            // check zrx token balances before minting stake
+            const zrxTokenBalanceOfVaultBeforeStaking = await stakingWrapper.getZrxTokenBalanceOfZrxVault();
+            expect(zrxTokenBalanceOfVaultBeforeStaking).to.be.bignumber.equal(new BigNumber(0));
+            const zrxTokenBalanceOfStakerBeforeStaking = await stakingWrapper.getZrxTokenBalance(stakers[0]);
+            expect(zrxTokenBalanceOfStakerBeforeStaking).to.be.bignumber.gte(amount);
             // mint stake
             const stakeMinted = await stakingWrapper.stake(stakers[0], amount);
-            console.log(stakeMinted);
-            //expect(stakeMinted).to.be.equal(amount);
-            
-            /*
-            const stakeBalance = stakingWrapper.getStakeBalance(stakers[0]);
-            expect(stakeBalance).to.be.equal(stakeAmount);
-            const vaultBalance = stakingWrapper.getZrxVaultBalance(stakers[0]);
-            expect(vaultBalance).to.be.equal(stakeAmount);
-            */
+            expect(stakeMinted).to.be.bignumber.equal(amount);
+            // check stake balance after minting
+            const stakeBalance = await stakingWrapper.getStakeBalance(stakers[0]);
+            expect(stakeBalance).to.be.bignumber.equal(amount);
+            // check zrx vault balance
+            const vaultBalance = await stakingWrapper.getZrxVaultBalance(stakers[0]);
+            expect(vaultBalance).to.be.bignumber.equal(amount);
+            // check zrx token balances
+            const zrxTokenBalanceOfVaultAfterStaking = await stakingWrapper.getZrxTokenBalanceOfZrxVault();
+            expect(zrxTokenBalanceOfVaultAfterStaking).to.be.bignumber.equal(amount);
+            const zrxTokenBalanceOfStakerAfterStaking = await stakingWrapper.getZrxTokenBalance(stakers[0]);
+            expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amount));
         });
     });
 });
