@@ -340,8 +340,8 @@ contract MixinMatchOrders is
                     _safeAdd(
                         matchedFillResults.left.takerFeePaid,
                         matchedFillResults.right.takerFeePaid
-                        )
-                    );
+                    )
+                );
                 return;
             }
         }
