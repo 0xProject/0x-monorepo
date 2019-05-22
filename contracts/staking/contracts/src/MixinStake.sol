@@ -26,8 +26,8 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 
 
 contract MixinStake is
-    MStake,
-    IStake,
+    //MStake,
+    //IStake,
     SafeMath
 {
     using LibZrxToken for uint256;
@@ -53,7 +53,7 @@ contract MixinStake is
         returns (uint256)
     {
         // sanitize input - can only stake whole tokens
-        uint256 amountOfStakeToMint = amount.roundDownToNearestWholeToken();
+        uint256 amountOfStakeToMint = amount._roundDownToNearestWholeToken();
 
         // deposit equivalent amount of ZRX into vault
         zrxVault.depositFrom(msg.sender, amountOfStakeToMint);
@@ -71,7 +71,7 @@ contract MixinStake is
         returns (uint256)
     {
         // sanitize input - can only stake whole tokens
-        uint256 amountOfStakeToBurn = amount.roundDownToNearestWholeToken();
+        uint256 amountOfStakeToBurn = amount._roundDownToNearestWholeToken();
 
         // burn stake
         totalStake[msg.sender] = _safeSub(totalStake[msg.sender], amountOfStakeToBurn);
