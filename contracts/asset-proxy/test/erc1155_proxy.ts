@@ -752,6 +752,7 @@ describe('ERC1155Proxy', () => {
                 valuesToTransfer,
                 receiverCallbackData,
             );
+            // remove the function selector and contract address from check, as these change on each test
             const offsetToTokenIds = 74;
             const assetDataWithoutContractAddress = assetData.substr(offsetToTokenIds);
             const expectedAssetDataWithoutContractAddress =
@@ -771,6 +772,268 @@ describe('ERC1155Proxy', () => {
                 authorized,
                 assetData,
             );
+            ///// Step 5/5 /////
+            // Validate final balances
+            const finalBalances = await erc1155Wrapper.getBalancesAsync(balanceHolders, balanceTokens);
+            const expectedAmountsTransferred = _.map(valuesToTransfer, value => {
+                return value.times(valueMultiplier);
+            });
+            const expectedFinalBalances = [
+                spenderInitialBalance.minus(expectedAmountsTransferred[0]), // Token ID 1 / Spender Balance
+                spenderInitialBalance.minus(expectedAmountsTransferred[1]), // Token ID 2 / Spender Balance
+                spenderInitialBalance, // Token ID 3 / Spender Balance
+                spenderInitialBalance, // Token ID 4 / Spender Balance
+                receiverInitialBalance.plus(expectedAmountsTransferred[0]), // Token ID 1 / Receiver Balance
+                receiverInitialBalance.plus(expectedAmountsTransferred[1]), // Token ID 2 / Receiver Balance
+                receiverInitialBalance, // Token ID 3 / Receiver Balance
+                receiverInitialBalance, // Token ID 4 / Receiver Balance
+            ];
+            expect(finalBalances).to.be.deep.equal(expectedFinalBalances);
+        });
+        it('should successfully transfer if token values and data are abi encoded to same entry in calldata', async () => {
+            /**
+             * This test ensures that scaling the values does not simultaneously scale the data.
+             * Note that this test is slightly more contrived than the test above, as asset data must be
+             * intentionally hand-modified to produce this result: a functioning abi encoder will not produce it.
+             */
+            ///// Step 1/5 /////
+            // Create tokens with ids [1, 2, 3, 4] and mint a balance of 4 for the `spender`
+            const tokensToCreate = [new BigNumber(1), new BigNumber(2), new BigNumber(3), new BigNumber(4)];
+            const spenderInitialBalance = new BigNumber(4);
+            const receiverInitialBalance = new BigNumber(0);
+            const tokenUri = '';
+            for (const tokenToCreate of tokensToCreate) {
+                // create token
+                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
+                    tokenToCreate,
+                    tokenUri,
+                    {
+                        from: owner,
+                    },
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+
+                // mint balance for spender
+                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
+                    tokenToCreate,
+                    [spender],
+                    [spenderInitialBalance],
+                    {
+                        from: owner,
+                    },
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+            }
+            ///// Step 2/5 /////
+            // Check balances before transfer
+            const balanceHolders = [
+                spender,
+                spender,
+                spender,
+                spender,
+                receiverContract,
+                receiverContract,
+                receiverContract,
+                receiverContract,
+            ];
+            const balanceTokens = tokensToCreate.concat(tokensToCreate);
+            const initialBalances = await erc1155Wrapper.getBalancesAsync(balanceHolders, balanceTokens);
+            const expectedInitialBalances = [
+                spenderInitialBalance, // Token ID 1 / Spender Balance
+                spenderInitialBalance, // Token ID 2 / Spender Balance
+                spenderInitialBalance, // Token ID 3 / Spender Balance
+                spenderInitialBalance, // Token ID 4 / Spender Balance
+                receiverInitialBalance, // Token ID 1 / Receiver Balance
+                receiverInitialBalance, // Token ID 2 / Receiver Balance
+                receiverInitialBalance, // Token ID 3 / Receiver Balance
+                receiverInitialBalance, // Token ID 4 / Receiver Balance
+            ];
+            expect(initialBalances).to.be.deep.equal(expectedInitialBalances);
+            ///// Step 3/5 /////
+            // Create optimized calldata. We format like the table below.
+            // 0x         0000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082      // ERC1155 contract address
+            // 0x20       0000000000000000000000000000000000000000000000000000000000000080      // Offset to token IDs
+            // 0x40       00000000000000000000000000000000000000000000000000000000000000e0      // Offset to token values
+            // 0x60       00000000000000000000000000000000000000000000000000000000000000e0      // Offset to data (same as values)
+            // 0x80       0000000000000000000000000000000000000000000000000000000000000002      // Length of token Ids
+            // 0xA0       0000000000000000000000000000000000000000000000000000000000000001      // First Token ID
+            // 0xC0       0000000000000000000000000000000000000000000000000000000000000002      // Second Token ID
+            // 0xE0       0000000000000000000000000000000000000000000000000000000000000002      // Length of values (Length of data)
+            // 0x100      0000000000000000000000000000000000000000000000000000000000000002      // First Value
+            // 0x120      0000000000000000000000000000000000000000000000000000000000000002      // Second Value
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const tokensToTransfer = [new BigNumber(1), new BigNumber(2)];
+            const valuesToTransfer = [new BigNumber(2), new BigNumber(2)];
+            const valueMultiplier = new BigNumber(2);
+            // create callback data that is the encoded version of `valuesToTransfer`
+            const generatedAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            // remove the function selector and contract address from check, as these change on each test
+            const offsetToTokenIds = 74;
+            const assetDataSelectorAndContractAddress = generatedAssetData.substr(0, offsetToTokenIds);
+            const assetDataParameters =
+                '000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002';
+            const assetData = `${assetDataSelectorAndContractAddress}${assetDataParameters}`;
+            ///// Step 4/5 /////
+            // Transfer tokens
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+                assetData,
+            );
+            // check receiver log ignored extra asset data
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<
+                DummyERC1155ReceiverBatchTokenReceivedEventArgs
+            >;
+            expect(receiverLog.args.operator).to.be.equal(erc1155Proxy.address);
+            expect(receiverLog.args.from).to.be.equal(spender);
+            expect(receiverLog.args.tokenIds.length).to.be.deep.equal(2);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokensToTransfer[0]);
+            expect(receiverLog.args.tokenIds[1]).to.be.bignumber.equal(tokensToTransfer[1]);
+            expect(receiverLog.args.tokenValues.length).to.be.deep.equal(2);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(valuesToTransfer[0].times(valueMultiplier));
+            expect(receiverLog.args.tokenValues[1]).to.be.bignumber.equal(valuesToTransfer[1].times(valueMultiplier));
+            expect(receiverLog.args.data).to.be.deep.equal('0x0000');
+            ///// Step 5/5 /////
+            // Validate final balances
+            const finalBalances = await erc1155Wrapper.getBalancesAsync(balanceHolders, balanceTokens);
+            const expectedAmountsTransferred = _.map(valuesToTransfer, value => {
+                return value.times(valueMultiplier);
+            });
+            const expectedFinalBalances = [
+                spenderInitialBalance.minus(expectedAmountsTransferred[0]), // Token ID 1 / Spender Balance
+                spenderInitialBalance.minus(expectedAmountsTransferred[1]), // Token ID 2 / Spender Balance
+                spenderInitialBalance, // Token ID 3 / Spender Balance
+                spenderInitialBalance, // Token ID 4 / Spender Balance
+                receiverInitialBalance.plus(expectedAmountsTransferred[0]), // Token ID 1 / Receiver Balance
+                receiverInitialBalance.plus(expectedAmountsTransferred[1]), // Token ID 2 / Receiver Balance
+                receiverInitialBalance, // Token ID 3 / Receiver Balance
+                receiverInitialBalance, // Token ID 4 / Receiver Balance
+            ];
+            expect(finalBalances).to.be.deep.equal(expectedFinalBalances);
+        });
+        it('should successfully transfer if token ids, values and data are abi encoded to same entry in calldata', async () => {
+            /**
+             * This test combines the two tests above.
+             * Similar to the test above, the asset data must be manually constructed.
+             */
+            ///// Step 1/5 /////
+            // Create tokens with ids [1, 2, 3, 4] and mint a balance of 4 for the `spender`
+            const tokensToCreate = [new BigNumber(1), new BigNumber(2), new BigNumber(3), new BigNumber(4)];
+            const spenderInitialBalance = new BigNumber(4);
+            const receiverInitialBalance = new BigNumber(0);
+            const tokenUri = '';
+            for (const tokenToCreate of tokensToCreate) {
+                // create token
+                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
+                    tokenToCreate,
+                    tokenUri,
+                    {
+                        from: owner,
+                    },
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+
+                // mint balance for spender
+                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
+                    tokenToCreate,
+                    [spender],
+                    [spenderInitialBalance],
+                    {
+                        from: owner,
+                    },
+                    constants.AWAIT_TRANSACTION_MINED_MS,
+                );
+            }
+            ///// Step 2/5 /////
+            // Check balances before transfer
+            const balanceHolders = [
+                spender,
+                spender,
+                spender,
+                spender,
+                receiverContract,
+                receiverContract,
+                receiverContract,
+                receiverContract,
+            ];
+            const balanceTokens = tokensToCreate.concat(tokensToCreate);
+            const initialBalances = await erc1155Wrapper.getBalancesAsync(balanceHolders, balanceTokens);
+            const expectedInitialBalances = [
+                spenderInitialBalance, // Token ID 1 / Spender Balance
+                spenderInitialBalance, // Token ID 2 / Spender Balance
+                spenderInitialBalance, // Token ID 3 / Spender Balance
+                spenderInitialBalance, // Token ID 4 / Spender Balance
+                receiverInitialBalance, // Token ID 1 / Receiver Balance
+                receiverInitialBalance, // Token ID 2 / Receiver Balance
+                receiverInitialBalance, // Token ID 3 / Receiver Balance
+                receiverInitialBalance, // Token ID 4 / Receiver Balance
+            ];
+            expect(initialBalances).to.be.deep.equal(expectedInitialBalances);
+            ///// Step 3/5 /////
+            // Create optimized calldata. We format like the table below.
+            // 0x         0000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082      // ERC1155 contract address
+            // 0x20       0000000000000000000000000000000000000000000000000000000000000080      // Offset to token IDs
+            // 0x40       0000000000000000000000000000000000000000000000000000000000000080      // Offset to token values
+            // 0x60       0000000000000000000000000000000000000000000000000000000000000080      // Offset to data (same as values)
+            // 0x80       0000000000000000000000000000000000000000000000000000000000000002      // Length of token Ids (Length of values / data)
+            // 0xA0       0000000000000000000000000000000000000000000000000000000000000001      // First Token ID (First Value)
+            // 0xC0       0000000000000000000000000000000000000000000000000000000000000002      // Second Token ID (Second Value)
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const tokensToTransfer = [new BigNumber(1), new BigNumber(2)];
+            const valuesToTransfer = [new BigNumber(1), new BigNumber(2)];
+            const valueMultiplier = new BigNumber(2);
+            // create callback data that is the encoded version of `valuesToTransfer`
+            const generatedAssetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            // remove the function selector and contract address from check, as these change on each test
+            const offsetToTokenIds = 74;
+            const assetDataSelectorAndContractAddress = generatedAssetData.substr(0, offsetToTokenIds);
+            const assetDataParameters =
+                '000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
+            const assetData = `${assetDataSelectorAndContractAddress}${assetDataParameters}`;
+            ///// Step 4/5 /////
+            // Transfer tokens
+            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+                assetData,
+            );
+            // check receiver log ignored extra asset data
+            expect(txReceipt.logs.length).to.be.equal(2);
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<
+                DummyERC1155ReceiverBatchTokenReceivedEventArgs
+            >;
+            expect(receiverLog.args.operator).to.be.equal(erc1155Proxy.address);
+            expect(receiverLog.args.from).to.be.equal(spender);
+            expect(receiverLog.args.tokenIds.length).to.be.deep.equal(2);
+            expect(receiverLog.args.tokenIds[0]).to.be.bignumber.equal(tokensToTransfer[0]);
+            expect(receiverLog.args.tokenIds[1]).to.be.bignumber.equal(tokensToTransfer[1]);
+            expect(receiverLog.args.tokenValues.length).to.be.deep.equal(2);
+            expect(receiverLog.args.tokenValues[0]).to.be.bignumber.equal(valuesToTransfer[0].times(valueMultiplier));
+            expect(receiverLog.args.tokenValues[1]).to.be.bignumber.equal(valuesToTransfer[1].times(valueMultiplier));
+            expect(receiverLog.args.data).to.be.deep.equal('0x0000');
             ///// Step 5/5 /////
             // Validate final balances
             const finalBalances = await erc1155Wrapper.getBalancesAsync(balanceHolders, balanceTokens);
