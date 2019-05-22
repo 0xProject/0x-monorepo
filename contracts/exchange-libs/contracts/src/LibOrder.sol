@@ -44,7 +44,7 @@ contract LibOrder is
     //     "bytes takerFeeAssetData",
     //     ")"
     // ))
-    bytes32 constant internal EIP712_ORDER_SCHEMA_HASH =
+    bytes32 constant public EIP712_ORDER_SCHEMA_HASH =
         0xf80322eb8376aafb64eadf8f0d7623f22130fd9491a221e902b713cb984a7534;
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
