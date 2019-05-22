@@ -4,6 +4,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { assetDataUtils } from '@0x/order-utils';
 import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
@@ -17,17 +18,17 @@ export class StakingWrapper {
     private readonly _logDecoder: LogDecoder;
     private readonly _ownerAddres: string;
     private readonly _erc20ProxyContract: ERC20ProxyContract;
-    private readonly _zrxTokenAddress: string;
+    private readonly _zrxTokenContract: DummyERC20TokenContract;
     private _stakingContractIfExists?: StakingContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
 
-    constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenAddress: string) {
+    constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
         this._ownerAddres= ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
-        this._zrxTokenAddress = zrxTokenAddress;
+        this._zrxTokenContract = zrxTokenContract;
     }
     public getStakingContract(): StakingContract {
         this._validateDeployedOrThrow();
@@ -39,7 +40,7 @@ export class StakingWrapper {
     }
     public async deployAndConfigureContracts(): Promise<void> {
         // deploy zrx vault
-        const zrxAssetData = assetDataUtils.encodeERC20AssetData(this._zrxTokenAddress);
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(this._zrxTokenContract.address);
         this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
             artifacts.ZrxVault,
             this._provider,
@@ -56,8 +57,9 @@ export class StakingWrapper {
             txDefaults,
             (this._zrxVaultContractIfExists as ZrxVaultContract).address
         );
+        // set staking contract in zrx vault
+        await this.getZrxVaultContract().setStakingContractAddrsess.awaitTransactionSuccessAsync((this._stakingContractIfExists as StakingContract).address);
     }
-    /*
     public async stake(holder: string, amount: BigNumber): Promise<BigNumber> {
         const stakeMinted = await this.getStakingContract().stake.callAsync(amount, {from: holder});
         await this.getStakingContract().stake.awaitTransactionSuccessAsync(amount, {from: holder});
@@ -67,9 +69,12 @@ export class StakingWrapper {
         const balance = await this.getStakingContract().getStakeBalance.callAsync(holder);
         return balance;
     }
-    */
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
+        return balance;
+    }
+    public async getZrxTokenBalance(holder: string): Promise<BigNumber> {
+        const balance = await this._zrxTokenContract.balanceOf.callAsync(holder);
         return balance;
     }
     public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
