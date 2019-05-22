@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.5;
 
-import "./interfaces/IStake.sol";
 import "./mixins/MStake.sol";
 import "./interfaces/IVault.sol";
 import "./libs/LibZrxToken.sol";
@@ -26,8 +25,7 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 
 
 contract MixinStake is
-    //MStake,
-    //IStake,
+    MStake,
     SafeMath
 {
     using LibZrxToken for uint256;
