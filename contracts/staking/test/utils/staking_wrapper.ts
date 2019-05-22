@@ -57,6 +57,7 @@ export class StakingWrapper {
             (this._zrxVaultContractIfExists as ZrxVaultContract).address
         );
     }
+    /*
     public async stake(holder: string, amount: BigNumber): Promise<BigNumber> {
         const stakeMinted = await this.getStakingContract().stake.callAsync(amount, {from: holder});
         await this.getStakingContract().stake.awaitTransactionSuccessAsync(amount, {from: holder});
@@ -66,6 +67,7 @@ export class StakingWrapper {
         const balance = await this.getStakingContract().getStakeBalance.callAsync(holder);
         return balance;
     }
+    */
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;
