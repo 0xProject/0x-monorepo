@@ -21,6 +21,7 @@ pragma solidity ^0.5.5;
 import "../interfaces/IVault.sol";
 import "../interfaces/IAssetProxy.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./MixinVaultCore.sol";
 
 
@@ -35,12 +36,19 @@ contract ZrxVault is
 
     IAssetProxy internal erc20Proxy;
 
+    IERC20Token internal zrxToken;
+
     bytes internal zrxAssetData;
 
-    constructor(address _erc20ProxyAddress, bytes memory _zrxAssetData)
+    constructor(
+        address _erc20ProxyAddress,
+        address _zrxTokenAddress,
+        bytes memory _zrxAssetData
+    )
         public
     {
         erc20Proxy = IAssetProxy(_erc20ProxyAddress);
+        zrxToken = IERC20Token(_zrxTokenAddress);
         zrxAssetData = _zrxAssetData;
     }
 
@@ -98,9 +106,7 @@ contract ZrxVault is
         internal
     {
         // withdraw ZRX to owner
-        erc20Proxy.transferFrom(
-            zrxAssetData,
-            address(this),
+        zrxToken.transfer(
             owner,
             amount
         );

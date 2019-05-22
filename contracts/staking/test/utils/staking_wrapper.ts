@@ -46,6 +46,7 @@ export class StakingWrapper {
             this._provider,
             txDefaults,
             this._erc20ProxyContract.address,
+            this._zrxTokenContract.address,
             zrxAssetData
         );
         // configure erc20 proxy to accept calls from zrx vault
@@ -64,6 +65,11 @@ export class StakingWrapper {
         const stakeMinted = await this.getStakingContract().stake.callAsync(amount, {from: holder});
         await this.getStakingContract().stake.awaitTransactionSuccessAsync(amount, {from: holder});
         return stakeMinted;
+    }
+    public async unstake(holder: string, amount: BigNumber): Promise<BigNumber> {
+        const stakeBurned = await this.getStakingContract().unstake.callAsync(amount, {from: holder});
+        await this.getStakingContract().unstake.awaitTransactionSuccessAsync(amount, {from: holder});
+        return stakeBurned;
     }
     public async getStakeBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getStakingContract().getStakeBalance.callAsync(holder);
