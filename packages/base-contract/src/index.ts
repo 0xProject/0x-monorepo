@@ -53,6 +53,7 @@ const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SE
 export class BaseContract {
     protected _abiEncoderByFunctionSignature: AbiEncoderByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
+    protected _bytecode: string;
     public abi: ContractAbi;
     public address: string;
     public contractName: string;
@@ -167,6 +168,13 @@ export class BaseContract {
         }) as MethodAbi;
         return methodAbi;
     }
+    protected async _lookupDeployedBytecodeAsync(): Promise<string> {
+        const bytecode = this._bytecode;
+        if (bytecode === '') {
+            this._bytecode = await this._web3Wrapper.getContractCodeAsync(this.address);
+        }
+        return this._bytecode;
+    }
     protected _strictEncodeArguments(functionSignature: string, functionArguments: any): string {
         const abiEncoder = this._lookupAbiEncoder(functionSignature);
         const inputAbi = abiEncoder.getDataItem().components;
@@ -201,6 +209,7 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
         ) as MethodAbi[];
         this._abiEncoderByFunctionSignature = {};
+        this._bytecode = '';
         _.each(methodAbis, methodAbi => {
             const abiEncoder = new AbiEncoder.Method(methodAbi);
             const functionSignature = abiEncoder.getSignature();

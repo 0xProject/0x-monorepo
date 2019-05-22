@@ -21,6 +21,7 @@ import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
+import * as pure_evm from 'pure-evm';
 // tslint:enable:no-unused-variable
 
 {{#if events}}
@@ -46,12 +47,16 @@ export enum {{contractName}}Events {
 // tslint:disable-next-line:class-name
 export class {{contractName}}Contract extends BaseContract {
 {{#each methods}}
-    {{#this.constant}}
-    {{> call contractName=../contractName}}
-    {{/this.constant}}
-    {{^this.constant}}
-    {{> tx contractName=../contractName}}
-    {{/this.constant}}
+    {{#if (isPure this.stateMutability)}}
+    {{> callPure contractName=../contractName}}
+    {{else}}
+        {{#this.constant}}
+        {{> call contractName=../contractName}}
+        {{/this.constant}}
+        {{^this.constant}}
+        {{> tx contractName=../contractName}}
+        {{/this.constant}}
+    {{/if}}
 {{/each}}
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

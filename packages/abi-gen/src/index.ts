@@ -70,6 +70,13 @@ function registerPartials(partialsGlob: string): void {
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
+Handlebars.registerHelper(
+    'isPure',
+    (stateMutability: string): any => {
+        return stateMutability === 'pure';
+    },
+);
+
 if (args.partials) {
     registerPartials(args.partials);
 }
