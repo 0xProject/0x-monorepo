@@ -29,8 +29,8 @@ contract MixinVaultCore is
 
     bool internal isInCatostrophicFailure;
 
-    constructor(address _stakingContractAddress) public {
-        stakingContractAddress = _stakingContractAddress;
+    constructor() public {
+        stakingContractAddress = 0x0000000000000000000000000000000000000000;
         isInCatostrophicFailure = false;
     }
 
