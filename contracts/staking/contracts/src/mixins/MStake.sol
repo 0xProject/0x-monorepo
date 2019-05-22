@@ -18,9 +18,8 @@
 
 pragma solidity ^0.5.5;
 
+import "../interfaces/IStake.sol";
 
-contract MStake
-{
-    
-
-}
+contract MStake is
+    IStake
+{}
