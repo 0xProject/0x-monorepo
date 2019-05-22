@@ -77,6 +77,10 @@ export class StakingWrapper {
         const balance = await this._zrxTokenContract.balanceOf.callAsync(holder);
         return balance;
     }
+    public async getZrxTokenBalanceOfZrxVault(): Promise<BigNumber> {
+        const balance = await this._zrxTokenContract.balanceOf.callAsync(this.getZrxVaultContract().address);
+        return balance;
+    }
     public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
         const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;

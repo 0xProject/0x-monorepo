@@ -62,15 +62,13 @@ contract ZrxVault is
         external
         onlyStakingContract
     {
-        /*
         // deposit ZRX from owner
         erc20Proxy.transferFrom(
             zrxAssetData,
-            address(this),
             owner,
+            address(this),
             amount
         );
-        */
 
         // update balance
         balances[owner] = _safeAdd(balances[owner], amount);
