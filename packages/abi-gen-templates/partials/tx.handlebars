@@ -3,29 +3,32 @@ public {{languageSpecificName}} = {
     {{> typed_params inputs=inputs}}
     txData?: Partial<TxData> | undefined,
     ): Promise<string> {
-    {{#each inputs}}
-    {{#assertionType name type}}{{/assertionType}}
-    {{/each}}
-    const self = this as any as {{contractName}}Contract;
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
-    const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-        {
-            to: self.address,
-            ...txData,
-            data: encodedData,
-        },
-        self._web3Wrapper.getContractDefaults(),
-        self.{{languageSpecificName}}.estimateGasAsync.bind(
-            self,
-            {{> normalized_params inputs=inputs}}
-        ),
-    );
-    if (txDataWithDefaults.from !== undefined) {
-        txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-    }
-
-    const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-    return txHash;
+        const self = this as any as {{contractName}}Contract;
+        const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.{{this.tsName}}.estimateGasAsync.bind(
+                self,
+                {{> params inputs=inputs}}
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        try {
+            return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        } catch (err) {
+            // Try to decode ganache transaction revert Errors.
+            BaseContract._throwIfThrownErrorIsRevertError(err);
+            throw err;
+        }
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
     },
     awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
@@ -58,25 +61,28 @@ public {{languageSpecificName}} = {
     {{> typed_params inputs=inputs}}
         txData?: Partial<TxData> | undefined,
     ): Promise<number> {
-    {{#each inputs}}
-    {{#assertionType name type}}{{/assertionType}}
-    {{/each}}
-    const self = this as any as {{contractName}}Contract;
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
-    const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-        {
-            to: self.address,
-            ...txData,
-            data: encodedData,
-        },
-        self._web3Wrapper.getContractDefaults(),
-    );
-    if (txDataWithDefaults.from !== undefined) {
-        txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-    }
-    
-    const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-    return gas;
+        const self = this as any as {{contractName}}Contract;
+        const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        try {
+            return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        } catch (err) {
+            // Try to decode ganache transaction revert Errors.
+            BaseContract._throwIfThrownErrorIsRevertError(err);
+            throw err;
+        }
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
     },
     {{> callAsync}}
 };
