@@ -23,8 +23,8 @@ library LibZrxToken {
 
     uint256 constant internal TOKEN_MULTIPLIER = 10**18;
 
-    function roundDownToNearestWholeToken(uint256 value)
-        public
+    function _roundDownToNearestWholeToken(uint256 value)
+        internal
         pure
         returns (uint256)
     {
