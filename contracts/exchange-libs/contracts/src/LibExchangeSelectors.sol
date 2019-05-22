@@ -149,17 +149,17 @@ contract LibExchangeSelectors {
     bytes4 constant internal VERSION_SELECTOR = 0xffa1ad74;
 
     // event AssetProxyRegistered(bytes4,address)
-    bytes32 constant internal EVENT_ASSETPROXYREGISTERED_SELECTOR = 0xd2c6b762299c609bdb96520b58a49bfb80186934d4f71a86a367571a15c03194;
+    bytes32 constant internal EVENT_ASSET_PROXY_REGISTERED_SELECTOR = 0xd2c6b762299c609bdb96520b58a49bfb80186934d4f71a86a367571a15c03194;
 
     // event Cancel(address,address,address,bytes32,bytes,bytes)
     bytes32 constant internal EVENT_CANCEL_SELECTOR = 0xdc47b3613d9fe400085f6dbdc99453462279057e6207385042827ed6b1a62cf7;
 
     // event CancelUpTo(address,address,uint256)
-    bytes32 constant internal EVENT_CANCELUPTO_SELECTOR = 0x82af639571738f4ebd4268fb0363d8957ebe1bbb9e78dba5ebd69eed39b154f0;
+    bytes32 constant internal EVENT_CANCEL_UP_TO_SELECTOR = 0x82af639571738f4ebd4268fb0363d8957ebe1bbb9e78dba5ebd69eed39b154f0;
 
     // event Fill(address,address,address,address,uint256,uint256,uint256,uint256,bytes32,bytes,bytes,bytes,bytes)
     bytes32 constant internal EVENT_FILL_SELECTOR = 0xcb32b586b1d019abfd3dfc2d45e7275f145185e9d53359e9b99521ca88cea0e8;
 
     // event SignatureValidatorApproval(address,address,bool)
-    bytes32 constant internal EVENT_SIGNATUREVALIDATORAPPROVAL_SELECTOR = 0xa8656e308026eeabce8f0bc18048433252318ab80ac79da0b3d3d8697dfba891;
+    bytes32 constant internal EVENT_SIGNATURE_VALIDATOR_APPROVAL_SELECTOR = 0xa8656e308026eeabce8f0bc18048433252318ab80ac79da0b3d3d8697dfba891;
 }
