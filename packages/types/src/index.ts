@@ -55,6 +55,7 @@ export enum MarketOperation {
  */
 export interface ZeroExTransaction {
     salt: BigNumber;
+    expirationTimeSeconds: BigNumber;
     signerAddress: string;
     data: string;
     domain: EIP712DomainWithDefaultSchema;

@@ -8,14 +8,14 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { constants as orderConstants } from '@0x/order-utils/lib/src/constants';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
-import { TestLibsContract } from '../generated-wrappers/test_libs';
+import { TestLibsContract } from '../src';
 import { artifacts } from '../src/artifacts';
 
 import { stringifySchema } from './utils';
@@ -56,7 +56,6 @@ describe('Exchange libs', () => {
             txDefaults,
             new BigNumber(alternateChainId),
         );
-
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
@@ -150,6 +149,33 @@ describe('Exchange libs', () => {
                 const orderHashHex1 = await libsAlternateChain.getOrderHash.callAsync(signedOrder);
                 const orderHashHex2 = await libs.getOrderHash.callAsync(signedOrder);
                 expect(orderHashHex1).to.be.not.equal(orderHashHex2);
+            });
+        });
+    });
+
+    describe('LibZeroExTransaction', () => {
+        describe('EIP712ZeroExTransactionSchemaHash', () => {
+            it('should return the correct schema hash', async () => {
+                const schemaHash = await libs.EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH.callAsync();
+                const schemaString =
+                    'ZeroExTransaction(uint256 salt,uint256 expirationTimeSeconds,address signerAddress,bytes data)';
+                const expectedSchemaHash = ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.sha3(schemaString)));
+                expect(schemaHash).to.equal(expectedSchemaHash);
+            });
+            it('should return the correct transactionHash', async () => {
+                const transaction = {
+                    salt: new BigNumber(0),
+                    expirationTimeSeconds: new BigNumber(0),
+                    signerAddress: constants.NULL_ADDRESS,
+                    data: constants.NULL_BYTES,
+                    domain: {
+                        verifyingContractAddress: libs.address,
+                        chainId,
+                    },
+                };
+                const transactionHash = await libs.getTransactionHash.callAsync(transaction);
+                const expectedTransactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(transactionHash).to.equal(expectedTransactionHash);
             });
         });
     });
