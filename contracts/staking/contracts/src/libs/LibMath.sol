@@ -108,7 +108,6 @@ library LibMath {
             }
         }
     }
-
     function _nthRootFixedPoint(
         uint256 base,
         uint256 n,
@@ -122,5 +121,50 @@ library LibMath {
         uint256 numerator = _nthRoot(base, n);
         uint256 denominator = _nthRoot(scalar, n);
         root = (scalar * numerator) / denominator;
+    }
+
+    // workaround for bug in ganache
+    function _exp(uint256 base, uint256 power)
+        internal
+        pure
+        returns (uint256 result)
+    {
+        result = base;
+        for(power = power - 1; power > 0; power -= 1) {
+            result *= base;
+        }
+        return result;
+    }
+
+    uint256 constant fixedPointDecimals = 18;
+    uint256 constant scalar = 10**fixedPointDecimals;
+
+    // rough implementation of cobb-douglas using the nth root fixed point algorithm above
+    function _cobbDouglas(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake,
+        uint8 alphaNumerator,
+        uint8 alphaDenominator
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        require(
+            alphaDenominator - alphaNumerator <= 10,
+            "numerator of (1 - alpha) is out of range"
+        );
+
+        uint256 feeRatio = _exp((totalRewards * ownerFees), alphaNumerator) / totalFees;
+        uint256 rootedFeeRatio = _nthRootFixedPoint(feeRatio, alphaDenominator, fixedPointDecimals);
+
+        uint256 inverseAlphaNumerator = alphaDenominator - alphaNumerator;
+        uint256 stakeRatio = _exp((totalRewards * ownerStake), inverseAlphaNumerator) / totalStake;
+        uint256 rootedStakeRatio = _nthRootFixedPoint(stakeRatio, alphaDenominator, fixedPointDecimals);
+
+        return (rootedFeeRatio * rootedStakeRatio) / scalar;
     }
 }
