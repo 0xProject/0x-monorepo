@@ -82,7 +82,7 @@ library LibMath {
             // 5. Run Newton's nth Root Algorithm
             let delta := 1 // run at least once
             for {let i := 0}
-                or(lt(i, 10), gt(delta, 0))
+                and(lt(i, 20), gt(delta, 0))
                 {i := add(i,1)}
             {
                 let lhsDenominator :=
@@ -158,11 +158,11 @@ library LibMath {
             "numerator of (1 - alpha) is out of range"
         );
 
-        uint256 feeRatio = _exp((totalRewards * ownerFees), alphaNumerator) / totalFees;
+        uint256 feeRatio = _exp((totalRewards * ownerFees) / totalFees, alphaNumerator);
         uint256 rootedFeeRatio = _nthRootFixedPoint(feeRatio, alphaDenominator, fixedPointDecimals);
 
         uint256 inverseAlphaNumerator = alphaDenominator - alphaNumerator;
-        uint256 stakeRatio = _exp((totalRewards * ownerStake), inverseAlphaNumerator) / totalStake;
+        uint256 stakeRatio = _exp((totalRewards * ownerStake) / totalStake, inverseAlphaNumerator);
         uint256 rootedStakeRatio = _nthRootFixedPoint(stakeRatio, alphaDenominator, fixedPointDecimals);
 
         return (rootedFeeRatio * rootedStakeRatio) / scalar;
