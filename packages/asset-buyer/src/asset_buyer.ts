@@ -2,9 +2,9 @@ import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -16,14 +16,16 @@ import {
     BuyQuote,
     BuyQuoteExecutionOpts,
     BuyQuoteRequestOpts,
+    LiquidityForAssetData,
+    LiquidityRequestOpts,
     OrderProvider,
-    OrderProviderResponse,
     OrdersAndFillableAmounts,
 } from './types';
 
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
+import { calculateLiquidity } from './utils/calculate_liquidity';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 
 interface OrdersEntry {
@@ -32,7 +34,7 @@ interface OrdersEntry {
 }
 
 export class AssetBuyer {
-    public readonly provider: Provider;
+    public readonly provider: ZeroExProvider;
     public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
@@ -42,7 +44,7 @@ export class AssetBuyer {
     private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
     /**
      * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
@@ -50,31 +52,30 @@ export class AssetBuyer {
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForProvidedOrders(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         orders: SignedOrder[],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
-        const assetBuyer = new AssetBuyer(provider, orderProvider, options);
+        const assetBuyer = new AssetBuyer(supportedProvider, orderProvider, options);
         return assetBuyer;
     }
     /**
      * Instantiates a new AssetBuyer instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForStandardRelayerAPIUrl(
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         sraApiUrl: string,
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
         const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
@@ -83,19 +84,23 @@ export class AssetBuyer {
     }
     /**
      * Instantiates a new AssetBuyer instance
-     * @param   provider            The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orderProvider       An object that conforms to OrderProvider, see type for definition.
      * @param   options             Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
-    constructor(provider: Provider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
+    constructor(
+        supportedProvider: SupportedProvider,
+        orderProvider: OrderProvider,
+        options: Partial<AssetBuyerOpts> = {},
+    ) {
         const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
             {},
             constants.DEFAULT_ASSET_BUYER_OPTS,
             options,
         );
-        assert.isWeb3Provider('provider', provider);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
@@ -138,10 +143,10 @@ export class AssetBuyer {
         // get the relevant orders for the makerAsset and fees
         // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
+            this.getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
             isMakerAssetZrxToken
                 ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
@@ -178,6 +183,41 @@ export class AssetBuyer {
         return buyQuote;
     }
     /**
+     * Returns information about available liquidity for an asset
+     * Does not factor in slippage or fees
+     * @param   assetData           The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   options             Options for the request. See type definition for more information.
+     *
+     * @return  An object that conforms to LiquidityForAssetData that satisfies the request. See type definition for more information.
+     */
+    public async getLiquidityForAssetDataAsync(
+        assetData: string,
+        options: Partial<LiquidityRequestOpts> = {},
+    ): Promise<LiquidityForAssetData> {
+        const shouldForceOrderRefresh =
+            options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
+        assert.isString('assetData', assetData);
+        assetDataUtils.decodeAssetDataOrThrow(assetData);
+        assert.isBoolean('options.shouldForceOrderRefresh', shouldForceOrderRefresh);
+
+        const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        if (!assetPairs.includes(etherTokenAssetData)) {
+            return {
+                tokensAvailableInBaseUnits: new BigNumber(0),
+                ethValueAvailableInWei: new BigNumber(0),
+            };
+        }
+
+        const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
+            assetData,
+            shouldForceOrderRefresh,
+        );
+
+        return calculateLiquidity(ordersAndFillableAmounts);
+    }
+
+    /**
      * Given a BuyQuote and desired rate, attempt to execute the buy.
      * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
      * @param   options         Options for the execution of the BuyQuote. See type definition for more information.
@@ -194,29 +234,29 @@ export class AssetBuyer {
             options,
         );
         assert.isValidBuyQuote('buyQuote', buyQuote);
-        if (!_.isUndefined(ethAmount)) {
+        if (ethAmount !== undefined) {
             assert.isBigNumber('ethAmount', ethAmount);
         }
-        if (!_.isUndefined(takerAddress)) {
+        if (takerAddress !== undefined) {
             assert.isETHAddressHex('takerAddress', takerAddress);
         }
         assert.isETHAddressHex('feeRecipient', feeRecipient);
-        if (!_.isUndefined(gasLimit)) {
+        if (gasLimit !== undefined) {
             assert.isNumber('gasLimit', gasLimit);
         }
-        if (!_.isUndefined(gasPrice)) {
+        if (gasPrice !== undefined) {
             assert.isBigNumber('gasPrice', gasPrice);
         }
         const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
         // if no takerAddress is provided, try to get one from the provider
         let finalTakerAddress;
-        if (!_.isUndefined(takerAddress)) {
+        if (takerAddress !== undefined) {
             finalTakerAddress = takerAddress;
         } else {
             const web3Wrapper = new Web3Wrapper(this.provider);
             const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
             const firstAvailableAddress = _.head(availableAddresses);
-            if (!_.isUndefined(firstAvailableAddress)) {
+            if (firstAvailableAddress !== undefined) {
                 finalTakerAddress = firstAvailableAddress;
             } else {
                 throw new Error(AssetBuyerError.NoAddressAvailable);
@@ -260,8 +300,10 @@ export class AssetBuyer {
     }
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
+     * @param assetData                The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param shouldForceOrderRefresh  If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs.
      */
-    private async _getOrdersAndFillableAmountsAsync(
+    public async getOrdersAndFillableAmountsAsync(
         assetData: string,
         shouldForceOrderRefresh: boolean,
     ): Promise<OrdersAndFillableAmounts> {
@@ -272,7 +314,7 @@ export class AssetBuyer {
         // we are forced to OR
         // we have some last refresh time AND that time was sufficiently long ago
         const shouldRefresh =
-            _.isUndefined(ordersEntryIfExists) ||
+            ordersEntryIfExists === undefined ||
             shouldForceOrderRefresh ||
             // tslint:disable:restrict-plus-operands
             ordersEntryIfExists.lastRefreshTime + this.orderRefreshIntervalMs < Date.now();

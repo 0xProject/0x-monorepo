@@ -45,9 +45,14 @@ export interface SignedOrder extends Order {
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */
 export interface ZeroExTransaction {
+    verifyingContractAddress: string;
     salt: BigNumber;
     signerAddress: string;
     data: string;
+}
+
+export interface SignedZeroExTransaction extends ZeroExTransaction {
+    signature: string;
 }
 
 /**
@@ -110,7 +115,9 @@ export type DoneCallback = (err?: Error) => void;
 
 export interface OrderRelevantState {
     makerBalance: BigNumber;
+    makerIndividualBalances: ObjectMap<BigNumber>;
     makerProxyAllowance: BigNumber;
+    makerIndividualProxyAllowances: ObjectMap<BigNumber>;
     makerFeeBalance: BigNumber;
     makerFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
@@ -155,6 +162,8 @@ export enum SignatureType {
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
+    MultiAsset = '0x94cfcdd7',
+    ERC1155 = '0xa7cb5fb7',
 }
 
 export interface ERC20AssetData {
@@ -168,7 +177,43 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type AssetData = ERC20AssetData | ERC721AssetData;
+export interface ERC1155AssetData {
+    assetProxyId: string;
+    tokenAddress: string;
+    tokenIds: BigNumber[];
+    tokenValues: BigNumber[];
+    callbackData: string;
+}
+
+export interface ERC1155AssetDataNoProxyId {
+    tokenAddress: string;
+    tokenValues: BigNumber[];
+    tokenIds: BigNumber[];
+    callbackData: string;
+}
+
+export const ERC1155AssetDataAbi = [
+    { name: 'tokenAddress', type: 'address' },
+    { name: 'tokenIds', type: 'uint256[]' },
+    { name: 'tokenValues', type: 'uint256[]' },
+    { name: 'callbackData', type: 'bytes' },
+];
+
+export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData;
+
+export interface MultiAssetData {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: string[];
+}
+
+export interface MultiAssetDataWithRecursiveDecoding {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: SingleAssetData[];
+}
+
+export type AssetData = SingleAssetData | MultiAssetData | MultiAssetDataWithRecursiveDecoding;
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
@@ -182,6 +227,7 @@ export enum RevertReason {
     RoundingError = 'ROUNDING_ERROR',
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
+    SignatureInvalid = 'SIGNATURE_INVALID',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
     TakerOverpay = 'TAKER_OVERPAY',
     OrderOverfill = 'ORDER_OVERFILL',
@@ -237,12 +283,35 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
+    // LibAddressArray
+    InvalidFreeMemoryPtr = 'INVALID_FREE_MEMORY_PTR',
     // DutchAuction
     AuctionInvalidAmount = 'INVALID_AMOUNT',
     AuctionExpired = 'AUCTION_EXPIRED',
     AuctionNotStarted = 'AUCTION_NOT_STARTED',
     AuctionInvalidBeginTime = 'INVALID_BEGIN_TIME',
     InvalidAssetData = 'INVALID_ASSET_DATA',
+    // Balance Threshold Filter
+    InvalidOrBlockedExchangeSelector = 'INVALID_OR_BLOCKED_EXCHANGE_SELECTOR',
+    BalanceQueryFailed = 'BALANCE_QUERY_FAILED',
+    AtLeastOneAddressDoesNotMeetBalanceThreshold = 'AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD',
+    FromLessThanToRequired = 'FROM_LESS_THAN_TO_REQUIRED',
+    ToLessThanLengthRequired = 'TO_LESS_THAN_LENGTH_REQUIRED',
+    InvalidApprovalSignature = 'INVALID_APPROVAL_SIGNATURE',
+    ApprovalExpired = 'APPROVAL_EXPIRED',
+    InvalidOrigin = 'INVALID_ORIGIN',
+    // ERC1155
+    AmountEqualToOneRequired = 'AMOUNT_EQUAL_TO_ONE_REQUIRED',
+    BadReceiverReturnValue = 'BAD_RECEIVER_RETURN_VALUE',
+    CannotTransferToAddressZero = 'CANNOT_TRANSFER_TO_ADDRESS_ZERO',
+    InsufficientAllowance = 'INSUFFICIENT_ALLOWANCE',
+    NFTNotOwnedByFromAddress = 'NFT_NOT_OWNED_BY_FROM_ADDRESS',
+    OwnersAndIdsMustHaveSameLength = 'OWNERS_AND_IDS_MUST_HAVE_SAME_LENGTH',
+    TokenAndValuesLengthMismatch = 'TOKEN_AND_VALUES_LENGTH_MISMATCH',
+    TriedToMintFungibleForNonFungibleToken = 'TRIED_TO_MINT_FUNGIBLE_FOR_NON_FUNGIBLE_TOKEN',
+    TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
+    TransferRejected = 'TRANSFER_REJECTED',
+    Uint256Underflow = 'UINT256_UNDERFLOW',
 }
 
 export enum StatusCodes {
@@ -654,4 +723,43 @@ export interface SimpleEvmOutput {
 
 export interface SimpleEvmBytecodeOutput {
     object: string;
+}
+
+export interface DutchAuctionDetails {
+    beginTimeSeconds: BigNumber;
+    endTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
+    endAmount: BigNumber;
+    currentAmount: BigNumber;
+    currentTimeSeconds: BigNumber;
+}
+
+export interface PackageJSONConfig {
+    postpublish?: {
+        assets?: string[];
+        docOmitExports?: string[];
+        dockerHubRepo?: string;
+    };
+    'abis:comment'?: string;
+    abis?: string;
+    ignoreDependencyVersions?: string;
+    ignoreDependencyVersionsForPackage?: string;
+}
+
+export interface PackageJSON {
+    private?: boolean;
+    version: string;
+    name: string;
+    main?: string;
+    scripts?: { [command: string]: string };
+    config?: PackageJSONConfig;
+    dependencies?: { [dependencyName: string]: string };
+    devDependencies?: { [dependencyName: string]: string };
+    workspaces?: string[];
+}
+
+export interface EIP712DomainWithDefaultSchema {
+    name?: string;
+    version?: string;
+    verifyingContractAddress: string;
 }

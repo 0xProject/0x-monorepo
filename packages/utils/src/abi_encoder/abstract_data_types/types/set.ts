@@ -1,3 +1,4 @@
+import { ObjectMap } from '@0x/types';
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -34,7 +35,7 @@ export abstract class AbstractSetDataType extends DataType {
         this._isArray = isArray;
         this._arrayLength = arrayLength;
         this._arrayElementType = arrayElementType;
-        if (isArray && !_.isUndefined(arrayLength)) {
+        if (isArray && arrayLength !== undefined) {
             [this._members, this._memberIndexByName] = this._createMembersWithLength(dataItem, arrayLength);
         } else if (!isArray) {
             [this._members, this._memberIndexByName] = this._createMembersWithKeys(dataItem);
@@ -53,7 +54,7 @@ export abstract class AbstractSetDataType extends DataType {
         let members = this._members;
         // Case 1: This is an array of undefined length, which means that `this._members` was not
         //         populated in the constructor. So we must construct the set of members now.
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             const arrayLengthBuf = calldata.popWord();
             const arrayLengthHex = ethUtil.bufferToHex(arrayLengthBuf);
             const arrayLength = new BigNumber(arrayLengthHex, constants.HEX_BASE);
@@ -62,7 +63,7 @@ export abstract class AbstractSetDataType extends DataType {
         // Create a new scope in the calldata, before descending into the members of this set.
         calldata.startScope();
         let value: any[] | object;
-        if (rules.structsAsObjects && !this._isArray) {
+        if (rules.shouldConvertStructsToObjects && !this._isArray) {
             // Construct an object with values for each member of the set.
             value = {};
             _.each(this._memberIndexByName, (idx: number, key: string) => {
@@ -85,20 +86,41 @@ export abstract class AbstractSetDataType extends DataType {
 
     public isStatic(): boolean {
         // An array with an undefined length is never static.
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             return false;
         }
         // If any member of the set is a pointer then the set is not static.
         const dependentMember = _.find(this._members, (member: DataType) => {
             return member instanceof AbstractPointerDataType;
         });
-        const isStatic = _.isUndefined(dependentMember);
+        const isStatic = dependentMember === undefined;
         return isStatic;
+    }
+
+    public getDefaultValue(rules?: DecodingRules): any[] | object {
+        let defaultValue: any[] | object;
+        if (this._isArray && this._arrayLength === undefined) {
+            defaultValue = [];
+        } else if (rules !== undefined && rules.shouldConvertStructsToObjects && !this._isArray) {
+            defaultValue = {};
+            _.each(this._memberIndexByName, (idx: number, key: string) => {
+                const member = this._members[idx];
+                const memberValue = member.getDefaultValue();
+                (defaultValue as { [key: string]: any })[key] = memberValue;
+            });
+        } else {
+            defaultValue = [];
+            _.each(this._members, (member: DataType, idx: number) => {
+                const memberValue = member.getDefaultValue();
+                (defaultValue as any[]).push(memberValue);
+            });
+        }
+        return defaultValue;
     }
 
     protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): SetCalldataBlock {
         // Sanity check: if the set has a defined length then `value` must have the same length.
-        if (!_.isUndefined(this._arrayLength) && value.length !== this._arrayLength) {
+        if (this._arrayLength !== undefined && value.length !== this._arrayLength) {
             throw new Error(
                 `Expected array of ${JSON.stringify(
                     this._arrayLength,
@@ -106,11 +128,11 @@ export abstract class AbstractSetDataType extends DataType {
             );
         }
         // Create a new calldata block for this set.
-        const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // If this set has an undefined length then set its header to be the number of elements.
         let members = this._members;
-        if (this._isArray && _.isUndefined(this._arrayLength)) {
+        if (this._isArray && this._arrayLength === undefined) {
             [members] = this._createMembersWithLength(this.getDataItem(), value.length);
             const lenBuf = ethUtil.setLengthLeft(
                 ethUtil.toBuffer(`0x${value.length.toString(constants.HEX_BASE)}`),
@@ -130,35 +152,30 @@ export abstract class AbstractSetDataType extends DataType {
 
     protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): SetCalldataBlock {
         // Create a new calldata block for this set.
-        const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // Create blocks for members of set.
         const memberCalldataBlocks: CalldataBlock[] = [];
-        const childMap = _.cloneDeep(this._memberIndexByName);
-        _.forOwn(obj, (value: any, key: string) => {
-            if (!(key in childMap)) {
+        _.forEach(this._memberIndexByName, (memberIndex: number, memberName: string) => {
+            if (!(memberName in obj)) {
                 throw new Error(
-                    `Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`,
+                    `Could not assign tuple to object: missing key '${memberName}' in object ${JSON.stringify(obj)}`,
                 );
             }
-            const memberBlock = this._members[this._memberIndexByName[key]].generateCalldataBlock(value, block);
+            const memberValue: any = (obj as ObjectMap<any>)[memberName];
+            const memberBlock = this._members[memberIndex].generateCalldataBlock(memberValue, block);
             memberCalldataBlocks.push(memberBlock);
-            delete childMap[key];
         });
-        // Sanity check that all members have been included.
-        if (Object.keys(childMap).length !== 0) {
-            throw new Error(`Could not assign tuple to object: missing keys ${Object.keys(childMap)}`);
-        }
         // Associate member blocks with Set block.
         block.setMembers(memberCalldataBlocks);
         return block;
     }
 
-    protected _computeSignatureOfMembers(): string {
+    protected _computeSignatureOfMembers(isDetailed?: boolean): string {
         // Compute signature of members
         let signature = `(`;
         _.each(this._members, (member: DataType, i: number) => {
-            signature += member.getSignature();
+            signature += member.getSignature(isDetailed);
             if (i < this._members.length - 1) {
                 signature += ',';
             }
@@ -169,7 +186,7 @@ export abstract class AbstractSetDataType extends DataType {
 
     private _createMembersWithKeys(dataItem: DataItem): [DataType[], MemberIndexByName] {
         // Sanity check
-        if (_.isUndefined(dataItem.components)) {
+        if (dataItem.components === undefined) {
             throw new Error(
                 `Tried to create a set using key/value pairs, but no components were defined by the input DataItem '${
                     dataItem.name
@@ -179,17 +196,27 @@ export abstract class AbstractSetDataType extends DataType {
         // Create one member for each component of `dataItem`
         const members: DataType[] = [];
         const memberIndexByName: MemberIndexByName = {};
+        const memberNames: string[] = [];
         _.each(dataItem.components, (memberItem: DataItem) => {
+            // If a component with `name` already exists then
+            // rename to `name_nameIdx` to avoid naming conflicts.
+            let memberName = memberItem.name;
+            let nameIdx = 0;
+            while (_.includes(memberNames, memberName) || _.isEmpty(memberName)) {
+                nameIdx++;
+                memberName = `${memberItem.name}_${nameIdx}`;
+            }
+            memberNames.push(memberName);
             const childDataItem: DataItem = {
                 type: memberItem.type,
-                name: `${dataItem.name}.${memberItem.name}`,
+                name: `${dataItem.name}.${memberName}`,
             };
             const components = memberItem.components;
-            if (!_.isUndefined(components)) {
+            if (components !== undefined) {
                 childDataItem.components = components;
             }
             const child = this.getFactory().create(childDataItem, this);
-            memberIndexByName[memberItem.name] = members.length;
+            memberIndexByName[memberName] = members.length;
             members.push(child);
         });
         return [members, memberIndexByName];
@@ -202,11 +229,11 @@ export abstract class AbstractSetDataType extends DataType {
         const range = _.range(length);
         _.each(range, (idx: number) => {
             const memberDataItem: DataItem = {
-                type: _.isUndefined(this._arrayElementType) ? '' : this._arrayElementType,
+                type: this._arrayElementType === undefined ? '' : this._arrayElementType,
                 name: `${dataItem.name}[${idx.toString(constants.DEC_BASE)}]`,
             };
             const components = dataItem.components;
-            if (!_.isUndefined(components)) {
+            if (components !== undefined) {
                 memberDataItem.components = components;
             }
             const memberType = this.getFactory().create(memberDataItem, this);

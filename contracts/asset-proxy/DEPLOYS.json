@@ -1,0 +1,47 @@
+[
+    {
+        "name": "MultiAssetProxy",
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Add MultiAssetProxy implementation",
+                "pr": 1224,
+                "networks": {
+                    "3": "0xab8fbd189c569ccdee3a4d929bb7f557be4028f6",
+                    "4": "0xb34cde0ad3a83d04abebc0b66e75196f22216621",
+                    "42": "0xf6313a772c222f51c28f2304c0703b8cf5428fd8"
+                }
+            }
+        ]
+    },
+    {
+        "name": "ERC20Proxy",
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "protocol v2 deploy",
+                "networks": {
+                    "1": "0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
+                    "3": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
+                    "4": "0x3e809c563c15a295e832e37053798ddc8d6c8dab",
+                    "42": "0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e"
+                }
+            }
+        ]
+    },
+    {
+        "name": "ERC721Proxy",
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "protocol v2 deploy",
+                "networks": {
+                    "1": "0x208e41fb445f1bb1b6780d58356e81405f3e6127",
+                    "3": "0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4",
+                    "4": "0x8e1ff02637cb5e39f2fa36c14706aa348b065b09",
+                    "42": "0x2a9127c745688a165106c11cd4d647d2220af821"
+                }
+            }
+        ]
+    }
+]

@@ -1,11 +1,10 @@
-import { marketUtils, SignedOrder } from '@0x/order-utils';
+import { marketUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
+import { InsufficientAssetLiquidityError } from '../errors';
 import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
-
-import { orderUtils } from './order_utils';
 
 // Calculates a buy quote for orders that have WETH as the takerAsset
 export const buyQuoteCalculator = {
@@ -21,7 +20,7 @@ export const buyQuoteCalculator = {
         const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const feeOrders = feeOrdersAndFillableAmounts.orders;
         const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const slippageBufferAmount = assetBuyAmount.mul(slippagePercentage).round();
+        const slippageBufferAmount = assetBuyAmount.multipliedBy(slippagePercentage).integerValue();
         // find the orders that cover the desired assetBuyAmount (with slippage)
         const {
             resultOrders,
@@ -33,7 +32,20 @@ export const buyQuoteCalculator = {
         });
         // if we do not have enough orders to cover the desired assetBuyAmount, throw
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            throw new Error(AssetBuyerError.InsufficientAssetLiquidity);
+            // We needed the amount they requested to buy, plus the amount for slippage
+            const totalAmountRequested = assetBuyAmount.plus(slippageBufferAmount);
+            const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
+            // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
+            // in order to get the total amount needed considering slippage
+            // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
+            const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
+            // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
+            // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
+            const amountAvailableToFillConsideringSlippage = amountAbleToFill
+                .div(multiplierNeededWithSlippage)
+                .integerValue(BigNumber.ROUND_FLOOR);
+
+            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
         }
         // if we are not buying ZRX:
         // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)
@@ -119,7 +131,7 @@ function calculateQuoteInfo(
         zrxEthAmount = findEthAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
     // eth amount needed to buy the affiliate fee
-    const affiliateFeeEthAmount = assetEthAmount.mul(feePercentage).ceil();
+    const affiliateFeeEthAmount = assetEthAmount.multipliedBy(feePercentage).integerValue(BigNumber.ROUND_CEIL);
     // eth amount needed for fees is the sum of affiliate fee and zrx fee
     const feeEthAmount = affiliateFeeEthAmount.plus(zrxEthAmount);
     // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
@@ -152,13 +164,13 @@ function findEthAmountNeededToBuyZrx(
             const { totalEthAmount, remainingZrxBuyAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
             const makerFillAmount = BigNumber.min(remainingZrxBuyAmount, remainingFillableMakerAssetAmount);
-            const [takerFillAmount, adjustedMakerFillAmount] = orderUtils.getTakerFillAmountForFeeOrder(
+            const [takerFillAmount, adjustedMakerFillAmount] = orderCalculationUtils.getTakerFillAmountForFeeOrder(
                 order,
                 makerFillAmount,
             );
-            const extraFeeAmount = remainingFillableMakerAssetAmount.greaterThanOrEqualTo(adjustedMakerFillAmount)
+            const extraFeeAmount = remainingFillableMakerAssetAmount.isGreaterThanOrEqualTo(adjustedMakerFillAmount)
                 ? constants.ZERO_AMOUNT
-                : adjustedMakerFillAmount.sub(makerFillAmount);
+                : adjustedMakerFillAmount.minus(makerFillAmount);
             return {
                 totalEthAmount: totalEthAmount.plus(takerFillAmount),
                 remainingZrxBuyAmount: BigNumber.max(
@@ -186,8 +198,8 @@ function findEthAndZrxAmountNeededToBuyAsset(
             const { totalEthAmount, totalZrxAmount, remainingAssetBuyAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
             const makerFillAmount = BigNumber.min(acc.remainingAssetBuyAmount, remainingFillableMakerAssetAmount);
-            const takerFillAmount = orderUtils.getTakerFillAmount(order, makerFillAmount);
-            const takerFeeAmount = orderUtils.getTakerFeeAmount(order, takerFillAmount);
+            const takerFillAmount = orderCalculationUtils.getTakerFillAmount(order, makerFillAmount);
+            const takerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmount);
             return {
                 totalEthAmount: totalEthAmount.plus(takerFillAmount),
                 totalZrxAmount: totalZrxAmount.plus(takerFeeAmount),

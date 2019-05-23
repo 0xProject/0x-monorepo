@@ -30,7 +30,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
     };
     public render(): React.ReactNode {
         const menuItemColor = this.props.isNightVersion ? 'white' : this.props.style.color;
-        const linkColor = _.isUndefined(menuItemColor) ? colors.darkestGrey : menuItemColor;
+        const linkColor = menuItemColor === undefined ? colors.darkestGrey : menuItemColor;
         const itemContent = this.props.isPrimary ? (
             <CallToAction padding="0.8em 1.5em">{this.props.title}</CallToAction>
         ) : (

@@ -5,6 +5,87 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.3 - _May 10, 2019_
+
+    * Fixed spelling error in ABI Encoder error message (#1808)
+
+## v4.3.2 - _Invalid date_
+
+    * Support for ABI encoding multibyte strings (fixes issue #1723) (#1806)
+
+## v4.3.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.3.0 - _March 21, 2019_
+
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v4.2.3 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v4.2.2 - _March 1, 2019_
+
+    * Fix issue where process is not defined in browser context (#1660)
+
+## v4.2.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v4.2.0 - _February 25, 2019_
+
+    * Export providerUtils which helps standardize all supported provider interfaces into the ZeroExProvider interface (#1627)
+    * Add `logUtils.table` and `logUtils.header` (#1638)
+
+## v4.1.0 - _February 9, 2019_
+
+    * Added method decoding to AbiDecoder (#1569)
+
+## v4.0.4 - _Invalid date_
+
+    * Cleaner signature parsing (#1592)
+
+## v4.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 6, 2019_
+
+    * ABI Decode NULL for all data types (#1587)
+
+## v4.0.1 - _February 5, 2019_
+
+    * ABI Decode NULL as False (#1582)
+
+## v4.0.0 - _Invalid date_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v3.0.1 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _January 11, 2019_
+
+    * Make `promisify` resolve when the callback error is undefined. (#1501)
+
+## v2.1.1 - _January 9, 2019_
+
+    * Add `should` prefix to names of properties in EncodingRules and DecodingRules (#1363)
+
+## v2.1.0 - _Invalid date_
+
+    * Add `logWithTime` to `logUtils` (#1461)
+
+## v2.0.8 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.0.7 - _December 11, 2018_
+
+    * Optimized ABI Encoder/Decoder. Generates compressed calldata to save gas. Generates human-readable calldata to aid development.
+
 ## v2.0.6 - _November 21, 2018_
 
     * Dependencies updated

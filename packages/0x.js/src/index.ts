@@ -1,9 +1,19 @@
 export { ContractAddresses } from '@0x/contract-addresses';
 
-export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
+export {
+    assetDataUtils,
+    signatureUtils,
+    generatePseudoRandomSalt,
+    orderHashUtils,
+    transactionHashUtils,
+} from '@0x/order-utils';
 
 export {
     ContractWrappers,
+    CoordinatorWrapper,
+    CoordinatorServerCancellationResponse,
+    CoordinatorServerError,
+    DutchAuctionWrapper,
     ERC20TokenWrapper,
     ERC721TokenWrapper,
     EtherTokenWrapper,
@@ -27,6 +37,7 @@ export {
     OrderAndTraderInfo,
     TraderInfo,
     ValidateOrderFillableOpts,
+    DutchAuctionData,
 } from '@0x/contract-wrappers';
 
 export {
@@ -66,7 +77,7 @@ export {
     MetamaskSubprovider,
 } from '@0x/subproviders';
 
-export { AbiDecoder } from '@0x/utils';
+export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 
 export { BigNumber } from '@0x/utils';
 
@@ -80,11 +91,20 @@ export {
     OrderState,
     AssetProxyId,
     AssetData,
+    SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,
+    ERC1155AssetData,
+    ERC1155AssetDataAbi,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
     SignatureType,
+    ObjectMap,
     OrderRelevantState,
     Stats,
+    DutchAuctionDetails,
+    ZeroExTransaction,
+    SignedZeroExTransaction,
 } from '@0x/types';
 
 export {
@@ -93,10 +113,9 @@ export {
     BlockParam,
     LogWithDecodedArgs,
     ContractEventArg,
-    Provider,
+    SupportedProvider,
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
-    JSONRPCErrorCallback,
     JSONRPCResponseError,
     LogEntry,
     DecodedLogArgs,
@@ -114,4 +133,13 @@ export {
     DataItem,
     ConstructorStateMutability,
     StateMutability,
+    Web3JsProvider,
+    GanacheProvider,
+    EIP1193Provider,
+    ZeroExProvider,
+    EIP1193Event,
+    JSONRPCErrorCallback,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
 } from 'ethereum-types';

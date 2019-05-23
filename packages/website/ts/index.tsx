@@ -4,13 +4,8 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
-import { About } from 'ts/containers/about';
 import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
-import { Instant } from 'ts/containers/instant';
-import { Jobs } from 'ts/containers/jobs';
-import { Landing } from 'ts/containers/landing';
-import { LaunchKit } from 'ts/containers/launch_kit';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
@@ -20,11 +15,27 @@ import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
 
+// Next (new website) routes. We should rename them later
+import { NextAboutJobs } from 'ts/pages/about/jobs';
+import { NextAboutMission } from 'ts/pages/about/mission';
+import { NextAboutPress } from 'ts/pages/about/press';
+import { NextAboutTeam } from 'ts/pages/about/team';
+import { Credits } from 'ts/pages/credits';
+import { Explore } from 'ts/pages/explore';
+
+import { NextEcosystem } from 'ts/pages/ecosystem';
+import { Extensions } from 'ts/pages/extensions';
+import { Governance } from 'ts/pages/governance/governance';
+import { Next0xInstant } from 'ts/pages/instant';
+import { NextLanding } from 'ts/pages/landing';
+import { NextLaunchKit } from 'ts/pages/launch_kit';
+import { NextMarketMaker } from 'ts/pages/market_maker';
+import { NextWhy } from 'ts/pages/why';
+
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
-import 'basscss/css/basscss.css';
 import 'less/all.less';
 
 // We pass modulePromise returning lambda instead of module promise,
@@ -62,8 +73,14 @@ const LazySolCompilerDocumentation = createLazyComponent('Documentation', async 
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
 );
-const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+const LazySolCoverageDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solCoverageDocs" */ 'ts/containers/sol_coverage_documentation'),
+);
+const LazySolTraceDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solTraceDocs" */ 'ts/containers/sol_trace_documentation'),
+);
+const LazySolProfilerDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "solProfilerDocs" */ 'ts/containers/sol_profiler_documentation'),
 );
 const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
@@ -90,14 +107,36 @@ render(
                     <Provider store={store}>
                         <div>
                             <Switch>
-                                <Route exact={true} path="/" component={Landing as any} />
+                                {/* Next (new site) routes */}
+                                <Route exact={true} path="/" component={NextLanding as any} />
+                                <Route exact={true} path={WebsitePaths.Why} component={NextWhy as any} />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.MarketMaker}
+                                    component={NextMarketMaker as any}
+                                />
+                                <Route exact={true} path={WebsitePaths.Explore} component={Explore as any} />
+                                <Route exact={true} path={WebsitePaths.Credits} component={Credits as any} />
+                                <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
+                                <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
+                                <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                                <Route exact={true} path={WebsitePaths.Vote} component={Governance as any} />
+                                <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.AboutMission}
+                                    component={NextAboutMission as any}
+                                />
+                                <Route exact={true} path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
+                                <Route exact={true} path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
+                                <Route exact={true} path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
+                                {/*
+                                  Note(ez): We remove/replace all old routes with next routes
+                                  once we're ready to put a ring on it. for now let's keep em there for reference
+                                */}
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                                <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
-                                <Route path={WebsitePaths.Instant} component={Instant as any} />
-                                <Route path={WebsitePaths.Careers} component={Jobs as any} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
-                                <Route path={WebsitePaths.About} component={About as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
@@ -123,7 +162,18 @@ render(
                                     path={`${WebsitePaths.SolCompiler}/:version?`}
                                     component={LazySolCompilerDocumentation}
                                 />
-                                <Route path={`${WebsitePaths.SolCov}/:version?`} component={LazySolCovDocumentation} />
+                                <Route
+                                    path={`${WebsitePaths.SolCoverage}/:version?`}
+                                    component={LazySolCoverageDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolTrace}/:version?`}
+                                    component={LazySolTraceDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.SolProfiler}/:version?`}
+                                    component={LazySolProfilerDocumentation}
+                                />
                                 <Route
                                     path={`${WebsitePaths.JSONSchemas}/:version?`}
                                     component={LazyJSONSchemasDocumentation}
@@ -166,7 +216,8 @@ render(
                                     path={`${WebsiteLegacyPaths.Deployer}/:version?`}
                                     component={LazySolCompilerDocumentation}
                                 />
-                                <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
+                                <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
+                                <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>

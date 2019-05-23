@@ -141,7 +141,7 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
         }
     }
     private _isBlockchainReady(): boolean {
-        return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
+        return this.props.blockchainIsLoaded && this.props.blockchain !== undefined;
     }
     private _getAccountState(): AccountState {
         return utils.getAccountState(

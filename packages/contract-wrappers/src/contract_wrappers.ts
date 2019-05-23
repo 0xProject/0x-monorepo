@@ -1,4 +1,6 @@
 import {
+    Coordinator,
+    DutchAuction,
     ERC20Proxy,
     ERC20Token,
     ERC721Proxy,
@@ -8,10 +10,13 @@ import {
     OrderValidator,
     WETH9,
 } from '@0x/contract-artifacts';
+import { AbiDecoder } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { CoordinatorWrapper } from './contract_wrappers/coordinator_wrapper';
+import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
@@ -65,23 +70,33 @@ export class ContractWrappers {
      * An instance of the OrderValidatorWrapper class containing methods for interacting with any OrderValidator smart contract.
      */
     public orderValidator: OrderValidatorWrapper;
+    /**
+     * An instance of the DutchAuctionWrapper class containing methods for interacting with any DutchAuction smart contract.
+     */
+    public dutchAuction: DutchAuctionWrapper;
+
+    /**
+     * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
+     */
+    public coordinator: CoordinatorWrapper;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
-     * @param   provider    The Provider instance you would like the contract-wrappers library to use for interacting with
+     * @param   supportedProvider    The Provider instance you would like the contract-wrappers library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the ContractWrappers class.
      */
-    constructor(provider: Provider, config: ContractWrappersConfig) {
-        assert.isWeb3Provider('provider', provider);
+    constructor(supportedProvider: SupportedProvider, config: ContractWrappersConfig) {
         assert.doesConformToSchema('config', config, ContractWrappersConfigSchema);
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
         const artifactsArray = [
+            Coordinator,
+            DutchAuction,
             ERC20Proxy,
             ERC20Token,
             ERC721Proxy,
@@ -92,14 +107,16 @@ export class ContractWrappers {
             WETH9,
         ];
         _.forEach(artifactsArray, artifact => {
-            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi);
+            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
         });
-        const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
-            ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
-            : config.blockPollingIntervalMs;
-        const contractAddresses = _.isUndefined(config.contractAddresses)
-            ? _getDefaultContractAddresses(config.networkId)
-            : config.contractAddresses;
+        const blockPollingIntervalMs =
+            config.blockPollingIntervalMs === undefined
+                ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
+                : config.blockPollingIntervalMs;
+        const contractAddresses =
+            config.contractAddresses === undefined
+                ? _getDefaultContractAddresses(config.networkId)
+                : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
         this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
         this.erc20Token = new ERC20TokenWrapper(
@@ -141,6 +158,18 @@ export class ContractWrappers {
             config.networkId,
             contractAddresses.orderValidator,
         );
+        this.dutchAuction = new DutchAuctionWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.dutchAuction,
+        );
+        this.coordinator = new CoordinatorWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.coordinator,
+            contractAddresses.exchange,
+            contractAddresses.coordinatorRegistry,
+        );
     }
     /**
      * Unsubscribes from all subscriptions for all contracts.
@@ -155,7 +184,14 @@ export class ContractWrappers {
      * Get the provider instance currently used by contract-wrappers
      * @return  Web3 provider instance
      */
-    public getProvider(): Provider {
+    public getProvider(): SupportedProvider {
         return this._web3Wrapper.getProvider();
+    }
+    /**
+     * Get the abi decoder instance currently used by contract-wrappers
+     * @return  AbiDecoder instance
+     */
+    public getAbiDecoder(): AbiDecoder {
+        return this._web3Wrapper.abiDecoder;
     }
 }

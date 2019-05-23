@@ -1,9 +1,19 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { EIP712Object, EIP712TypedData, EIP712Types, Order, ZeroExTransaction } from '@0x/types';
+import {
+    EIP712DomainWithDefaultSchema,
+    EIP712Object,
+    EIP712TypedData,
+    EIP712Types,
+    Order,
+    SignedZeroExTransaction,
+    ZeroExTransaction,
+} from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
+import { transactionHashUtils } from './transaction_hash';
 
 export const eip712Utils = {
     /**
@@ -11,26 +21,26 @@ export const eip712Utils = {
      * @param   primaryType The primary type found in message
      * @param   types The additional types for the data in message
      * @param   message The contents of the message
-     * @param   exchangeAddress The address of the exchange contract
+     * @param   domain Domain containing a name (optional), version (optional), and verifying contract address
      * @return  A typed data object
      */
     createTypedData: (
         primaryType: string,
         types: EIP712Types,
         message: EIP712Object,
-        exchangeAddress: string,
+        domain: EIP712DomainWithDefaultSchema,
     ): EIP712TypedData => {
-        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.isETHAddressHex('verifyingContractAddress', domain.verifyingContractAddress);
         assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
-                EIP712Domain: constants.EIP712_DOMAIN_SCHEMA.parameters,
+                EIP712Domain: constants.DEFAULT_DOMAIN_SCHEMA.parameters,
                 ...types,
             },
             domain: {
-                name: constants.EIP712_DOMAIN_NAME,
-                version: constants.EIP712_DOMAIN_VERSION,
-                verifyingContract: exchangeAddress,
+                name: domain.name === undefined ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
+                version: domain.version === undefined ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
+                verifyingContract: domain.verifyingContractAddress,
             },
             message,
             primaryType,
@@ -48,35 +58,73 @@ export const eip712Utils = {
         const normalizedOrder = _.mapValues(order, value => {
             return !_.isString(value) ? value.toString() : value;
         });
+        const domain = {
+            verifyingContractAddress: order.exchangeAddress,
+        };
         const typedData = eip712Utils.createTypedData(
-            constants.EIP712_ORDER_SCHEMA.name,
-            { Order: constants.EIP712_ORDER_SCHEMA.parameters },
+            constants.EXCHANGE_ORDER_SCHEMA.name,
+            { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
             normalizedOrder,
-            order.exchangeAddress,
+            domain,
         );
         return typedData;
     },
     /**
      * Creates an ExecuteTransaction EIP712TypedData object for use with signTypedData and
      * 0x Exchange executeTransaction.
-     * @param   ZeroExTransaction the 0x transaction
-     * @param   exchangeAddress The address of the exchange contract
+     * @param   zeroExTransaction the 0x transaction
      * @return  A typed data object
      */
-    createZeroExTransactionTypedData: (
-        zeroExTransaction: ZeroExTransaction,
-        exchangeAddress: string,
-    ): EIP712TypedData => {
-        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+    createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
+        assert.isETHAddressHex('verifyingContractAddress', zeroExTransaction.verifyingContractAddress);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
         });
+        const domain = {
+            verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
+        };
         const typedData = eip712Utils.createTypedData(
-            constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.name,
-            { ZeroExTransaction: constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.parameters },
+            constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
+            { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
-            exchangeAddress,
+            domain,
+        );
+        return typedData;
+    },
+    /**
+     * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
+     * @param   transaction A 0x transaction
+     * @param   verifyingContractAddress The coordinator extension contract address that will be verifying the typedData
+     * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
+     * @param   approvalExpirationTimeSeconds The approvals expiration time
+     * @return  A typed data object
+     */
+    createCoordinatorApprovalTypedData: (
+        transaction: SignedZeroExTransaction,
+        verifyingContractAddress: string,
+        txOrigin: string,
+        approvalExpirationTimeSeconds: BigNumber,
+    ): EIP712TypedData => {
+        const domain = {
+            name: constants.COORDINATOR_DOMAIN_NAME,
+            version: constants.COORDINATOR_DOMAIN_VERSION,
+            verifyingContractAddress,
+        };
+        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+        const approval = {
+            txOrigin,
+            transactionHash,
+            transactionSignature: transaction.signature,
+            approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
+        };
+        const typedData = eip712Utils.createTypedData(
+            constants.COORDINATOR_APPROVAL_SCHEMA.name,
+            {
+                CoordinatorApproval: constants.COORDINATOR_APPROVAL_SCHEMA.parameters,
+            },
+            approval,
+            domain,
         );
         return typedData;
     },

@@ -1,6 +1,5 @@
-// tslint:disable:no-unnecessary-type-assertion
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData, SignedOrder } from '@0x/types';
+import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -38,6 +37,12 @@ export class DependentOrderHashesTracker {
         this._zrxTokenAddress = zrxTokenAddress;
     }
     public getDependentOrderHashesByERC721ByMaker(makerAddress: string, tokenAddress: string): string[] {
+        if (
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress] === undefined ||
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress] === undefined
+        ) {
+            return [];
+        }
         const orderHashSets = _.values(
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress],
         );
@@ -62,35 +67,18 @@ export class DependentOrderHashesTracker {
         return dependentOrderHashes;
     }
     public addToDependentOrderHashes(signedOrder: SignedOrder): void {
-        const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(signedOrder.makerAssetData);
-        if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            this._addToERC20DependentOrderHashes(signedOrder, (decodedMakerAssetData as ERC20AssetData).tokenAddress);
-        } else {
-            this._addToERC721DependentOrderHashes(
-                signedOrder,
-                (decodedMakerAssetData as ERC721AssetData).tokenAddress,
-                (decodedMakerAssetData as ERC721AssetData).tokenId,
-            );
-        }
+        this._addAssetDataToDependentOrderHashes(signedOrder, signedOrder.makerAssetData);
         this._addToERC20DependentOrderHashes(signedOrder, this._zrxTokenAddress);
         this._addToMakerDependentOrderHashes(signedOrder);
     }
     public removeFromDependentOrderHashes(signedOrder: SignedOrder): void {
-        const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(signedOrder.makerAssetData);
-        if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            this._removeFromERC20DependentOrderhashes(
-                signedOrder,
-                (decodedMakerAssetData as ERC20AssetData).tokenAddress,
-            );
-        } else {
-            this._removeFromERC721DependentOrderhashes(
-                signedOrder,
-                (decodedMakerAssetData as ERC721AssetData).tokenAddress,
-                (decodedMakerAssetData as ERC721AssetData).tokenId,
-            );
-        }
+        this._removeAssetDataFromDependentOrderHashes(signedOrder, signedOrder.makerAssetData);
         // If makerToken === ZRX then we already removed it and we don't need to remove it again.
-        if ((decodedMakerAssetData as ERC20AssetData).tokenAddress !== this._zrxTokenAddress) {
+        const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(signedOrder.makerAssetData);
+        if (
+            assetDataUtils.isERC20AssetData(decodedMakerAssetData) &&
+            decodedMakerAssetData.tokenAddress !== this._zrxTokenAddress
+        ) {
             this._removeFromERC20DependentOrderhashes(signedOrder, this._zrxTokenAddress);
         }
         this._removeFromMakerDependentOrderhashes(signedOrder);
@@ -99,8 +87,8 @@ export class DependentOrderHashesTracker {
         const tokenAddress = assetDataUtils.decodeERC20AssetData(erc20AssetData).tokenAddress;
         let dependentOrderHashes: string[] = [];
         if (
-            !_.isUndefined(this._orderHashesByERC20ByMakerAddress[makerAddress]) &&
-            !_.isUndefined(this._orderHashesByERC20ByMakerAddress[makerAddress][tokenAddress])
+            this._orderHashesByERC20ByMakerAddress[makerAddress] !== undefined &&
+            this._orderHashesByERC20ByMakerAddress[makerAddress][tokenAddress] !== undefined
         ) {
             dependentOrderHashes = Array.from(this._orderHashesByERC20ByMakerAddress[makerAddress][tokenAddress]);
         }
@@ -111,11 +99,10 @@ export class DependentOrderHashesTracker {
         const tokenId = assetDataUtils.decodeERC721AssetData(erc721AssetData).tokenId;
         let dependentOrderHashes: string[] = [];
         if (
-            !_.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress]) &&
-            !_.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress]) &&
-            !_.isUndefined(
-                this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress][tokenId.toString()],
-            )
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress] !== undefined &&
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress] !== undefined &&
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress][tokenId.toString()] !==
+                undefined
         ) {
             dependentOrderHashes = Array.from(
                 this._orderHashesByERC721AddressByTokenIdByMakerAddress[makerAddress][tokenAddress][tokenId.toString()],
@@ -125,10 +112,10 @@ export class DependentOrderHashesTracker {
     }
     private _addToERC20DependentOrderHashes(signedOrder: SignedOrder, erc20TokenAddress: string): void {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress])) {
+        if (this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress] === undefined) {
             this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress] = {};
         }
-        if (_.isUndefined(this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress])) {
+        if (this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress] === undefined) {
             this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress] = new Set();
         }
         this._orderHashesByERC20ByMakerAddress[signedOrder.makerAddress][erc20TokenAddress].add(orderHash);
@@ -139,24 +126,21 @@ export class DependentOrderHashesTracker {
         tokenId: BigNumber,
     ): void {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress])) {
+        if (this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress] === undefined) {
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress] = {};
         }
 
         if (
-            _.isUndefined(
-                this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress],
-            )
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress] ===
+            undefined
         ) {
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress] = {};
         }
 
         if (
-            _.isUndefined(
-                this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress][
-                    tokenId.toString()
-                ],
-            )
+            this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress][
+                tokenId.toString()
+            ] === undefined
         ) {
             this._orderHashesByERC721AddressByTokenIdByMakerAddress[signedOrder.makerAddress][erc721TokenAddress][
                 tokenId.toString()
@@ -167,9 +151,21 @@ export class DependentOrderHashesTracker {
             tokenId.toString()
         ].add(orderHash);
     }
+    private _addAssetDataToDependentOrderHashes(signedOrder: SignedOrder, assetData: string): void {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            this._addToERC20DependentOrderHashes(signedOrder, decodedAssetData.tokenAddress);
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            this._addToERC721DependentOrderHashes(signedOrder, decodedAssetData.tokenAddress, decodedAssetData.tokenId);
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                this._addAssetDataToDependentOrderHashes(signedOrder, nestedAssetDataElement),
+            );
+        }
+    }
     private _addToMakerDependentOrderHashes(signedOrder: SignedOrder): void {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (_.isUndefined(this._orderHashesByMakerAddress[signedOrder.makerAddress])) {
+        if (this._orderHashesByMakerAddress[signedOrder.makerAddress] === undefined) {
             this._orderHashesByMakerAddress[signedOrder.makerAddress] = new Set();
         }
         this._orderHashesByMakerAddress[signedOrder.makerAddress].add(orderHash);
@@ -228,6 +224,22 @@ export class DependentOrderHashesTracker {
 
         if (_.isEmpty(this._orderHashesByMakerAddress[signedOrder.makerAddress])) {
             delete this._orderHashesByMakerAddress[signedOrder.makerAddress];
+        }
+    }
+    private _removeAssetDataFromDependentOrderHashes(signedOrder: SignedOrder, assetData: string): void {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            this._removeFromERC20DependentOrderhashes(signedOrder, decodedAssetData.tokenAddress);
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
+            this._removeFromERC721DependentOrderhashes(
+                signedOrder,
+                decodedAssetData.tokenAddress,
+                decodedAssetData.tokenId,
+            );
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                this._removeAssetDataFromDependentOrderHashes(signedOrder, nestedAssetDataElement),
+            );
         }
     }
 }

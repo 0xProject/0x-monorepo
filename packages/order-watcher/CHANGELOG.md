@@ -5,6 +5,99 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.10 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v4.0.9 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v4.0.7 - _May 10, 2019_
+
+    * Fix race-condition bug due to async callback modifying shared state (#1789)
+    * Fix bug where WETH deposit/withdrawal events would not trigger an order state update (#1809)
+
+## v4.0.6 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v4.0.4 - _March 20, 2019_
+
+    * Update websocket from ^1.0.25 to ^1.0.26 (#1685)
+    * Fix issue where ERC721 Approval events could cause a lookup on undefined object (#1692)
+    * Fix race-condition bugs due to async event callbacks modifying shared state (#1718)
+    * Run Web3ProviderEngine without excess block polling (#1695)
+
+## v4.0.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
+## v3.0.4 - _February 9, 2019_
+
+    * Dependencies updated
+
+## v3.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v2.4.3 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v2.4.2 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v2.4.1 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v2.4.0 - _January 9, 2019_
+
+    * Add support for `MultiAssetProxy` (#1363)
+
+## v2.3.0 - _Invalid date_
+
+    * Added a WebSocket interface to OrderWatcher so that it can be used by a client written in any language (#1427)
+
+## v2.2.8 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.2.7 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v2.2.6 - _November 28, 2018_
 
     * Dependencies updated

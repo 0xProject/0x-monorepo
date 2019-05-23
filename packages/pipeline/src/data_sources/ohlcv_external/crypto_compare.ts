@@ -1,6 +1,6 @@
 // tslint:disable:no-duplicate-imports
 import { fetchAsync } from '@0x/utils';
-import promiseLimit = require('p-limit');
+import Bottleneck from 'bottleneck';
 import { stringify } from 'querystring';
 import * as R from 'ramda';
 
@@ -33,43 +33,46 @@ export interface CryptoCompareOHLCVParams {
     toTs?: number;
 }
 
-const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
+export interface CryptoCompareUsdPrice {
+    USD: number;
+}
+
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
 const HTTP_OK_STATUS = 200;
 const CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE = 96;
+const MAX_PAGE_SIZE = 2000;
 
 export class CryptoCompareOHLCVSource {
-    public readonly interval = ONE_WEEK; // the hourly API returns data for one week at a time
-    public readonly default_exchange = 'CCCAGG';
     public readonly intervalBetweenRecords = ONE_HOUR;
+    public readonly defaultExchange = 'CCCAGG';
+    public readonly interval = this.intervalBetweenRecords * MAX_PAGE_SIZE; // the hourly API returns data for one interval at a time
     private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
+    private readonly _priceUrl: string = 'https://min-api.cryptocompare.com/data/price?';
 
     // rate-limit for all API calls through this class instance
-    private readonly _promiseLimit: (fetchFn: () => Promise<Response>) => Promise<Response>;
-    constructor(maxConcurrentRequests: number = 50) {
-        this._promiseLimit = promiseLimit(maxConcurrentRequests);
+    private readonly _limiter: Bottleneck;
+    constructor(maxReqsPerSecond: number) {
+        this._limiter = new Bottleneck({
+            minTime: ONE_SECOND / maxReqsPerSecond,
+            reservoir: 30,
+            reservoirRefreshAmount: 30,
+            reservoirRefreshInterval: ONE_SECOND,
+        });
     }
 
     // gets OHLCV records starting from pair.latest
     public async getHourlyOHLCVAsync(pair: TradingPair): Promise<CryptoCompareOHLCVRecord[]> {
         const params = {
-            e: this.default_exchange,
+            e: this.defaultExchange,
             fsym: pair.fromSymbol,
             tsym: pair.toSymbol,
+            limit: MAX_PAGE_SIZE,
             toTs: Math.floor((pair.latestSavedTime + this.interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
         };
         const url = this._url + stringify(params);
-
-        // go through the instance-wide rate-limit
-        const fetchPromise: Promise<Response> = this._promiseLimit(() => {
-            // tslint:disable-next-line:no-console
-            console.log(`Scraping Crypto Compare at ${url}`);
-            return fetchAsync(url);
-        });
-
-        const response = await Promise.resolve(fetchPromise);
+        const response = await this._limiter.schedule(() => fetchAsync(url));
         if (response.status !== HTTP_OK_STATUS) {
             throw new Error(`HTTP error while scraping Crypto Compare: [${response}]`);
         }
@@ -97,6 +100,13 @@ export class CryptoCompareOHLCVSource {
             }
         };
         return R.unfold(f, pair);
+    }
+
+    public async getUsdPriceAsync(symbol: string): Promise<number> {
+        const usdUrl = `${this._priceUrl}tsyms=USD&fsym=${symbol}`;
+        const resp = await fetchAsync(usdUrl);
+        const respJson: CryptoCompareUsdPrice = await resp.json();
+        return respJson.USD;
     }
 }
 

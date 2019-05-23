@@ -1,8 +1,7 @@
 import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
 
-import { ActionsUnion, AddressAndEthBalanceInWei, Asset, StandardSlidingPanelContent } from '../types';
+import { ActionsUnion, AddressAndEthBalanceInWei, Asset, BaseCurrency, StandardSlidingPanelContent } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -17,59 +16,60 @@ export type Action = ActionsUnion<typeof actions>;
 function createAction<T extends string>(type: T): PlainAction<T>;
 function createAction<T extends string, P>(type: T, data: P): ActionWithPayload<T, P>;
 function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | ActionWithPayload<T, P> {
-    return _.isUndefined(data) ? { type } : { type, data };
+    return data === undefined ? { type } : { type, data };
 }
 
 export enum ActionTypes {
-    SET_ACCOUNT_STATE_LOADING = 'SET_ACCOUNT_STATE_LOADING',
-    SET_ACCOUNT_STATE_LOCKED = 'SET_ACCOUNT_STATE_LOCKED',
-    SET_ACCOUNT_STATE_READY = 'SET_ACCOUNT_STATE_READY',
-    UPDATE_ACCOUNT_ETH_BALANCE = 'UPDATE_ACCOUNT_ETH_BALANCE',
-    UPDATE_ETH_USD_PRICE = 'UPDATE_ETH_USD_PRICE',
-    UPDATE_SELECTED_ASSET_UNIT_AMOUNT = 'UPDATE_SELECTED_ASSET_UNIT_AMOUNT',
-    SET_BUY_ORDER_STATE_NONE = 'SET_BUY_ORDER_STATE_NONE',
-    SET_BUY_ORDER_STATE_VALIDATING = 'SET_BUY_ORDER_STATE_VALIDATING',
-    SET_BUY_ORDER_STATE_PROCESSING = 'SET_BUY_ORDER_STATE_PROCESSING',
-    SET_BUY_ORDER_STATE_FAILURE = 'SET_BUY_ORDER_STATE_FAILURE',
-    SET_BUY_ORDER_STATE_SUCCESS = 'SET_BUY_ORDER_STATE_SUCCESS',
-    UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
-    UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
-    SET_AVAILABLE_ASSETS = 'SET_AVAILABLE_ASSETS',
-    SET_QUOTE_REQUEST_STATE_PENDING = 'SET_QUOTE_REQUEST_STATE_PENDING',
-    SET_QUOTE_REQUEST_STATE_FAILURE = 'SET_QUOTE_REQUEST_STATE_FAILURE',
-    SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE',
-    HIDE_ERROR = 'HIDE_ERROR',
-    CLEAR_ERROR = 'CLEAR_ERROR',
-    RESET_AMOUNT = 'RESET_AMOUNT',
-    OPEN_STANDARD_SLIDING_PANEL = 'OPEN_STANDARD_SLIDING_PANEL',
-    CLOSE_STANDARD_SLIDING_PANEL = 'CLOSE_STANDARD_SLIDING_PANEL',
+    SetAccountStateLoading = 'SET_ACCOUNT_STATE_LOADING',
+    SetAccountStateLocked = 'SET_ACCOUNT_STATE_LOCKED',
+    SetAccountStateReady = 'SET_ACCOUNT_STATE_READY',
+    UpdateAccountEthBalance = 'UPDATE_ACCOUNT_ETH_BALANCE',
+    UpdateEthUsdPrice = 'UPDATE_ETH_USD_PRICE',
+    UpdateSelectedAssetUnitAmount = 'UPDATE_SELECTED_ASSET_UNIT_AMOUNT',
+    SetBuyOrderStateNone = 'SET_BUY_ORDER_STATE_NONE',
+    SetBuyOrderStateValidating = 'SET_BUY_ORDER_STATE_VALIDATING',
+    SetBuyOrderStateProcessing = 'SET_BUY_ORDER_STATE_PROCESSING',
+    SetBuyOrderStateFailure = 'SET_BUY_ORDER_STATE_FAILURE',
+    SetBuyOrderStateSuccess = 'SET_BUY_ORDER_STATE_SUCCESS',
+    UpdateLatestBuyQuote = 'UPDATE_LATEST_BUY_QUOTE',
+    UpdateSelectedAsset = 'UPDATE_SELECTED_ASSET',
+    SetAvailableAssets = 'SET_AVAILABLE_ASSETS',
+    SetQuoteRequestStatePending = 'SET_QUOTE_REQUEST_STATE_PENDING',
+    SetQuoteRequestStateFailure = 'SET_QUOTE_REQUEST_STATE_FAILURE',
+    SetErrorMessage = 'SET_ERROR_MESSAGE',
+    HideError = 'HIDE_ERROR',
+    ClearError = 'CLEAR_ERROR',
+    ResetAmount = 'RESET_AMOUNT',
+    OpenStandardSlidingPanel = 'OPEN_STANDARD_SLIDING_PANEL',
+    CloseStandardSlidingPanel = 'CLOSE_STANDARD_SLIDING_PANEL',
+    UpdateBaseCurrency = 'UPDATE_BASE_CURRENCY',
 }
 
 export const actions = {
-    setAccountStateLoading: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOADING),
-    setAccountStateLocked: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOCKED),
-    setAccountStateReady: (address: string) => createAction(ActionTypes.SET_ACCOUNT_STATE_READY, address),
+    setAccountStateLoading: () => createAction(ActionTypes.SetAccountStateLoading),
+    setAccountStateLocked: () => createAction(ActionTypes.SetAccountStateLocked),
+    setAccountStateReady: (address: string) => createAction(ActionTypes.SetAccountStateReady, address),
     updateAccountEthBalance: (addressAndBalance: AddressAndEthBalanceInWei) =>
-        createAction(ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE, addressAndBalance),
-    updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
-    updateSelectedAssetAmount: (amount?: BigNumber) =>
-        createAction(ActionTypes.UPDATE_SELECTED_ASSET_UNIT_AMOUNT, amount),
-    setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),
-    setBuyOrderStateValidating: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_VALIDATING),
+        createAction(ActionTypes.UpdateAccountEthBalance, addressAndBalance),
+    updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UpdateEthUsdPrice, price),
+    updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UpdateSelectedAssetUnitAmount, amount),
+    setBuyOrderStateNone: () => createAction(ActionTypes.SetBuyOrderStateNone),
+    setBuyOrderStateValidating: () => createAction(ActionTypes.SetBuyOrderStateValidating),
     setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
-        createAction(ActionTypes.SET_BUY_ORDER_STATE_PROCESSING, { txHash, startTimeUnix, expectedEndTimeUnix }),
-    setBuyOrderStateFailure: (txHash: string) => createAction(ActionTypes.SET_BUY_ORDER_STATE_FAILURE, txHash),
-    setBuyOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SET_BUY_ORDER_STATE_SUCCESS, txHash),
-    updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
-    updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, asset),
-    setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SET_AVAILABLE_ASSETS, availableAssets),
-    setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),
-    setQuoteRequestStateFailure: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE),
-    setErrorMessage: (errorMessage: string) => createAction(ActionTypes.SET_ERROR_MESSAGE, errorMessage),
-    hideError: () => createAction(ActionTypes.HIDE_ERROR),
-    clearError: () => createAction(ActionTypes.CLEAR_ERROR),
-    resetAmount: () => createAction(ActionTypes.RESET_AMOUNT),
+        createAction(ActionTypes.SetBuyOrderStateProcessing, { txHash, startTimeUnix, expectedEndTimeUnix }),
+    setBuyOrderStateFailure: (txHash: string) => createAction(ActionTypes.SetBuyOrderStateFailure, txHash),
+    setBuyOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SetBuyOrderStateSuccess, txHash),
+    updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UpdateLatestBuyQuote, buyQuote),
+    updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UpdateSelectedAsset, asset),
+    setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SetAvailableAssets, availableAssets),
+    setQuoteRequestStatePending: () => createAction(ActionTypes.SetQuoteRequestStatePending),
+    setQuoteRequestStateFailure: () => createAction(ActionTypes.SetQuoteRequestStateFailure),
+    setErrorMessage: (errorMessage: string) => createAction(ActionTypes.SetErrorMessage, errorMessage),
+    hideError: () => createAction(ActionTypes.HideError),
+    clearError: () => createAction(ActionTypes.ClearError),
+    resetAmount: () => createAction(ActionTypes.ResetAmount),
     openStandardSlidingPanel: (content: StandardSlidingPanelContent) =>
-        createAction(ActionTypes.OPEN_STANDARD_SLIDING_PANEL, content),
-    closeStandardSlidingPanel: () => createAction(ActionTypes.CLOSE_STANDARD_SLIDING_PANEL),
+        createAction(ActionTypes.OpenStandardSlidingPanel, content),
+    closeStandardSlidingPanel: () => createAction(ActionTypes.CloseStandardSlidingPanel),
+    updateBaseCurrency: (baseCurrency: BaseCurrency) => createAction(ActionTypes.UpdateBaseCurrency, baseCurrency),
 };

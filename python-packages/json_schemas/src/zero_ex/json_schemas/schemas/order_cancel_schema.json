@@ -1,0 +1,12 @@
+{
+    "id": "/orderCancellationRequestsSchema",
+    "type": "array",
+    "items": {
+        "properties": {
+            "order": { "$ref": "/orderSchema" },
+            "takerTokenCancelAmount": { "$ref": "/wholeNumberSchema" }
+        },
+        "required": ["order", "takerTokenCancelAmount"],
+        "type": "object"
+    }
+}

@@ -1,14 +1,15 @@
 import { colors, Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as DocumentTitle from 'react-document-title';
-import { Footer } from 'ts/components/footer';
+import { DocumentTitle } from 'ts/components/document_title';
+import { Footer } from 'ts/components/old_footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Question } from 'ts/pages/faq/question';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { FAQQuestion, FAQSection, WebsitePaths } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 
 export interface FAQProps {
@@ -36,17 +37,16 @@ const sections: FAQSection[] = [
                     <div>
                         At its core, 0x is an open and non-rent seeking protocol that facilitates trustless, low
                         friction exchange of Ethereum-based assets. Developers can use 0x as a platform to build
-                        exchange applications on top of (<a
-                            href={`${configs.BASE_URL}${WebsitePaths.ZeroExJs}#introduction`}
-                            target="blank"
-                        >
+                        exchange applications on top of (
+                        <a href={`${configs.BASE_URL}${WebsitePaths.ZeroExJs}#introduction`} target="blank">
                             0x.js
                         </a>{' '}
                         is a Javascript library for interacting with the 0x protocol). For end users, 0x will be the
                         infrastructure of a wide variety of user-facing applications i.e.{' '}
                         <a href={`${configs.BASE_URL}${WebsitePaths.Portal}`} target="blank">
                             0x Portal
-                        </a>, a decentralized application that facilitates trustless trading of Ethereum-based tokens
+                        </a>
+                        , a decentralized application that facilitates trustless trading of Ethereum-based tokens
                         between known counterparties.
                     </div>
                 ),
@@ -253,7 +253,8 @@ const sections: FAQSection[] = [
                             target="_blank"
                         >
                             development roadmap
-                        </a>.
+                        </a>
+                        .
                     </div>
                 ),
             },
@@ -360,7 +361,8 @@ const sections: FAQSection[] = [
                             target="_blank"
                         >
                             here
-                        </a>.
+                        </a>
+                        .
                     </div>
                 ),
             },
@@ -380,8 +382,9 @@ const sections: FAQSection[] = [
                         Join our{' '}
                         <a href={constants.URL_ZEROEX_CHAT} target="_blank">
                             Discord
-                        </a>! As an open source project, 0x will rely on a worldwide community of passionate developers
-                        to contribute proposals, ideas and code.
+                        </a>
+                        ! As an open source project, 0x will rely on a worldwide community of passionate developers to
+                        contribute proposals, ideas and code.
                     </div>
                 ),
             },
@@ -410,7 +413,7 @@ export class FAQ extends React.Component<FAQProps, FAQState> {
     public render(): React.ReactNode {
         return (
             <div>
-                <DocumentTitle title="0x FAQ" />
+                <DocumentTitle {...documentConstants.FAQ} />
                 <TopBar blockchainIsLoaded={false} location={this.props.location} translate={this.props.translate} />
                 <div id="faq" className="mx-auto max-width-4 pt4" style={{ color: colors.grey800 }}>
                     <h1 className="center" style={{ ...styles.thin }}>

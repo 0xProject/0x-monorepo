@@ -20,7 +20,7 @@ const args = yargs
 (async () => {
     const isDryRun = args.isDryRun;
     let packages;
-    if (_.isUndefined(args.packages)) {
+    if (args.packages === undefined) {
         const shouldIncludePrivate = false;
         packages = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
     } else {

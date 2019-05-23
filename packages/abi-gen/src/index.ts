@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { abiUtils, logUtils } from '@0x/utils';
+import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
@@ -92,12 +92,12 @@ for (const abiFileName of abiFileNames) {
     let ABI;
     if (_.isArray(parsedContent)) {
         ABI = parsedContent; // ABI file
-    } else if (!_.isUndefined(parsedContent.abi)) {
+    } else if (parsedContent.abi !== undefined) {
         ABI = parsedContent.abi; // Truffle artifact
-    } else if (!_.isUndefined(parsedContent.compilerOutput.abi)) {
+    } else if (parsedContent.compilerOutput.abi !== undefined) {
         ABI = parsedContent.compilerOutput.abi; // 0x artifact
     }
-    if (_.isUndefined(ABI)) {
+    if (ABI === undefined) {
         logUtils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
         logUtils.log(
             `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x sol-compiler artifact`,
@@ -114,7 +114,7 @@ for (const abiFileName of abiFileNames) {
     }
 
     let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
-    if (_.isUndefined(ctor)) {
+    if (ctor === undefined) {
         ctor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
     }
 
@@ -133,7 +133,7 @@ for (const abiFileName of abiFileNames) {
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
             tsName: sanitizedMethodAbis[methodAbiIndex].name,
-            functionSignature: abiUtils.getFunctionSignature(methodAbi),
+            functionSignature: new AbiEncoder.Method(methodAbi).getSignature(),
         };
         return methodData;
     });

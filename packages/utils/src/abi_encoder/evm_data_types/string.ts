@@ -9,6 +9,7 @@ import { constants } from '../utils/constants';
 
 export class StringDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
+    private static readonly _DEFAULT_VALUE = '';
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.String;
@@ -25,14 +26,15 @@ export class StringDataType extends AbstractBlobDataType {
     /* tslint:disable prefer-function-over-method */
     public encodeValue(value: string): Buffer {
         // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
-        // 1/3 Construct the length
-        const wordsToStoreValuePadded = Math.ceil(value.length / constants.EVM_WORD_WIDTH_IN_BYTES);
-        const bytesToStoreValuePadded = wordsToStoreValuePadded * constants.EVM_WORD_WIDTH_IN_BYTES;
-        const lengthBuf = ethUtil.toBuffer(value.length);
-        const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, constants.EVM_WORD_WIDTH_IN_BYTES);
-        // 2/3 Construct the value
+        // 1/3 Construct the value
         const valueBuf = new Buffer(value);
+        const valueLengthInBytes = valueBuf.byteLength;
+        const wordsToStoreValuePadded = Math.ceil(valueLengthInBytes / constants.EVM_WORD_WIDTH_IN_BYTES);
+        const bytesToStoreValuePadded = wordsToStoreValuePadded * constants.EVM_WORD_WIDTH_IN_BYTES;
         const valueBufPadded = ethUtil.setLengthRight(valueBuf, bytesToStoreValuePadded);
+        // 2/3 Construct the length
+        const lengthBuf = ethUtil.toBuffer(valueLengthInBytes);
+        const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, constants.EVM_WORD_WIDTH_IN_BYTES);
         // 3/3 Combine length and value
         const encodedValue = Buffer.concat([lengthBufPadded, valueBufPadded]);
         return encodedValue;
@@ -48,11 +50,15 @@ export class StringDataType extends AbstractBlobDataType {
         const wordsToStoreValuePadded = Math.ceil(length / constants.EVM_WORD_WIDTH_IN_BYTES);
         const valueBufPadded = calldata.popWords(wordsToStoreValuePadded);
         const valueBuf = valueBufPadded.slice(0, length);
-        const value = valueBuf.toString('ascii');
+        const value = valueBuf.toString('UTF-8');
         return value;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): string {
+        return StringDataType._DEFAULT_VALUE;
+    }
+
+    public getSignatureType(): string {
         return SolidityTypes.String;
     }
     /* tslint:enable prefer-function-over-method */

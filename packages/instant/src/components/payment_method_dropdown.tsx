@@ -16,7 +16,7 @@ export interface PaymentMethodDropdownProps {
     network: Network;
 }
 
-export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdownProps> {
+export class PaymentMethodDropdown extends React.PureComponent<PaymentMethodDropdownProps> {
     public render(): React.ReactNode {
         const { accountAddress, accountEthBalanceInWei } = this.props;
         const value = format.ethAddress(accountAddress);

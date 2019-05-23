@@ -18,8 +18,8 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 ## Usage
 
-*   [Docs](https://0xproject.com/docs/connect)
-*   [Tutorials](https://0xproject.com/wiki#connect)
+-   [Docs](https://0xproject.com/docs/connect)
+-   [Tutorials](https://0xproject.com/wiki#connect)
 
 ## Contributing
 

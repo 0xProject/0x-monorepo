@@ -1,25 +1,22 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
-import { Container } from 'ts/components/ui/container';
-import { Text } from 'ts/components/ui/text';
-import { ActionLink } from 'ts/pages/instant/action_link';
 import { CodeDemo } from 'ts/pages/instant/code_demo';
 import { ConfigGenerator } from 'ts/pages/instant/config_generator';
-import { colors } from 'ts/style/colors';
+
+import { Link } from 'ts/components/link';
+import { Column, FlexWrap } from 'ts/components/newLayout';
+import { Heading } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
 import { ZeroExInstantBaseConfig } from '../../../../instant/src/types';
-
-export interface ConfiguratorProps {
-    hash: string;
-}
 
 export interface ConfiguratorState {
     instantConfig: ZeroExInstantBaseConfig;
 }
 
-export class Configurator extends React.Component<ConfiguratorProps> {
+export class Configurator extends React.Component {
     public state: ConfiguratorState = {
         instantConfig: {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
@@ -31,36 +28,24 @@ export class Configurator extends React.Component<ConfiguratorProps> {
         },
     };
     public render(): React.ReactNode {
-        const { hash } = this.props;
         const codeToDisplay = this._generateCodeDemoCode();
         return (
-            <Container
-                className="flex justify-center py4 px3"
-                id={hash}
-                backgroundColor={colors.instantTertiaryBackground}
-            >
-                <Container className="mx3">
-                    <Container className="mb3">
-                        <Text fontSize="20px" lineHeight="28px" fontColor={colors.white} fontWeight={500}>
-                            0x Instant Configurator
-                        </Text>
-                    </Container>
+            <FlexWrap isFlex={true}>
+                <Column width="442px" padding="0 70px 0 0">
                     <ConfigGenerator value={this.state.instantConfig} onConfigChange={this._handleConfigChange} />
-                </Container>
-                <Container className="mx3" height="550px">
-                    <Container className="mb3 flex justify-between">
-                        <Text fontSize="20px" lineHeight="28px" fontColor={colors.white} fontWeight={500}>
+                </Column>
+                <Column width="100%">
+                    <HeadingWrapper>
+                        <Heading size="small" marginBottom="15px">
                             Code Snippet
-                        </Text>
-                        <ActionLink
-                            displayText="Explore the Docs"
-                            linkSrc={`${WebsitePaths.Wiki}#Get-Started-With-Instant`}
-                            color={colors.grey}
-                        />
-                    </Container>
+                        </Heading>
+                        <Link href={`${WebsitePaths.Wiki}#Get-Started-With-Instant`} isBlock={true} target="_blank">
+                            Explore the Docs
+                        </Link>
+                    </HeadingWrapper>
                     <CodeDemo key={codeToDisplay}>{codeToDisplay}</CodeDemo>
-                </Container>
-            </Container>
+                </Column>
+            </FlexWrap>
         );
     }
     private readonly _handleConfigChange = (config: ZeroExInstantBaseConfig) => {
@@ -74,29 +59,29 @@ export class Configurator extends React.Component<ConfiguratorProps> {
 <html>
     <head>
         <meta charset="utf-8" />
-        <script src="https://instant.0xproject.com/instant.js"></script>
+        <script src="https://instant.0x.org/instant.js"></script>
     </head>
     <body>
         <script>
             zeroExInstant.render({
                 orderSource: '${instantConfig.orderSource}',${
-            !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
+            instantConfig.affiliateInfo !== undefined && instantConfig.affiliateInfo.feeRecipient
                 ? `\n                affiliateInfo: {
                     feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
                     feePercentage: ${instantConfig.affiliateInfo.feePercentage}
-                }`
+                },`
                 : ''
         }${
-            !_.isUndefined(instantConfig.availableAssetDatas)
+            instantConfig.availableAssetDatas !== undefined
                 ? `\n                availableAssetDatas: ${this._renderAvailableAssetDatasString(
                       instantConfig.availableAssetDatas,
                   )}`
                 : ''
         }
-            }, 'body');
-        </script>
-    </body>
-</html>`;
+                }, 'body');
+            </script>
+        </body>
+    </html>`;
     };
     private readonly _renderAvailableAssetDatasString = (availableAssetDatas: string[]): string => {
         const stringAvailableAssetDatas = availableAssetDatas.map(assetData => `'${assetData}'`);
@@ -108,3 +93,12 @@ export class Configurator extends React.Component<ConfiguratorProps> {
         )}\n                ]`;
     };
 }
+
+const HeadingWrapper = styled.div`
+    display: flex;
+    justify-content: space-between;
+
+    a {
+        transform: translateY(-8px);
+    }
+`;

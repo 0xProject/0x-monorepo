@@ -73,13 +73,13 @@ yarn prettier
 
 ##### Toolkit
 
-*   [Styled Components](https://www.styled-components.com/)
-*   [BassCSS](http://basscss.com/)
+-   [Styled Components](https://www.styled-components.com/)
+-   [BassCSS](http://basscss.com/)
 
 ##### Recommended Atom packages:
 
-*   [atom-typescript](https://atom.io/packages/atom-typescript)
-*   [linter-tslint](https://atom.io/packages/linter-tslint)
+-   [atom-typescript](https://atom.io/packages/atom-typescript)
+-   [linter-tslint](https://atom.io/packages/linter-tslint)
 
 ## Contributing
 

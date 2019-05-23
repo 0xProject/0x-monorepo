@@ -1,3 +1,4 @@
+import { AssetProxyId } from '@0x/types';
 import * as React from 'react';
 
 import PoweredByLogo from '../assets/powered_by_0x.svg';
@@ -11,7 +12,7 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
-import { SlideAnimationState } from '../types';
+import { Asset, SlideAnimationState } from '../types';
 import { analytics, TokenSelectorClosedVia } from '../util/analytics';
 
 import { CSSReset } from './css_reset';
@@ -24,7 +25,10 @@ export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-export class ZeroExInstantContainer extends React.Component<ZeroExInstantContainerProps, ZeroExInstantContainerState> {
+export class ZeroExInstantContainer extends React.PureComponent<
+    ZeroExInstantContainerProps,
+    ZeroExInstantContainerState
+> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
@@ -60,6 +64,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         <SlidingPanel
                             animationState={this.state.tokenSelectionPanelAnimationState}
                             onClose={this._handlePanelCloseClickedX}
+                            onAnimationEnd={this._handleSlidingPanelAnimationEnd}
                         >
                             <AvailableERC20TokenSelector onTokenSelect={this._handlePanelCloseAfterChose} />
                         </SlidingPanel>
@@ -80,11 +85,14 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
             </React.Fragment>
         );
     }
-    private readonly _handleSymbolClick = (): void => {
-        analytics.trackTokenSelectorOpened();
-        this.setState({
-            tokenSelectionPanelAnimationState: 'slidIn',
-        });
+    private readonly _handleSymbolClick = (asset?: Asset): void => {
+        // TODO: If ERC721 link open sea or allow to choose another ERC721?
+        if (asset === undefined || asset.metaData.assetProxyId === AssetProxyId.ERC20) {
+            analytics.trackTokenSelectorOpened();
+            this.setState({
+                tokenSelectionPanelAnimationState: 'slidIn',
+            });
+        }
     };
     private readonly _handlePanelCloseClickedX = (): void => {
         this._handlePanelClose(TokenSelectorClosedVia.ClickedX);
@@ -97,5 +105,12 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
         this.setState({
             tokenSelectionPanelAnimationState: 'slidOut',
         });
+    };
+    private readonly _handleSlidingPanelAnimationEnd = (): void => {
+        if (this.state.tokenSelectionPanelAnimationState === 'slidOut') {
+            // When the slidOut animation completes, don't keep the panel mounted.
+            // Performance optimization
+            this.setState({ tokenSelectionPanelAnimationState: 'none' });
+        }
     };
 }

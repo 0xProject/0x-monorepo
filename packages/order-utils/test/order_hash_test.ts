@@ -54,8 +54,9 @@ describe('Order hashing', () => {
                 ...order,
                 takerAddress: (null as any) as string,
             };
-            const expectedErrorMessage =
-                'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
+            const expectedErrorMessage = `Order taker must be of type string. If you want anyone to be able to fill an order - pass ${
+                constants.NULL_ADDRESS
+            }`;
             expect(() => orderHashUtils.getOrderHashHex(orderWithInvalidtakerFormat)).to.throw(expectedErrorMessage);
         });
     });
@@ -70,7 +71,7 @@ describe('Order hashing', () => {
         });
         it('returns true if order hash is correct', () => {
             const orderHashLength = 65;
-            const isValid = orderHashUtils.isValidOrderHash('0x' + Array(orderHashLength).join('0'));
+            const isValid = orderHashUtils.isValidOrderHash(`0x${Array(orderHashLength).join('0')}`);
             expect(isValid).to.be.true();
         });
     });

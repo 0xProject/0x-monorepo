@@ -1,6 +1,5 @@
 import { devConstants } from '@0x/dev-utils';
-import { ProfilerSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
-import * as _ from 'lodash';
+import { ProfilerSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-profiler';
 
 let profilerSubprovider: ProfilerSubprovider;
 
@@ -12,7 +11,7 @@ export const profiler = {
         profiler.getProfilerSubproviderSingleton().stop();
     },
     getProfilerSubproviderSingleton(): ProfilerSubprovider {
-        if (_.isUndefined(profilerSubprovider)) {
+        if (profilerSubprovider === undefined) {
             profilerSubprovider = profiler._getProfilerSubprovider();
         }
         return profilerSubprovider;

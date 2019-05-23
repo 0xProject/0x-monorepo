@@ -58,7 +58,7 @@ export class EthWethConversionDialog extends React.Component<
             <FlatButton key="convert" label="Convert" primary={true} onClick={this._onConvertClick.bind(this)} />,
         ];
         const title = this.props.direction === Side.Deposit ? 'Wrap ETH' : 'Unwrap WETH';
-        return !_.isUndefined(this.props.etherBalanceInWei) ? (
+        return this.props.etherBalanceInWei !== undefined ? (
             <Dialog
                 title={title}
                 titleStyle={{ fontWeight: 100 }}
@@ -111,20 +111,19 @@ export class EthWethConversionDialog extends React.Component<
                         )}
                         <div className="pt1" style={{ fontSize: 12 }}>
                             <div className="left">1 ETH = 1 WETH</div>
-                            {this.props.direction === Side.Receive &&
-                                this.state.isEthTokenBalanceLoaded && (
-                                    <div
-                                        className="right"
-                                        onClick={this._onMaxClick.bind(this)}
-                                        style={{
-                                            color: colors.darkBlue,
-                                            textDecoration: 'underline',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        Max
-                                    </div>
-                                )}
+                            {this.props.direction === Side.Receive && this.state.isEthTokenBalanceLoaded && (
+                                <div
+                                    className="right"
+                                    onClick={this._onMaxClick.bind(this)}
+                                    style={{
+                                        color: colors.darkBlue,
+                                        textDecoration: 'underline',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    Max
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

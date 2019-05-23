@@ -37,7 +37,7 @@ export class LogDecoder {
     public decodeLogOrThrow<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const logWithDecodedArgsOrLog = this._abiDecoder.tryToDecodeLogOrNoop(log);
         // tslint:disable-next-line:no-unnecessary-type-assertion
-        if (_.isUndefined((logWithDecodedArgsOrLog as LogWithDecodedArgs<ArgsType>).args)) {
+        if ((logWithDecodedArgsOrLog as LogWithDecodedArgs<ArgsType>).args === undefined) {
             throw new Error(`Unable to decode log: ${JSON.stringify(log)}`);
         }
         LogDecoder.wrapLogBigNumbers(logWithDecodedArgsOrLog);

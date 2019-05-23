@@ -22,6 +22,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const NotFound: React.ComponentClass<NotFoundProps> = connect(mapStateToProps, mapDispatchToProps)(
-    NotFoundComponent,
-);
+export const NotFound: React.ComponentClass<NotFoundProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(NotFoundComponent);

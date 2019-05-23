@@ -1,0 +1,38 @@
+{
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
+    "useDockerisedSolc": false,
+    "isOfflineMode": false,
+    "compilerSettings": {
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    },
+    "contracts": [
+        "src/ERC20Token.sol",
+        "src/MintableERC20Token.sol",
+        "src/UnlimitedAllowanceERC20Token.sol",
+        "src/WETH9.sol",
+        "src/ZRXToken.sol",
+        "src/interfaces/IERC20Token.sol",
+        "src/interfaces/IEtherToken.sol",
+        "test/DummyERC20Token.sol",
+        "test/DummyMultipleReturnERC20Token.sol",
+        "test/DummyNoReturnERC20Token.sol",
+        "test/UntransferrableDummyERC20Token.sol"
+    ]
+}

@@ -8,6 +8,7 @@ import { envUtil } from '../util/env';
 import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
+import { SectionHeader } from './section_header';
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -23,21 +24,13 @@ export interface PaymentMethodProps {
     onUnlockWalletClick: () => void;
 }
 
-export class PaymentMethod extends React.Component<PaymentMethodProps> {
+export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
             <Container width="100%" height="120px" padding="20px 20px 0px 20px">
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
-                        <Text
-                            letterSpacing="1px"
-                            fontColor={ColorOption.primaryColor}
-                            fontWeight={600}
-                            textTransform="uppercase"
-                            fontSize="14px"
-                        >
-                            {this._renderTitleText()}
-                        </Text>
+                        <SectionHeader>{this._renderTitleText()}</SectionHeader>
                         {this._renderTitleLabel()}
                     </Flex>
                 </Container>

@@ -44,7 +44,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
         const method = this.props.method;
 
         const isFallback = (method as SolidityMethod).isFallback;
-        const hasExclusivelyNamedParams = !_.isUndefined(_.find(method.parameters, p => !_.isEmpty(p.name)));
+        const hasExclusivelyNamedParams = _.find(method.parameters, p => !_.isEmpty(p.name)) !== undefined;
         return (
             <div
                 id={`${this.props.sectionName}-${method.name}`}
@@ -91,16 +91,14 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                     />
                 )}
                 {method.comment && <Comment comment={method.comment} className="py2" />}
-                {method.parameters &&
-                    !_.isEmpty(method.parameters) &&
-                    hasExclusivelyNamedParams && (
-                        <div>
-                            <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>
-                                ARGUMENTS
-                            </h4>
-                            {this._renderParameterDescriptions(method.parameters, method.name)}
-                        </div>
-                    )}
+                {method.parameters && !_.isEmpty(method.parameters) && hasExclusivelyNamedParams && (
+                    <div>
+                        <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>
+                            ARGUMENTS
+                        </h4>
+                        {this._renderParameterDescriptions(method.parameters, method.name)}
+                    </div>
+                )}
                 {method.returnComment && (
                     <div className="pt1 comment">
                         <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>

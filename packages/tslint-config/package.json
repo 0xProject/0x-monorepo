@@ -1,6 +1,6 @@
 {
     "name": "@0x/tslint-config",
-    "version": "1.0.10",
+    "version": "3.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,6 +9,7 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
+        "test": "mocha ./lib/test/*.spec.js",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project ."
     },
@@ -39,7 +40,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.11",
         "tslint": "5.11.0",
         "tslint-eslint-rules": "5.4.0",
         "tslint-react": "^3.2.0",

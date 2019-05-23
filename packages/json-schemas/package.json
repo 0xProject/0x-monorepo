@@ -1,6 +1,6 @@
 {
     "name": "@0x/json-schemas",
-    "version": "2.1.2",
+    "version": "3.0.10",
     "engines": {
         "node": ">=6.12"
     },
@@ -11,6 +11,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project . --exclude **/schemas/**/*",
+        "fix": "tslint --fix --format stylish --project . --exclude **/schemas/**/*",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s clean build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
@@ -39,14 +40,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
-        "@0x/typescript-typings": "^3.0.4",
+        "@0x/typescript-typings": "^4.2.2",
         "@types/node": "*",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^1.0.10",
-        "@0x/utils": "^2.0.6",
+        "@0x/tslint-config": "^3.0.1",
+        "@0x/utils": "^4.3.3",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",

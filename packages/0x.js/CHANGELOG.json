@@ -1,5 +1,202 @@
 [
     {
+        "timestamp": 1557961111,
+        "version": "6.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557799313,
+        "version": "6.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "6.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "6.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "6.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "6.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551299797,
+        "version": "6.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Export `transactionHashUtils`, `DecodedCalldata`, `ZeroExTransaction`, and `SignedZeroExTransaction`",
+                "pr": 1569
+            }
+        ],
+        "timestamp": 1549733923
+    },
+    {
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549504360,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547747677,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Export `MultiAssetData`, `MultiAssetDataWithRecursiveDecoding`, `ObjectMap`, and `SingleAssetData` from types. No longer export `AssetData`.",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "2.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "timestamp": 1543401373,
         "version": "2.0.6",
         "changes": [
@@ -61,18 +258,15 @@
                 "pr": 1102
             },
             {
-                "note":
-                    "Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints.",
+                "note": "Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints.",
                 "pr": 1102
             },
             {
-                "note":
-                    "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
+                "note": "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
                 "pr": 1102
             },
             {
-                "note":
-                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
+                "note": "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
                 "pr": 1105
             },
             {
@@ -171,8 +365,7 @@
         "version": "1.0.1-rc.5",
         "changes": [
             {
-                "note":
-                    "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
+                "note": "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
             }
         ]
     },
@@ -180,8 +373,7 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "note":
-                    "Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher`",
+                "note": "Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher`",
                 "pr": 963
             }
         ],
@@ -253,18 +445,15 @@
                 "pr": 863
             },
             {
-                "note":
-                    "Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types",
+                "note": "Refactored `ZeroEx.isValidSignature` to `zeroEx.isValidSignatureAsync`. It is now async so that it can verify contract-dependent signature types",
                 "pr": 863
             },
             {
-                "note":
-                    "Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too.",
+                "note": "Refactored `signOrderHashAsync` to `ecSignOrderHashAsync`. There are now many non-ECSignature ways to sign orders too.",
                 "pr": 863
             },
             {
-                "note":
-                    "Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2",
+                "note": "Removed `createOrderWatcherAsync` method. Will be added back once OrderWatcher is refactored for V2",
                 "pr": 863
             },
             {
@@ -339,8 +528,7 @@
                 "pr": 579
             },
             {
-                "note":
-                    "Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage",
+                "note": "Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage",
                 "pr": 579
             }
         ],
@@ -425,8 +613,7 @@
                 "pr": 501
             },
             {
-                "note":
-                    "Add `zeroEx.exchange.getOrderStateAsync` to allow obtaining current OrderState for a signedOrder",
+                "note": "Add `zeroEx.exchange.getOrderStateAsync` to allow obtaining current OrderState for a signedOrder",
                 "pr": 510
             }
         ],
@@ -436,8 +623,7 @@
         "version": "0.35.0",
         "changes": [
             {
-                "note":
-                    "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3-wrapper' `Web3WrapperErrors.TransactionMiningTimeout`",
+                "note": "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3-wrapper' `Web3WrapperErrors.TransactionMiningTimeout`",
                 "pr": 485
             }
         ],
@@ -447,8 +633,7 @@
         "version": "0.34.0",
         "changes": [
             {
-                "note":
-                    "Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed",
+                "note": "Fix the bug causing `zeroEx.exchange.fillOrdersUpToAsync` validation to fail if there were some extra orders passed",
                 "pr": 470
             },
             {
@@ -460,8 +645,7 @@
                 "pr": 488
             },
             {
-                "note":
-                    "Added `stateLayer` setting to `OrderStateWatcherConfig` so OrderStateWatcher can be set to monitor different blockchain state layers",
+                "note": "Added `stateLayer` setting to `OrderStateWatcherConfig` so OrderStateWatcher can be set to monitor different blockchain state layers",
                 "pr": 488
             }
         ],
@@ -548,8 +732,7 @@
                 "pr": 350
             },
             {
-                "note":
-                    "Fixed the bug causing order watcher to throw if there is an event with the same signature but different indexed fields",
+                "note": "Fixed the bug causing order watcher to throw if there is an event with the same signature but different indexed fields",
                 "pr": 366
             }
         ],
@@ -569,8 +752,7 @@
         "version": "0.31.0",
         "changes": [
             {
-                "note":
-                    "Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the caller can decide on whether to add the personalMessage prefix before relaying the request to the signer. Parity Signer, Ledger and TestRPC add the prefix themselves, Metamask expects it to have already been added.",
+                "note": "Add the `shouldAddPersonalMessagePrefix` parameter to `signOrderHashAsync` so that the caller can decide on whether to add the personalMessage prefix before relaying the request to the signer. Parity Signer, Ledger and TestRPC add the prefix themselves, Metamask expects it to have already been added.",
                 "pr": 349
             }
         ],
@@ -615,8 +797,7 @@
                 "pr": 312
             },
             {
-                "note":
-                    "Fix a bug in fillOrdersUpTo validation making it impossible to fill up to if user doesn't have enough balance to fully fill all the orders",
+                "note": "Fix a bug in fillOrdersUpTo validation making it impossible to fill up to if user doesn't have enough balance to fully fill all the orders",
                 "pr": 321
             }
         ],
@@ -650,13 +831,11 @@
         "version": "0.28.0",
         "changes": [
             {
-                "note":
-                    "Add `etherTokenAddress` arg to `depositAsync` and `withdrawAsync` methods on `zeroEx.etherToken`",
+                "note": "Add `etherTokenAddress` arg to `depositAsync` and `withdrawAsync` methods on `zeroEx.etherToken`",
                 "pr": 267
             },
             {
-                "note":
-                    "Removed accidentally included `unsubscribeAll` method from `zeroEx.proxy`, `zeroEx.etherToken` and `zeroEx.tokenRegistry`",
+                "note": "Removed accidentally included `unsubscribeAll` method from `zeroEx.proxy`, `zeroEx.etherToken` and `zeroEx.tokenRegistry`",
                 "pr": 267
             },
             {
@@ -668,8 +847,7 @@
                 "pr": 272
             },
             {
-                "note":
-                    "Add `zeroEx.etherToken.subscribe`, `zeroEx.etherToken.unsubscribe`, `zeroEx.etherToken.unsubscribeAll`",
+                "note": "Add `zeroEx.etherToken.subscribe`, `zeroEx.etherToken.unsubscribe`, `zeroEx.etherToken.unsubscribeAll`",
                 "pr": 277
             },
             {
@@ -677,8 +855,7 @@
                 "pr": 277
             },
             {
-                "note":
-                    "Add new public types `BlockParamLiteral`, `EtherTokenEvents`, `EtherTokenContractEventArgs`, `DepositContractEventArgs`, `WithdrawalContractEventArgs`",
+                "note": "Add new public types `BlockParamLiteral`, `EtherTokenEvents`, `EtherTokenContractEventArgs`, `DepositContractEventArgs`, `WithdrawalContractEventArgs`",
                 "pr": 277
             },
             {
@@ -713,8 +890,7 @@
                 "pr": 233
             },
             {
-                "note":
-                    "Make all `getContractAddress` functions, `zeroEx.exchange.subscribe`, `zeroEx.exchange.getZRXTokenAddress` sync",
+                "note": "Make all `getContractAddress` functions, `zeroEx.exchange.subscribe`, `zeroEx.exchange.getZRXTokenAddress` sync",
                 "pr": 233
             },
             {
@@ -722,8 +898,7 @@
                 "pr": 233
             },
             {
-                "note":
-                    "Make `DecodedLogEvent<A>` contain `LogWithDecodedArgs<A>` under log key instead of merging it in like web3 does",
+                "note": "Make `DecodedLogEvent<A>` contain `LogWithDecodedArgs<A>` under log key instead of merging it in like web3 does",
                 "pr": 234
             },
             {
@@ -739,8 +914,7 @@
                 "pr": 235
             },
             {
-                "note":
-                    "Modify order validation methods to validate against the `latest` block, not against the `pending` block",
+                "note": "Modify order validation methods to validate against the `latest` block, not against the `pending` block",
                 "pr": 236
             }
         ],
@@ -750,8 +924,7 @@
         "version": "0.26.0",
         "changes": [
             {
-                "note":
-                    "Add post-formatter for logs converting `blockNumber`, `logIndex`, `transactionIndex` from hexes to numbers",
+                "note": "Add post-formatter for logs converting `blockNumber`, `logIndex`, `transactionIndex` from hexes to numbers",
                 "pr": 231
             },
             {
@@ -759,8 +932,7 @@
                 "pr": 222
             },
             {
-                "note":
-                    "In OrderWatcher subscribe to ZRX Token Transfer and Approval events when maker token is different",
+                "note": "In OrderWatcher subscribe to ZRX Token Transfer and Approval events when maker token is different",
                 "pr": 225
             }
         ],
@@ -778,8 +950,7 @@
                 "pr": 205
             },
             {
-                "note":
-                    "Normalized the transactionReceipt status to be `null|0|1`, 1 meaning transaction execution successful, 0 unsuccessful and `null` if it is a pre-byzantinium transaction.",
+                "note": "Normalized the transactionReceipt status to be `null|0|1`, 1 meaning transaction execution successful, 0 unsuccessful and `null` if it is a pre-byzantinium transaction.",
                 "pr": 200
             }
         ],
@@ -850,8 +1021,7 @@
         "version": "0.22.0",
         "changes": [
             {
-                "note":
-                    "Started using `OrderFillRequest` interface instead of `OrderFillOrKillRequest` interface for `zeroEx.exchange.batchFillOrKill`",
+                "note": "Started using `OrderFillRequest` interface instead of `OrderFillOrKillRequest` interface for `zeroEx.exchange.batchFillOrKill`",
                 "pr": 187
             },
             {
@@ -865,8 +1035,7 @@
         "version": "0.21.4",
         "changes": [
             {
-                "note":
-                    "Made 0x.js more type-safe by making `getLogsAsync` and `subscribe/subscribeAsync` generics parametrized with arg type",
+                "note": "Made 0x.js more type-safe by making `getLogsAsync` and `subscribe/subscribeAsync` generics parametrized with arg type",
                 "pr": 194
             }
         ],
@@ -913,8 +1082,7 @@
                 "note": "Subscriptions no longer return historical logs. If you want them - use `getLogsAsync`"
             },
             {
-                "note":
-                    "Subscriptions now use [ethereumjs-blockstream](https://github.com/ethereumjs/ethereumjs-blockstream) under the hood"
+                "note": "Subscriptions now use [ethereumjs-blockstream](https://github.com/ethereumjs/ethereumjs-blockstream) under the hood"
             },
             {
                 "note": "Subscriptions correctly handle block re-orgs (forks)"
@@ -923,8 +1091,7 @@
                 "note": "Subscriptions correctly backfill logs (connection problems)"
             },
             {
-                "note":
-                    "They no longer setup filters on the underlying nodes, so you can use them with infura without a filter Subprovider"
+                "note": "They no longer setup filters on the underlying nodes, so you can use them with infura without a filter Subprovider"
             },
             {
                 "note": "Removed `ContractEventEmitter` and added `LogEvent`"
@@ -1031,8 +1198,7 @@
         "version": "0.15.0",
         "changes": [
             {
-                "note":
-                    "Added the ability to specify a historical `blockNumber` at which to query the blockchain's state when calling a token or exchange method",
+                "note": "Added the ability to specify a historical `blockNumber` at which to query the blockchain's state when calling a token or exchange method",
                 "pr": 161
             }
         ],
@@ -1080,8 +1246,7 @@
         "version": "0.13.0",
         "changes": [
             {
-                "note":
-                    "Made all the functions submitting transactions to the network to immediately return transaction hash",
+                "note": "Made all the functions submitting transactions to the network to immediately return transaction hash",
                 "pr": 151
             },
             {
@@ -1089,8 +1254,7 @@
                 "pr": 151
             },
             {
-                "note":
-                    "Added `TransactionReceiptWithDecodedLogs`, `LogWithDecodedArgs`, `DecodedLogArgs` to public types",
+                "note": "Added `TransactionReceiptWithDecodedLogs`, `LogWithDecodedArgs`, `DecodedLogArgs` to public types",
                 "pr": 151
             },
             {
@@ -1263,8 +1427,7 @@
                 "pr": 104
             },
             {
-                "note":
-                    "Fixed an issue with incorrect balance/allowance validation when ZRX is one of the tokens traded",
+                "note": "Fixed an issue with incorrect balance/allowance validation when ZRX is one of the tokens traded",
                 "pr": 109
             }
         ],
@@ -1274,13 +1437,11 @@
         "version": "0.8.0",
         "changes": [
             {
-                "note":
-                    "Added the ability to call methods on different authorized versions of the Exchange smart contract",
+                "note": "Added the ability to call methods on different authorized versions of the Exchange smart contract",
                 "pr": 82
             },
             {
-                "note":
-                    "Updated contract artifacts to reflect latest changes to the smart contracts (0xproject/contracts#59)"
+                "note": "Updated contract artifacts to reflect latest changes to the smart contracts (0xproject/contracts#59)"
             },
             {
                 "note": "Added `zeroEx.proxy.isAuthorizedAsync` and `zeroEx.proxy.getAuthorizedAddressesAsync`",
@@ -1316,8 +1477,7 @@
         "version": "0.7.1",
         "changes": [
             {
-                "note":
-                    "Added the ability to convert Ether to wrapped Ether tokens and back via `zeroEx.etherToken.depostAsync` and `zeroEx.etherToken.withdrawAsync`",
+                "note": "Added the ability to convert Ether to wrapped Ether tokens and back via `zeroEx.etherToken.depostAsync` and `zeroEx.etherToken.withdrawAsync`",
                 "pr": 81
             }
         ],
@@ -1339,8 +1499,7 @@
                 "pr": 72
             },
             {
-                "note":
-                    "Renamed type `LogCancelArgs` to `LogCancelContractEventArgs` and `LogFillArgs` to `LogFillContractEventArgs`"
+                "note": "Renamed type `LogCancelArgs` to `LogCancelContractEventArgs` and `LogFillArgs` to `LogFillContractEventArgs`"
             }
         ],
         "timestamp": 1498057200
@@ -1382,8 +1541,7 @@
         "version": "0.5.2",
         "changes": [
             {
-                "note":
-                    "Fixed the bug in `postpublish` script that caused that only unminified UMD bundle was uploaded to release page"
+                "note": "Fixed the bug in `postpublish` script that caused that only unminified UMD bundle was uploaded to release page"
             }
         ],
         "timestamp": 1497452400

@@ -5,6 +5,91 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.9 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v6.0.8 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v6.0.7 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v6.0.6 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v6.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v6.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v6.0.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v6.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v6.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v6.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
+## v5.0.0 - _February 9, 2019_
+
+    * Export `transactionHashUtils`, `DecodedCalldata`, `ZeroExTransaction`, and `SignedZeroExTransaction` (#1569)
+
+## v4.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v3.0.3 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v3.0.2 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _January 9, 2019_
+
+    * Export `MultiAssetData`, `MultiAssetDataWithRecursiveDecoding`, `ObjectMap`, and `SingleAssetData` from types. No longer export `AssetData`. (#1363)
+
+## v2.0.8 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.0.7 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v2.0.6 - _November 28, 2018_
 
     * Dependencies updated

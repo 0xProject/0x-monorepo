@@ -69,7 +69,7 @@ export class RawCalldata {
 
     public toAbsoluteOffset(relativeOffset: number): number {
         const scopeOffset = this._scopes.peekFront();
-        if (_.isUndefined(scopeOffset)) {
+        if (scopeOffset === undefined) {
             throw new Error(`Tried to access undefined scope.`);
         }
         const absoluteOffset = relativeOffset + scopeOffset;
@@ -78,5 +78,10 @@ export class RawCalldata {
 
     public getSelector(): string {
         return this._selector;
+    }
+
+    public getSizeInBytes(): number {
+        const sizeInBytes = this._value.byteLength;
+        return sizeInBytes;
     }
 }

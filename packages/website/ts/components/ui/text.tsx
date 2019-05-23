@@ -7,6 +7,7 @@ export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4'
 
 export interface TextProps {
     className?: string;
+    children?: any;
     Tag?: TextTag;
     fontSize?: string;
     fontFamily?: string;

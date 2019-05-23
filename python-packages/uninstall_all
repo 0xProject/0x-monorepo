@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PKG_FOLDERS=$(find ./ -maxdepth 1 -type d -exec basename {} \; | grep -v -e '^.$' | grep -v '.mypy_cache' | tr '_' '-')
+for i in $PKG_FOLDERS; do PKGS="${PKGS} 0x-$i"; done
+echo pip uninstall --yes $PKGS 0x-web3 web3
+     pip uninstall --yes $PKGS 0x-web3 web3

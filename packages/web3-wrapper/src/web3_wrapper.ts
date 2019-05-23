@@ -1,6 +1,6 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0x/utils';
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify, providerUtils } from '@0x/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -11,14 +11,15 @@ import {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     LogEntry,
-    Provider,
     RawLogEntry,
+    SupportedProvider,
     TraceParams,
     Transaction,
     TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
     TransactionTrace,
     TxData,
+    ZeroExProvider,
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -51,7 +52,9 @@ export class Web3Wrapper {
      */
     public isZeroExWeb3Wrapper = true;
     public abiDecoder: AbiDecoder;
-    private _provider: Provider;
+    private _provider: ZeroExProvider;
+    // Raw provider passed in. Do not use. Only here to return the unmodified provider passed in via `getProvider()`
+    private readonly _supportedProvider: SupportedProvider;
     private readonly _txDefaults: Partial<TxData>;
     private _jsonRpcRequestId: number;
     /**
@@ -134,7 +137,7 @@ export class Web3Wrapper {
         // hex - Geth
         if (_.isString(status)) {
             return utils.convertHexToNumber(status) as 0 | 1;
-        } else if (_.isUndefined(status)) {
+        } else if (status === undefined) {
             return null;
         } else {
             return status;
@@ -147,16 +150,10 @@ export class Web3Wrapper {
      * @param   txDefaults  Override TxData defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
-    constructor(provider: Provider, txDefaults?: Partial<TxData>) {
-        assert.isWeb3Provider('provider', provider);
-        if (_.isUndefined((provider as any).sendAsync)) {
-            // Web3@1.0 provider doesn't support synchronous http requests,
-            // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with @0x/web3-wrapper
-            (provider as any).sendAsync = (provider as any).send;
-        }
+    constructor(supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         this.abiDecoder = new AbiDecoder([]);
-        this._provider = provider;
+        this._supportedProvider = supportedProvider;
+        this._provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._txDefaults = txDefaults || {};
         this._jsonRpcRequestId = 1;
     }
@@ -171,15 +168,15 @@ export class Web3Wrapper {
      * Retrieve the Web3 provider
      * @return  Web3 provider instance
      */
-    public getProvider(): Provider {
-        return this._provider;
+    public getProvider(): SupportedProvider {
+        return this._supportedProvider;
     }
     /**
      * Update the used Web3 provider
      * @param provider The new Web3 provider to be set
      */
-    public setProvider(provider: Provider): void {
-        assert.isWeb3Provider('provider', provider);
+    public setProvider(supportedProvider: SupportedProvider): void {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._provider = provider;
     }
     /**
@@ -226,7 +223,7 @@ export class Web3Wrapper {
         // HACK Parity can return a pending transaction receipt. We check for a non null
         // block number before continuing with returning a fully realised receipt.
         // ref: https://github.com/paritytech/parity-ethereum/issues/1180
-        if (!_.isNull(transactionReceiptRpc) && !_.isNull(transactionReceiptRpc.blockNumber)) {
+        if (transactionReceiptRpc !== null && transactionReceiptRpc.blockNumber !== null) {
             transactionReceiptRpc.status = Web3Wrapper._normalizeTxReceiptStatus(transactionReceiptRpc.status);
             const transactionReceipt = marshaller.unmarshalTransactionReceipt(transactionReceiptRpc);
             return transactionReceipt;
@@ -256,7 +253,7 @@ export class Web3Wrapper {
      */
     public async getBalanceInWeiAsync(owner: string, defaultBlock?: BlockParam): Promise<BigNumber> {
         assert.isETHAddressHex('owner', owner);
-        if (!_.isUndefined(defaultBlock)) {
+        if (defaultBlock !== undefined) {
             Web3Wrapper._assertBlockParam(defaultBlock);
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
@@ -288,7 +285,7 @@ export class Web3Wrapper {
      */
     public async getContractCodeAsync(address: string, defaultBlock?: BlockParam): Promise<string> {
         assert.isETHAddressHex('address', address);
-        if (!_.isUndefined(defaultBlock)) {
+        if (defaultBlock !== undefined) {
             Web3Wrapper._assertBlockParam(defaultBlock);
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
@@ -375,7 +372,7 @@ export class Web3Wrapper {
             params: [encodedBlockParam, shouldIncludeTransactionData],
         });
         let blockWithoutTransactionDataIfExists;
-        if (!_.isNull(blockWithoutTransactionDataWithHexValuesOrNull)) {
+        if (blockWithoutTransactionDataWithHexValuesOrNull !== null) {
             blockWithoutTransactionDataIfExists = marshaller.unmarshalIntoBlockWithoutTransactionData(
                 blockWithoutTransactionDataWithHexValuesOrNull,
             );
@@ -412,7 +409,7 @@ export class Web3Wrapper {
     public async getBlockTimestampAsync(blockParam: string | BlockParam): Promise<number> {
         Web3Wrapper._assertBlockParamOrString(blockParam);
         const blockIfExists = await this.getBlockIfExistsAsync(blockParam);
-        if (_.isUndefined(blockIfExists)) {
+        if (blockIfExists === undefined) {
             throw new Error(`Failed to fetch block with blockParam: ${JSON.stringify(blockParam)}`);
         }
         return blockIfExists.timestamp;
@@ -476,7 +473,7 @@ export class Web3Wrapper {
      * @returns The corresponding log entries
      */
     public async getLogsAsync(filter: FilterObject): Promise<LogEntry[]> {
-        if (!_.isUndefined(filter.blockHash) && (!_.isUndefined(filter.fromBlock) || !_.isUndefined(filter.toBlock))) {
+        if (filter.blockHash !== undefined && (filter.fromBlock !== undefined || filter.toBlock !== undefined)) {
             throw new Error(
                 `Cannot specify 'blockHash' as well as 'fromBlock'/'toBlock' in the filter supplied to 'getLogsAsync'`,
             );
@@ -531,7 +528,7 @@ export class Web3Wrapper {
             schemas.numberSchema,
             schemas.jsNumber,
         ]);
-        if (!_.isUndefined(defaultBlock)) {
+        if (defaultBlock !== undefined) {
             Web3Wrapper._assertBlockParam(defaultBlock);
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
@@ -575,12 +572,12 @@ export class Web3Wrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         assert.isHexString('txHash', txHash);
         assert.isNumber('pollingIntervalMs', pollingIntervalMs);
-        if (!_.isUndefined(timeoutMs)) {
+        if (timeoutMs !== undefined) {
             assert.isNumber('timeoutMs', timeoutMs);
         }
         // Immediately check if the transaction has already been mined.
         let transactionReceipt = await this.getTransactionReceiptIfExistsAsync(txHash);
-        if (!_.isUndefined(transactionReceipt)) {
+        if (transactionReceipt !== undefined) {
             const logsWithDecodedArgs = _.map(
                 transactionReceipt.logs,
                 this.abiDecoder.tryToDecodeLogOrNoop.bind(this.abiDecoder),
@@ -608,7 +605,7 @@ export class Web3Wrapper {
                         }
 
                         transactionReceipt = await this.getTransactionReceiptIfExistsAsync(txHash);
-                        if (!_.isUndefined(transactionReceipt)) {
+                        if (transactionReceipt !== undefined) {
                             intervalUtils.clearAsyncExcludingInterval(intervalId);
                             const logsWithDecodedArgs = _.map(
                                 transactionReceipt.logs,

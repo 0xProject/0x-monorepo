@@ -87,7 +87,7 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
         const sortedEligibleVersions = eligibleVersions.sort(semver.rcompare.bind(semver));
         const closestVersion = sortedEligibleVersions[0];
         const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdownByVersion[closestVersion][sectionName];
-        if (!_.isUndefined(markdownFileIfExists)) {
+        if (markdownFileIfExists !== undefined) {
             // Special-case replace the `introduction` sectionName with the package name
             const isIntroductionSection = sectionName === 'introduction';
             const headerSize = isIntroductionSection ? HeaderSizes.H1 : HeaderSizes.H3;
@@ -103,7 +103,7 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
         }
 
         const docSection = this.props.docAgnosticFormat[sectionName];
-        if (_.isUndefined(docSection)) {
+        if (docSection === undefined) {
             return null;
         }
 
@@ -194,21 +194,19 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                         <div>{functionDefs}</div>
                     </div>
                 )}
-                {!_.isUndefined(docSection.events) &&
-                    docSection.events.length > 0 && (
-                        <div>
-                            <h2 style={headerStyle}>Events</h2>
-                            <div>{eventDefs}</div>
-                        </div>
-                    )}
-                {!_.isUndefined(docSection.externalExportToLink) &&
+                {docSection.events !== undefined && docSection.events.length > 0 && (
+                    <div>
+                        <h2 style={headerStyle}>Events</h2>
+                        <div>{eventDefs}</div>
+                    </div>
+                )}
+                {docSection.externalExportToLink !== undefined &&
                     this._renderExternalExports(docSection.externalExportToLink)}
-                {!_.isUndefined(typeDefs) &&
-                    typeDefs.length > 0 && (
-                        <div>
-                            <div>{typeDefs}</div>
-                        </div>
-                    )}
+                {typeDefs !== undefined && typeDefs.length > 0 && (
+                    <div>
+                        <div>{typeDefs}</div>
+                    </div>
+                )}
                 <div
                     style={{
                         width: '100%',
@@ -249,7 +247,7 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
             networkToAddressByContractName,
             (addressByContractName: AddressByContractName, networkName: string) => {
                 const contractAddress = addressByContractName[sectionName];
-                if (_.isUndefined(contractAddress)) {
+                if (contractAddress === undefined) {
                     return null;
                 }
                 const linkIfExists = sharedUtils.getEtherScanLinkIfExists(

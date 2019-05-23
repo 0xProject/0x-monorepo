@@ -5,6 +5,39 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.2 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v2.1.1 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v2.1.0 - _February 25, 2019_
+
+    * Added types SupportedProvider, GanacheProvider, Web3JsProvider, ZeroExProvider, EIP1193Provider (#1627)
+    * Added all existing opcodes to `OpCode` type (#1638)
+
+## v2.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v1.1.6 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v1.1.5 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v1.1.4 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.1.3 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v1.1.2 - _November 9, 2018_
 
     * Dependencies updated

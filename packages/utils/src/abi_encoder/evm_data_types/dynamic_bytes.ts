@@ -9,6 +9,7 @@ import { constants } from '../utils/constants';
 
 export class DynamicBytesDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
+    private static readonly _DEFAULT_VALUE = '0x';
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Bytes;
@@ -19,7 +20,7 @@ export class DynamicBytesDataType extends AbstractBlobDataType {
             return;
         }
         if (!_.startsWith(value, '0x')) {
-            throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
+            throw new Error(`Tried to encode non-hex value. Value must include '0x' prefix.`);
         } else if (value.length % 2 !== 0) {
             throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
         }
@@ -65,7 +66,11 @@ export class DynamicBytesDataType extends AbstractBlobDataType {
         return value;
     }
 
-    public getSignature(): string {
+    public getDefaultValue(): string {
+        return DynamicBytesDataType._DEFAULT_VALUE;
+    }
+
+    public getSignatureType(): string {
         return SolidityTypes.Bytes;
     }
     /* tslint:enable prefer-function-over-method */

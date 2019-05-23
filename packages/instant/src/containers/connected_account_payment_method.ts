@@ -58,7 +58,7 @@ const mergeProps = (
     ...ownProps,
     network: connectedState.network,
     account: connectedState.providerState.account,
-    walletDisplayName: connectedState.walletDisplayName || connectedState.providerState.name,
+    walletDisplayName: connectedState.providerState.displayName,
     onUnlockWalletClick: () => connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState),
     onInstallWalletClick: () => {
         const isMobile = envUtil.isMobileOperatingSystem();

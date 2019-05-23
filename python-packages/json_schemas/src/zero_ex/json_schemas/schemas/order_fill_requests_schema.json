@@ -1,0 +1,12 @@
+{
+    "id": "/orderFillRequestsSchema",
+    "type": "array",
+    "items": {
+        "properties": {
+            "signedOrder": { "$ref": "/signedOrderSchema" },
+            "takerTokenFillAmount": { "$ref": "/wholeNumberSchema" }
+        },
+        "required": ["signedOrder", "takerTokenFillAmount"],
+        "type": "object"
+    }
+}

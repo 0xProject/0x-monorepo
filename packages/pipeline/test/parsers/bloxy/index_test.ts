@@ -7,7 +7,6 @@ import * as R from 'ramda';
 import { BLOXY_DEX_TRADES_URL, BloxyTrade } from '../../../src/data_sources/bloxy';
 import { DexTrade } from '../../../src/entities';
 import { _parseBloxyTrade } from '../../../src/parsers/bloxy';
-import { _convertToExchangeFillEvent } from '../../../src/parsers/events';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
@@ -18,6 +17,7 @@ const baseInput: BloxyTrade = {
     tx_time: '2018-11-21T09:06:28.000+00:00',
     tx_date: '2018-11-21',
     tx_sender: '0x00923b9a074762b93650716333b3e1473a15048e',
+    tradeIndex: '1',
     smart_contract_id: 7091917,
     smart_contract_address: '0x818e6fecd516ecc3849daf6845e3ec868087b755',
     contract_type: 'DEX/Kyber Network Proxy',
@@ -41,6 +41,7 @@ const baseInput: BloxyTrade = {
 const baseExpected: DexTrade = {
     sourceUrl: BLOXY_DEX_TRADES_URL,
     txHash: '0xb93a7faf92efbbb5405c9a73cd4efd99702fe27c03ff22baee1f1b1e37b3a0bf',
+    tradeIndex: '1',
     txTimestamp: 1542791188000,
     txDate: '2018-11-21',
     txSender: '0x00923b9a074762b93650716333b3e1473a15048e',

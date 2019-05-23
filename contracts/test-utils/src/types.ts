@@ -14,6 +14,27 @@ export interface ERC721TokenIdsByOwner {
     };
 }
 
+export interface ERC1155FungibleHoldingsByOwner {
+    [ownerAddress: string]: {
+        [tokenAddress: string]: {
+            [tokenId: string]: BigNumber;
+        };
+    };
+}
+
+export interface ERC1155NonFungibleHoldingsByOwner {
+    [ownerAddress: string]: {
+        [tokenAddress: string]: {
+            [tokenId: string]: BigNumber[];
+        };
+    };
+}
+
+export interface ERC1155HoldingsByOwner {
+    fungible: ERC1155FungibleHoldingsByOwner;
+    nonFungible: ERC1155NonFungibleHoldingsByOwner;
+}
+
 export interface SubmissionContractEventArgs {
     transactionId: BigNumber;
 }
@@ -70,13 +91,13 @@ export interface Token {
 }
 
 export enum OrderStatus {
-    INVALID,
-    INVALID_MAKER_ASSET_AMOUNT,
-    INVALID_TAKER_ASSET_AMOUNT,
-    FILLABLE,
-    EXPIRED,
-    FULLY_FILLED,
-    CANCELLED,
+    Invalid,
+    InvalidMakerAssetAmount,
+    InvalidTakerAssetAmount,
+    Fillable,
+    Expired,
+    FullyFilled,
+    Cancelled,
 }
 
 export enum ContractName {
@@ -104,14 +125,7 @@ export enum ContractName {
     Authorizable = 'Authorizable',
     Whitelist = 'Whitelist',
     Forwarder = 'Forwarder',
-}
-
-export interface SignedTransaction {
-    exchangeAddress: string;
-    salt: BigNumber;
-    signerAddress: string;
-    data: string;
-    signature: string;
+    BalanceThresholdFilter = 'BalanceThresholdFilter',
 }
 
 export interface TransferAmountsByMatchOrders {

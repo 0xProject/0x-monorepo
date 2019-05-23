@@ -25,10 +25,15 @@ const SEPARATOR = ',';
             type: 'string',
             description: 'comma separated list of contracts to compile',
         })
+        .option('watch', {
+            alias: 'w',
+            default: false,
+        })
         .help().argv;
-    const contracts = _.isUndefined(argv.contracts)
-        ? undefined
-        : argv.contracts === DEFAULT_CONTRACTS_LIST
+    const contracts =
+        argv.contracts === undefined
+            ? undefined
+            : argv.contracts === DEFAULT_CONTRACTS_LIST
             ? DEFAULT_CONTRACTS_LIST
             : argv.contracts.split(SEPARATOR);
     const opts = {
@@ -37,7 +42,11 @@ const SEPARATOR = ',';
         contracts,
     };
     const compiler = new Compiler(opts);
-    await compiler.compileAsync();
+    if (argv.watch) {
+        await compiler.watchAsync();
+    } else {
+        await compiler.compileAsync();
+    }
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);

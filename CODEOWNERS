@@ -24,12 +24,17 @@ packages/metacoin/ @LogvinovLeon
 packages/monorepo-scripts/ @fabioberger
 packages/order-utils/ @fabioberger @LogvinovLeon 
 packages/sol-compiler/ @LogvinovLeon
-packages/sol-cov/ @LogvinovLeon
+packages/sol-coverage/ @LogvinovLeon
+packages/sol-profiler/ @LogvinovLeon
+packages/sol-trace/ @LogvinovLeon
+packages/sol-tracing-utils/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
 packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
 packages/web3-wrapper/ @LogvinovLeon @fabioberger
 python-packages/ @feuGeneA
+packages/utils/ @hysz
 
 # Protocol/smart contracts
 contracts/core/test/ @albrow
+contracts/ @abandeali1 @hysz

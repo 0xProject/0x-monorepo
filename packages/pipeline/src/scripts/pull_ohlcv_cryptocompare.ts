@@ -1,5 +1,6 @@
-// tslint:disable:no-console
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
+
+import { logUtils } from '@0x/utils';
 
 import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { OHLCVExternal } from '../entities';
@@ -11,7 +12,7 @@ import { fetchOHLCVTradingPairsAsync, TradingPair } from '../utils/get_ohlcv_tra
 const SOURCE_NAME = 'CryptoCompare';
 const TWO_HOURS_AGO = new Date().getTime() - 2 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 
-const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '14', 10); // tslint:disable-line:custom-no-magic-numbers
+const MAX_REQS_PER_SECOND = parseInt(process.env.CRYPTOCOMPARE_MAX_REQS_PER_SECOND || '15', 10); // tslint:disable-line:custom-no-magic-numbers
 const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2014-06-01';
 const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
 
@@ -20,18 +21,18 @@ let connection: Connection;
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const repository = connection.getRepository(OHLCVExternal);
-    const source = new CryptoCompareOHLCVSource(MAX_CONCURRENT_REQUESTS);
+    const source = new CryptoCompareOHLCVSource(MAX_REQS_PER_SECOND);
 
     const jobTime = new Date().getTime();
     const tradingPairs = await fetchOHLCVTradingPairsAsync(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);
-    console.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
+    logUtils.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
 
     const fetchAndSavePromises = tradingPairs.map(async pair => {
         const pairs = source.generateBackfillIntervals(pair);
         return fetchAndSaveAsync(source, repository, jobTime, pairs);
     });
     await Promise.all(fetchAndSavePromises);
-    console.log(`Finished scraping OHLCV records from Crypto Compare, exiting...`);
+    logUtils.log(`Finished scraping OHLCV records from Crypto Compare, exiting...`);
     process.exit(0);
 })().catch(handleError);
 
@@ -60,10 +61,10 @@ async function fetchAndSaveAsync(
         }
         try {
             const records = await source.getHourlyOHLCVAsync(pair);
-            console.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
+            logUtils.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
             if (records.length > 0) {
                 const metadata: OHLCVMetadata = {
-                    exchange: source.default_exchange,
+                    exchange: source.defaultExchange,
                     fromSymbol: pair.fromSymbol,
                     toSymbol: pair.toSymbol,
                     source: SOURCE_NAME,
@@ -75,7 +76,7 @@ async function fetchAndSaveAsync(
             }
             i++;
         } catch (err) {
-            console.log(`Error scraping OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
+            logUtils.log(`Error scraping OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
             break;
         }
     }
@@ -90,6 +91,6 @@ async function saveRecordsAsync(repository: Repository<OHLCVExternal>, records: 
         new Date(records[records.length - 1].endTime),
     ];
 
-    console.log(`Saving ${records.length} records to ${repository.metadata.name}... ${JSON.stringify(metadata)}`);
+    logUtils.log(`Saving ${records.length} records to ${repository.metadata.name}... ${JSON.stringify(metadata)}`);
     await repository.save(records);
 }

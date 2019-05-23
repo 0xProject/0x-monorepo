@@ -1,7 +1,8 @@
-import { ExchangeContractErrs } from '@0x/types';
+import { AssetProxyId, ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { assetDataUtils } from './asset_data_utils';
 import { constants } from './constants';
 import { TradeSide, TransferType } from './types';
 
@@ -74,24 +75,51 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
-        // HACK: When simulating an open order (e.g taker is NULL_ADDRESS), we don't want to adjust balances/
-        // allowances for the taker. We do however, want to increase the balance of the maker since the maker
-        // might be relying on those funds to fill subsequent orders or pay the order's fees.
-        if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
-            await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
-            return;
+        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+        switch (assetProxyId) {
+            case AssetProxyId.ERC20:
+            case AssetProxyId.ERC721:
+                // HACK: When simulating an open order (e.g taker is NULL_ADDRESS), we don't want to adjust balances/
+                // allowances for the taker. We do however, want to increase the balance of the maker since the maker
+                // might be relying on those funds to fill subsequent orders or pay the order's fees.
+                if (from === constants.NULL_ADDRESS && tradeSide === TradeSide.Taker) {
+                    await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
+                    return;
+                }
+                const balance = await this._store.getBalanceAsync(assetData, from);
+                const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, from);
+                if (proxyAllowance.isLessThan(amountInBaseUnits)) {
+                    ExchangeTransferSimulator._throwValidationError(
+                        FailureReason.ProxyAllowance,
+                        tradeSide,
+                        transferType,
+                    );
+                }
+                if (balance.isLessThan(amountInBaseUnits)) {
+                    ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, tradeSide, transferType);
+                }
+                await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);
+                await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
+                await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
+                break;
+            case AssetProxyId.MultiAsset:
+                const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+                for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
+                    const amountsElement = decodedAssetData.amounts[index];
+                    const totalAmount = amountInBaseUnits.times(amountsElement);
+                    await this.transferFromAsync(
+                        nestedAssetDataElement,
+                        from,
+                        to,
+                        totalAmount,
+                        tradeSide,
+                        transferType,
+                    );
+                }
+                break;
+            default:
+                break;
         }
-        const balance = await this._store.getBalanceAsync(assetData, from);
-        const proxyAllowance = await this._store.getProxyAllowanceAsync(assetData, from);
-        if (proxyAllowance.lessThan(amountInBaseUnits)) {
-            ExchangeTransferSimulator._throwValidationError(FailureReason.ProxyAllowance, tradeSide, transferType);
-        }
-        if (balance.lessThan(amountInBaseUnits)) {
-            ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, tradeSide, transferType);
-        }
-        await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);
-        await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
-        await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
     }
     private async _decreaseProxyAllowanceAsync(
         assetData: string,

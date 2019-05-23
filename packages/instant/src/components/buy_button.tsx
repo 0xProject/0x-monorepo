@@ -10,6 +10,7 @@ import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants'
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, Asset, ZeroExInstantError } from '../types';
 import { analytics } from '../util/analytics';
+import { errorReporter } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
@@ -31,7 +32,7 @@ export interface BuyButtonProps {
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
-export class BuyButton extends React.Component<BuyButtonProps> {
+export class BuyButton extends React.PureComponent<BuyButtonProps> {
     public static defaultProps = {
         onClick: util.boundNoop,
         onBuySuccess: util.boundNoop,
@@ -39,9 +40,9 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     };
     public render(): React.ReactNode {
         const { buyQuote, accountAddress, selectedAsset } = this.props;
-        const shouldDisableButton = _.isUndefined(buyQuote) || _.isUndefined(accountAddress);
+        const shouldDisableButton = buyQuote === undefined || accountAddress === undefined;
         const buttonText =
-            !_.isUndefined(selectedAsset) && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+            selectedAsset !== undefined && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
                 ? `Buy ${selectedAsset.metaData.symbol.toUpperCase()}`
                 : 'Buy Now';
         return (
@@ -58,13 +59,13 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
         const { buyQuote, assetBuyer, affiliateInfo, accountAddress, accountEthBalanceInWei, web3Wrapper } = this.props;
-        if (_.isUndefined(buyQuote) || _.isUndefined(accountAddress)) {
+        if (buyQuote === undefined || accountAddress === undefined) {
             return;
         }
         this.props.onValidationPending(buyQuote);
         const ethNeededForBuy = buyQuote.worstCaseQuoteInfo.totalEthAmount;
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
-        const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
+        const hasSufficientEth = accountEthBalanceInWei === undefined || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
             analytics.trackBuyNotEnoughEth(buyQuote);
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
@@ -82,13 +83,18 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             });
         } catch (e) {
             if (e instanceof Error) {
-                if (e.message === AssetBuyerError.SignatureRequestDenied) {
+                if (e.message === AssetBuyerError.TransactionValueTooLow) {
+                    analytics.trackBuySimulationFailed(buyQuote);
+                    this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
+                    return;
+                } else if (e.message === AssetBuyerError.SignatureRequestDenied) {
                     analytics.trackBuySignatureDenied(buyQuote);
                     this.props.onSignatureDenied(buyQuote);
                     return;
-                } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
-                    analytics.trackBuySimulationFailed(buyQuote);
-                    this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
+                } else {
+                    errorReporter.report(e);
+                    analytics.trackBuyUnknownError(buyQuote, e.message);
+                    this.props.onValidationFail(buyQuote, ZeroExInstantError.CouldNotSubmitTransaction);
                     return;
                 }
             }

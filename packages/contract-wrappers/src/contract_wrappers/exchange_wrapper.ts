@@ -1,10 +1,13 @@
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
-import { Exchange } from '@0x/contract-artifacts';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents, IAssetProxyContract } from '@0x/abi-gen-wrappers';
+import { Exchange, IAssetProxy } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
+    orderCalculationUtils,
+    orderHashUtils,
+    OrderStateUtils,
     OrderValidationUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
@@ -74,10 +77,9 @@ export class ExchangeWrapper extends ContractWrapper {
         super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
-        this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
-            ? _getDefaultContractAddresses(networkId).zrxToken
-            : zrxTokenAddress;
+        this.address = address === undefined ? _getDefaultContractAddresses(networkId).exchange : address;
+        this.zrxTokenAddress =
+            zrxTokenAddress === undefined ? _getDefaultContractAddresses(networkId).zrxToken : zrxTokenAddress;
     }
     /**
      * Retrieve the address of an asset proxy by signature.
@@ -743,10 +745,6 @@ export class ExchangeWrapper extends ContractWrapper {
             rightSignedOrder.takerAssetData !== leftSignedOrder.makerAssetData
         ) {
             throw new Error(ExchangeWrapperError.AssetDataMismatch);
-        } else {
-            // Smart contracts assigns the asset data from the left order to the right one so we can save gas on reducing the size of call data
-            rightSignedOrder.makerAssetData = '0x';
-            rightSignedOrder.takerAssetData = '0x';
         }
         const exchangeInstance = await this._getExchangeContractAsync();
         if (orderTransactionOpts.shouldValidate) {
@@ -863,7 +861,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<boolean> {
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.isETHAddressHex('validatorAddress', validatorAddress);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const normalizedSignerAddress = signerAddress.toLowerCase();
@@ -889,7 +887,7 @@ export class ExchangeWrapper extends ContractWrapper {
     public async isPreSignedAsync(hash: string, signerAddress: string, methodOpts: MethodOpts = {}): Promise<boolean> {
         assert.isHexString('hash', hash);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -913,7 +911,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async isTransactionExecutedAsync(transactionHash: string, methodOpts: MethodOpts = {}): Promise<boolean> {
         assert.isHexString('transactionHash', transactionHash);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -934,7 +932,7 @@ export class ExchangeWrapper extends ContractWrapper {
     @decorators.asyncZeroExErrorHandler
     public async getOrderInfoAsync(order: Order | SignedOrder, methodOpts: MethodOpts = {}): Promise<OrderInfo> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -954,7 +952,7 @@ export class ExchangeWrapper extends ContractWrapper {
         methodOpts: MethodOpts = {},
     ): Promise<OrderInfo[]> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
-        if (!_.isUndefined(methodOpts)) {
+        if (methodOpts !== undefined) {
             assert.doesConformToSchema('methodOpts', methodOpts, methodOptsSchema);
         }
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -1143,7 +1141,8 @@ export class ExchangeWrapper extends ContractWrapper {
      * Validate if the supplied order is fillable, and throw if it isn't
      * @param signedOrder SignedOrder of interest
      * @param opts ValidateOrderFillableOpts options (e.g expectedFillTakerTokenAmount.
-     * If it isn't supplied, we check if the order is fillable for a non-zero amount)
+     * If it isn't supplied, we check if the order is fillable for the remaining amount.
+     * To check if the order is fillable for a non-zero amount, set `validateRemainingOrderAmountIsFillable` to false.)
      */
     public async validateOrderFillableOrThrowAsync(
         signedOrder: SignedOrder,
@@ -1159,16 +1158,78 @@ export class ExchangeWrapper extends ContractWrapper {
         );
         const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
-
-        const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+
+        let fillableTakerAssetAmount;
+        const shouldValidateRemainingOrderAmountIsFillable =
+            opts.validateRemainingOrderAmountIsFillable === undefined
+                ? true
+                : opts.validateRemainingOrderAmountIsFillable;
+        if (opts.expectedFillTakerTokenAmount) {
+            // If the caller has specified a taker fill amount, we use this for all validation
+            fillableTakerAssetAmount = opts.expectedFillTakerTokenAmount;
+        } else if (shouldValidateRemainingOrderAmountIsFillable) {
+            // Default behaviour is to validate the amount left on the order.
+            const filledTakerTokenAmount = await this.getFilledTakerAssetAmountAsync(
+                orderHashUtils.getOrderHashHex(signedOrder),
+            );
+            fillableTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
+        } else {
+            const orderStateUtils = new OrderStateUtils(balanceAllowanceStore, filledCancelledFetcher);
+            // Calculate the taker amount fillable given the maker balance and allowance
+            const orderRelevantState = await orderStateUtils.getOpenOrderRelevantStateAsync(signedOrder);
+            fillableTakerAssetAmount = orderRelevantState.remainingFillableTakerAssetAmount;
+        }
+
         const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
             this.getZRXAssetData(),
-            expectedFillTakerTokenAmountIfExists,
+            fillableTakerAssetAmount,
         );
+        const makerTransferAmount = orderCalculationUtils.getMakerFillAmount(signedOrder, fillableTakerAssetAmount);
+        await this.validateMakerTransferThrowIfInvalidAsync(
+            signedOrder,
+            makerTransferAmount,
+            opts.simulationTakerAddress,
+        );
+    }
+    /**
+     * Validate the transfer from the maker to the taker. This is simulated on-chain
+     * via an eth_call. If this call fails, the asset is currently nontransferable.
+     * @param signedOrder SignedOrder of interest
+     * @param makerAssetAmount Amount to transfer from the maker
+     * @param takerAddress The address to transfer to, defaults to signedOrder.takerAddress
+     */
+    public async validateMakerTransferThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        makerAssetAmount: BigNumber,
+        takerAddress?: string,
+    ): Promise<void> {
+        const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const makerAssetData = signedOrder.makerAssetData;
+        const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
+        const assetProxyAddress = await exchangeInstance.assetProxies.callAsync(makerAssetDataProxyId);
+        const assetProxy = new IAssetProxyContract(
+            IAssetProxy.compilerOutput.abi,
+            assetProxyAddress,
+            this._web3Wrapper.getProvider(),
+        );
+
+        const result = await assetProxy.transferFrom.callAsync(
+            makerAssetData,
+            signedOrder.makerAddress,
+            toAddress,
+            makerAssetAmount,
+            {
+                from: this.address,
+            },
+        );
+        if (result !== undefined) {
+            throw new Error(`Error during maker transfer simulation: ${result}`);
+        }
     }
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed
@@ -1220,7 +1281,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
-        if (!_.isUndefined(this._exchangeContractIfExists)) {
+        if (this._exchangeContractIfExists !== undefined) {
             return this._exchangeContractIfExists;
         }
         const contractInstance = new ExchangeContract(

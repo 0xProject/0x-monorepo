@@ -1,6 +1,6 @@
 import { fetchAsync, logUtils } from '@0x/utils';
 
-const DDEX_BASE_URL = 'https://api.ddex.io/v2';
+const DDEX_BASE_URL = 'https://api.ddex.io/v3';
 const ACTIVE_MARKETS_URL = `${DDEX_BASE_URL}/markets`;
 const NO_AGGREGATION_LEVEL = 3; // See https://docs.ddex.io/#get-orderbook
 const ORDERBOOK_ENDPOINT = `/orderbook?level=${NO_AGGREGATION_LEVEL}`;
@@ -23,7 +23,6 @@ export interface DdexMarket {
     baseTokenDecimals: number;
     baseTokenAddress: string;
     minOrderSize: string;
-    maxOrderSize: string;
     pricePrecision: number;
     priceDecimals: number;
     amountDecimals: number;

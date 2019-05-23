@@ -7,7 +7,6 @@ import { constants } from '../utils/constants';
 
 export class ArrayDataType extends AbstractSetDataType {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
-    private readonly _arraySignature: string;
     private readonly _elementType: string;
 
     public static matchType(type: string): boolean {
@@ -16,11 +15,11 @@ export class ArrayDataType extends AbstractSetDataType {
 
     private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined | number] {
         const matches = ArrayDataType._MATCHER.exec(type);
-        if (_.isNull(matches) || matches.length !== 3) {
+        if (matches === null || matches.length !== 3) {
             throw new Error(`Could not parse array: ${type}`);
-        } else if (_.isUndefined(matches[1])) {
+        } else if (matches[1] === undefined) {
             throw new Error(`Could not parse array type: ${type}`);
-        } else if (_.isUndefined(matches[2])) {
+        } else if (matches[2] === undefined) {
             throw new Error(`Could not parse array length: ${type}`);
         }
         const arrayElementType = matches[1];
@@ -35,27 +34,38 @@ export class ArrayDataType extends AbstractSetDataType {
         super(dataItem, dataTypeFactory, isArray, arrayLength, arrayElementType);
         // Set array properties
         this._elementType = arrayElementType;
-        this._arraySignature = this._computeSignature();
     }
 
-    public getSignature(): string {
-        return this._arraySignature;
+    public getSignatureType(): string {
+        return this._computeSignature(false);
     }
 
-    private _computeSignature(): string {
+    public getSignature(isDetailed?: boolean): string {
+        if (_.isEmpty(this.getDataItem().name) || !isDetailed) {
+            return this.getSignatureType();
+        }
+        const name = this.getDataItem().name;
+        const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
+        const isScopedName = lastIndexOfScopeDelimiter !== undefined && lastIndexOfScopeDelimiter > 0;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
+        const detailedSignature = `${shortName} ${this._computeSignature(isDetailed)}`;
+        return detailedSignature;
+    }
+
+    private _computeSignature(isDetailed?: boolean): string {
         // Compute signature for a single array element
         const elementDataItem: DataItem = {
             type: this._elementType,
-            name: 'N/A',
+            name: '',
         };
         const elementComponents = this.getDataItem().components;
-        if (!_.isUndefined(elementComponents)) {
+        if (elementComponents !== undefined) {
             elementDataItem.components = elementComponents;
         }
         const elementDataType = this.getFactory().create(elementDataItem);
-        const elementSignature = elementDataType.getSignature();
+        const elementSignature = elementDataType.getSignature(isDetailed);
         // Construct signature for array of type `element`
-        if (_.isUndefined(this._arrayLength)) {
+        if (this._arrayLength === undefined) {
             return `${elementSignature}[]`;
         } else {
             return `${elementSignature}[${this._arrayLength}]`;

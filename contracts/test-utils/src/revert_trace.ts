@@ -1,12 +1,11 @@
 import { devConstants } from '@0x/dev-utils';
-import { RevertTraceSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
-import * as _ from 'lodash';
+import { RevertTraceSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-trace';
 
 let revertTraceSubprovider: RevertTraceSubprovider;
 
 export const revertTrace = {
     getRevertTraceSubproviderSingleton(): RevertTraceSubprovider {
-        if (_.isUndefined(revertTraceSubprovider)) {
+        if (revertTraceSubprovider === undefined) {
             revertTraceSubprovider = revertTrace._getRevertTraceSubprovider();
         }
         return revertTraceSubprovider;

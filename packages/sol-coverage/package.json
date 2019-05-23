@@ -1,0 +1,57 @@
+{
+    "name": "@0x/sol-coverage",
+    "version": "3.0.4",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Generate coverage reports for Solidity code",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "lint": "tslint --format stylish --project .",
+        "fix": "tslint --fix --format stylish --project .",
+        "clean": "shx rm -rf lib src/artifacts generated_docs",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+    },
+    "config": {
+        "postpublish": {
+            "assets": []
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-coverage/README.md",
+    "dependencies": {
+        "@0x/sol-tracing-utils": "^6.0.11",
+        "@0x/subproviders": "^4.0.6",
+        "@0x/typescript-typings": "^4.2.2",
+        "@types/minimatch": "^3.0.3",
+        "ethereum-types": "^2.1.2",
+        "lodash": "^4.17.11",
+        "minimatch": "^3.0.4",
+        "web3-provider-engine": "14.0.6"
+    },
+    "devDependencies": {
+        "@0x/tslint-config": "^3.0.1",
+        "@types/node": "*",
+        "@types/web3-provider-engine": "^14.0.0",
+        "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
+        "shx": "^0.2.2",
+        "sinon": "^4.0.0",
+        "tslint": "5.11.0",
+        "typedoc": "0.13.0",
+        "typescript": "3.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

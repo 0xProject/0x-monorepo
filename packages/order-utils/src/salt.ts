@@ -1,6 +1,4 @@
-import { BigNumber } from '@0x/utils';
-
-const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
+import { BigNumber, generatePseudoRandom256BitNumber } from '@0x/utils';
 
 /**
  * Generates a pseudo-random 256-bit salt.
@@ -9,10 +7,6 @@ const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
  * @return  A pseudo-random 256-bit number that can be used as a salt.
  */
 export function generatePseudoRandomSalt(): BigNumber {
-    // BigNumber.random returns a pseudo-random number between 0 & 1 with a passed in number of decimal places.
-    // Source: https://mikemcl.github.io/bignumber.js/#random
-    const randomNumber = BigNumber.random(MAX_DIGITS_IN_UNSIGNED_256_INT);
-    const factor = new BigNumber(10).pow(MAX_DIGITS_IN_UNSIGNED_256_INT - 1);
-    const salt = randomNumber.times(factor).round();
+    const salt = generatePseudoRandom256BitNumber();
     return salt;
 }

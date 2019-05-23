@@ -18,9 +18,9 @@ import { utils } from 'ts/utils/utils';
 const TOKEN_ICON_DIMENSION = 100;
 const TILE_DIMENSION = 146;
 enum AssetViews {
-    ASSET_PICKER = 'ASSET_PICKER',
-    NEW_TOKEN_FORM = 'NEW_TOKEN_FORM',
-    CONFIRM_TRACK_TOKEN = 'CONFIRM_TRACK_TOKEN',
+    AssetPicker = 'ASSET_PICKER',
+    NewTokenForm = 'NEW_TOKEN_FORM',
+    ConfirmTrackToken = 'CONFIRM_TRACK_TOKEN',
 }
 
 interface AssetPickerProps {
@@ -44,29 +44,29 @@ interface AssetPickerState {
 
 export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerState> {
     public static defaultProps: Partial<AssetPickerProps> = {
-        tokenVisibility: TokenVisibility.ALL,
+        tokenVisibility: TokenVisibility.All,
     };
     private readonly _dialogConfigsByAssetView: { [assetView: string]: DialogConfigs };
     constructor(props: AssetPickerProps) {
         super(props);
         this.state = {
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
             hoveredAddress: undefined,
             chosenTrackTokenAddress: undefined,
             isAddingTokenToTracked: false,
         };
         this._dialogConfigsByAssetView = {
-            [AssetViews.ASSET_PICKER]: {
+            [AssetViews.AssetPicker]: {
                 title: 'Select token',
                 isModal: false,
                 actions: [],
             },
-            [AssetViews.NEW_TOKEN_FORM]: {
+            [AssetViews.NewTokenForm]: {
                 title: 'Add an ERC20 token',
                 isModal: false,
                 actions: [],
             },
-            [AssetViews.CONFIRM_TRACK_TOKEN]: {
+            [AssetViews.ConfirmTrackToken]: {
                 title: 'Tracking confirmation',
                 isModal: true,
                 actions: [
@@ -95,15 +95,15 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                 autoScrollBodyContent={true}
                 onRequestClose={this._onCloseDialog.bind(this)}
             >
-                {this.state.assetView === AssetViews.ASSET_PICKER && this._renderAssetPicker()}
-                {this.state.assetView === AssetViews.NEW_TOKEN_FORM && (
+                {this.state.assetView === AssetViews.AssetPicker && this._renderAssetPicker()}
+                {this.state.assetView === AssetViews.NewTokenForm && (
                     <NewTokenForm
                         blockchain={this.props.blockchain}
                         onNewTokenSubmitted={this._onNewTokenSubmitted.bind(this)}
                         tokenByAddress={this.props.tokenByAddress}
                     />
                 )}
-                {this.state.assetView === AssetViews.CONFIRM_TRACK_TOKEN && this._renderConfirmTrackToken()}
+                {this.state.assetView === AssetViews.ConfirmTrackToken && this._renderConfirmTrackToken()}
             </Dialog>
         );
     }
@@ -138,19 +138,19 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const allTokens = _.values(this.props.tokenByAddress);
         // filter tokens based on visibility specified in props, do not show ZRX or ETHER as tracked or untracked
         const filteredTokens =
-            this.props.tokenVisibility === TokenVisibility.ALL
+            this.props.tokenVisibility === TokenVisibility.All
                 ? allTokens
                 : _.filter(allTokens, token => {
                       return (
                           token.symbol !== constants.ZRX_TOKEN_SYMBOL &&
                           token.symbol !== constants.ETHER_TOKEN_SYMBOL &&
-                          ((this.props.tokenVisibility === TokenVisibility.TRACKED && utils.isTokenTracked(token)) ||
-                              (this.props.tokenVisibility === TokenVisibility.UNTRACKED &&
+                          ((this.props.tokenVisibility === TokenVisibility.Tracked && utils.isTokenTracked(token)) ||
+                              (this.props.tokenVisibility === TokenVisibility.Untracked &&
                                   !utils.isTokenTracked(token)))
                       );
                   });
         // if we are showing tracked tokens, sort by date added, otherwise sort by symbol
-        const sortKey = this.props.tokenVisibility === TokenVisibility.TRACKED ? 'trackedTimestamp' : 'symbol';
+        const sortKey = this.props.tokenVisibility === TokenVisibility.Tracked ? 'trackedTimestamp' : 'symbol';
         const sortedTokens = filteredTokens.sort(firstBy(sortKey));
         if (_.isEmpty(sortedTokens)) {
             return <div className="mx-auto p4 h2">No tokens to remove.</div>;
@@ -188,7 +188,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             cursor: 'pointer',
             opacity: isHovered ? 0.6 : 1,
         };
-        if (this.props.tokenVisibility !== TokenVisibility.TRACKED) {
+        if (this.props.tokenVisibility !== TokenVisibility.Tracked) {
             gridTiles.push(
                 <div
                     key={otherTokenKey}
@@ -222,7 +222,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
     }
     private _onCloseDialog(): void {
         this.setState({
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
         });
         this.props.onTokenChosen(this.props.currentTokenAddress);
     }
@@ -232,21 +232,21 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
             this.props.onTokenChosen(tokenAddress);
         } else {
             this.setState({
-                assetView: AssetViews.CONFIRM_TRACK_TOKEN,
+                assetView: AssetViews.ConfirmTrackToken,
                 chosenTrackTokenAddress: tokenAddress,
             });
         }
     }
     private _onCustomAssetChosen(): void {
         this.setState({
-            assetView: AssetViews.NEW_TOKEN_FORM,
+            assetView: AssetViews.NewTokenForm,
         });
     }
     private _onNewTokenSubmitted(newToken: Token): void {
         trackedTokenStorage.addTrackedTokenToUser(this.props.userAddress, this.props.networkId, newToken);
         this.props.dispatcher.addTokenToTokenByAddress(newToken);
         this.setState({
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
         });
         this.props.onTokenChosen(newToken.address);
     }
@@ -254,7 +254,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         const resetState: AssetPickerState = {
             ...this.state,
             isAddingTokenToTracked: false,
-            assetView: AssetViews.ASSET_PICKER,
+            assetView: AssetViews.AssetPicker,
             chosenTrackTokenAddress: undefined,
         };
         if (!didUserAcceptTracking) {
@@ -267,7 +267,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         });
         const tokenAddress = this.state.chosenTrackTokenAddress;
         const token = this.props.tokenByAddress[tokenAddress];
-        if (_.isUndefined(tokenAddress)) {
+        if (tokenAddress === undefined) {
             this.setState(resetState);
             return;
         }

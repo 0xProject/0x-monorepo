@@ -9,7 +9,7 @@ import {
     WETH9Events,
 } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { OrderState, SignedOrder } from '@0x/types';
+import { AssetData, OrderState, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
@@ -120,13 +120,22 @@ export interface ContractWrappersConfig {
 }
 
 /**
- * expectedFillTakerTokenAmount: If specified, the validation method will ensure that the
- * supplied order maker has a sufficient allowance/balance to fill this amount of the order's
- * takerTokenAmount. If not specified, the validation method ensures that the maker has a sufficient
- * allowance/balance to fill the entire remaining order amount.
+ * `expectedFillTakerTokenAmount`: If specified, the validation method will ensure that the supplied order maker has a sufficient
+ *                               allowance/balance to fill this amount of the order's takerTokenAmount.
+ *
+ * `validateRemainingOrderAmountIsFillable`: The validation method ensures that the maker has sufficient allowance/balance to fill
+ *                                         the entire remaining order amount. If this option is set to false, the balances
+ *                                         and allowances are calculated to determine the order is fillable for a
+ *                                         non-zero amount (some value less than or equal to the order remaining amount).
+ *                                         We call such orders "partially fillable orders". Default is `true`.
+ *
+ * `simulationTakerAddress`: During the maker transfer simulation, tokens are sent from the maker to the `simulationTakerAddress`. This defaults
+ *                           to the `takerAddress` specified in the order. Some tokens prevent transfer to the NULL address so this address can be specified.
  */
 export interface ValidateOrderFillableOpts {
     expectedFillTakerTokenAmount?: BigNumber;
+    validateRemainingOrderAmountIsFillable?: boolean;
+    simulationTakerAddress?: string;
 }
 
 /**
@@ -177,13 +186,13 @@ export interface OrderInfo {
 }
 
 export enum OrderStatus {
-    INVALID = 0,
-    INVALID_MAKER_ASSET_AMOUNT,
-    INVALID_TAKER_ASSET_AMOUNT,
-    FILLABLE,
-    EXPIRED,
-    FULLY_FILLED,
-    CANCELLED,
+    Invalid = 0,
+    InvalidMakerAssetAmount,
+    InvalidTakerAssetAmount,
+    Fillable,
+    Expired,
+    FullyFilled,
+    Cancelled,
 }
 
 export interface TraderInfo {
@@ -205,4 +214,22 @@ export interface OrderAndTraderInfo {
 export interface BalanceAndAllowance {
     balance: BigNumber;
     allowance: BigNumber;
+}
+
+export enum DutchAuctionWrapperError {
+    AssetDataMismatch = 'ASSET_DATA_MISMATCH',
+}
+
+export interface DutchAuctionData {
+    assetData: AssetData;
+    beginTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
+}
+
+export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';
+
+export interface CoordinatorTransaction {
+    salt: BigNumber;
+    signerAddress: string;
+    data: string;
 }

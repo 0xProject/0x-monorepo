@@ -289,7 +289,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     title="Oh oh"
                     titleStyle={{ fontWeight: 100 }}
                     actions={errorDialogActions}
-                    open={!_.isUndefined(this.state.errorType)}
+                    open={this.state.errorType !== undefined}
                     onRequestClose={this._onErrorDialogToggle.bind(this, false)}
                 >
                     {this._renderErrorDialogBody()}
@@ -303,7 +303,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     currentTokenAddress={''}
                     onTokenChosen={this._onAssetTokenPicked.bind(this)}
                     tokenByAddress={this.props.tokenByAddress}
-                    tokenVisibility={this.state.isAddingToken ? TokenVisibility.UNTRACKED : TokenVisibility.TRACKED}
+                    tokenVisibility={this.state.isAddingToken ? TokenVisibility.Untracked : TokenVisibility.Tracked}
                 />
             </div>
         );
@@ -342,7 +342,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>
-                    {_.isUndefined(tokenLink) ? (
+                    {tokenLink === undefined ? (
                         this._renderTokenName(token)
                     ) : (
                         <a href={tokenLink} target="_blank" style={{ textDecoration: 'none' }}>
@@ -354,12 +354,11 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     {tokenState.isLoaded ? (
                         <span>
                             {this._renderAmount(tokenState.balance, token.decimals)} {token.symbol}
-                            {this.state.isZRXSpinnerVisible &&
-                                token.symbol === ZRX_TOKEN_SYMBOL && (
-                                    <span className="pl1">
-                                        <i className="zmdi zmdi-spinner zmdi-hc-spin" />
-                                    </span>
-                                )}
+                            {this.state.isZRXSpinnerVisible && token.symbol === ZRX_TOKEN_SYMBOL && (
+                                <span className="pl1">
+                                    <i className="zmdi zmdi-spinner zmdi-hc-spin" />
+                                </span>
+                            )}
                         </span>
                     ) : (
                         <i className="zmdi zmdi-spinner zmdi-hc-spin" />
@@ -440,7 +439,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _onSendFailed(): void {
         this.setState({
-            errorType: BalanceErrs.sendFailed,
+            errorType: BalanceErrs.SendFailed,
         });
     }
     private _renderAmount(amount: BigNumber, decimals: number): React.ReactNode {
@@ -461,7 +460,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _renderErrorDialogBody(): React.ReactNode {
         switch (this.state.errorType) {
-            case BalanceErrs.incorrectNetworkForFaucet:
+            case BalanceErrs.IncorrectNetworkForFaucet:
                 return (
                     <div>
                         Our faucet can only send test Ether to addresses on testnets. Please make sure you are connected
@@ -469,7 +468,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     </div>
                 );
 
-            case BalanceErrs.faucetRequestFailed:
+            case BalanceErrs.FaucetRequestFailed:
                 return (
                     <div>
                         An unexpected error occurred while trying to request test Ether from our faucet. Please refresh
@@ -477,13 +476,13 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                     </div>
                 );
 
-            case BalanceErrs.faucetQueueIsFull:
+            case BalanceErrs.FaucetQueueIsFull:
                 return <div>Our test Ether faucet queue is full. Please try requesting test Ether again later.</div>;
 
-            case BalanceErrs.mintingFailed:
+            case BalanceErrs.MintingFailed:
                 return <div>Minting your test tokens failed unexpectedly. Please refresh the page and try again.</div>;
 
-            case BalanceErrs.allowanceSettingFailed:
+            case BalanceErrs.AllowanceSettingFailed:
                 return (
                     <div>
                         An unexpected error occurred while trying to set your test token allowance. Please refresh the
@@ -522,7 +521,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             logUtils.log(`Unexpected error encountered: ${err}`);
             logUtils.log(err.stack);
             this.setState({
-                errorType: BalanceErrs.mintingFailed,
+                errorType: BalanceErrs.MintingFailed,
             });
             errorReporter.report(err);
             return false;
@@ -538,7 +537,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         // from, we must show user an error message
         if (!utils.isTestNetwork(this.props.blockchain.networkId)) {
             this.setState({
-                errorType: BalanceErrs.incorrectNetworkForFaucet,
+                errorType: BalanceErrs.IncorrectNetworkForFaucet,
             });
             return false;
         }
@@ -554,8 +553,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             logUtils.log(`Unexpected status code: ${response.status} -> ${responseBody}`);
             const errorType =
                 response.status === constants.UNAVAILABLE_STATUS
-                    ? BalanceErrs.faucetQueueIsFull
-                    : BalanceErrs.faucetRequestFailed;
+                    ? BalanceErrs.FaucetQueueIsFull
+                    : BalanceErrs.FaucetRequestFailed;
             this.setState({
                 errorType,
             });

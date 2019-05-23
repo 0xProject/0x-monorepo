@@ -3,12 +3,12 @@
 This is an example project that demonstrates how the many Ethereum dev tools developed by 0x can be used in any Solidity/TS project.
 It supports:
 
-*   Compiling & testing smart contracts
-*   Generating typed contract wrappers
-*   Solidity coverage
-*   Solidity gas profiling
-*   Running tests against Ganache
-*   Running tests against our fork of Geth (it supports snapshotting & time travel)
+-   Compiling & testing smart contracts
+-   Generating typed contract wrappers
+-   Solidity coverage
+-   Solidity gas profiling
+-   Running tests against Ganache
+-   Running tests against our fork of Geth (it supports snapshotting & time travel)
 
 ## Contributing
 

@@ -4,7 +4,22 @@
         "outDir": "lib",
         "rootDir": ".",
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "resolveJsonModule": true
     },
-    "include": ["./src/**/*", "./test/**/*", "./migrations/**/*"]
+    "include": ["./src/**/*", "./test/**/*", "./migrations/**/*"],
+    "files": [
+        "./test/fixtures/copper/api_v1_activity_types.json",
+        "./test/fixtures/copper/api_v1_custom_field_definitions.json",
+        "./test/fixtures/copper/api_v1_list_activities.json",
+        "./test/fixtures/copper/api_v1_list_leads.json",
+        "./test/fixtures/copper/api_v1_list_opportunities.json",
+        "./test/fixtures/etherscan/api_v1_accounts_transactions.json",
+        "./test/fixtures/github/api_v3_compare.json",
+        "./test/fixtures/github/api_v3_forks.json",
+        "./test/fixtures/github/api_v3_issues.json",
+        "./test/fixtures/github/api_v3_pulls.json",
+        "./test/fixtures/github/api_v3_repo.json",
+        "./test/fixtures/greenhouse/api_v1_applications.json"
+    ]
 }

@@ -19,7 +19,7 @@ export const dispenseAssetTasks = {
             logUtils.log(`Processing ETH ${recipientAddress}`);
             const userBalance = await web3Wrapper.getBalanceInWeiAsync(recipientAddress);
             const maxAmountInWei = Web3Wrapper.toWei(new BigNumber(DISPENSE_MAX_AMOUNT_ETHER));
-            if (userBalance.greaterThanOrEqualTo(maxAmountInWei)) {
+            if (userBalance.isGreaterThanOrEqualTo(maxAmountInWei)) {
                 logUtils.log(
                     `User exceeded ETH balance maximum (${maxAmountInWei}) ${recipientAddress} ${userBalance} `,
                 );
@@ -43,7 +43,7 @@ export const dispenseAssetTasks = {
             logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);
             const tokenIfExists = _.get(TOKENS_BY_NETWORK, [networkId, tokenSymbol]);
-            if (_.isUndefined(tokenIfExists)) {
+            if (tokenIfExists === undefined) {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
             const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);
@@ -55,7 +55,7 @@ export const dispenseAssetTasks = {
                 new BigNumber(DISPENSE_MAX_AMOUNT_TOKEN),
                 tokenIfExists.decimals,
             );
-            if (userBalanceBaseUnits.greaterThanOrEqualTo(maxAmountBaseUnits)) {
+            if (userBalanceBaseUnits.isGreaterThanOrEqualTo(maxAmountBaseUnits)) {
                 logUtils.log(
                     `User exceeded token balance maximum (${maxAmountBaseUnits}) ${recipientAddress} ${userBalanceBaseUnits} `,
                 );

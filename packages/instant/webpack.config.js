@@ -89,11 +89,17 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
         });
     }
 
+    const infuraProjectId =
+        dischargeTarget === 'production'
+            ? process.env.INSTANT_INFURA_PROJECT_ID_PRODUCTION
+            : process.env.INSTANT_INFURA_PROJECT_ID_DEVELOPMENT;
+
     const envVars = {
         GIT_SHA: JSON.stringify(GIT_SHA),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
         ROLLBAR_ENABLED: rollbarEnabled,
-        HEAP_ENABLED: heapEnabled
+        HEAP_ENABLED: heapEnabled,
+        INSTANT_INFURA_PROJECT_ID: JSON.stringify(infuraProjectId),
     };
     if (dischargeTarget) {
         envVars.INSTANT_DISCHARGE_TARGET = JSON.stringify(dischargeTarget);
@@ -141,12 +147,33 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
                 },
                 {
                     test: /\.js$/,
-                    loader: 'source-map-loader',
-                    exclude: [
-                        // instead of /\/node_modules\//
-                        path.join(process.cwd(), 'node_modules'),
-                        path.join(process.cwd(), '../..', 'node_modules'),
+                    use: [
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                plugins: ['transform-runtime'],
+                                presets: [
+                                    [
+                                        'env',
+                                        {
+                                            targets: {
+                                                chrome: 41,
+                                            },
+                                        },
+                                    ],
+                                ],
+                            },
+                        },
+                        {
+                            loader: 'source-map-loader',
+                        },
                     ],
+                    exclude: function(modulePath) {
+                        return (
+                            /node_modules/.test(modulePath) &&
+                            /node_modules\/(core-js|lodash|react|websocket)/.test(modulePath)
+                        );
+                    },
                 },
             ],
         },

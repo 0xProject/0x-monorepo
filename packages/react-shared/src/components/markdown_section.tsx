@@ -46,9 +46,10 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
 
         const id = utils.getIdFromName(sectionName);
         const formattedSectionName = utils.convertCamelCaseToSpaces(sectionName);
-        const title = !_.isUndefined(this.props.alternativeSectionTitle)
-            ? this.props.alternativeSectionTitle
-            : _.capitalize(formattedSectionName);
+        const title =
+            this.props.alternativeSectionTitle !== undefined
+                ? this.props.alternativeSectionTitle
+                : _.capitalize(formattedSectionName);
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"
@@ -68,7 +69,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                             </span>
                         </div>
                         <div className="col col-4 sm-hide xs-hide right-align pr3" style={{ height: 28 }}>
-                            {!_.isUndefined(githubLink) && (
+                            {githubLink !== undefined && (
                                 <div style={{ lineHeight: 2.1 }}>
                                     <Link to={githubLink} shouldOpenInNewTab={true} fontColor={colors.linkBlue}>
                                         Edit on Github

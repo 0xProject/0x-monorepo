@@ -24,7 +24,7 @@ export const SidebarHeader: React.StatelessComponent<SidebarHeaderProps> = ({
     return (
         <Container>
             <Container className="flex justify-bottom">
-                <Container className="left pl1" width="150px">
+                <Container className="col col-8 pl1">
                     <Text
                         fontColor={colors.lightLinkBlue}
                         fontSize={screenWidth === ScreenWidths.Sm ? '20px' : '22px'}
@@ -34,17 +34,17 @@ export const SidebarHeader: React.StatelessComponent<SidebarHeaderProps> = ({
                         {title}
                     </Text>
                 </Container>
-                {!_.isUndefined(docsVersion) &&
-                    !_.isUndefined(availableDocVersions) &&
-                    !_.isUndefined(onVersionSelected) && (
-                        <div className="right" style={{ alignSelf: 'flex-end', paddingBottom: 4 }}>
+                {docsVersion !== undefined && availableDocVersions !== undefined && onVersionSelected !== undefined && (
+                    <div className="col col-4 pl1" style={{ alignSelf: 'flex-end', paddingBottom: 4 }}>
+                        <Container className="right">
                             <VersionDropDown
                                 selectedVersion={docsVersion}
                                 versions={availableDocVersions}
                                 onVersionSelected={onVersionSelected}
                             />
-                        </div>
-                    )}
+                        </Container>
+                    </div>
+                )}
             </Container>
             <Container
                 width={'100%'}

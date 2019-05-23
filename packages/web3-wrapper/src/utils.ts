@@ -2,17 +2,13 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 export const utils = {
-    isBigNumber(value: any): boolean {
-        const isBigNumber = _.isObject(value) && value.isBigNumber;
-        return isBigNumber;
-    },
     convertHexToNumber(value: string): number {
         const valueBigNumber = new BigNumber(value);
         const valueNumber = valueBigNumber.toNumber();
         return valueNumber;
     },
     convertHexToNumberOrNull(hex: string | null): number | null {
-        if (_.isNull(hex)) {
+        if (hex === null) {
             return null;
         }
         const decimal = utils.convertHexToNumber(hex);
@@ -20,7 +16,7 @@ export const utils = {
     },
     convertAmountToBigNumber(value: string | number | BigNumber): BigNumber {
         const num = value || 0;
-        const isBigNumber = utils.isBigNumber(num);
+        const isBigNumber = BigNumber.isBigNumber(num);
         if (isBigNumber) {
             return num as BigNumber;
         }
@@ -37,7 +33,7 @@ export const utils = {
         const hexBase = 16;
         const valueHex = valueBigNumber.toString(hexBase);
 
-        return valueBigNumber.lessThan(0) ? `-0x${valueHex.substr(1)}` : `0x${valueHex}`;
+        return valueBigNumber.isLessThan(0) ? `-0x${valueHex.substr(1)}` : `0x${valueHex}`;
     },
     numberToHex(value: number): string {
         if (!isFinite(value) && !utils.isHexStrict(value)) {

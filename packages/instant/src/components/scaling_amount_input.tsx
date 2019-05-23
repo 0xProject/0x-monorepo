@@ -26,7 +26,7 @@ interface ScalingAmountInputState {
 }
 
 const { stringToMaybeBigNumber, areMaybeBigNumbersEqual } = maybeBigNumberUtil;
-export class ScalingAmountInput extends React.Component<ScalingAmountInputProps, ScalingAmountInputState> {
+export class ScalingAmountInput extends React.PureComponent<ScalingAmountInputProps, ScalingAmountInputState> {
     public static defaultProps = {
         onAmountChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
@@ -36,7 +36,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
     public constructor(props: ScalingAmountInputProps) {
         super(props);
         this.state = {
-            stringValue: _.isUndefined(props.value) ? '' : props.value.toString(),
+            stringValue: props.value === undefined ? '' : props.value.toString(),
         };
     }
     public componentDidUpdate(): void {
@@ -49,7 +49,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
             // we dont expect to ever get into this state, but let's make sure
             // we reset if we do since we're dealing with important numbers
             this.setState({
-                stringValue: _.isUndefined(currentValue) ? '' : currentValue.toString(),
+                stringValue: currentValue === undefined ? '' : currentValue.toString(),
             });
         }
     }
@@ -58,6 +58,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
         const { textLengthThreshold, fontColor, maxFontSizePx, onFontSizeChange } = this.props;
         return (
             <ScalingInput
+                type="number"
                 maxFontSizePx={maxFontSizePx}
                 textLengthThreshold={textLengthThreshold}
                 onFontSizeChange={onFontSizeChange}

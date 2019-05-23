@@ -1,0 +1,34 @@
+{
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
+    "useDockerisedSolc": false,
+    "isOfflineMode": false,
+    "compilerSettings": {
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    },
+    "contracts": [
+        "@0x/contracts-erc20/contracts/src/WETH9.sol",
+        "@0x/contracts-exchange/contracts/examples/ExchangeWrapper.sol",
+        "@0x/contracts-exchange/contracts/src/Exchange.sol",
+        "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",
+        "src/DutchAuction/DutchAuction.sol",
+        "src/OrderMatcher/OrderMatcher.sol",
+        "src/OrderValidator/OrderValidator.sol"
+    ]
+}

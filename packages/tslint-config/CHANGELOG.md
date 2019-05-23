@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v2.0.2 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v2.0.1 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v2.0.0 - _December 13, 2018_
+
+    * Improve async-suffix rule to check functions too, not just methods (#1425)
+
 ## v1.0.10 - _November 9, 2018_
 
     * Dependencies updated

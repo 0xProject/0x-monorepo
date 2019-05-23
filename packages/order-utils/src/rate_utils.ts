@@ -22,7 +22,7 @@ export const rateUtils = {
             feeRate.gte(constants.ZERO_AMOUNT),
             `Expected feeRate: ${feeRate} to be greater than or equal to 0`,
         );
-        const takerAssetAmountNeededToPayForFees = order.takerFee.mul(feeRate);
+        const takerAssetAmountNeededToPayForFees = order.takerFee.multipliedBy(feeRate);
         const totalTakerAssetAmount = takerAssetAmountNeededToPayForFees.plus(order.takerAssetAmount);
         const rate = totalTakerAssetAmount.div(order.makerAssetAmount);
         return rate;
@@ -35,9 +35,9 @@ export const rateUtils = {
      */
     getFeeAdjustedRateOfFeeOrder(feeOrder: Order): BigNumber {
         assert.doesConformToSchema('feeOrder', feeOrder, schemas.orderSchema);
-        const zrxAmountAfterFees = feeOrder.makerAssetAmount.sub(feeOrder.takerFee);
+        const zrxAmountAfterFees = feeOrder.makerAssetAmount.minus(feeOrder.takerFee);
         assert.assert(
-            zrxAmountAfterFees.greaterThan(constants.ZERO_AMOUNT),
+            zrxAmountAfterFees.isGreaterThan(constants.ZERO_AMOUNT),
             `Expected takerFee: ${JSON.stringify(feeOrder.takerFee)} to be less than makerAssetAmount: ${JSON.stringify(
                 feeOrder.makerAssetAmount,
             )}`,

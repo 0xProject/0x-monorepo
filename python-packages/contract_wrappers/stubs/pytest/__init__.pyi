@@ -1,0 +1,9 @@
+from typing import Callable
+
+def fixture(scope: str) -> Callable:
+    ...
+
+class ExceptionInfo:
+    ...
+
+def raises(exception: Exception) -> ExceptionInfo: ...

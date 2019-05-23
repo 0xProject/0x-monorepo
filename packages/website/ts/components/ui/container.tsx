@@ -28,6 +28,7 @@ export interface ContainerProps {
     borderBottomRightRadius?: StringOrNum;
     borderBottom?: StringOrNum;
     borderColor?: string;
+    children?: React.ReactNode;
     maxWidth?: StringOrNum;
     maxHeight?: StringOrNum;
     width?: StringOrNum;

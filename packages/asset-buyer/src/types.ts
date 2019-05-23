@@ -75,6 +75,13 @@ export interface BuyQuoteRequestOpts {
     slippagePercentage: number;
 }
 
+/*
+ * Options for checking liquidity
+ *
+ * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
+ */
+export type LiquidityRequestOpts = Pick<BuyQuoteRequestOpts, 'shouldForceOrderRefresh'>;
+
 /**
  * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
@@ -102,7 +109,7 @@ export interface AssetBuyerOpts {
 }
 
 /**
- * Possible errors thrown by an AssetBuyer instance or associated static methods.
+ * Possible error messages thrown by an AssetBuyer instance or associated static methods.
  */
 export enum AssetBuyerError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
@@ -117,7 +124,19 @@ export enum AssetBuyerError {
     TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
+/**
+ * orders: An array of signed orders
+ * remainingFillableMakerAssetAmounts: A list of fillable amounts for the signed orders. The index of an item in the array associates the amount with the corresponding order.
+ */
 export interface OrdersAndFillableAmounts {
     orders: SignedOrder[];
     remainingFillableMakerAssetAmounts: BigNumber[];
+}
+
+/**
+ * Represents available liquidity for a given assetData
+ */
+export interface LiquidityForAssetData {
+    tokensAvailableInBaseUnits: BigNumber;
+    ethValueAvailableInWei: BigNumber;
 }

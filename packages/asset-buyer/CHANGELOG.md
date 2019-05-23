@@ -5,6 +5,95 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.4 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v6.1.3 - _May 14, 2019_
+
+    * Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder (#1810)
+
+## v6.1.1 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v6.1.0 - _April 11, 2019_
+
+    * Moved order_utils into `@0x/order-utils` package as `orderCalculationUtils` (#1714)
+
+## v6.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v6.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v6.0.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v6.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v6.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v6.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
+## v5.0.4 - _February 9, 2019_
+
+    * Dependencies updated
+
+## v5.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v5.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v5.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v5.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v4.1.0 - _Invalid date_
+
+    * Adds new public method getLiquidityForAssetDataAsync, and exposes getOrdersAndFillableAmountsAsync as public method (#1512)
+
+## v4.0.2 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _January 11, 2019_
+
+    * Raise custom InsufficientAssetLiquidityError error with amountAvailableToFill attribute (#1437)
+
+## v3.0.5 - _January 9, 2019_
+
+    * Dependencies updated
+
+## v3.0.4 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v3.0.3 - _December 11, 2018_
+
+    * Update SRA order provider to include Dai
+
 ## v3.0.2 - _November 28, 2018_
 
     * Dependencies updated

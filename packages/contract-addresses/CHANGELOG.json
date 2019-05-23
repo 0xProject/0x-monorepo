@@ -1,5 +1,76 @@
 [
     {
+        "version": "2.3.3",
+        "changes": [
+            {
+                "note": "Redeploy Coordinator contract",
+                "pr": 1812
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "version": "2.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Add addresses for coordinator extension contract and coordinator registry",
+                "pr": 1689
+            },
+            {
+                "note": "Added Dutch Auction mainnet address",
+                "pr": 1715
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Fixed Ganache addresses for OrderValidator & Forwarder"
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549373905,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added migration for `MultiAssetProxy` contract",
+                "pr": 1503
+            }
+        ],
+        "timestamp": 1547561734
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added testnet entries for Dutch Auction contract (kovan,rinkeby,ropsten)",
+                "pr": 1465
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {

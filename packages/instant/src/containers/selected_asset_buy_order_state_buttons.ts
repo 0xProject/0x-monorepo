@@ -95,6 +95,9 @@ const mapDispatchToProps = (
         if (error === ZeroExInstantError.InsufficientETH) {
             const errorMessage = "You don't have enough ETH";
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
+        } else if (error === ZeroExInstantError.CouldNotSubmitTransaction) {
+            const errorMessage = 'Could not submit transaction';
+            errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
         } else {
             errorFlasher.flashNewErrorMessage(dispatch);
         }

@@ -1,228 +1,171 @@
-import { ALink, colors, Link } from '@0x/react-shared';
-import { ObjectMap } from '@0x/types';
+import { Link as SmartLink } from '@0x/react-shared';
 import * as _ from 'lodash';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
+import MediaQuery from 'react-responsive';
+import styled from 'styled-components';
 
-import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, Language, WebsitePaths } from 'ts/types';
+import { Logo } from 'ts/components/logo';
+import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
+import { NewsletterForm } from 'ts/components/newsletter_form';
+import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
-import { Translate } from 'ts/utils/translate';
 
-const ICON_DIMENSION = 16;
-
-const languageToMenuTitle = {
-    [Language.English]: 'English',
-    [Language.Russian]: 'Русский',
-    [Language.Spanish]: 'Español',
-    [Language.Korean]: '한국어',
-    [Language.Chinese]: '中文',
-};
-
-export interface FooterProps {
-    translate: Translate;
-    dispatcher: Dispatcher;
-    backgroundColor?: string;
+interface LinkInterface {
+    text: string;
+    url: string;
+    shouldOpenInNewTab?: boolean;
 }
 
-interface FooterState {
-    selectedLanguage: Language;
+interface LinkRows {
+    heading: string;
+    isOnMobile?: boolean;
+    links: LinkInterface[];
 }
 
-export class Footer extends React.Component<FooterProps, FooterState> {
-    public static defaultProps = {
-        backgroundColor: colors.darkerGrey,
-    };
-    constructor(props: FooterProps) {
-        super(props);
-        this.state = {
-            selectedLanguage: props.translate.getLanguage(),
-        };
-    }
-    public render(): React.ReactNode {
-        const sectionNameToLinks: ObjectMap<ALink[]> = {
-            [Key.Documentation]: [
-                {
-                    title: 'Developer Home',
-                    to: WebsitePaths.Docs,
-                },
-                {
-                    title: '0x.js',
-                    to: WebsitePaths.ZeroExJs,
-                },
-                {
-                    title: this.props.translate.get(Key.SmartContracts, Deco.Cap),
-                    to: WebsitePaths.SmartContracts,
-                },
-                {
-                    title: this.props.translate.get(Key.Connect, Deco.Cap),
-                    to: WebsitePaths.Connect,
-                },
-                {
-                    title: this.props.translate.get(Key.Whitepaper, Deco.Cap),
-                    to: WebsitePaths.Whitepaper,
-                    shouldOpenInNewTab: true,
-                },
-                {
-                    title: this.props.translate.get(Key.Wiki, Deco.Cap),
-                    to: WebsitePaths.Wiki,
-                },
-            ],
-            [Key.Community]: [
-                {
-                    title: this.props.translate.get(Key.Discord, Deco.Cap),
-                    to: constants.URL_ZEROEX_CHAT,
-                    shouldOpenInNewTab: true,
-                },
-                {
-                    title: this.props.translate.get(Key.Blog, Deco.Cap),
-                    to: constants.URL_BLOG,
-                    shouldOpenInNewTab: true,
-                },
-                {
-                    title: 'Twitter',
-                    to: constants.URL_TWITTER,
-                    shouldOpenInNewTab: true,
-                },
-                {
-                    title: 'Reddit',
-                    to: constants.URL_REDDIT,
-                    shouldOpenInNewTab: true,
-                },
-                {
-                    title: this.props.translate.get(Key.Forum, Deco.Cap),
-                    to: constants.URL_DISCOURSE_FORUM,
-                    shouldOpenInNewTab: true,
-                },
-            ],
-            [Key.Organization]: [
-                {
-                    title: this.props.translate.get(Key.About, Deco.Cap),
-                    to: WebsitePaths.About,
-                },
-                {
-                    title: this.props.translate.get(Key.Careers, Deco.Cap),
-                    to: WebsitePaths.Careers,
-                },
-                {
-                    title: this.props.translate.get(Key.Contact, Deco.Cap),
-                    to: 'mailto:team@0xproject.com',
-                    shouldOpenInNewTab: true,
-                },
-            ],
-        };
-        const languageMenuItems = _.map(languageToMenuTitle, (menuTitle: string, language: Language) => {
-            return <MenuItem key={menuTitle} value={language} primaryText={menuTitle} />;
-        });
-        return (
-            <div className="relative pb4 pt2" style={{ backgroundColor: this.props.backgroundColor }}>
-                <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{ color: colors.white }}>
-                    <div className="col lg-col-4 md-col-4 col-12 left">
-                        <div className="sm-mx-auto" style={{ width: 148 }}>
-                            <div>
-                                <img src="/images/protocol_logo_white.png" height="30" />
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: 11,
-                                    color: colors.grey,
-                                    paddingLeft: 37,
-                                    paddingTop: 2,
-                                }}
-                            >
-                                © ZeroEx, Intl.
-                            </div>
-                            <div className="pt4 center">
-                                <DropDownMenu
-                                    labelStyle={{ color: colors.white }}
-                                    value={this.state.selectedLanguage}
-                                    onChange={this._updateLanguage.bind(this)}
-                                >
-                                    {languageMenuItems}
-                                </DropDownMenu>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col lg-col-8 md-col-8 col-12 lg-pl4 md-pl4">
-                        <div className="col lg-col-4 md-col-4 col-12">
-                            <div className="lg-right md-right sm-center">
-                                {this._renderHeader(Key.Documentation)}
-                                {_.map(sectionNameToLinks[Key.Documentation], this._renderMenuItem.bind(this))}
-                            </div>
-                        </div>
-                        <div className="col lg-col-4 md-col-4 col-12 lg-pr2 md-pr2">
-                            <div className="lg-right md-right sm-center">
-                                {this._renderHeader(Key.Community)}
-                                {_.map(sectionNameToLinks[Key.Community], this._renderMenuItem.bind(this))}
-                            </div>
-                        </div>
-                        <div className="col lg-col-4 md-col-4 col-12">
-                            <div className="lg-right md-right sm-center">
-                                {this._renderHeader(Key.Organization)}
-                                {_.map(sectionNameToLinks[Key.Organization], this._renderMenuItem.bind(this))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-    private _renderIcon(fileName: string): React.ReactNode {
-        return (
-            <div style={{ height: ICON_DIMENSION, width: ICON_DIMENSION }}>
-                <img src={`/images/social/${fileName}`} style={{ width: ICON_DIMENSION }} />
-            </div>
-        );
-    }
-    private _renderMenuItem(link: ALink): React.ReactNode {
-        const titleToIcon: { [title: string]: string } = {
-            [this.props.translate.get(Key.Discord, Deco.Cap)]: 'rocketchat.png',
-            [this.props.translate.get(Key.Blog, Deco.Cap)]: 'medium.png',
-            Twitter: 'twitter.png',
-            Reddit: 'reddit.png',
-            [this.props.translate.get(Key.Forum, Deco.Cap)]: 'discourse.png',
-        };
-        const iconIfExists = titleToIcon[link.title];
-        return (
-            <div key={link.title} className="sm-center" style={{ fontSize: 13, paddingTop: 25 }}>
-                <Link
-                    to={link.to}
-                    shouldOpenInNewTab={link.shouldOpenInNewTab}
-                    fontColor={colors.white}
-                    className="text-decoration-none"
-                >
-                    <div>
-                        {!_.isUndefined(iconIfExists) ? (
-                            <div className="inline-block">
-                                <div className="pr1 table-cell">{this._renderIcon(iconIfExists)}</div>
-                                <div className="table-cell">{link.title}</div>
-                            </div>
-                        ) : (
-                            link.title
-                        )}
-                    </div>
+interface LinkListProps {
+    links: LinkInterface[];
+}
+
+const linkRows: LinkRows[] = [
+    {
+        heading: 'Products',
+        isOnMobile: true,
+        links: [
+            { url: WebsitePaths.Instant, text: '0x Instant' },
+            { url: WebsitePaths.LaunchKit, text: '0x Launch Kit' },
+            { url: WebsitePaths.Extensions, text: 'Extensions' },
+            { url: WebsitePaths.Vote, text: 'Governance' },
+        ],
+    },
+    {
+        heading: 'Developers',
+        links: [
+            { url: WebsitePaths.Docs, text: 'Documentation' },
+            { url: constants.URL_GITHUB_ORG, text: 'GitHub', shouldOpenInNewTab: true },
+            { url: constants.URL_PROTOCOL_SPECIFICATION, text: 'Protocol Spec', shouldOpenInNewTab: true },
+        ],
+    },
+    {
+        heading: 'About',
+        isOnMobile: true,
+        links: [
+            { url: WebsitePaths.AboutMission, text: 'Mission' },
+            { url: WebsitePaths.AboutTeam, text: 'Team' },
+            { url: WebsitePaths.AboutJobs, text: 'Jobs' },
+            { url: WebsitePaths.AboutPress, text: 'Press' },
+            { url: WebsitePaths.Ecosystem, text: 'Grant Program' },
+        ],
+    },
+    {
+        heading: 'Community',
+        isOnMobile: true,
+        links: [
+            { url: constants.URL_TWITTER, text: 'Twitter', shouldOpenInNewTab: true },
+            { url: constants.URL_ZEROEX_CHAT, text: 'Discord Chat', shouldOpenInNewTab: true },
+            { url: constants.URL_FACEBOOK, text: 'Facebook', shouldOpenInNewTab: true },
+            { url: constants.URL_REDDIT, text: 'Reddit', shouldOpenInNewTab: true },
+            { url: constants.URL_FORUM, text: 'Forum', shouldOpenInNewTab: true },
+        ],
+    },
+];
+
+export const Footer: React.StatelessComponent = () => (
+    <FooterWrap>
+        <FlexWrap>
+            <FooterColumn width="35%">
+                <Logo />
+                <NewsletterForm />
+            </FooterColumn>
+
+            <FooterColumn width="55%">
+                <WrapGrid isCentered={false} isWrapped={true}>
+                    {_.map(linkRows, (row: LinkRows, index) => (
+                        <MediaQuery minWidth={row.isOnMobile ? 0 : 768} key={`fc-${index}`}>
+                            <FooterSectionWrap>
+                                <RowHeading>{row.heading}</RowHeading>
+
+                                <LinkList links={row.links} />
+                            </FooterSectionWrap>
+                        </MediaQuery>
+                    ))}
+                </WrapGrid>
+            </FooterColumn>
+        </FlexWrap>
+    </FooterWrap>
+);
+
+const LinkList = (props: LinkListProps) => (
+    <List>
+        {_.map(props.links, (link, index) => (
+            <li key={`fl-${index}`}>
+                <Link to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+                    {link.text}
                 </Link>
-            </div>
-        );
+            </li>
+        ))}
+    </List>
+);
+
+const FooterWrap = styled.footer`
+    padding: 40px 30px 30px 30px;
+    margin-top: 30px;
+    background-color: ${props => props.theme.footerBg};
+    color: ${props => props.theme.footerColor};
+
+    path {
+        fill: ${props => props.theme.footerColor};
     }
-    private _renderHeader(key: Key): React.ReactNode {
-        const headerStyle = {
-            color: colors.grey400,
-            letterSpacing: 2,
-            fontFamily: 'Roboto Mono',
-            fontSize: 13,
-        };
-        return (
-            <div className="lg-pb2 md-pb2 sm-pt4" style={headerStyle}>
-                {this.props.translate.get(key, Deco.Upper)}
-            </div>
-        );
+
+    @media (min-width: 768px) {
+        height: 350px;
     }
-    private _updateLanguage(_event: any, _index: number, value: Language): void {
-        this.setState({
-            selectedLanguage: value,
-        });
-        this.props.dispatcher.updateSelectedLanguage(value);
+`;
+
+const FooterColumn = styled(Column)`
+    @media (min-width: 768px) {
+        width: ${props => props.width};
     }
-}
+
+    @media (max-width: 768px) {
+        text-align: left;
+    }
+`;
+
+const FooterSectionWrap = styled(FooterColumn)`
+    @media (max-width: 768px) {
+        width: 50%;
+
+        & + & {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+    }
+`;
+
+const RowHeading = styled.h3`
+    color: inherit;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 1.25em;
+    opacity: 0.75;
+`;
+
+const List = styled.ul`
+    li + li {
+        margin-top: 8px;
+    }
+`;
+
+const Link = styled(SmartLink)`
+    color: inherit;
+    opacity: 0.5;
+    display: block;
+    font-size: 16px;
+    line-height: 20px;
+    transition: opacity 0.25s;
+    text-decoration: none;
+
+    &:hover {
+        opacity: 0.8;
+    }
+`;

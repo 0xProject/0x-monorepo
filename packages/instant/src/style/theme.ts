@@ -11,7 +11,7 @@ const {
 } = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
-
+// tslint:disable:enum-naming
 export enum ColorOption {
     primaryColor = 'primaryColor',
     black = 'black',

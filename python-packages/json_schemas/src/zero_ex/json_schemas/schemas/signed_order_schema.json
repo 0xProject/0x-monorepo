@@ -1,0 +1,12 @@
+{
+    "id": "/signedOrderSchema",
+    "allOf": [
+        { "$ref": "/orderSchema" },
+        {
+            "properties": {
+                "signature": { "$ref": "/hexSchema" }
+            },
+            "required": ["signature"]
+        }
+    ]
+}

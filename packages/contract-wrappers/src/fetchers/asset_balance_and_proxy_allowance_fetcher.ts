@@ -1,8 +1,7 @@
-// tslint:disable:no-unnecessary-type-assertion
 import { AbstractBalanceAndProxyAllowanceFetcher, assetDataUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import { ERC20TokenWrapper } from '../contract_wrappers/erc20_token_wrapper';
 import { ERC721TokenWrapper } from '../contract_wrappers/erc721_token_wrapper';
@@ -18,42 +17,45 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
     }
     public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-        if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
-            const decodedERC20AssetData = decodedAssetData as ERC20AssetData;
-            const balance = await this._erc20Token.getBalanceAsync(decodedERC20AssetData.tokenAddress, userAddress, {
+        let balance: BigNumber | undefined;
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            balance = await this._erc20Token.getBalanceAsync(decodedAssetData.tokenAddress, userAddress, {
                 defaultBlock: this._stateLayer,
             });
-            return balance;
-        } else {
-            const decodedERC721AssetData = decodedAssetData as ERC721AssetData;
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
             const tokenOwner = await this._erc721Token.getOwnerOfAsync(
-                decodedERC721AssetData.tokenAddress,
-                decodedERC721AssetData.tokenId,
+                decodedAssetData.tokenAddress,
+                decodedAssetData.tokenId,
                 {
                     defaultBlock: this._stateLayer,
                 },
             );
-            const balance = tokenOwner === userAddress ? new BigNumber(1) : new BigNumber(0);
-            return balance;
+            balance = tokenOwner === userAddress ? new BigNumber(1) : new BigNumber(0);
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            // The `balance` for MultiAssetData is the total units of the entire `assetData` that are held by the `userAddress`.
+            for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
+                const nestedAmountElement = decodedAssetData.amounts[index];
+                const nestedAssetBalance = (await this.getBalanceAsync(
+                    nestedAssetDataElement,
+                    userAddress,
+                )).dividedToIntegerBy(nestedAmountElement);
+                if (balance === undefined || nestedAssetBalance.isLessThan(balance)) {
+                    balance = nestedAssetBalance;
+                }
+            }
         }
+        return balance as BigNumber;
     }
     public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-        if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
-            const decodedERC20AssetData = decodedAssetData as ERC20AssetData;
-            const proxyAllowance = await this._erc20Token.getProxyAllowanceAsync(
-                decodedERC20AssetData.tokenAddress,
-                userAddress,
-                {
-                    defaultBlock: this._stateLayer,
-                },
-            );
-            return proxyAllowance;
-        } else {
-            const decodedERC721AssetData = decodedAssetData as ERC721AssetData;
-
+        let proxyAllowance: BigNumber | undefined;
+        if (assetDataUtils.isERC20AssetData(decodedAssetData)) {
+            proxyAllowance = await this._erc20Token.getProxyAllowanceAsync(decodedAssetData.tokenAddress, userAddress, {
+                defaultBlock: this._stateLayer,
+            });
+        } else if (assetDataUtils.isERC721AssetData(decodedAssetData)) {
             const isApprovedForAll = await this._erc721Token.isProxyApprovedForAllAsync(
-                decodedERC721AssetData.tokenAddress,
+                decodedAssetData.tokenAddress,
                 userAddress,
                 {
                     defaultBlock: this._stateLayer,
@@ -63,15 +65,27 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
                 return new BigNumber(this._erc20Token.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             } else {
                 const isApproved = await this._erc721Token.isProxyApprovedAsync(
-                    decodedERC721AssetData.tokenAddress,
-                    decodedERC721AssetData.tokenId,
+                    decodedAssetData.tokenAddress,
+                    decodedAssetData.tokenId,
                     {
                         defaultBlock: this._stateLayer,
                     },
                 );
-                const proxyAllowance = isApproved ? new BigNumber(1) : new BigNumber(0);
-                return proxyAllowance;
+                proxyAllowance = isApproved ? new BigNumber(1) : new BigNumber(0);
+            }
+        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
+            // The `proxyAllowance` for MultiAssetData is the total units of the entire `assetData` that the proxies have been approved to spend by the `userAddress`.
+            for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
+                const nestedAmountElement = decodedAssetData.amounts[index];
+                const nestedAssetAllowance = (await this.getProxyAllowanceAsync(
+                    nestedAssetDataElement,
+                    userAddress,
+                )).dividedToIntegerBy(nestedAmountElement);
+                if (proxyAllowance === undefined || nestedAssetAllowance.isLessThan(proxyAllowance)) {
+                    proxyAllowance = nestedAssetAllowance;
+                }
             }
         }
+        return proxyAllowance as BigNumber;
     }
 }

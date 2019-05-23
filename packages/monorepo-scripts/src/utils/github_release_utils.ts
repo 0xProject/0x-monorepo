@@ -12,7 +12,10 @@ import { utils } from './utils';
 
 const publishReleaseAsync = promisify(publishRelease);
 // tslint:disable-next-line:completed-docs
-export async function publishReleaseNotesAsync(packagesToPublish: Package[], isDryRun: boolean): Promise<void> {
+export async function publishReleaseNotesAsync(
+    packagesToPublish: Package[],
+    isDryRun: boolean,
+): Promise<string | undefined> {
     // Git push a tag representing this publish (publish-{commit-hash}) (truncate hash)
     const result = await execAsync('git log -n 1 --pretty=format:"%H"', { cwd: constants.monorepoRootPath });
     const latestGitCommit = result.stdout;
@@ -44,7 +47,7 @@ export async function publishReleaseNotesAsync(packagesToPublish: Package[], isD
         aggregateNotes += getReleaseNotesForPackage(pkg.location, pkg.packageJson.name);
 
         const packageAssets = _.get(pkg.packageJson, 'config.postpublish.assets');
-        if (!_.isUndefined(packageAssets)) {
+        if (packageAssets !== undefined) {
             assets = [...assets, ...packageAssets];
         }
     });
@@ -75,6 +78,8 @@ export async function publishReleaseNotesAsync(packagesToPublish: Package[], isD
 
     utils.log('Publishing release notes ', releaseName, '...');
     await publishReleaseAsync(publishReleaseConfigs);
+
+    return aggregateNotes;
 }
 
 // Asset paths should described from the monorepo root. This method prefixes

@@ -13,13 +13,10 @@ export class RelativeFSResolver extends Resolver {
     }
     // tslint:disable-next-line:prefer-function-over-method
     public resolveIfExists(importPath: string): ContractSource | undefined {
-        const filePath = path.join(this._contractsDir, importPath);
+        const filePath = path.resolve(path.join(this._contractsDir, importPath));
         if (fs.existsSync(filePath) && !fs.lstatSync(filePath).isDirectory()) {
             const fileContent = fs.readFileSync(filePath).toString();
-            return {
-                source: fileContent,
-                path: importPath,
-            };
+            return { source: fileContent, path: importPath, absolutePath: filePath };
         }
         return undefined;
     }

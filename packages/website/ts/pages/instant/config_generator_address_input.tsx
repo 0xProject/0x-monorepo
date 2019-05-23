@@ -1,11 +1,13 @@
-import { colors } from '@0x/react-shared';
 import { addressUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
+
+import { colors } from 'ts/style/colors';
 
 import { Container } from 'ts/components/ui/container';
-import { Input } from 'ts/components/ui/input';
-import { Text } from 'ts/components/ui/text';
+
+import { Paragraph } from 'ts/components/text';
 
 export interface ConfigGeneratorAddressInputProps {
     value?: string;
@@ -14,6 +16,19 @@ export interface ConfigGeneratorAddressInputProps {
 
 export interface ConfigGeneratorAddressInputState {
     errMsg: string;
+}
+
+export interface InputProps {
+    className?: string;
+    value?: string;
+    width?: string;
+    fontSize?: string;
+    fontColor?: string;
+    padding?: string;
+    placeholderColor?: string;
+    placeholder?: string;
+    backgroundColor?: string;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export class ConfigGeneratorAddressInput extends React.Component<
@@ -26,22 +41,13 @@ export class ConfigGeneratorAddressInput extends React.Component<
     public render(): React.ReactNode {
         const { errMsg } = this.state;
         const hasError = !_.isEmpty(errMsg);
-        const border = hasError ? '1px solid red' : undefined;
         return (
             <Container height="80px">
-                <Input
-                    width="100%"
-                    fontSize="16px"
-                    padding="0.7em 1em"
-                    value={this.props.value}
-                    onChange={this._handleChange}
-                    placeholder="0xe99...aa8da4"
-                    border={border}
-                />
+                <Input value={this.props.value} onChange={this._handleChange} placeholder="0xe99...aa8da4" />
                 <Container marginTop="5px" isHidden={!hasError} height="25px">
-                    <Text fontSize="14px" fontColor={colors.grey} fontStyle="italic">
+                    <Paragraph size="small" isNoMargin={true}>
                         {errMsg}
-                    </Text>
+                    </Paragraph>
                 </Container>
             </Container>
         );
@@ -57,3 +63,22 @@ export class ConfigGeneratorAddressInput extends React.Component<
         this.props.onChange(address, isValidAddress);
     };
 }
+
+const PlainInput: React.StatelessComponent<InputProps> = ({ value, className, placeholder, onChange }) => (
+    <input className={className} value={value} onChange={onChange} placeholder={placeholder} />
+);
+
+export const Input = styled(PlainInput)`
+    background-color: ${colors.white};
+    color: ${colors.textDarkSecondary};
+    font-size: 1rem;
+    width: 100%;
+    padding: 16px 20px 18px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    outline: none;
+    &::placeholder {
+        color: #333333;
+        opacity: 0.5;
+    }
+`;

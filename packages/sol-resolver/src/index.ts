@@ -5,5 +5,6 @@ export { NPMResolver } from './resolvers/npm_resolver';
 export { FSResolver } from './resolvers/fs_resolver';
 export { RelativeFSResolver } from './resolvers/relative_fs_resolver';
 export { NameResolver } from './resolvers/name_resolver';
+export { SpyResolver } from './resolvers/spy_resolver';
 export { EnumerableResolver } from './resolvers/enumerable_resolver';
 export { Resolver } from './resolvers/resolver';

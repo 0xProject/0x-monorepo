@@ -5,6 +5,71 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _May 10, 2019_
+
+    * Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods (#1797)
+
+## v4.2.0 - _April 11, 2019_
+
+    * Added IAssetProxy wrapper (#1714)
+
+## v4.1.0 - _March 21, 2019_
+
+    * Add Coordinator and CoordinatorRegistry contract wrappers (#1689)
+
+## v4.0.3 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
+## v3.0.3 - _February 9, 2019_
+
+    * Dependencies updated
+
+## v3.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v2.2.0 - _January 15, 2019_
+
+    * Added `MultiAssetProxy` (#1503)
+
+## v2.1.1 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v2.1.0 - _January 9, 2019_
+
+    * Added Dutch Auction Wrapper (#1465)
+
+## v2.0.2 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v2.0.0 - _November 28, 2018_
 
     * Update Exchange artifact to receive ZRX asset data as a constructor argument (#1309)

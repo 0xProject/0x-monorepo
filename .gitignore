@@ -83,19 +83,33 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
-contracts/core/generated-artifacts/
+contracts/coordinator/generated-artifacts/
+contracts/exchange/generated-artifacts/
+contracts/asset-proxy/generated-artifacts/
 contracts/multisig/generated-artifacts/
 contracts/utils/generated-artifacts/
-contracts/libs/generated-artifacts/
-packages/sol-cov/test/fixtures/artifacts/
+contracts/exchange-libs/generated-artifacts/
+contracts/erc20/generated-artifacts/
+contracts/erc721/generated-artifacts/
+contracts/erc1155/generated-artifacts/
+contracts/extensions/generated-artifacts/
+contracts/exchange-forwarder/generated-artifacts/
+packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/wrappers
-contracts/core/generated-wrappers/
+contracts/coordinator/generated-wrappers/
+contracts/exchange/generated-wrappers/
+contracts/asset-proxy/generated-wrappers/
 contracts/multisig/generated-wrappers/
 contracts/utils/generated-wrappers/
-contracts/libs/generated-wrappers/
+contracts/exchange-libs/generated-wrappers/
+contracts/erc20/generated-wrappers/
+contracts/erc721/generated-wrappers/
+contracts/erc1155/generated-wrappers/
+contracts/extensions/generated-wrappers/
+contracts/exchange-forwarder/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

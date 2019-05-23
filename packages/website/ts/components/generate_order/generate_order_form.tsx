@@ -36,9 +36,9 @@ import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
 enum SigningState {
-    UNSIGNED,
-    SIGNING,
-    SIGNED,
+    Unsigned,
+    Signing,
+    Signed,
 }
 
 interface GenerateOrderFormProps {
@@ -76,7 +76,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         this.state = {
             globalErrMsg: '',
             shouldShowIncompleteErrs: false,
-            signingState: SigningState.UNSIGNED,
+            signingState: SigningState.Unsigned,
         };
     }
     public componentDidMount(): void {
@@ -207,7 +207,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                             />
                         </div>
                         {this.state.globalErrMsg !== '' && (
-                            <Alert type={AlertTypes.ERROR} message={this.state.globalErrMsg} />
+                            <Alert type={AlertTypes.Error} message={this.state.globalErrMsg} />
                         )}
                     </div>
                 </div>
@@ -215,7 +215,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                     title="Order JSON"
                     titleStyle={{ fontWeight: 100 }}
                     modal={false}
-                    open={this.state.signingState === SigningState.SIGNED}
+                    open={this.state.signingState === SigningState.Signed}
                     onRequestClose={this._onCloseOrderJSONDialog.bind(this)}
                 >
                     <OrderJSON
@@ -247,7 +247,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         // orderHash will not collide with the previously generated orderHash.
         this.props.dispatcher.updateOrderSalt(generatePseudoRandomSalt());
         this.setState({
-            signingState: SigningState.UNSIGNED,
+            signingState: SigningState.Unsigned,
         });
     }
     private async _onSignClickedAsync(): Promise<boolean> {
@@ -266,8 +266,8 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         const receiveToken = this.props.sideToAssetToken[Side.Receive];
         const receiveAmount = receiveToken.amount;
         if (
-            !_.isUndefined(debitToken.amount) &&
-            !_.isUndefined(receiveAmount) &&
+            debitToken.amount !== undefined &&
+            receiveAmount !== undefined &&
             debitToken.amount.gt(0) &&
             receiveAmount.gt(0) &&
             this.props.userAddress !== '' &&
@@ -275,7 +275,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             debitAllowance.gte(debitToken.amount)
         ) {
             const signedOrder = await this._signTransactionAsync();
-            const doesSignedOrderExist = !_.isUndefined(signedOrder);
+            const doesSignedOrderExist = signedOrder !== undefined;
             if (doesSignedOrderExist) {
                 analytics.trackOrderEvent('Sign Order Success', signedOrder);
                 this.setState({
@@ -305,13 +305,13 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
     }
     private async _signTransactionAsync(): Promise<PortalOrder | undefined> {
         this.setState({
-            signingState: SigningState.SIGNING,
+            signingState: SigningState.Signing,
         });
         const exchangeAddress = this.props.blockchain.getExchangeContractAddressIfExists();
-        if (_.isUndefined(exchangeAddress)) {
+        if (exchangeAddress === undefined) {
             this.props.dispatcher.updateShouldBlockchainErrDialogBeOpen(true);
             this.setState({
-                signingState: SigningState.UNSIGNED,
+                signingState: SigningState.Unsigned,
             });
             return undefined;
         }
@@ -371,13 +371,13 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             }
         }
         this.setState({
-            signingState: globalErrMsg === '' ? SigningState.SIGNED : SigningState.UNSIGNED,
+            signingState: globalErrMsg === '' ? SigningState.Signed : SigningState.Unsigned,
             globalErrMsg,
         });
         return order;
     }
     private _updateOrderAddress(address?: string): void {
-        if (!_.isUndefined(address)) {
+        if (address !== undefined) {
             const normalizedAddress = _.isEmpty(address) ? constants.NULL_ADDRESS : address;
             this.props.dispatcher.updateOrderTakerAddress(normalizedAddress);
         }

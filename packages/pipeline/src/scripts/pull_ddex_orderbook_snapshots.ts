@@ -2,7 +2,7 @@ import { logUtils } from '@0x/utils';
 import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
-import { DDEX_SOURCE, DdexMarket, DdexSource } from '../data_sources/ddex';
+import { DdexMarket, DdexSource } from '../data_sources/ddex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseDdexOrders } from '../parsers/ddex_orders';
@@ -25,7 +25,7 @@ let connection: Connection;
     const markets = await ddexSource.getActiveMarketsAsync();
     for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
         await Promise.all(
-            marketsChunk.map(async (market: DdexMarket) => getAndSaveMarketOrderbook(ddexSource, market)),
+            marketsChunk.map(async (market: DdexMarket) => getAndSaveMarketOrderbookAsync(ddexSource, market)),
         );
         await new Promise<void>(resolve => setTimeout(resolve, MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY));
     }
@@ -38,12 +38,12 @@ let connection: Connection;
  * @param ddexSource Data source which can query Ddex API.
  * @param market Object from Ddex API containing market data.
  */
-async function getAndSaveMarketOrderbook(ddexSource: DdexSource, market: DdexMarket): Promise<void> {
+async function getAndSaveMarketOrderbookAsync(ddexSource: DdexSource, market: DdexMarket): Promise<void> {
     const orderBook = await ddexSource.getMarketOrderbookAsync(market.id);
     const observedTimestamp = Date.now();
 
     logUtils.log(`${market.id}: Parsing orders.`);
-    const orders = parseDdexOrders(orderBook, market, observedTimestamp, DDEX_SOURCE);
+    const orders = parseDdexOrders(orderBook, market, observedTimestamp);
 
     if (orders.length > 0) {
         logUtils.log(`${market.id}: Saving ${orders.length} orders.`);

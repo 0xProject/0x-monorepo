@@ -5,6 +5,90 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.5 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v4.1.4 - _May 14, 2019_
+
+    * Add --pk flag to accept private key when migrating (#1811)
+
+## v4.1.2 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v4.1.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.1.0 - _March 21, 2019_
+
+    * Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script (#1689)
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v4.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v4.0.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v4.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v4.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v4.0.0 - _February 25, 2019_
+
+    * Replace Provider param interface with Web3ProviderEngine (#1627)
+
+## v3.0.4 - _February 9, 2019_
+
+    * Dependencies updated
+
+## v3.0.3 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+    * Removed `owner` in Migrations (#1533)
+    * `txDefaults` parameter now requires the `from` field (#1533)
+    * Convert `from` to lower case when passed in via cli (#1533)
+
+## v2.4.0 - _January 15, 2019_
+
+    * Added migrations for `MultiAssetProxy` contract (#1503)
+
+## v2.3.1 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v2.3.0 - _January 9, 2019_
+
+    * Added migrations for Dutch Auction contract (#1465)
+
+## v2.2.2 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v2.2.1 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v2.2.0 - _November 28, 2018_
 
     * Add CLI `0x-migrate` for running the 0x migrations in a language-agnostic way (#1324)

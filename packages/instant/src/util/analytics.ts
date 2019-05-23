@@ -6,6 +6,7 @@ import { GIT_SHA, HEAP_ENABLED, INSTANT_DISCHARGE_TARGET, NODE_ENV, NPM_PACKAGE_
 import {
     AffiliateInfo,
     Asset,
+    BaseCurrency,
     Network,
     OrderProcessState,
     OrderSource,
@@ -30,35 +31,38 @@ export const evaluateIfEnabled = (fnCall: () => void) => {
 };
 
 enum EventNames {
-    INSTANT_OPENED = 'Instant - Opened',
-    INSTANT_CLOSED = 'Instant - Closed',
-    ACCOUNT_LOCKED = 'Account - Locked',
-    ACCOUNT_READY = 'Account - Ready',
-    ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
-    ACCOUNT_UNLOCK_DENIED = 'Account - Unlock Denied',
-    ACCOUNT_ADDRESS_CHANGED = 'Account - Address Changed',
-    PAYMENT_METHOD_DROPDOWN_OPENED = 'Payment Method - Dropdown Opened',
-    PAYMENT_METHOD_OPENED_ETHERSCAN = 'Payment Method - Opened Etherscan',
-    PAYMENT_METHOD_COPIED_ADDRESS = 'Payment Method - Copied Address',
-    BUY_NOT_ENOUGH_ETH = 'Buy - Not Enough Eth',
-    BUY_STARTED = 'Buy - Started',
-    BUY_SIGNATURE_DENIED = 'Buy - Signature Denied',
-    BUY_SIMULATION_FAILED = 'Buy - Simulation Failed',
-    BUY_TX_SUBMITTED = 'Buy - Tx Submitted',
-    BUY_TX_SUCCEEDED = 'Buy - Tx Succeeded',
-    BUY_TX_FAILED = 'Buy - Tx Failed',
-    INSTALL_WALLET_CLICKED = 'Install Wallet - Clicked',
-    INSTALL_WALLET_MODAL_OPENED = 'Install Wallet - Modal - Opened',
-    INSTALL_WALLET_MODAL_CLICKED_EXPLANATION = 'Install Wallet - Modal - Clicked Explanation',
-    INSTALL_WALLET_MODAL_CLICKED_GET = 'Install Wallet - Modal - Clicked Get',
-    INSTALL_WALLET_MODAL_CLOSED = 'Install Wallet - Modal - Closed',
-    TOKEN_SELECTOR_OPENED = 'Token Selector - Opened',
-    TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
-    TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
-    TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
-    TRANSACTION_VIEWED = 'Transaction - Viewed',
-    QUOTE_FETCHED = 'Quote - Fetched',
-    QUOTE_ERROR = 'Quote - Error',
+    InstantOpened = 'Instant - Opened',
+    InstantClosed = 'Instant - Closed',
+    AccountLocked = 'Account - Locked',
+    AccountReady = 'Account - Ready',
+    AccountUnlockRequested = 'Account - Unlock Requested',
+    AccountUnlockDenied = 'Account - Unlock Denied',
+    AccountAddressChanged = 'Account - Address Changed',
+    BaseCurrencyChanged = 'Base Currency - Changed',
+    PaymentMethodDropdownOpened = 'Payment Method - Dropdown Opened',
+    PaymentMethodOpenedEtherscan = 'Payment Method - Opened Etherscan',
+    PaymentMethodCopiedAddress = 'Payment Method - Copied Address',
+    BuyNotEnoughEth = 'Buy - Not Enough Eth',
+    BuyStarted = 'Buy - Started',
+    BuySignatureDenied = 'Buy - Signature Denied',
+    BuySimulationFailed = 'Buy - Simulation Failed',
+    BuyUnknownError = 'Buy - Unknown Error',
+    BuyTxSubmitted = 'Buy - Tx Submitted',
+    BuyTxSucceeded = 'Buy - Tx Succeeded',
+    BuyTxFailed = 'Buy - Tx Failed',
+    UsdPriceFetchFailed = 'USD Price - Fetch Failed',
+    InstallWalletClicked = 'Install Wallet - Clicked',
+    InstallWalletModalOpened = 'Install Wallet - Modal - Opened',
+    InstallWalletModalClickedExplanation = 'Install Wallet - Modal - Clicked Explanation',
+    InstallWalletModalClickedGet = 'Install Wallet - Modal - Clicked Get',
+    InstallWalletModalClosed = 'Install Wallet - Modal - Closed',
+    TokenSelectorOpened = 'Token Selector - Opened',
+    TokenSelectorClosed = 'Token Selector - Closed',
+    TokenSelectorChose = 'Token Selector - Chose',
+    TokenSelectorSearched = 'Token Selector - Searched',
+    TransactionViewed = 'Transaction - Viewed',
+    QuoteFetched = 'Quote - Fetched',
+    QuoteError = 'Quote - Error',
 }
 
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
@@ -83,7 +87,7 @@ const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
     const assetEthAmount = buyQuote.worstCaseQuoteInfo.assetEthAmount.toString();
     const feeEthAmount = buyQuote.worstCaseQuoteInfo.feeEthAmount.toString();
     const totalEthAmount = buyQuote.worstCaseQuoteInfo.totalEthAmount.toString();
-    const feePercentage = !_.isUndefined(buyQuote.feePercentage) ? buyQuote.feePercentage.toString() : 0;
+    const feePercentage = buyQuote.feePercentage !== undefined ? buyQuote.feePercentage.toString() : 0;
     const hasFeeOrders = !_.isEmpty(buyQuote.feeOrders) ? 'true' : 'false';
     return {
         assetBuyAmount,
@@ -106,6 +110,7 @@ export interface AnalyticsEventOptions {
     ethAddress?: string;
     networkId?: number;
     providerName?: string;
+    providerDisplayName?: string;
     gitSha?: string;
     npmVersion?: string;
     instantEnvironment?: string;
@@ -117,9 +122,10 @@ export interface AnalyticsEventOptions {
     selectedAssetSymbol?: string;
     selectedAssetData?: string;
     selectedAssetDecimals?: number;
+    baseCurrency?: string;
 }
 export enum TokenSelectorClosedVia {
-    ClickedX = 'Clicked X',
+    ClickedX = 'Clicked X', // tslint:disable-line:enum-naming
     TokenChose = 'Token Chose',
 }
 export const analytics = {
@@ -140,6 +146,7 @@ export const analytics = {
         window: Window,
         selectedAsset?: Asset,
         affiliateInfo?: AffiliateInfo,
+        baseCurrency?: BaseCurrency,
     ): AnalyticsEventOptions => {
         const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
         const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
@@ -149,6 +156,7 @@ export const analytics = {
             embeddedUrl: window.location.href,
             networkId: network,
             providerName: providerState.name,
+            providerDisplayName: providerState.displayName,
             gitSha: GIT_SHA,
             npmVersion: NPM_PACKAGE_VERSION,
             orderSource: orderSourceName,
@@ -157,75 +165,84 @@ export const analytics = {
             selectedAssetName: selectedAsset ? selectedAsset.metaData.name : 'none',
             selectedAssetData: selectedAsset ? selectedAsset.assetData : 'none',
             instantEnvironment: INSTANT_DISCHARGE_TARGET || `Local ${NODE_ENV}`,
+            baseCurrency,
         };
         return eventOptions;
     },
-    trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
-    trackInstantClosed: trackingEventFnWithoutPayload(EventNames.INSTANT_CLOSED),
-    trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
-    trackAccountReady: (address: string) => trackingEventFnWithPayload(EventNames.ACCOUNT_READY)({ address }),
-    trackAccountUnlockRequested: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_REQUESTED),
-    trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
+    trackInstantOpened: trackingEventFnWithoutPayload(EventNames.InstantOpened),
+    trackInstantClosed: trackingEventFnWithoutPayload(EventNames.InstantClosed),
+    trackAccountLocked: trackingEventFnWithoutPayload(EventNames.AccountLocked),
+    trackAccountReady: (address: string) => trackingEventFnWithPayload(EventNames.AccountReady)({ address }),
+    trackAccountUnlockRequested: trackingEventFnWithoutPayload(EventNames.AccountUnlockRequested),
+    trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.AccountUnlockDenied),
     trackAccountAddressChanged: (address: string) =>
-        trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
-    trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_DROPDOWN_OPENED),
-    trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_OPENED_ETHERSCAN),
-    trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_COPIED_ADDRESS),
+        trackingEventFnWithPayload(EventNames.AccountAddressChanged)({ address }),
+    trackBaseCurrencyChanged: (currencyChangedTo: BaseCurrency) =>
+        trackingEventFnWithPayload(EventNames.BaseCurrencyChanged)({ currencyChangedTo }),
+    trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PaymentMethodDropdownOpened),
+    trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PaymentMethodOpenedEtherscan),
+    trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PaymentMethodCopiedAddress),
     trackBuyNotEnoughEth: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BUY_NOT_ENOUGH_ETH)(buyQuoteEventProperties(buyQuote)),
+        trackingEventFnWithPayload(EventNames.BuyNotEnoughEth)(buyQuoteEventProperties(buyQuote)),
     trackBuyStarted: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BUY_STARTED)(buyQuoteEventProperties(buyQuote)),
+        trackingEventFnWithPayload(EventNames.BuyStarted)(buyQuoteEventProperties(buyQuote)),
     trackBuySignatureDenied: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BUY_SIGNATURE_DENIED)(buyQuoteEventProperties(buyQuote)),
+        trackingEventFnWithPayload(EventNames.BuySignatureDenied)(buyQuoteEventProperties(buyQuote)),
     trackBuySimulationFailed: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BUY_SIMULATION_FAILED)(buyQuoteEventProperties(buyQuote)),
+        trackingEventFnWithPayload(EventNames.BuySimulationFailed)(buyQuoteEventProperties(buyQuote)),
+    trackBuyUnknownError: (buyQuote: BuyQuote, errorMessage: string) =>
+        trackingEventFnWithPayload(EventNames.BuyUnknownError)({
+            ...buyQuoteEventProperties(buyQuote),
+            errorMessage,
+        }),
     trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
-        trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({
+        trackingEventFnWithPayload(EventNames.BuyTxSubmitted)({
             ...buyQuoteEventProperties(buyQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
         }),
     trackBuyTxSucceeded: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
-        trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({
+        trackingEventFnWithPayload(EventNames.BuyTxSucceeded)({
             ...buyQuoteEventProperties(buyQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
     trackBuyTxFailed: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
-        trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({
+        trackingEventFnWithPayload(EventNames.BuyTxFailed)({
             ...buyQuoteEventProperties(buyQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
     trackInstallWalletClicked: (walletSuggestion: WalletSuggestion) =>
-        trackingEventFnWithPayload(EventNames.INSTALL_WALLET_CLICKED)({ walletSuggestion }),
+        trackingEventFnWithPayload(EventNames.InstallWalletClicked)({ walletSuggestion }),
     trackInstallWalletModalClickedExplanation: trackingEventFnWithoutPayload(
-        EventNames.INSTALL_WALLET_MODAL_CLICKED_EXPLANATION,
+        EventNames.InstallWalletModalClickedExplanation,
     ),
-    trackInstallWalletModalClickedGet: trackingEventFnWithoutPayload(EventNames.INSTALL_WALLET_MODAL_CLICKED_GET),
-    trackInstallWalletModalOpened: trackingEventFnWithoutPayload(EventNames.INSTALL_WALLET_MODAL_OPENED),
-    trackInstallWalletModalClosed: trackingEventFnWithoutPayload(EventNames.INSTALL_WALLET_MODAL_CLOSED),
-    trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
+    trackInstallWalletModalClickedGet: trackingEventFnWithoutPayload(EventNames.InstallWalletModalClickedGet),
+    trackInstallWalletModalOpened: trackingEventFnWithoutPayload(EventNames.InstallWalletModalOpened),
+    trackInstallWalletModalClosed: trackingEventFnWithoutPayload(EventNames.InstallWalletModalClosed),
+    trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TokenSelectorOpened),
     trackTokenSelectorClosed: (closedVia: TokenSelectorClosedVia) =>
-        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CLOSED)({ closedVia }),
+        trackingEventFnWithPayload(EventNames.TokenSelectorClosed)({ closedVia }),
     trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
-        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
+        trackingEventFnWithPayload(EventNames.TokenSelectorChose)(payload),
     trackTokenSelectorSearched: (searchText: string) =>
-        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
+        trackingEventFnWithPayload(EventNames.TokenSelectorSearched)({ searchText }),
     trackTransactionViewed: (orderProcesState: OrderProcessState) =>
-        trackingEventFnWithPayload(EventNames.TRANSACTION_VIEWED)({ orderState: orderProcesState }),
+        trackingEventFnWithPayload(EventNames.TransactionViewed)({ orderState: orderProcesState }),
     trackQuoteFetched: (buyQuote: BuyQuote, fetchOrigin: QuoteFetchOrigin) =>
-        trackingEventFnWithPayload(EventNames.QUOTE_FETCHED)({
+        trackingEventFnWithPayload(EventNames.QuoteFetched)({
             ...buyQuoteEventProperties(buyQuote),
             fetchOrigin,
         }),
     trackQuoteError: (errorMessage: string, assetBuyAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
-        trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
+        trackingEventFnWithPayload(EventNames.QuoteError)({
             errorMessage,
             assetBuyAmount: assetBuyAmount.toString(),
             fetchOrigin,
         });
     },
+    trackUsdPriceFailed: trackingEventFnWithoutPayload(EventNames.UsdPriceFetchFailed),
 };

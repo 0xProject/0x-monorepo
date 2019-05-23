@@ -5,6 +5,102 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.1.3 - _May 15, 2019_
+
+    * Fix decoding bug in `DutchAuctionWrapper.decodeDutchAuctionData` (#1815)
+    * Fallback to eth_sign if eth_signedTypedData fails (#1817)
+
+## v9.1.2 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v9.1.0 - _May 10, 2019_
+
+    * Added CoordinatorWrapper to support orders with the Coordinator extension contract (#1792)
+
+## v9.0.0 - _April 11, 2019_
+
+    * Added a simulation to transfer from maker to taker during `exchange.validateOrderFillableOrThrowAsync` (#1714)
+    * Added additional properties to `ValidateOrderFillableOpts`. An order can now be validated to fill a non-zero amount by specifying `validateRemainingOrderAmountIsFillable` as `false`. The default `true` will continue to validate the entire remaining balance is fillable. (#1714)
+
+## v8.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v8.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v8.0.3 - _March 1, 2019_
+
+    * Move contracts-test-utils and fill-scenarios to dev dependency (#1657)
+
+## v8.0.2 - _February 27, 2019_
+
+    * Dependencies updated
+
+## v8.0.1 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v8.0.0 - _February 25, 2019_
+
+    * Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38 (#1627)
+    * Update provider params to type SupportedProvider which outlines all supported providers (#1627)
+
+## v7.1.0 - _February 9, 2019_
+
+    * Added calldata decoding to ContractWrappers (#1569)
+
+## v7.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v7.0.1 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v7.0.0 - _February 6, 2019_
+
+    * Use new `ZeroExTransaction` interface (#1576)
+    * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
+    * Rename `getTransactionHex` to `getTransactionHashHex` (#1576)
+
+## v6.0.0 - _February 5, 2019_
+
+    * Fix OrderValidatorWrapper constructor to use the correct address (#1568)
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v5.0.1 - _January 17, 2019_
+
+    * Dependencies updated
+
+## v5.0.0 - _January 15, 2019_
+
+    * Renamed OrderStatus enum members to PascalCase to conform with tslint enum-naming rule (#1474)
+    * Remove Exchange `matchOrdersAsync` optimization (#1514)
+
+## v4.2.1 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v4.2.0 - _January 9, 2019_
+
+    * Added Dutch Auction wrapper (#1465)
+
+## v4.1.4 - _Invalid date_
+
+    * Add support for Trust Wallet signature denial error
+    * Add balance and allowance queries for `MultiAssetProxy` (#1363)
+
+## v4.1.3 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v4.1.2 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v4.1.1 - _November 28, 2018_
 
     * Dependencies updated

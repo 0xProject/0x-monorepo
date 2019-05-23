@@ -26,7 +26,7 @@ function parseEthersParams(params: DataItem[]): { names: ParamName[]; types: str
 
             const result = parseEthersParams(param.components);
             names.push({ name: param.name || null, names: result.names });
-            types.push('tuple(' + result.types.join(',') + ')' + suffix);
+            types.push(`tuple(${result.types.join(',')})${suffix}`);
         } else {
             names.push(param.name || null);
             types.push(param.type);
@@ -43,11 +43,11 @@ function parseEthersParams(params: DataItem[]): { names: ParamName[]; types: str
 // type conversion and data massaging for x and y, depending on type. name and
 // type should typically be derived from parseEthersParams.
 function isAbiDataEqual(name: ParamName, type: string, x: any, y: any): boolean {
-    if (_.isUndefined(x) && _.isUndefined(y)) {
+    if (x === undefined && y === undefined) {
         return true;
-    } else if (_.isUndefined(x) && !_.isUndefined(y)) {
+    } else if (x === undefined && y !== undefined) {
         return false;
-    } else if (!_.isUndefined(x) && _.isUndefined(y)) {
+    } else if (x !== undefined && y === undefined) {
         return false;
     }
     if (_.endsWith(type, '[]')) {
@@ -68,7 +68,7 @@ function isAbiDataEqual(name: ParamName, type: string, x: any, y: any): boolean 
     if (_.startsWith(type, 'tuple(')) {
         if (_.isString(name)) {
             throw new Error('Internal error: type was tuple but names was a string');
-        } else if (_.isNull(name)) {
+        } else if (name === null) {
             throw new Error('Internal error: type was tuple but names was null');
         }
         // For tuples, we iterate through the underlying values and check each
@@ -120,7 +120,7 @@ function splitTupleTypes(type: string): string[] {
     if (_.endsWith(type, '[]')) {
         throw new Error('Internal error: array types are not supported');
     } else if (!_.startsWith(type, 'tuple(')) {
-        throw new Error('Internal error: expected tuple type but got non-tuple type: ' + type);
+        throw new Error(`Internal error: expected tuple type but got non-tuple type: ${type}`);
     }
     // Trim the outtermost tuple().
     const trimmedType = type.substring('tuple('.length, type.length - 1);

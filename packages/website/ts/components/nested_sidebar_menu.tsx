@@ -77,8 +77,8 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
                         isActive
                             ? colors.lightLinkBlue
                             : this.props.screenWidth === ScreenWidths.Sm
-                                ? 'white'
-                                : colors.grey100
+                            ? 'white'
+                            : colors.grey100
                     }
                     fontSize="14px"
                     textAlign="left"

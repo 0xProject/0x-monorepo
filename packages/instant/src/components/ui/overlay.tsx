@@ -12,10 +12,7 @@ export interface OverlayProps {
     showMaxWidth?: ScreenWidths;
 }
 
-export const Overlay =
-    styled.div <
-    OverlayProps >
-    `
+export const Overlay = styled.div<OverlayProps>`
     && {
         position: fixed;
         top: 0;

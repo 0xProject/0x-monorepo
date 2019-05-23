@@ -34,8 +34,10 @@ yarn lint
 
 ### Migrations
 
-Create a new migration: `yarn migrate:create --name MigrationNameInCamelCase`
+Create a new migration: `yarn migrate:create --name MigrationNameInCamelCase`.
+
 Run migrations: `yarn migrate:run`
+
 Revert the most recent migration (CAUTION: may result in data loss!): `yarn migrate:revert`
 
 ## Testing
@@ -147,20 +149,38 @@ set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
     starting from that block number.
 7.  Run the migrations and then run your new script locally and verify it works
     as expected.
+8.  After all tests pass and you can run the script locally, open a new PR to
+    the monorepo. Don't merge this yet!
+9.  If you added any new scripts or dependencies between scripts, you will need
+    to make changes to https://github.com/0xProject/0x-pipeline-orchestration
+    and make a separate PR there. Don't merge this yet!
+10. After your PR passes code review, ask @feuGeneA or @xianny to deploy your
+    changes to the QA environment. Check the [QA Airflow dashboard](http://airflow-qa.0x.org:8080)
+    to make sure everything works correctly in the QA environment.
+11. Merge your PR to 0x-monorepo (and
+    https://github.com/0xProject/0x-pipeline-orchestration if needed). Then ask
+    @feuGeneA or @xianny to deploy to production.
+12. Monitor the [production Airflow dashboard](http://airflow.0x.org:8080) to
+    make sure everything still works.
+13. Celebrate! :tada:
 
 #### Additional guidelines and tips:
 
-*   Table names should be plural and separated by underscores (e.g.,
+-   Table names should be plural and separated by underscores (e.g.,
     `exchange_fill_events`).
-*   Any table which contains data which comes directly from a third-party source
+-   Any table which contains data which comes directly from a third-party source
     should be namespaced in the `raw` PostgreSQL schema.
-*   Column names in the database should be separated by underscores (e.g.,
+-   Column names in the database should be separated by underscores (e.g.,
     `maker_asset_type`).
-*   Field names in entity classes (like any other fields in TypeScript) should
+-   Field names in entity classes (like any other fields in TypeScript) should
     be camel-cased (e.g., `makerAssetType`).
-*   All timestamps should be stored as milliseconds since the Unix Epoch.
-*   Use the `BigNumber` type for TypeScript code which deals with 256-bit
+-   All timestamps should be stored as milliseconds since the Unix Epoch.
+-   Use the `BigNumber` type for TypeScript code which deals with 256-bit
     numbers from smart contracts or for any case where we are dealing with large
     floating point numbers.
-*   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
+-   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
     helpful resource.
+
+*   Scripts/parsers should perform minimum data transformation/normalization.
+    The idea here is to have a raw data feed that will be cleaned up and
+    synthesized in a separate step.

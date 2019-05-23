@@ -6,9 +6,9 @@ import * as React from 'react';
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;
 
 enum ButtonState {
-    READY,
-    LOADING,
-    COMPLETE,
+    Ready,
+    Loading,
+    Complete,
 }
 
 interface LifeCycleRaisedButtonProps {
@@ -38,7 +38,7 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
     constructor(props: LifeCycleRaisedButtonProps) {
         super(props);
         this.state = {
-            buttonState: ButtonState.READY,
+            buttonState: ButtonState.Ready,
         };
     }
     public componentWillUnmount(): void {
@@ -52,13 +52,13 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
 
         let label;
         switch (this.state.buttonState) {
-            case ButtonState.READY:
+            case ButtonState.Ready:
                 label = this.props.labelReady;
                 break;
-            case ButtonState.LOADING:
+            case ButtonState.Loading:
                 label = this.props.labelLoading;
                 break;
-            case ButtonState.COMPLETE:
+            case ButtonState.Complete:
                 label = this.props.labelComplete;
                 break;
             default:
@@ -72,13 +72,13 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
                 backgroundColor={this.props.backgroundColor}
                 labelColor={this.props.labelColor}
                 onClick={this.onClickAsync.bind(this)}
-                disabled={this.props.isDisabled || this.state.buttonState !== ButtonState.READY}
+                disabled={this.props.isDisabled || this.state.buttonState !== ButtonState.Ready}
             />
         );
     }
     public async onClickAsync(): Promise<void> {
         this.setState({
-            buttonState: ButtonState.LOADING,
+            buttonState: ButtonState.Loading,
         });
         const didSucceed = await this.props.onClickAsyncFn();
         if (this._didUnmount) {
@@ -86,16 +86,16 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
         }
         if (didSucceed) {
             this.setState({
-                buttonState: ButtonState.COMPLETE,
+                buttonState: ButtonState.Complete,
             });
             this._buttonTimeoutId = window.setTimeout(() => {
                 this.setState({
-                    buttonState: ButtonState.READY,
+                    buttonState: ButtonState.Ready,
                 });
             }, COMPLETE_STATE_SHOW_LENGTH_MS);
         } else {
             this.setState({
-                buttonState: ButtonState.READY,
+                buttonState: ButtonState.Ready,
             });
         }
     }

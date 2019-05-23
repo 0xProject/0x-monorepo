@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
@@ -16,6 +17,9 @@ const config = {
         filename: 'bundle.js',
         chunkFilename: 'bundle-[name].js',
         publicPath: '/',
+    },
+    externals: {
+        zeroExInstant: 'zeroExInstant'
     },
     devtool: 'source-map',
     resolve: {
@@ -55,6 +59,21 @@ const config = {
                 test: /\.css$/,
                 loaders: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.svg$/,
+                use: [
+                    {
+                        loader: "react-svg-loader",
+                        options: {
+                            svgo: {
+                                plugins: [
+                                    { removeViewBox: false }
+                                ],
+                            }
+                        }
+                    }
+                ]
+            },
         ],
     },
     optimization: {
@@ -70,6 +89,7 @@ const config = {
         ],
     },
     devServer: {
+        host: '0.0.0.0',
         port: 3572,
         historyApiFallback: {
             // Fixes issue where having dots in URL path that aren't part of fileNames causes webpack-dev-server
@@ -85,6 +105,13 @@ const config = {
             ],
         },
         disableHostCheck: true,
+        // Fixes assertion error
+        // Source: https://github.com/webpack/webpack-dev-server/issues/1491
+        https: {
+            spdy: {
+                protocols: ['http/1.1']
+            }
+        },
     },
 };
 
@@ -92,6 +119,9 @@ module.exports = (_env, argv) => {
     let plugins = [];
     if (argv.mode === 'development') {
         config.mode = 'development';
+        plugins.concat([
+            new BundleAnalyzerPlugin(),
+        ]);
     } else {
         config.mode = 'production';
         plugins = plugins.concat([
@@ -109,7 +139,7 @@ module.exports = (_env, argv) => {
                 new RollbarSourceMapPlugin({
                     accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
                     version: GIT_SHA,
-                    publicPath: 'https://0xproject.com/',
+                    publicPath: 'https://0x.org/',
                 }),
             ]);
         }

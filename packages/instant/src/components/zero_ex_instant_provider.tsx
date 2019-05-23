@@ -1,3 +1,4 @@
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -21,7 +22,7 @@ import { providerStateFactory } from '../util/provider_state_factory';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
-export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
+export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProviderProps> {
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
     private _buyQuoteHeartbeat?: Heartbeater;
@@ -38,6 +39,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             props.orderSource,
             networkId,
             props.provider,
+            props.walletDisplayName,
         );
         // merge the additional additionalAssetMetaDataMap with our default map
         const completeAssetMetaDataMap = {
@@ -45,25 +47,42 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             ..._.mapKeys(props.additionalAssetMetaDataMap || {}, (value, key) => key.toLowerCase()),
             ...defaultState.assetMetaDataMap,
         };
+
+        const selectedAsset =
+            props.defaultSelectedAssetData === undefined
+                ? undefined
+                : assetUtils.createAssetFromAssetDataOrThrow(
+                      props.defaultSelectedAssetData,
+                      completeAssetMetaDataMap,
+                      networkId,
+                  );
+
+        let selectedAssetUnitAmount: BigNumber | undefined;
+        if (selectedAsset !== undefined) {
+            if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+                selectedAssetUnitAmount =
+                    props.defaultAssetBuyAmount === undefined ? undefined : new BigNumber(props.defaultAssetBuyAmount);
+            } else if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC721) {
+                selectedAssetUnitAmount = new BigNumber(1);
+            }
+        }
+
         // construct the final state
         const storeStateFromProps: State = {
             ...defaultState,
             providerState,
             network: networkId,
             walletDisplayName: props.walletDisplayName,
-            selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
-                ? undefined
-                : assetUtils.createAssetFromAssetDataOrThrow(
-                      props.defaultSelectedAssetData,
-                      completeAssetMetaDataMap,
-                      networkId,
-                  ),
-            selectedAssetUnitAmount: _.isUndefined(props.defaultAssetBuyAmount)
-                ? undefined
-                : new BigNumber(props.defaultAssetBuyAmount),
-            availableAssets: _.isUndefined(props.availableAssetDatas)
-                ? undefined
-                : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
+            selectedAsset,
+            selectedAssetUnitAmount,
+            availableAssets:
+                props.availableAssetDatas === undefined
+                    ? undefined
+                    : assetUtils.createAssetsFromAssetDatas(
+                          props.availableAssetDatas,
+                          completeAssetMetaDataMap,
+                          networkId,
+                      ),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
         };
@@ -82,7 +101,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchEthPriceAndDispatchToStore(dispatch);
         // fetch available assets if none are specified
-        if (_.isUndefined(state.availableAssets)) {
+        if (state.availableAssets === undefined) {
             // tslint:disable-next-line:no-floating-promises
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(state, dispatch);
         }
@@ -121,6 +140,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                 window,
                 state.selectedAsset,
                 this.props.affiliateInfo,
+                state.baseCurrency,
             ),
         );
         analytics.trackInstantOpened();

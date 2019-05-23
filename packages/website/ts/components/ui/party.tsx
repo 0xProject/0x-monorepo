@@ -56,7 +56,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                     <div className="circle mx-auto" style={emptyIdenticonStyles} />
                 ) : (
                     <a href={etherscanLinkIfExists} target="_blank">
-                        {isRegistered && !_.isUndefined(this.props.alternativeImage) ? (
+                        {isRegistered && this.props.alternativeImage !== undefined ? (
                             <img style={tokenImageStyle} src={this.props.alternativeImage} />
                         ) : (
                             <div className="mx-auto" style={{ height: identiconDiameter, width: identiconDiameter }}>
@@ -73,7 +73,7 @@ export class Party extends React.Component<PartyProps, PartyState> {
                     <div style={{ height: 25 }}>
                         <EthereumAddress address={address} networkId={this.props.networkId} />
                     </div>
-                    {!_.isUndefined(this.props.isInTokenRegistry) && (
+                    {this.props.isInTokenRegistry !== undefined && (
                         <div>
                             <div
                                 data-tip={true}
@@ -94,14 +94,17 @@ export class Party extends React.Component<PartyProps, PartyState> {
                                 <ReactTooltip id={registeredTooltipId}>
                                     {isRegistered ? (
                                         <div>
-                                            This token address was found in the token registry<br />
+                                            This token address was found in the token registry
+                                            <br />
                                             smart contract and is therefore believed to be a<br />
                                             legitimate token.
                                         </div>
                                     ) : (
                                         <div>
-                                            This token is not included in the token registry<br />
-                                            smart contract. We cannot guarantee the legitimacy<br />
+                                            This token is not included in the token registry
+                                            <br />
+                                            smart contract. We cannot guarantee the legitimacy
+                                            <br />
                                             of this token. Make sure to verify its address on Etherscan.
                                         </div>
                                     )}
@@ -109,27 +112,28 @@ export class Party extends React.Component<PartyProps, PartyState> {
                             </div>
                         </div>
                     )}
-                    {!_.isUndefined(this.props.hasUniqueNameAndSymbol) &&
-                        !this.props.hasUniqueNameAndSymbol && (
-                            <div>
-                                <div
-                                    data-tip={true}
-                                    data-for={uniqueNameAndSymbolTooltipId}
-                                    className="mx-auto"
-                                    style={{ fontSize: 13, width: 127 }}
-                                >
-                                    <span style={{ color: colors.red500 }}>
-                                        <i className="zmdi zmdi-alert-octagon" />
-                                    </span>{' '}
-                                    <span>Suspicious token</span>
-                                    <ReactTooltip id={uniqueNameAndSymbolTooltipId}>
-                                        This token shares it's name, symbol or both with<br />
-                                        a token in the 0x Token Registry but it has a different<br />
-                                        smart contract address. This is most likely a scam token!
-                                    </ReactTooltip>
-                                </div>
+                    {this.props.hasUniqueNameAndSymbol !== undefined && !this.props.hasUniqueNameAndSymbol && (
+                        <div>
+                            <div
+                                data-tip={true}
+                                data-for={uniqueNameAndSymbolTooltipId}
+                                className="mx-auto"
+                                style={{ fontSize: 13, width: 127 }}
+                            >
+                                <span style={{ color: colors.red500 }}>
+                                    <i className="zmdi zmdi-alert-octagon" />
+                                </span>{' '}
+                                <span>Suspicious token</span>
+                                <ReactTooltip id={uniqueNameAndSymbolTooltipId}>
+                                    This token shares it's name, symbol or both with
+                                    <br />
+                                    a token in the 0x Token Registry but it has a different
+                                    <br />
+                                    smart contract address. This is most likely a scam token!
+                                </ReactTooltip>
                             </div>
-                        )}
+                        </div>
+                    )}
                 </div>
             </div>
         );

@@ -1,4 +1,4 @@
-import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
+import { GanacheProvider, JSONRPCRequestPayload } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 
 import { Callback, ErrorCallback } from '../types';
@@ -10,7 +10,7 @@ import { Subprovider } from './subprovider';
  * It intercepts all JSON RPC requests and relays them to an in-process ganache instance.
  */
 export class GanacheSubprovider extends Subprovider {
-    private readonly _ganacheProvider: Provider;
+    private readonly _ganacheProvider: GanacheProvider;
     /**
      * Instantiates a GanacheSubprovider
      * @param opts The desired opts with which to instantiate the Ganache provider

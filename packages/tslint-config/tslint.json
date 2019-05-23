@@ -25,6 +25,7 @@
         "curly": true,
         "custom-no-magic-numbers": [true, 0, 1, 2, 3, -1],
         "encoding": true,
+        "enum-naming": true,
         "eofline": true,
         "import-spacing": true,
         "indent": [true, "spaces", 4],
@@ -61,6 +62,8 @@
         "no-inferred-empty-object-type": true,
         "no-invalid-template-strings": true,
         "no-invalid-this": true,
+        "no-lodash-isnull": true,
+        "no-lodash-isundefined": true,
         "no-misused-new": true,
         "no-non-null-assertion": true,
         "no-parameter-reassignment": true,
@@ -92,6 +95,7 @@
         "prefer-function-over-method": true,
         "prefer-object-spread": true,
         "prefer-readonly": true,
+        "prefer-template": true,
         "promise-function-async": true,
         "quotemark": [true, "single", "avoid-escape", "jsx-double"],
         "restrict-plus-operands": true,
@@ -124,5 +128,5 @@
             "check-preblock"
         ]
     },
-    "rulesDirectory": "lib"
+    "rulesDirectory": "lib/rules"
 }

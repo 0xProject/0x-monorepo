@@ -4,124 +4,227 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
 
-import { BIG_NUMBER_ZERO } from '../constants';
+import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { ColorOption } from '../style/theme';
+import { BaseCurrency } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
+import { SectionHeader } from './section_header';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
-import { Text } from './ui/text';
+import { Text, TextProps } from './ui/text';
 
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
     selectedAssetUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     isLoading: boolean;
+    assetName?: string;
+    baseCurrency: BaseCurrency;
+    onBaseCurrencySwitchEth: () => void;
+    onBaseCurrencySwitchUsd: () => void;
 }
-export class OrderDetails extends React.Component<OrderDetailsProps> {
+export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { buyQuoteInfo, ethUsdPrice, selectedAssetUnitAmount } = this.props;
-        const buyQuoteAccessor = oc(buyQuoteInfo);
-        const assetEthBaseUnitAmount = buyQuoteAccessor.assetEthAmount();
-        const feeEthBaseUnitAmount = buyQuoteAccessor.feeEthAmount();
-        const totalEthBaseUnitAmount = buyQuoteAccessor.totalEthAmount();
-        const pricePerTokenEth =
-            !_.isUndefined(assetEthBaseUnitAmount) &&
-            !_.isUndefined(selectedAssetUnitAmount) &&
-            !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
-                ? assetEthBaseUnitAmount.div(selectedAssetUnitAmount).ceil()
-                : undefined;
+        const shouldShowUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
-                <Container marginBottom="10px">
-                    <Text
-                        letterSpacing="1px"
-                        fontColor={ColorOption.primaryColor}
-                        fontWeight={600}
-                        textTransform="uppercase"
-                        fontSize="14px"
-                    >
-                        Order Details
-                    </Text>
-                </Container>
-                <EthAmountRow
-                    rowLabel="Token Price"
-                    ethAmount={pricePerTokenEth}
-                    ethUsdPrice={ethUsdPrice}
-                    isLoading={this.props.isLoading}
-                />
-                <EthAmountRow
-                    rowLabel="Fee"
-                    ethAmount={feeEthBaseUnitAmount}
-                    ethUsdPrice={ethUsdPrice}
-                    isLoading={this.props.isLoading}
-                />
-                <EthAmountRow
-                    rowLabel="Total Cost"
-                    ethAmount={totalEthBaseUnitAmount}
-                    ethUsdPrice={ethUsdPrice}
-                    shouldEmphasize={true}
-                    isLoading={this.props.isLoading}
-                />
+                <Container marginBottom="10px">{this._renderHeader()}</Container>
+                {shouldShowUsdError ? this._renderErrorFetchingUsdPrice() : this._renderRows()}
             </Container>
+        );
+    }
+
+    private _renderRows(): React.ReactNode {
+        const { buyQuoteInfo } = this.props;
+        return (
+            <React.Fragment>
+                <OrderDetailsRow
+                    labelText={this._assetAmountLabel()}
+                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.assetEthAmount)}
+                />
+                <OrderDetailsRow
+                    labelText="Fee"
+                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.feeEthAmount)}
+                />
+                <OrderDetailsRow
+                    labelText="Total Cost"
+                    isLabelBold={true}
+                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.totalEthAmount)}
+                    isPrimaryValueBold={true}
+                    secondaryValue={this._totalCostSecondaryValue()}
+                />
+            </React.Fragment>
+        );
+    }
+
+    private _renderErrorFetchingUsdPrice(): React.ReactNode {
+        return (
+            <Text>
+                There was an error fetching the USD price.
+                <Text
+                    onClick={this.props.onBaseCurrencySwitchEth}
+                    fontWeight={700}
+                    fontColor={ColorOption.primaryColor}
+                >
+                    Click here
+                </Text>
+                {' to view ETH prices'}
+            </Text>
+        );
+    }
+
+    private _hadErrorFetchingUsdPrice(): boolean {
+        return this.props.ethUsdPrice ? this.props.ethUsdPrice.isEqualTo(BIG_NUMBER_ZERO) : false;
+    }
+
+    private _totalCostSecondaryValue(): React.ReactNode {
+        const secondaryCurrency = this.props.baseCurrency === BaseCurrency.USD ? BaseCurrency.ETH : BaseCurrency.USD;
+
+        const canDisplayCurrency =
+            secondaryCurrency === BaseCurrency.ETH ||
+            (secondaryCurrency === BaseCurrency.USD && this.props.ethUsdPrice && !this._hadErrorFetchingUsdPrice());
+
+        if (this.props.buyQuoteInfo && canDisplayCurrency) {
+            return this._displayAmount(secondaryCurrency, this.props.buyQuoteInfo.totalEthAmount);
+        } else {
+            return undefined;
+        }
+    }
+
+    private _displayAmountOrPlaceholder(weiAmount?: BigNumber): React.ReactNode {
+        const { baseCurrency, isLoading } = this.props;
+
+        if (weiAmount === undefined) {
+            return (
+                <Container opacity={0.5}>
+                    <AmountPlaceholder color={ColorOption.lightGrey} isPulsating={isLoading} />
+                </Container>
+            );
+        }
+
+        return this._displayAmount(baseCurrency, weiAmount);
+    }
+
+    private _displayAmount(currency: BaseCurrency, weiAmount: BigNumber): React.ReactNode {
+        switch (currency) {
+            case BaseCurrency.USD:
+                return format.ethBaseUnitAmountInUsd(weiAmount, this.props.ethUsdPrice, 2, '');
+            case BaseCurrency.ETH:
+                return format.ethBaseUnitAmount(weiAmount, 4, '');
+        }
+    }
+
+    private _assetAmountLabel(): React.ReactNode {
+        const { assetName, baseCurrency } = this.props;
+        const numTokens = this.props.selectedAssetUnitAmount;
+
+        // Display as 0 if we have a selected asset
+        const displayNumTokens =
+            assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && numTokens === undefined
+                ? new BigNumber(0)
+                : numTokens;
+        if (displayNumTokens !== undefined) {
+            let numTokensWithSymbol: React.ReactNode = displayNumTokens.toString();
+            if (assetName) {
+                numTokensWithSymbol += ` ${assetName}`;
+            }
+            const pricePerTokenWei = this._pricePerTokenWei();
+            if (pricePerTokenWei) {
+                const atPriceDisplay = (
+                    <Text fontColor={ColorOption.lightGrey}>
+                        @ {this._displayAmount(baseCurrency, pricePerTokenWei)}
+                    </Text>
+                );
+                numTokensWithSymbol = (
+                    <React.Fragment>
+                        {numTokensWithSymbol} {atPriceDisplay}
+                    </React.Fragment>
+                );
+            }
+            return numTokensWithSymbol;
+        }
+        return 'Token Amount';
+    }
+
+    private _pricePerTokenWei(): BigNumber | undefined {
+        const buyQuoteAccessor = oc(this.props.buyQuoteInfo);
+        const assetTotalInWei = buyQuoteAccessor.assetEthAmount();
+        const selectedAssetUnitAmount = this.props.selectedAssetUnitAmount;
+        return assetTotalInWei !== undefined &&
+            selectedAssetUnitAmount !== undefined &&
+            !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
+            ? assetTotalInWei.div(selectedAssetUnitAmount).integerValue(BigNumber.ROUND_CEIL)
+            : undefined;
+    }
+
+    private _baseCurrencyChoice(choice: BaseCurrency): React.ReactNode {
+        const onClick =
+            choice === BaseCurrency.ETH ? this.props.onBaseCurrencySwitchEth : this.props.onBaseCurrencySwitchUsd;
+        const isSelected = this.props.baseCurrency === choice;
+
+        const textStyle: TextProps = { onClick, fontSize: '12px' };
+        if (isSelected) {
+            textStyle.fontColor = ColorOption.primaryColor;
+            textStyle.fontWeight = 700;
+        } else {
+            textStyle.fontColor = ColorOption.lightGrey;
+        }
+        return <Text {...textStyle}>{choice}</Text>;
+    }
+
+    private _renderHeader(): React.ReactNode {
+        return (
+            <Flex justify="space-between">
+                <SectionHeader>Order Details</SectionHeader>
+                <Container>
+                    {this._baseCurrencyChoice(BaseCurrency.ETH)}
+                    <Container marginLeft="5px" marginRight="5px" display="inline">
+                        <Text fontSize="12px" fontColor={ColorOption.feintGrey}>
+                            /
+                        </Text>
+                    </Container>
+                    {this._baseCurrencyChoice(BaseCurrency.USD)}
+                </Container>
+            </Flex>
         );
     }
 }
 
-export interface EthAmountRowProps {
-    rowLabel: string;
-    ethAmount?: BigNumber;
-    isEthAmountInBaseUnits?: boolean;
-    ethUsdPrice?: BigNumber;
-    shouldEmphasize?: boolean;
-    isLoading: boolean;
+export interface OrderDetailsRowProps {
+    labelText: React.ReactNode;
+    isLabelBold?: boolean;
+    isPrimaryValueBold?: boolean;
+    primaryValue: React.ReactNode;
+    secondaryValue?: React.ReactNode;
 }
-
-export class EthAmountRow extends React.Component<EthAmountRowProps> {
-    public static defaultProps = {
-        shouldEmphasize: false,
-        isEthAmountInBaseUnits: true,
-    };
+export class OrderDetailsRow extends React.PureComponent<OrderDetailsRowProps, {}> {
     public render(): React.ReactNode {
-        const { rowLabel, ethAmount, isEthAmountInBaseUnits, shouldEmphasize, isLoading } = this.props;
-
-        const fontWeight = shouldEmphasize ? 700 : 400;
-        const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseUnitAmount : format.ethUnitAmount;
         return (
             <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
                 <Flex justify="space-between">
-                    <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                        {rowLabel}
+                    <Text fontWeight={this.props.isLabelBold ? 700 : 400} fontColor={ColorOption.grey}>
+                        {this.props.labelText}
                     </Text>
-                    <Container>
-                        {this._renderUsdSection()}
-                        <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                            {ethFormatter(
-                                ethAmount,
-                                4,
-                                <Container opacity={0.5}>
-                                    <AmountPlaceholder color={ColorOption.lightGrey} isPulsating={isLoading} />
-                                </Container>,
-                            )}
-                        </Text>
-                    </Container>
+                    <Container>{this._renderValues()}</Container>
                 </Flex>
             </Container>
         );
     }
-    private _renderUsdSection(): React.ReactNode {
-        const usdFormatter = this.props.isEthAmountInBaseUnits
-            ? format.ethBaseUnitAmountInUsd
-            : format.ethUnitAmountInUsd;
-        const shouldHideUsdPriceSection = _.isUndefined(this.props.ethUsdPrice) || _.isUndefined(this.props.ethAmount);
-        return shouldHideUsdPriceSection ? null : (
+
+    private _renderValues(): React.ReactNode {
+        const secondaryValueNode: React.ReactNode = this.props.secondaryValue && (
             <Container marginRight="3px" display="inline-block">
-                <Text fontColor={ColorOption.lightGrey}>
-                    ({usdFormatter(this.props.ethAmount, this.props.ethUsdPrice)})
-                </Text>
+                <Text fontColor={ColorOption.lightGrey}>({this.props.secondaryValue})</Text>
             </Container>
+        );
+        return (
+            <React.Fragment>
+                {secondaryValueNode}
+                <Text fontWeight={this.props.isPrimaryValueBold ? 700 : 400}>{this.props.primaryValue}</Text>
+            </React.Fragment>
         );
     }
 }

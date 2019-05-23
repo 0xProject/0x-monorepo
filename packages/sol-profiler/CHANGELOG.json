@@ -1,0 +1,171 @@
+[
+    {
+        "timestamp": 1557507213,
+        "version": "3.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "3.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "3.1.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Bug fixes related to stack parameters parsing",
+                "pr": 1663
+            }
+        ],
+        "timestamp": 1551479279
+    },
+    {
+        "timestamp": 1551299797,
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add support for Ganache",
+                "pr": 1647
+            }
+        ],
+        "timestamp": 1551220833
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Big @0x/sol-profiler overhaul. It now has a bunch of new features",
+                "pr": 1638
+            },
+            {
+                "note": "Added a CLI interface for reporting non line-based profiling info",
+                "pr": 1638
+            },
+            {
+                "note": "Add memory consumption analysis",
+                "pr": 1638
+            },
+            {
+                "note": "Add calldata analysis",
+                "pr": 1638
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Fix a bug when some parts of the profiling report were missing because of the coverage ignore lines",
+                "pr": 1535
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ]
+    },
+    {
+        "timestamp": 1547747677,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Initial release as a separate package. For historical entries see @0x/sol-tracing-utils",
+                "pr": 1492
+            }
+        ]
+    }
+]

@@ -9,13 +9,17 @@ const decimalRadix = 10;
 // https://github.com/typeorm/typeorm/issues/2400 for more information.
 export class NumberToBigIntTransformer implements ValueTransformer {
     // tslint:disable-next-line:prefer-function-over-method
-    public to(value: number): string {
-        return value.toString();
+    public to(value: number): string | null {
+        if (value === null || value === undefined) {
+            return null;
+        } else {
+            return value.toString();
+        }
     }
 
     // tslint:disable-next-line:prefer-function-over-method
     public from(value: string): number {
-        if (new BigNumber(value).greaterThan(Number.MAX_SAFE_INTEGER)) {
+        if (new BigNumber(value).isGreaterThan(Number.MAX_SAFE_INTEGER)) {
             throw new Error(
                 `Attempted to convert PostgreSQL bigint value (${value}) to JavaScript number type but it is too big to safely convert`,
             );

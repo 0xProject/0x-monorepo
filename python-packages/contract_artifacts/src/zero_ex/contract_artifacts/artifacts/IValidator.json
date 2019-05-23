@@ -1,0 +1,41 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IValidator",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "hash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "name": "signerAddress",
+                        "type": "address"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "isValidSignature",
+                "outputs": [
+                    {
+                        "name": "isValid",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "evm": {
+            "bytecode": {
+                "object": "0x"
+            }
+        }
+    },
+    "networks": {}
+}

@@ -42,7 +42,7 @@ export class BodyOverlay extends React.Component<BodyOverlayProps, BodyOverlaySt
         }
     }
     private _isBlockchainReady(): boolean {
-        return this.props.blockchainIsLoaded && !_.isUndefined(this.props.blockchain);
+        return this.props.blockchainIsLoaded && this.props.blockchain !== undefined;
     }
     private _getAccountState(): AccountState {
         return utils.getAccountState(

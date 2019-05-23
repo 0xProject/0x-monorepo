@@ -83,8 +83,8 @@ describe('TransactionEncoder', () => {
             signerAddress: string = takerAddress,
         ): Promise<void> => {
             const salt = generatePseudoRandomSalt();
-            const encodedTransaction = encoder.getTransactionHex(data, salt, signerAddress);
-            const signature = await signatureUtils.ecSignHashAsync(provider, encodedTransaction, signerAddress);
+            const transactionHash = encoder.getTransactionHashHex(data, salt, signerAddress);
+            const signature = await signatureUtils.ecSignHashAsync(provider, transactionHash, signerAddress);
             txHash = await contractWrappers.exchange.executeTransactionAsync(
                 salt,
                 signerAddress,

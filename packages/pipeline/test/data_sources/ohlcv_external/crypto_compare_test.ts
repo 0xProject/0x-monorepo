@@ -13,7 +13,7 @@ const expect = chai.expect;
 describe('ohlcv_external data source (Crypto Compare)', () => {
     describe('generateBackfillIntervals', () => {
         it('generates pairs with intervals to query', () => {
-            const source = new CryptoCompareOHLCVSource();
+            const source = new CryptoCompareOHLCVSource(20);
             const pair: TradingPair = {
                 fromSymbol: 'ETH',
                 toSymbol: 'ZRX',
@@ -31,7 +31,7 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
         });
 
         it('returns single pair if no backfill is needed', () => {
-            const source = new CryptoCompareOHLCVSource();
+            const source = new CryptoCompareOHLCVSource(20);
             const pair: TradingPair = {
                 fromSymbol: 'ETH',
                 toSymbol: 'ZRX',

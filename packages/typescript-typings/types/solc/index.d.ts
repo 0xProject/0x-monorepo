@@ -66,6 +66,15 @@ declare module 'solc' {
         optimizer?: {
             enabled: boolean;
             runs?: number;
+            details?: {
+                peephole?: boolean;
+                jumpdestRemover?: boolean;
+                orderLiterals?: boolean;
+                deduplicate?: boolean;
+                cse?: boolean;
+                constantOptimizer?: boolean;
+                yul?: boolean;
+            };
         };
         evmVersion?: 'homestead' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople';
         metadata?: {
@@ -95,7 +104,7 @@ declare module 'solc' {
             optimizerEnabled: number,
             findImports: (importPath: string) => ImportContents,
         ): CompilationResult;
-        compileStandardWrapper(input: string, findImports: (importPath: string) => ImportContents): string;
+        compileStandardWrapper(input: string, findImports?: (importPath: string) => ImportContents): string;
     }
     export function loadRemoteVersion(
         versionName: string,

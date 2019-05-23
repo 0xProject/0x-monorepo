@@ -44,13 +44,21 @@ const TUTORIALS: TutorialInfo[] = [
             to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
         },
     },
+    {
+        iconUrl: '/images/developers/tutorials/integrate_0x_instant.svg',
+        description: Key.Integrate0xInstantDescription,
+        link: {
+            title: Key.Integrate0xInstant,
+            to: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
+        },
+    },
 ];
 
 const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
-    [Categories.ZeroExProtocol]: [
+    [Categories.ZeroExProtocolTypescript]: [
         {
             description:
-                'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0xproject.com/docs/order-utils) and [contract-wrappers](https://0xproject.com/docs/contract-wrappers).',
+                'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0x.org/docs/order-utils) and [contract-wrappers](https://0x.org/docs/contract-wrappers).',
             link: {
                 title: '0x.js',
                 to: WebsitePaths.ZeroExJs,
@@ -67,10 +75,10 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                'Launch a 0x relayer in under a minute with Launch Kit. `0x-launch-kit` is an open-source, free-to-use 0x relayer template that you can use as a starting point for your own project.',
+                'Launch a 0x relayer API backend in under a minute with Launch Kit. `0x-launch-kit-backend` is an open-source, free-to-use 0x relayer template that you can use as a starting point for your own project.',
             link: {
                 title: '0x launch kit',
-                to: 'https://github.com/0xProject/0x-launch-kit',
+                to: 'https://github.com/0xProject/0x-launch-kit-backend',
                 shouldOpenInNewTab: true,
             },
         },
@@ -80,15 +88,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '0x smart contracts',
                 to: WebsitePaths.SmartContracts,
-            },
-        },
-        {
-            description:
-                "A Python library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
-            link: {
-                title: '0x-order-utils.py',
-                to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
-                shouldOpenInNewTab: true,
             },
         },
         {
@@ -174,6 +173,57 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
     ],
+    [Categories.ZeroExProtocolPython]: [
+        {
+            description:
+                "A library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
+            link: {
+                title: '0x-order-utils',
+                to: 'https://pypi.org/project/0x-order-utils/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'A Standard Relayer API client',
+            link: {
+                title: '0x-sra-client',
+                to: 'https://pypi.org/project/0x-sra-client/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Package containing the addresses at which the 0x smart contracts have been deployed',
+            link: {
+                title: '0x-contract-addresses',
+                to: 'https://pypi.org/project/0x-contract-addresses/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Package containing the 0x smart contract compilation artifacts',
+            link: {
+                title: '0x-contract-artifacts',
+                to: 'https://pypi.org/project/0x-contract-artifacts/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: '0x JSON schemas for those developing on top of 0x protocol',
+            link: {
+                title: '0x-json-schemas',
+                to: 'https://pypi.org/project/0x-json-schemas/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Demo project showing how to interact with the 0x smart contracts using Python',
+            link: {
+                title: '0x-contract-demo',
+                to: 'https://github.com/0xProject/0x-monorepo/blob/development/python-packages/contract_demo/README.md',
+                shouldOpenInNewTab: true,
+            },
+        },
+    ],
     [Categories.Ethereum]: [
         {
             description:
@@ -202,10 +252,26 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                'A Solidity code coverage tool. Sol-cov uses transaction traces to figure out which lines of your code has been covered by your tests.',
+                'A Solidity code coverage tool. Sol-coverage uses transaction traces to figure out which lines of your code has been covered by your tests.',
             link: {
-                title: '@0x/sol-cov',
-                to: WebsitePaths.SolCov,
+                title: '@0x/sol-coverage',
+                to: WebsitePaths.SolCoverage,
+            },
+        },
+        {
+            description:
+                'A Solidity profiler. Sol-profiler uses transaction traces to figure out line-by-line gas consumption.',
+            link: {
+                title: '@0x/sol-profiler',
+                to: WebsitePaths.SolProfiler,
+            },
+        },
+        {
+            description:
+                'A Solidity revert trace tool. Sol-trace prints human-readable revert trace whenever the revert happens.',
+            link: {
+                title: '@0x/sol-trace',
+                to: WebsitePaths.SolTrace,
             },
         },
         {
@@ -259,14 +325,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: 'Aquaduct Server SDK',
                 to: 'https://github.com/ERCdEX/aqueduct-server-sdk',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description: 'A node.js SDK for trading on the DDEX relayer',
-            link: {
-                to: 'https://www.npmjs.com/package/ddex-api',
-                title: 'DDEX Node.js SDK',
                 shouldOpenInNewTab: true,
             },
         },
@@ -377,7 +435,10 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                     title: this.props.translate.get(tutorialInfo.link.title as Key, Deco.Cap),
                 };
             }),
-            [Categories.ZeroExProtocol]: _.map(CATEGORY_TO_PACKAGES[Categories.ZeroExProtocol], pkg => pkg.link),
+            [Categories.ZeroExProtocolTypescript]: _.map(
+                CATEGORY_TO_PACKAGES[Categories.ZeroExProtocolTypescript],
+                pkg => pkg.link,
+            ),
             [Categories.Ethereum]: _.map(CATEGORY_TO_PACKAGES[Categories.Ethereum], pkg => pkg.link),
             [Categories.CommunityMaintained]: _.map(
                 CATEGORY_TO_PACKAGES[Categories.CommunityMaintained],
@@ -434,4 +495,4 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
         });
         return menuItems;
     }
-}
+} // tslint:disable:max-file-line-count

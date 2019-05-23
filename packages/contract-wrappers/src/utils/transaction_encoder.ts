@@ -1,9 +1,9 @@
 import { ExchangeContract } from '@0x/abi-gen-wrappers';
 
 import { schemas } from '@0x/json-schemas';
-import { eip712Utils } from '@0x/order-utils';
+import { transactionHashUtils } from '@0x/order-utils';
 import { Order, SignedOrder } from '@0x/types';
-import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import _ = require('lodash');
 
 import { assert } from './assert';
@@ -19,23 +19,22 @@ export class TransactionEncoder {
         this._exchangeInstance = exchangeInstance;
     }
     /**
-     * Encodes the transaction data for use with the Exchange contract.
+     * Hashes the transaction data for use with the Exchange contract.
      * @param data The ABI Encoded 0x Exchange method. I.e fillOrder
      * @param salt A random value to provide uniqueness and prevent replay attacks.
      * @param signerAddress The address which will sign this transaction.
-     * @return An unsigned hex encoded transaction for use in 0x Exchange executeTransaction.
+     * @return The hash of the 0x transaction.
      */
-    public getTransactionHex(data: string, salt: BigNumber, signerAddress: string): string {
+    public getTransactionHashHex(data: string, salt: BigNumber, signerAddress: string): string {
         const exchangeAddress = this._getExchangeContract().address;
-        const executeTransactionData = {
+        const transaction = {
+            verifyingContractAddress: exchangeAddress,
             salt,
             signerAddress,
             data,
         };
-        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, exchangeAddress);
-        const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
-        const messageHex = `0x${eip712MessageBuffer.toString('hex')}`;
-        return messageHex;
+        const hashHex = transactionHashUtils.getTransactionHashHex(transaction);
+        return hashHex;
     }
     /**
      * Encodes a fillOrder transaction.
@@ -239,6 +238,23 @@ export class TransactionEncoder {
             signedOrders,
             makerAssetFillAmount,
             signatures,
+        );
+        return abiEncodedData;
+    }
+    /**
+     * Encodes a matchOrders transaction.
+     * @param   leftOrder First order to match.
+     * @param   rightOrder Second order to match.
+     * @return Hex encoded abi of the function call.
+     */
+    public matchOrdersTx(leftOrder: SignedOrder, rightOrder: SignedOrder): string {
+        assert.doesConformToSchema('leftOrder', leftOrder, schemas.orderSchema);
+        assert.doesConformToSchema('rightOrder', rightOrder, schemas.orderSchema);
+        const abiEncodedData = this._getExchangeContract().matchOrders.getABIEncodedTransactionData(
+            leftOrder,
+            rightOrder,
+            leftOrder.signature,
+            rightOrder.signature,
         );
         return abiEncodedData;
     }

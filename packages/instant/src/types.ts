@@ -1,7 +1,7 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 
 // Reusable
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -24,6 +24,11 @@ export enum OrderProcessState {
 export enum QuoteFetchOrigin {
     Manual = 'Manual',
     Heartbeat = 'Heartbeat',
+}
+
+export enum BaseCurrency {
+    USD = 'USD', // tslint:disable-line:enum-naming
+    ETH = 'ETH', // tslint:disable-line:enum-naming
 }
 
 export interface SimulatedProgress {
@@ -90,7 +95,8 @@ export enum Network {
 
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
-    InsufficientETH = 'INSUFFICIENT_ETH',
+    InsufficientETH = 'INSUFFICIENT_ETH', // tslint:disable-line:enum-naming
+    CouldNotSubmitTransaction = 'COULD_NOT_SUBMIT_TRANSACTION',
 }
 
 export type SimpleHandler = () => void;
@@ -102,7 +108,8 @@ export interface AffiliateInfo {
 
 export interface ProviderState {
     name: string;
-    provider: Provider;
+    displayName: string;
+    provider: ZeroExProvider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
     account: Account;
@@ -161,7 +168,7 @@ export enum WalletSuggestion {
 
 export enum OperatingSystem {
     Android = 'ANDROID',
-    iOS = 'IOS',
+    iOS = 'IOS', // tslint:disable-line:enum-naming
     Mac = 'MAC',
     Windows = 'WINDOWS',
     WindowsPhone = 'WINDOWS_PHONE',
@@ -175,6 +182,8 @@ export enum ProviderType {
     Mist = 'MIST',
     CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
+    TrustWallet = 'TRUST_WALLET',
+    Opera = 'OPERA',
     Fallback = 'FALLBACK',
 }
 
@@ -183,7 +192,7 @@ export interface ZeroExInstantRequiredBaseConfig {
 }
 
 export interface ZeroExInstantOptionalBaseConfig {
-    provider: Provider;
+    provider: SupportedProvider;
     walletDisplayName: string;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;

@@ -49,13 +49,13 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
         this._isUnmounted = true;
     }
     public render(): React.ReactNode {
-        const isReadyToRender = _.isUndefined(this.state.error) && !_.isUndefined(this.state.relayerInfos);
+        const isReadyToRender = this.state.error === undefined && this.state.relayerInfos !== undefined;
         if (!isReadyToRender) {
             return (
                 // TODO: consolidate this loading component with the one in portal and OpenPositions
                 // TODO: possibly refactor into a generic loading container with spinner and retry UI
                 <div className="center">
-                    {_.isUndefined(this.state.error) ? (
+                    {this.state.error === undefined ? (
                         <CircularProgress size={40} thickness={5} />
                     ) : (
                         <Retry onRetry={this._fetchRelayerInfosAsync.bind(this)} />

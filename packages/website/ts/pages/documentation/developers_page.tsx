@@ -1,8 +1,8 @@
 import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle from 'react-document-title';
 import { Helmet } from 'react-helmet';
+import { DocumentTitle } from 'ts/components/document_title';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';
@@ -10,6 +10,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { BrowserType, OperatingSystemType, ScreenWidths } from 'ts/types';
+import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -68,10 +69,7 @@ interface SidebarContainerProps {
     className?: string;
 }
 
-const SidebarContainer =
-    styled.div <
-    SidebarContainerProps >
-    `
+const SidebarContainer = styled.div<SidebarContainerProps>`
     ${scrollableContainerStyles}
     padding-top: 27px;
     padding-left: ${SIDEBAR_PADDING}px;
@@ -87,10 +85,7 @@ interface MainContentContainerProps {
     className?: string;
 }
 
-const MainContentContainer =
-    styled.div <
-    MainContentContainerProps >
-    `
+const MainContentContainer = styled.div<MainContentContainerProps>`
     ${scrollableContainerStyles}
     padding-top: 0px;
     padding-left: 50px;
@@ -146,14 +141,14 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                     colors.white
                 } 50%, ${colors.white} 100%)`}
             >
-                <DocumentTitle title="0x Docs" />
+                <DocumentTitle {...documentConstants.DOCS} />
                 <Helmet>
                     <link rel="stylesheet" href="/css/github-gist.css" />
                 </Helmet>
                 <Container className="flex mx-auto" height="100vh">
                     <Container
                         className="sm-hide xs-hide relative"
-                        width={234}
+                        width={270}
                         paddingLeft={22}
                         paddingRight={22}
                         paddingTop={0}

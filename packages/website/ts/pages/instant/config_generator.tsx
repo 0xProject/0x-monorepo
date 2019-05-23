@@ -4,11 +4,11 @@ import { assetDataUtils } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import { CheckMark } from 'ts/components/ui/check_mark';
 import { Container } from 'ts/components/ui/container';
 import { MultiSelect } from 'ts/components/ui/multi_select';
-import { Select, SelectItemConfig } from 'ts/components/ui/select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
 import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
@@ -16,6 +16,10 @@ import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
+
+// New components
+import { Heading } from 'ts/components/text';
+import { Select, SelectItemConfig } from 'ts/pages/instant/select';
 
 import { assetMetaDataMap } from '../../../../instant/src/data/asset_meta_data_map';
 import { ERC20AssetMetaData, ZeroExInstantBaseConfig } from '../../../../instant/src/types';
@@ -59,8 +63,14 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         }
         return (
             <Container minWidth="350px">
-                <ConfigGeneratorSection title="Standard relayer API endpoint">
-                    <Select value={value.orderSource} items={this._generateItems()} />
+                <ConfigGeneratorSection title="Liquidity Source">
+                    <Select
+                        shouldIncludeEmpty={false}
+                        id=""
+                        value={value.orderSource}
+                        items={this._generateItems()}
+                        onChange={this._handleSRASelection.bind(this)}
+                    />
                 </ConfigGeneratorSection>
                 <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
@@ -79,6 +89,11 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                     <FeePercentageSlider
                         value={value.affiliateInfo.feePercentage}
                         onChange={this._handleAffiliatePercentageChange}
+                        isDisabled={
+                            value.affiliateInfo === undefined ||
+                            value.affiliateInfo.feeRecipient === undefined ||
+                            _.isEmpty(value.affiliateInfo.feeRecipient)
+                        }
                     />
                 </ConfigGeneratorSection>
             </Container>
@@ -90,7 +105,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                 title: 'What tokens can users buy?',
             };
         }
-        if (_.isUndefined(this.props.value.availableAssetDatas)) {
+        if (this.props.value.availableAssetDatas === undefined) {
             return {
                 title: 'What tokens can users buy?',
                 actionText: 'Unselect All',
@@ -105,14 +120,16 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     };
     private readonly _generateItems = (): SelectItemConfig[] => {
         return _.map(SRA_ENDPOINTS, endpoint => ({
-            text: endpoint,
+            label: endpoint,
+            value: endpoint,
             onClick: this._handleSRASelection.bind(this, endpoint),
         }));
     };
     private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
         window.open(`${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`, '_blank');
     };
-    private readonly _handleSRASelection = (sraEndpoint: string) => {
+    private readonly _handleSRASelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const sraEndpoint = event.target.value;
         const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,
             orderSource: sraEndpoint,
@@ -160,7 +177,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         let newAvailableAssetDatas: string[] = [];
         const allKnownAssetDatas = _.keys(this.state.availableTokens);
         const availableAssetDatas = value.availableAssetDatas;
-        if (_.isUndefined(availableAssetDatas)) {
+        if (availableAssetDatas === undefined) {
             // It being undefined means it's all tokens.
             newAvailableAssetDatas = _.pull(allKnownAssetDatas, assetData);
         } else if (!_.includes(availableAssetDatas, assetData)) {
@@ -182,7 +199,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     };
     private readonly _setAvailableAssetsFromOrderProvider = async (): Promise<void> => {
         const { value } = this.props;
-        if (!_.isUndefined(value.orderSource) && _.isString(value.orderSource)) {
+        if (value.orderSource !== undefined && _.isString(value.orderSource)) {
             this.setState({ isLoadingAvailableTokens: true });
             const networkId = constants.NETWORK_ID_MAINNET;
             const sraOrderProvider = new StandardRelayerAPIOrderProvider(value.orderSource, networkId);
@@ -244,15 +261,11 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                 renderItemContent: (isSelected: boolean) => (
                     <Container className="flex items-center">
                         <Container marginRight="10px">
-                            <CheckMark isChecked={isSelected} />
+                            <CheckMark isChecked={isSelected} color={colors.brandLight} />
                         </Container>
-                        <Text
-                            fontSize="16px"
-                            fontColor={isSelected ? colors.mediumBlue : colors.darkerGrey}
-                            fontWeight={300}
-                        >
-                            <b>{metaData.symbol.toUpperCase()}</b> — {metaData.name}
-                        </Text>
+                        <CheckboxText isSelected={isSelected}>
+                            {metaData.symbol.toUpperCase()} — {metaData.name}
+                        </CheckboxText>
                     </Container>
                 ),
                 onClick: this._handleTokenClick.bind(this, assetData),
@@ -280,22 +293,11 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
 }) => (
     <Container marginBottom={marginBottom}>
         <Container marginBottom="10px" className="flex justify-between items-center">
-            <Container>
-                <Text fontColor={colors.white} fontSize="16px" lineHeight="18px" display="inline">
-                    {title}
-                </Text>
-                {isOptional && (
-                    <Text fontColor={colors.grey} fontSize="16px" lineHeight="18px" display="inline">
-                        {' '}
-                        (optional)
-                    </Text>
-                )}
-            </Container>
-            {actionText && (
-                <Text fontSize="12px" fontColor={colors.grey} onClick={onActionTextClick}>
-                    {actionText}
-                </Text>
-            )}
+            <Heading size="small" marginBottom="0" isFlex={true}>
+                <span>{title}</span>
+                {isOptional && <OptionalText> Optional</OptionalText>}
+            </Heading>
+            {actionText && <OptionalAction onClick={onActionTextClick}>{actionText}</OptionalAction>}
         </Container>
         {children}
     </Container>
@@ -304,3 +306,24 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
 ConfigGeneratorSection.defaultProps = {
     marginBottom: '30px',
 };
+
+const OptionalText = styled.span`
+    display: inline;
+    font-size: 14px;
+    color: #999999;
+    flex-shrink: 0;
+`;
+
+interface CheckboxTextProps {
+    isSelected?: boolean;
+}
+
+const CheckboxText = styled.span<CheckboxTextProps>`
+    font-size: 14px;
+    line-height: 18px;
+    color: ${props => (props.isSelected ? colors.brandDark : '#666666')};
+`;
+
+const OptionalAction = styled(OptionalText)`
+    cursor: pointer;
+`;

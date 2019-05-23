@@ -32,18 +32,15 @@ interface AnchorIconProps {
     shouldShowAnchor: boolean;
 }
 
-const AnchorIcon =
-    styled.i <
-    AnchorIconProps >
-    `
-            opacity: ${props => (props.shouldShowAnchor ? 1 : 0)};
-            &:hover {
-                opacity: ${props => (props.shouldShowAnchor ? 0.6 : 0)};
-            }
-            font-size: 20px;
-            transform: rotate(45deg);
-            cursor: pointer;
-        `;
+const AnchorIcon = styled.i<AnchorIconProps>`
+    opacity: ${props => (props.shouldShowAnchor ? 1 : 0)};
+    &:hover {
+        opacity: ${props => (props.shouldShowAnchor ? 0.6 : 0)};
+    }
+    font-size: 20px;
+    transform: rotate(45deg);
+    cursor: pointer;
+`;
 
 export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleState> {
     public static defaultProps: Partial<AnchorTitleProps> = {

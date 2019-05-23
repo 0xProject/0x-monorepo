@@ -1,9 +1,9 @@
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
+import { BigNumber, providerUtils } from '@0x/utils';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { OrderError, TradeSide, TransferType } from './types';
+import { TradeSide, TransferType, TypedDataError } from './types';
 
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 import { constants } from './constants';
@@ -17,7 +17,7 @@ import { utils } from './utils';
  */
 export class OrderValidationUtils {
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
-    private readonly _provider: Provider;
+    private readonly _provider: ZeroExProvider;
     /**
      * A Typescript implementation mirroring the implementation of isRoundingError in the
      * Exchange smart contract
@@ -31,13 +31,13 @@ export class OrderValidationUtils {
         if (denominator.eq(0)) {
             throw new Error('denominator cannot be 0');
         }
-        const remainder = target.mul(numerator).mod(denominator);
+        const remainder = target.multipliedBy(numerator).mod(denominator);
         if (remainder.eq(0)) {
             return false; // no rounding error
         }
 
         // tslint:disable-next-line:custom-no-magic-numbers
-        const errPercentageTimes1000000 = remainder.mul(1000000).div(numerator.mul(target));
+        const errPercentageTimes1000000 = remainder.multipliedBy(1000000).div(numerator.multipliedBy(target));
         // tslint:disable-next-line:custom-no-magic-numbers
         const isError = errPercentageTimes1000000.gt(1000);
         return isError;
@@ -108,17 +108,22 @@ export class OrderValidationUtils {
     }
     private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
-        if (expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
+        if (expirationTimeSeconds.isLessThan(currentUnixTimestampSec)) {
             throw new Error(RevertReason.OrderUnfillable);
         }
     }
     /**
      * Instantiate OrderValidationUtils
      * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
+     * @param supportedProvider Web3 provider to use for JSON RPC calls
      * @return An instance of OrderValidationUtils
      */
-    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, provider: Provider) {
+    constructor(
+        orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
+        supportedProvider: SupportedProvider,
+    ) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._provider = provider;
     }
     // TODO(fabio): remove this method once the smart contracts have been refactored
@@ -163,7 +168,7 @@ export class OrderValidationUtils {
             throw new Error('EXPIRED');
         }
         let fillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
-        if (!_.isUndefined(expectedFillTakerTokenAmount)) {
+        if (expectedFillTakerTokenAmount !== undefined) {
             fillTakerAssetAmount = expectedFillTakerTokenAmount;
         }
         await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
@@ -177,7 +182,7 @@ export class OrderValidationUtils {
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed
      * @param exchangeTradeEmulator ExchangeTradeEmulator to use
-     * @param provider Web3 provider to use for JSON RPC requests
+     * @param supportedProvider Web3 provider to use for JSON RPC requests
      * @param signedOrder SignedOrder of interest
      * @param fillTakerAssetAmount Amount we'd like to fill the order for
      * @param takerAddress The taker of the order
@@ -185,7 +190,7 @@ export class OrderValidationUtils {
      */
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
-        provider: Provider,
+        supportedProvider: SupportedProvider,
         signedOrder: SignedOrder,
         fillTakerAssetAmount: BigNumber,
         takerAddress: string,
@@ -197,6 +202,7 @@ export class OrderValidationUtils {
         if (fillTakerAssetAmount.eq(0)) {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isValid = await signatureUtils.isValidSignatureAsync(
             provider,
@@ -205,7 +211,7 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
         );
         if (!isValid) {
-            throw new Error(OrderError.InvalidSignature);
+            throw new Error(TypedDataError.InvalidSignature);
         }
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         if (signedOrder.takerAssetAmount.eq(filledTakerTokenAmount)) {
@@ -216,7 +222,7 @@ export class OrderValidationUtils {
         }
         OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
-        const desiredFillTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerAssetAmount)
+        const desiredFillTakerTokenAmount = remainingTakerTokenAmount.isLessThan(fillTakerAssetAmount)
             ? remainingTakerTokenAmount
             : fillTakerAssetAmount;
         try {

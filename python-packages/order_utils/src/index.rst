@@ -7,23 +7,28 @@ Python zero_ex.order_utils
    :maxdepth: 2
    :caption: Contents:
 
-.. autoclass:: zero_ex.order_utils.Order
-   :members:
-
-See source for class properties.  Sphinx does not easily generate class property docs; pull requests welcome.
-
 .. automodule:: zero_ex.order_utils
    :members:
+
+.. autoclass:: zero_ex.order_utils.Order
+
+   See source for class properties.  Sphinx is having problems generating docs for ``TypedDict`` declarations; pull requests welcome.
+
+zero_ex.order_utils.asset_data_utils
+------------------------------------
 
 .. automodule:: zero_ex.order_utils.asset_data_utils
    :members:
 
 .. autoclass:: zero_ex.order_utils.asset_data_utils.ERC20AssetData
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. autoclass:: zero_ex.order_utils.asset_data_utils.ERC721AssetData
-
-.. automodule:: zero_ex.json_schemas
    :members:
+   :undoc-members:
+   :show-inheritance:
 
 Indices and tables
 ==================

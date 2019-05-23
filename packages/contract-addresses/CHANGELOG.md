@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.3 - _May 14, 2019_
+
+    * Redeploy Coordinator contract (#1812)
+
+## v2.3.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v2.3.0 - _March 21, 2019_
+
+    * Add addresses for coordinator extension contract and coordinator registry (#1689)
+    * Added Dutch Auction mainnet address (#1715)
+
+## v2.2.2 - _February 25, 2019_
+
+    * Fixed Ganache addresses for OrderValidator & Forwarder
+
+## v2.2.1 - _February 5, 2019_
+
+    * Dependencies updated
+
+## v2.2.0 - _January 15, 2019_
+
+    * Added migration for `MultiAssetProxy` contract (#1503)
+
+## v2.1.0 - _January 9, 2019_
+
+    * Added testnet entries for Dutch Auction contract (kovan,rinkeby,ropsten) (#1465)
+
 ## v2.0.0 - _November 28, 2018_
 
     * Redeployed Rinkeby with testnet Exchange artifact (#1318)

@@ -45,11 +45,11 @@ export class Calldata {
      */
     public toString(): string {
         // Sanity check: root block must be set
-        if (_.isUndefined(this._root)) {
+        if (this._root === undefined) {
             throw new Error('expected root');
         }
         // Optimize, if flag set
-        if (this._rules.optimize) {
+        if (this._rules.shouldOptimize) {
             this._optimize();
         }
         // Set offsets
@@ -60,7 +60,9 @@ export class Calldata {
             offset += block.getSizeInBytes();
         }
         // Generate hex string
-        const hexString = this._rules.annotate ? this._toHumanReadableCallData() : this._toEvmCompatibeCallDataHex();
+        const hexString = this._rules.shouldAnnotate
+            ? this._toHumanReadableCallData()
+            : this._toEvmCompatibeCallDataHex();
         return hexString;
     }
     /**
@@ -104,7 +106,7 @@ export class Calldata {
      */
     private _optimize(): void {
         // Step 1/1 Create a reverse iterator (starts from the end of the calldata to the beginning)
-        if (_.isUndefined(this._root)) {
+        if (this._root === undefined) {
             throw new Error('expected root');
         }
         const iterator = new ReverseCalldataIterator(this._root);
@@ -134,7 +136,7 @@ export class Calldata {
     }
     private _toEvmCompatibeCallDataHex(): string {
         // Sanity check: must have a root block.
-        if (_.isUndefined(this._root)) {
+        if (this._root === undefined) {
             throw new Error('expected root');
         }
         // Construct an array of buffers (one buffer for each block).
@@ -173,7 +175,7 @@ export class Calldata {
      */
     private _toHumanReadableCallData(): string {
         // Sanity check: must have a root block.
-        if (_.isUndefined(this._root)) {
+        if (this._root === undefined) {
             throw new Error('expected root');
         }
         // Constants for constructing annotated string

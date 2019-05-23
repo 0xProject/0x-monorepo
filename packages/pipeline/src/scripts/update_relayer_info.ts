@@ -1,6 +1,7 @@
-// tslint:disable:no-console
 import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
+
+import { logUtils } from '@0x/utils';
 
 import { RelayerRegistrySource } from '../data_sources/relayer-registry';
 import { Relayer } from '../entities';
@@ -17,17 +18,17 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getRelayers();
+    await getRelayersAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getRelayers(): Promise<void> {
-    console.log('Getting latest relayer info...');
+async function getRelayersAsync(): Promise<void> {
+    logUtils.log('Getting latest relayer info...');
     const relayerRepository = connection.getRepository(Relayer);
     const relayerSource = new RelayerRegistrySource(RELAYER_REGISTRY_URL);
     const relayersResp = await relayerSource.getRelayerInfoAsync();
     const relayers = parseRelayers(relayersResp);
-    console.log('Saving relayer info...');
+    logUtils.log('Saving relayer info...');
     await relayerRepository.save(relayers);
-    console.log('Done saving relayer info.');
+    logUtils.log('Done saving relayer info.');
 }

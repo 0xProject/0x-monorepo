@@ -8,7 +8,7 @@ interface AlertProps {
 }
 
 export const Alert = (props: AlertProps) => {
-    const isAlert = props.type === AlertTypes.ERROR;
+    const isAlert = props.type === AlertTypes.Error;
     const errMsgStyles = {
         background: isAlert ? colors.red200 : colors.lightestGreen,
         color: colors.white,

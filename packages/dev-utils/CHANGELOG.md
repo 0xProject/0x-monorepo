@@ -5,6 +5,70 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.2 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v2.2.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v2.2.0 - _March 21, 2019_
+
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v2.1.4 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v2.1.3 - _March 1, 2019_
+
+    * Dependencies updated
+
+## v2.1.2 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v2.1.1 - _February 25, 2019_
+
+    * Dependencies updated
+
+## v2.1.0 - _February 9, 2019_
+
+    * Allow using the Web3Factory in-process Ganache provider with existing DB snapshot (#1602)
+
+## v2.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v2.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v2.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v1.0.24 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v1.0.23 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v1.0.22 - _January 9, 2019_
+
+    * Dependencies updated
+
+## v1.0.21 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.0.20 - _December 11, 2018_
+
+    * Dependencies updated
+
 ## v1.0.19 - _November 28, 2018_
 
     * Dependencies updated

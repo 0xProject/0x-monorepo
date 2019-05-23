@@ -36,6 +36,7 @@ export interface ContainerProps {
     cursor?: string;
     overflow?: string;
     darkenOnHover?: boolean;
+    rawHoverColor?: string;
     boxShadowOnHover?: boolean;
     flexGrow?: string | number;
 }
@@ -50,10 +51,7 @@ const getBackgroundColor = (theme: any, backgroundColor?: ColorOption, rawBackgr
     return 'none';
 };
 
-export const Container =
-    styled.div <
-    ContainerProps >
-    `
+export const Container = styled.div<ContainerProps>`
     && {
         box-sizing: border-box;
         ${props => cssRuleIfExists(props, 'flex-grow')}
@@ -87,6 +85,7 @@ export const Container =
         background-color: ${props => getBackgroundColor(props.theme, props.backgroundColor, props.rawBackgroundColor)};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {
+            ${props => (props.rawHoverColor ? `background-color: ${props.rawHoverColor}` : '')}
             ${props =>
                 props.darkenOnHover
                     ? `background-color: ${

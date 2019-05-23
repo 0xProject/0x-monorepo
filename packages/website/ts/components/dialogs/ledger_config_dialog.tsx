@@ -20,8 +20,8 @@ import { utils } from 'ts/utils/utils';
 const VALID_ETHEREUM_DERIVATION_PATH_PREFIX = `44'/60'`;
 
 enum LedgerSteps {
-    CONNECT,
-    SELECT_ADDRESS,
+    Connect,
+    SelectAddress,
 }
 
 interface LedgerConfigDialogProps {
@@ -52,12 +52,11 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const derivationPathIfExists = props.blockchain.getLedgerDerivationPathIfExists();
         this.state = {
             connectionErrMsg: '',
-            stepIndex: LedgerSteps.CONNECT,
+            stepIndex: LedgerSteps.Connect,
             userAddresses: [],
             addressBalances: [],
-            derivationPath: _.isUndefined(derivationPathIfExists)
-                ? configs.DEFAULT_DERIVATION_PATH
-                : derivationPathIfExists,
+            derivationPath:
+                derivationPathIfExists === undefined ? configs.DEFAULT_DERIVATION_PATH : derivationPathIfExists,
             derivationErrMsg: '',
             preferredNetworkId: props.networkId,
         };
@@ -67,7 +66,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             <FlatButton key="ledgerConnectCancel" label="Cancel" onClick={this._onClose.bind(this)} />,
         ];
         const dialogTitle =
-            this.state.stepIndex === LedgerSteps.CONNECT ? 'Connect to your Ledger' : 'Select desired address';
+            this.state.stepIndex === LedgerSteps.Connect ? 'Connect to your Ledger' : 'Select desired address';
         return (
             <Dialog
                 title={dialogTitle}
@@ -79,8 +78,8 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
                 bodyStyle={{ paddingBottom: 0 }}
             >
                 <div style={{ color: colors.grey700, paddingTop: 1 }}>
-                    {this.state.stepIndex === LedgerSteps.CONNECT && this._renderConnectStep()}
-                    {this.state.stepIndex === LedgerSteps.SELECT_ADDRESS && this._renderSelectAddressStep()}
+                    {this.state.stepIndex === LedgerSteps.Connect && this._renderConnectStep()}
+                    {this.state.stepIndex === LedgerSteps.SelectAddress && this._renderSelectAddressStep()}
                 </div>
             </Dialog>
         );
@@ -195,7 +194,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     private _onClose(): void {
         this.setState({
             connectionErrMsg: '',
-            stepIndex: LedgerSteps.CONNECT,
+            stepIndex: LedgerSteps.Connect,
         });
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
@@ -210,7 +209,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         this.props.blockchain.fetchTokenInformationAsync();
         this.props.dispatcher.updateUserWeiBalance(selectAddressBalance);
         this.setState({
-            stepIndex: LedgerSteps.CONNECT,
+            stepIndex: LedgerSteps.Connect,
         });
         const isOpen = false;
         this.props.toggleDialogFn(isOpen);
@@ -284,7 +283,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const didSucceed = await this._fetchAddressesAndBalancesAsync();
         if (didSucceed) {
             this.setState({
-                stepIndex: LedgerSteps.SELECT_ADDRESS,
+                stepIndex: LedgerSteps.SelectAddress,
                 connectionErrMsg: '',
             });
         }

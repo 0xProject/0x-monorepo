@@ -1,0 +1,4 @@
+[MESSAGES CONTROL]
+disable=C0330,line-too-long,fixme,too-few-public-methods,too-many-ancestors
+# C0330 is "bad hanging indent". we use indents per `black`.
+

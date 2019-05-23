@@ -9,7 +9,7 @@ export interface EnumProps {
 
 export const Enum = (props: EnumProps) => {
     const values = _.map(props.values, value => {
-        const defaultValueIfAny = !_.isUndefined(value.defaultValue) ? ` = ${value.defaultValue}` : '';
+        const defaultValueIfAny = value.defaultValue !== undefined ? ` = ${value.defaultValue}` : '';
         return `\n\t${value.name}${defaultValueIfAny},`;
     });
     return (

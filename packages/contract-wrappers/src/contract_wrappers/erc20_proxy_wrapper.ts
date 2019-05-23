@@ -26,7 +26,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).erc20Proxy : address;
+        this.address = address === undefined ? _getDefaultContractAddresses(networkId).erc20Proxy : address;
     }
     /**
      * Get the 4 bytes ID of this asset proxy
@@ -62,7 +62,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
         return authorizedAddresses;
     }
     private _getERC20ProxyContract(): ERC20ProxyContract {
-        if (!_.isUndefined(this._erc20ProxyContractIfExists)) {
+        if (this._erc20ProxyContractIfExists !== undefined) {
             return this._erc20ProxyContractIfExists;
         }
         const contractInstance = new ERC20ProxyContract(

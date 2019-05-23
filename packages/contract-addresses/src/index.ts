@@ -9,6 +9,9 @@ export interface ContractAddresses {
     assetProxyOwner: string;
     forwarder: string;
     orderValidator: string;
+    dutchAuction: string;
+    coordinatorRegistry: string;
+    coordinator: string;
 }
 
 export enum NetworkId {
@@ -18,6 +21,8 @@ export enum NetworkId {
     Kovan = 42,
     Ganache = 50,
 }
+
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const networkToAddresses: { [networkId: number]: ContractAddresses } = {
     1: {
@@ -29,6 +34,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
+        dutchAuction: '0x07b32a653754945666cfca91168bb207323dfe67',
+        coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -39,6 +47,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b',
         forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
+        dutchAuction: '0x2df6b59309f35ada230ec7d61d7d97355017a1df',
+        coordinatorRegistry: '0x403cc23e88c17c4652fb904784d1af640a6722d9',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     4: {
         exchange: '0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e',
@@ -49,6 +60,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0xe1703da878afcebff5b7624a826902af475b9c03',
         forwarder: '0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4',
         orderValidator: '0x0c5173a51e26b29d6126c686756fb9fbef71f762',
+        dutchAuction: '0xdd7bd6437e67c422879364740ab5855fe3dc41f7',
+        coordinatorRegistry: '0x1084b6a398e47907bae43fec3ff4b677db6e4fee',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -59,17 +73,23 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
         forwarder: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
+        dutchAuction: '0xe11667fb51f34c5367f40d7e379327ce32ee7150',
+        coordinatorRegistry: '0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
-        exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
         erc20Proxy: '0x1dc4c1cefef38a777b15aa20260a54e584b16c48',
         erc721Proxy: '0x1d7022f5b17d2f8b695918fb48fa1089c9f85401',
         zrxToken: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
         etherToken: '0x0b1ba0af832d7c05fd64161e0db78e85978e8082',
-        assetProxyOwner: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
-        forwarder: '0xb69e673309512a9d726f87304c6984054f87a93b',
-        orderValidator: '0xe86bb98fcf9bff3512c74589b78fb168200cc546',
+        exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+        assetProxyOwner: '0x04b5dadd2c0d6a261bfafbc964e0cac48585def3',
+        forwarder: '0x6000eca38b8b5bba64986182fe2a69c57f6b5414',
+        orderValidator: '0x32eecaf51dfea9618e9bc94e9fbfddb1bbdcba15',
+        dutchAuction: '0x7e3f4e1deb8d3a05d9d2da87d9521268d0ec3239',
+        coordinatorRegistry: '0xaa86dda78e9434aca114b6676fc742a18d15a1cc',
+        coordinator: '0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29',
     },
 };
 
@@ -82,7 +102,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
  * given networkId.
  */
 export function getContractAddressesForNetworkOrThrow(networkId: NetworkId): ContractAddresses {
-    if (_.isUndefined(networkToAddresses[networkId])) {
+    if (networkToAddresses[networkId] === undefined) {
         throw new Error(`Unknown network id (${networkId}). No known 0x contracts have been deployed on this network.`);
     }
     return networkToAddresses[networkId];

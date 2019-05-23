@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link as ReactRounterLink } from 'react-router-dom';
+import { NavLink as ReactRounterLink } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 import * as validUrl from 'valid-url';
 
 import { LinkType } from '../types';
 import { constants } from '../utils/constants';
 
-interface BaseLinkProps {
+export interface BaseLinkProps {
     to: string;
     shouldOpenInNewTab?: boolean;
     className?: string;
@@ -18,11 +18,15 @@ interface BaseLinkProps {
     fontColor?: string;
 }
 
-interface ScrollLinkProps extends BaseLinkProps {
+export interface ScrollLinkProps extends BaseLinkProps {
     onActivityChanged?: (isActive: boolean) => void;
 }
 
-type LinkProps = BaseLinkProps & ScrollLinkProps;
+export interface ReactLinkProps extends BaseLinkProps {
+    activeStyle?: React.CSSProperties;
+}
+
+export type LinkProps = ReactLinkProps & ScrollLinkProps;
 
 export interface LinkState {}
 
@@ -94,6 +98,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
                         onMouseOver={this.props.onMouseOver}
                         onMouseEnter={this.props.onMouseEnter}
                         onMouseLeave={this.props.onMouseLeave}
+                        activeStyle={this.props.activeStyle}
                     >
                         {this.props.children}
                     </ReactRounterLink>
@@ -138,7 +143,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
     // is within a dropdown we want to close upon being clicked). Because of this, we register the
     // click event of an inner span, and pass it around the react-scroll link to an outer span.
     private _onClickPropagateClickEventAroundScrollLink(): void {
-        if (!_.isNull(this._outerReactScrollSpan)) {
+        if (this._outerReactScrollSpan !== null) {
             this._outerReactScrollSpan.click();
         }
     }

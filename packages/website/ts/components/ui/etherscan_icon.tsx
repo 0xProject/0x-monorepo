@@ -18,7 +18,7 @@ export const EtherScanIcon = (props: EtherScanIconProps) => {
     const transactionTooltipId = `${props.addressOrTxHash}-etherscan-icon-tooltip`;
     return (
         <div className="inline">
-            {!_.isUndefined(etherscanLinkIfExists) ? (
+            {etherscanLinkIfExists !== undefined ? (
                 <a href={etherscanLinkIfExists} target="_blank">
                     {renderIcon()}
                 </a>

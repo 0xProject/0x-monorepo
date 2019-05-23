@@ -33,7 +33,9 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ContractWrappers]: 'contract-wrappers',
     [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',
-    [DocPackages.SolCov]: 'sol-cov',
+    [DocPackages.SolCoverage]: 'sol-coverage',
+    [DocPackages.SolProfiler]: 'sol-profiler',
+    [DocPackages.SolTrace]: 'sol-trace',
     [DocPackages.Subproviders]: 'subproviders',
     [DocPackages.OrderUtils]: 'order-utils',
     [DocPackages.OrderWatcher]: 'order-watcher',
@@ -78,29 +80,32 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     public render(): React.ReactNode {
         const sourceUrl = this._getSourceUrl();
-        const sectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
-            ? {}
-            : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
-        const mainContent = _.isUndefined(this.state.docAgnosticFormat) ? (
-            <div className="flex justify-center">{this._renderLoading()}</div>
-        ) : (
-            <DocReference
-                selectedVersion={this.props.docsVersion}
-                availableVersions={this.props.availableDocVersions}
-                docsInfo={this.props.docsInfo}
-                docAgnosticFormat={this.state.docAgnosticFormat}
-                sourceUrl={sourceUrl}
-            />
-        );
-        const sidebar = _.isUndefined(this.state.docAgnosticFormat) ? (
-            <div />
-        ) : (
-            <NestedSidebarMenu
-                sidebarHeader={this._renderSidebarHeader()}
-                sectionNameToLinks={sectionNameToLinks}
-                screenWidth={this.props.screenWidth}
-            />
-        );
+        const sectionNameToLinks =
+            this.state.docAgnosticFormat === undefined
+                ? {}
+                : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
+        const mainContent =
+            this.state.docAgnosticFormat === undefined ? (
+                <div className="flex justify-center">{this._renderLoading()}</div>
+            ) : (
+                <DocReference
+                    selectedVersion={this.props.docsVersion}
+                    availableVersions={this.props.availableDocVersions}
+                    docsInfo={this.props.docsInfo}
+                    docAgnosticFormat={this.state.docAgnosticFormat}
+                    sourceUrl={sourceUrl}
+                />
+            );
+        const sidebar =
+            this.state.docAgnosticFormat === undefined ? (
+                <div />
+            ) : (
+                <NestedSidebarMenu
+                    sidebarHeader={this._renderSidebarHeader()}
+                    sectionNameToLinks={sectionNameToLinks}
+                    screenWidth={this.props.screenWidth}
+                />
+            );
         return (
             <DevelopersPage
                 sidebar={sidebar}
@@ -147,9 +152,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const latestVersion = sortedVersions[0];
 
         let versionToFetch = latestVersion;
-        if (!_.isUndefined(preferredVersionIfExists)) {
+        if (preferredVersionIfExists !== undefined) {
             const preferredVersionFileNameIfExists = versionToFilePath[preferredVersionIfExists];
-            if (!_.isUndefined(preferredVersionFileNameIfExists)) {
+            if (preferredVersionFileNameIfExists !== undefined) {
                 versionToFetch = preferredVersionIfExists;
             }
         }

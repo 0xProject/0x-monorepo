@@ -1,19 +1,17 @@
 {
     "extends": "../../tsconfig",
-    "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": ".",
-        "resolveJsonModule": true
-    },
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "./generated-artifacts/TestConstants.json",
-        "./generated-artifacts/TestLibBytes.json",
-        "./generated-artifacts/IOwnable.json",
-        "./generated-artifacts/Ownable.json",
-        "./generated-artifacts/LibBytes.json",
-        "./generated-artifacts/SafeMath.json",
-        "./generated-artifacts/ReentrancyGuard.json"
+        "generated-artifacts/Address.json",
+        "generated-artifacts/IOwnable.json",
+        "generated-artifacts/LibBytes.json",
+        "generated-artifacts/Ownable.json",
+        "generated-artifacts/ReentrancyGuard.json",
+        "generated-artifacts/SafeMath.json",
+        "generated-artifacts/TestConstants.json",
+        "generated-artifacts/TestLibAddressArray.json",
+        "generated-artifacts/TestLibBytes.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

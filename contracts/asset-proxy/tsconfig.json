@@ -1,0 +1,17 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
+    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "files": [
+        "generated-artifacts/ERC1155Proxy.json",
+        "generated-artifacts/ERC20Proxy.json",
+        "generated-artifacts/ERC721Proxy.json",
+        "generated-artifacts/IAssetData.json",
+        "generated-artifacts/IAssetProxy.json",
+        "generated-artifacts/IAuthorizable.json",
+        "generated-artifacts/LibAssetData.json",
+        "generated-artifacts/MixinAuthorizable.json",
+        "generated-artifacts/MultiAssetProxy.json"
+    ],
+    "exclude": ["./deploy/solc/solc_bin"]
+}

@@ -14,3 +14,5 @@ export const PlacingOrderButton: React.StatelessComponent<{}> = props => (
         Placing Order&hellip;
     </Button>
 );
+
+PlacingOrderButton.displayName = 'PlacingOrderButton';

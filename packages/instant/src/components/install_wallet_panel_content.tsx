@@ -18,7 +18,7 @@ import { Button } from './ui/button';
 
 export interface InstallWalletPanelContentProps {}
 
-export class InstallWalletPanelContent extends React.Component<InstallWalletPanelContentProps> {
+export class InstallWalletPanelContent extends React.PureComponent<InstallWalletPanelContentProps> {
     public render(): React.ReactNode {
         const panelProps = this._getStandardPanelContentProps();
         return <StandardPanelContent {...panelProps} />;

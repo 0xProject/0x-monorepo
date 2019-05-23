@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ]
+    },
+    {
         "version": "1.0.6",
         "changes": [
             {
@@ -17,6 +26,10 @@
             {
                 "note": "Fix a bug when hardcoded CHANGELOG paths cause fetching release notes to fail",
                 "pr": 1311
+            },
+            {
+                "note": "Added DutchAuctionWrapper to the CLASSES_WITH_HIDDEN_CONSTRUCTORS array",
+                "pr": 1465
             }
         ]
     },

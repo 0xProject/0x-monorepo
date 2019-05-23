@@ -16,10 +16,13 @@ export const ONE_SECOND_MS = 1000;
 export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 export const GIT_SHA = process.env.GIT_SHA;
 export const NODE_ENV = process.env.NODE_ENV;
+export const ERC20_BUY_QUOTE_SLIPPAGE_PERCENTAGE = 0.2;
+export const ERC721_BUY_QUOTE_SLIPPAGE_PERCENTAGE = 0;
 export const NPM_PACKAGE_VERSION = process.env.NPM_PACKAGE_VERSION;
+export const DEFAULT_UNKOWN_ASSET_NAME = '???';
 export const ACCOUNT_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 5;
 export const BUY_QUOTE_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 15;
-export const DEFAULT_GAS_PRICE = GWEI_IN_WEI.mul(6);
+export const DEFAULT_GAS_PRICE = GWEI_IN_WEI.multipliedBy(6);
 export const DEFAULT_ESTIMATED_TRANSACTION_TIME_MS = ONE_MINUTE_MS * 2;
 export const MAGIC_TRIGGER_ERROR_INPUT = '0€';
 export const MAGIC_TRIGGER_ERROR_MESSAGE = 'Triggered error';
@@ -33,6 +36,7 @@ export const HOST_DOMAINS_EXTERNAL = [
     '0x-instant-staging.s3-website-us-east-1.amazonaws.com',
     '0x-instant-dogfood.s3-website-us-east-1.amazonaws.com',
     'instant.0xproject.com',
+    'instant.0x.org',
 ];
 export const HOST_DOMAINS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'];
 export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
@@ -51,10 +55,10 @@ export const META_MASK_CHROME_STORE_URL =
 export const META_MASK_OPERA_STORE_URL = 'https://addons.opera.com/en/extensions/details/metamask/';
 export const META_MASK_SITE_URL = 'https://metamask.io/';
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
-    [Network.Mainnet]: 'https://mainnet.infura.io/',
-    [Network.Kovan]: 'https://kovan.infura.io/',
+    [Network.Mainnet]: `https://mainnet.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
+    [Network.Kovan]: `https://kovan.infura.io/v3/${process.env.INSTANT_INFURA_PROJECT_ID}`,
 };
-export const ZERO_EX_SITE_URL = 'https://www.0xproject.com/';
+export const ZERO_EX_SITE_URL = 'https://www.0x.org/';
 export const BLOCK_POLLING_INTERVAL_MS = 10000; // 10s
 export const NO_ACCOUNT: AccountNotReady = {
     state: AccountState.None,
@@ -71,5 +75,7 @@ export const PROVIDER_TYPE_TO_NAME: { [key in ProviderType]: string } = {
     [ProviderType.Mist]: 'Mist',
     [ProviderType.CoinbaseWallet]: 'Coinbase Wallet',
     [ProviderType.Parity]: 'Parity',
+    [ProviderType.TrustWallet]: 'Trust Wallet',
+    [ProviderType.Opera]: 'Opera Wallet',
     [ProviderType.Fallback]: 'Fallback',
 };

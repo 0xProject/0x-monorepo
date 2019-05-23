@@ -1,5 +1,5 @@
 import { Schema, SchemaValidator } from '@0x/json-schemas';
-import { addressUtils, BigNumber } from '@0x/utils';
+import { addressUtils, BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
 
@@ -7,12 +7,12 @@ const HEX_REGEX = /^0x[0-9A-F]*$/i;
 
 export const assert = {
     isBigNumber(variableName: string, value: BigNumber): void {
-        const isBigNumber = _.isObject(value) && (value as any).isBigNumber;
+        const isBigNumber = BigNumber.isBigNumber(value);
         assert.assert(isBigNumber, assert.typeAssertionMessage(variableName, 'BigNumber', value));
     },
     isValidBaseUnitAmount(variableName: string, value: BigNumber): void {
         assert.isBigNumber(variableName, value);
-        const isNegative = value.lessThan(0);
+        const isNegative = value.isLessThan(0);
         assert.assert(!isNegative, `${variableName} cannot be a negative number, found value: ${value.toNumber()}`);
         const hasDecimals = value.decimalPlaces() !== 0;
         assert.assert(
@@ -60,15 +60,16 @@ export const assert = {
         assert.assert(_.isBoolean(value), assert.typeAssertionMessage(variableName, 'boolean', value));
     },
     isWeb3Provider(variableName: string, value: any): void {
+        logUtils.warn('DEPRECATED: Please use providerUtils.standardizeOrThrow() instead');
         const isWeb3Provider = _.isFunction(value.send) || _.isFunction(value.sendAsync);
         assert.assert(isWeb3Provider, assert.typeAssertionMessage(variableName, 'Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
-        if (_.isUndefined(value)) {
+        if (value === undefined) {
             throw new Error(`${variableName} can't be undefined`);
         }
         const schemaValidator = new SchemaValidator();
-        if (!_.isUndefined(subSchemas)) {
+        if (subSchemas !== undefined) {
             _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
         }
         const validationResult = schemaValidator.validate(value, schema);
@@ -79,11 +80,11 @@ Validation errors: ${validationResult.errors.join(', ')}`;
         assert.assert(!hasValidationErrors, msg);
     },
     isWebUri(variableName: string, value: any): void {
-        const isValidUrl = !_.isUndefined(validUrl.isWebUri(value));
+        const isValidUrl = validUrl.isWebUri(value) !== undefined;
         assert.assert(isValidUrl, assert.typeAssertionMessage(variableName, 'web uri', value));
     },
     isUri(variableName: string, value: any): void {
-        const isValidUri = !_.isUndefined(validUrl.isUri(value));
+        const isValidUri = validUrl.isUri(value) !== undefined;
         assert.assert(isValidUri, assert.typeAssertionMessage(variableName, 'uri', value));
     },
     assert(condition: boolean, message: string): void {

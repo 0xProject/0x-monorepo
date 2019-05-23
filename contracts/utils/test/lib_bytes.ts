@@ -16,8 +16,7 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { TestLibBytesContract } from '../generated-wrappers/test_lib_bytes';
-import { artifacts } from '../src';
+import { artifacts, TestLibBytesContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -25,7 +24,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // BUG: Ideally we would use Buffer.from(memory).toString('hex')
 // https://github.com/Microsoft/TypeScript/issues/23155
-const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + ('00' + v.toString(16)).slice(-2), '0x');
+const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + `00${v.toString(16)}`.slice(-2), '0x');
 
 const fromHex = (str: string): Uint8Array => Uint8Array.from(Buffer.from(str.slice(2), 'hex'));
 
@@ -870,6 +869,104 @@ describe('LibBytes', () => {
 
         describe('copies forward within one word and one byte overlap', () =>
             test([[0, 0, 1, 'one byte'], [0, 10, 11, 'eleven bytes'], [0, 15, 16, 'sixteen bytes']]));
+    });
+
+    describe('slice', () => {
+        it('should revert if from > to', async () => {
+            const from = new BigNumber(1);
+            const to = new BigNumber(0);
+            expectContractCallFailedAsync(
+                libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to),
+                RevertReason.FromLessThanToRequired,
+            );
+        });
+        it('should return a byte array of length 0 if from == to', async () => {
+            const from = new BigNumber(0);
+            const to = from;
+            const [result, original] = await libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to);
+            expect(original).to.eq(byteArrayLongerThan32Bytes);
+            expect(result).to.eq(constants.NULL_BYTES);
+        });
+        it('should return a byte array of length 0 if from == to == b.length', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const from = new BigNumber(byteLen);
+            const to = from;
+            const [result, original] = await libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to);
+            expect(original).to.eq(byteArrayLongerThan32Bytes);
+            expect(result).to.eq(constants.NULL_BYTES);
+        });
+        it('should revert if to > input.length', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const from = new BigNumber(0);
+            const to = new BigNumber(byteLen).plus(1);
+            expectContractCallFailedAsync(
+                libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to),
+                RevertReason.ToLessThanLengthRequired,
+            );
+        });
+        it('should slice a section of the input', async () => {
+            const from = new BigNumber(1);
+            const to = new BigNumber(2);
+            const [result, original] = await libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to);
+            const expectedResult = `0x${byteArrayLongerThan32Bytes.slice(4, 6)}`;
+            expect(original).to.eq(byteArrayLongerThan32Bytes);
+            expect(result).to.eq(expectedResult);
+        });
+        it('should copy the entire input if from = 0 and to = input.length', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const from = new BigNumber(0);
+            const to = new BigNumber(byteLen);
+            const [result, original] = await libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to);
+            expect(original).to.eq(byteArrayLongerThan32Bytes);
+            expect(result).to.eq(byteArrayLongerThan32Bytes);
+        });
+    });
+
+    describe('sliceDestructive', () => {
+        it('should revert if from > to', async () => {
+            const from = new BigNumber(1);
+            const to = new BigNumber(0);
+            expectContractCallFailedAsync(
+                libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to),
+                RevertReason.FromLessThanToRequired,
+            );
+        });
+        it('should return a byte array of length 0 if from == to', async () => {
+            const from = new BigNumber(0);
+            const to = from;
+            const [result] = await libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to);
+            expect(result).to.eq(constants.NULL_BYTES);
+        });
+        it('should return a byte array of length 0 if from == to == b.length', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const from = new BigNumber(byteLen);
+            const to = from;
+            const [result] = await libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to);
+            expect(result).to.eq(constants.NULL_BYTES);
+        });
+        it('should revert if to > input.length', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const from = new BigNumber(0);
+            const to = new BigNumber(byteLen).plus(1);
+            expectContractCallFailedAsync(
+                libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to),
+                RevertReason.ToLessThanLengthRequired,
+            );
+        });
+        it('should slice a section of the input', async () => {
+            const from = new BigNumber(1);
+            const to = new BigNumber(2);
+            const [result] = await libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to);
+            const expectedResult = `0x${byteArrayLongerThan32Bytes.slice(4, 6)}`;
+            expect(result).to.eq(expectedResult);
+        });
+        it('should copy the entire input if from = 0 and to = input.length', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const from = new BigNumber(0);
+            const to = new BigNumber(byteLen);
+            const [result] = await libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to);
+            expect(result).to.eq(byteArrayLongerThan32Bytes);
+        });
     });
 });
 // tslint:disable:max-file-line-count

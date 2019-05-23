@@ -1,7 +1,5 @@
 ## @0x/asset-buyer
 
-**Warning: In Beta, has not been extensively tested.**
-
 Convenience package for buying assets represented on the Ethereum blockchain using 0x. In its simplest form, the package helps in the usage of the [0x forwarder contract](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md), which allows users to execute [Wrapped Ether](https://weth.io/) based 0x orders without having to set allowances, wrap Ether or own ZRX, meaning they can buy tokens with Ether alone. Given some liquidity (0x signed orders), it helps estimate the Ether cost of buying a certain asset (giving a range) and then buying that asset.
 
 In its more advanced and useful form, it integrates with the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) and takes care of sourcing liquidity for you given an SRA compliant endpoint. The final result is a library that tells you what assets are available, provides an Ether based quote for any asset desired, and allows you to buy that asset using Ether alone.

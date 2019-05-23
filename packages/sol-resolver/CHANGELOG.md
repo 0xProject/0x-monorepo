@@ -5,6 +5,59 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.7 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v2.0.6 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v2.0.5 - _March 20, 2019_
+
+    * Dependencies updated
+
+## v2.0.4 - _February 26, 2019_
+
+    * Dependencies updated
+
+## v2.0.3 - _February 25, 2019_
+
+    * Dependencies updated
+
+## v2.0.2 - _February 7, 2019_
+
+    * Dependencies updated
+
+## v2.0.1 - _February 6, 2019_
+
+    * Dependencies updated
+
+## v2.0.0 - _February 5, 2019_
+
+    * Upgrade the bignumber.js to v8.0.2 (#1517)
+
+## v1.2.3 - _January 15, 2019_
+
+    * Dependencies updated
+
+## v1.2.2 - _January 11, 2019_
+
+    * Dependencies updated
+
+## v1.2.1 - _January 9, 2019_
+
+    * Add `absolutePath` to `ContractSource` type (#1461)
+    * Add `SpyResolver` that records all resolved contracts data (#1461)
+
+## v1.1.1 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.1.0 - _December 11, 2018_
+
+    * NPMResolver now supports scoped packages (#1311)
+
 ## v1.0.17 - _November 21, 2018_
 
     * Dependencies updated

@@ -2,9 +2,9 @@ These templates are used with [abi-gen](https://github.com/0xProject/0x-monorepo
 
 To successfully compile the generated TypeScript contract wrappers, you must:
 
-*   Install the packages on which the main contract template directly depends: `yarn add @0x/base-contract @0x/sol-compiler @0x/utils @0x/web3-wrapper ethereum-types ethers lodash`
-*   Install the packages on which the main contract template *in*directly depends: `yarn add @types/lodash`
-*   Ensure that your TypeScript configuration includes the following:
+-   Install the packages on which the main contract template directly depends: `yarn add @0x/base-contract @0x/sol-compiler @0x/utils @0x/web3-wrapper ethereum-types ethers lodash`
+-   Install the packages on which the main contract template *in*directly depends: `yarn add @types/lodash`
+-   Ensure that your TypeScript configuration includes the following:
 
 ```
 "compilerOptions": {

@@ -21,7 +21,7 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
     const curAccount = curState.providerState.account;
 
     switch (nextAction.type) {
-        case ActionTypes.SET_ACCOUNT_STATE_READY:
+        case ActionTypes.SetAccountStateReady:
             if (curAccount.state === AccountState.Ready) {
                 const didJustTurnReady = prevAccount.state !== AccountState.Ready;
                 const didJustUpdateAddress =
@@ -38,13 +38,13 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 }
             }
             break;
-        case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
+        case ActionTypes.SetAccountStateLocked:
             if (prevAccount.state !== AccountState.Locked && curAccount.state === AccountState.Locked) {
                 // if we are moving from account not locked to account locked, track `Account - Locked`
                 analytics.trackAccountLocked();
             }
             break;
-        case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE:
+        case ActionTypes.UpdateAccountEthBalance:
             if (
                 curAccount.state === AccountState.Ready &&
                 curAccount.ethBalanceInWei &&
@@ -58,7 +58,7 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 analytics.addEventProperties({ ethBalanceInUnitAmount });
             }
             break;
-        case ActionTypes.UPDATE_SELECTED_ASSET:
+        case ActionTypes.UpdateSelectedAsset:
             const selectedAsset = curState.selectedAsset;
             if (selectedAsset) {
                 const assetName = selectedAsset.metaData.name;
@@ -79,7 +79,7 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 analytics.addEventProperties(selectedAssetEventProperties);
             }
             break;
-        case ActionTypes.SET_AVAILABLE_ASSETS:
+        case ActionTypes.SetAvailableAssets:
             const availableAssets = curState.availableAssets;
             if (availableAssets) {
                 analytics.addEventProperties({
@@ -87,18 +87,21 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 });
             }
             break;
-        case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+        case ActionTypes.OpenStandardSlidingPanel:
             const openSlidingContent = curState.standardSlidingPanelSettings.content;
             if (openSlidingContent === StandardSlidingPanelContent.InstallWallet) {
                 analytics.trackInstallWalletModalOpened();
             }
             break;
-        case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+        case ActionTypes.CloseStandardSlidingPanel:
             const closeSlidingContent = curState.standardSlidingPanelSettings.content;
             if (closeSlidingContent === StandardSlidingPanelContent.InstallWallet) {
                 analytics.trackInstallWalletModalClosed();
             }
             break;
+        case ActionTypes.UpdateBaseCurrency:
+            analytics.trackBaseCurrencyChanged(curState.baseCurrency);
+            analytics.addEventProperties({ baseCurrency: curState.baseCurrency });
     }
 
     return nextAction;

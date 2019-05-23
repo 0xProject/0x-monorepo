@@ -1,5 +1,6 @@
-// tslint:disable:no-console
 import { HttpClient } from '@0x/connect';
+import { logUtils } from '@0x/utils';
+
 import * as R from 'ramda';
 import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection, EntityManager } from 'typeorm';
@@ -21,34 +22,31 @@ let connection: Connection;
 })().catch(handleError);
 
 async function getOrderbookAsync(): Promise<void> {
-    console.log('Getting all orders...');
+    logUtils.log('Getting all orders...');
     const connectClient = new HttpClient(RADAR_RELAY_URL);
     const rawOrders = await connectClient.getOrdersAsync({
         perPage: ORDERS_PER_PAGE,
     });
-    console.log(`Got ${rawOrders.records.length} orders.`);
-    console.log('Parsing orders...');
+    logUtils.log(`Got ${rawOrders.records.length} orders.`);
+    logUtils.log('Parsing orders...');
     // Parse the sra orders, then add source url to each.
-    const orders = R.pipe(parseSraOrders, R.map(setSourceUrl(RADAR_RELAY_URL)))(rawOrders);
+    const orders = R.pipe(
+        parseSraOrders,
+        R.map(o => R.set(sourceUrlProp, RADAR_RELAY_URL, o)),
+    )(rawOrders);
     // Save all the orders and update the observed time stamps in a single
     // transaction.
-    console.log('Saving orders and updating timestamps...');
+    logUtils.log('Saving orders and updating timestamps...');
     const observedTimestamp = Date.now();
-    await connection.transaction(async (manager: EntityManager): Promise<void> => {
-        for (const order of orders) {
-            await manager.save(SraOrder, order);
-            const orderObservation = createObservedTimestampForOrder(order, observedTimestamp);
-            await manager.save(orderObservation);
-        }
-    });
+    await connection.transaction(
+        async (manager: EntityManager): Promise<void> => {
+            for (const order of orders) {
+                await manager.save(SraOrder, order);
+                const orderObservation = createObservedTimestampForOrder(order, observedTimestamp);
+                await manager.save(orderObservation);
+            }
+        },
+    );
 }
 
 const sourceUrlProp = R.lensProp('sourceUrl');
-
-/**
- * Sets the source url for a single order. Returns a new order instead of
- * mutating the given one.
- */
-const setSourceUrl = R.curry((sourceURL: string, order: SraOrder): SraOrder => {
-    return R.set(sourceUrlProp, sourceURL, order);
-});

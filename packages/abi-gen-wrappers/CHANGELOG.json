@@ -1,5 +1,160 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods",
+                "pr": 1797
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Added IAssetProxy wrapper",
+                "pr": 1714
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Add Coordinator and CoordinatorRegistry contract wrappers",
+                "pr": 1689
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added `MultiAssetProxy`",
+                "pr": 1503
+            }
+        ],
+        "timestamp": 1547561734
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added Dutch Auction Wrapper",
+                "pr": 1465
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
@@ -13,8 +168,7 @@
         "version": "1.1.0",
         "changes": [
             {
-                "note":
-                    "`deployFrom0xArtifactAsync` additionally accepts artifacts that conform to the `SimpleContractArtifact` interface",
+                "note": "`deployFrom0xArtifactAsync` additionally accepts artifacts that conform to the `SimpleContractArtifact` interface",
                 "pr": 1298
             }
         ],

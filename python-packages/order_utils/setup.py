@@ -21,7 +21,7 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        exit(pytest.main())
+        exit(pytest.main(["--doctest-modules"]))
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -137,14 +137,8 @@ class GanacheCommand(distutils.command.build_py.build_py):
     def run(self):
         """Run ganache."""
         cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
-            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
-            + " --networkId 50 -m"
+            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
         ).split()
-        cmd_line.append(
-            "concert load couple harbor equip island argue ramp clarify fence"
-            + " smart topic"
-        )
         subprocess.call(cmd_line)  # nosec
 
 
@@ -154,11 +148,14 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-order-utils",
-    version="1.0.1",
+    version="2.0.0",
     description="Order utilities for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
+    url=(
+        "https://github.com/0xProject/0x-monorepo/tree/development"
+        "/python-packages/order_utils"
+    ),
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
@@ -171,11 +168,15 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
+        "0x-contract-addresses",
+        "0x-contract-artifacts",
+        "0x-json-schemas",
+        "0x-web3",
         "eth-abi",
         "eth_utils",
-        "jsonschema",
+        "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
+        # above works around https://github.com/ethereum/web3.py/issues/1179
         "mypy_extensions",
-        "web3",
     ],
     extras_require={
         "dev": [
@@ -183,6 +184,7 @@ setup(
             "black",
             "coverage",
             "coveralls",
+            "deprecated",
             "mypy",
             "mypy_extensions",
             "pycodestyle",
@@ -190,16 +192,13 @@ setup(
             "pylint",
             "pytest",
             "sphinx",
+            "sphinx-autodoc-typehints",
             "tox",
             "twine",
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={
-        "zero_ex.order_utils": ["py.typed"],
-        "zero_ex.contract_artifacts": ["artifacts/*"],
-        "zero_ex.json_schemas": ["schemas/*"],
-    },
+    package_data={"zero_ex.order_utils": ["py.typed"]},
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(

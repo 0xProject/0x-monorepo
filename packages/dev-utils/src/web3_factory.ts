@@ -5,6 +5,7 @@ import {
     RPCSubprovider,
     Web3ProviderEngine,
 } from '@0x/subproviders';
+import { providerUtils } from '@0x/utils';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 
@@ -17,14 +18,15 @@ export interface Web3Config {
     shouldThrowErrorsOnGanacheRPCResponse?: boolean; // default: true
     rpcUrl?: string; // default: localhost:8545
     shouldUseFakeGasEstimate?: boolean; // default: true
+    ganacheDatabasePath?: string; // default: undefined, creates a tmp dir
 }
 
 export const web3Factory = {
     getRpcProvider(config: Web3Config = {}): Web3ProviderEngine {
         const provider = new Web3ProviderEngine();
-        const hasAddresses = _.isUndefined(config.hasAddresses) || config.hasAddresses;
+        const hasAddresses = config.hasAddresses === undefined || config.hasAddresses;
         config.shouldUseFakeGasEstimate =
-            _.isUndefined(config.shouldUseFakeGasEstimate) || config.shouldUseFakeGasEstimate;
+            config.shouldUseFakeGasEstimate === undefined || config.shouldUseFakeGasEstimate;
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
@@ -39,15 +41,23 @@ export const web3Factory = {
         };
         const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
-            if (!_.isUndefined(config.rpcUrl)) {
+            if (config.rpcUrl !== undefined) {
                 throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
             }
             const shouldThrowErrorsOnGanacheRPCResponse =
-                _.isUndefined(config.shouldThrowErrorsOnGanacheRPCResponse) ||
+                config.shouldThrowErrorsOnGanacheRPCResponse === undefined ||
                 config.shouldThrowErrorsOnGanacheRPCResponse;
+            if (config.ganacheDatabasePath !== undefined) {
+                const doesDatabaseAlreadyExist = fs.existsSync(config.ganacheDatabasePath);
+                if (!doesDatabaseAlreadyExist) {
+                    // Working with local DB snapshot. Ganache requires this directory to exist
+                    fs.mkdirSync(config.ganacheDatabasePath);
+                }
+            }
             provider.addProvider(
                 new GanacheSubprovider({
                     vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
+                    db_path: config.ganacheDatabasePath,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),
@@ -59,7 +69,7 @@ export const web3Factory = {
         } else {
             provider.addProvider(new RPCSubprovider(config.rpcUrl || constants.RPC_URL));
         }
-        provider.start();
+        providerUtils.startProviderEngine(provider);
         return provider;
     },
 };

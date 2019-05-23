@@ -9,6 +9,7 @@ export const docGenConfigs: DocGenConfigs = {
         Array: 'https://developer.mozilla.org/pt-PT/docs/Web/JavaScript/Reference/Global_Objects/Array',
         BigNumber: 'http://mikemcl.github.io/bignumber.js',
         Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+        ErrorConstructor: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
         Buffer: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L262',
         'solc.StandardContractOutput':
             'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',
@@ -37,6 +38,8 @@ export const docGenConfigs: DocGenConfigs = {
     // and getting confused. Any class name in this list will not have it's constructor rendered in our docs.
     CLASSES_WITH_HIDDEN_CONSTRUCTORS: [
         'AssetBuyer',
+        'CoordinatorWrapper',
+        'DutchAuctionWrapper',
         'ERC20ProxyWrapper',
         'ERC20TokenWrapper',
         'ERC721ProxyWrapper',
@@ -54,9 +57,11 @@ export const docGenConfigs: DocGenConfigs = {
         'NonceSubproviderErrors',
         'Web3WrapperErrors',
         'ContractWrappersError',
-        'OrderError',
+        'TypedDataError',
         'AssetBuyerError',
         'ForwarderWrapperError',
+        'CoordinatorServerError',
+        'CoordinatorServerCancellationResponse',
     ],
     // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
     // "exported public interface". Thus we add them here and skip those checks.

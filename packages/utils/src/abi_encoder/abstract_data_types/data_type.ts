@@ -27,9 +27,9 @@ export abstract class DataType {
     }
 
     public encode(value: any, rules?: EncodingRules, selector?: string): string {
-        const rules_ = _.isUndefined(rules) ? constants.DEFAULT_ENCODING_RULES : rules;
+        const rules_ = rules === undefined ? constants.DEFAULT_ENCODING_RULES : rules;
         const calldata = new Calldata(rules_);
-        if (!_.isUndefined(selector)) {
+        if (selector !== undefined) {
             calldata.setSelector(selector);
         }
         const block = this.generateCalldataBlock(value);
@@ -39,20 +39,40 @@ export abstract class DataType {
     }
 
     public decode(calldata: string, rules?: DecodingRules, selector?: string): any {
-        if (!_.isUndefined(selector) && !_.startsWith(calldata, selector)) {
+        if (selector !== undefined && !_.startsWith(calldata, selector)) {
             throw new Error(
                 `Tried to decode calldata, but it was missing the function selector. Expected prefix '${selector}'. Got '${calldata}'.`,
             );
         }
-        const hasSelector = !_.isUndefined(selector);
+        const hasSelector = selector !== undefined;
         const rawCalldata = new RawCalldata(calldata, hasSelector);
-        const rules_ = _.isUndefined(rules) ? constants.DEFAULT_DECODING_RULES : rules;
-        const value = this.generateValue(rawCalldata, rules_);
+        const rules_ = rules === undefined ? constants.DEFAULT_DECODING_RULES : rules;
+        const value =
+            rawCalldata.getSizeInBytes() > 0 ? this.generateValue(rawCalldata, rules_) : this.getDefaultValue(rules_);
         return value;
+    }
+
+    public decodeAsArray(returndata: string, rules?: DecodingRules): any[] {
+        const value = this.decode(returndata, rules);
+        const valuesAsArray = _.isObject(value) ? _.values(value) : [value];
+        return valuesAsArray;
+    }
+
+    public getSignature(isDetailed?: boolean): string {
+        if (_.isEmpty(this._dataItem.name) || !isDetailed) {
+            return this.getSignatureType();
+        }
+        const name = this.getDataItem().name;
+        const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
+        const isScopedName = lastIndexOfScopeDelimiter !== undefined && lastIndexOfScopeDelimiter > 0;
+        const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
+        const detailedSignature = `${shortName} ${this.getSignatureType()}`;
+        return detailedSignature;
     }
 
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
     public abstract generateValue(calldata: RawCalldata, rules: DecodingRules): any;
-    public abstract getSignature(): string;
+    public abstract getDefaultValue(rules?: DecodingRules): any;
+    public abstract getSignatureType(): string;
     public abstract isStatic(): boolean;
 }

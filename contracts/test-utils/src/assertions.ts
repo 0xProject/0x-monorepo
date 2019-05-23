@@ -23,8 +23,8 @@ export type sendTransactionResult = Promise<TransactionReceipt | TransactionRece
  * @returns either the given ganacheError or gethError depending on the backing
  * node.
  */
-async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
-    if (_.isUndefined(nodeType)) {
+async function _getGanacheOrGethErrorAsync(ganacheError: string, gethError: string): Promise<string> {
+    if (nodeType === undefined) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
     }
     switch (nodeType) {
@@ -38,15 +38,15 @@ async function _getGanacheOrGethError(ganacheError: string, gethError: string): 
 }
 
 async function _getInsufficientFundsErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethError("sender doesn't have enough funds", 'insufficient funds');
+    return _getGanacheOrGethErrorAsync("sender doesn't have enough funds", 'insufficient funds');
 }
 
 async function _getTransactionFailedErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethError('revert', 'always failing transaction');
+    return _getGanacheOrGethErrorAsync('revert', 'always failing transaction');
 }
 
 async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
-    return _getGanacheOrGethError('revert', 'Contract call failed');
+    return _getGanacheOrGethErrorAsync('revert', 'Contract call failed');
 }
 
 /**
@@ -54,7 +54,7 @@ async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
  * contract call. The exact error message depends on the backing Ethereum node.
  */
 export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string> {
-    return _getGanacheOrGethError('invalid opcode', 'Contract call failed');
+    return _getGanacheOrGethErrorAsync('invalid opcode', 'Contract call failed');
 }
 
 /**
@@ -65,7 +65,7 @@ export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string
  * @returns the expected error message.
  */
 export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
-    return _getGanacheOrGethError(reason, 'always failing transaction');
+    return _getGanacheOrGethErrorAsync(reason, 'always failing transaction');
 }
 
 /**
@@ -99,7 +99,7 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
         _.noop(e);
     });
 
-    if (_.isUndefined(nodeType)) {
+    if (nodeType === undefined) {
         nodeType = await web3Wrapper.getNodeTypeAsync();
     }
     switch (nodeType) {
@@ -137,7 +137,7 @@ export async function expectTransactionFailedWithoutReasonAsync(p: sendTransacti
                 // directly.
                 txReceiptStatus = result.status;
             } else {
-                throw new Error('Unexpected result type: ' + typeof result);
+                throw new Error(`Unexpected result type: ${typeof result}`);
             }
             expect(_.toString(txReceiptStatus)).to.equal(
                 '0',

@@ -5,7 +5,6 @@ import {
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
-    Provider,
     RPCSubprovider,
     signatureUtils,
     SignedOrder,
@@ -36,9 +35,9 @@ interface ItemByNetworkId<T> {
 }
 
 enum RequestedAssetType {
-    ETH = 'ETH',
-    WETH = 'WETH',
-    ZRX = 'ZRX',
+    ETH = 'ETH', // tslint:disable-line:enum-naming
+    WETH = 'WETH', // tslint:disable-line:enum-naming
+    ZRX = 'ZRX', // tslint:disable-line:enum-naming
 }
 
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
@@ -48,8 +47,8 @@ const ASSET_AMOUNT = new BigNumber(0.1);
 
 export class Handler {
     private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
-    private static _createProviderEngine(rpcUrl: string): Provider {
-        if (_.isUndefined(configs.DISPENSER_PRIVATE_KEY)) {
+    private static _createProviderEngine(rpcUrl: string): Web3ProviderEngine {
+        if (configs.DISPENSER_PRIVATE_KEY === undefined) {
             throw new Error('Dispenser Private key not found');
         }
         const engine = new Web3ProviderEngine();
@@ -110,7 +109,7 @@ export class Handler {
         const networkId = req.params.networkId;
         const recipient = req.params.recipient;
         const networkConfig = _.get(this._networkConfigByNetworkId, networkId);
-        if (_.isUndefined(networkConfig)) {
+        if (networkConfig === undefined) {
             res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
@@ -145,19 +144,19 @@ export class Handler {
         requestedAssetType: RequestedAssetType,
     ): Promise<void> {
         const networkConfig = _.get(this._networkConfigByNetworkId, req.params.networkId);
-        if (_.isUndefined(networkConfig)) {
+        if (networkConfig === undefined) {
             res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
         res.setHeader('Content-Type', 'application/json');
         const makerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, requestedAssetType]);
-        if (_.isUndefined(makerTokenIfExists)) {
+        if (makerTokenIfExists === undefined) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
         const takerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, takerTokenSymbol]);
-        if (_.isUndefined(takerTokenIfExists)) {
+        if (takerTokenIfExists === undefined) {
             throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
 
@@ -178,8 +177,10 @@ export class Handler {
             exchangeAddress: networkConfig.contractWrappers.exchange.address,
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
-            // tslint:disable-next-line:custom-no-magic-numbers
-            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
+            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS)
+                // tslint:disable-next-line:custom-no-magic-numbers
+                .div(1000)
+                .integerValue(BigNumber.ROUND_FLOOR),
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const signature = await signatureUtils.ecSignHashAsync(

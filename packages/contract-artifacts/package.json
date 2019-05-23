@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-artifacts",
-    "version": "1.1.2",
+    "version": "1.5.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -12,6 +12,9 @@
     "scripts": {
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
+        "test": "yarn run_mocha",
+        "test:circleci": "yarn test",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "clean": "shx rm -rf lib"
     },
     "repository": {
@@ -24,6 +27,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-artifacts/README.md",
     "devDependencies": {
+        "chai": "^4.0.1",
+        "lodash": "^4.17.11",
+        "mocha": "^4.1.0",
         "shx": "^0.2.2",
         "typescript": "3.0.1"
     },

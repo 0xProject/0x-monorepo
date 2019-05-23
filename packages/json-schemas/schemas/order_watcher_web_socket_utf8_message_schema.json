@@ -1,0 +1,10 @@
+{
+    "id": "/orderWatcherWebSocketUtf8MessageSchema",
+    "properties": {
+        "utf8Data": { "type": "string" }
+    },
+    "required": [
+        "utf8Data"
+    ],
+    "type": "object"
+}

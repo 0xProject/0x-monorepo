@@ -1,31 +1,29 @@
 import axios from 'axios';
 import * as R from 'ramda';
 
+import { logUtils } from '@0x/utils';
+
 // URL to use for getting dex trades from Bloxy.
 export const BLOXY_DEX_TRADES_URL = 'https://bloxy.info/api/dex/trades';
 // Number of trades to get at once. Must be less than or equal to MAX_OFFSET.
-const TRADES_PER_QUERY = 10000;
+const TRADES_PER_QUERY = 100000;
 // Maximum offset supported by the Bloxy API.
 const MAX_OFFSET = 100000;
 // Buffer to subtract from offset. This means we will request some trades twice
 // but we have less chance on missing out on any data.
 const OFFSET_BUFFER = 1000;
-// Maximum number of days supported by the Bloxy API.
-const MAX_DAYS = 30;
 // Buffer used for comparing the last seen timestamp to the last returned
 // timestamp. Increasing this reduces chances of data loss but also creates more
 // redundancy and can impact performance.
 // tslint:disable-next-line:custom-no-magic-numbers
 const LAST_SEEN_TIMESTAMP_BUFFER_MS = 1000 * 60 * 30; // 30 minutes
 
-// tslint:disable-next-line:custom-no-magic-numbers
-const millisecondsPerDay = 1000 * 60 * 60 * 24; // ms/d = ms/s * s/m * m/h * h/d
-
 export interface BloxyTrade {
     tx_hash: string;
     tx_time: string;
     tx_date: string;
     tx_sender: string;
+    tradeIndex: string;
     smart_contract_id: number;
     smart_contract_address: string;
     contract_type: string;
@@ -73,10 +71,16 @@ export class BloxySource {
      * already been seen.
      */
     public async getDexTradesAsync(lastSeenTimestamp: number): Promise<BloxyTrade[]> {
-        let allTrades: BloxyTrade[] = [];
+        const allTrades = await this._scrapeAllDexTradesAsync(lastSeenTimestamp);
+        logUtils.log(`Removing duplicates from ${allTrades.length} entries`);
+        const uniqueTrades = R.uniqBy((trade: BloxyTrade) => `${trade.tradeIndex}-${trade.tx_hash}`, allTrades);
+        logUtils.log(`Removed ${allTrades.length - uniqueTrades.length} duplicate entries`);
+        return uniqueTrades;
+    }
 
-        // Clamp numberOfDays so that it is always between 1 and MAX_DAYS (inclusive)
-        const numberOfDays = R.clamp(1, MAX_DAYS, getDaysSinceTimestamp(lastSeenTimestamp));
+    // Potentially returns duplicate trades.
+    private async _scrapeAllDexTradesAsync(lastSeenTimestamp: number): Promise<BloxyTrade[]> {
+        let allTrades: BloxyTrade[] = [];
 
         // Keep getting trades until we hit one of the following conditions:
         //
@@ -86,11 +90,11 @@ export class BloxySource {
         //     some buffer).
         //
         for (let offset = 0; offset <= MAX_OFFSET; offset += TRADES_PER_QUERY - OFFSET_BUFFER) {
-            const trades = await this._getTradesWithOffsetAsync(numberOfDays, offset);
+            const trades = await this._getTradesWithOffsetAsync(lastSeenTimestamp, offset);
             if (trades.length === 0) {
                 // There are no more trades left for the days we are querying.
                 // This means we are done.
-                return filterDuplicateTrades(allTrades);
+                return allTrades;
             }
             const sortedTrades = R.reverse(R.sortBy(trade => trade.tx_time, trades));
             allTrades = allTrades.concat(sortedTrades);
@@ -100,34 +104,31 @@ export class BloxySource {
             if (lastReturnedTimestamp < lastSeenTimestamp - LAST_SEEN_TIMESTAMP_BUFFER_MS) {
                 // We are at the point where we have already seen trades for the
                 // timestamp range that is being returned. We're done.
-                return filterDuplicateTrades(allTrades);
+                return allTrades;
             }
         }
-        return filterDuplicateTrades(allTrades);
+        return allTrades;
     }
 
-    private async _getTradesWithOffsetAsync(numberOfDays: number, offset: number): Promise<BloxyTrade[]> {
+    private async _getTradesWithOffsetAsync(lastSeenTimestamp: number, offset: number): Promise<BloxyTrade[]> {
         const resp = await axios.get<BloxyTradeResponse>(BLOXY_DEX_TRADES_URL, {
             params: {
                 key: this._apiKey,
-                days: numberOfDays,
+                from_date: dateToISO8601ExtendedCalendarDateFormat(new Date(lastSeenTimestamp)),
+                till_date: dateToISO8601ExtendedCalendarDateFormat(new Date()),
                 limit: TRADES_PER_QUERY,
                 offset,
             },
         });
         if (isError(resp.data)) {
-            throw new Error('Error in Bloxy API response: ' + resp.data.error);
+            throw new Error(`Error in Bloxy API response: ${resp.data.error}`);
         }
         return resp.data;
     }
 }
 
-// Computes the number of days between the given timestamp and the current
-// timestamp (rounded up).
-function getDaysSinceTimestamp(timestamp: number): number {
-    const msSinceTimestamp = Date.now() - timestamp;
-    const daysSinceTimestamp = msSinceTimestamp / millisecondsPerDay;
-    return Math.ceil(daysSinceTimestamp);
+// Converts a Date object to the format like 'YYYY-MM-DD', which is expected by
+// the Bloxy API for its from_date and till_date parameters.
+function dateToISO8601ExtendedCalendarDateFormat(date: Date): string {
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
-
-const filterDuplicateTrades = R.uniqBy((trade: BloxyTrade) => trade.tx_hash);

@@ -25,4 +25,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
     dispatcher: new Dispatcher(dispatch),
 });
 
-export const Wiki: React.ComponentClass<WikiProps> = connect(mapStateToProps, mapDispatchToProps)(WikiComponent);
+export const Wiki: React.ComponentClass<WikiProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(WikiComponent);

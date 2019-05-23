@@ -1,5 +1,228 @@
 [
     {
+        "timestamp": 1557961111,
+        "version": "4.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "version": "4.0.7",
+        "changes": [
+            {
+                "note": "Fix race-condition bug due to async callback modifying shared state",
+                "pr": 1789
+            },
+            {
+                "note": "Fix bug where WETH deposit/withdrawal events would not trigger an order state update",
+                "pr": 1809
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Update websocket from ^1.0.25 to ^1.0.26",
+                "pr": 1685
+            },
+            {
+                "note": "Fix issue where ERC721 Approval events could cause a lookup on undefined object",
+                "pr": 1692
+            },
+            {
+                "note": "Fix race-condition bugs due to async event callbacks modifying shared state",
+                "pr": 1718
+            },
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551299797,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "3.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549504360,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547747677,
+        "version": "2.4.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "2.4.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "2.4.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Add support for `MultiAssetProxy`",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Added a WebSocket interface to OrderWatcher so that it can be used by a client written in any language",
+                "pr": 1427
+            }
+        ]
+    },
+    {
+        "version": "2.2.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.2.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "timestamp": 1543401373,
         "version": "2.2.6",
         "changes": [
@@ -21,8 +244,7 @@
         "version": "2.2.4",
         "changes": [
             {
-                "note":
-                    "Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX",
+                "note": "Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX",
                 "pr": 1259
             }
         ],
@@ -36,8 +258,7 @@
                 "pr": 1227
             },
             {
-                "note":
-                    "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
+                "note": "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
             }
         ],
         "timestamp": 1542134075
@@ -68,8 +289,7 @@
                 "pr": 1118
             },
             {
-                "note":
-                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter.",
+                "note": "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter.",
                 "pr": 1105
             }
         ],
@@ -98,18 +318,15 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
+                "note": "Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
                 "pr": 1080
             },
             {
-                "note":
-                    "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "note": "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
                 "pr": 1080
             },
             {
-                "note":
-                    "Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction.",
+                "note": "Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction.",
                 "pr": 1087
             }
         ],
@@ -173,8 +390,7 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "note":
-                    "Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "note": "Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
                 "pr": 924
             },
             {

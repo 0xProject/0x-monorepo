@@ -1,5 +1,213 @@
 [
     {
+        "version": "8.1.0",
+        "changes": [
+            {
+                "note": "Add `ecSignTransactionAsync`",
+                "pr": 1817
+            }
+        ],
+        "timestamp": 1557961111
+    },
+    {
+        "version": "8.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "version": "8.0.0",
+        "changes": [
+            {
+                "note": "Renamed `OrderError` to `TypedDataError`",
+                "pr": 1792
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
+        "version": "7.2.0",
+        "changes": [
+            {
+                "note": "Added `orderCalculationUtils`",
+                "pr": 1714
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "7.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add Coordinator EIP712 constants",
+                "pr": 1705
+            },
+            {
+                "note": "Added encoding/decoding for ERC1155 asset data",
+                "pr": 1661
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "7.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "7.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "7.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Updated implementation of `generatePseudoRandomSalt` to use generator from @0x/utils",
+                "pr": 1569
+            }
+        ],
+        "timestamp": 1549733923
+    },
+    {
+        "version": "6.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "version": "6.0.0",
+        "changes": {
+            "note": "Stop exporting the EIP712 schemas"
+        },
+        "timestamp": 1549504360
+    },
+    {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Add `transactionHashUtils`",
+                "pr": 1576
+            },
+            {
+                "note": "Refactor `eip712Utils` to allow custom domain params",
+                "pr": 1576
+            },
+            {
+                "note": "Export constant EIP712 params",
+                "pr": 1576
+            }
+        ],
+        "timestamp": 1549452781
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            },
+            {
+                "note": "Fix preSigned `isSignatureValidAsync` check",
+                "pr": 1580
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Use new ABI encoder, add encoding/decoding logic for MultiAsset assetData, and add information to return values in orderStateUtils",
+                "pr": 1363
+            }
+        ],
+        "timestamp": 1547040760
+    },
+    {
+        "version": "3.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "3.0.6",
+        "changes": [
+            {
+                "note": "Fix bug in wallet signature type verification",
+                "pr": 1414
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
+        "timestamp": 1544482891,
+        "version": "3.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1543401373,
         "version": "3.0.4",
         "changes": [
@@ -39,23 +247,19 @@
         "version": "3.0.0",
         "changes": [
             {
-                "note":
-                    "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
+                "note": "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
                 "pr": 1235
             },
             {
-                "note":
-                    "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
+                "note": "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
                 "pr": 1235
             },
             {
-                "note":
-                    "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
+                "note": "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
                 "pr": 1235
             },
             {
-                "note":
-                    "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
+                "note": "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
                 "pr": 1235
             }
         ],
@@ -74,8 +278,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`.",
+                "note": "Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`.",
                 "pr": 1102
             },
             {
@@ -106,8 +309,7 @@
         "version": "1.0.6",
         "changes": [
             {
-                "note":
-                    "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
+                "note": "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
                 "pr": 1096
             }
         ],
@@ -189,23 +391,19 @@
                 "pr": 953
             },
             {
-                "note":
-                    "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
+                "note": "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
                 "pr": 954
             },
             {
-                "note":
-                    "Instead of exporting signature util methods individually, they are now exported as `signatureUtils`",
+                "note": "Instead of exporting signature util methods individually, they are now exported as `signatureUtils`",
                 "pr": 924
             },
             {
-                "note":
-                    "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "note": "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
                 "pr": 924
             },
             {
-                "note":
-                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
+                "note": "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
                 "pr": 997
             },
             {
@@ -213,8 +411,7 @@
                 "pr": 997
             },
             {
-                "note":
-                    "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
+                "note": "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
                 "pr": 997
             }
         ],
@@ -225,12 +422,10 @@
         "changes": [
             {
                 "pr": 914,
-                "note":
-                    "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
+                "note": "Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts."
             },
             {
-                "note":
-                    "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
+                "note": "Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters",
                 "pr": 936
             },
             {
@@ -274,8 +469,7 @@
         "version": "1.0.0-rc.2",
         "changes": [
             {
-                "note":
-                    "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
+                "note": "Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`"
             }
         ],
         "timestamp": 1532357734
@@ -338,8 +532,7 @@
         "version": "0.0.5",
         "changes": [
             {
-                "note":
-                    "Add orderStateUtils, a module for computing order state needed to decide if an order is still valid"
+                "note": "Add orderStateUtils, a module for computing order state needed to decide if an order is still valid"
             }
         ],
         "timestamp": 1527008794

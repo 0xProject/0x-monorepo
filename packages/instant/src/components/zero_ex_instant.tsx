@@ -17,3 +17,5 @@ export const ZeroExInstant: React.StatelessComponent<ZeroExInstantProps> = props
         </div>
     );
 };
+
+ZeroExInstant.displayName = 'ZeroExInstant';

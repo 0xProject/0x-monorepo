@@ -2,9 +2,8 @@ import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
-import { Button } from 'ts/components/ui/button';
+import { Button } from 'ts/components/button';
 import { Container } from 'ts/components/ui/container';
-import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
 
@@ -12,7 +11,7 @@ const CustomPre = styled.pre`
     margin: 0px;
     line-height: 24px;
     overflow: scroll;
-    width: 600px;
+    width: 100%;
     height: 100%;
     max-height: 800px;
     border-radius: 4px;
@@ -23,19 +22,21 @@ const CustomPre = styled.pre`
         border: none;
     }
     code:first-of-type {
-        background-color: #2a2a2a !important;
+        background-color: #060d0d !important;
         color: #999;
-        min-height: 98%;
+        min-height: 100%;
         text-align: center;
-        padding-right: 5px !important;
-        padding-left: 5px;
         margin-right: 15px;
         line-height: 25px;
-        padding-top: 10px;
+        padding: 10px 7px !important;
     }
     code:last-of-type {
         position: relative;
         top: 10px;
+        top: 0;
+        padding-top: 11px;
+        display: inline-block;
+        line-height: 25px;
     }
 `;
 
@@ -77,7 +78,7 @@ const customStyle = {
         color: '#c994ff',
     },
     'hljs-meta': {
-        color: '#aa573c',
+        color: '#61f5ff',
     },
     'hljs-built_in': {
         color: '#aa573c',
@@ -130,7 +131,7 @@ const customStyle = {
     hljs: {
         display: 'block',
         overflowX: 'hidden',
-        background: colors.instantSecondaryBackground,
+        background: '#1B2625',
         color: 'white',
         fontSize: '12px',
     },
@@ -160,9 +161,7 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
             <Container position="relative" height="100%">
                 <Container position="absolute" top="10px" right="10px" zIndex={zIndex.overlay - 1}>
                     <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
-                        <Button fontSize="14px">
-                            <b>{copyButtonText}</b>
-                        </Button>
+                        <StyledButton>{copyButtonText}</StyledButton>
                     </CopyToClipboard>
                 </Container>
                 <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
@@ -175,3 +174,10 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
         this.setState({ didCopyCode: true });
     };
 }
+
+const StyledButton = styled(Button)`
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 9px 21px 7px;
+`;

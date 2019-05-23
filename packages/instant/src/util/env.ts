@@ -1,5 +1,5 @@
 import * as bowser from 'bowser';
-import { Provider } from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { PROVIDER_TYPE_TO_NAME } from '../constants';
@@ -41,24 +41,36 @@ export const envUtil = {
             return OperatingSystem.Other;
         }
     },
-    getProviderType(provider: Provider): ProviderType | undefined {
+    getProviderType(provider: ZeroExProvider): ProviderType | undefined {
+        const anyProvider = provider as any;
         if (provider.constructor.name === 'EthereumProvider') {
             return ProviderType.Mist;
-        } else if ((provider as any).isParity) {
+        } else if (anyProvider.isTrust) {
+            return ProviderType.TrustWallet;
+        } else if (anyProvider.isParity) {
             return ProviderType.Parity;
-        } else if ((provider as any).isMetaMask) {
+        } else if (anyProvider.isMetaMask) {
             return ProviderType.MetaMask;
-        } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
+        } else if (_.get(window, 'SOFA') !== undefined) {
             return ProviderType.CoinbaseWallet;
-        } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
+        } else if (_.get(window, '__CIPHER__') !== undefined) {
             return ProviderType.Cipher;
+        } else if (envUtil.getBrowser() === Browser.Opera && !anyProvider.isMetaMask) {
+            return ProviderType.Opera;
         }
         return;
     },
-    getProviderName(provider: Provider): string {
+    getProviderName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);
-        if (_.isUndefined(providerTypeIfExists)) {
+        if (providerTypeIfExists === undefined) {
             return provider.constructor.name;
+        }
+        return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
+    },
+    getProviderDisplayName(provider: ZeroExProvider): string {
+        const providerTypeIfExists = envUtil.getProviderType(provider);
+        if (providerTypeIfExists === undefined) {
+            return 'Wallet';
         }
         return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
     },

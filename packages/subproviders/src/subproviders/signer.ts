@@ -1,5 +1,5 @@
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
-import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
+import { JSONRPCRequestPayload, SupportedProvider } from 'ethereum-types';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -15,11 +15,11 @@ export class SignerSubprovider extends Subprovider {
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new SignerSubprovider.
-     * @param provider Web3 provider that should handle  all user account related requests
+     * @param supportedProvider Web3 provider that should handle  all user account related requests
      */
-    constructor(provider: Provider) {
+    constructor(supportedProvider: SupportedProvider) {
         super();
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider);
     }
     /**
      * This method conforms to the web3-provider-engine interface.

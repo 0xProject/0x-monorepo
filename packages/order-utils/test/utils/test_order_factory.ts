@@ -7,9 +7,9 @@ import { orderFactory } from '../../src/order_factory';
 const BASE_TEST_ORDER: Order = orderFactory.createOrder(
     constants.NULL_ADDRESS,
     constants.ZERO_AMOUNT,
-    constants.NULL_ADDRESS,
+    constants.NULL_ERC20_ASSET_DATA,
     constants.ZERO_AMOUNT,
-    constants.NULL_ADDRESS,
+    constants.NULL_ERC20_ASSET_DATA,
     constants.NULL_ADDRESS,
 );
 const BASE_TEST_SIGNED_ORDER: SignedOrder = {

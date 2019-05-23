@@ -1,5 +1,160 @@
 [
     {
+        "timestamp": 1557507213,
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Update ganache-core to 2.5.3",
+                "pr": 1707
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
+        "timestamp": 1551479279,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1551220833,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Add support for EIP1193 providers & Web3.js providers >= 1.0-beta.38",
+                "pr": 1627
+            },
+            {
+                "note": "Update provider params to type SupportedProvider which outlines all supported providers",
+                "pr": 1627
+            }
+        ],
+        "timestamp": 1551130135
+    },
+    {
+        "timestamp": 1549733923,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1549547375
+    },
+    {
+        "timestamp": 1549452781,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Upgrade the bignumber.js to v8.0.2",
+                "pr": 1517
+            },
+            {
+                "note": "Update ganache-core to v2.3.3",
+                "pr": 1518
+            }
+        ],
+        "timestamp": 1549373905
+    },
+    {
+        "timestamp": 1547561734,
+        "version": "2.1.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547225310,
+        "version": "2.1.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1547040760,
+        "version": "2.1.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544739608
+    },
+    {
+        "version": "2.1.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1544570656
+    },
+    {
         "timestamp": 1543401373,
         "version": "2.1.6",
         "changes": [
@@ -138,8 +293,7 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note":
-                    "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
+                "note": "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
                 "pr": 924
             }
         ],
@@ -268,8 +422,7 @@
         "version": "0.9.0",
         "changes": [
             {
-                "note":
-                    "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
+                "note": "Refactor RedundantRPCSubprovider into RedundantSubprovider where it now accepts an array of subproviders rather then an array of RPC endpoints",
                 "pr": 500
             },
             {
@@ -285,8 +438,7 @@
                 "pr": 507
             },
             {
-                "note":
-                    "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
+                "note": "Refactors LedgerSubprovider such that explicitly setting the `pathIndex` is no longer required. Simply set the request `from` address as desired",
                 "pr": 507
             },
             {
@@ -344,8 +496,7 @@
         "version": "0.7.0",
         "changes": [
             {
-                "note":
-                    "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
+                "note": "Updated legerco packages. Removed node-hid package as a dependency and make it an optional dependency. It is still used in integration tests but is causing problems for users on Linux distros.",
                 "pr": 437
             }
         ],
@@ -393,8 +544,7 @@
                 "pr": 355
             },
             {
-                "note":
-                    "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
+                "note": "InjectedWeb3Subprovider accepts a Provider in the constructor, previously it was a Web3 object",
                 "pr": 363
             }
         ],

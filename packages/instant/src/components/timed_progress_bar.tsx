@@ -17,7 +17,7 @@ export interface TimedProgressBarProps {
  * Goes from 0% -> PROGRESS_STALL_AT_WIDTH over time of expectedTimeMs
  * When hasEnded set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length of time
  */
-export class TimedProgressBar extends React.Component<TimedProgressBarProps, {}> {
+export class TimedProgressBar extends React.PureComponent<TimedProgressBarProps, {}> {
     private readonly _barRef = React.createRef<HTMLDivElement>();
 
     public render(): React.ReactNode {
@@ -68,10 +68,7 @@ interface ProgressProps {
     animationSettings?: WidthAnimationSettings;
 }
 
-export const Progress =
-    styled.div <
-    ProgressProps >
-    `
+export const Progress = styled.div<ProgressProps>`
     && {
         background-color: ${props => props.theme[ColorOption.primaryColor]};
         border-radius: 6px;

@@ -3,9 +3,11 @@ export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
 export { marketUtils } from './market_utils';
+export { transactionHashUtils } from './transaction_hash';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderParsingUtils } from './parsing_utils';
+export { orderCalculationUtils } from './order_calculation_utils';
 
 export { OrderStateUtils } from './order_state_utils';
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
@@ -21,11 +23,19 @@ export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_la
 export { eip712Utils } from './eip712_utils';
 
 export {
-    Provider,
+    SupportedProvider,
     JSONRPCRequestPayload,
     JSONRPCErrorCallback,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
+    Web3JsProvider,
+    GanacheProvider,
+    EIP1193Provider,
+    ZeroExProvider,
+    EIP1193Event,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
 } from 'ethereum-types';
 
 export {
@@ -34,11 +44,16 @@ export {
     OrderRelevantState,
     OrderState,
     ECSignature,
-    AssetData,
+    SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,
+    ERC1155AssetData,
+    ERC1155AssetDataAbi,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
     AssetProxyId,
     SignatureType,
+    ObjectMap,
     OrderStateValid,
     OrderStateInvalid,
     ExchangeContractErrs,
@@ -47,10 +62,13 @@ export {
     EIP712Types,
     EIP712Object,
     EIP712ObjectValue,
+    EIP712DomainWithDefaultSchema,
     ZeroExTransaction,
+    SignedZeroExTransaction,
 } from '@0x/types';
+
 export {
-    OrderError,
+    TypedDataError,
     TradeSide,
     TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,

@@ -24,7 +24,7 @@ export class Image extends React.Component<ImageProps, ImageState> {
     }
     public render(): React.ReactNode {
         const src =
-            this.state.imageLoadFailed || _.isUndefined(this.props.src) ? this.props.fallbackSrc : this.props.src;
+            this.state.imageLoadFailed || this.props.src === undefined ? this.props.fallbackSrc : this.props.src;
         return (
             <img
                 className={this.props.className}
