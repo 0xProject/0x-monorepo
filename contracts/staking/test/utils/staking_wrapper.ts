@@ -102,10 +102,27 @@ export class StakingWrapper {
         const output = await this.getLibMathTestContract().nthRoot.callAsync(value, n);
         return output;
     }
+    public async nthRootFixedPoint(value: BigNumber, n: BigNumber, decimals: BigNumber): Promise<BigNumber> {
+        const output = await this.getLibMathTestContract().nthRootFixedPoint.callAsync(value, n, decimals);
+        return output;
+    }
     public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
         const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
-        return Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
+        const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
+        return baseUnitAmount;
+    }
+    public toFixedPoint(amount: BigNumber | number, decimals: number): BigNumber {
+        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const scalar = Math.pow(10, decimals);
+        const amountAsFixedPoint = amountAsBigNumber.times(scalar);
+        return amountAsFixedPoint;
+    }
+    public toFloatingPoint(amount: BigNumber | number, decimals: number): BigNumber {
+        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const scalar = Math.pow(10, decimals);
+        const amountAsFloatingPoint = amountAsBigNumber.dividedBy(scalar);
+        return amountAsFloatingPoint;
     }
     private _validateDeployedOrThrow() {
         if (this._stakingContractIfExists === undefined) {

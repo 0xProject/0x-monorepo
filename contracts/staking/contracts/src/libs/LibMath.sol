@@ -108,4 +108,19 @@ library LibMath {
             }
         }
     }
+
+    function _nthRootFixedPoint(
+        uint256 base,
+        uint256 n,
+        uint256 decimals
+    )
+        internal
+        pure
+        returns (uint256 root)
+    {
+        uint256 scalar = 10**decimals;
+        uint256 numerator = _nthRoot(base, n);
+        uint256 denominator = _nthRoot(scalar, n);
+        root = (scalar * numerator) / denominator;
+    }
 }
