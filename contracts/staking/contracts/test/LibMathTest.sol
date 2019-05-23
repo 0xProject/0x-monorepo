@@ -28,6 +28,18 @@ contract LibMathTest {
     function nthRoot(uint256 base, uint256 n) public pure returns (uint256 root) {
         return LibMath._nthRoot(base, n);
     }
+
+    function nthRootFixedPoint(
+        uint256 base,
+        uint256 n,
+        uint256 decimals
+    )
+        public
+        pure
+        returns (uint256 root)
+    {
+        return LibMath._nthRootFixedPoint(base, n, decimals);
+    }
 }
 
 
