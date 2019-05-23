@@ -145,7 +145,7 @@ describe('Staking Core', () => {
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
         });
 
-        it('cobb douglas - basic computation', async() => {
+        it.skip('cobb douglas - basic computation', async() => {
             const totalRewards = new BigNumber(50);
             const ownerFees = new BigNumber(5);
             const totalFees = new BigNumber(10);
@@ -173,7 +173,7 @@ describe('Staking Core', () => {
             expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it('cobb douglas - token computation', async() => {
+        it.only('cobb douglas - token computation', async() => {
             const totalRewards = stakingWrapper.toBaseUnitAmount(50);
             const ownerFees = stakingWrapper.toBaseUnitAmount(5);
             const totalFees = stakingWrapper.toBaseUnitAmount(10);
@@ -199,6 +199,64 @@ describe('Staking Core', () => {
                 alphaDenominator
             );
             expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
+        });
+
+        it.only('cobb douglas - complex token computation', async() => {
+            const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
+            const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
+            const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
+            const ownerStake = stakingWrapper.toBaseUnitAmount(56);
+            const totalStake = stakingWrapper.toBaseUnitAmount(10906);
+            const alphaNumerator = new BigNumber(1);
+            const alphaDenominator = new BigNumber(2);
+
+            /*const expectedOwnerReward = totalRewards
+            .times(
+                (ownerFees.div(totalFees)).squareRoot()
+            ).times(
+                (ownerStake.div(totalStake)).squareRoot()
+            ).dividedToIntegerBy(1); // 25000000000000000000*/
+            
+            const ownerReward = await stakingWrapper.cobbDouglas(
+                totalRewards,
+                ownerFees,
+                totalFees,
+                ownerStake,
+                totalStake,
+                alphaNumerator,
+                alphaDenominator
+            );
+            console.log(ownerReward);
+            //expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
+        });
+
+        it.only('cobb douglas - complex token computation #2', async() => {
+            const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
+            const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
+            const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
+            const ownerStake = stakingWrapper.toBaseUnitAmount(56);
+            const totalStake = stakingWrapper.toBaseUnitAmount(10906);
+            const alphaNumerator = new BigNumber(1);
+            const alphaDenominator = new BigNumber(3);
+
+            /*const expectedOwnerReward = totalRewards
+            .times(
+                (ownerFees.div(totalFees)).squareRoot()
+            ).times(
+                (ownerStake.div(totalStake)).squareRoot()
+            ).dividedToIntegerBy(1); // 25000000000000000000*/
+            
+            const ownerReward = await stakingWrapper.cobbDouglas(
+                totalRewards,
+                ownerFees,
+                totalFees,
+                ownerStake,
+                totalStake,
+                alphaNumerator,
+                alphaDenominator
+            );
+            console.log(ownerReward);
+            //expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
     });
 });
