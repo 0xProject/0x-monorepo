@@ -76,6 +76,10 @@
             {
                 "note": "Automatically set unlimited proxy allowances in `ERC721.setBalancesAndAllowancesAsync()`",
                 "pr": 1819
+            },
+            {
+                "note": "Add `setProxyAllowanceForAllAsync()` to `ERC1155ProxyWrapper`.",
+                "pr": 1819
             }
         ],
         "timestamp": 1557507213
