@@ -115,6 +115,13 @@ describe('Staking Core', () => {
             const root = await stakingWrapper.nthRoot(base, n);
             expect(root).to.be.bignumber.equal(17);
         });
+
+        it('nth root #2', async () => {
+            const base = new BigNumber(3375);
+            const n = new BigNumber(3);
+            const root = await stakingWrapper.nthRoot(base, n);
+            expect(root).to.be.bignumber.equal(15);
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion

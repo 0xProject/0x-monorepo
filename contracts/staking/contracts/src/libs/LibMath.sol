@@ -45,7 +45,7 @@ library LibMath {
             // 3. Find y such that `x` + `y` = `value`
             let y := xor(base, exp(2, mul(div(m, n), n)))
 
-            // 4. Run Newton's Approximation to find the root
+            // 4. Run Newton's Approximation to approximate the root
             root := add(x, div(y, mul(n, exp(2, mul(div(m, n), sub(n, 1))))))
 
             /**
@@ -68,8 +68,44 @@ library LibMath {
              *       return m;
              *   }
              */
+
+            function exp2(b,p) -> z {
+                z := b
+                for {p := sub(p, 1)}
+                    gt(p, 0)
+                    {p := sub(p, 1)}
+                {
+                    z := mul(z, b)
+                }
+            }
+
+            // 5. Run Newton's nth Root Algorithm
+            let delta := 1 // run at least once
+            for {let i := 0}
+                or(lt(i, 10), gt(delta, 0))
+                {i := add(i,1)}
+            {
+                let lhsDenominator :=
+                exp2(
+                    root,
+                    sub(n, 1)
+                )
+
+                let lhs := div(base, lhsDenominator)
+
+                // check for overlow
+                switch lt(lhs, root)
+                case 0 {
+                    // underestimate
+                    delta := div(sub(lhs, root), n)
+                    root := add(root, delta)
+                }
+                case 1 {
+                    // overestimate
+                    delta := div(sub(root, lhs), n)
+                    root := sub(root, delta)
+                }
+            }
         }
     }
 }
-
-
