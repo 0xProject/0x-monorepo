@@ -131,6 +131,7 @@ export const constants = {
         name: 'ZeroExTransaction',
         parameters: [
             { name: 'salt', type: 'uint256' },
+            { name: 'expirationTimeSeconds', type: 'uint256' },
             { name: 'signerAddress', type: 'address' },
             { name: 'data', type: 'bytes' },
         ],
