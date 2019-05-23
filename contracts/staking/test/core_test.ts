@@ -144,6 +144,62 @@ describe('Staking Core', () => {
             const expectedResult = new BigNumber(26);
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
         });
+
+        it('cobb douglas - basic computation', async() => {
+            const totalRewards = new BigNumber(50);
+            const ownerFees = new BigNumber(5);
+            const totalFees = new BigNumber(10);
+            const ownerStake = new BigNumber(5);
+            const totalStake = new BigNumber(10);
+            const alphaNumerator = new BigNumber(1);
+            const alphaDenominator = new BigNumber(2);
+
+            const expectedOwnerReward = totalRewards
+            .times(
+                (ownerFees.div(totalFees)).squareRoot()
+            ).times(
+                (ownerStake.div(totalStake)).squareRoot()
+            ).dividedToIntegerBy(1); // 25
+            
+            const ownerReward = await stakingWrapper.cobbDouglas(
+                totalRewards,
+                ownerFees,
+                totalFees,
+                ownerStake,
+                totalStake,
+                alphaNumerator,
+                alphaDenominator
+            );
+            expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
+        });
+
+        it('cobb douglas - token computation', async() => {
+            const totalRewards = stakingWrapper.toBaseUnitAmount(50);
+            const ownerFees = stakingWrapper.toBaseUnitAmount(5);
+            const totalFees = stakingWrapper.toBaseUnitAmount(10);
+            const ownerStake = stakingWrapper.toBaseUnitAmount(5);
+            const totalStake = stakingWrapper.toBaseUnitAmount(10);
+            const alphaNumerator = new BigNumber(1);
+            const alphaDenominator = new BigNumber(2);
+
+            const expectedOwnerReward = totalRewards
+            .times(
+                (ownerFees.div(totalFees)).squareRoot()
+            ).times(
+                (ownerStake.div(totalStake)).squareRoot()
+            ).dividedToIntegerBy(1); // 25000000000000000000
+            
+            const ownerReward = await stakingWrapper.cobbDouglas(
+                totalRewards,
+                ownerFees,
+                totalFees,
+                ownerStake,
+                totalStake,
+                alphaNumerator,
+                alphaDenominator
+            );
+            expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion
