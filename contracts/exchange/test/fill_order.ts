@@ -9,7 +9,6 @@ import {
     ExpirationTimeSecondsScenario,
     FeeAssetDataScenario,
     FeeRecipientAddressScenario,
-    FillScenario,
     OrderAssetAmountScenario,
     TakerAssetFillAmountScenario,
     TakerScenario,
@@ -52,7 +51,7 @@ const defaultFillScenario = {
     },
 };
 
-describe('FillOrder Tests', () => {
+describe.only('FillOrder Tests', () => {
     let fillOrderCombinatorialUtils: FillOrderCombinatorialUtils;
 
     before(async () => {
@@ -68,26 +67,7 @@ describe('FillOrder Tests', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('fillOrder', () => {
-        const test = (fillScenarios: FillScenario[]) => {
-            _.forEach(fillScenarios, fillScenario => {
-                const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;
-                it(description, async () => {
-                    await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(fillScenario);
-                });
-            });
-        };
-
-        const allFillScenarios = FillOrderCombinatorialUtils.generateFillOrderCombinations();
-        describe('Combinatorially generated fills orders', () => test(allFillScenarios));
-
-        it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
+    describe('Fill tests', () => {
         it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -137,38 +117,6 @@ describe('FillOrder Tests', () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should be able to pay maker fee with taker asset', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-                makerStateScenario: {
-                    ...defaultFillScenario.makerStateScenario,
-                    feeBalance: BalanceAmountScenario.Zero,
-                },
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should be able to pay taker fee with maker asset', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-                takerStateScenario: {
-                    ...defaultFillScenario.takerStateScenario,
-                    feeBalance: BalanceAmountScenario.Zero,
-                },
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
@@ -226,8 +174,92 @@ describe('FillOrder Tests', () => {
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
+    });
 
-        it('should throw if maker erc20Balances are too low to fill order', async () => {
+    describe('ERC20', () => {
+        it('should be able to pay maker fee with taker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with maker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should not be able to pay maker fee with maker asset if none is left over (double-spend)', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    traderAssetBalance: BalanceAmountScenario.Exact,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should not be able to pay taker fee with taker asset if none is left over (double-spend)', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    traderAssetBalance: BalanceAmountScenario.Exact,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with maker asset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should throw if maker balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
@@ -238,7 +270,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if taker erc20Balances are too low to fill order', async () => {
+        it('should throw if taker balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerStateScenario: {
@@ -271,7 +303,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if maker fee erc20Balances are too low to fill order', async () => {
+        it('should throw if maker fee balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
@@ -282,7 +314,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if taker fee erc20Balances are too low to fill order', async () => {
+        it('should throw if taker fee balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerStateScenario: {
@@ -316,85 +348,8 @@ describe('FillOrder Tests', () => {
         });
     });
 
-    describe('Testing exchange of ERC721 Tokens', () => {
-        it('should successfully exchange a single token between the maker and taker (via fillOrder)', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    makerAssetDataScenario: AssetDataScenario.ERC721,
-                    takerAssetDataScenario: AssetDataScenario.ERC721,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should successfully fill order when makerAsset is ERC721 and takerAsset is ERC20', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    makerAssetDataScenario: AssetDataScenario.ERC721,
-                    takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should successfully fill order when makerAsset is ERC20 and takerAsset is ERC721', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    makerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
-                    takerAssetDataScenario: AssetDataScenario.ERC721,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should successfully fill order when makerAsset is ERC721 and approveAll is set for it', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    makerAssetDataScenario: AssetDataScenario.ERC721,
-                    takerAssetDataScenario: AssetDataScenario.ERC20EighteenDecimals,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-                makerStateScenario: {
-                    ...defaultFillScenario.makerStateScenario,
-                    traderAssetAllowance: AllowanceAmountScenario.Unlimited,
-                },
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should successfully fill order when makerAsset and takerAsset are ERC721 and approveAll is set for them', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                orderScenario: {
-                    ...defaultFillScenario.orderScenario,
-                    makerAssetDataScenario: AssetDataScenario.ERC721,
-                    takerAssetDataScenario: AssetDataScenario.ERC721,
-                },
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
-                makerStateScenario: {
-                    ...defaultFillScenario.makerStateScenario,
-                    traderAssetAllowance: AllowanceAmountScenario.Unlimited,
-                },
-                takerStateScenario: {
-                    ...defaultFillScenario.takerStateScenario,
-                    traderAssetAllowance: AllowanceAmountScenario.Unlimited,
-                },
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
-        });
-
-        it('should be able to pay maker fee with taker asset', async () => {
+    describe('ERC721', () => {
+        it('should be able to pay maker fee with taker ERC721', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
@@ -406,13 +361,12 @@ describe('FillOrder Tests', () => {
                 makerStateScenario: {
                     ...defaultFillScenario.makerStateScenario,
                     feeBalance: BalanceAmountScenario.Zero,
-                    feeAllowance: AllowanceAmountScenario.Unlimited,
                 },
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
-        it('should be able to pay taker fee with maker asset', async () => {
+        it('should be able to pay taker fee with maker ERC721', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
@@ -424,10 +378,259 @@ describe('FillOrder Tests', () => {
                 takerStateScenario: {
                     ...defaultFillScenario.takerStateScenario,
                     feeBalance: BalanceAmountScenario.Zero,
-                    feeAllowance: AllowanceAmountScenario.Unlimited,
                 },
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
+
+        it('should not be able to pay maker fee with maker ERC721 (double-spend)', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetDataScenario: AssetDataScenario.ERC721,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with taker ERC721 (double-spend)', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerAssetDataScenario: AssetDataScenario.ERC721,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+    });
+
+    describe('ERC1155', () => {
+        const assetTypes = [AssetDataScenario.ERC1155Fungible, AssetDataScenario.ERC1155NonFungible];
+        for (const assetType of assetTypes) {
+            describe(_.startCase(_.toLower((/ERC1155(.+)/.exec(assetType) as string[])[1])), () => {
+                it('should be able to pay maker fee with taker asset', async () => {
+                    const fillScenario = {
+                        ...defaultFillScenario,
+                        orderScenario: {
+                            ...defaultFillScenario.orderScenario,
+                            takerAssetDataScenario: assetType,
+                            makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                        },
+                        takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                        makerStateScenario: {
+                            ...defaultFillScenario.makerStateScenario,
+                            feeBalance: BalanceAmountScenario.Zero,
+                        },
+                    };
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                });
+
+                it('should be able to pay taker fee with maker asset', async () => {
+                    const fillScenario = {
+                        ...defaultFillScenario,
+                        orderScenario: {
+                            ...defaultFillScenario.orderScenario,
+                            makerAssetDataScenario: assetType,
+                            takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                        },
+                        takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                        takerStateScenario: {
+                            ...defaultFillScenario.takerStateScenario,
+                            feeBalance: BalanceAmountScenario.Zero,
+                        },
+                    };
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                });
+
+                it('should not be able to pay maker fee with maker asset if not enough left (double-spend)', async () => {
+                    const fillScenario = {
+                        ...defaultFillScenario,
+                        orderScenario: {
+                            ...defaultFillScenario.orderScenario,
+                            makerAssetDataScenario: assetType,
+                            makerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                        },
+                        takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                        makerStateScenario: {
+                            ...defaultFillScenario.makerStateScenario,
+                            traderAssetBalance: BalanceAmountScenario.Exact,
+                            feeBalance: BalanceAmountScenario.Zero,
+                        },
+                    };
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+                });
+
+                it('should be able to pay taker fee with taker asset if not enough left (double-spend)', async () => {
+                    const fillScenario = {
+                        ...defaultFillScenario,
+                        orderScenario: {
+                            ...defaultFillScenario.orderScenario,
+                            takerAssetDataScenario: assetType,
+                            takerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                        },
+                        takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                        takerStateScenario: {
+                            ...defaultFillScenario.takerStateScenario,
+                            traderAssetBalance: BalanceAmountScenario.Exact,
+                            feeBalance: BalanceAmountScenario.Zero,
+                        },
+                    };
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+                });
+            });
+        }
+    });
+
+    describe('MultiAssetProxy', () => {
+        it('should be able to pay maker fee with taker MAP', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerAssetDataScenario: AssetDataScenario.MultiAssetERC20,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with maker MAP', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetDataScenario: AssetDataScenario.MultiAssetERC20,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should not be able to pay maker fee with maker MAP (double-spend)', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetDataScenario: AssetDataScenario.MultiAssetERC20,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                makerStateScenario: {
+                    ...defaultFillScenario.makerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+
+        it('should be able to pay taker fee with taker MAP (double-spend)', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    takerAssetDataScenario: AssetDataScenario.MultiAssetERC20,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                takerStateScenario: {
+                    ...defaultFillScenario.takerStateScenario,
+                    feeBalance: BalanceAmountScenario.Zero,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+        });
+    });
+
+    describe('Maker/taker asset combinations', () => {
+        const assetDataScenarios = [
+            AssetDataScenario.ERC20EighteenDecimals,
+            AssetDataScenario.ERC721,
+            AssetDataScenario.ERC1155Fungible,
+            AssetDataScenario.ERC1155NonFungible,
+            AssetDataScenario.MultiAssetERC20,
+        ];
+        for (const [makerAssetData, takerAssetData] of getAllPossiblePairs(assetDataScenarios)) {
+            it(`should successfully exchange ${makerAssetData} for ${takerAssetData}`, async () => {
+                const fillScenario = {
+                    ...defaultFillScenario,
+                    orderScenario: {
+                        ...defaultFillScenario.orderScenario,
+                        makerAssetDataScenario: makerAssetData,
+                        takerAssetDataScenario: takerAssetData,
+                    },
+                    takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                };
+                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            });
+        }
+    });
+
+    describe('Maker/taker fee asset combinations', () => {
+        const feeAssetDataScenarios = [
+            FeeAssetDataScenario.ERC20EighteenDecimals,
+            FeeAssetDataScenario.ERC721,
+            FeeAssetDataScenario.ERC1155Fungible,
+            FeeAssetDataScenario.ERC1155NonFungible,
+            FeeAssetDataScenario.MultiAssetERC20,
+        ];
+        for (const [makerFeeAssetData, takerFeeAssetData] of getAllPossiblePairs(feeAssetDataScenarios)) {
+            it(`should successfully pay maker fee ${makerFeeAssetData} and taker fee ${takerFeeAssetData}`, async () => {
+                const fillScenario = {
+                    ...defaultFillScenario,
+                    orderScenario: {
+                        ...defaultFillScenario.orderScenario,
+                        makerFeeAssetDataScenario: makerFeeAssetData,
+                        takerFeeAssetDataScenario: takerFeeAssetData,
+                    },
+                    takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+                };
+                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            });
+        }
+    });
+
+    describe('Combinatorially generated fills orders', () => {
+        const allFillScenarios = FillOrderCombinatorialUtils.generateFillOrderCombinations();
+        for (const fillScenario of allFillScenarios) {
+            const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;
+            it(description, async () => {
+                await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(fillScenario);
+            });
+        }
     });
 });
+
+function getAllPossiblePairs<T>(choices: T[]): Array<[T, T]> {
+    const pairs: Array<[T, T]> = [];
+    for (const i of _.times(choices.length)) {
+        for (const j of _.times(choices.length)) {
+            pairs.push([choices[i], choices[j]]);
+        }
+    }
+    return pairs;
+}
+// tslint:disable: max-file-line-count

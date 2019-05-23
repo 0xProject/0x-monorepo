@@ -27,6 +27,9 @@ export enum AssetDataScenario {
     ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
     ERC20EighteenDecimals = 'ERC20_EIGHTEEN_DECIMALS',
     ERC721 = 'ERC721',
+    ERC1155Fungible = 'ERC1155_FUNGIBLE',
+    ERC1155NonFungible = 'ERC1155_NON_FUNGIBLE',
+    MultiAssetERC20 = 'MULTI_ASSET_ERC20',
 }
 
 export enum FeeAssetDataScenario {
@@ -34,6 +37,9 @@ export enum FeeAssetDataScenario {
     ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
     ERC20EighteenDecimals = 'ERC20_EIGHTEEN_DECIMALS',
     ERC721 = 'ERC721',
+    ERC1155Fungible = 'ERC1155_FUNGIBLE',
+    ERC1155NonFungible = 'ERC1155_NON_FUNGIBLE',
+    MultiAssetERC20 = 'MULTI_ASSET_ERC20',
     MakerToken = 'MAKER_TOKEN',
     TakerToken = 'TAKER_TOKEN',
 }
