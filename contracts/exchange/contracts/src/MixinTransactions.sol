@@ -135,6 +135,8 @@ contract MixinTransactions is
             currentContextAddress = address(0);
         }
 
+        emit TransactionExecution(transactionHash);
+
         return returnData;
     }
 
