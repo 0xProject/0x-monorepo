@@ -40,10 +40,12 @@ contract ExchangeWrapper {
     ///      and senderAddress equal to this contract.
     /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     /// @param salt Arbitrary value to gaurantee uniqueness of 0x transaction hash.
+    /// @param transactionExpirationTimeSeconds Timestamp in seconds ar which ZeroExTransaction expires.
     /// @param makerSignature Proof that maker wishes to call this function with given params.
     function cancelOrdersUpTo(
         uint256 targetOrderEpoch,
         uint256 salt,
+        uint256 transactionExpirationTimeSeconds,
         bytes calldata makerSignature
     )
         external
@@ -58,6 +60,7 @@ contract ExchangeWrapper {
 
         LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
             salt: salt,
+            expirationTimeSeconds: transactionExpirationTimeSeconds,
             data: data,
             signerAddress: makerAddress
         });
@@ -70,12 +73,14 @@ contract ExchangeWrapper {
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param salt Arbitrary value to gaurantee uniqueness of 0x transaction hash.
+    /// @param transactionExpirationTimeSeconds Timestamp in seconds ar which ZeroExTransaction expires.
     /// @param orderSignature Proof that order has been created by maker.
     /// @param takerSignature Proof that taker wishes to call this function with given params.
     function fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         uint256 salt,
+        uint256 transactionExpirationTimeSeconds,
         bytes memory orderSignature,
         bytes memory takerSignature
     )
@@ -93,6 +98,7 @@ contract ExchangeWrapper {
 
         LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
             salt: salt,
+            expirationTimeSeconds: transactionExpirationTimeSeconds,
             data: data,
             signerAddress: takerAddress
         });
