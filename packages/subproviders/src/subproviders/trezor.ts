@@ -29,7 +29,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     private readonly _trezorConnectClientApi: any;
     private readonly _networkId: number;
     private readonly _addressSearchLimit: number;
-    private _initialDerivedKeyInfo: any;
+    private _initialDerivedKeyInfo: DerivedHDKeyInfo | undefined;
     /**
      * Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'/0/`.
      * Must be initialized with trezor-connect API module https://github.com/trezor/connect.
