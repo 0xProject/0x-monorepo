@@ -29,6 +29,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     private readonly _trezorConnectClientApi: any;
     private readonly _networkId: number;
     private readonly _addressSearchLimit: number;
+    private _initialDerivedKeyInfo: any;
     /**
      * Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'/0/`.
      * Must be initialized with trezor-connect API module https://github.com/trezor/connect.
@@ -161,28 +162,33 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         throw new Error(WalletSubproviderErrors.MethodNotSupported);
     }
     private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
-        const parentKeyDerivationPath = `m/${this._privateKeyPath}`;
-
-        const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({
-            path: parentKeyDerivationPath,
-        });
-
-        if (response.success) {
-            const payload: TrezorGetPublicKeyResponsePayload = response.payload;
-            const hdKey = new HDNode();
-            hdKey.publicKey = new Buffer(payload.publicKey, 'hex');
-            hdKey.chainCode = new Buffer(payload.chainCode, 'hex');
-            const address = walletUtils.addressOfHDKey(hdKey);
-            const initialDerivedKeyInfo = {
-                hdKey,
-                address,
-                derivationPath: parentKeyDerivationPath,
-                baseDerivationPath: this._privateKeyPath,
-            };
-            return initialDerivedKeyInfo;
+        if (this._initialDerivedKeyInfo) {
+            return this._initialDerivedKeyInfo;
         } else {
-            const payload: TrezorResponseErrorPayload = response.payload;
-            throw new Error(payload.error);
+            const parentKeyDerivationPath = `m/${this._privateKeyPath}`;
+
+            const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({
+                path: parentKeyDerivationPath,
+            });
+
+            if (response.success) {
+                const payload: TrezorGetPublicKeyResponsePayload = response.payload;
+                const hdKey = new HDNode();
+                hdKey.publicKey = new Buffer(payload.publicKey, 'hex');
+                hdKey.chainCode = new Buffer(payload.chainCode, 'hex');
+                const address = walletUtils.addressOfHDKey(hdKey);
+                const initialDerivedKeyInfo = {
+                    hdKey,
+                    address,
+                    derivationPath: parentKeyDerivationPath,
+                    baseDerivationPath: this._privateKeyPath,
+                };
+                this._initialDerivedKeyInfo = initialDerivedKeyInfo;
+                return initialDerivedKeyInfo;
+            } else {
+                const payload: TrezorResponseErrorPayload = response.payload;
+                throw new Error(payload.error);
+            }
         }
     }
     private _findDerivedKeyInfoForAddress(initalHDKey: DerivedHDKeyInfo, address: string): DerivedHDKeyInfo {
