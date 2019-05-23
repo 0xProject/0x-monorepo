@@ -41,8 +41,8 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         this._trezorConnectClientApi = config.trezorConnectClientApi;
         this._networkId = config.networkId;
         this._addressSearchLimit =
-            !_.isUndefined(config.accountFetchingConfigs) &&
-            !_.isUndefined(config.accountFetchingConfigs.addressSearchLimit)
+            config.accountFetchingConfigs !== undefined &&
+            config.accountFetchingConfigs.addressSearchLimit !== undefined
                 ? config.accountFetchingConfigs.addressSearchLimit
                 : DEFAULT_ADDRESS_SEARCH_LIMIT;
     }
@@ -67,7 +67,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
      * @return Signed transaction hex string
      */
     public async signTransactionAsync(txData: PartialTxParams): Promise<string> {
-        if (_.isUndefined(txData.from) || !addressUtils.isAddress(txData.from)) {
+        if (txData.from === undefined || !addressUtils.isAddress(txData.from)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
         }
         txData.value = txData.value ? txData.value : '0x0';
@@ -126,7 +126,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        if (_.isUndefined(data)) {
+        if (data === undefined) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
@@ -163,7 +163,9 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     private async _initialDerivedKeyInfoAsync(): Promise<DerivedHDKeyInfo> {
         const parentKeyDerivationPath = `m/${this._privateKeyPath}`;
 
-        const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({ path: parentKeyDerivationPath });
+        const response: TrezorConnectResponse = await this._trezorConnectClientApi.getPublicKey({
+            path: parentKeyDerivationPath,
+        });
 
         if (response.success) {
             const payload: TrezorGetPublicKeyResponsePayload = response.payload;
@@ -189,7 +191,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
             initalHDKey,
             this._addressSearchLimit,
         );
-        if (_.isUndefined(matchedDerivedKeyInfo)) {
+        if (matchedDerivedKeyInfo === undefined) {
             throw new Error(`${WalletSubproviderErrors.AddressNotFound}: ${address}`);
         }
         return matchedDerivedKeyInfo;
