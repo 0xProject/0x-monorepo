@@ -77,8 +77,9 @@ export class ExchangeTransferSimulator {
     ): Promise<void> {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
+            case AssetProxyId.ERC1155:
             case AssetProxyId.ERC20:
-            case AssetProxyId.ERC721:
+            case AssetProxyId.ERC721: {
                 // HACK: When simulating an open order (e.g taker is NULL_ADDRESS), we don't want to adjust balances/
                 // allowances for the taker. We do however, want to increase the balance of the maker since the maker
                 // might be relying on those funds to fill subsequent orders or pay the order's fees.
@@ -98,12 +99,18 @@ export class ExchangeTransferSimulator {
                 if (balance.isLessThan(amountInBaseUnits)) {
                     ExchangeTransferSimulator._throwValidationError(FailureReason.Balance, tradeSide, transferType);
                 }
-                await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);
+                if (assetProxyId !== AssetProxyId.ERC1155) {
+                    // No need to decrease allowance for ERC115 because it's all or nothing.
+                    await this._decreaseProxyAllowanceAsync(assetData, from, amountInBaseUnits);
+                }
                 await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
                 await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
                 break;
-            case AssetProxyId.MultiAsset:
+            }
+            case AssetProxyId.MultiAsset: {
                 const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+                await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
+                await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
                 for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
                     const amountsElement = decodedAssetData.amounts[index];
                     const totalAmount = amountInBaseUnits.times(amountsElement);
@@ -117,8 +124,9 @@ export class ExchangeTransferSimulator {
                     );
                 }
                 break;
+            }
             default:
-                break;
+                throw new Error(`Unhandled asset proxy ID: ${assetProxyId}`);
         }
     }
     private async _decreaseProxyAllowanceAsync(
