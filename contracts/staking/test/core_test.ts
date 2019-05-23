@@ -122,6 +122,28 @@ describe('Staking Core', () => {
             const root = await stakingWrapper.nthRoot(base, n);
             expect(root).to.be.bignumber.equal(15);
         });
+
+        it('nth root #3 with fixed point', async () => {
+            const decimals = 6;
+            const base = stakingWrapper.toFixedPoint(4.234, decimals);
+            const n = new BigNumber(2);
+            const decimalsAsBn = new BigNumber(decimals);
+            const root = await stakingWrapper.nthRootFixedPoint(base, n, decimalsAsBn);
+            const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
+            const expectedResult = new BigNumber(2.057);
+            expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
+        });
+
+        it('nth root #3 with fixed point (integer nth root would fail here)', async () => {
+            const decimals = 18;
+            const base = stakingWrapper.toFixedPoint(5429503678976, decimals);
+            const n = new BigNumber(9);
+            const decimalsAsBn = new BigNumber(decimals);
+            const root = await stakingWrapper.nthRootFixedPoint(base, n, decimalsAsBn);
+            const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
+            const expectedResult = new BigNumber(26);
+            expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion
