@@ -27,6 +27,7 @@
         "src/Staking.sol",
         "src/libs/LibZrxToken.sol",
         "src/vaults/MixinVaultCore.sol",
-        "src/vaults/ZrxVault.sol"
+        "src/vaults/ZrxVault.sol",
+        "test/LibMathTest.sol"
     ]
 }

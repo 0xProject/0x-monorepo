@@ -108,6 +108,13 @@ describe('Staking Core', () => {
                 expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToStake).plus(amountToUnstake));
             }
         });
+
+        it('nth root', async () => {
+            const base = new BigNumber(1419857);
+            const n = new BigNumber(5);
+            const root = await stakingWrapper.nthRoot(base, n);
+            expect(root).to.be.bignumber.equal(17);
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion
