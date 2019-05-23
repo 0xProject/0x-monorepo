@@ -173,7 +173,7 @@ describe('Staking Core', () => {
             expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it.only('cobb douglas - token computation', async() => {
+        it.skip('cobb douglas - token computation', async() => {
             const totalRewards = stakingWrapper.toBaseUnitAmount(50);
             const ownerFees = stakingWrapper.toBaseUnitAmount(5);
             const totalFees = stakingWrapper.toBaseUnitAmount(10);
@@ -227,6 +227,7 @@ describe('Staking Core', () => {
                 alphaDenominator
             );
             console.log(ownerReward);
+            console.log(stakingWrapper.toFloatingPoint(ownerReward, 18));
             //expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
 
@@ -256,6 +257,7 @@ describe('Staking Core', () => {
                 alphaDenominator
             );
             console.log(ownerReward);
+            console.log(stakingWrapper.toFloatingPoint(ownerReward, 18));
             //expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
     });
