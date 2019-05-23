@@ -1,9 +1,20 @@
-import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import {
+    artifacts as assetProxyArtifacts,
+    ERC1155ProxyContract,
+    ERC1155ProxyWrapper,
+    ERC20ProxyContract,
+    ERC20Wrapper,
+    ERC721ProxyContract,
+    ERC721Wrapper,
+    MultiAssetProxyContract,
+} from '@0x/contracts-asset-proxy';
+import { ERC1155Contract as ERC1155TokenContract, Erc1155Wrapper as ERC1155Wrapper } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
     chaiSetup,
     constants,
+    ERC1155HoldingsByOwner,
     ERC721TokenIdsByOwner,
     OrderFactory,
     provider,
@@ -28,6 +39,13 @@ import {
     TestExchangeInternalsContract,
 } from '../src';
 
+interface IndividualERC1155Holdings {
+    fungible: {
+        [tokenId: string]: BigNumber;
+    };
+    nonFungible: BigNumber[];
+}
+
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
@@ -43,19 +61,25 @@ describe('matchOrders', () => {
 
     let erc20Tokens: DummyERC20TokenContract[];
     let erc721Token: DummyERC721TokenContract;
+    let erc1155Token: ERC1155TokenContract;
     let reentrantErc20Token: ReentrantERC20TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
+    let erc1155Proxy: ERC1155ProxyContract;
+    let erc1155ProxyWrapper: ERC1155ProxyWrapper;
 
     let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
     let erc721Wrapper: ERC721Wrapper;
+    let erc1155Wrapper: ERC1155Wrapper;
     let orderFactoryLeft: OrderFactory;
     let orderFactoryRight: OrderFactory;
 
     let erc721LeftMakerAssetIds: BigNumber[];
     let erc721RightMakerAssetIds: BigNumber[];
+    let erc1155LeftMakerHoldings: IndividualERC1155Holdings;
+    let erc1155RightMakerHoldings: IndividualERC1155Holdings;
 
     let defaultERC20MakerAssetAddress: string;
     let defaultERC20TakerAssetAddress: string;
@@ -88,9 +112,13 @@ describe('matchOrders', () => {
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
+        erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
         // Deploy ERC20 token & ERC20 proxy
         const numDummyErc20ToDeploy = 4;
-        erc20Tokens = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
+        erc20Tokens = await erc20Wrapper.deployDummyTokensAsync(
+            numDummyErc20ToDeploy,
+            constants.DUMMY_TOKEN_DECIMALS,
+        );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC721 token and proxy
@@ -100,6 +128,28 @@ describe('matchOrders', () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721LeftMakerAssetIds = erc721Balances[makerAddressLeft][erc721Token.address];
         erc721RightMakerAssetIds = erc721Balances[makerAddressRight][erc721Token.address];
+        // Deploy ERC1155 token and proxy
+        [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
+        erc1155Token = erc1155Wrapper.getContract();
+        erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
+        await erc1155ProxyWrapper.setBalancesAndAllowancesAsync();
+        const erc1155Holdings = await erc1155ProxyWrapper.getBalancesAsync();
+        erc1155LeftMakerHoldings = getIndividualERC1155Holdings(
+            erc1155Holdings,
+            erc1155Token.address,
+            makerAddressLeft,
+        );
+        erc1155RightMakerHoldings = getIndividualERC1155Holdings(
+            erc1155Holdings,
+            erc1155Token.address,
+            makerAddressRight,
+        );
+        // Deploy MultiAssetProxy.
+        const multiAssetProxyContract = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
+            assetProxyArtifacts.MultiAssetProxy,
+            provider,
+            txDefaults,
+        );
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
@@ -110,17 +160,42 @@ describe('matchOrders', () => {
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-        // Authorize ERC20 and ERC721 trades by exchange
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
+        await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(multiAssetProxyContract.address, owner);
+        // Authorize proxies.
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            exchange.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            exchange.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            exchange.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            multiAssetProxyContract.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            multiAssetProxyContract.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            multiAssetProxyContract.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await multiAssetProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            exchange.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
@@ -173,6 +248,9 @@ describe('matchOrders', () => {
             txDefaults,
             new BigNumber(chainId),
         );
+
+        console.log(erc1155LeftMakerHoldings);
+        console.log(erc1155RightMakerHoldings);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -1485,4 +1563,19 @@ describe('matchOrders', () => {
             }
         });
     });
-}); // tslint:disable-line:max-file-line-count
+});
+
+function getIndividualERC1155Holdings(
+    erc1155HoldingsByOwner: ERC1155HoldingsByOwner,
+    tokenAddress: string,
+    ownerAddress: string,
+): IndividualERC1155Holdings {
+    return {
+        fungible: erc1155HoldingsByOwner.fungible[ownerAddress][tokenAddress],
+        nonFungible: _.uniqBy(_.flatten(_.values(
+            erc1155HoldingsByOwner.nonFungible[ownerAddress][tokenAddress])),
+            v => v.toString(10),
+        ),
+    };
+}
+// tslint:disable-line:max-file-line-count
