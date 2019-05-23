@@ -28,7 +28,6 @@ import "@0x/contracts-utils/contracts/src/Ownable.sol";
 contract Whitelist is
     Ownable
 {
-
     // Mapping of address => whitelist status.
     mapping (address => bool) public isWhitelisted;
 
@@ -129,6 +128,7 @@ contract Whitelist is
         LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
             salt: salt,
             data: data,
+            expirationTimeSeconds: uint256(-1),
             signerAddress: takerAddress
         });
 
