@@ -106,6 +106,26 @@ export class StakingWrapper {
         const output = await this.getLibMathTestContract().nthRootFixedPoint.callAsync(value, n, decimals);
         return output;
     }
+    public async cobbDouglas(
+        totalRewards: BigNumber,
+        ownerFees: BigNumber,
+        totalFees: BigNumber,
+        ownerStake: BigNumber,
+        totalStake: BigNumber,
+        alphaNumerator: BigNumber,
+        alphaDenominator: BigNumber
+    ) {
+        const output = await this.getLibMathTestContract().cobbDouglas.callAsync(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaNumerator,
+            alphaDenominator
+        );
+        return output;
+    }
     public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
         const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
