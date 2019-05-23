@@ -3,6 +3,7 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
+        "generated-artifacts/LibMathTest.json",
         "generated-artifacts/LibZrxToken.json",
         "generated-artifacts/MixinStake.json",
         "generated-artifacts/MixinVaultCore.json",
