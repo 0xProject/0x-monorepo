@@ -14,12 +14,13 @@ const expect = chai.expect;
 
 describe('0x transaction hashing', () => {
     describe('#getTransactionHashHex', () => {
-        const expectedTransactionHash = '0x834125acbd69d6e2e706df216865728e9b63bfd7c8bcecb5987d9d02ea62ecd5';
+        const expectedTransactionHash = '0x9779e4ca195f8c9c6f137f495599e9a1944806310b64748479bfa6c6b1ae7eb4';
         const fakeVerifyingContractAddress = '0x5e72914535f202659083db3a02c984188fa26e9f';
         const fakeChainId = 1337;
         const transaction: ZeroExTransaction = {
             signerAddress: constants.NULL_ADDRESS,
             salt: new BigNumber(0),
+            expirationTimeSeconds: new BigNumber(0),
             data: constants.NULL_BYTES,
             domain: {
                 verifyingContractAddress: fakeVerifyingContractAddress,
@@ -38,6 +39,7 @@ describe('0x transaction hashing', () => {
             const transactionHash = transactionHashUtils.getTransactionHashHex({
                 ...transaction,
                 salt: '0',
+                expirationTimeSeconds: '0',
             } as any);
             expect(transactionHash).to.be.equal(expectedTransactionHash);
         });
