@@ -12,6 +12,9 @@ const GIT_SHA = childProcess
 
 const config = {
     entry: ['./ts/index.tsx'],
+    node: {
+        fs: 'empty',
+    },
     output: {
         path: path.join(__dirname, '/public'),
         filename: 'bundle.js',

@@ -124,6 +124,9 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
         entry: {
             instant: './src/index.umd.ts',
         },
+        node: {
+            fs: 'empty',
+        },
         output: {
             filename: '[name].js',
             path: path.resolve(__dirname, outputPath),

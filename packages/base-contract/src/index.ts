@@ -147,6 +147,17 @@ export class BaseContract {
         }
         return rawEncoded;
     }
+    protected static async _evmExecAsync(bytecode: Uint8Array, data: Uint8Array): Promise<Uint8Array> {
+        const isBrowser = new Function('try {return this===window;}catch(e){ return false;}');
+        if (isBrowser()) {
+            return import('pure-evm').then(pure_evm_async => {
+                return pure_evm_async.exec(bytecode, data);
+            });
+        } else {
+            const pure_evm = require('pure-evm');
+            return pure_evm.exec(bytecode, data);
+        }
+    }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
         if (abiEncoder === undefined) {

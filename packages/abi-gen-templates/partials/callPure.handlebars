@@ -9,7 +9,7 @@ public {{this.tsName}} = {
         const encodedDataBytes = Uint8Array.from(Buffer.from(encodedData.substr(2), 'hex'));
         const bytecode = await self._lookupDeployedBytecodeAsync();
         const bytecodeBytes = Uint8Array.from(Buffer.from(bytecode.substr(2), 'hex'));
-        const rawCallResultBytes = pure_evm.exec(bytecodeBytes, encodedDataBytes);
+        const rawCallResultBytes = await BaseContract._evmExecAsync(bytecodeBytes, encodedDataBytes);
         const rawCallResultHex = `0x${Buffer.from(rawCallResultBytes).toString('hex')}`;
         BaseContract._throwIfRevertWithReasonCallResult(rawCallResultHex);
         const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
