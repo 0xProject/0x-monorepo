@@ -38,6 +38,11 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
 
+// Reduce the number of tokens to deploy to speed up tests, since we don't need
+// so many.
+constants.NUM_DUMMY_ERC721_TO_DEPLOY = 1;
+constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY = 1;
+
 describe('matchOrders', () => {
     let chainId: number;
     let makerAddressLeft: string;
