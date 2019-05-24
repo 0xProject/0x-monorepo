@@ -27,6 +27,7 @@ export enum AssetProxyDispatchErrorCode {
 export enum TransactionErrorCode {
     NoReentrancy,
     AlreadyExecuted,
+    Expired,
 }
 
 export class SignatureError extends RevertError {
