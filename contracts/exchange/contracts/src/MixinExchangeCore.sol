@@ -611,33 +611,67 @@ contract MixinExchangeCore is
     )
         private
     {
-        _dispatchTransferFrom(
-            orderHash,
-            order.makerAssetData,
-            order.makerAddress,
-            takerAddress,
-            fillResults.makerAssetFilledAmount
-        );
-        _dispatchTransferFrom(
-            orderHash,
-            order.takerAssetData,
-            takerAddress,
-            order.makerAddress,
-            fillResults.takerAssetFilledAmount
-        );
-        _dispatchTransferFrom(
-            orderHash,
-            order.makerFeeAssetData,
-            order.makerAddress,
-            order.feeRecipientAddress,
-            fillResults.makerFeePaid
-        );
-        _dispatchTransferFrom(
-            orderHash,
-            order.takerFeeAssetData,
-            takerAddress,
-            order.feeRecipientAddress,
-            fillResults.takerFeePaid
-        );
+        if (
+            order.makerAddress == order.feeRecipientAddress &&
+            order.makerFeeAssetData.equals(order.takerAssetData)
+        ) {
+            // Maker is fee recipient and the maker fee asset is the same as the taker asset.
+            // We can transfer the taker asset and maker fees in one go.
+            _dispatchTransferFrom(
+                orderHash,
+                order.takerAssetData,
+                takerAddress,
+                order.makerAddress,
+                _safeAdd(fillResults.takerAssetFilledAmount, fillResults.makerFeePaid)
+            );
+        } else {
+            // Transfer taker -> maker
+            _dispatchTransferFrom(
+                orderHash,
+                order.takerAssetData,
+                takerAddress,
+                order.makerAddress,
+                fillResults.takerAssetFilledAmount
+            );
+            // Transfer maker fee -> feeRecipient
+            _dispatchTransferFrom(
+                orderHash,
+                order.makerFeeAssetData,
+                order.makerAddress,
+                order.feeRecipientAddress,
+                fillResults.makerFeePaid
+            );
+        }
+        if (
+            takerAddress == order.feeRecipientAddress &&
+            order.takerFeeAssetData.equals(order.makerAssetData)
+        ) {
+            // Taker is fee recipient and the taker fee asset is the same as the maker asset.
+            // We can transfer the maker asset and taker fees in one go.
+            _dispatchTransferFrom(
+                orderHash,
+                order.makerAssetData,
+                order.makerAddress,
+                takerAddress,
+                _safeAdd(fillResults.makerAssetFilledAmount, fillResults.takerFeePaid)
+            );
+        } else {
+            // Transfer maker -> taker
+            _dispatchTransferFrom(
+                orderHash,
+                order.makerAssetData,
+                order.makerAddress,
+                takerAddress,
+                fillResults.makerAssetFilledAmount
+            );
+            // Transfer taker fee -> feeRecipient
+            _dispatchTransferFrom(
+                orderHash,
+                order.takerFeeAssetData,
+                takerAddress,
+                order.feeRecipientAddress,
+                fillResults.takerFeePaid
+            );
+        }
     }
 }
