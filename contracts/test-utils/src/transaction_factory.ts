@@ -1,5 +1,5 @@
 import { generatePseudoRandomSalt, transactionHashUtils } from '@0x/order-utils';
-import { SignatureType, SignedZeroExTransaction } from '@0x/types';
+import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -19,9 +19,12 @@ export class TransactionFactory {
         this._signerBuff = ethUtil.privateToAddress(this._privateKey);
     }
     public async newSignedTransactionAsync(
-        data: string,
+        customTransactionParams: Partial<ZeroExTransaction>,
         signatureType: SignatureType = SignatureType.EthSign,
     ): Promise<SignedZeroExTransaction> {
+        if (customTransactionParams.data === undefined) {
+            throw new Error('Error: ZeroExTransaction data field must be supplied');
+        }
         const tenMinutesInSeconds = 10 * 60;
         const currentBlockTimestamp = await getLatestBlockTimestampAsync();
         const salt = generatePseudoRandomSalt();
@@ -29,12 +32,13 @@ export class TransactionFactory {
         const transaction = {
             salt,
             signerAddress,
-            data,
+            data: customTransactionParams.data,
             expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds),
             domain: {
                 verifyingContractAddress: this._exchangeAddress,
                 chainId: this._chainId,
             },
+            ...customTransactionParams,
         };
 
         const transactionHashBuffer = transactionHashUtils.getTransactionHashBuffer(transaction);
