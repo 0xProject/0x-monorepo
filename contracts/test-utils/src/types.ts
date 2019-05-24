@@ -37,11 +37,6 @@ export interface ERC1155HoldingsByOwner {
     nonFungible: ERC1155NonFungibleHoldingsByOwner;
 }
 
-export interface TokenBalancesByOwner {
-    erc20: ERC20BalancesByOwner;
-    erc721: ERC721TokenIdsByOwner;
-}
-
 export interface SubmissionContractEventArgs {
     transactionId: BigNumber;
 }
