@@ -1,5 +1,5 @@
-import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { chaiSetup, OrderStatus, TokenBalancesByOwner } from '@0x/contracts-test-utils';
+import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { chaiSetup, ERC1155HoldingsByOwner, OrderStatus } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -13,6 +13,13 @@ const ZERO = new BigNumber(0);
 
 chaiSetup.configure();
 const expect = chai.expect;
+
+export interface IndividualERC1155Holdings {
+    fungible: {
+        [tokenId: string]: BigNumber;
+    };
+    nonFungible: BigNumber[];
+}
 
 export interface FillEventArgs {
     orderHash: string;
@@ -46,7 +53,32 @@ export interface MatchTransferAmounts {
 export interface MatchResults {
     orders: MatchedOrders;
     fills: FillEventArgs[];
-    balances: TokenBalancesByOwner;
+    balances: TokenBalances;
+}
+
+export interface ERC1155Holdings {
+    [owner: string]: {
+        [contract: string]: {
+            fungible: {
+                [tokenId: string]: BigNumber;
+            };
+            nonFungible: BigNumber[];
+        };
+    };
+}
+
+export interface TokenBalances {
+    erc20: {
+        [owner: string]: {
+            [contract: string]: BigNumber;
+        };
+    };
+    erc721: {
+        [owner: string]: {
+            [contract: string]: BigNumber[];
+        };
+    };
+    erc1155: ERC1155Holdings;
 }
 
 export interface MatchedOrders {
@@ -66,14 +98,16 @@ export class MatchOrderTester {
     public exchangeWrapper: ExchangeWrapper;
     public erc20Wrapper: ERC20Wrapper;
     public erc721Wrapper: ERC721Wrapper;
+    public erc1155ProxyWrapper: ERC1155ProxyWrapper;
     public matchOrdersCallAsync?: MatchOrdersAsyncCall;
-    private readonly _initialTokenBalancesPromise: Promise<TokenBalancesByOwner>;
+    private readonly _initialTokenBalancesPromise: Promise<TokenBalances>;
 
     /**
      * Constructs new MatchOrderTester.
      * @param exchangeWrapper Used to call to the Exchange.
      * @param erc20Wrapper Used to fetch ERC20 balances.
      * @param erc721Wrapper Used to fetch ERC721 token owners.
+     * @param erc1155Wrapper Used to fetch ERC1155 token owners.
      * @param matchOrdersCallAsync Optional, custom caller for
      *                             `ExchangeWrapper.matchOrdersAsync()`.
      */
@@ -81,11 +115,13 @@ export class MatchOrderTester {
         exchangeWrapper: ExchangeWrapper,
         erc20Wrapper: ERC20Wrapper,
         erc721Wrapper: ERC721Wrapper,
+        erc1155ProxyWrapper: ERC1155ProxyWrapper,
         matchOrdersCallAsync?: MatchOrdersAsyncCall,
     ) {
         this.exchangeWrapper = exchangeWrapper;
         this.erc20Wrapper = erc20Wrapper;
         this.erc721Wrapper = erc721Wrapper;
+        this.erc1155ProxyWrapper = erc1155ProxyWrapper;
         this.matchOrdersCallAsync = matchOrdersCallAsync;
         this._initialTokenBalancesPromise = this.getBalancesAsync();
     }
@@ -103,7 +139,7 @@ export class MatchOrderTester {
         orders: MatchedOrders,
         takerAddress: string,
         expectedTransferAmounts: Partial<MatchTransferAmounts>,
-        initialTokenBalances?: TokenBalancesByOwner,
+        initialTokenBalances?: TokenBalances,
     ): Promise<MatchResults> {
         await assertInitialOrderStatesAsync(orders, this.exchangeWrapper);
         // Get the token balances before executing `matchOrders()`.
@@ -136,8 +172,8 @@ export class MatchOrderTester {
     /**
      * Fetch the current token balances of all known accounts.
      */
-    public async getBalancesAsync(): Promise<TokenBalancesByOwner> {
-        return getTokenBalancesAsync(this.erc20Wrapper, this.erc721Wrapper);
+    public async getBalancesAsync(): Promise<TokenBalances> {
+        return getTokenBalancesAsync(this.erc20Wrapper, this.erc721Wrapper, this.erc1155ProxyWrapper);
     }
 
     private async _executeMatchOrdersAsync(
@@ -203,7 +239,7 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
 function simulateMatchOrders(
     orders: MatchedOrders,
     takerAddress: string,
-    tokenBalances: TokenBalancesByOwner,
+    tokenBalances: TokenBalances,
     transferAmounts: MatchTransferAmounts,
 ): MatchResults {
     // prettier-ignore
@@ -336,8 +372,47 @@ function transferAsset(
             const tokenId = erc721AssetData.tokenId;
             const fromTokens = matchResults.balances.erc721[fromAddress][assetAddress];
             const toTokens = matchResults.balances.erc721[toAddress][assetAddress];
-            _.remove(fromTokens, tokenId);
-            toTokens.push(tokenId);
+            if (amount.gte(1)) {
+                const tokenIndex = _.findIndex(fromTokens, t => t.eq(tokenId));
+                if (tokenIndex !== -1) {
+                    fromTokens.splice(tokenIndex, 1);
+                    toTokens.push(tokenId);
+                }
+            }
+            break;
+        }
+        case AssetProxyId.ERC1155: {
+            const erc1155AssetData = assetDataUtils.decodeERC1155AssetData(assetData);
+            const assetAddress = erc1155AssetData.tokenAddress;
+            const fromBalances = matchResults.balances.erc1155[fromAddress][assetAddress];
+            const toBalances = matchResults.balances.erc1155[toAddress][assetAddress];
+            for (const i of _.times(erc1155AssetData.tokenIds.length)) {
+                const tokenId = erc1155AssetData.tokenIds[i];
+                const tokenValue = erc1155AssetData.tokenValues[i];
+                const tokenAmount = amount.times(tokenValue);
+                if (tokenAmount.gt(0)) {
+                    const tokenIndex = _.findIndex(fromBalances.nonFungible, t => t.eq(tokenId));
+                    if (tokenIndex !== -1) {
+                        // Transfer a non-fungible.
+                        fromBalances.nonFungible.splice(tokenIndex, 1);
+                        toBalances.nonFungible.push(tokenId);
+                    } else {
+                        // Transfer a fungible.
+                        const _tokenId = tokenId.toString(10);
+                        fromBalances.fungible[_tokenId] = fromBalances.fungible[_tokenId].minus(tokenAmount);
+                        toBalances.fungible[_tokenId] = toBalances.fungible[_tokenId].plus(tokenAmount);
+                    }
+                }
+            }
+            break;
+        }
+        case AssetProxyId.MultiAsset: {
+            const multiAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+            for (const i of _.times(multiAssetData.amounts.length)) {
+                const nestedAmount = amount.times(multiAssetData.amounts[i]);
+                const nestedAssetData = multiAssetData.nestedAssetData[i];
+                transferAsset(fromAddress, toAddress, nestedAmount, nestedAssetData, matchResults);
+            }
             break;
         }
         default:
@@ -355,7 +430,7 @@ function transferAsset(
 async function assertMatchResultsAsync(
     matchResults: MatchResults,
     transactionReceipt: TransactionReceiptWithDecodedLogs,
-    actualTokenBalances: TokenBalancesByOwner,
+    actualTokenBalances: TokenBalances,
     exchangeWrapper: ExchangeWrapper,
 ): Promise<void> {
     // Check the fill events.
@@ -462,21 +537,8 @@ function extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs
  * @param expectedBalances Expected balances.
  * @param actualBalances Actual balances.
  */
-function assertBalances(expectedBalances: TokenBalancesByOwner, actualBalances: TokenBalancesByOwner): void {
-    // ERC20 Balances
-    expect(actualBalances.erc20, 'ERC20 balances').to.deep.equal(expectedBalances.erc20);
-    // ERC721 Token Ids
-    const sortedExpectedERC721Balances = _.mapValues(expectedBalances.erc721, tokenIdsByOwner => {
-        _.mapValues(tokenIdsByOwner, tokenIds => {
-            _.sortBy(tokenIds);
-        });
-    });
-    const sortedActualERC721Balances = _.mapValues(actualBalances.erc721, tokenIdsByOwner => {
-        _.mapValues(tokenIdsByOwner, tokenIds => {
-            _.sortBy(tokenIds);
-        });
-    });
-    expect(sortedExpectedERC721Balances, 'ERC721 balances').to.deep.equal(sortedActualERC721Balances);
+function assertBalances(expectedBalances: TokenBalances, actualBalances: TokenBalances): void {
+    expect(encodeTokenBalances(expectedBalances)).to.deep.equal(encodeTokenBalances(actualBalances));
 }
 
 /**
@@ -533,17 +595,57 @@ async function assertPostExchangeStateAsync(
  * Retrive the current token balances of all known addresses.
  * @param erc20Wrapper The ERC20Wrapper instance.
  * @param erc721Wrapper The ERC721Wrapper instance.
- * @return A promise that resolves to a `TokenBalancesByOwner`.
+ * @param erc1155Wrapper The ERC1155ProxyWrapper instance.
+ * @return A promise that resolves to a `TokenBalances`.
  */
 export async function getTokenBalancesAsync(
     erc20Wrapper: ERC20Wrapper,
     erc721Wrapper: ERC721Wrapper,
-): Promise<TokenBalancesByOwner> {
-    const [erc20, erc721] = await Promise.all([erc20Wrapper.getBalancesAsync(), erc721Wrapper.getBalancesAsync()]);
+    erc1155ProxyWrapper: ERC1155ProxyWrapper,
+): Promise<TokenBalances> {
+    const [erc20, erc721, erc1155] = await Promise.all([
+        erc20Wrapper.getBalancesAsync(),
+        erc721Wrapper.getBalancesAsync(),
+        erc1155ProxyWrapper.getBalancesAsync(),
+    ]);
     return {
         erc20,
         erc721,
+        erc1155: transformERC1155Holdings(erc1155),
     };
 }
 
+/**
+ * Restructures `ERC1155HoldingsByOwner` to be compatible with `TokenBalances.erc1155`.
+ * @param erc1155HoldingsByOwner Holdings returned by `ERC1155ProxyWrapper.getBalancesAsync()`.
+ */
+function transformERC1155Holdings(erc1155HoldingsByOwner: ERC1155HoldingsByOwner): ERC1155Holdings {
+    const result = {};
+    for (const owner of _.keys(erc1155HoldingsByOwner.fungible)) {
+        for (const contract of _.keys(erc1155HoldingsByOwner.fungible[owner])) {
+            _.set(result as any, [owner, contract, 'fungible'], erc1155HoldingsByOwner.fungible[owner][contract]);
+        }
+    }
+    for (const owner of _.keys(erc1155HoldingsByOwner.nonFungible)) {
+        for (const contract of _.keys(erc1155HoldingsByOwner.nonFungible[owner])) {
+            const tokenIds = _.flatten(_.values(erc1155HoldingsByOwner.nonFungible[owner][contract]));
+            _.set(result as any, [owner, contract, 'nonFungible'], _.uniqBy(tokenIds, v => v.toString(10)));
+        }
+    }
+    return result;
+}
+
+function encodeTokenBalances(obj: any): any {
+    if (!_.isPlainObject(obj)) {
+        if (BigNumber.isBigNumber(obj)) {
+            return obj.toString(10);
+        }
+        if (_.isArray(obj)) {
+            return _.sortBy(obj, v => encodeTokenBalances(v));
+        }
+        return obj;
+    }
+    const keys = _.keys(obj).sort();
+    return _.zip(keys, keys.map(k => encodeTokenBalances(obj[k])));
+}
 // tslint:disable-line:max-file-line-count

@@ -254,7 +254,8 @@ export class FillOrderCombinatorialUtils {
             // ExpirationTimeSecondsScenario.InPast,
         ];
         const makerAssetDataScenario = [
-            AssetDataScenario.ERC20FiveDecimals,
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // AssetDataScenario.ERC20FiveDecimals,
             AssetDataScenario.ERC20EighteenDecimals,
             AssetDataScenario.ERC721,
             AssetDataScenario.ERC1155Fungible,
@@ -262,7 +263,8 @@ export class FillOrderCombinatorialUtils {
             AssetDataScenario.MultiAssetERC20,
         ];
         const takerAssetDataScenario = [
-            AssetDataScenario.ERC20FiveDecimals,
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // AssetDataScenario.ERC20FiveDecimals,
             AssetDataScenario.ERC20EighteenDecimals,
             AssetDataScenario.ERC721,
             AssetDataScenario.ERC1155Fungible,
@@ -270,7 +272,8 @@ export class FillOrderCombinatorialUtils {
             AssetDataScenario.MultiAssetERC20,
         ];
         const makerFeeAssetDataScenario = [
-            FeeAssetDataScenario.ERC20FiveDecimals,
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // FeeAssetDataScenario.ERC20FiveDecimals,
             FeeAssetDataScenario.ERC20EighteenDecimals,
             FeeAssetDataScenario.ERC721,
             FeeAssetDataScenario.ERC1155Fungible,
@@ -280,7 +283,8 @@ export class FillOrderCombinatorialUtils {
             FeeAssetDataScenario.TakerToken,
         ];
         const takerFeeAssetDataScenario = [
-            FeeAssetDataScenario.ERC20FiveDecimals,
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // FeeAssetDataScenario.ERC20FiveDecimals,
             FeeAssetDataScenario.ERC20EighteenDecimals,
             FeeAssetDataScenario.ERC721,
             FeeAssetDataScenario.ERC1155Fungible,
