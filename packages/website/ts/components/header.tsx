@@ -9,6 +9,7 @@ import Headroom from 'react-headroom';
 import { Button } from 'ts/components/button';
 import { DropdownDevelopers } from 'ts/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/components/dropdowns/dropdown_products';
+import { DropdownResources } from 'ts/components/dropdowns/dropdown_resources';
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
 import { MobileNav } from 'ts/components/mobileNav';
@@ -50,21 +51,21 @@ const navItems: NavItemProps[] = [
         dropdownWidth: 280,
     },
     {
-        id: 'developers',
-        text: 'Developers',
+        id: 'docs',
+        text: 'Docs',
         dropdownComponent: DropdownDevelopers,
         dropdownWidth: 480,
+    },
+    {
+        id: 'resources',
+        text: 'Resources',
+        dropdownComponent: DropdownResources,
+        dropdownWidth: 270,
     },
     {
         id: 'about',
         url: WebsitePaths.AboutMission,
         text: 'About',
-    },
-    {
-        id: 'blog',
-        url: constants.URL_BLOG,
-        shouldOpenInNewTab: true,
-        text: 'Blog',
     },
 ];
 
