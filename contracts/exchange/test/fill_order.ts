@@ -1,6 +1,8 @@
 import { chaiSetup, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
+import { env } from 'process';
 
 import {
     AllowanceAmountScenario,
@@ -21,6 +23,12 @@ import {
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+
+let describeOptional = describe;
+if (env.TEST_ALL === undefined || env.TEST_ALL === '0') {
+    describeOptional = describe.skip;
+    logUtils.warn(`Combinatorial tests are disabled. Run with "TEST_ALL=1" env variable to enable.`);
+}
 
 const defaultFillScenario = {
     orderScenario: {
@@ -51,7 +59,7 @@ const defaultFillScenario = {
     },
 };
 
-describe.only('FillOrder Tests', () => {
+describe('FillOrder Tests', () => {
     let fillOrderCombinatorialUtils: FillOrderCombinatorialUtils;
 
     before(async () => {
@@ -631,7 +639,7 @@ describe.only('FillOrder Tests', () => {
         }
     });
 
-    describe('Combinatorially generated fills orders', () => {
+    describeOptional('Combinatorially generated fills orders', () => {
         const allFillScenarios = FillOrderCombinatorialUtils.generateFillOrderCombinations();
         for (const fillScenario of allFillScenarios) {
             const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;

@@ -15,6 +15,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
@@ -35,6 +36,8 @@ contract MixinMatchOrders is
     MTransactions,
     MExchangeRichErrors
 {
+    using LibBytes for bytes;
+
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
@@ -280,21 +283,82 @@ contract MixinMatchOrders is
     )
         private
     {
-        // Order makers and taker
-        _dispatchTransferFrom(
-            leftOrderHash,
-            leftOrder.makerAssetData,
-            leftOrder.makerAddress,
-            rightOrder.makerAddress,
-            matchedFillResults.right.takerAssetFilledAmount
-        );
-        _dispatchTransferFrom(
-            rightOrderHash,
-            rightOrder.makerAssetData,
-            rightOrder.makerAddress,
-            leftOrder.makerAddress,
-            matchedFillResults.left.takerAssetFilledAmount
-        );
+        address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
+        address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;
+
+        // Settle left order taker asset and maker fees.
+        if (
+            leftOrder.makerAddress == leftFeeRecipientAddress &&
+            leftOrder.makerFeeAssetData.equals(leftOrder.takerAssetData)
+        ) {
+            // Maker is fee recipient and the maker fee asset is the same as the taker asset.
+            // We can transfer the taker asset and maker fees in one go.
+            _dispatchTransferFrom(
+                rightOrderHash,
+                rightOrder.makerAssetData,
+                rightOrder.makerAddress,
+                leftFeeRecipientAddress,
+                _safeAdd(
+                    matchedFillResults.left.takerAssetFilledAmount,
+                    matchedFillResults.right.makerFeePaid
+                )
+            );
+        } else {
+            // Right maker asset -> left maker
+            _dispatchTransferFrom(
+                rightOrderHash,
+                rightOrder.makerAssetData,
+                rightOrder.makerAddress,
+                leftOrder.makerAddress,
+                matchedFillResults.left.takerAssetFilledAmount
+            );
+            // Left maker fee -> left fee recipient
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.makerFeeAssetData,
+                leftOrder.makerAddress,
+                leftFeeRecipientAddress,
+                matchedFillResults.left.makerFeePaid
+            );
+        }
+
+        // Settle right order taker asset and maker fees.
+        if (
+            rightOrder.makerAddress == rightFeeRecipientAddress &&
+            rightOrder.makerFeeAssetData.equals(rightOrder.takerAssetData)
+        ) {
+            // Maker is fee recipient and the maker fee asset is the same as the taker asset.
+            // We can transfer the taker asset and maker fees in one go.
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.makerAssetData,
+                leftOrder.makerAddress,
+                rightOrder.makerAddress,
+                _safeAdd(
+                    matchedFillResults.right.takerAssetFilledAmount,
+                    matchedFillResults.left.makerFeePaid
+                )
+            );
+        } else {
+            // Left maker asset -> right maker
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.makerAssetData,
+                leftOrder.makerAddress,
+                rightOrder.makerAddress,
+                matchedFillResults.right.takerAssetFilledAmount
+            );
+            // Right maker fee -> right fee recipient
+            _dispatchTransferFrom(
+                rightOrderHash,
+                rightOrder.makerFeeAssetData,
+                rightOrder.makerAddress,
+                rightFeeRecipientAddress,
+                matchedFillResults.right.makerFeePaid
+            );
+        }
+
+        // Settle taker profits.
         _dispatchTransferFrom(
             leftOrderHash,
             leftOrder.makerAssetData,
@@ -303,61 +367,40 @@ contract MixinMatchOrders is
             matchedFillResults.leftMakerAssetSpreadAmount
         );
 
-        address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
-        address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;
-
-        // Maker fees
-        _dispatchTransferFrom(
-            leftOrderHash,
-            leftOrder.makerFeeAssetData,
-            leftOrder.makerAddress,
-            leftFeeRecipientAddress,
-            matchedFillResults.left.makerFeePaid
-        );
-        _dispatchTransferFrom(
-            rightOrderHash,
-            rightOrder.makerFeeAssetData,
-            rightOrder.makerAddress,
-            rightFeeRecipientAddress,
-            matchedFillResults.right.makerFeePaid
-        );
-
-        // Taker fees
-        bytes memory leftTakerFeeAssetData = leftOrder.takerFeeAssetData;
-        bytes memory rightTakerFeeAssetData = rightOrder.takerFeeAssetData;
-
-        if (leftFeeRecipientAddress == rightFeeRecipientAddress) {
-            bytes32 leftTakerFeeAssetDataHash = keccak256(leftTakerFeeAssetData);
-            bytes32 rightTakerFeeAssetDataHash = keccak256(rightTakerFeeAssetData);
-            if (leftTakerFeeAssetDataHash == rightTakerFeeAssetDataHash) {
-                // Fee recipients and taker fee assets are identical, so we can
-                // transfer them in one go.
-                _dispatchTransferFrom(
-                    leftOrderHash,
-                    leftTakerFeeAssetData,
-                    takerAddress,
-                    leftFeeRecipientAddress,
-                    _safeAdd(
-                        matchedFillResults.left.takerFeePaid,
-                        matchedFillResults.right.takerFeePaid
-                    )
-                );
-                return;
-            }
+        // Settle taker fees.
+        if (
+            leftFeeRecipientAddress == rightFeeRecipientAddress &&
+            leftOrder.takerFeeAssetData.equals(rightOrder.takerFeeAssetData)
+        ) {
+            // Fee recipients and taker fee assets are identical, so we can
+            // transfer them in one go.
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.takerFeeAssetData,
+                takerAddress,
+                leftFeeRecipientAddress,
+                _safeAdd(
+                    matchedFillResults.left.takerFeePaid,
+                    matchedFillResults.right.takerFeePaid
+                )
+            );
+        } else {
+            // taker fee -> left fee recipient
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.takerFeeAssetData,
+                takerAddress,
+                leftFeeRecipientAddress,
+                matchedFillResults.left.takerFeePaid
+            );
+            // taker fee -> right fee recipient
+            _dispatchTransferFrom(
+                rightOrderHash,
+                rightOrder.takerFeeAssetData,
+                takerAddress,
+                rightFeeRecipientAddress,
+                matchedFillResults.right.takerFeePaid
+            );
         }
-        _dispatchTransferFrom(
-            leftOrderHash,
-            leftTakerFeeAssetData,
-            takerAddress,
-            leftFeeRecipientAddress,
-            matchedFillResults.left.takerFeePaid
-        );
-        _dispatchTransferFrom(
-            rightOrderHash,
-            rightTakerFeeAssetData,
-            takerAddress,
-            rightFeeRecipientAddress,
-            matchedFillResults.right.takerFeePaid
-        );
     }
 }
