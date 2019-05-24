@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.3 - _May 10, 2019_
+
+    * Fixed spelling error in ABI Encoder error message (#1808)
+
+## v4.3.2 - _Invalid date_
+
+    * Support for ABI encoding multibyte strings (fixes issue #1723) (#1806)
+
 ## v4.3.1 - _April 11, 2019_
 
     * Dependencies updated

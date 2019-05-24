@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.10 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v4.0.9 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v4.0.7 - _May 10, 2019_
+
+    * Fix race-condition bug due to async callback modifying shared state (#1789)
+    * Fix bug where WETH deposit/withdrawal events would not trigger an order state update (#1809)
+
 ## v4.0.6 - _April 11, 2019_
 
     * Dependencies updated

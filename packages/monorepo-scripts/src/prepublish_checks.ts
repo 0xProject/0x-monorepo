@@ -18,7 +18,7 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicPackages);
     await checkChangelogFormatAsync(updatedPublicPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
-    await checkPublishRequiredSetupAsync();
+    await checkPublishRequiredSetupAsync(updatedPublicPackages);
     await checkDockerHubSetupAsync();
 }
 
@@ -130,7 +130,7 @@ async function checkChangelogFormatAsync(updatedPublicPackages: Package[]): Prom
     }
 }
 
-async function checkPublishRequiredSetupAsync(): Promise<void> {
+async function checkPublishRequiredSetupAsync(updatedPublicPackages: Package[]): Promise<void> {
     // check to see if logged into npm before publishing
     try {
         // HACK: for some reason on some setups, the `npm whoami` will not recognize a logged-in user
@@ -139,6 +139,22 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
         await execAsync(`sudo npm whoami`);
     } catch (err) {
         throw new Error('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
+    }
+
+    // check to see that all required write permissions exist
+    utils.log(`Checking that all necessary npm write permissions exist...`);
+    const pkgPermissionsResult = await execAsync(`sudo npm access ls-packages`);
+    const pkgPermissions = JSON.parse(pkgPermissionsResult.stdout);
+    const writePermissions = Object.keys(pkgPermissions).filter(pkgName => {
+        return pkgPermissions[pkgName] === 'read-write';
+    });
+    const unwriteablePkgs = updatedPublicPackages.filter(pkg => !writePermissions.includes(pkg.packageJson.name));
+    if (unwriteablePkgs.length > 0) {
+        utils.log(`Missing write permissions for the following packages:`);
+        unwriteablePkgs.forEach(pkg => {
+            utils.log(pkg.packageJson.name);
+        });
+        throw new Error(`Obtain necessary write permissions to continue.`);
     }
 
     // Check to see if Git personal token setup

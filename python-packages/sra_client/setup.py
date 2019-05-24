@@ -54,7 +54,7 @@ class TestPublishCommand(distutils.command.build_py.build_py):
 
 
 class StartTestRelayerCommand(distutils.command.build_py.build_py):
-    """Custom command to boot up a local 0x-launch-kit in docker."""
+    """Custom command to boot up a local 0x-launch-kit-backend in docker."""
 
     description = "Run launch-kit daemon to support tests."
 
@@ -79,7 +79,7 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
 
 
 class StopTestRelayerCommand(distutils.command.build_py.build_py):
-    """Custom command to tear down the local 0x-launch-kit test relayer."""
+    """Custom command to tear down the local 0x-launch-kit-backend test relayer."""
 
     description = "Tear down launch-kit daemon."
 

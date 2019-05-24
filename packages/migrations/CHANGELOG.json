@@ -1,5 +1,33 @@
 [
     {
+        "timestamp": 1557961111,
+        "version": "4.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.1.4",
+        "changes": [
+            {
+                "note": "Add --pk flag to accept private key when migrating",
+                "pr": 1811
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "4.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.1.1",
         "changes": [
             {

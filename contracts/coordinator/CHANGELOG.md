@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.3 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v2.0.2 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v2.0.1 - _May 10, 2019_
+
+    * Dependencies updated
+
 ## v2.0.0 - _April 11, 2019_
 
     * Make `decodeOrdersFromFillData`, `getCoordinatorApprovalHash`, and `getTransactionHash` public (#1729)

@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.4 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v2.2.3 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v2.2.1 - _May 10, 2019_
+
+    * Dependencies updated
+
 ## v2.2.0 - _April 11, 2019_
 
     * Added UntransferrableDummyERC20Token (#1714)

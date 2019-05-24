@@ -1,12 +1,35 @@
 [
     {
+        "timestamp": 1557961111,
+        "version": "4.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
         "version": "4.0.7",
         "changes": [
             {
                 "note": "Fix race-condition bug due to async callback modifying shared state",
                 "pr": 1789
+            },
+            {
+                "note": "Fix bug where WETH deposit/withdrawal events would not trigger an order state update",
+                "pr": 1809
             }
-        ]
+        ],
+        "timestamp": 1557507213
     },
     {
         "version": "4.0.6",

@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.1.3 - _May 15, 2019_
+
+    * Fix decoding bug in `DutchAuctionWrapper.decodeDutchAuctionData` (#1815)
+    * Fallback to eth_sign if eth_signedTypedData fails (#1817)
+
+## v9.1.2 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v9.1.0 - _May 10, 2019_
+
+    * Added CoordinatorWrapper to support orders with the Coordinator extension contract (#1792)
+
 ## v9.0.0 - _April 11, 2019_
 
     * Added a simulation to transfer from maker to taker during `exchange.validateOrderFillableOrThrowAsync` (#1714)

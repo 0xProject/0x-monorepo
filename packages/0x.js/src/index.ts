@@ -10,6 +10,9 @@ export {
 
 export {
     ContractWrappers,
+    CoordinatorWrapper,
+    CoordinatorServerCancellationResponse,
+    CoordinatorServerError,
     DutchAuctionWrapper,
     ERC20TokenWrapper,
     ERC721TokenWrapper,

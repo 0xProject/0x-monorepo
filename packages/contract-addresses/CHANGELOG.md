@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.3 - _May 14, 2019_
+
+    * Redeploy Coordinator contract (#1812)
+
 ## v2.3.1 - _April 11, 2019_
 
     * Dependencies updated

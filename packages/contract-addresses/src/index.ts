@@ -36,7 +36,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
         dutchAuction: '0x07b32a653754945666cfca91168bb207323dfe67',
         coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
-        coordinator: '0x24675738816c87ad37e712cc24f309a0c906187f',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -49,7 +49,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
         dutchAuction: '0x2df6b59309f35ada230ec7d61d7d97355017a1df',
         coordinatorRegistry: '0x403cc23e88c17c4652fb904784d1af640a6722d9',
-        coordinator: '0xc442300dcb4df1ff1db0173e77556dc559de6006',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     4: {
         exchange: '0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e',
@@ -62,7 +62,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         orderValidator: '0x0c5173a51e26b29d6126c686756fb9fbef71f762',
         dutchAuction: '0xdd7bd6437e67c422879364740ab5855fe3dc41f7',
         coordinatorRegistry: '0x1084b6a398e47907bae43fec3ff4b677db6e4fee',
-        coordinator: '0xc05e6c01b83eeedecac2f7bab9367da4d4c108df',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -75,7 +75,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
         dutchAuction: '0xe11667fb51f34c5367f40d7e379327ce32ee7150',
         coordinatorRegistry: '0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5',
-        coordinator: '0x04b2b090bad68b254881d7eb645a258ce66cc998',
+        coordinator: '0x25aae5b981ce6683cc5aeea1855d927e0b59066f',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {

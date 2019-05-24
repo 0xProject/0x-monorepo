@@ -29,6 +29,7 @@ export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet';
 export { MnemonicWalletSubprovider } from './subproviders/mnemonic_wallet';
 export { MetamaskSubprovider } from './subproviders/metamask_subprovider';
 export { EthLightwalletSubprovider } from './subproviders/eth_lightwallet_subprovider';
+export { TrezorSubprovider } from './subproviders/trezor';
 
 export {
     Callback,
@@ -46,6 +47,7 @@ export {
     OnNextCompleted,
     MnemonicWalletSubproviderConfigs,
     LedgerGetAddressResult,
+    TrezorSubproviderConfig,
 } from './types';
 
 export { ECSignature, EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types, EIP712Parameter } from '@0x/types';

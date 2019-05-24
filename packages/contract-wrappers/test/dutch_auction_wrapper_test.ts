@@ -1,12 +1,12 @@
 import { expectTransactionFailedAsync, getLatestBlockTimestampAsync } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { RevertReason, SignedOrder } from '@0x/types';
+import { ERC20AssetData, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { ContractWrappers } from '../src';
+import { ContractWrappers, DutchAuctionWrapper } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -90,6 +90,21 @@ describe('DutchAuctionWrapper', () => {
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+    describe('.decodeDutchAuctionAssetData', () => {
+        it('decodes to the encoded values', async () => {
+            const encodedAssetData = DutchAuctionWrapper.encodeDutchAuctionAssetData(
+                makerTokenAssetData,
+                auctionBeginTimeSeconds,
+                makerAssetAmount,
+            );
+            const decodedAssetData = DutchAuctionWrapper.decodeDutchAuctionData(encodedAssetData);
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const erc20AssetData = decodedAssetData.assetData as ERC20AssetData;
+            expect(erc20AssetData.tokenAddress).to.eq(makerTokenAddress);
+            expect(decodedAssetData.beginAmount).to.be.bignumber.eq(makerAssetAmount);
+            expect(decodedAssetData.beginTimeSeconds).to.be.bignumber.eq(auctionBeginTimeSeconds);
+        });
     });
     describe('#matchOrdersAsync', () => {
         it('should match two orders', async () => {
