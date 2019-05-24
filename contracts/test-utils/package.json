@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-test-utils",
-    "version": "3.1.6",
+    "version": "3.1.7",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,13 +42,13 @@
     },
     "dependencies": {
         "@0x/abi-gen": "^2.0.10",
-        "@0x/dev-utils": "^2.2.2",
-        "@0x/order-utils": "^8.1.0",
-        "@0x/sol-compiler": "^3.1.7",
-        "@0x/sol-coverage": "^3.0.4",
-        "@0x/sol-profiler": "^3.1.6",
-        "@0x/sol-trace": "^2.0.12",
-        "@0x/subproviders": "^4.0.6",
+        "@0x/dev-utils": "^2.2.3",
+        "@0x/order-utils": "^8.1.1",
+        "@0x/sol-compiler": "^3.1.8",
+        "@0x/sol-coverage": "^3.0.5",
+        "@0x/sol-profiler": "^3.1.7",
+        "@0x/sol-trace": "^2.0.13",
+        "@0x/subproviders": "^4.1.0",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",

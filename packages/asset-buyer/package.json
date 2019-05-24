@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "6.1.4",
+    "version": "6.1.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -38,11 +38,11 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
     "dependencies": {
         "@0x/assert": "^2.0.10",
-        "@0x/connect": "^5.0.9",
-        "@0x/contract-wrappers": "^9.1.3",
+        "@0x/connect": "^5.0.10",
+        "@0x/contract-wrappers": "^9.1.4",
         "@0x/json-schemas": "^3.0.10",
-        "@0x/order-utils": "^8.1.0",
-        "@0x/subproviders": "^4.0.6",
+        "@0x/order-utils": "^8.1.1",
+        "@0x/subproviders": "^4.1.0",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.3",

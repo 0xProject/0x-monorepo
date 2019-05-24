@@ -1,6 +1,6 @@
 {
     "name": "@0x/pipeline",
-    "version": "1.0.20",
+    "version": "1.0.21",
     "private": true,
     "description": "Data pipeline for offline analysis",
     "scripts": {
@@ -40,13 +40,13 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/connect": "^5.0.9",
+        "@0x/connect": "^5.0.10",
         "@0x/contract-addresses": "^2.3.3",
         "@0x/contract-artifacts": "^1.5.1",
-        "@0x/contract-wrappers": "^9.1.3",
-        "@0x/dev-utils": "^2.2.2",
-        "@0x/order-utils": "^8.1.0",
-        "@0x/subproviders": "^4.0.6",
+        "@0x/contract-wrappers": "^9.1.4",
+        "@0x/dev-utils": "^2.2.3",
+        "@0x/order-utils": "^8.1.1",
+        "@0x/subproviders": "^4.1.0",
         "@0x/types": "^2.2.2",
         "@0x/utils": "^4.3.3",
         "@0x/web3-wrapper": "^6.0.6",

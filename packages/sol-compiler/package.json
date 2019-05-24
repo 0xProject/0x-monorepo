@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-compiler",
-    "version": "3.1.7",
+    "version": "3.1.8",
     "engines": {
         "node": ">=6.12"
     },
@@ -43,7 +43,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
-        "@0x/dev-utils": "^2.2.2",
+        "@0x/dev-utils": "^2.2.3",
         "@0x/tslint-config": "^3.0.1",
         "@types/chokidar": "^1.7.5",
         "@types/mkdirp": "^0.5.2",
