@@ -14,8 +14,6 @@ import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
     chaiSetup,
     constants,
-    ERC1155HoldingsByOwner,
-    ERC721TokenIdsByOwner,
     OrderFactory,
     provider,
     txDefaults,
@@ -34,17 +32,14 @@ import {
     constants as exchangeConstants,
     ExchangeContract,
     ExchangeWrapper,
-    MatchOrderTester,
     ReentrantERC20TokenContract,
     TestExchangeInternalsContract,
 } from '../src';
 
-interface IndividualERC1155Holdings {
-    fungible: {
-        [tokenId: string]: BigNumber;
-    };
-    nonFungible: BigNumber[];
-}
+import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
+
+const ONE = new BigNumber(1);
+const TWO = new BigNumber(2);
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -76,14 +71,12 @@ describe('matchOrders', () => {
     let orderFactoryLeft: OrderFactory;
     let orderFactoryRight: OrderFactory;
 
-    let erc721LeftMakerAssetIds: BigNumber[];
-    let erc721RightMakerAssetIds: BigNumber[];
-    let erc1155LeftMakerHoldings: IndividualERC1155Holdings;
-    let erc1155RightMakerHoldings: IndividualERC1155Holdings;
+    let tokenBalances: TokenBalances;
 
     let defaultERC20MakerAssetAddress: string;
     let defaultERC20TakerAssetAddress: string;
     let defaultERC721AssetAddress: string;
+    let defaultERC1155AssetAddress: string;
     let defaultFeeTokenAddress: string;
 
     let matchOrderTester: MatchOrderTester;
@@ -109,41 +102,25 @@ describe('matchOrders', () => {
             feeRecipientAddressLeft,
             feeRecipientAddressRight,
         ] = accounts);
+        const addressesWithBalances = usedAddresses.slice(1);
         // Create wrappers
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
-        erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(provider, addressesWithBalances, owner);
+        erc721Wrapper = new ERC721Wrapper(provider, addressesWithBalances, owner);
+        erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, addressesWithBalances, owner);
         // Deploy ERC20 token & ERC20 proxy
         const numDummyErc20ToDeploy = 4;
-        erc20Tokens = await erc20Wrapper.deployDummyTokensAsync(
-            numDummyErc20ToDeploy,
-            constants.DUMMY_TOKEN_DECIMALS,
-        );
+        erc20Tokens = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC721 token and proxy
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
         await erc721Wrapper.setBalancesAndAllowancesAsync();
-        const erc721Balances = await erc721Wrapper.getBalancesAsync();
-        erc721LeftMakerAssetIds = erc721Balances[makerAddressLeft][erc721Token.address];
-        erc721RightMakerAssetIds = erc721Balances[makerAddressRight][erc721Token.address];
         // Deploy ERC1155 token and proxy
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
         erc1155Token = erc1155Wrapper.getContract();
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
         await erc1155ProxyWrapper.setBalancesAndAllowancesAsync();
-        const erc1155Holdings = await erc1155ProxyWrapper.getBalancesAsync();
-        erc1155LeftMakerHoldings = getIndividualERC1155Holdings(
-            erc1155Holdings,
-            erc1155Token.address,
-            makerAddressLeft,
-        );
-        erc1155RightMakerHoldings = getIndividualERC1155Holdings(
-            erc1155Holdings,
-            erc1155Token.address,
-            makerAddressRight,
-        );
         // Deploy MultiAssetProxy.
         const multiAssetProxyContract = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
             assetProxyArtifacts.MultiAssetProxy,
@@ -178,6 +155,11 @@ describe('matchOrders', () => {
             { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
+        await multiAssetProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            exchange.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxyContract.address,
             { from: owner },
@@ -193,8 +175,18 @@ describe('matchOrders', () => {
             { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await multiAssetProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            exchange.address,
+        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc20Proxy.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc721Proxy.address,
+            { from: owner },
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc1155Proxy.address,
             { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
@@ -211,6 +203,7 @@ describe('matchOrders', () => {
         defaultERC20TakerAssetAddress = erc20Tokens[1].address;
         defaultFeeTokenAddress = erc20Tokens[2].address;
         defaultERC721AssetAddress = erc721Token.address;
+        defaultERC1155AssetAddress = erc1155Token.address;
         const domain = {
             verifyingContractAddress: exchange.address,
             chainId,
@@ -240,17 +233,15 @@ describe('matchOrders', () => {
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParamsLeft);
         const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
-        // Set match order tester
-        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper);
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
             provider,
             txDefaults,
             new BigNumber(chainId),
         );
-
-        console.log(erc1155LeftMakerHoldings);
-        console.log(erc1155RightMakerHoldings);
+        // Create match order tester
+        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper);
+        tokenBalances = await matchOrderTester.getBalancesAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -1266,267 +1257,452 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should transfer correct amounts when left order maker asset is an ERC721 token', async () => {
-            // Create orders to match
-            const erc721TokenToTransfer = erc721LeftMakerAssetIds[0];
-            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                takerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                takerAssetAmount: new BigNumber(1),
-            });
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 50%
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
-                {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
-                },
-                takerAddress,
-                expectedTransferAmounts,
-            );
-        });
-
-        it('should transfer correct amounts when right order maker asset is an ERC721 token', async () => {
-            // Create orders to match
-            const erc721TokenToTransfer = erc721RightMakerAssetIds[0];
-            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                takerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                takerAssetAmount: new BigNumber(1),
-            });
-            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(8, 18),
-            });
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(8, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
-                {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
-                },
-                takerAddress,
-                expectedTransferAmounts,
-            );
-        });
-
-        describe('fee tokens', () => {
+        describe('combinations', () => {
             // tslint:disable: enum-naming
-            enum TokenType {
-                ERC20A = 'ERC20A',
-                ERC20B = 'ERC20B',
-                ERC20C = 'ERC20C',
-                ERC20D = 'ERC20D',
-                ERC721A = 'ERC721A',
-                ERC721B = 'ERC721B',
-                ERC721C = 'ERC721C',
-                ERC721D = 'ERC721D',
+            enum AssetType {
+                ERC20A = 'ERC20_A',
+                ERC20B = 'ERC20_B',
+                ERC20C = 'ERC20_C',
+                ERC20D = 'ERC20_D',
+                ERC721LeftMaker = 'ERC721_LEFT_MAKER',
+                ERC721RightMaker = 'ERC721_RIGHT_MAKER',
+                ERC721Taker = 'ERC721_TAKER',
+                ERC1155FungibleA = 'ERC1155_FUNGIBLE_A',
+                ERC1155FungibleB = 'ERC1155_FUNGIBLE_B',
+                ERC1155FungibleC = 'ERC1155_FUNGIBLE_C',
+                ERC1155FungibleD = 'ERC1155_FUNGIBLE_D',
+                ERC1155NonFungibleLeftMaker = 'ERC1155_NON_FUNGIBLE_LEFT_MAKER',
+                ERC1155NonFungibleRightMaker = 'ERC1155_NON_FUNGIBLE_RIGHT_MAKER',
+                ERC1155NonFungibleTaker = 'ERC1155_NON_FUNGIBLE_TAKER',
+                MultiAssetA = 'MULTI_ASSET_A',
+                MultiAssetB = 'MULTI_ASSET_B',
+                MultiAssetC = 'MULTI_ASSET_C',
+                MultiAssetD = 'MULTI_ASSET_D',
             }
+            const fungibleTypes = [
+                AssetType.ERC20A,
+                AssetType.ERC20B,
+                AssetType.ERC20C,
+                AssetType.ERC20D,
+                AssetType.ERC1155FungibleA,
+                AssetType.ERC1155FungibleB,
+                AssetType.ERC1155FungibleC,
+                AssetType.ERC1155FungibleD,
+                AssetType.MultiAssetA,
+                AssetType.MultiAssetB,
+                AssetType.MultiAssetC,
+                AssetType.MultiAssetD,
+            ];
             interface AssetCombination {
-                leftMaker: TokenType;
-                rightMaker: TokenType;
-                leftMakerFee: TokenType;
-                rightMakerFee: TokenType;
-                leftTakerFee: TokenType;
-                rightTakerFee: TokenType;
+                leftMaker: AssetType;
+                rightMaker: AssetType;
+                leftMakerFee: AssetType;
+                rightMakerFee: AssetType;
+                leftTakerFee: AssetType;
+                rightTakerFee: AssetType;
                 description?: string;
                 shouldFail?: boolean;
             }
-            const feeAssetCombinations: AssetCombination[] = [
+            const assetCombinations: AssetCombination[] = [
                 {
-                    description: 'Swapping tokens then using them to pay maker fees.',
-                    leftMaker: TokenType.ERC20A,
-                    rightMaker: TokenType.ERC20B,
-                    leftMakerFee: TokenType.ERC20B,
-                    rightMakerFee: TokenType.ERC20A,
-                    leftTakerFee: TokenType.ERC20C,
-                    rightTakerFee: TokenType.ERC20C,
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC20B,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                 },
                 {
-                    description: 'Swapping tokens then using them to pay taker fees.',
-                    leftMaker: TokenType.ERC20A,
-                    rightMaker: TokenType.ERC20B,
-                    leftMakerFee: TokenType.ERC20C,
-                    rightMakerFee: TokenType.ERC20C,
-                    leftTakerFee: TokenType.ERC20B,
-                    rightTakerFee: TokenType.ERC20A,
+                    leftMaker: AssetType.ERC721LeftMaker,
+                    rightMaker: AssetType.ERC721RightMaker,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                 },
                 {
-                    description: 'Swapping tokens then using them to pay maker and taker fees.',
-                    leftMaker: TokenType.ERC20A,
-                    rightMaker: TokenType.ERC20B,
-                    leftMakerFee: TokenType.ERC20B,
-                    rightMakerFee: TokenType.ERC20A,
-                    leftTakerFee: TokenType.ERC20C,
-                    rightTakerFee: TokenType.ERC20C,
+                    leftMaker: AssetType.ERC721LeftMaker,
+                    rightMaker: AssetType.ERC20A,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                 },
                 {
-                    description: 'Paying maker and taker fees with same tokens being sold.',
-                    leftMaker: TokenType.ERC20A,
-                    rightMaker: TokenType.ERC20B,
-                    leftMakerFee: TokenType.ERC20A,
-                    rightMakerFee: TokenType.ERC20B,
-                    leftTakerFee: TokenType.ERC20A,
-                    rightTakerFee: TokenType.ERC20B,
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC721RightMaker,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                 },
                 {
-                    description: 'Paying maker and taker fees with same tokens being bought.',
-                    leftMaker: TokenType.ERC20A,
-                    rightMaker: TokenType.ERC20B,
-                    leftMakerFee: TokenType.ERC20B,
-                    rightMakerFee: TokenType.ERC20A,
-                    leftTakerFee: TokenType.ERC20B,
-                    rightTakerFee: TokenType.ERC20A,
+                    leftMaker: AssetType.ERC1155FungibleA,
+                    rightMaker: AssetType.ERC20A,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                 },
                 {
-                    description: 'Buy an ERC721 then use it to pay maker fees.',
-                    leftMaker: TokenType.ERC20A,
-                    rightMaker: TokenType.ERC721A,
-                    leftMakerFee: TokenType.ERC721A,
-                    rightMakerFee: TokenType.ERC20B,
-                    leftTakerFee: TokenType.ERC20C,
-                    rightTakerFee: TokenType.ERC20C,
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC1155FungibleB,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                 },
                 {
-                    description: 'Buy an ERC721 then use it to pay maker fee (the other way).',
-                    leftMaker: TokenType.ERC721A,
-                    rightMaker: TokenType.ERC20A,
-                    leftMakerFee: TokenType.ERC20B,
-                    rightMakerFee: TokenType.ERC721A,
-                    leftTakerFee: TokenType.ERC20C,
-                    rightTakerFee: TokenType.ERC20C,
+                    leftMaker: AssetType.ERC1155FungibleA,
+                    rightMaker: AssetType.ERC1155FungibleA,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC1155NonFungibleLeftMaker,
+                    rightMaker: AssetType.ERC20A,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC1155NonFungibleRightMaker,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC1155NonFungibleLeftMaker,
+                    rightMaker: AssetType.ERC1155NonFungibleRightMaker,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC1155FungibleA,
+                    rightMaker: AssetType.ERC20A,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC1155FungibleB,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC1155FungibleB,
+                    rightMaker: AssetType.ERC1155FungibleB,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.MultiAssetA,
+                    rightMaker: AssetType.ERC20A,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.MultiAssetB,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.MultiAssetA,
+                    rightMaker: AssetType.MultiAssetB,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC20C,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    leftMaker: AssetType.MultiAssetA,
+                    rightMaker: AssetType.ERC1155FungibleA,
+                    leftMakerFee: AssetType.ERC1155FungibleA,
+                    rightMakerFee: AssetType.MultiAssetA,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
+                },
+                {
+                    description: 'Paying maker fees with the same ERC20 tokens being bought.',
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC20B,
+                    leftMakerFee: AssetType.ERC20B,
+                    rightMakerFee: AssetType.ERC20A,
+                    leftTakerFee: AssetType.ERC20B,
+                    rightTakerFee: AssetType.ERC20A,
+                },
+                {
+                    description: 'Paying maker fees with the same ERC20 tokens being sold.',
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC20B,
+                    leftMakerFee: AssetType.ERC20A,
+                    rightMakerFee: AssetType.ERC20B,
+                    leftTakerFee: AssetType.ERC20A,
+                    rightTakerFee: AssetType.ERC20B,
+                },
+                {
+                    description: 'Using all the same ERC20 asset.',
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC20A,
+                    leftMakerFee: AssetType.ERC20A,
+                    rightMakerFee: AssetType.ERC20A,
+                    leftTakerFee: AssetType.ERC20A,
+                    rightTakerFee: AssetType.ERC20A,
+                },
+                {
+                    description: 'Paying fees with the same MAP assets being sold.',
+                    leftMaker: AssetType.MultiAssetA,
+                    rightMaker: AssetType.MultiAssetB,
+                    leftMakerFee: AssetType.MultiAssetA,
+                    rightMakerFee: AssetType.MultiAssetB,
+                    leftTakerFee: AssetType.MultiAssetA,
+                    rightTakerFee: AssetType.MultiAssetB,
+                },
+                {
+                    description: 'Paying fees with the same MAP assets being bought.',
+                    leftMaker: AssetType.MultiAssetA,
+                    rightMaker: AssetType.MultiAssetB,
+                    leftMakerFee: AssetType.MultiAssetB,
+                    rightMakerFee: AssetType.MultiAssetA,
+                    leftTakerFee: AssetType.MultiAssetB,
+                    rightTakerFee: AssetType.MultiAssetA,
+                },
+                {
+                    description: 'Using all the same MAP assets.',
+                    leftMaker: AssetType.MultiAssetA,
+                    rightMaker: AssetType.MultiAssetA,
+                    leftMakerFee: AssetType.MultiAssetA,
+                    rightMakerFee: AssetType.MultiAssetA,
+                    leftTakerFee: AssetType.MultiAssetA,
+                    rightTakerFee: AssetType.MultiAssetA,
                 },
                 {
                     description: 'Swapping ERC721s then using them to pay maker fees.',
-                    leftMaker: TokenType.ERC721A,
-                    rightMaker: TokenType.ERC721B,
-                    leftMakerFee: TokenType.ERC721B,
-                    rightMakerFee: TokenType.ERC721A,
-                    leftTakerFee: TokenType.ERC20A,
-                    rightTakerFee: TokenType.ERC20A,
+                    leftMaker: AssetType.ERC721LeftMaker,
+                    rightMaker: AssetType.ERC721RightMaker,
+                    leftMakerFee: AssetType.ERC721RightMaker,
+                    rightMakerFee: AssetType.ERC721LeftMaker,
+                    leftTakerFee: AssetType.ERC20A,
+                    rightTakerFee: AssetType.ERC20A,
+                },
+                {
+                    description: 'Swapping ERC1155 NFTs then using them to pay maker fees.',
+                    leftMaker: AssetType.ERC1155NonFungibleLeftMaker,
+                    rightMaker: AssetType.ERC1155NonFungibleRightMaker,
+                    leftMakerFee: AssetType.ERC1155NonFungibleRightMaker,
+                    rightMakerFee: AssetType.ERC1155NonFungibleLeftMaker,
+                    leftTakerFee: AssetType.ERC20A,
+                    rightTakerFee: AssetType.ERC20A,
                 },
                 {
                     description: 'Double-spend by trying to pay maker fees with sold ERC721 token (fail).',
-                    leftMaker: TokenType.ERC721A,
-                    rightMaker: TokenType.ERC721B,
-                    leftMakerFee: TokenType.ERC721A,
-                    rightMakerFee: TokenType.ERC721A,
-                    leftTakerFee: TokenType.ERC20A,
-                    rightTakerFee: TokenType.ERC20A,
+                    leftMaker: AssetType.ERC721LeftMaker,
+                    rightMaker: AssetType.ERC721RightMaker,
+                    leftMakerFee: AssetType.ERC721LeftMaker,
+                    rightMakerFee: AssetType.ERC721LeftMaker,
+                    leftTakerFee: AssetType.ERC20A,
+                    rightTakerFee: AssetType.ERC20A,
+                    shouldFail: true,
+                },
+                {
+                    description: 'Double-spend by trying to pay maker fees with sold ERC1155 NFT (fail).',
+                    leftMaker: AssetType.ERC20A,
+                    rightMaker: AssetType.ERC1155NonFungibleLeftMaker,
+                    leftMakerFee: AssetType.ERC20C,
+                    rightMakerFee: AssetType.ERC1155NonFungibleLeftMaker,
+                    leftTakerFee: AssetType.ERC20C,
+                    rightTakerFee: AssetType.ERC20C,
                     shouldFail: true,
                 },
             ];
 
-            let erc721TokenIdsByOwner: ERC721TokenIdsByOwner;
-            let nameToERC20Tokens: { [name: string]: string };
-            let nameToERC721Tokens: { [name: string]: string };
+            let nameToERC20Asset: { [name: string]: string };
+            let nameToERC721Asset: { [name: string]: [string, BigNumber] };
+            let nameToERC1155FungibleAsset: { [name: string]: [string, BigNumber] };
+            let nameToERC1155NonFungibleAsset: { [name: string]: [string, BigNumber] };
+            let nameToMultiAssetAsset: { [name: string]: [BigNumber[], string[]] };
 
-            function getAssetData(tokenType: TokenType, ownerAddress: string): string {
+            function getAssetData(assetType: AssetType): string {
                 const encodeERC20AssetData = assetDataUtils.encodeERC20AssetData;
                 const encodeERC721AssetData = assetDataUtils.encodeERC721AssetData;
-                if (nameToERC20Tokens[tokenType] !== undefined) {
-                    const tokenAddress = nameToERC20Tokens[tokenType];
+                const encodeERC1155AssetData = assetDataUtils.encodeERC1155AssetData;
+                const encodeMultiAssetData = assetDataUtils.encodeMultiAssetData;
+                if (nameToERC20Asset[assetType] !== undefined) {
+                    const tokenAddress = nameToERC20Asset[assetType];
                     return encodeERC20AssetData(tokenAddress);
                 }
-                if (nameToERC721Tokens[tokenType] !== undefined) {
-                    const tokenAddress = nameToERC721Tokens[tokenType];
-                    const tokenIdx = tokenType.charCodeAt(tokenType.length - 1) - 'A'.charCodeAt(0);
-                    const tokenId = erc721TokenIdsByOwner[ownerAddress][tokenAddress][tokenIdx];
-                    return encodeERC721AssetData(nameToERC721Tokens[tokenType], tokenId);
+                if (nameToERC721Asset[assetType] !== undefined) {
+                    const [tokenAddress, tokenId] = nameToERC721Asset[assetType];
+                    return encodeERC721AssetData(tokenAddress, tokenId);
                 }
-                return '0x';
+                if (nameToERC1155FungibleAsset[assetType] !== undefined) {
+                    const [tokenAddress, tokenId] = nameToERC1155FungibleAsset[assetType];
+                    return encodeERC1155AssetData(tokenAddress, [tokenId], [ONE], constants.NULL_BYTES);
+                }
+                if (nameToERC1155NonFungibleAsset[assetType] !== undefined) {
+                    const [tokenAddress, tokenId] = nameToERC1155NonFungibleAsset[assetType];
+                    return encodeERC1155AssetData(tokenAddress, [tokenId], [ONE], constants.NULL_BYTES);
+                }
+                if (nameToMultiAssetAsset[assetType] !== undefined) {
+                    const [amounts, nestedAssetData] = nameToMultiAssetAsset[assetType];
+                    return encodeMultiAssetData(amounts, nestedAssetData);
+                }
+                throw new Error(`Unknown asset type: ${assetType}`);
             }
 
             before(async () => {
-                erc721TokenIdsByOwner = await erc721Wrapper.getBalancesAsync();
-                nameToERC20Tokens = {
-                    ERC20A: erc20Tokens[0].address,
-                    ERC20B: erc20Tokens[1].address,
-                    ERC20C: erc20Tokens[0].address,
-                    ERC20D: erc20Tokens[1].address,
+                nameToERC20Asset = {
+                    ERC20_A: erc20Tokens[0].address,
+                    ERC20_B: erc20Tokens[1].address,
+                    ERC20_C: erc20Tokens[2].address,
+                    ERC20_D: erc20Tokens[3].address,
                 };
-                nameToERC721Tokens = {
-                    ERC721A: erc721Token.address,
-                    ERC721B: erc721Token.address,
-                    ERC721C: erc721Token.address,
-                    ERC721D: erc721Token.address,
+                const erc721TokenIds = _.mapValues(tokenBalances.erc721, v => v[defaultERC721AssetAddress.address][0]);
+                nameToERC721Asset = {
+                    ERC721_LEFT_MAKER: [defaultERC721AssetAddress.address, erc721TokenIds[makerAddressLeft]],
+                    ERC721_RIGHT_MAKER: [defaultERC721AssetAddress.address, erc721TokenIds[makerAddressRight]],
+                    ERC721_TAKER: [defaultERC721AssetAddress.address, erc721TokenIds[takerAddress]],
+                };
+                const erc1155FungibleTokens = _.keys(
+                    _.values(tokenBalances.erc1155)[0][defaultERC1155AssetAddress].fungible,
+                ).map(k => new BigNumber(k));
+                nameToERC1155FungibleAsset = {
+                    ERC1155_FUNGIBLE_A: [defaultERC1155AssetAddress, erc1155FungibleTokens[0]],
+                    ERC1155_FUNGIBLE_B: [defaultERC1155AssetAddress, erc1155FungibleTokens[1]],
+                    ERC1155_FUNGIBLE_C: [defaultERC1155AssetAddress, erc1155FungibleTokens[2]],
+                    ERC1155_FUNGIBLE_D: [defaultERC1155AssetAddress, erc1155FungibleTokens[3]],
+                };
+                const erc1155NonFungibleTokenIds = _.mapValues(
+                    tokenBalances.erc1155,
+                    v => v[defaultERC1155AssetAddress].nonFungible[0],
+                );
+                nameToERC1155NonFungibleAsset = {
+                    ERC1155_NON_FUNGIBLE_LEFT_MAKER: [
+                        defaultERC1155AssetAddress,
+                        erc1155NonFungibleTokenIds[makerAddressLeft],
+                    ],
+                    ERC1155_NON_FUNGIBLE_RIGHT_MAKER: [
+                        defaultERC1155AssetAddress,
+                        erc1155NonFungibleTokenIds[makerAddressRight],
+                    ],
+                    ERC1155_NON_FUNGIBLE_TAKER: [defaultERC1155AssetAddress, erc1155NonFungibleTokenIds[takerAddress]],
+                };
+                nameToMultiAssetAsset = {
+                    MULTI_ASSET_A: [
+                        [ONE, TWO],
+                        [
+                            assetDataUtils.encodeERC20AssetData(erc20Tokens[0].address),
+                            assetDataUtils.encodeERC1155AssetData(
+                                defaultERC1155AssetAddress,
+                                [erc1155FungibleTokens[0]],
+                                [ONE],
+                                constants.NULL_BYTES,
+                            ),
+                        ],
+                    ],
+                    MULTI_ASSET_B: [
+                        [ONE, TWO],
+                        [
+                            assetDataUtils.encodeERC20AssetData(erc20Tokens[1].address),
+                            assetDataUtils.encodeERC1155AssetData(
+                                defaultERC1155AssetAddress,
+                                [erc1155FungibleTokens[1]],
+                                [ONE],
+                                constants.NULL_BYTES,
+                            ),
+                        ],
+                    ],
+                    MULTI_ASSET_C: [
+                        [ONE, TWO],
+                        [
+                            assetDataUtils.encodeERC20AssetData(erc20Tokens[2].address),
+                            assetDataUtils.encodeERC1155AssetData(
+                                defaultERC1155AssetAddress,
+                                [erc1155FungibleTokens[2]],
+                                [ONE],
+                                constants.NULL_BYTES,
+                            ),
+                        ],
+                    ],
+                    MULTI_ASSET_D: [
+                        [ONE, TWO],
+                        [
+                            assetDataUtils.encodeERC20AssetData(erc20Tokens[3].address),
+                            assetDataUtils.encodeERC1155AssetData(
+                                erc1155Token.address,
+                                [erc1155FungibleTokens[3]],
+                                [ONE],
+                                constants.NULL_BYTES,
+                            ),
+                        ],
+                    ],
                 };
             });
 
-            for (const combo of feeAssetCombinations) {
+            for (const combo of assetCombinations) {
                 const description = combo.description || JSON.stringify(combo);
                 it(description, async () => {
                     // Create orders to match. For ERC20s, there will be a spread.
-                    const leftMakerAssetAmount = combo.leftMaker.startsWith('ERC20')
+                    const leftMakerAssetAmount = _.includes(fungibleTypes, combo.leftMaker)
                         ? Web3Wrapper.toBaseUnitAmount(15, 18)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const leftTakerAssetAmount = combo.rightMaker.startsWith('ERC20')
+                    const leftTakerAssetAmount = _.includes(fungibleTypes, combo.rightMaker)
                         ? Web3Wrapper.toBaseUnitAmount(30, 18)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const rightMakerAssetAmount = combo.rightMaker.startsWith('ERC20')
+                    const rightMakerAssetAmount = _.includes(fungibleTypes, combo.rightMaker)
                         ? Web3Wrapper.toBaseUnitAmount(30, 18)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const rightTakerAssetAmount = combo.leftMaker.startsWith('ERC20')
+                    const rightTakerAssetAmount = _.includes(fungibleTypes, combo.leftMaker)
                         ? Web3Wrapper.toBaseUnitAmount(14, 18)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const leftMakerFeeAssetAmount = combo.leftMakerFee.startsWith('ERC20')
+                    const leftMakerFeeAssetAmount = _.includes(fungibleTypes, combo.leftMakerFee)
                         ? Web3Wrapper.toBaseUnitAmount(8, 12)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const rightMakerFeeAssetAmount = combo.rightMakerFee.startsWith('ERC20')
+                    const rightMakerFeeAssetAmount = _.includes(fungibleTypes, combo.rightMakerFee)
                         ? Web3Wrapper.toBaseUnitAmount(7, 12)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const leftTakerFeeAssetAmount = combo.leftTakerFee.startsWith('ERC20')
+                    const leftTakerFeeAssetAmount = _.includes(fungibleTypes, combo.leftTakerFee)
                         ? Web3Wrapper.toBaseUnitAmount(6, 12)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const rightTakerFeeAssetAmount = combo.rightTakerFee.startsWith('ERC20')
+                    const rightTakerFeeAssetAmount = _.includes(fungibleTypes, combo.rightTakerFee)
                         ? Web3Wrapper.toBaseUnitAmount(5, 12)
                         : Web3Wrapper.toBaseUnitAmount(1, 0);
-                    const leftMakerAssetReceivedByTakerAmount = combo.leftMaker.startsWith('ERC20')
+                    const leftMakerAssetReceivedByTakerAmount = _.includes(fungibleTypes, combo.leftMaker)
                         ? leftMakerAssetAmount.minus(rightTakerAssetAmount)
                         : Web3Wrapper.toBaseUnitAmount(0, 0);
                     const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                        makerAssetData: getAssetData(combo.leftMaker, makerAddressLeft),
-                        takerAssetData: getAssetData(combo.rightMaker, makerAddressRight),
-                        makerFeeAssetData: getAssetData(combo.leftMakerFee, makerAddressLeft),
-                        takerFeeAssetData: getAssetData(combo.leftTakerFee, takerAddress),
+                        makerAssetData: getAssetData(combo.leftMaker),
+                        takerAssetData: getAssetData(combo.rightMaker),
+                        makerFeeAssetData: getAssetData(combo.leftMakerFee),
+                        takerFeeAssetData: getAssetData(combo.leftTakerFee),
                         makerAssetAmount: leftMakerAssetAmount,
                         takerAssetAmount: leftTakerAssetAmount,
                         makerFee: leftMakerFeeAssetAmount,
                         takerFee: leftTakerFeeAssetAmount,
                     });
                     const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                        makerAssetData: getAssetData(combo.rightMaker, makerAddressRight),
-                        takerAssetData: getAssetData(combo.leftMaker, makerAddressLeft),
-                        makerFeeAssetData: getAssetData(combo.rightMakerFee, makerAddressRight),
-                        takerFeeAssetData: getAssetData(combo.rightTakerFee, takerAddress),
+                        makerAssetData: getAssetData(combo.rightMaker),
+                        takerAssetData: getAssetData(combo.leftMaker),
+                        makerFeeAssetData: getAssetData(combo.rightMakerFee),
+                        takerFeeAssetData: getAssetData(combo.rightTakerFee),
                         makerAssetAmount: rightMakerAssetAmount,
                         takerAssetAmount: rightTakerAssetAmount,
                         makerFee: rightMakerFeeAssetAmount,
@@ -1536,15 +1712,15 @@ describe('matchOrders', () => {
                     const expectedTransferAmounts = {
                         // Left Maker
                         leftMakerAssetSoldByLeftMakerAmount: leftMakerAssetAmount,
-                        leftMakerFeeAssetPaidByLeftMakerAmount: leftMakerFeeAssetAmount, // 100%
+                        leftMakerFeeAssetPaidByLeftMakerAmount: leftMakerFeeAssetAmount,
                         // Right Maker
                         rightMakerAssetSoldByRightMakerAmount: rightMakerAssetAmount,
                         leftMakerAssetBoughtByRightMakerAmount: rightTakerAssetAmount,
-                        rightMakerFeeAssetPaidByRightMakerAmount: rightMakerFeeAssetAmount, // 100%
+                        rightMakerFeeAssetPaidByRightMakerAmount: rightMakerFeeAssetAmount,
                         // Taker
                         leftMakerAssetReceivedByTakerAmount,
-                        leftTakerFeeAssetPaidByTakerAmount: leftTakerFeeAssetAmount, // 100%
-                        rightTakerFeeAssetPaidByTakerAmount: rightTakerFeeAssetAmount, // 100%
+                        leftTakerFeeAssetPaidByTakerAmount: leftTakerFeeAssetAmount,
+                        rightTakerFeeAssetPaidByTakerAmount: rightTakerFeeAssetAmount,
                     };
                     if (!combo.shouldFail) {
                         await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -1564,18 +1740,4 @@ describe('matchOrders', () => {
         });
     });
 });
-
-function getIndividualERC1155Holdings(
-    erc1155HoldingsByOwner: ERC1155HoldingsByOwner,
-    tokenAddress: string,
-    ownerAddress: string,
-): IndividualERC1155Holdings {
-    return {
-        fungible: erc1155HoldingsByOwner.fungible[ownerAddress][tokenAddress],
-        nonFungible: _.uniqBy(_.flatten(_.values(
-            erc1155HoldingsByOwner.nonFungible[ownerAddress][tokenAddress])),
-            v => v.toString(10),
-        ),
-    };
-}
 // tslint:disable-line:max-file-line-count

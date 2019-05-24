@@ -177,6 +177,24 @@ describe('FillOrder Tests', () => {
     });
 
     describe('ERC20', () => {
+        const assetCombinations = getAllPossiblePairs([
+            AssetDataScenario.ERC20ZeroDecimals,
+            AssetDataScenario.ERC20FiveDecimals,
+            AssetDataScenario.ERC20EighteenDecimals,
+        ]);
+        for (const [makerAsset, takerAsset] of assetCombinations) {
+            it(`should transfer correct amounts between ${makerAsset} and ${takerAsset}`, async () => {
+                const fillScenario = {
+                    ...defaultFillScenario,
+                    orderScenario: {
+                        ...defaultFillScenario.orderScenario,
+                        makerAssetDataScenario: makerAsset,
+                        takerAssetDataScenario: takerAsset,
+                    },
+                };
+                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            });
+        }
         it('should be able to pay maker fee with taker asset', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -573,14 +591,14 @@ describe('FillOrder Tests', () => {
             AssetDataScenario.ERC1155NonFungible,
             AssetDataScenario.MultiAssetERC20,
         ];
-        for (const [makerAssetData, takerAssetData] of getAllPossiblePairs(assetDataScenarios)) {
-            it(`should successfully exchange ${makerAssetData} for ${takerAssetData}`, async () => {
+        for (const [makerAsset, takerAsset] of getAllPossiblePairs(assetDataScenarios)) {
+            it(`should successfully exchange ${makerAsset} for ${takerAsset}`, async () => {
                 const fillScenario = {
                     ...defaultFillScenario,
                     orderScenario: {
                         ...defaultFillScenario.orderScenario,
-                        makerAssetDataScenario: makerAssetData,
-                        takerAssetDataScenario: takerAssetData,
+                        makerAssetDataScenario: makerAsset,
+                        takerAssetDataScenario: takerAsset,
                     },
                     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
                 };
@@ -590,21 +608,21 @@ describe('FillOrder Tests', () => {
     });
 
     describe('Maker/taker fee asset combinations', () => {
-        const feeAssetDataScenarios = [
+        const feeAssetPairs = getAllPossiblePairs([
             FeeAssetDataScenario.ERC20EighteenDecimals,
             FeeAssetDataScenario.ERC721,
             FeeAssetDataScenario.ERC1155Fungible,
             FeeAssetDataScenario.ERC1155NonFungible,
             FeeAssetDataScenario.MultiAssetERC20,
-        ];
-        for (const [makerFeeAssetData, takerFeeAssetData] of getAllPossiblePairs(feeAssetDataScenarios)) {
-            it(`should successfully pay maker fee ${makerFeeAssetData} and taker fee ${takerFeeAssetData}`, async () => {
+        ]);
+        for (const [makerFeeAsset, takerFeeAsset] of feeAssetPairs) {
+            it(`should successfully pay maker fee ${makerFeeAsset} and taker fee ${takerFeeAsset}`, async () => {
                 const fillScenario = {
                     ...defaultFillScenario,
                     orderScenario: {
                         ...defaultFillScenario.orderScenario,
-                        makerFeeAssetDataScenario: makerFeeAssetData,
-                        takerFeeAssetDataScenario: takerFeeAssetData,
+                        makerFeeAssetDataScenario: makerFeeAsset,
+                        takerFeeAssetDataScenario: takerFeeAsset,
                     },
                     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
                 };
