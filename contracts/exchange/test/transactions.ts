@@ -5,6 +5,7 @@ import {
     chaiSetup,
     constants,
     FillResults,
+    getLatestBlockTimestampAsync,
     LogDecoder,
     OrderFactory,
     provider,
@@ -47,7 +48,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe.only('Exchange transactions', () => {
+describe('Exchange transactions', () => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;
@@ -163,7 +164,7 @@ describe.only('Exchange transactions', () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const orders = [order];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
                 const transactionExecutionLogs = transactionReceipt.logs.filter(
                     log =>
@@ -178,6 +179,23 @@ describe.only('Exchange transactions', () => {
                     executionLogArgs.transactionHash,
                 );
             });
+            it('should revert if the transaction is expired', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({
+                    data,
+                    expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+                });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const expectedError = new ExchangeRevertErrors.TransactionError(
+                    ExchangeRevertErrors.TransactionErrorCode.Expired,
+                    transactionHashHex,
+                );
+                const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
+            });
         });
         describe('fill methods', () => {
             for (const fnName of [
@@ -188,7 +206,7 @@ describe.only('Exchange transactions', () => {
                 it(`${fnName} should revert if signature is invalid and not called by signer`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const v = ethUtil.toBuffer(transaction.signature.slice(0, 4));
                     const invalidR = ethUtil.sha3('invalidR');
                     const invalidS = ethUtil.sha3('invalidS');
@@ -208,7 +226,7 @@ describe.only('Exchange transactions', () => {
                 it(`${fnName} should be successful if signed by taker and called by sender`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const transactionReceipt = await exchangeWrapper.executeTransactionAsync(
                         transaction,
                         senderAddress,
@@ -233,7 +251,7 @@ describe.only('Exchange transactions', () => {
                 it(`${fnName} should be successful if called by taker without a transaction signature`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     transaction.signature = constants.NULL_BYTES;
                     const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
                     const fillLogs = transactionReceipt.logs.filter(
@@ -257,7 +275,7 @@ describe.only('Exchange transactions', () => {
                     const order = await orderFactory.newSignedOrderAsync();
                     const orders = [order];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const returnData = await exchangeInstance.executeTransaction.callAsync(
                         transaction,
                         transaction.signature,
@@ -281,7 +299,7 @@ describe.only('Exchange transactions', () => {
                 it(`${fnName} should revert if transaction has already been executed`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
                     const expectedError = new ExchangeRevertErrors.TransactionError(
@@ -294,13 +312,15 @@ describe.only('Exchange transactions', () => {
                 it(`${fnName} should revert and rethrow error if executeTransaction is called recursively with a signature`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
                     const recursiveData = exchangeInstance.executeTransaction.getABIEncodedTransactionData(
                         transaction,
                         transaction.signature,
                     );
-                    const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync(recursiveData);
+                    const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync({
+                        data: recursiveData,
+                    });
                     const recursiveTransactionHashHex = transactionHashUtils.getTransactionHashHex(
                         recursiveTransaction,
                     );
@@ -318,12 +338,14 @@ describe.only('Exchange transactions', () => {
                 it(`${fnName} should be successful if executeTransaction is called recursively by taker without a signature`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const recursiveData = exchangeInstance.executeTransaction.getABIEncodedTransactionData(
                         transaction,
                         constants.NULL_BYTES,
                     );
-                    const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync(recursiveData);
+                    const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync({
+                        data: recursiveData,
+                    });
                     const transactionReceipt = await exchangeWrapper.executeTransactionAsync(
                         recursiveTransaction,
                         takerAddress,
@@ -358,7 +380,7 @@ describe.only('Exchange transactions', () => {
                         order.signature = constants.NULL_BYTES;
                         const orders = [order];
                         const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                        const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                        const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                         const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
                         const nestedError = new ExchangeRevertErrors.SignatureError(
                             ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
@@ -381,7 +403,7 @@ describe.only('Exchange transactions', () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const orders = [order];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
                 const nestedError = new ExchangeRevertErrors.InvalidMakerError(
                     orderHashUtils.getOrderHashHex(order),
@@ -397,7 +419,7 @@ describe.only('Exchange transactions', () => {
             it('should be successful if signed by maker and called by sender', async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
-                const transaction = await makerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
@@ -414,7 +436,7 @@ describe.only('Exchange transactions', () => {
             it('should be successful if called by maker without a signature', async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
-                const transaction = await makerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
@@ -437,7 +459,7 @@ describe.only('Exchange transactions', () => {
                     ExchangeFunctionName.BatchCancelOrders,
                     orders,
                 );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
                 const nestedError = new ExchangeRevertErrors.InvalidMakerError(
                     orderHashUtils.getOrderHashHex(orders[0]),
@@ -456,7 +478,7 @@ describe.only('Exchange transactions', () => {
                     ExchangeFunctionName.BatchCancelOrders,
                     orders,
                 );
-                const transaction = await makerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
@@ -478,7 +500,7 @@ describe.only('Exchange transactions', () => {
                     ExchangeFunctionName.BatchCancelOrders,
                     orders,
                 );
-                const transaction = await makerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
@@ -500,7 +522,7 @@ describe.only('Exchange transactions', () => {
             it('should be successful if signed by maker and called by sender', async () => {
                 const targetEpoch = constants.ZERO_AMOUNT;
                 const data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
-                const transaction = await makerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).event === 'CancelUpTo',
@@ -514,7 +536,7 @@ describe.only('Exchange transactions', () => {
             it('should be successful if called by maker without a signature', async () => {
                 const targetEpoch = constants.ZERO_AMOUNT;
                 const data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
-                const transaction = await makerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).event === 'CancelUpTo',
@@ -531,7 +553,7 @@ describe.only('Exchange transactions', () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const orderHash = orderHashUtils.getOrderHashHex(order);
                 const data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHash);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 let isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
                 expect(isPreSigned).to.be.eq(false);
                 await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
@@ -542,7 +564,7 @@ describe.only('Exchange transactions', () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const orderHash = orderHashUtils.getOrderHashHex(order);
                 const data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHash);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
                 let isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
                 expect(isPreSigned).to.be.eq(false);
@@ -558,7 +580,7 @@ describe.only('Exchange transactions', () => {
                     validatorAddress,
                     shouldApprove,
                 );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const validatorApprovalLogs = transactionReceipt.logs.filter(
                     log =>
@@ -579,7 +601,7 @@ describe.only('Exchange transactions', () => {
                     validatorAddress,
                     shouldApprove,
                 );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
                 const validatorApprovalLogs = transactionReceipt.logs.filter(
@@ -603,7 +625,7 @@ describe.only('Exchange transactions', () => {
                     validatorAddress,
                     shouldApprove,
                 );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const validatorApprovalLogs = transactionReceipt.logs.filter(
                     log =>
@@ -624,7 +646,7 @@ describe.only('Exchange transactions', () => {
                     validatorAddress,
                     shouldApprove,
                 );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
                 const validatorApprovalLogs = transactionReceipt.logs.filter(
@@ -647,8 +669,8 @@ describe.only('Exchange transactions', () => {
                 const order2 = await orderFactory.newSignedOrderAsync();
                 const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
                 const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
                     [transaction1, transaction2],
                     senderAddress,
@@ -711,8 +733,8 @@ describe.only('Exchange transactions', () => {
                 const order2 = await orderFactory.newSignedOrderAsync();
                 const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await takerTransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await takerTransactionFactory.newSignedTransactionAsync({ data: data2 });
                 transaction1.signature = constants.NULL_BYTES;
                 transaction2.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
@@ -777,8 +799,8 @@ describe.only('Exchange transactions', () => {
                 const order2 = await orderFactory.newSignedOrderAsync();
                 const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
                 transaction2.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
                     [transaction1, transaction2],
@@ -842,8 +864,8 @@ describe.only('Exchange transactions', () => {
                 const order2 = await orderFactory.newSignedOrderAsync();
                 const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
                 const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
                     [transaction1, transaction2],
                     [transaction1.signature, transaction2.signature],
@@ -872,8 +894,8 @@ describe.only('Exchange transactions', () => {
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
                     order2,
                 ]);
-                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await makerTransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await makerTransactionFactory.newSignedTransactionAsync({ data: data2 });
                 const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
                     [transaction1, transaction2],
                     senderAddress,
@@ -948,8 +970,8 @@ describe.only('Exchange transactions', () => {
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
                     order2,
                 ]);
-                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await makerTransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await makerTransactionFactory.newSignedTransactionAsync({ data: data2 });
                 const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
                     [transaction1, transaction2],
                     [transaction1.signature, transaction2.signature],
@@ -971,8 +993,8 @@ describe.only('Exchange transactions', () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
-                const transaction1 = await makerTransactionFactory.newSignedTransactionAsync(data1);
-                const transaction2 = await takerTransactionFactory.newSignedTransactionAsync(data2);
+                const transaction1 = await makerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await takerTransactionFactory.newSignedTransactionAsync({ data: data2 });
                 const tx = exchangeWrapper.batchExecuteTransactionsAsync([transaction1, transaction2], senderAddress);
                 const nestedError = new ExchangeRevertErrors.OrderStatusError(
                     orderHashUtils.getOrderHashHex(order),
@@ -983,6 +1005,25 @@ describe.only('Exchange transactions', () => {
                     nestedError,
                 );
                 return expect(tx).to.revertWith(expectedError);
+            });
+            it('should revert if a single transaction is expired', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({
+                    data: data2,
+                    expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+                });
+                const tx = exchangeWrapper.batchExecuteTransactionsAsync([transaction1, transaction2], senderAddress);
+                const expiredTransactionHash = transactionHashUtils.getTransactionHashHex(transaction2);
+                const expectedError = new ExchangeRevertErrors.TransactionError(
+                    ExchangeRevertErrors.TransactionErrorCode.Expired,
+                    expiredTransactionHash,
+                );
+                expect(tx).to.revertWith(expectedError);
             });
         });
         describe('examples', () => {
@@ -1010,7 +1051,9 @@ describe.only('Exchange transactions', () => {
                     });
                     const targetOrderEpoch = orderSalt.plus(1);
                     const cancelData = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetOrderEpoch);
-                    const cancelTransaction = await makerTransactionFactory.newSignedTransactionAsync(cancelData);
+                    const cancelTransaction = await makerTransactionFactory.newSignedTransactionAsync({
+                        data: cancelData,
+                    });
                     await exchangeWrapperContract.cancelOrdersUpTo.awaitTransactionSuccessAsync(
                         targetOrderEpoch,
                         cancelTransaction.salt,
@@ -1025,7 +1068,7 @@ describe.only('Exchange transactions', () => {
                         takerAssetFillAmount,
                         signedOrder.signature,
                     );
-                    const fillTransaction = await takerTransactionFactory.newSignedTransactionAsync(fillData);
+                    const fillTransaction = await takerTransactionFactory.newSignedTransactionAsync({ data: fillData });
                     const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(fillTransaction);
                     const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
@@ -1059,7 +1102,7 @@ describe.only('Exchange transactions', () => {
                         takerAssetFillAmount,
                         signedOrder.signature,
                     );
-                    const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const logDecoder = new LogDecoder(web3Wrapper, artifacts);
                     const transactionReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                         await exchangeWrapperContract.fillOrder.sendTransactionAsync(
