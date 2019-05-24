@@ -85,6 +85,14 @@ contract MixinTransactions is
     {
         bytes32 transactionHash = getTransactionHash(transaction);
 
+        // Check transaction is not expired
+        if (block.timestamp >= transaction.expirationTimeSeconds) {
+            _rrevert(TransactionError(
+                TransactionErrorCodes.EXPIRED,
+                transactionHash
+            ));
+        }
+
         // Prevent reentrancy
         if (currentContextAddress != address(0)) {
             _rrevert(TransactionError(
