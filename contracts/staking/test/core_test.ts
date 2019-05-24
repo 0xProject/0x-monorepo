@@ -210,12 +210,13 @@ describe('Staking Core', () => {
             const alphaNumerator = new BigNumber(1);
             const alphaDenominator = new BigNumber(2);
 
-            /*const expectedOwnerReward = totalRewards
+            const expectedOwnerReward = totalRewards
             .times(
                 (ownerFees.div(totalFees)).squareRoot()
             ).times(
                 (ownerStake.div(totalStake)).squareRoot()
             ).dividedToIntegerBy(1); // 25000000000000000000*/
+            console.log(`EXPECTED - `, stakingWrapper.toFloatingPoint(expectedOwnerReward, 18));
             
             const ownerReward = await stakingWrapper.cobbDouglas(
                 totalRewards,
@@ -226,8 +227,7 @@ describe('Staking Core', () => {
                 alphaNumerator,
                 alphaDenominator
             );
-            console.log(ownerReward);
-            console.log(stakingWrapper.toFloatingPoint(ownerReward, 18));
+            console.log(`ACTUAL - `, stakingWrapper.toFloatingPoint(ownerReward, 18));
             //expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
 
@@ -240,12 +240,8 @@ describe('Staking Core', () => {
             const alphaNumerator = new BigNumber(1);
             const alphaDenominator = new BigNumber(3);
 
-            /*const expectedOwnerReward = totalRewards
-            .times(
-                (ownerFees.div(totalFees)).squareRoot()
-            ).times(
-                (ownerStake.div(totalStake)).squareRoot()
-            ).dividedToIntegerBy(1); // 25000000000000000000*/
+            // https://www.wolframalpha.com/input/?i=57.154398+*+(5.64375%2F29.00679)+%5E+(1%2F3)+*+(56+%2F+10906)+%5E+(1+-+1%2F3)
+            console.log(`EXPECTED - 0.9857...`);
             
             const ownerReward = await stakingWrapper.cobbDouglas(
                 totalRewards,
@@ -256,8 +252,8 @@ describe('Staking Core', () => {
                 alphaNumerator,
                 alphaDenominator
             );
-            console.log(ownerReward);
-            console.log(stakingWrapper.toFloatingPoint(ownerReward, 18));
+            //console.log(ownerReward);
+            console.log(`ACTUAL - `, stakingWrapper.toFloatingPoint(ownerReward, 18));
             //expect(ownerReward).to.be.bignumber.equal(expectedOwnerReward);
         });
     });
