@@ -28,12 +28,12 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     using LibBytes for bytes;
 
     /// @dev Decodes the call data for an Exchange contract method call.
-    /// @param signedTransactionData ABI-encoded calldata for an Exchange
+    /// @param transactionData ABI-encoded calldata for an Exchange
     ///     contract method call.
     /// @return The name of the function called, and the parameters it was
     ///     given.  For single-order fills and cancels, the arrays will have
     ///     just one element.
-    function decodeTransaction(bytes memory signedTransactionData)
+    function decodeTransaction(bytes memory transactionData)
         public
         pure
         returns(
@@ -43,7 +43,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             bytes[] memory signatures
         )
     {
-        bytes4 functionSelector = signedTransactionData.readBytes4(0);
+        bytes4 functionSelector = transactionData.readBytes4(0);
 
         if (functionSelector == BATCH_CANCEL_ORDERS_SELECTOR) {
             functionName = "batchCancelOrders";
@@ -83,7 +83,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
 
         if (functionSelector == BATCH_CANCEL_ORDERS_SELECTOR) {
             // solhint-disable-next-line indent
-            orders = abi.decode(signedTransactionData.slice(4, signedTransactionData.length), (LibOrder.Order[]));
+            orders = abi.decode(transactionData.slice(4, transactionData.length), (LibOrder.Order[]));
             takerAssetFillAmounts = new uint256[](0);
             signatures = new bytes[](0);
         } else if (
@@ -91,10 +91,10 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionSelector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
             functionSelector == BATCH_FILL_ORDERS_SELECTOR
         ) {
-            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForBatchFill(signedTransactionData);
+            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForBatchFill(transactionData);
         } else if (functionSelector == CANCEL_ORDER_SELECTOR) {
             orders = new LibOrder.Order[](1);
-            orders[0] = abi.decode(signedTransactionData.slice(4, signedTransactionData.length), (LibOrder.Order));
+            orders[0] = abi.decode(transactionData.slice(4, transactionData.length), (LibOrder.Order));
             takerAssetFillAmounts = new uint256[](0);
             signatures = new bytes[](0);
         } else if (
@@ -102,14 +102,14 @@ contract LibTransactionDecoder is LibExchangeSelectors {
             functionSelector == FILL_ORDER_SELECTOR ||
             functionSelector == FILL_ORDER_NO_THROW_SELECTOR
         ) {
-            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(signedTransactionData);
+            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(transactionData);
         } else if (
             functionSelector == MARKET_BUY_ORDERS_SELECTOR ||
             functionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
             functionSelector == MARKET_SELL_ORDERS_SELECTOR ||
             functionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
         ) {
-            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForMarketFill(signedTransactionData);
+            (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForMarketFill(transactionData);
         } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
             (
                 LibOrder.Order memory leftOrder,
@@ -117,7 +117,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
                 bytes memory leftSignature,
                 bytes memory rightSignature
             ) = abi.decode(
-                signedTransactionData.slice(4, signedTransactionData.length),
+                transactionData.slice(4, transactionData.length),
                 (LibOrder.Order, LibOrder.Order, bytes, bytes)
             );
 
@@ -135,7 +135,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
         }
     }
 
-    function _makeReturnValuesForSingleOrderFill(bytes memory signedTransactionData)
+    function _makeReturnValuesForSingleOrderFill(bytes memory transactionData)
         private
         pure
         returns(
@@ -149,12 +149,12 @@ contract LibTransactionDecoder is LibExchangeSelectors {
         signatures = new bytes[](1);
         // solhint-disable-next-line indent
         (orders[0], takerAssetFillAmounts[0], signatures[0]) = abi.decode(
-            signedTransactionData.slice(4, signedTransactionData.length),
+            transactionData.slice(4, transactionData.length),
             (LibOrder.Order, uint256, bytes)
         );
     }
 
-    function _makeReturnValuesForBatchFill(bytes memory signedTransactionData)
+    function _makeReturnValuesForBatchFill(bytes memory transactionData)
         private
         pure
         returns(
@@ -165,13 +165,13 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     {
         // solhint-disable-next-line indent
         (orders, takerAssetFillAmounts, signatures) = abi.decode(
-            signedTransactionData.slice(4, signedTransactionData.length),
+            transactionData.slice(4, transactionData.length),
             // solhint-disable-next-line indent
             (LibOrder.Order[], uint256[], bytes[])
         );
     }
 
-    function _makeReturnValuesForMarketFill(bytes memory signedTransactionData)
+    function _makeReturnValuesForMarketFill(bytes memory transactionData)
         private
         pure
         returns(
@@ -183,7 +183,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
         takerAssetFillAmounts = new uint256[](1);
         // solhint-disable-next-line indent
         (orders, takerAssetFillAmounts[0], signatures) = abi.decode(
-            signedTransactionData.slice(4, signedTransactionData.length),
+            transactionData.slice(4, transactionData.length),
             // solhint-disable-next-line indent
             (LibOrder.Order[], uint256, bytes[])
         );
