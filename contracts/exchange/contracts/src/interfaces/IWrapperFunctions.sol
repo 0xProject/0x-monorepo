@@ -55,41 +55,41 @@ contract IWrapperFunctions {
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults[] memory);
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults[] memory);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults[] memory);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.

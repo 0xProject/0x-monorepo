@@ -106,8 +106,7 @@ contract MixinWrapperFunctions is
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
@@ -115,26 +114,25 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults[] memory)
     {
         uint256 ordersLength = orders.length;
+        FillResults[] memory fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = _fillOrder(
+            fillResults[i] = _fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            _addFillResults(totalFillResults, singleFillResults);
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
@@ -142,18 +140,18 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults[] memory)
     {
         uint256 ordersLength = orders.length;
+        FillResults[] memory fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = _fillOrKillOrder(
+            fillResults[i] = _fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            _addFillResults(totalFillResults, singleFillResults);
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
@@ -161,26 +159,25 @@ contract MixinWrapperFunctions is
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory totalFillResults)
+        returns (FillResults[] memory)
     {
         uint256 ordersLength = orders.length;
+        FillResults[] memory fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            fillResults[i] = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            _addFillResults(totalFillResults, singleFillResults);
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
