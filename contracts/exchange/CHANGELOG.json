@@ -29,6 +29,14 @@
             {
                 "note": "Add support for `SignatureType.WalletOrderValidator` for orders",
                 "pr": 1774
+            },
+            {
+                "note": "Remove ZRX fees in lieu of arbitrary maker and taker fee tokens.",
+                "pr": 1819
+            },
+            {
+                "note": "Incorporate Multi-asset and ERC1155 tests into `fillOrder` and `matchOrders` tests",
+                "pr": 1819
             }
         ]
     },

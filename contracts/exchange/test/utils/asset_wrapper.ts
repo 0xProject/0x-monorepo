@@ -96,24 +96,24 @@ export class AssetWrapper {
                     assetProxyData.tokenAddress,
                     assetProxyData.tokenId,
                 );
-                if (!doesTokenExist && desiredBalance.gt(0)) {
+                if (!doesTokenExist && desiredBalance.gte(1)) {
                     await erc721Wrapper.mintAsync(assetProxyData.tokenAddress, assetProxyData.tokenId, userAddress);
                     return;
-                } else if (!doesTokenExist && desiredBalance.lte(0)) {
+                } else if (!doesTokenExist && desiredBalance.lt(1)) {
                     return; // noop
                 }
                 const tokenOwner = await erc721Wrapper.ownerOfAsync(
                     assetProxyData.tokenAddress,
                     assetProxyData.tokenId,
                 );
-                if (userAddress !== tokenOwner && desiredBalance.gt(0)) {
+                if (userAddress !== tokenOwner && desiredBalance.gte(1)) {
                     await erc721Wrapper.transferFromAsync(
                         assetProxyData.tokenAddress,
                         assetProxyData.tokenId,
                         tokenOwner,
                         userAddress,
                     );
-                } else if (tokenOwner === userAddress && desiredBalance.lte(0)) {
+                } else if (tokenOwner === userAddress && desiredBalance.lt(1)) {
                     // Burn token
                     await erc721Wrapper.transferFromAsync(
                         assetProxyData.tokenAddress,
@@ -123,8 +123,8 @@ export class AssetWrapper {
                     );
                     return;
                 } else if (
-                    (userAddress !== tokenOwner && desiredBalance.lte(0)) ||
-                    (tokenOwner === userAddress && desiredBalance.gt(0))
+                    (userAddress !== tokenOwner && desiredBalance.lt(1)) ||
+                    (tokenOwner === userAddress && desiredBalance.gte(1))
                 ) {
                     return; // noop
                 }
@@ -168,7 +168,7 @@ export class AssetWrapper {
                         }
                     } else {
                         const nftOwner = await assetWrapper.getOwnerOfAsync(tokenId);
-                        if (scaledDesiredBalance.gt(0)) {
+                        if (scaledDesiredBalance.gte(1)) {
                             if (nftOwner === userAddress) {
                                 // Nothing to do.
                             } else if (nftOwner !== constants.NULL_ADDRESS) {
