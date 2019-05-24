@@ -136,8 +136,35 @@ library LibMath {
         return result;
     }
 
+    function _exp2(uint256 numerator_1, uint256 numerator_2, uint256 denominator, uint256 power)
+        internal
+        pure
+        returns (uint256 result)
+    {
+        result = (numerator_1 * numerator_2) / denominator;
+        for(power = power - 1; power > 0; power -= 1) {
+            result *= numerator_1;
+            result /= denominator;
+            result *= numerator_2;
+        }
+        return result;
+    }
+
+    function _exp3(uint256 numerator, uint256 denominator, uint256 power)
+        internal
+        pure
+        returns (uint256 result)
+    {
+        result = numerator / denominator;
+        for(power = power - 1; power > 0; power -= 1) {
+            result = (result * numerator) / denominator;
+        }
+        return result;
+    }
+
     uint256 constant fixedPointDecimals = 18;
     uint256 constant scalar = 10**fixedPointDecimals;
+    uint256 constant halfScalar = 10**(fixedPointDecimals/2);
 
     // rough implementation of cobb-douglas using the nth root fixed point algorithm above
     function _cobbDouglas(
@@ -153,18 +180,10 @@ library LibMath {
         pure
         returns (uint256)
     {
-        require(
-            alphaDenominator - alphaNumerator <= 10,
-            "numerator of (1 - alpha) is out of range"
-        );
-
-        uint256 feeRatio = _exp((totalRewards * ownerFees) / totalFees, alphaNumerator);
-        uint256 rootedFeeRatio = _nthRootFixedPoint(feeRatio, alphaDenominator, fixedPointDecimals);
-
-        uint256 inverseAlphaNumerator = alphaDenominator - alphaNumerator;
-        uint256 stakeRatio = _exp((totalRewards * ownerStake) / totalStake, inverseAlphaNumerator);
-        uint256 rootedStakeRatio = _nthRootFixedPoint(stakeRatio, alphaDenominator, fixedPointDecimals);
-
-        return (rootedFeeRatio * rootedStakeRatio) / scalar;
+        uint256 lhs = _exp3(_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator, 18),
+                            _nthRootFixedPoint(totalFees * ownerStake, alphaDenominator, 18),
+                            alphaNumerator
+                        );
+        return lhs * ((totalRewards * ownerStake) / totalStake);
     }
 }
