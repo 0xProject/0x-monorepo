@@ -47,7 +47,8 @@ contract MExchangeRichErrorTypes is
 
     enum TransactionErrorCodes {
         NO_REENTRANCY,
-        ALREADY_EXECUTED
+        ALREADY_EXECUTED,
+        EXPIRED
     }
 
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
