@@ -64,6 +64,50 @@ contract LibMathTest {
             alphaDenominator
         );
     }
+
+    function cobbDouglasSimplified(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake,
+        uint8 alphaDenominator
+    )
+        public
+        pure
+        returns (uint256)
+    {
+        return LibMath._cobbDouglasSimplified(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaDenominator
+        );
+    }
+
+    function cobbDouglasSimplifiedInverse(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake,
+        uint8 alphaDenominator
+    )
+        public
+        pure
+        returns (uint256)
+    {
+        return LibMath._cobbDouglasSimplifiedInverse(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaDenominator
+        );
+    }
 }
 
 
