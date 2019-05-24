@@ -51,7 +51,7 @@ const defaultFillScenario = {
     },
 };
 
-describe('FillOrder Tests', () => {
+describe.only('FillOrder Tests', () => {
     let fillOrderCombinatorialUtils: FillOrderCombinatorialUtils;
 
     before(async () => {

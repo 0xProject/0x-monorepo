@@ -37,6 +37,14 @@
             {
                 "note": "Incorporate Multi-asset and ERC1155 tests into `fillOrder` and `matchOrders` tests",
                 "pr": 1819
+            },
+            {
+                "note": "Swap fill order from maker -> taker to taker -> maker",
+                "pr": 1819
+            },
+            {
+                "note": "Avoid redundant transfer in `fillOrder` when maker/taker is the same as feeRecipient and assets are the same",
+                "pr": 1819
             }
         ]
     },
