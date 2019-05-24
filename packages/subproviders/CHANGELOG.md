@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _May 24, 2019_
+
+    * Improve performance of Trezor subprovider via caching (#1830)
+    * Add Trezor handware wallet subprovider (#1431)
+
 ## v4.0.6 - _May 10, 2019_
 
     * Dependencies updated

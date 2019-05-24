@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.1.1 - _May 24, 2019_
+
+    * Dependencies updated
+
 ## v8.1.0 - _May 15, 2019_
 
     * Add `ecSignTransactionAsync` (#1817)
