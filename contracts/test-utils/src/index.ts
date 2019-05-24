@@ -41,6 +41,5 @@ export {
     OrderInfo,
     OrderStatus,
     Token,
-    TokenBalancesByOwner,
     TransactionDataParams,
 } from './types';
