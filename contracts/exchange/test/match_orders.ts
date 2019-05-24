@@ -1575,11 +1575,11 @@ describe('matchOrders', () => {
                     ERC20_C: erc20Tokens[2].address,
                     ERC20_D: erc20Tokens[3].address,
                 };
-                const erc721TokenIds = _.mapValues(tokenBalances.erc721, v => v[defaultERC721AssetAddress.address][0]);
+                const erc721TokenIds = _.mapValues(tokenBalances.erc721, v => v[defaultERC721AssetAddress][0]);
                 nameToERC721Asset = {
-                    ERC721_LEFT_MAKER: [defaultERC721AssetAddress.address, erc721TokenIds[makerAddressLeft]],
-                    ERC721_RIGHT_MAKER: [defaultERC721AssetAddress.address, erc721TokenIds[makerAddressRight]],
-                    ERC721_TAKER: [defaultERC721AssetAddress.address, erc721TokenIds[takerAddress]],
+                    ERC721_LEFT_MAKER: [defaultERC721AssetAddress, erc721TokenIds[makerAddressLeft]],
+                    ERC721_RIGHT_MAKER: [defaultERC721AssetAddress, erc721TokenIds[makerAddressRight]],
+                    ERC721_TAKER: [defaultERC721AssetAddress, erc721TokenIds[takerAddress]],
                 };
                 const erc1155FungibleTokens = _.keys(
                     _.values(tokenBalances.erc1155)[0][defaultERC1155AssetAddress].fungible,
