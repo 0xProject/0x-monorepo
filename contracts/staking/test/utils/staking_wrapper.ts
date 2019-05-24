@@ -126,6 +126,42 @@ export class StakingWrapper {
         );
         return output;
     }
+    public async cobbDouglasSimplified(
+        totalRewards: BigNumber,
+        ownerFees: BigNumber,
+        totalFees: BigNumber,
+        ownerStake: BigNumber,
+        totalStake: BigNumber,
+        alphaDenominator: BigNumber
+    ) {
+        const output = await this.getLibMathTestContract().cobbDouglasSimplified.callAsync(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaDenominator
+        );
+        return output;
+    }
+    public async cobbDouglasSimplifiedInverse(
+        totalRewards: BigNumber,
+        ownerFees: BigNumber,
+        totalFees: BigNumber,
+        ownerStake: BigNumber,
+        totalStake: BigNumber,
+        alphaDenominator: BigNumber
+    ) {
+        const output = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaDenominator
+        );
+        return output;
+    }
     public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
         const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
@@ -142,6 +178,12 @@ export class StakingWrapper {
         const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
         const scalar = Math.pow(10, decimals);
         const amountAsFloatingPoint = amountAsBigNumber.dividedBy(scalar);
+        return amountAsFloatingPoint;
+    }
+    public trimFloat(amount: BigNumber | number, decimals: number): BigNumber {
+        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const scalar = Math.pow(10, decimals);
+        const amountAsFloatingPoint = ((amountAsBigNumber.multipliedBy(scalar)).dividedToIntegerBy(1)).dividedBy(scalar);
         return amountAsFloatingPoint;
     }
     private _validateDeployedOrThrow() {
