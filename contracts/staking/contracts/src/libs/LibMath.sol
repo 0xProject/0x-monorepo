@@ -123,39 +123,13 @@ library LibMath {
         root = (scalar * numerator) / denominator;
     }
 
-    // workaround for bug in ganache
-    function _exp(uint256 base, uint256 power)
+    // scalar gets multiplied by once at the beginning
+    function _exp(uint256 numerator, uint256 scalar, uint256 denominator, uint256 power)
         internal
         pure
         returns (uint256 result)
     {
-        result = base;
-        for(power = power - 1; power > 0; power -= 1) {
-            result *= base;
-        }
-        return result;
-    }
-
-    function _exp2(uint256 numerator_1, uint256 numerator_2, uint256 denominator, uint256 power)
-        internal
-        pure
-        returns (uint256 result)
-    {
-        result = (numerator_1 * numerator_2) / denominator;
-        for(power = power - 1; power > 0; power -= 1) {
-            result *= numerator_1;
-            result /= denominator;
-            result *= numerator_2;
-        }
-        return result;
-    }
-
-    function _exp3(uint256 numerator, uint256 denominator, uint256 power)
-        internal
-        pure
-        returns (uint256 result)
-    {
-        result = numerator / denominator;
+        result = (numerator * scalar) / denominator;
         for(power = power - 1; power > 0; power -= 1) {
             result = (result * numerator) / denominator;
         }
@@ -166,7 +140,9 @@ library LibMath {
     uint256 constant scalar = 10**fixedPointDecimals;
     uint256 constant halfScalar = 10**(fixedPointDecimals/2);
 
-    // rough implementation of cobb-douglas using the nth root fixed point algorithm above
+    // cobb-douglas using the nth root fixed point algorithm above
+    // no limitation on alpha. We tend to get better rounding
+    // on the simplified versions below.
     function _cobbDouglas(
         uint256 totalRewards,
         uint256 ownerFees,
@@ -180,10 +156,44 @@ library LibMath {
         pure
         returns (uint256)
     {
-        uint256 lhs = _exp3(_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator, 18),
-                            _nthRootFixedPoint(totalFees * ownerStake, alphaDenominator, 18),
-                            alphaNumerator
-                        );
-        return lhs * ((totalRewards * ownerStake) / totalStake);
+        return _exp(_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator, 18),
+                    ((totalRewards * ownerStake) / totalStake),
+                    _nthRootFixedPoint(totalFees * ownerStake, alphaDenominator, 18),
+                    alphaNumerator
+                );
+    }
+
+    // alpha = 1/x
+    function _cobbDouglasSimplified(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake,
+        uint8 alphaDenominator
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        return  (_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator, 18) * totalRewards * ownerStake) /
+                (_nthRootFixedPoint(totalFees * ownerStake, alphaDenominator, 18) * totalStake);
+    }
+
+    // (1 - alpha) = 1/x
+    function _cobbDouglasSimplifiedInverse(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake,
+        uint8 alphaDenominator
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        return  (_nthRootFixedPoint(ownerStake * totalFees, alphaDenominator, 18) * totalRewards * ownerFees) /
+                (_nthRootFixedPoint(totalStake * ownerFees, alphaDenominator, 18) * totalFees);
     }
 }
