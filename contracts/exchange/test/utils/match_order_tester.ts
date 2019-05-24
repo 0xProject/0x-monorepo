@@ -259,6 +259,22 @@ function simulateMatchOrders(
         fills: simulateFillEvents(orders, takerAddress, transferAmounts),
         balances: _.cloneDeep(tokenBalances),
     };
+    // Right maker asset -> left maker
+    transferAsset(
+        orders.rightOrder.makerAddress,
+        orders.leftOrder.makerAddress,
+        transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
+        orders.rightOrder.makerAssetData,
+        matchResults,
+    );
+    // Left maker fees
+    transferAsset(
+        orders.leftOrder.makerAddress,
+        orders.leftOrder.feeRecipientAddress,
+        transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
+        orders.leftOrder.makerFeeAssetData,
+        matchResults,
+    );
     // Left maker asset -> right maker
     transferAsset(
         orders.leftOrder.makerAddress,
@@ -267,12 +283,12 @@ function simulateMatchOrders(
         orders.leftOrder.makerAssetData,
         matchResults,
     );
-    // Right maker asset -> left maker
+    // Right maker fees
     transferAsset(
         orders.rightOrder.makerAddress,
-        orders.leftOrder.makerAddress,
-        transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
-        orders.rightOrder.makerAssetData,
+        orders.rightOrder.feeRecipientAddress,
+        transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
+        orders.rightOrder.makerFeeAssetData,
         matchResults,
     );
     // Left taker profit
@@ -291,56 +307,22 @@ function simulateMatchOrders(
         orders.rightOrder.makerAssetData,
         matchResults,
     );
-    // Left maker fees
+    // Left taker fees
     transferAsset(
-        orders.leftOrder.makerAddress,
+        takerAddress,
         orders.leftOrder.feeRecipientAddress,
-        transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
-        orders.leftOrder.makerFeeAssetData,
+        transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
+        orders.leftOrder.takerFeeAssetData,
         matchResults,
     );
-    // Right maker fees
+    // Right taker fees
     transferAsset(
-        orders.rightOrder.makerAddress,
+        takerAddress,
         orders.rightOrder.feeRecipientAddress,
-        transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
-        orders.rightOrder.makerFeeAssetData,
+        transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
+        orders.rightOrder.takerFeeAssetData,
         matchResults,
     );
-    // Taker fees.
-    if (
-        orders.leftOrder.feeRecipientAddress === orders.rightOrder.feeRecipientAddress &&
-        orders.leftOrder.takerFeeAssetData === orders.rightOrder.takerFeeAssetData
-    ) {
-        // Same asset data and recipients, so combine into a single transfer.
-        const totalTakerFeeAssetPaidByTakerAmount = transferAmounts.leftTakerFeeAssetPaidByTakerAmount.plus(
-            transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
-        );
-        transferAsset(
-            takerAddress,
-            orders.leftOrder.feeRecipientAddress,
-            totalTakerFeeAssetPaidByTakerAmount,
-            orders.leftOrder.takerFeeAssetData,
-            matchResults,
-        );
-    } else {
-        // Left taker fees
-        transferAsset(
-            takerAddress,
-            orders.leftOrder.feeRecipientAddress,
-            transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
-            orders.leftOrder.takerFeeAssetData,
-            matchResults,
-        );
-        // Right taker fees
-        transferAsset(
-            takerAddress,
-            orders.rightOrder.feeRecipientAddress,
-            transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
-            orders.rightOrder.takerFeeAssetData,
-            matchResults,
-        );
-    }
     return matchResults;
 }
 
