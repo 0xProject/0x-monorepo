@@ -37,6 +37,7 @@ import {
     ExchangeFillEventArgs,
     ExchangeFunctionName,
     ExchangeSignatureValidatorApprovalEventArgs,
+    ExchangeTransactionExecutionEventArgs,
     ExchangeWrapper,
     ExchangeWrapperContract,
     WhitelistContract,
@@ -46,7 +47,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange transactions', () => {
+describe.only('Exchange transactions', () => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;
@@ -157,6 +158,27 @@ describe('Exchange transactions', () => {
         taker2TransactionFactory = new TransactionFactory(taker2PrivateKey, exchangeInstance.address, chainId);
     });
     describe('executeTransaction', () => {
+        describe('general functionality', () => {
+            it('should log the correct transactionHash if successfully executed', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync(data);
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(1);
+                const executionLogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction)).to.equal(
+                    executionLogArgs.transactionHash,
+                );
+            });
+        });
         describe('fill methods', () => {
             for (const fnName of [
                 ...exchangeConstants.SINGLE_FILL_FN_NAMES,
@@ -631,6 +653,28 @@ describe('Exchange transactions', () => {
                     [transaction1, transaction2],
                     senderAddress,
                 );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
+                    execution1LogArgs.transactionHash,
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
+                    execution2LogArgs.transactionHash,
+                );
+
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
                 );
@@ -675,6 +719,28 @@ describe('Exchange transactions', () => {
                     [transaction1, transaction2],
                     takerAddress,
                 );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
+                    execution1LogArgs.transactionHash,
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
+                    execution2LogArgs.transactionHash,
+                );
+
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
                 );
@@ -718,6 +784,28 @@ describe('Exchange transactions', () => {
                     [transaction1, transaction2],
                     taker2Address,
                 );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
+                    execution1LogArgs.transactionHash,
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
+                    execution2LogArgs.transactionHash,
+                );
+
                 const fillLogs = transactionReceipt.logs.filter(
                     log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
                 );
@@ -789,6 +877,27 @@ describe('Exchange transactions', () => {
                 const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
                     [transaction1, transaction2],
                     senderAddress,
+                );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
+                    execution1LogArgs.transactionHash,
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
+                    execution2LogArgs.transactionHash,
                 );
 
                 let fillLogIndex: number = 0;
