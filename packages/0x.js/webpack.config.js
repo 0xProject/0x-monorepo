@@ -23,6 +23,9 @@ module.exports = {
         library: 'ZeroEx',
         umdNamedDefine: true,
     },
+    node: {
+        fs: 'empty'
+    },
     resolve: {
         extensions: ['.ts', '.js', '.json'],
     },

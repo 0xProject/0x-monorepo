@@ -15,6 +15,9 @@ const config = {
         profiler: './ts/pages/profiler.tsx',
         trace: './ts/pages/trace.tsx',
     },
+    node: {
+        fs: 'empty',
+    },
     output: {
         path: path.join(__dirname, '/public'),
         filename: 'bundle-[name].js',
