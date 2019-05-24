@@ -135,7 +135,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should fill the order with a signed approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -174,7 +174,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should fill the order if called by approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                     await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
@@ -206,7 +206,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert with no approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 await expectTransactionFailedAsync(
                     coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
@@ -225,7 +225,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert with an invalid approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -249,7 +249,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert with an expired approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -272,7 +272,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -299,7 +299,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should fill the orders with a signed approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -340,7 +340,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should fill the orders if called by approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                     await coordinatorContract.executeTransaction.sendTransactionAsync(
                         transaction,
@@ -374,7 +374,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert with an invalid approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -398,7 +398,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert with an expired approval`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -421,7 +421,7 @@ describe('Coordinator tests', () => {
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = takerTransactionFactory.newSignedTransaction(data);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory.newSignedApproval(
@@ -447,7 +447,7 @@ describe('Coordinator tests', () => {
         it('cancelOrder call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync()];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
-            const transaction = makerTransactionFactory.newSignedTransaction(data);
+            const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
                     transaction,
@@ -475,7 +475,7 @@ describe('Coordinator tests', () => {
         it('batchCancelOrders call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
-            const transaction = makerTransactionFactory.newSignedTransaction(data);
+            const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
                     transaction,
@@ -505,7 +505,7 @@ describe('Coordinator tests', () => {
         it('cancelOrdersUpTo call should be successful without an approval', async () => {
             const targetEpoch = constants.ZERO_AMOUNT;
             const data = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
-            const transaction = makerTransactionFactory.newSignedTransaction(data);
+            const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
             const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
                 await coordinatorContract.executeTransaction.sendTransactionAsync(
                     transaction,
