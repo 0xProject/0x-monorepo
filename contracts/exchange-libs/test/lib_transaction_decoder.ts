@@ -155,17 +155,14 @@ describe('LibTransactionDecoder', () => {
     });
 
     it('should decode an Exchange.batchCancelOrders() transaction', async () => {
-        expect(await libTxDecoder.decodeTransaction.callAsync(ENCODED_INPUTS.batchCancelOrders)).to.deep.equal([
-            'batchCancelOrders',
-            [INPUTS.order, INPUTS.order],
-            [],
-            [],
-        ]);
+        expect(
+            await libTxDecoder.decodeZeroExTransactionData.callAsync(ENCODED_INPUTS.batchCancelOrders),
+        ).to.deep.equal(['batchCancelOrders', [INPUTS.order, INPUTS.order], [], []]);
     });
 
     for (const func of ['batchFillOrders', 'batchFillOrdersNoThrow', 'batchFillOrKillOrders']) {
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeTransaction.callAsync(ENCODED_INPUTS[func])).to.deep.equal([
+            expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(ENCODED_INPUTS[func])).to.deep.equal([
                 func,
                 [INPUTS.order, INPUTS.order],
                 [INPUTS.takerAssetFillAmount, INPUTS.takerAssetFillAmount],
@@ -175,7 +172,7 @@ describe('LibTransactionDecoder', () => {
     }
 
     it('should decode an Exchange.cancelOrder() transaction', async () => {
-        expect(await libTxDecoder.decodeTransaction.callAsync(ENCODED_INPUTS.cancelOrder)).to.deep.equal([
+        expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(ENCODED_INPUTS.cancelOrder)).to.deep.equal([
             'cancelOrder',
             [INPUTS.order],
             [],
@@ -185,7 +182,7 @@ describe('LibTransactionDecoder', () => {
 
     for (const func of ['fillOrder', 'fillOrderNoThrow', 'fillOrKillOrder']) {
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeTransaction.callAsync(ENCODED_INPUTS[func])).to.deep.equal([
+            expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(ENCODED_INPUTS[func])).to.deep.equal([
                 func,
                 [INPUTS.order],
                 [INPUTS.takerAssetFillAmount],
@@ -196,7 +193,7 @@ describe('LibTransactionDecoder', () => {
 
     for (const func of ['marketBuyOrders', 'marketBuyOrdersNoThrow', 'marketSellOrders', 'marketSellOrdersNoThrow']) {
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeTransaction.callAsync(ENCODED_INPUTS[func])).to.deep.equal([
+            expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(ENCODED_INPUTS[func])).to.deep.equal([
                 func,
                 [INPUTS.order, INPUTS.order],
                 [INPUTS.takerAssetFillAmount],
@@ -224,7 +221,7 @@ describe('LibTransactionDecoder', () => {
             return complementaryOrder;
         }
 
-        expect(await libTxDecoder.decodeTransaction.callAsync(ENCODED_INPUTS.matchOrders)).to.deep.equal([
+        expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(ENCODED_INPUTS.matchOrders)).to.deep.equal([
             'matchOrders',
             [INPUTS.order, makeComplementaryOrder(INPUTS.order)],
             [INPUTS.order.takerAssetAmount, makeComplementaryOrder(INPUTS.order).takerAssetAmount],

@@ -33,7 +33,7 @@ contract LibTransactionDecoder is LibExchangeSelectors {
     /// @return The name of the function called, and the parameters it was
     ///     given.  For single-order fills and cancels, the arrays will have
     ///     just one element.
-    function decodeTransaction(bytes memory transactionData)
+    function decodeZeroExTransactionData(bytes memory transactionData)
         public
         pure
         returns(
