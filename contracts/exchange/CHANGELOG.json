@@ -43,7 +43,7 @@
                 "pr": 1819
             },
             {
-                "note": "Avoid redundant transfer in `fillOrder` when maker/taker is the same as feeRecipient and assets are the same",
+                "note": "Avoid redundant transfer in `fillOrder()` and `matchOrders()` when maker/taker is the same as feeRecipient and assets are the same",
                 "pr": 1819
             }
         ]
