@@ -1023,7 +1023,7 @@ describe('Exchange transactions', () => {
                     ExchangeRevertErrors.TransactionErrorCode.Expired,
                     expiredTransactionHash,
                 );
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
         });
         describe('examples', () => {
