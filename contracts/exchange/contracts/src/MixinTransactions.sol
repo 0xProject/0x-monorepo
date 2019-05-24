@@ -86,6 +86,7 @@ contract MixinTransactions is
         bytes32 transactionHash = getTransactionHash(transaction);
 
         // Check transaction is not expired
+        // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= transaction.expirationTimeSeconds) {
             _rrevert(TransactionError(
                 TransactionErrorCodes.EXPIRED,
