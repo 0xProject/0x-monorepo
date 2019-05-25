@@ -16,7 +16,6 @@ import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
 interface HeaderProps {
     location?: Location;
@@ -31,7 +30,6 @@ interface NavItemProps {
     text?: string;
     dropdownWidth?: number;
     dropdownComponent?: React.FunctionComponent<any>;
-    shouldOpenInNewTab?: boolean;
 }
 
 interface DropdownWrapInterface {
@@ -51,8 +49,8 @@ const navItems: NavItemProps[] = [
         dropdownWidth: 280,
     },
     {
-        id: 'docs',
-        text: 'Docs',
+        id: 'developers',
+        text: 'Developers',
         dropdownComponent: DropdownDevelopers,
         dropdownWidth: 480,
     },
