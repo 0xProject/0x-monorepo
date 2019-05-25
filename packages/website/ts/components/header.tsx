@@ -120,9 +120,7 @@ const NavItem = (props: { link: NavItemProps; key: string }) => {
         link.url === undefined ? (
             <StyledAnchor href="#">{link.text}</StyledAnchor>
         ) : (
-            <StyledNavLink to={link.url}>
-                {link.text}
-            </StyledNavLink>
+            <StyledNavLink to={link.url}>{link.text}</StyledNavLink>
         );
     return (
         <LinkWrap>
