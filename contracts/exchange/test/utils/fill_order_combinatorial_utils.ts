@@ -1024,37 +1024,6 @@ function getTakerAssetFillAmount(signedOrder: SignedOrder, fillScenario: FillSce
             break;
 
         case TakerAssetFillAmountScenario.LessThanTakerAssetAmount:
-            // TODO(dorothy-zbornak): Do we need this?
-            // const {
-            //     makerAssetDataScenario,
-            //     takerAssetDataScenario,
-            //     makerFeeAssetDataScenario,
-            //     takerFeeAssetDataScenario,
-            // } = fillScenario.orderScenario;
-            // const NFT_SCENARIOS = [
-            //     AssetDataScenario.ERC721,
-            //     AssetDataScenario.ERC1155NonFungible,
-            // ];
-            // const FEE_NFT_SCENARIOS = [
-            //     FeeAssetDataScenario.ERC721,
-            //     FeeAssetDataScenario.ERC1155NonFungible,
-            // ];
-            // if (_.includes(NFT_SCENARIOS, makerAssetDataScenario)) {
-            //     FEE_NFT_SCENARIOS.push(FeeAssetDataScenario.MakerToken);
-            // }
-            // if (_.includes(NFT_SCENARIOS, takerAssetDataScenario)) {
-            //     FEE_NFT_SCENARIOS.push(FeeAssetDataScenario.TakerToken);
-            // }
-            // const isAnyAssetNonFungible =
-            //     _.includes(NFT_SCENARIOS, makerAssetDataScenario) ||
-            //     _.includes(NFT_SCENARIOS, takerAssetDataScenario) ||
-            //     _.includes(FEE_NFT_SCENARIOS, makerFeeAssetDataScenario) ||
-            //     _.includes(FEE_NFT_SCENARIOS, takerFeeAssetDataScenario);
-            // if (isAnyAssetNonFungible) {
-            //     throw new Error(
-            //         'Cannot test `TakerAssetFillAmountScenario.LessThanTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
-            //     );
-            // }
             takerAssetFillAmount = signedOrder.takerAssetAmount.div(2).integerValue(BigNumber.ROUND_FLOOR);
             break;
 
