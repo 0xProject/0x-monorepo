@@ -523,7 +523,7 @@ describe('Exchange wrappers', () => {
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
 
-            const fillResults = await exchange.fillOrKillOrder.callAsync(
+            const fillResults = await exchange.fillOrderNoThrow.callAsync(
                 signedOrder,
                 takerAssetFillAmount,
                 signedOrder.signature,
