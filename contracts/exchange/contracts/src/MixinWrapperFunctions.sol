@@ -199,8 +199,9 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being sold by taker is the same for each order.
-            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            // The `takerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
@@ -243,8 +244,9 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being sold by taker is the same for each order.
-            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            // The `takerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
@@ -287,8 +289,9 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being bought by taker is the same for each order.
-            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            // The `makerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
@@ -339,8 +342,9 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being bought by taker is the same for each order.
-            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            // The `makerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
