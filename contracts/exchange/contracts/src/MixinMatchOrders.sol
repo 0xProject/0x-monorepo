@@ -57,7 +57,8 @@ contract MixinMatchOrders is
         nonReentrant
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
-        // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData.
+        // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData
+        // by pointing these values to the same location in memory. This is cheaper than checking equality.
         // If this assumption isn't true, the match will fail at signature validation.
         rightOrder.makerAssetData = leftOrder.takerAssetData;
         rightOrder.takerAssetData = leftOrder.makerAssetData;
