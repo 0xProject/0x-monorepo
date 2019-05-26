@@ -16,7 +16,6 @@ export {
 export { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from './block_timestamp';
 export { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 export { LogDecoder } from './log_decoder';
-export { formatters } from './formatters';
 export { signingUtils } from './signing_utils';
 export { orderUtils } from './order_utils';
 export { typeEncodingUtils } from './type_encoding_utils';
