@@ -53,6 +53,10 @@
             {
                 "note": "Add `generate-exchange-selectors` package script.",
                 "pr": 1819
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` struct",
+                "pr": 1823
             }
         ]
     },
