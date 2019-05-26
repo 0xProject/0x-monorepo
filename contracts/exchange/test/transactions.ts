@@ -286,11 +286,13 @@ describe('Exchange transactions', () => {
                     const abi = artifacts.Exchange.compilerOutput.abi;
                     const methodAbi = abi.filter(abiItem => (abiItem as MethodAbi).name === fnName)[0] as MethodAbi;
                     const abiEncoder = new AbiEncoder.Method(methodAbi);
+
                     const decodedReturnData = abiEncoder.decodeReturnValues(returnData);
-                    const fillResults: FillResults =
-                        decodedReturnData.fillResults === undefined
-                            ? decodedReturnData.totalFillResults
+                    const fillResults =
+                        exchangeConstants.BATCH_FILL_FN_NAMES.indexOf(fnName) !== -1
+                            ? decodedReturnData.fillResults[0]
                             : decodedReturnData.fillResults;
+
                     expect(fillResults.makerAssetFilledAmount).to.be.bignumber.eq(order.makerAssetAmount);
                     expect(fillResults.takerAssetFilledAmount).to.be.bignumber.eq(order.takerAssetAmount);
                     expect(fillResults.makerFeePaid).to.be.bignumber.eq(order.makerFee);
