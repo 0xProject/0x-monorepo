@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.2.0",
+        "version": "4.0.0",
         "changes": [
             {
                 "note": "Add `chainId` to `TransactionFactory` constructor",
@@ -25,6 +25,10 @@
             {
                 "note": "Update types for arbitrary fee tokens",
                 "pr": 1819
+            },
+            {
+                "note": "Remove formatters",
+                "pr": 1834
             }
         ]
     },
