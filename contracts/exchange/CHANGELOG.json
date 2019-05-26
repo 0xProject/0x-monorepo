@@ -69,6 +69,10 @@
             {
                 "note": "Log an `TransactionExecuted` event when an `executeTransaction` call is successful",
                 "pr": 1832
+            },
+            {
+                "note": "Return a FillResults array for batch fill variants",
+                "pr": 1834
             }
         ]
     },
