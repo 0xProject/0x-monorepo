@@ -62,7 +62,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults[] memory);
+        returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
@@ -75,7 +75,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults[] memory);
+        returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
@@ -89,7 +89,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults[] memory);
+        returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
@@ -102,7 +102,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     ///      Returns false if the transaction would otherwise revert.
@@ -116,7 +116,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
@@ -129,7 +129,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
     ///      Returns false if the transaction would otherwise revert.
@@ -143,7 +143,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of order specifications.
