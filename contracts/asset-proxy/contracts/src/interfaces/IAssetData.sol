@@ -26,20 +26,20 @@ pragma experimental ABIEncoderV2;
 // This argument is ABI encoded as one of the methods of this interface.
 interface IAssetData {
 
-    function ERC20Token(address tokenContract)
+    function ERC20Token(address tokenAddress)
         external;
     
     function ERC721Token(
-        address tokenContract,
+        address tokenAddress,
         uint256 tokenId
     )
         external;
 
     function ERC1155Assets(
-        address tokenContract,
-        uint256[] calldata ids,
-        uint256[] calldata values,
-        bytes calldata data
+        address tokenAddress,
+        uint256[] calldata tokenIds,
+        uint256[] calldata tokenValues,
+        bytes calldata callbackData
     )
         external;
 

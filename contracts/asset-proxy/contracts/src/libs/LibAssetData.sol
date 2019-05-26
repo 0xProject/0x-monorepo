@@ -29,6 +29,8 @@ import "./LibAssetProxyIds.sol";
 contract LibAssetData is
     LibAssetProxyIds
 {
+    using LibBytes for bytes;
+
     /// @dev Returns the owner's balance of the token(s) specified in
     ///     assetData.  When the asset data contains multiple tokens (eg in
     ///     ERC1155 or Multi-Asset), the return value indicates how many
@@ -42,15 +44,15 @@ contract LibAssetData is
         view
         returns (uint256 balance)
     {
-        bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
+        bytes4 proxyId = assetData.readBytes4(0);
+
         if (proxyId == ERC20_PROXY_ID) {
-            address tokenAddress = LibBytes.readAddress(assetData, 16);
-            return IERC20Token(tokenAddress).balanceOf(owner);
+            address tokenAddress = assetData.readAddress(16);
+            balance = IERC20Token(tokenAddress).balanceOf(owner);
         } else if (proxyId == ERC721_PROXY_ID) {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
-            return getERC721TokenOwner(tokenAddress, tokenId) == owner ? 1 : 0;
+            balance = getERC721TokenOwner(tokenAddress, tokenId) == owner ? 1 : 0;
         } else if (proxyId == ERC1155_PROXY_ID) {
-            uint256 lowestTokenBalance = 0;
             (
                 ,
                 address tokenAddress,
@@ -58,25 +60,30 @@ contract LibAssetData is
                 uint256[] memory tokenValues,
             ) = decodeERC1155AssetData(assetData);
             for (uint256 i = 0; i < tokenIds.length; i++) {
-                uint256 tokenBalance = IERC1155(tokenAddress).balanceOf(owner, tokenIds[i]) / tokenValues[i];
-                if (tokenBalance < lowestTokenBalance || lowestTokenBalance == 0) {
-                    lowestTokenBalance = tokenBalance;
+                uint256 totalBalance = IERC1155(tokenAddress).balanceOf(owner, tokenIds[i]);
+                uint256 scaledBalance = totalBalance / tokenValues[i];
+                if (scaledBalance < balance || balance == 0) {
+                    balance = scaledBalance;
                 }
             }
-            return lowestTokenBalance;
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
-            uint256 lowestAssetBalance = 0;
-            (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
+            (
+                ,
+                uint256[] memory assetAmounts,
+                bytes[] memory nestedAssetData
+            ) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
-                uint256 assetBalance = getBalance(owner, nestedAssetData[i]) / assetAmounts[i];
-                if (assetBalance < lowestAssetBalance || lowestAssetBalance == 0) {
-                    lowestAssetBalance = assetBalance;
+                uint256 totalBalance = getBalance(owner, nestedAssetData[i]);
+                uint256 scaledBalance = totalBalance / assetAmounts[i];
+                if (scaledBalance < balance || balance == 0) {
+                    balance = scaledBalance;
                 }
             }
-            return lowestAssetBalance;
         } else {
-            revert("UNSUPPORTED_PROXY_IDENTIFIER");
+            revert("UNSUPPORTED_PROXY_ID");
         }
+
+        return balance;
     }
 
     /// @dev Calls getBalance() for each element of assetData.
@@ -90,10 +97,12 @@ contract LibAssetData is
         view
         returns (uint256[] memory balances)
     {
-        balances = new uint256[](assetData.length);
-        for (uint256 i = 0; i < assetData.length; i++) {
+        uint256 length = assetData.length;
+        balances = new uint256[](length);
+        for (uint256 i = 0; i != length; i++) {
             balances[i] = getBalance(owner, assetData[i]);
         }
+        return balances;
     }
 
     /// @dev Returns the number of token(s) (described by assetData) that
@@ -106,45 +115,49 @@ contract LibAssetData is
     ///     specification.
     /// @return Number of tokens (or token baskets) that the spender is
     ///     authorized to spend.
-    function getAllowance(address owner, address spender, bytes memory assetData)
+    function getAllowance(
+        address owner,
+        address spender,
+        bytes memory assetData
+    )
         public
         view
         returns (uint256 allowance)
     {
-        bytes4 proxyId = LibBytes.readBytes4(assetData, 0);
+        bytes4 proxyId = assetData.readBytes4(0);
 
         if (proxyId == ERC20_PROXY_ID) {
-            address tokenAddress = LibBytes.readAddress(assetData, 16);
-            return IERC20Token(tokenAddress).allowance(owner, spender);
+            address tokenAddress = assetData.readAddress(16);
+            allowance = IERC20Token(tokenAddress).allowance(owner, spender);
         } else if (proxyId == ERC721_PROXY_ID) {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             IERC721Token token = IERC721Token(tokenAddress);
-            if (spender == token.getApproved(tokenId) || token.isApprovedForAll(owner, spender)) {
-                return 1;
-            } else {
-                return 0;
-            }
+            allowance = (token.getApproved(tokenId) != address(0) || token.isApprovedForAll(owner, spender)) ? 1 : 0;
         } else if (proxyId == ERC1155_PROXY_ID) {
             (, address tokenAddress, , , ) = decodeERC1155AssetData(assetData);
-            if (IERC1155(tokenAddress).isApprovedForAll(owner, spender)) {
-                return 1;
-            } else {
-                return 0;
-            }
+            allowance = IERC1155(tokenAddress).isApprovedForAll(owner, spender) ? 1 : 0;
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
-            uint256 lowestAssetAllowance = 0;
-            // solhint-disable-next-line indent
-            (, uint256[] memory amounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
+            (
+                ,
+                uint256[] memory amounts,
+                bytes[] memory nestedAssetData
+            ) = decodeMultiAssetData(assetData);
             for (uint256 i = 0; i < nestedAssetData.length; i++) {
-                uint256 assetAllowance = getAllowance(owner, spender, nestedAssetData[i]) / amounts[i];
-                if (assetAllowance < lowestAssetAllowance || lowestAssetAllowance == 0) {
-                    lowestAssetAllowance = assetAllowance;
+                uint256 totalAllowance = getAllowance(
+                    owner,
+                    spender,
+                    nestedAssetData[i]
+                );
+                uint256 scaledAllowance = totalAllowance / amounts[i];
+                if (scaledAllowance < allowance || allowance == 0) {
+                    allowance = scaledAllowance;
                 }
             }
-            return lowestAssetAllowance;
         } else {
-            revert("UNSUPPORTED_PROXY_IDENTIFIER");
+            revert("UNSUPPORTED_PROXY_ID");
         }
+
+        return allowance;
     }
 
     /// @dev Calls getAllowance() for each element of assetData.
@@ -155,15 +168,21 @@ contract LibAssetData is
     /// @return An array of token allowances from getAllowance(), with each
     ///     element corresponding to the same-indexed element in the assetData
     ///     input.
-    function getBatchAllowances(address owner, address spender, bytes[] memory assetData)
+    function getBatchAllowances(
+        address owner,
+        address spender,
+        bytes[] memory assetData
+    )
         public
         view
         returns (uint256[] memory allowances)
     {
-        allowances = new uint256[](assetData.length);
-        for (uint256 i = 0; i < assetData.length; i++) {
+        uint256 length = assetData.length;
+        allowances = new uint256[](length);
+        for (uint256 i = 0; i != length; i++) {
             allowances[i] = getAllowance(owner, spender, assetData[i]);
         }
+        return allowances;
     }
 
     /// @dev Calls getBalance() and getAllowance() for assetData.
@@ -174,13 +193,18 @@ contract LibAssetData is
     /// @return Number of tokens (or token baskets) held by owner, and number
     ///     of tokens (or token baskets) that the spender is authorized to
     ///     spend.
-    function getBalanceAndAllowance(address owner, address spender, bytes memory assetData)
+    function getBalanceAndAllowance(
+        address owner,
+        address spender,
+        bytes memory assetData
+    )
         public
         view
         returns (uint256 balance, uint256 allowance)
     {
         balance = getBalance(owner, assetData);
         allowance = getAllowance(owner, spender, assetData);
+        return (balance, allowance);
     }
 
     /// @dev Calls getBatchBalances() and getBatchAllowances() for each element
@@ -192,13 +216,21 @@ contract LibAssetData is
     /// @return An array of token balances from getBalance(), and an array of
     ///     token allowances from getAllowance(), with each element
     ///     corresponding to the same-indexed element in the assetData input.
-    function getBatchBalancesAndAllowances(address owner, address spender, bytes[] memory assetData)
+    function getBatchBalancesAndAllowances(
+        address owner,
+        address spender,
+        bytes[] memory assetData
+    )
         public
         view
-        returns (uint256[] memory balances, uint256[] memory allowances)
+        returns (
+            uint256[] memory balances,
+            uint256[] memory allowances
+        )
     {
         balances = getBatchBalances(owner, assetData);
         allowances = getBatchAllowances(owner, spender, assetData);
+        return (balances, allowances);
     }
 
     /// @dev Encode ERC-20 asset data into the format described in the
@@ -211,7 +243,8 @@ contract LibAssetData is
         pure
         returns (bytes memory assetData)
     {
-        return abi.encodeWithSelector(ERC20_PROXY_ID, tokenAddress);
+        assetData = abi.encodeWithSelector(ERC20_PROXY_ID, tokenAddress);
+        return assetData;
     }
 
     /// @dev Decode ERC-20 asset data from the format described in the
@@ -228,11 +261,15 @@ contract LibAssetData is
             address tokenAddress
         )
     {
-        proxyId = LibBytes.readBytes4(assetData, 0);
+        proxyId = assetData.readBytes4(0);
 
-        require(proxyId == ERC20_PROXY_ID, "WRONG_PROXY_ID");
+        require(
+            proxyId == ERC20_PROXY_ID,
+            "WRONG_PROXY_ID"
+        );
 
-        tokenAddress = LibBytes.readAddress(assetData, 16);
+        tokenAddress = assetData.readAddress(16);
+        return (proxyId, tokenAddress);
     }
 
     /// @dev Encode ERC-721 asset data into the format described in the
@@ -249,7 +286,12 @@ contract LibAssetData is
         pure
         returns (bytes memory assetData)
     {
-        return abi.encodeWithSelector(ERC721_PROXY_ID, tokenAddress, tokenId);
+        assetData = abi.encodeWithSelector(
+            ERC721_PROXY_ID,
+            tokenAddress,
+            tokenId
+        );
+        return assetData;
     }
 
     /// @dev Decode ERC-721 asset data from the format described in the
@@ -268,12 +310,16 @@ contract LibAssetData is
             uint256 tokenId
         )
     {
-        proxyId = LibBytes.readBytes4(assetData, 0);
+        proxyId = assetData.readBytes4(0);
 
-        require(proxyId == ERC721_PROXY_ID, "WRONG_PROXY_ID");
+        require(
+            proxyId == ERC721_PROXY_ID,
+            "WRONG_PROXY_ID"
+        );
 
-        tokenAddress = LibBytes.readAddress(assetData, 16);
-        tokenId = LibBytes.readUint256(assetData, 36);
+        tokenAddress = assetData.readAddress(16);
+        tokenId = assetData.readUint256(36);
+        return (proxyId, tokenAddress, tokenId);
     }
 
     /// @dev Encode ERC-1155 asset data into the format described in the
@@ -294,7 +340,14 @@ contract LibAssetData is
         pure
         returns (bytes memory assetData)
     {
-        return abi.encodeWithSelector(ERC1155_PROXY_ID, tokenAddress, tokenIds, tokenValues, callbackData);
+        assetData = abi.encodeWithSelector(
+            ERC1155_PROXY_ID,
+            tokenAddress,
+            tokenIds,
+            tokenValues,
+            callbackData
+        );
+        return assetData;
     }
 
     /// @dev Decode ERC-1155 asset data from the format described in the
@@ -319,9 +372,12 @@ contract LibAssetData is
             bytes memory callbackData
         )
     {
-        proxyId = LibBytes.readBytes4(assetData, 0);
+        proxyId = assetData.readBytes4(0);
 
-        require(proxyId == ERC1155_PROXY_ID, "WRONG_PROXY_ID");
+        require(
+            proxyId == ERC1155_PROXY_ID,
+            "WRONG_PROXY_ID"
+        );
 
         assembly {
             // Skip selector and length to get to the first parameter:
@@ -335,6 +391,14 @@ contract LibAssetData is
             // Point to the next parameter's data:
             callbackData := add(assetData, mload(add(assetData, 96)))
         }
+
+        return (
+            proxyId,
+            tokenAddress,
+            tokenIds,
+            tokenValues,
+            callbackData
+        );
     }
 
     /// @dev Encode data for multiple assets, per the AssetProxy contract
@@ -343,12 +407,20 @@ contract LibAssetData is
     /// @param nestedAssetData AssetProxy-compliant data describing each asset
     ///     to be traded.
     /// @return AssetProxy-compliant data describing the set of assets.
-    function encodeMultiAssetData(uint256[] memory amounts, bytes[] memory nestedAssetData)
+    function encodeMultiAssetData(
+        uint256[] memory amounts,
+        bytes[] memory nestedAssetData
+    )
         public
         pure
         returns (bytes memory assetData)
     {
-        assetData = abi.encodeWithSelector(MULTI_ASSET_PROXY_ID, amounts, nestedAssetData);
+        assetData = abi.encodeWithSelector(
+            MULTI_ASSET_PROXY_ID,
+            amounts,
+            nestedAssetData
+        );
+        return assetData;
     }
 
     /// @dev Decode multi-asset data from the format described in the
@@ -369,50 +441,36 @@ contract LibAssetData is
             bytes[] memory nestedAssetData
         )
     {
-        proxyId = LibBytes.readBytes4(assetData, 0);
+        proxyId = assetData.readBytes4(0);
 
-        require(proxyId == MULTI_ASSET_PROXY_ID, "WRONG_PROXY_ID");
+        require(
+            proxyId == MULTI_ASSET_PROXY_ID,
+            "WRONG_PROXY_ID"
+        );
 
-        // solhint-disable-next-line indent
-        (amounts, nestedAssetData) = abi.decode(LibBytes.slice(assetData, 4, assetData.length), (uint256[], bytes[]));
+        (amounts, nestedAssetData) = abi.decode(
+            assetData.slice(4, assetData.length),
+            (uint256[], bytes[])
+        );
     }
 
     /// @dev Calls `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
-    /// @param token Address of ERC721 token.
+    /// @param tokenAddress Address of ERC721 token.
     /// @param tokenId The identifier for the specific NFT.
     /// @return Owner of tokenId or null address if unowned.
-    function getERC721TokenOwner(address token, uint256 tokenId)
+    function getERC721TokenOwner(address tokenAddress, uint256 tokenId)
         public
         view
         returns (address owner)
     {
-        assembly {
-            // load free memory pointer
-            let cdStart := mload(64)
+        bytes memory ownerOfCalldata = abi.encodeWithSelector(
+            0x6352211e,
+            tokenId
+        );
 
-            // bytes4(keccak256(ownerOf(uint256))) = 0x6352211e
-            mstore(cdStart, 0x6352211e00000000000000000000000000000000000000000000000000000000)
-            mstore(add(cdStart, 4), tokenId)
+        (bool success, bytes memory returnData) = tokenAddress.staticcall(ownerOfCalldata);
 
-            // staticcall `ownerOf(tokenId)`
-            // `ownerOf` will revert if tokenId is not owned
-            let success := staticcall(
-                gas,      // forward all gas
-                token,    // call token contract
-                cdStart,  // start of calldata
-                36,       // length of input is 36 bytes
-                cdStart,  // write output over input
-                32        // size of output is 32 bytes
-            )
-
-            // Success implies that tokenId is owned
-            // Copy owner from return data if successful
-            if success {
-                owner := mload(cdStart)
-            }
-        }
-
-        // Owner initialized to address(0), no need to modify if call is unsuccessful
+        owner = success ? returnData.readAddress(12) : address(0);
         return owner;
     }
 }
