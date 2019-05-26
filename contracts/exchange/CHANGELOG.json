@@ -31,6 +31,18 @@
                 "pr": 1774
             },
             {
+                "note": "Add a `bytes` return value to `executeTransaction`, which is equal to the encoded return data of the underlying Exchange function call",
+                "pr": 1793
+            },
+            {
+                "note": "Implement `batchExecuteTransactions`",
+                "pr": 1793
+            },
+            {
+                "note": "Refactor preSign to be compatible with `executeTransaction`",
+                "pr": 1793
+            },
+            {
                 "note": "Remove ZRX fees in lieu of arbitrary maker and taker fee tokens.",
                 "pr": 1819
             },
@@ -45,6 +57,18 @@
             {
                 "note": "Avoid redundant transfer in `fillOrder()` and `matchOrders()` when maker/taker is the same as feeRecipient and assets are the same",
                 "pr": 1819
+            },
+            {
+                "note": "Implement `cancelOrderNoThrow` and `batchCancelOrdersNoThrow` functions",
+                "pr": 1827
+            },
+            {
+                "note": "`executeTransaction` will now revert if the input transaction is expired",
+                "pr": 1832
+            },
+            {
+                "note": "Log an `TransactionExecuted` event when an `executeTransaction` call is successful",
+                "pr": 1832
             }
         ]
     },

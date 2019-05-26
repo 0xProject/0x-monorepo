@@ -52,6 +52,10 @@
             {
                 "note": "Update `Order` type for arbitrary fee tokens (ZEIP-28).",
                 "pr": 1819
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` type",
+                "pr": 1832
             }
         ]
     },
