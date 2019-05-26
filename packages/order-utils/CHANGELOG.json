@@ -33,6 +33,14 @@
             {
                 "note": "Update `RevertError` types for new base constructor",
                 "pr": 1819
+            },
+            {
+                "note": "Add `Expired` TransactionErrorCode",
+                "pr": 1832
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` parameters used for hashing",
+                "pr": 1832
             }
         ]
     },
