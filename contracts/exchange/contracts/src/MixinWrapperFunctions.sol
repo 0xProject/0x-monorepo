@@ -114,10 +114,10 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults[] memory)
+        returns (FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        FillResults[] memory fillResults = new FillResults[](ordersLength);
+        fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = _fillOrder(
                 orders[i],
@@ -140,10 +140,10 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults[] memory)
+        returns (FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        FillResults[] memory fillResults = new FillResults[](ordersLength);
+        fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = _fillOrKillOrder(
                 orders[i],
@@ -166,10 +166,10 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults[] memory)
+        returns (FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        FillResults[] memory fillResults = new FillResults[](ordersLength);
+        fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = fillOrderNoThrow(
                 orders[i],
@@ -192,7 +192,7 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
@@ -205,7 +205,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = _fillOrder(
@@ -215,14 +215,14 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
+            if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
@@ -237,7 +237,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
@@ -250,7 +250,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
@@ -260,14 +260,14 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
+            if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
@@ -282,7 +282,7 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
@@ -295,7 +295,7 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
@@ -313,14 +313,14 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
+            if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
@@ -335,7 +335,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
@@ -348,7 +348,7 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
@@ -366,14 +366,14 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
+            if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev After calling, the order can not be filled anymore.
