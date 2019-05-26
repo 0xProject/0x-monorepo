@@ -35,6 +35,14 @@ interface IAssetData {
     )
         external;
 
+    function ERC1155Assets(
+        address tokenContract,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    )
+        external;
+
     function MultiAsset(
         uint256[] calldata amounts,
         bytes[] calldata nestedAssetData

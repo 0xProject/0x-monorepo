@@ -23,14 +23,12 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
+import "./LibAssetProxyIds.sol";
 
 
-library LibAssetData {
-    bytes4 constant public ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 constant public ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
-    bytes4 constant public ERC1155_PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
-    bytes4 constant public MULTI_ASSET_PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));
-
+contract LibAssetData is
+    LibAssetProxyIds
+{
     /// @dev Returns the owner's balance of the token(s) specified in
     ///     assetData.  When the asset data contains multiple tokens (eg in
     ///     ERC1155 or Multi-Asset), the return value indicates how many
