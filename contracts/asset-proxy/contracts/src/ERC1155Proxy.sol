@@ -160,45 +160,61 @@ contract ERC1155Proxy is
 
                 // Load length in bytes of `assetData`
                 let assetDataLength := calldataload(assetDataOffset)
+                
+                // Load offset to parameters section in asset data
+                let offsetToParamsInAssetData := add(assetDataOffset, 36)
 
-                // Copy the components of asset data (Table #2) that remain the same in Table #3.
+                // Memory offset of Data Area when stored in memory (Table #3)
+                let dataPtr := 164
+
+                // Copy ids from asset data in calldata (Table #2) to memory (Table #3).
+                let offsetToIds := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 68)))
+                let idsLength := calldataload(offsetToIds)
+                let idsLengthInBytes := mul(idsLength, 32)
                 calldatacopy(
-                    68,                         // aligned such that "offset to ids" is at the correct location for Table #3
-                    add(assetDataOffset, 68),   // beginning of `ids` in asset data (Table #2)
-                    sub(assetDataLength, 36)    // length of asset data, starting at `ids` (Table #2)
+                    dataPtr,
+                    offsetToIds,
+                    add(idsLengthInBytes, 32)
                 )
+                mstore(68, sub(dataPtr, 4))
+                dataPtr := add(dataPtr, add(idsLengthInBytes, 32))
 
-                // Increment by 32 the offsets to `ids`, `values`, and `data`
-                mstore(68, add(mload(68), 32))
-                mstore(100, add(mload(100), 32))
-                mstore(132, add(mload(132), 32))
+                // Copy values from asset data in calldata (Table #2) to memory (Table #3).
+                let offsetToValues := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 100)))
+                let valuesLength := calldataload(offsetToValues)
+                let valuesLengthInBytes := mul(valuesLength, 32)
+                calldatacopy(
+                    dataPtr,
+                    offsetToValues,
+                    add(valuesLengthInBytes, 32)
+                )
+                mstore(100, sub(dataPtr, 4))
+                dataPtr := add(dataPtr, add(valuesLengthInBytes, 32))
+
+                // Copy data from asset data in calldata (Table #2) to memory (Table #3).
+                let offsetToData := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 132)))
+                let dataLengthInBytes := calldataload(offsetToData)
+                let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
+                let dataLengthInBytesWordAligned := mul(dataLengthInWords, 32)
+                calldatacopy(
+                    dataPtr,
+                    offsetToData,
+                    add(dataLengthInBytesWordAligned, 32)
+                )
+                mstore(132, sub(dataPtr, 4))
+                dataPtr := add(dataPtr, add(dataLengthInBytesWordAligned, 32))
 
                 ////////// STEP 2/4 //////////
                 // Setup iterators for `values` array (Table #3)
                 let valuesOffset := add(mload(100), 4) // add 4 for calldata offset
-                let valuesLength := mload(valuesOffset)
-                let valuesLengthInBytes := mul(valuesLength, 32)
                 let valuesBegin := add(valuesOffset, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
 
-                // Setup iterators for `scaledValues` array (Table #3).
-                // This array is placed at the end of the regular ERC1155 calldata,
-                // which is 32 bytes longer than `assetData` (Table #2).
-                let scaledValuesOffset := add(assetDataLength, 32)
-                let scaledValuesBegin := add(scaledValuesOffset, 32)
-                let scaledValuesEnd := add(scaledValuesBegin, valuesLengthInBytes)
-
                 // Scale `values` by `amount` and store the output in `scaledValues`
                 let amount := calldataload(100)
-                for {
-                        let tokenValueOffset := valuesBegin
-                        let scaledTokenValueOffset := scaledValuesBegin
-                    }
+                for {let tokenValueOffset := valuesBegin}
                     lt(tokenValueOffset, valuesEnd)
-                    {
-                        tokenValueOffset := add(tokenValueOffset, 32)
-                        scaledTokenValueOffset := add(scaledTokenValueOffset, 32)
-                    }
+                    {tokenValueOffset := add(tokenValueOffset, 32)}
                 {
                     // Load token value and generate scaled value
                     let tokenValue := mload(tokenValueOffset)
@@ -218,15 +234,8 @@ contract ERC1155Proxy is
                     }
 
                     // There was no overflow, store the scaled token value
-                    mstore(scaledTokenValueOffset, scaledTokenValue)
+                    mstore(tokenValueOffset, scaledTokenValue)
                 }
-
-                // Store length of `scaledValues` (which is the same as `values`)
-                mstore(scaledValuesOffset, valuesLength)
-
-                // Point `values` to `scaledValues` (see Table #3);
-                // subtract 4 from memory location to account for selector
-                mstore(100, sub(scaledValuesOffset, 4))
 
                 ////////// STEP 3/4 //////////
                 // Store the safeBatchTransferFrom function selector,
@@ -258,7 +267,7 @@ contract ERC1155Proxy is
                     assetAddress,                           // call address of erc1155 asset
                     0,                                      // don't send any ETH
                     0,                                      // pointer to start of input
-                    scaledValuesEnd,                        // length of input (Table #3) is the end of the `scaledValues`
+                    dataPtr,                                // length of input is the end of the Data Area (Table #3)
                     0,                                      // write output over memory that won't be reused
                     0                                       // don't copy output to memory
                 )

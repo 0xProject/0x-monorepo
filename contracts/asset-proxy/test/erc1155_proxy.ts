@@ -30,7 +30,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:no-unnecessary-type-assertion
-describe('ERC1155Proxy', () => {
+describe.only('ERC1155Proxy', () => {
     // constant values used in transfer tests
     const nftOwnerBalance = new BigNumber(1);
     const nftNotOwnerBalance = new BigNumber(0);
