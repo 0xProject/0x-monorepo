@@ -4,11 +4,11 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/BalanceThresholdFilter.json",
+        "generated-artifacts/DevUtils.json",
         "generated-artifacts/DutchAuction.json",
         "generated-artifacts/Exchange.json",
         "generated-artifacts/ExchangeWrapper.json",
         "generated-artifacts/OrderMatcher.json",
-        "generated-artifacts/OrderValidator.json",
         "generated-artifacts/WETH9.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
