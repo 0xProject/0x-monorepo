@@ -23,6 +23,7 @@ import "./OrderValidationUtils.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibTransactionDecoder.sol";
 
 
+// solhint-disable no-empty-blocks
 contract DevUtils is
     OrderValidationUtils,
     LibTransactionDecoder

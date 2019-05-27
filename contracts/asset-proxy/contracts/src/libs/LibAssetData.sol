@@ -448,10 +448,12 @@ contract LibAssetData is
             "WRONG_PROXY_ID"
         );
 
+        // solhint-disable indent
         (amounts, nestedAssetData) = abi.decode(
             assetData.slice(4, assetData.length),
             (uint256[], bytes[])
         );
+        // solhint-enable indent
     }
 
     /// @dev Calls `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
