@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add `LibAssetProxyIds` and `LibAssetData` contracts",
+                "pr": 1835
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "2.1.5",
         "changes": [
