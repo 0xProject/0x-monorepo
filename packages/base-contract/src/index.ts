@@ -151,9 +151,10 @@ export class BaseContract {
 
     protected async _evmExecAsync(input: Buffer): Promise<Buffer> {
         const contractCode = await this._lookupDeployedBytecodeAsync();
-        const vm = new VM();
         return new Promise<Buffer>((resolve: any, reject: any) => {
-            vm.runCode({
+            const vm = new VM();
+            vm.runCode(
+                {
                     code: Buffer.from(contractCode.substr(2), 'hex'),
                     data: input,
                     gasLimit: Buffer.from('ffffffff', 'hex'),
@@ -162,7 +163,8 @@ export class BaseContract {
                     // res.return holds the successful result or the revert reason
                     // res.err only returns generic VmError
                     resolve(res.return);
-                });
+                },
+            );
         });
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
