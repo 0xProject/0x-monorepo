@@ -77,7 +77,7 @@ contract ERC1155Proxy is
         // |          | 4           |         |   1. from address                   |
         // |          | 36          |         |   2. to address                     |
         // |          | 68          |         |   3. offset to ids (*)              |
-        // |          | 100         |         |   4. offset to scaledValues (*)     |
+        // |          | 100         |         |   4. offset to values (*)           |
         // |          | 132         |         |   5. offset to data (*)             |
         // | Data     |             |         | ids:                                |
         // |          | 164         | 32      |   1. ids Length                     |
@@ -88,9 +88,6 @@ contract ERC1155Proxy is
         // |          |             |         | data:                               |
         // |          | 228 + a + b | 32      |   1. data Length                    |
         // |          | 260 + a + b | c       |   2. data Contents                  |
-        // |          |             |         | scaledValues: (***)                 |
-        // |          | 260 + a+b+c | 32      |   1. scaledValues Length            |
-        // |          | 292 + a+b+c | b       |   2. scaledValues Contents          |
         //
         //
         // (*): offset is computed from start of function parameters, so offset
@@ -99,12 +96,6 @@ contract ERC1155Proxy is
         // (**): the `Offset` column is computed assuming no calldata compression;
         //       offsets in the Data Area are dynamic and should be evaluated in
         //       real-time.
-        //
-        // (***): The contents of `values` are modified and stored separately, as `scaledValues`.
-        //        The `values` array cannot be overwritten, as other dynamically allocated fields
-        //        (`ids` and `data`) may resolve to the same array contents. For example, if
-        //        `ids` = [1,2] and `values` = [1,2], the asset data may be optimized
-        //        such that both arrays resolve to same entry of [1,2].
         //
         // WARNING: The ABIv2 specification allows additional padding between
         //          the Params and Data section. This will result in a larger
@@ -146,78 +137,64 @@ contract ERC1155Proxy is
                 // been constructed in memory, the destination erc1155 contract is called using this
                 // as its calldata. This process is divided into four steps, below.
 
-                ////////// STEP 1/4 //////////
+                ////////// STEP 1/3 //////////
                 // Map relevant fields from assetData (Table #2) into memory (Table #3)
                 // The Contents column of Table #2 is the same as Table #3,
                 // beginning from parameter 3 - `offset to ids (*)`
-                // The offsets in these rows are offset by 32 bytes in Table #3.
-                // Strategy:
-                // 1. Copy the assetData into memory at offset 32
-                // 2. Increment by 32 the offsets to `ids`, `values`, and `data`
+                // The `values` from assetData (Table #2) are multiplied by `amount` (Table #1)
+                // when they are copied into memory.
 
                 // Load offset to `assetData`
                 let assetDataOffset := add(calldataload(4), 4)
 
                 // Load length in bytes of `assetData`
                 let assetDataLength := calldataload(assetDataOffset)
-                
+
                 // Load offset to parameters section in asset data
                 let offsetToParamsInAssetData := add(assetDataOffset, 36)
 
                 // Memory offset of Data Area when stored in memory (Table #3)
-                let dataPtr := 164
+                let dataAreaPtr := 164
 
-                // Copy ids from asset data in calldata (Table #2) to memory (Table #3).
+                // Load amount by which to scale values
+                let amount := calldataload(100)
+
+                // Copy `ids` from `assetData` (Table #2) to memory (Table #3)
+                mstore(68, sub(dataAreaPtr, 4))
                 let offsetToIds := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 68)))
                 let idsLength := calldataload(offsetToIds)
                 let idsLengthInBytes := mul(idsLength, 32)
                 calldatacopy(
-                    dataPtr,
+                    dataAreaPtr,
                     offsetToIds,
                     add(idsLengthInBytes, 32)
                 )
-                mstore(68, sub(dataPtr, 4))
-                dataPtr := add(dataPtr, add(idsLengthInBytes, 32))
+                dataAreaPtr := add(dataAreaPtr, add(idsLengthInBytes, 32))
 
-                // Copy values from asset data in calldata (Table #2) to memory (Table #3).
+                // Copy `values` from `assetData` (Table #2) to memory (Table #3)
+                mstore(100, sub(dataAreaPtr, 4))
                 let offsetToValues := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 100)))
                 let valuesLength := calldataload(offsetToValues)
                 let valuesLengthInBytes := mul(valuesLength, 32)
+                // Copy `values` length
                 calldatacopy(
-                    dataPtr,
+                    dataAreaPtr,
                     offsetToValues,
-                    add(valuesLengthInBytes, 32)
+                    32
                 )
-                mstore(100, sub(dataPtr, 4))
-                dataPtr := add(dataPtr, add(valuesLengthInBytes, 32))
-
-                // Copy data from asset data in calldata (Table #2) to memory (Table #3).
-                let offsetToData := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 132)))
-                let dataLengthInBytes := calldataload(offsetToData)
-                let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
-                let dataLengthInBytesWordAligned := mul(dataLengthInWords, 32)
-                calldatacopy(
-                    dataPtr,
-                    offsetToData,
-                    add(dataLengthInBytesWordAligned, 32)
-                )
-                mstore(132, sub(dataPtr, 4))
-                dataPtr := add(dataPtr, add(dataLengthInBytesWordAligned, 32))
-
-                ////////// STEP 2/4 //////////
-                // Setup iterators for `values` array (Table #3)
-                let valuesOffset := add(mload(100), 4) // add 4 for calldata offset
-                let valuesBegin := add(valuesOffset, 32)
+                dataAreaPtr := add(dataAreaPtr, 32)
+                // Copy and scale elements of `values`
+                let valuesBegin := add(offsetToValues, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
-
-                // Scale `values` by `amount` and store the output in `scaledValues`
-                let amount := calldataload(100)
-                for {let tokenValueOffset := valuesBegin}
+                for { let tokenValueOffset := valuesBegin }
                     lt(tokenValueOffset, valuesEnd)
-                    {tokenValueOffset := add(tokenValueOffset, 32)}
+                    {
+                        tokenValueOffset := add(tokenValueOffset, 32)
+                        dataAreaPtr := add(dataAreaPtr, 32)
+                    }
                 {
                     // Load token value and generate scaled value
-                    let tokenValue := mload(tokenValueOffset)
+                    let tokenValue := calldataload(tokenValueOffset)
                     let scaledTokenValue := mul(tokenValue, amount)
 
                     // Revert if `amount` != 0 and multiplication resulted in an overflow
@@ -234,10 +211,23 @@ contract ERC1155Proxy is
                     }
 
                     // There was no overflow, store the scaled token value
-                    mstore(tokenValueOffset, scaledTokenValue)
+                    mstore(dataAreaPtr, scaledTokenValue)
                 }
 
-                ////////// STEP 3/4 //////////
+                // Copy `data` from `assetData` (Table #2) to memory (Table #3)
+                mstore(132, sub(dataAreaPtr, 4))
+                let offsetToData := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 132)))
+                let dataLengthInBytes := calldataload(offsetToData)
+                let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
+                let dataLengthInBytesWordAligned := mul(dataLengthInWords, 32)
+                calldatacopy(
+                    dataAreaPtr,
+                    offsetToData,
+                    add(dataLengthInBytesWordAligned, 32)
+                )
+                dataAreaPtr := add(dataAreaPtr, add(dataLengthInBytesWordAligned, 32))
+
+                ////////// STEP 2/3 //////////
                 // Store the safeBatchTransferFrom function selector,
                 // and copy `from`/`to` fields from Table #1 to Table #3.
 
@@ -252,7 +242,7 @@ contract ERC1155Proxy is
                     64          // 32 bytes for `from` + 32 bytes for `to` field
                 )
 
-                ////////// STEP 4/4 //////////
+                ////////// STEP 3/3 //////////
                 // Load the address of the destination erc1155 contract from asset data (Table #2)
                 // +32 bytes for assetData Length
                 // +4 bytes for assetProxyId
@@ -267,7 +257,7 @@ contract ERC1155Proxy is
                     assetAddress,                           // call address of erc1155 asset
                     0,                                      // don't send any ETH
                     0,                                      // pointer to start of input
-                    dataPtr,                                // length of input is the end of the Data Area (Table #3)
+                    dataAreaPtr,                            // length of input is the end of the Data Area (Table #3)
                     0,                                      // write output over memory that won't be reused
                     0                                       // don't copy output to memory
                 )
