@@ -162,7 +162,7 @@ contract LibAssetData is
 
     /// @dev Calls getAllowance() for each element of assetData.
     /// @param owner Owner of the tokens specified by assetData.
-    /// @param spender Address whose authority to spend is in question.
+    /// @param spenders Array of addresses whose authority to spend is in question for each corresponding assetData.
     /// @param assetData Description of tokens, per the AssetProxy contract
     ///     specification.
     /// @return An array of token allowances from getAllowance(), with each
@@ -170,7 +170,7 @@ contract LibAssetData is
     ///     input.
     function getBatchAllowances(
         address owner,
-        address spender,
+        address[] memory spenders,
         bytes[] memory assetData
     )
         public
@@ -180,7 +180,7 @@ contract LibAssetData is
         uint256 length = assetData.length;
         allowances = new uint256[](length);
         for (uint256 i = 0; i != length; i++) {
-            allowances[i] = getAllowance(owner, spender, assetData[i]);
+            allowances[i] = getAllowance(owner, spenders[i], assetData[i]);
         }
         return allowances;
     }
@@ -210,7 +210,7 @@ contract LibAssetData is
     /// @dev Calls getBatchBalances() and getBatchAllowances() for each element
     ///     of assetData.
     /// @param owner Owner of the tokens specified by assetData.
-    /// @param spender Address whose authority to spend is in question.
+    /// @param spenders Array of addresses whose authority to spend is in question for each corresponding assetData.
     /// @param assetData Description of tokens, per the AssetProxy contract
     ///     specification.
     /// @return An array of token balances from getBalance(), and an array of
@@ -218,7 +218,7 @@ contract LibAssetData is
     ///     corresponding to the same-indexed element in the assetData input.
     function getBatchBalancesAndAllowances(
         address owner,
-        address spender,
+        address[] memory spenders,
         bytes[] memory assetData
     )
         public
@@ -229,7 +229,7 @@ contract LibAssetData is
         )
     {
         balances = getBatchBalances(owner, assetData);
-        allowances = getBatchAllowances(owner, spender, assetData);
+        allowances = getBatchAllowances(owner, spenders, assetData);
         return (balances, allowances);
     }
 
@@ -470,7 +470,7 @@ contract LibAssetData is
 
         (bool success, bytes memory returnData) = tokenAddress.staticcall(ownerOfCalldata);
 
-        owner = success ? returnData.readAddress(12) : address(0);
+        owner = (success && returnData.length == 32) ? returnData.readAddress(12) : address(0);
         return owner;
     }
 }
