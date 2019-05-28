@@ -29,7 +29,8 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
     },
     LAUNCH_KIT: {
         title: '0x Launch Kit: Launch your own exchange or marketplace in minutes',
-        description: 'Launch Kit includes a set of tools, UI and documentation to build an exchange or marketplace in minutes on 0x.',
+        description:
+            'Launch Kit includes a set of tools, UI and documentation to build an exchange or marketplace in minutes on 0x.',
         keywords: '',
     },
     ABOUT: {
