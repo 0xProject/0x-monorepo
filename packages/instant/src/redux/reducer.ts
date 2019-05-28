@@ -49,6 +49,7 @@ interface OptionalState {
     latestBuyQuote: BuyQuote;
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
+    onSuccess: (txHash: string) => void;
 }
 
 export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;

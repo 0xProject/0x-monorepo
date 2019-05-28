@@ -108,7 +108,10 @@
         const queryParams = new Uri(window.location.search);
         const renderOptionsDefaults = {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
-            onClose: () => { console.log('0x Instant Closed') }
+            onClose: () => { console.log('0x Instant Closed') },
+            onSuccess: (txHash) => {
+                console.log(`Success! Transaction hash is: ${txHash}`)
+            }
         }
         const orderSourceOverride = queryParams.getQueryParamValue('orderSource');
         const availableAssetDatasString = queryParams.getQueryParamValue('availableAssetDatas');

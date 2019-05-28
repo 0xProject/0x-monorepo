@@ -22,6 +22,7 @@ interface ConnectedState {
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
+    onSuccess?: (txHash: string) => void;
 }
 
 interface ConnectedDispatch {
@@ -48,6 +49,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
         web3Wrapper,
         buyQuote: state.latestBuyQuote,
         affiliateInfo: state.affiliateInfo,
+        onSuccess: state.onSuccess,
         onViewTransaction: () => {
             if (
                 state.buyOrderState.processState === OrderProcessState.Processing ||
@@ -98,7 +100,27 @@ const mapDispatchToProps = (
     },
 });
 
-export const SelectedAssetBuyOrderStateButtons: React.ComponentClass<SelectedAssetBuyOrderStateButtons> = connect(
+
+const mergeProps = (
+   connectedState: ConnectedState,
+   connectedDispatch: ConnectedDispatch,
+   ownProps: SelectedAssetBuyOrderStateButtons,
+) => {
+   return {
+       ...ownProps,
+       ...connectedState,
+       onBuySuccess: (buyQuote: BuyQuote, txHash: string) => {
+           connectedDispatch.onBuySuccess(buyQuote, txHash);
+           if (connectedState.onSuccess) {
+               connectedState.onSuccess(txHash);
+           }
+       },
+    }
+
+};
+
+export const SelectedAssetBuyOrderStateButtons = connect(
     mapStateToProps,
     mapDispatchToProps,
+    mergeProps,
 )(BuyOrderStateButtons);

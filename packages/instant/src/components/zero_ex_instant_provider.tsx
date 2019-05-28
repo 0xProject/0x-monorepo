@@ -36,6 +36,7 @@ export interface ZeroExInstantProviderOptionalProps {
     networkId: Network;
     affiliateInfo: AffiliateInfo;
     shouldDisableAnalyticsTracking: boolean;
+    onSuccess?: (txHash: string) => void;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
@@ -81,6 +82,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                 : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
+            onSuccess: props.onSuccess,
         };
         return storeStateFromProps;
     }
