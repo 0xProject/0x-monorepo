@@ -109,22 +109,21 @@ const mapDispatchToProps = (
 });
 
 const mergeProps = (
-   connectedState: ConnectedState,
-   connectedDispatch: ConnectedDispatch,
-   ownProps: SelectedAssetBuyOrderStateButtons,
+    connectedState: ConnectedState,
+    connectedDispatch: ConnectedDispatch,
+    ownProps: SelectedAssetBuyOrderStateButtons,
 ) => {
-   return {
-       ...ownProps,
-       ...connectedState,
-       ...connectedDispatch,
-       onBuySuccess: (buyQuote: BuyQuote, txHash: string) => {
-           connectedDispatch.onBuySuccess(buyQuote, txHash);
-           if (connectedState.onSuccess) {
-               connectedState.onSuccess(txHash);
-           }
-       },
+    return {
+        ...ownProps,
+        ...connectedState,
+        ...connectedDispatch,
+        onBuySuccess: (buyQuote: BuyQuote, txHash: string) => {
+            connectedDispatch.onBuySuccess(buyQuote, txHash);
+            if (connectedState.onSuccess) {
+                connectedState.onSuccess(txHash);
+            }
+        },
     };
-
 };
 
 export const SelectedAssetBuyOrderStateButtons = connect(
