@@ -28,7 +28,6 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
     private _buyQuoteHeartbeat?: Heartbeater;
-    private _unsubscribeHandler?: Unsubscribe;
 
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
@@ -88,6 +87,7 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
                       ),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
+            onSuccess: props.onSuccess,
         };
         return storeStateFromProps;
     }
@@ -100,18 +100,6 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
     }
     public componentDidMount(): void {
         const state = this._store.getState();
-        this._unsubscribeHandler = this._store.subscribe(() => {
-            const currentState = this._store.getState();
-            if (
-                currentState.buyOrderState.processState === OrderProcessState.Success &&
-                !currentState.buyOrderState.performedCallback &&
-                this.props.onSuccess !== undefined
-            ) {
-                const txHash = currentState.buyOrderState.txHash;
-                this.props.onSuccess(txHash);
-                this._store.dispatch(actions.setBuyOrderStateSuccess(txHash, true));
-            }
-        });
         const dispatch = this._store.dispatch;
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchEthPriceAndDispatchToStore(dispatch);
@@ -166,9 +154,6 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         }
         if (this._buyQuoteHeartbeat) {
             this._buyQuoteHeartbeat.stop();
-        }
-        if (this._unsubscribeHandler) {
-            this._unsubscribeHandler();
         }
     }
     public render(): React.ReactNode {

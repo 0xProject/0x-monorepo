@@ -24,6 +24,7 @@ interface ConnectedState {
     affiliateInfo?: AffiliateInfo;
     selectedAsset?: Asset;
     onViewTransaction: () => void;
+    onSuccess?: (txHash: string) => void;
 }
 
 interface ConnectedDispatch {
@@ -52,6 +53,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
         buyQuote: state.latestBuyQuote,
         affiliateInfo: state.affiliateInfo,
         selectedAsset,
+        onSuccess: state.onSuccess,
         onViewTransaction: () => {
             if (
                 state.buyOrderState.processState === OrderProcessState.Processing ||
@@ -107,7 +109,28 @@ const mapDispatchToProps = (
     },
 });
 
-export const SelectedAssetBuyOrderStateButtons: React.ComponentClass<SelectedAssetBuyOrderStateButtons> = connect(
+
+const mergeProps = (
+   connectedState: ConnectedState,
+   connectedDispatch: ConnectedDispatch,
+   ownProps: SelectedAssetBuyOrderStateButtons,
+) => {
+   return {
+       ...ownProps,
+       ...connectedState,
+       ...connectedDispatch,
+       onBuySuccess: (buyQuote: BuyQuote, txHash: string) => {
+           connectedDispatch.onBuySuccess(buyQuote, txHash);
+           if (connectedState.onSuccess) {
+               connectedState.onSuccess(txHash);
+           }
+       },
+    }
+
+};
+
+export const SelectedAssetBuyOrderStateButtons = connect(
     mapStateToProps,
     mapDispatchToProps,
+    mergeProps,
 )(BuyOrderStateButtons);

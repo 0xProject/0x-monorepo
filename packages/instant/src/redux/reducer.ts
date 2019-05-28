@@ -52,6 +52,7 @@ interface OptionalState {
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
     walletDisplayName: string;
+    onSuccess: (txHash: string) => void;
 }
 
 export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;
@@ -157,7 +158,6 @@ export const createReducer = (initialState: State) => {
                     buyOrderState: {
                         processState: OrderProcessState.Processing,
                         txHash: processingData.txHash,
-                        performedCallback: false,
                         progress: {
                             startTimeUnix,
                             expectedEndTimeUnix,
