@@ -172,7 +172,6 @@ export const createReducer = (initialState: State) => {
                         return {
                             ...state,
                             buyOrderState: {
-                                performedCallback: false,
                                 processState: OrderProcessState.Failure,
                                 txHash,
                                 progress,
