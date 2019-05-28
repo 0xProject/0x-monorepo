@@ -3,16 +3,14 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { Unsubscribe } from 'redux';
 
 import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
-import { actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, Network, OrderProcessState, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
+import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
