@@ -30,6 +30,7 @@
         "src/LibFillResults.sol",
         "src/LibMath.sol",
         "src/LibOrder.sol",
+        "src/LibTransactionDecoder.sol",
         "test/TestLibs.sol"
     ]
 }

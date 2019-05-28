@@ -2,7 +2,15 @@ import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-g
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
+import {
+    ECSignature,
+    Order,
+    SignatureType,
+    SignedOrder,
+    SignedZeroExTransaction,
+    ValidatorSignature,
+    ZeroExTransaction,
+} from '@0x/types';
 import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
@@ -12,7 +20,8 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
 import { orderHashUtils } from './order_hash';
-import { OrderError } from './types';
+import { transactionHashUtils } from './transaction_hash';
+import { TypedDataError } from './types';
 import { utils } from './utils';
 
 export const signatureUtils = {
@@ -278,7 +287,94 @@ export const signatureUtils = {
         } catch (err) {
             // Detect if Metamask to transition users to the MetamaskSubprovider
             if ((provider as any).isMetaMask) {
-                throw new Error(OrderError.InvalidMetamaskSigner);
+                throw new Error(TypedDataError.InvalidMetamaskSigner);
+            } else {
+                throw err;
+            }
+        }
+    },
+    /**
+     * Signs a transaction and returns a SignedZeroExTransaction. First `eth_signTypedData` is requested
+     * then a fallback to `eth_sign` if not available on the supplied provider.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
+     * @param   transaction The ZeroExTransaction to sign.
+     * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
+     *          must be available via the supplied Provider.
+     * @return  A SignedTransaction containing the order and Elliptic curve signature with Signature Type.
+     */
+    async ecSignTransactionAsync(
+        supportedProvider: SupportedProvider,
+        transaction: ZeroExTransaction,
+        signerAddress: string,
+    ): Promise<SignedZeroExTransaction> {
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        try {
+            const signedTransaction = await signatureUtils.ecSignTypedDataTransactionAsync(
+                supportedProvider,
+                transaction,
+                signerAddress,
+            );
+            return signedTransaction;
+        } catch (err) {
+            // HACK: We are unable to handle specific errors thrown since provider is not an object
+            //       under our control. It could be Metamask Web3, Ethers, or any general RPC provider.
+            //       We check for a user denying the signature request in a way that supports Metamask and
+            //       Coinbase Wallet. Unfortunately for signers with a different error message,
+            //       they will receive two signature requests.
+            if (err.message.includes('User denied message signature')) {
+                throw err;
+            }
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const signatureHex = await signatureUtils.ecSignHashAsync(
+                supportedProvider,
+                transactionHash,
+                signerAddress,
+            );
+            const signedTransaction = {
+                ...transaction,
+                signature: signatureHex,
+            };
+            return signedTransaction;
+        }
+    },
+    /**
+     * Signs a ZeroExTransaction using `eth_signTypedData` and returns a SignedZeroExTransaction.
+     * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
+     * @param   transaction            The ZeroEx Transaction to sign.
+     * @param   signerAddress          The hex encoded Ethereum address you wish to sign it with. This address
+     *          must be available via the supplied Provider.
+     * @return  A SignedZeroExTransaction containing the ZeroExTransaction and Elliptic curve signature with Signature Type.
+     */
+    async ecSignTypedDataTransactionAsync(
+        supportedProvider: SupportedProvider,
+        transaction: ZeroExTransaction,
+        signerAddress: string,
+    ): Promise<SignedZeroExTransaction> {
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        assert.isETHAddressHex('signerAddress', signerAddress);
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema, [schemas.hexSchema]);
+        const web3Wrapper = new Web3Wrapper(provider);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
+        const normalizedSignerAddress = signerAddress.toLowerCase();
+        const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
+        try {
+            const signature = await web3Wrapper.signTypedDataAsync(normalizedSignerAddress, typedData);
+            const ecSignatureRSV = parseSignatureHexAsRSV(signature);
+            const signatureBuffer = Buffer.concat([
+                ethUtil.toBuffer(ecSignatureRSV.v),
+                ethUtil.toBuffer(ecSignatureRSV.r),
+                ethUtil.toBuffer(ecSignatureRSV.s),
+                ethUtil.toBuffer(SignatureType.EIP712),
+            ]);
+            const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+            return {
+                ...transaction,
+                signature: signatureHex,
+            };
+        } catch (err) {
+            // Detect if Metamask to transition users to the MetamaskSubprovider
+            if ((provider as any).isMetaMask) {
+                throw new Error(TypedDataError.InvalidMetamaskSigner);
             } else {
                 throw err;
             }
@@ -339,9 +435,9 @@ export const signatureUtils = {
         }
         // Detect if Metamask to transition users to the MetamaskSubprovider
         if ((provider as any).isMetaMask) {
-            throw new Error(OrderError.InvalidMetamaskSigner);
+            throw new Error(TypedDataError.InvalidMetamaskSigner);
         } else {
-            throw new Error(OrderError.InvalidSignature);
+            throw new Error(TypedDataError.InvalidSignature);
         }
     },
     /**
@@ -444,3 +540,4 @@ function parseSignatureHexAsRSV(signatureHex: string): ECSignature {
     };
     return ecSignature;
 }
+// tslint:disable:max-file-line-count

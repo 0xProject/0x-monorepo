@@ -1,9 +1,10 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import {
     DoneCallback,
     ExchangeContractErrs,
@@ -51,10 +52,11 @@ describe('OrderWatcher', () => {
     let feeRecipient: string;
     let signedOrder: SignedOrder;
     let orderWatcher: OrderWatcher;
+    let contractAddresses: ContractAddresses;
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
-        const contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const networkId = constants.TESTRPC_NETWORK_ID;
         const config = {
@@ -594,6 +596,39 @@ describe('OrderWatcher', () => {
                 });
                 orderWatcher.subscribe(callback);
                 await contractWrappers.exchange.fillOrderAsync(signedOrder, fillAmountInBaseUnits, takerAddress);
+            })().catch(done);
+        });
+        it('should emit orderStateInvalid when makerAddress is unfunded by withdrawing WETH', (done: DoneCallback) => {
+            (async () => {
+                const etherTokenAddress = contractAddresses.etherToken;
+                const wethAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+                await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(etherTokenAddress, makerAddress);
+                const depositAmount = fillableAmount.times(2);
+                await contractWrappers.etherToken.depositAsync(etherTokenAddress, depositAmount, makerAddress);
+                // WETH for ZRX order
+                signedOrder = await orderFactory.createSignedOrderAsync(
+                    web3Wrapper.getProvider(),
+                    makerAddress,
+                    fillableAmount,
+                    wethAssetData,
+                    fillableAmount,
+                    takerAssetData,
+                    contractAddresses.exchange,
+                );
+                const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+                await orderWatcher.addOrderAsync(signedOrder);
+                const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                    expect(orderState.isValid).to.be.false();
+                    const invalidOrderState = orderState as OrderStateInvalid;
+                    expect(invalidOrderState.orderHash).to.be.equal(orderHash);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.InsufficientMakerBalance);
+                });
+                orderWatcher.subscribe(callback);
+                await contractWrappers.etherToken.withdrawAsync(
+                    contractAddresses.etherToken,
+                    depositAmount,
+                    makerAddress,
+                );
             })().catch(done);
         });
         describe('erc721', () => {

@@ -21,8 +21,8 @@ Install the package with pip::
 To interact with a 0x Relayer, you need the HTTP endpoint of the Relayer you'd
 like to connect to (eg https://api.radarrelay.com/0x/v2).
 
-For testing one can use the `0x-launch-kit
-<https://github.com/0xProject/0x-launch-kit#table-of-contents/>`_ to host
+For testing one can use the `0x-launch-kit-backend
+<https://github.com/0xProject/0x-launch-kit-backend#table-of-contents/>`_ to host
 orders locally.  The examples below assume that this server is running locally
 and listening on port 3000, so the Relayer URL they use is
 `http://localhost:3000`:code:.
@@ -45,8 +45,8 @@ To replicate this setup, one could run the following commands:
         0xorg/launch-kit-ci
 
 (Note: This will only work on Linux, because `--network host`:code: only works
-on Linux.  For other platforms one would have to clone `the 0x-launch-kit
-repository <https://github.com/0xProject/0x-launch-kit>`_ and build and start
+on Linux.  For other platforms one would have to clone `the 0x-launch-kit-backend
+repository <https://github.com/0xProject/0x-launch-kit-backend>`_ and build and start
 the server.)
 
 Configure and create an API client instance

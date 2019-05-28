@@ -1,5 +1,43 @@
 [
     {
+        "timestamp": 1558712885,
+        "version": "8.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "8.1.0",
+        "changes": [
+            {
+                "note": "Add `ecSignTransactionAsync`",
+                "pr": 1817
+            }
+        ],
+        "timestamp": 1557961111
+    },
+    {
+        "version": "8.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "version": "8.0.0",
+        "changes": [
+            {
+                "note": "Renamed `OrderError` to `TypedDataError`",
+                "pr": 1792
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
         "version": "7.2.0",
         "changes": [
             {

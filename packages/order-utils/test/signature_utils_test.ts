@@ -1,4 +1,5 @@
-import { Order, SignatureType } from '@0x/types';
+import { assert } from '@0x/assert';
+import { Order, SignatureType, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
@@ -6,7 +7,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { generatePseudoRandomSalt, orderHashUtils } from '../src';
+import { generatePseudoRandomSalt, orderHashUtils, transactionHashUtils } from '../src';
 import { constants } from '../src/constants';
 import { signatureUtils } from '../src/signature_utils';
 
@@ -20,6 +21,7 @@ describe('Signature utils', () => {
     let makerAddress: string;
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
     let order: Order;
+    let transaction: ZeroExTransaction;
     before(async () => {
         const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
         makerAddress = availableAddreses[0];
@@ -37,6 +39,12 @@ describe('Signature utils', () => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
+        };
+        transaction = {
+            verifyingContractAddress: fakeExchangeContractAddress,
+            salt: generatePseudoRandomSalt(),
+            signerAddress: makerAddress,
+            data: '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0',
         };
     });
     describe('#isValidSignatureAsync', () => {
@@ -197,6 +205,55 @@ describe('Signature utils', () => {
             );
         });
     });
+    describe('#ecSignTransactionAsync', () => {
+        it('should default to eth_sign if eth_signTypedData is unavailable', async () => {
+            const fakeProvider = {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
+                    if (payload.method === 'eth_signTypedData') {
+                        callback(new Error('Internal RPC Error'));
+                    } else if (payload.method === 'eth_sign') {
+                        const [address, message] = payload.params;
+                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        callback(null, {
+                            id: 42,
+                            jsonrpc: '2.0',
+                            result: signature,
+                        });
+                    } else {
+                        callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
+                    }
+                },
+            };
+            const signedTransaction = await signatureUtils.ecSignTransactionAsync(
+                fakeProvider,
+                transaction,
+                makerAddress,
+            );
+            assert.isHexString('signedTransaction.signature', signedTransaction.signature);
+        });
+        it('should throw if the user denies the signing request', async () => {
+            const fakeProvider = {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
+                    if (payload.method === 'eth_signTypedData') {
+                        callback(new Error('User denied message signature'));
+                    } else if (payload.method === 'eth_sign') {
+                        const [address, message] = payload.params;
+                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        callback(null, {
+                            id: 42,
+                            jsonrpc: '2.0',
+                            result: signature,
+                        });
+                    } else {
+                        callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
+                    }
+                },
+            };
+            expect(
+                signatureUtils.ecSignTransactionAsync(fakeProvider, transaction, makerAddress),
+            ).to.to.be.rejectedWith('User denied message signature');
+        });
+    });
     describe('#ecSignHashAsync', () => {
         before(async () => {
             const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
@@ -317,6 +374,60 @@ describe('Signature utils', () => {
             };
             const signedOrder = await signatureUtils.ecSignTypedDataOrderAsync(fakeProvider, order, makerAddress);
             expect(signedOrder.signature).to.equal(expectedSignature);
+        });
+    });
+    describe('#ecSignTypedDataTransactionAsync', () => {
+        it('should result in the same signature as signing the order hash without an ethereum message prefix', async () => {
+            // Note: Since order hash is an EIP712 hash the result of a valid EIP712 signature
+            //       of order hash is the same as signing the order without the Ethereum Message prefix.
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+            const sig = ethUtil.ecsign(
+                ethUtil.toBuffer(transactionHashHex),
+                Buffer.from('F2F48EE19680706196E2E339E5DA3491186E0C4C5030670656B0E0164837257D', 'hex'),
+            );
+            const signatureBuffer = Buffer.concat([
+                ethUtil.toBuffer(sig.v),
+                ethUtil.toBuffer(sig.r),
+                ethUtil.toBuffer(sig.s),
+                ethUtil.toBuffer(SignatureType.EIP712),
+            ]);
+            const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+            const signedTransaction = await signatureUtils.ecSignTypedDataTransactionAsync(
+                provider,
+                transaction,
+                makerAddress,
+            );
+            const isValidSignature = await signatureUtils.isValidSignatureAsync(
+                provider,
+                transactionHashHex,
+                signedTransaction.signature,
+                makerAddress,
+            );
+            expect(signatureHex).to.eq(signedTransaction.signature);
+            expect(isValidSignature).to.eq(true);
+        });
+        it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
+            const fakeProvider = {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
+                    if (payload.method === 'eth_signTypedData') {
+                        const [address, typedData] = payload.params;
+                        const signature = await web3Wrapper.signTypedDataAsync(address, typedData);
+                        callback(null, {
+                            id: 42,
+                            jsonrpc: '2.0',
+                            result: signature,
+                        });
+                    } else {
+                        callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
+                    }
+                },
+            };
+            const signedTransaction = await signatureUtils.ecSignTypedDataTransactionAsync(
+                fakeProvider,
+                transaction,
+                makerAddress,
+            );
+            assert.isHexString('signedTransaction.signature', signedTransaction.signature);
         });
     });
     describe('#convertECSignatureToSignatureHex', () => {

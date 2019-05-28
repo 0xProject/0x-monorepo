@@ -1,5 +1,28 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Improve performance of Trezor subprovider via caching",
+                "pr": 1830
+            },
+            {
+                "note": "Add Trezor handware wallet subprovider",
+                "pr": 1431
+            }
+        ],
+        "timestamp": 1558712885
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.5",
         "changes": [
             {

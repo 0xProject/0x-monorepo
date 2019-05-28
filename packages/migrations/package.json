@@ -1,6 +1,6 @@
 {
     "name": "@0x/migrations",
-    "version": "4.1.1",
+    "version": "4.1.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,7 +36,7 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0x/dev-utils": "^2.2.1",
+        "@0x/dev-utils": "^2.2.3",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.2.2",
         "@types/yargs": "^11.0.0",
@@ -50,16 +50,16 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^4.2.0",
-        "@0x/base-contract": "^5.0.5",
-        "@0x/contract-addresses": "^2.3.1",
-        "@0x/contract-artifacts": "^1.5.0",
-        "@0x/order-utils": "^7.2.0",
-        "@0x/sol-compiler": "^3.1.6",
-        "@0x/subproviders": "^4.0.5",
+        "@0x/abi-gen-wrappers": "^4.3.0",
+        "@0x/base-contract": "^5.1.0",
+        "@0x/contract-addresses": "^2.3.3",
+        "@0x/contract-artifacts": "^1.5.1",
+        "@0x/order-utils": "^8.1.1",
+        "@0x/sol-compiler": "^3.1.8",
+        "@0x/subproviders": "^4.1.0",
         "@0x/typescript-typings": "^4.2.2",
-        "@0x/utils": "^4.3.1",
-        "@0x/web3-wrapper": "^6.0.5",
+        "@0x/utils": "^4.3.3",
+        "@0x/web3-wrapper": "^6.0.6",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@types/web3-provider-engine": "^14.0.0",
         "ethereum-types": "^2.1.2",

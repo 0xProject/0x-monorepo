@@ -1,6 +1,6 @@
 {
     "name": "@0x/pipeline",
-    "version": "1.0.17",
+    "version": "1.0.21",
     "private": true,
     "description": "Data pipeline for offline analysis",
     "scripts": {
@@ -30,7 +30,7 @@
     "devDependencies": {
         "@0x/tslint-config": "^3.0.1",
         "@types/axios": "^0.14.0",
-        "@types/ramda": "^0.25.38",
+        "@types/ramda": "^0.26.8",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
@@ -40,16 +40,16 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/connect": "^5.0.5",
-        "@0x/contract-addresses": "^2.3.1",
-        "@0x/contract-artifacts": "^1.5.0",
-        "@0x/contract-wrappers": "^9.0.0",
-        "@0x/dev-utils": "^2.2.1",
-        "@0x/order-utils": "^7.2.0",
-        "@0x/subproviders": "^4.0.5",
+        "@0x/connect": "^5.0.10",
+        "@0x/contract-addresses": "^2.3.3",
+        "@0x/contract-artifacts": "^1.5.1",
+        "@0x/contract-wrappers": "^9.1.4",
+        "@0x/dev-utils": "^2.2.3",
+        "@0x/order-utils": "^8.1.1",
+        "@0x/subproviders": "^4.1.0",
         "@0x/types": "^2.2.2",
-        "@0x/utils": "^4.3.1",
-        "@0x/web3-wrapper": "^6.0.5",
+        "@0x/utils": "^4.3.3",
+        "@0x/web3-wrapper": "^6.0.6",
         "@radarrelay/types": "^1.2.1",
         "@types/dockerode": "^2.5.9",
         "@types/p-limit": "^2.0.0",
@@ -60,9 +60,9 @@
         "ethereum-types": "^2.1.2",
         "pg": "^7.5.0",
         "prettier": "^1.16.3",
-        "ramda": "^0.25.0",
+        "ramda": "^0.26.1",
         "reflect-metadata": "^0.1.12",
         "sqlite3": "^4.0.2",
-        "typeorm": "^0.2.7"
+        "typeorm": "0.2.7"
     }
 }
