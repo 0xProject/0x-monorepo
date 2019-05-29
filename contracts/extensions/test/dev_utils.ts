@@ -46,7 +46,6 @@ describe('DevUtils', () => {
     const tokenId = new BigNumber(123456789);
     const tokenId2 = new BigNumber(987654321);
     const ERC721_BALANCE = new BigNumber(1);
-    const ERC721_ALLOWANCE = new BigNumber(1);
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -188,7 +187,7 @@ describe('DevUtils', () => {
                 );
                 expect(newBalance).to.be.bignumber.equal(ERC721_BALANCE);
             });
-            it('should return an allowance of 1 when ERC721Proxy is approved for all', async () => {
+            it('should return an allowance of MAX_UINT256 when ERC721Proxy is approved for all', async () => {
                 const isApproved = true;
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
@@ -201,10 +200,9 @@ describe('DevUtils', () => {
                     erc721Proxy.address,
                     erc721AssetData,
                 );
-                expect(newAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+                expect(newAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             });
-            // TODO(abandeali1): determine if a single allowance should return true or false
-            it.skip('should return an allowance of 0 when ERC721Proxy is approved for specific tokenId', async () => {
+            it('should return an allowance of 1 when ERC721Proxy is approved for specific tokenId', async () => {
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
@@ -220,7 +218,7 @@ describe('DevUtils', () => {
                     erc721Proxy.address,
                     erc721AssetData,
                 );
-                expect(newAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+                expect(newAllowance).to.be.bignumber.equal(new BigNumber(1));
             });
         });
     });
@@ -274,7 +272,7 @@ describe('DevUtils', () => {
             expect(erc20Balance).to.be.bignumber.equal(balance);
             expect(erc721Balance).to.be.bignumber.equal(ERC721_BALANCE);
             expect(erc20Allowance).to.be.bignumber.equal(allowance);
-            expect(erc721Allowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(erc721Allowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
     describe('getTraderInfo', () => {
@@ -332,7 +330,7 @@ describe('DevUtils', () => {
             expect(traderInfo.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -410,7 +408,7 @@ describe('DevUtils', () => {
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -418,7 +416,7 @@ describe('DevUtils', () => {
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -507,7 +505,7 @@ describe('DevUtils', () => {
             expect(traderInfo.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -622,7 +620,7 @@ describe('DevUtils', () => {
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -630,7 +628,7 @@ describe('DevUtils', () => {
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);

@@ -29,6 +29,8 @@ import "./LibAssetProxyIds.sol";
 contract LibAssetData is
     LibAssetProxyIds
 {
+    uint256 constant internal _MAX_UINT256 = uint256(-1);
+
     using LibBytes for bytes;
 
     /// @dev Returns the owner's balance of the token(s) specified in
@@ -132,10 +134,14 @@ contract LibAssetData is
         } else if (proxyId == ERC721_PROXY_ID) {
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
             IERC721Token token = IERC721Token(tokenAddress);
-            allowance = (token.getApproved(tokenId) != address(0) || token.isApprovedForAll(owner, spender)) ? 1 : 0;
+            if (token.isApprovedForAll(owner, spender)) {
+                allowance = _MAX_UINT256;
+            } else if (token.getApproved(tokenId) == spender) {
+                allowance = 1;
+            }
         } else if (proxyId == ERC1155_PROXY_ID) {
             (, address tokenAddress, , , ) = decodeERC1155AssetData(assetData);
-            allowance = IERC1155(tokenAddress).isApprovedForAll(owner, spender) ? 1 : 0;
+            allowance = IERC1155(tokenAddress).isApprovedForAll(owner, spender) ? _MAX_UINT256 : 0;
         } else if (proxyId == MULTI_ASSET_PROXY_ID) {
             (
                 ,
