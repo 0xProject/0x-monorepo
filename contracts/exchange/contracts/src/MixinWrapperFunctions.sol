@@ -60,7 +60,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev Fills the input order.
-    ///      Returns false if the transaction would otherwise revert.
+    ///      Returns a null FillResults instance if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
@@ -102,7 +102,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder.
+    /// @dev Executes multiple calls of fillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
@@ -128,7 +128,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrKill.
+    /// @dev Executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
@@ -154,8 +154,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
@@ -180,7 +179,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+    /// @dev Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been created by makers.
@@ -225,8 +224,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -270,7 +268,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+    /// @dev Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -323,8 +321,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -377,8 +374,9 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev After calling, the order can not be filled anymore.
-    /// @return True if the order was cancelled successfully.
+    //       Returns false if the cancelOrder call would otherwise revert.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+    /// @return True if the order was cancelled successfully.
     function cancelOrderNoThrow(LibOrder.Order memory order)
         public
         returns (bool didCancel)
@@ -388,7 +386,7 @@ contract MixinWrapperFunctions is
         return didCancel;
     }
 
-    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @dev Executes multiple calls of cancelOrder.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
@@ -400,7 +398,7 @@ contract MixinWrapperFunctions is
         }
     }
 
-    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @dev Executes multiple calls of canccelOrderNoThrow.
     /// @param orders Array of order specifications.
     /// @return Bool array containing results of each individual cancellation.
     function batchCancelOrdersNoThrow(LibOrder.Order[] memory orders)
