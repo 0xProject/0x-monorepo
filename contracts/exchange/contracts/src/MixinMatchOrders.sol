@@ -333,7 +333,7 @@ contract MixinMatchOrders is
                 leftOrderHash,
                 leftOrder.makerAssetData,
                 leftOrder.makerAddress,
-                rightOrder.makerAddress,
+                rightFeeRecipientAddress,
                 _safeAdd(
                     matchedFillResults.right.takerAssetFilledAmount,
                     matchedFillResults.left.makerFeePaid
