@@ -131,6 +131,7 @@ const ButtonWrap = styled.div`
 
 const BackgroundWrap = styled.div`
     position: absolute;
+    overflow: hidden;
     bottom: 0;
     left: 0;
     right: 0;
