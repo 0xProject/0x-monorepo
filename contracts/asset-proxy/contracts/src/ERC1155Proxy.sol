@@ -115,7 +115,7 @@ contract ERC1155Proxy is
             // amount Amount of asset to transfer.
             // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
             if eq(selector, 0xa85e59e400000000000000000000000000000000000000000000000000000000) {
-                
+
                 // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
                 // where k is the key left padded to 32 bytes and p is the storage slot
                 mstore(0, caller)
@@ -164,42 +164,45 @@ contract ERC1155Proxy is
                 let assetDataLength := calldataload(assetDataOffset)
 
                 // Load offset to parameters section in asset data
-                let offsetToParamsInAssetData := add(assetDataOffset, 36)
+                let paramsInAssetDataOffset := add(assetDataOffset, 36)
 
-                // Memory offset of Data Area when stored in memory (Table #3)
-                let dataAreaPtr := 164
+                // Offset of end of Data Area in memory.
+                // This value will grow as we construct Table #3.
+                let dataAreaEndOffset := 164
 
                 // Load amount by which to scale values
                 let amount := calldataload(100)
 
                 // Store pointer to `ids` (Table #3)
-                mstore(68, sub(dataAreaPtr, 4))
+                // Subtract 4 for `safeBatchTrasferFrom` selector
+                mstore(68, sub(dataAreaEndOffset, 4))
 
                 // Copy `ids` from `assetData` (Table #2) to memory (Table #3)
-                let offsetToIds := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 68)))
-                let idsLength := calldataload(offsetToIds)
+                let idsOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 68)))
+                let idsLength := calldataload(idsOffset)
                 let idsLengthInBytes := mul(idsLength, 32)
                 calldatacopy(
-                    dataAreaPtr,
-                    offsetToIds,
+                    dataAreaEndOffset,
+                    idsOffset,
                     add(idsLengthInBytes, 32)
                 )
-                dataAreaPtr := add(dataAreaPtr, add(idsLengthInBytes, 32))
+                dataAreaEndOffset := add(dataAreaEndOffset, add(idsLengthInBytes, 32))
 
                 // Store pointer to `values` (Table #3)
-                mstore(100, sub(dataAreaPtr, 4))
+                // Subtract 4 for `safeBatchTrasferFrom` selector
+                mstore(100, sub(dataAreaEndOffset, 4))
 
                 // Copy `values` from `assetData` (Table #2) to memory (Table #3)
-                let offsetToValues := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 100)))
-                let valuesLength := calldataload(offsetToValues)
+                let valuesOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 100)))
+                let valuesLength := calldataload(valuesOffset)
                 let valuesLengthInBytes := mul(valuesLength, 32)
 
                 // Store length of `values`
-                mstore(dataAreaPtr, valuesLength)
-                dataAreaPtr := add(dataAreaPtr, 32)
+                mstore(dataAreaEndOffset, valuesLength)
+                dataAreaEndOffset := add(dataAreaEndOffset, 32)
 
                 // Scale and store elements of `values`
-                let valuesBegin := add(offsetToValues, 32)
+                let valuesBegin := add(valuesOffset, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
                 for { let currentValueOffset := valuesBegin }
                     lt(currentValueOffset, valuesEnd)
@@ -223,24 +226,25 @@ contract ERC1155Proxy is
                     }
 
                     // There was no overflow, store the scaled token value
-                    mstore(dataAreaPtr, currentValueScaled)
-                    dataAreaPtr := add(dataAreaPtr, 32)
+                    mstore(dataAreaEndOffset, currentValueScaled)
+                    dataAreaEndOffset := add(dataAreaEndOffset, 32)
                 }
 
                 // Store pointer to `data` (Table #3)
-                mstore(132, sub(dataAreaPtr, 4))
+                // Subtract 4 for `safeBatchTrasferFrom` selector
+                mstore(132, sub(dataAreaEndOffset, 4))
 
                 // Copy `data` from `assetData` (Table #2) to memory (Table #3)
-                let offsetToData := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 132)))
-                let dataLengthInBytes := calldataload(offsetToData)
+                let dataOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 132)))
+                let dataLengthInBytes := calldataload(dataOffset)
                 let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
                 let dataLengthInBytesWordAligned := mul(dataLengthInWords, 32)
                 calldatacopy(
-                    dataAreaPtr,
-                    offsetToData,
+                    dataAreaEndOffset,
+                    dataOffset,
                     add(dataLengthInBytesWordAligned, 32)
                 )
-                dataAreaPtr := add(dataAreaPtr, add(dataLengthInBytesWordAligned, 32))
+                dataAreaEndOffset := add(dataAreaEndOffset, add(dataLengthInBytesWordAligned, 32))
 
                 ////////// STEP 3/3 - Execute Transfer //////////
                 // Load the address of the destination erc1155 contract from asset data (Table #2)
@@ -257,7 +261,7 @@ contract ERC1155Proxy is
                     assetAddress,                           // call address of erc1155 asset
                     0,                                      // don't send any ETH
                     0,                                      // pointer to start of input
-                    dataAreaPtr,                            // length of input is the end of the Data Area (Table #3)
+                    dataAreaEndOffset,                      // length of input is the end of the Data Area (Table #3)
                     0,                                      // write output over memory that won't be reused
                     0                                       // don't copy output to memory
                 )
