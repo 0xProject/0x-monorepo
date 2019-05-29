@@ -52,6 +52,7 @@ interface OptionalState {
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
     walletDisplayName: string;
+    onSuccess: (txHash: string) => void;
 }
 
 export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;

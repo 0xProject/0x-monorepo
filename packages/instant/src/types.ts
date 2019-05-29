@@ -201,6 +201,7 @@ export interface ZeroExInstantOptionalBaseConfig {
     networkId: Network;
     affiliateInfo: AffiliateInfo;
     shouldDisableAnalyticsTracking: boolean;
+    onSuccess?: (txHash: string) => void;
 }
 
 export type ZeroExInstantBaseConfig = ZeroExInstantRequiredBaseConfig & Partial<ZeroExInstantOptionalBaseConfig>;

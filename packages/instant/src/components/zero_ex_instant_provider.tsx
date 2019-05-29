@@ -85,6 +85,7 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
                       ),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
+            onSuccess: props.onSuccess,
         };
         return storeStateFromProps;
     }
