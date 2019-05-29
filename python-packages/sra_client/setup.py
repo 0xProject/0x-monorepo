@@ -79,7 +79,7 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
 
 
 class StopTestRelayerCommand(distutils.command.build_py.build_py):
-    """Custom command to tear down the local 0x-launch-kit-backend test relayer."""
+    """Custom command to tear down the 0x-launch-kit-backend test relayer."""
 
     description = "Tear down launch-kit daemon."
 
