@@ -132,12 +132,25 @@ contract ERC1155Proxy is
                 }
 
                 // Construct Table #3 in memory, starting at memory offset 0.
-                // The algorithm below maps asset data from Table #1 and Table #2 to Table #3, while
-                // scaling the `values` (Table #2) by `amount` (Table #1). Once Table #3 has
-                // been constructed in memory, the destination erc1155 contract is called using this
-                // as its calldata. This process is divided into four steps, below.
+                // The algorithm below maps calldata (Table #1) and assetData (Table #2) to memory (Table #3).
+                // Once Table #3 ha been constructed in memory, the destination erc1155 contract is called using this
+                // as its calldata. This process is divided into three steps, below.
 
-                ////////// STEP 1/3 //////////
+                ////////// STEP 1/3 - Map calldata to memory (Table #1 -> Table #3) //////////
+
+                // Store the safeBatchTransferFrom function selector, which is computed using:
+                // bytes4(keccak256("safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)"))
+                mstore(0, 0x2eb2c2d600000000000000000000000000000000000000000000000000000000)
+
+                // Copy `from` and `to` fields from calldata (Table #1) into memory (Table #3)
+                calldatacopy(
+                    4,          // aligned such that `from` and `to` are at the correct location for Table #3
+                    36,         // beginning of `from` field from Table #1
+                    64          // 32 bytes for `from` + 32 bytes for `to` field
+                )
+
+                ////////// STEP 2/3 - Map assetData to memory (Table #2 -> Table #3) //////////
+
                 // Map relevant fields from assetData (Table #2) into memory (Table #3)
                 // The Contents column of Table #2 is the same as Table #3,
                 // beginning from parameter 3 - `offset to ids (*)`
@@ -159,8 +172,10 @@ contract ERC1155Proxy is
                 // Load amount by which to scale values
                 let amount := calldataload(100)
 
-                // Copy `ids` from `assetData` (Table #2) to memory (Table #3)
+                // Store pointer to `ids` (Table #3)
                 mstore(68, sub(dataAreaPtr, 4))
+
+                // Copy `ids` from `assetData` (Table #2) to memory (Table #3)
                 let offsetToIds := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 68)))
                 let idsLength := calldataload(offsetToIds)
                 let idsLengthInBytes := mul(idsLength, 32)
@@ -171,36 +186,33 @@ contract ERC1155Proxy is
                 )
                 dataAreaPtr := add(dataAreaPtr, add(idsLengthInBytes, 32))
 
-                // Copy `values` from `assetData` (Table #2) to memory (Table #3)
+                // Store pointer to `values` (Table #3)
                 mstore(100, sub(dataAreaPtr, 4))
+
+                // Copy `values` from `assetData` (Table #2) to memory (Table #3)
                 let offsetToValues := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 100)))
                 let valuesLength := calldataload(offsetToValues)
                 let valuesLengthInBytes := mul(valuesLength, 32)
-                // Copy `values` length
-                calldatacopy(
-                    dataAreaPtr,
-                    offsetToValues,
-                    32
-                )
+
+                // Store length of `values`
+                mstore(dataAreaPtr, valuesLength)
                 dataAreaPtr := add(dataAreaPtr, 32)
-                // Copy and scale elements of `values`
+
+                // Scale and store elements of `values`
                 let valuesBegin := add(offsetToValues, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
-                for { let tokenValueOffset := valuesBegin }
-                    lt(tokenValueOffset, valuesEnd)
-                    {
-                        tokenValueOffset := add(tokenValueOffset, 32)
-                        dataAreaPtr := add(dataAreaPtr, 32)
-                    }
+                for { let currentValueOffset := valuesBegin }
+                    lt(currentValueOffset, valuesEnd)
+                    { currentValueOffset := add(currentValueOffset, 32) }
                 {
-                    // Load token value and generate scaled value
-                    let tokenValue := calldataload(tokenValueOffset)
-                    let scaledTokenValue := mul(tokenValue, amount)
+                    // Load value and generate scaled value
+                    let currentValue := calldataload(currentValueOffset)
+                    let currentValueScaled := mul(currentValue, amount)
 
                     // Revert if `amount` != 0 and multiplication resulted in an overflow
                     if iszero(or(
                         iszero(amount),
-                        eq(div(scaledTokenValue, amount), tokenValue)
+                        eq(div(currentValueScaled, amount), currentValue)
                     )) {
                         // Revert with `Error("UINT256_OVERFLOW")`
                         mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
@@ -211,11 +223,14 @@ contract ERC1155Proxy is
                     }
 
                     // There was no overflow, store the scaled token value
-                    mstore(dataAreaPtr, scaledTokenValue)
+                    mstore(dataAreaPtr, currentValueScaled)
+                    dataAreaPtr := add(dataAreaPtr, 32)
                 }
 
-                // Copy `data` from `assetData` (Table #2) to memory (Table #3)
+                // Store pointer to `data` (Table #3)
                 mstore(132, sub(dataAreaPtr, 4))
+
+                // Copy `data` from `assetData` (Table #2) to memory (Table #3)
                 let offsetToData := add(offsetToParamsInAssetData, calldataload(add(assetDataOffset, 132)))
                 let dataLengthInBytes := calldataload(offsetToData)
                 let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
@@ -227,22 +242,7 @@ contract ERC1155Proxy is
                 )
                 dataAreaPtr := add(dataAreaPtr, add(dataLengthInBytesWordAligned, 32))
 
-                ////////// STEP 2/3 //////////
-                // Store the safeBatchTransferFrom function selector,
-                // and copy `from`/`to` fields from Table #1 to Table #3.
-
-                // The function selector is computed using:
-                // bytes4(keccak256("safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)"))
-                mstore(0, 0x2eb2c2d600000000000000000000000000000000000000000000000000000000)
-
-                // Copy `from` and `to` fields from Table #1 to Table #3
-                calldatacopy(
-                    4,          // aligned such that `from` and `to` are at the correct location for Table #3
-                    36,         // beginning of `from` field from Table #1
-                    64          // 32 bytes for `from` + 32 bytes for `to` field
-                )
-
-                ////////// STEP 3/3 //////////
+                ////////// STEP 3/3 - Execute Transfer //////////
                 // Load the address of the destination erc1155 contract from asset data (Table #2)
                 // +32 bytes for assetData Length
                 // +4 bytes for assetProxyId
