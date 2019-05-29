@@ -19,32 +19,37 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/interfaces/IWallet.sol";
+import "../../src/interfaces/IWallet.sol";
+
 
 contract OrderScenarioWallet is
     IWallet
 {
-    address internal _exchangeAddress;
-    bool internal _isSignatureValid;
+    mapping(bytes32=>bool) public isHashBlacklisted;
 
-    constructor(address exchangeAddress) {
-        _exchangeAddress = exchangeAddress;
-        _isSignatureValid = true;
-    }
-
-    /// @dev Toggle whether signature validation should always pass or always fail.
-    function enableValidSignature(bool isValid) external returns (void) {
-        _isSignatureValid = isValid;
-    }
-
-    /// @dev Call a function on the Exchange contract from the context of
-    ///      this wallet.
-    /// @param callData The ABI-encoded Exchange function call.
-    function callExchange(bytes calldata callData)
+    /// @dev Toggle whether signature validation should fail a hash.
+    function enableValidSignature(
+        bytes32 hash,
+        bool isValid
+    )
         external
-        returns (bool didSucceed, bytes returnData)
+        returns (void)
     {
-        (didSucceed, returnData) = _exchangeAddress.call(callData);
+        isHashBlacklisted[hash] = isValid;
+    }
+
+    /// @dev Call a function on another contract from the context of
+    ///      this wallet.
+    /// @param targetAddress The address of the target contract.
+    /// @param callData The ABI-encoded function call.
+    function callExternalFunction(
+        address targetAddress,
+        bytes calldata callData
+    )
+        external
+        returns (bool didSucceed, bytes memory returnData)
+    {
+        (didSucceed, returnData) = targetAddress.call(callData);
     }
 
     /// @dev `Wallet` signature type validation callback.
@@ -56,6 +61,6 @@ contract OrderScenarioWallet is
         pure
         returns (bool isValid)
     {
-        return _isSignatureValid;
+        return !isHashBlacklisted[hash];
     }
 }
