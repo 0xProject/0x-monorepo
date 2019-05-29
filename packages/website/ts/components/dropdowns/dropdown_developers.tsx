@@ -38,12 +38,12 @@ const introData: LinkConfig[] = [
         url: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
     {
-        label: 'Market making',
-        url: `${WebsitePaths.MarketMaker}`,
+        label: 'Use 0x Instant',
+        url: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
     },
     {
-        label: 'Free credits',
-        url: `${WebsitePaths.Credits}`,
+        label: '0x Code Sandbox',
+        url: constants.URL_SANDBOX,
     },
 ];
 

@@ -65,7 +65,7 @@ class NetworkId(Enum):
 
 
 NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
-    NetworkId.MAINNET: ContractAddresses(
+    NetworkId.MAINNET: ContractAddresses(  # nosec
         erc20_proxy="0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
         erc721_proxy="0x208e41fb445f1bb1b6780d58356e81405f3e6127",
         zrx_token="0xe41d2489571d322189246dafa5ebde1f4699f498",
@@ -77,7 +77,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         coordinator_registry="0x45797531b873fd5e519477a070a955764c1a5b07",
         coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.ROPSTEN: ContractAddresses(
+    NetworkId.ROPSTEN: ContractAddresses(  # nosec
         erc20_proxy="0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
         erc721_proxy="0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4",
         zrx_token="0xff67881f8d12f372d91baae9752eb3631ff0ed00",
@@ -89,7 +89,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         coordinator_registry="0x403cc23e88c17c4652fb904784d1af640a6722d9",
         coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.RINKEBY: ContractAddresses(
+    NetworkId.RINKEBY: ContractAddresses(  # nosec
         exchange="0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e",
         erc20_proxy="0x2f5ae4f6106e89b4147651688a92256885c5f410",
         erc721_proxy="0x7656d773e11ff7383a14dcf09a9c50990481cd10",
@@ -101,7 +101,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         coordinator_registry="0x1084b6a398e47907bae43fec3ff4b677db6e4fee",
         coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.KOVAN: ContractAddresses(
+    NetworkId.KOVAN: ContractAddresses(  # nosec
         erc20_proxy="0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
         erc721_proxy="0x2a9127c745688a165106c11cd4d647d2220af821",
         zrx_token="0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa",
@@ -113,7 +113,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         coordinator_registry="0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5",
         coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.GANACHE: ContractAddresses(
+    NetworkId.GANACHE: ContractAddresses(  # nosec
         exchange="0x48bacb9266a570d521063ef5dd96e61686dbe788",
         erc20_proxy="0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
         erc721_proxy="0x1d7022f5b17d2f8b695918fb48fa1089c9f85401",
