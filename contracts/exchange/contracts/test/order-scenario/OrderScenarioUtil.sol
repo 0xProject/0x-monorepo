@@ -19,6 +19,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "./OrderScenarioTypes.sol";
 import "./OrderScenarioWallet.sol";
 
@@ -221,7 +222,7 @@ contract OrderScenarioUtil is
     )
         public
         returns (
-            Order[] memory orders,
+            LibOrder.Order[] memory orders,
             bytes32[] memory orderHashes,
             address[][] memory takerAddresses
         )
