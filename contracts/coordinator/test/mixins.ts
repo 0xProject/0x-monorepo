@@ -92,21 +92,21 @@ describe('Mixins tests', () => {
     describe('getSignerAddress', () => {
         it('should return the correct address using the EthSign signature type', async () => {
             const data = constants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(data, SignatureType.EthSign);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data }, SignatureType.EthSign);
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const signerAddress = await mixins.getSignerAddress.callAsync(transactionHash, transaction.signature);
             expect(transaction.signerAddress).to.eq(signerAddress);
         });
         it('should return the correct address using the EIP712 signature type', async () => {
             const data = constants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(data, SignatureType.EIP712);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data }, SignatureType.EIP712);
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const signerAddress = await mixins.getSignerAddress.callAsync(transactionHash, transaction.signature);
             expect(transaction.signerAddress).to.eq(signerAddress);
         });
         it('should revert with with the Illegal signature type', async () => {
             const data = constants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(data);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data });
             const illegalSignatureByte = ethUtil.toBuffer(SignatureType.Illegal).toString('hex');
             transaction.signature = `${transaction.signature.slice(
                 0,
@@ -120,7 +120,7 @@ describe('Mixins tests', () => {
         });
         it('should revert with with the Invalid signature type', async () => {
             const data = constants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(data);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data });
             const invalidSignatureByte = ethUtil.toBuffer(SignatureType.Invalid).toString('hex');
             transaction.signature = `0x${invalidSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -131,7 +131,7 @@ describe('Mixins tests', () => {
         });
         it("should revert with with a signature type that doesn't exist", async () => {
             const data = constants.NULL_BYTES;
-            const transaction = transactionFactory.newSignedTransaction(data);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data });
             const invalidSignatureByte = '04';
             transaction.signature = `${transaction.signature.slice(
                 0,
@@ -218,7 +218,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -242,7 +242,7 @@ describe('Mixins tests', () => {
                 };
                 const orders = [order];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -262,7 +262,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName}, caller=approver1, senderAddress=[verifier], approval_sig=[], expiration=[]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -277,7 +277,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName}, caller=approver1, senderAddress=[verifier], approval_sig=[approver1], expiration=[invalid]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -297,7 +297,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName}, caller=approver1, senderAddress=[verifier], approval_sig=[], expiration=[]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -312,7 +312,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[invalid], expiration=[valid]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -336,7 +336,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1], expiration=[invalid]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -359,7 +359,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName}, caller=approver2, senderAddress=[verifier], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -390,7 +390,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver1], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -413,7 +413,7 @@ describe('Mixins tests', () => {
                     senderAddress: constants.NULL_ADDRESS,
                 }));
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -436,7 +436,7 @@ describe('Mixins tests', () => {
                     senderAddress: constants.NULL_ADDRESS,
                 }));
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     transactionSignerAddress,
@@ -449,7 +449,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,null], feeRecipient=[approver1,approver1], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, senderAddress: constants.NULL_ADDRESS }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -469,7 +469,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver2], approval_sig=[approver1,approver2], expiration=[valid,valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(
@@ -494,7 +494,7 @@ describe('Mixins tests', () => {
             it(`Should be successful: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver1], approval_sig=[], expiration=[]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 await mixins.assertValidCoordinatorApprovals.callAsync(
                     transaction,
                     approvalSignerAddress1,
@@ -507,7 +507,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver2], approval_sig=[approver2], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval2 = approvalFactory2.newSignedApproval(
@@ -530,7 +530,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[], expiration=[]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 expectContractCallFailedAsync(
                     mixins.assertValidCoordinatorApprovals.callAsync(
                         transaction,
@@ -546,7 +546,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[invalid], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval = approvalFactory1.newSignedApproval(
@@ -570,7 +570,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[valid,invalid], expiration=[valid,valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(
@@ -599,7 +599,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[invalid], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval2 = approvalFactory2.newSignedApproval(
@@ -623,7 +623,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[valid,valid], expiration=[valid,invalid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds1 = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approvalExpirationTimeSeconds2 = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
@@ -652,7 +652,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[valid], expiration=[invalid]`, async () => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
                 const approval2 = approvalFactory2.newSignedApproval(
@@ -675,7 +675,7 @@ describe('Mixins tests', () => {
             it(`Should revert: function=${fnName} caller=approver2, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[valid], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = transactionFactory.newSignedTransaction(data);
+                const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
                 const approval1 = approvalFactory1.newSignedApproval(
@@ -701,7 +701,7 @@ describe('Mixins tests', () => {
         it('should allow the tx signer to call `cancelOrder` without approval', async () => {
             const orders = [defaultOrder];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
-            const transaction = transactionFactory.newSignedTransaction(data);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data });
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,
                 transactionSignerAddress,
@@ -714,7 +714,7 @@ describe('Mixins tests', () => {
         it('should allow the tx signer to call `batchCancelOrders` without approval', async () => {
             const orders = [defaultOrder, defaultOrder];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
-            const transaction = transactionFactory.newSignedTransaction(data);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data });
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,
                 transactionSignerAddress,
@@ -726,7 +726,7 @@ describe('Mixins tests', () => {
         });
         it('should allow the tx signer to call `cancelOrdersUpTo` without approval', async () => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo);
-            const transaction = transactionFactory.newSignedTransaction(data);
+            const transaction = await transactionFactory.newSignedTransactionAsync({ data });
             await mixins.assertValidCoordinatorApprovals.callAsync(
                 transaction,
                 transactionSignerAddress,

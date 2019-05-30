@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../src/LibEIP712ExchangeDomain.sol";
 import "../src/LibMath.sol";
 import "../src/LibOrder.sol";
+import "../src/LibZeroExTransaction.sol";
 import "../src/LibFillResults.sol";
 
 
@@ -30,6 +31,7 @@ contract TestLibs is
     LibEIP712ExchangeDomain,
     LibMath,
     LibOrder,
+    LibZeroExTransaction,
     LibFillResults
 {
     constructor (uint256 chainId)

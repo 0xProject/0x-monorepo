@@ -42,6 +42,7 @@ describe('Libs tests', () => {
         it('should return the correct transaction hash', async () => {
             const tx = {
                 salt: new BigNumber(0),
+                expirationTimeSeconds: new BigNumber(0),
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
                 domain: {
@@ -59,6 +60,7 @@ describe('Libs tests', () => {
         it('should return the correct approval hash', async () => {
             const signedTx = {
                 salt: new BigNumber(0),
+                expirationTimeSeconds: new BigNumber(0),
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
                 signature: '0x5678',

@@ -4,8 +4,9 @@
         "data": { "$ref": "/hexSchema" },
         "signerAddress": { "$ref": "/addressSchema" },
         "salt": { "$ref": "/wholeNumberSchema" },
+        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" },
         "domain": { "$ref": "/eip712DomainSchema" }
     },
-    "required": ["data", "salt", "signerAddress", "domain"],
+    "required": ["data", "salt", "expirationTimeSeconds", "signerAddress", "domain"],
     "type": "object"
 }

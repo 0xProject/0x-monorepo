@@ -1,21 +1,13 @@
-import {
-    addressUtils,
-    chaiSetup,
-    constants,
-    OrderFactory,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { addressUtils, chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { constants as orderConstants } from '@0x/order-utils/lib/src/constants';
-import { SignedOrder } from '@0x/types';
+import { Order, ZeroExTransaction } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
-import { TestLibsContract } from '../generated-wrappers/test_libs';
+import { TestLibsContract } from '../src';
 import { artifacts } from '../src/artifacts';
 
 import { stringifySchema } from './utils';
@@ -27,8 +19,8 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('Exchange libs', () => {
     let chainId: number;
-    let signedOrder: SignedOrder;
-    let orderFactory: OrderFactory;
+    let order: Order;
+    let transaction: ZeroExTransaction;
     let libs: TestLibsContract;
     let libsAlternateChain: TestLibsContract;
 
@@ -40,7 +32,7 @@ describe('Exchange libs', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const makerAddress = accounts[0];
+        const [makerAddress, takerAddress, senderAddress, feeRecipientAddress, signerAddress] = accounts.slice(0, 5);
         chainId = await providerUtils.getChainIdAsync(provider);
         libs = await TestLibsContract.deployFrom0xArtifactAsync(
             artifacts.TestLibs,
@@ -56,22 +48,31 @@ describe('Exchange libs', () => {
             txDefaults,
             new BigNumber(alternateChainId),
         );
-
-        const defaultOrderParams = {
+        const domain = {
+            verifyingContractAddress: libs.address,
+            chainId,
+        };
+        order = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
-            feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
+            takerAddress,
+            senderAddress,
+            feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            domain: {
-                verifyingContractAddress: libs.address,
-                chainId,
-            },
+            salt: new BigNumber(0),
+            expirationTimeSeconds: new BigNumber(0),
+            domain,
         };
-        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        transaction = {
+            signerAddress,
+            salt: new BigNumber(0),
+            expirationTimeSeconds: new BigNumber(0),
+            data: constants.NULL_BYTES,
+            domain,
+        };
     });
 
     beforeEach(async () => {
@@ -140,16 +141,38 @@ describe('Exchange libs', () => {
 
     describe('LibOrder', () => {
         describe('getOrderHash', () => {
-            it('should output the correct orderHash', async () => {
-                signedOrder = await orderFactory.newSignedOrderAsync();
-                const orderHashHex = await libs.getOrderHash.callAsync(signedOrder);
-                expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(orderHashHex);
+            it('should return the correct orderHash', async () => {
+                const orderHashHex = await libs.getOrderHash.callAsync(order);
+                expect(orderHashUtils.getOrderHashHex(order)).to.be.equal(orderHashHex);
             });
             it('orderHash should differ if chainId is different', async () => {
-                signedOrder = await orderFactory.newSignedOrderAsync();
-                const orderHashHex1 = await libsAlternateChain.getOrderHash.callAsync(signedOrder);
-                const orderHashHex2 = await libs.getOrderHash.callAsync(signedOrder);
+                const orderHashHex1 = await libsAlternateChain.getOrderHash.callAsync(order);
+                const orderHashHex2 = await libs.getOrderHash.callAsync(order);
                 expect(orderHashHex1).to.be.not.equal(orderHashHex2);
+            });
+        });
+    });
+
+    describe('LibZeroExTransaction', () => {
+        describe('EIP712ZeroExTransactionSchemaHash', () => {
+            it('should return the correct schema hash', async () => {
+                const schemaHash = await libs.EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH.callAsync();
+                const schemaString =
+                    'ZeroExTransaction(uint256 salt,uint256 expirationTimeSeconds,address signerAddress,bytes data)';
+                const expectedSchemaHash = ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.sha3(schemaString)));
+                expect(schemaHash).to.equal(expectedSchemaHash);
+            });
+        });
+        describe('getTransactionHash', () => {
+            it('should return the correct transactionHash', async () => {
+                const transactionHash = await libs.getTransactionHash.callAsync(transaction);
+                const expectedTransactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(transactionHash).to.equal(expectedTransactionHash);
+            });
+            it('transactionHash should differ if chainId is different', async () => {
+                const transactionHash1 = await libsAlternateChain.getTransactionHash.callAsync(transaction);
+                const transactionHash2 = await libs.getTransactionHash.callAsync(transaction);
+                expect(transactionHash1).to.not.equal(transactionHash2);
             });
         });
     });
