@@ -3,6 +3,8 @@ import { BigNumber } from '@0x/utils';
 export enum FeeRecipientAddressScenario {
     BurnAddress = 'BURN_ADDRESS',
     EthUserAddress = 'ETH_USER_ADDRESS',
+    MakerAddress = 'MAKER_ADDRESS',
+    TakerAddress = 'TAKER_ADDRESS',
 }
 
 export enum OrderAssetAmountScenario {
