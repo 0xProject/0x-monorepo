@@ -71,69 +71,45 @@ export class FillOrderSimulator {
         );
 
         try {
-            if (order.makerAddress === order.feeRecipientAddress && order.takerAssetData === order.makerFeeAssetData) {
-                // Transfer combined taker assets and maker fees.
+            // Taker -> Maker
+            await this._transferSimulator.transferFromAsync(
+                order.takerAssetData,
+                takerAddress,
+                order.makerAddress,
+                finalTakerAssetFillAmount,
+                TradeSide.Taker,
+                TransferType.Trade,
+            );
+            // Maker fee -> fee recipient
+            if (makerFeePaid.isGreaterThan(0)) {
                 await this._transferSimulator.transferFromAsync(
-                    order.takerAssetData,
-                    takerAddress,
+                    order.makerFeeAssetData,
                     order.makerAddress,
-                    finalTakerAssetFillAmount.plus(makerFeePaid),
-                    TradeSide.Taker,
-                    TransferType.Trade,
+                    order.feeRecipientAddress,
+                    makerFeePaid,
+                    TradeSide.Maker,
+                    TransferType.Fee,
                 );
-            } else {
-                // Taker -> Maker
-                await this._transferSimulator.transferFromAsync(
-                    order.takerAssetData,
-                    takerAddress,
-                    order.makerAddress,
-                    finalTakerAssetFillAmount,
-                    TradeSide.Taker,
-                    TransferType.Trade,
-                );
-                // Maker fee -> fee recipient
-                if (makerFeePaid.isGreaterThan(0)) {
-                    await this._transferSimulator.transferFromAsync(
-                        order.makerFeeAssetData,
-                        order.makerAddress,
-                        order.feeRecipientAddress,
-                        makerFeePaid,
-                        TradeSide.Maker,
-                        TransferType.Fee,
-                    );
-                }
             }
-            if (takerAddress === order.feeRecipientAddress && order.makerAssetData === order.takerFeeAssetData) {
-                // Transfer combined maker assets and taker fees.
+            // Maker -> Taker
+            await this._transferSimulator.transferFromAsync(
+                order.makerAssetData,
+                order.makerAddress,
+                takerAddress,
+                makerAssetFillAmount,
+                TradeSide.Maker,
+                TransferType.Trade,
+            );
+            // Taker fee -> fee recipient
+            if (takerFeePaid.isGreaterThan(0)) {
                 await this._transferSimulator.transferFromAsync(
-                    order.makerAssetData,
-                    order.makerAddress,
+                    order.takerFeeAssetData,
                     takerAddress,
-                    makerAssetFillAmount.plus(takerFeePaid),
-                    TradeSide.Maker,
-                    TransferType.Trade,
+                    order.feeRecipientAddress,
+                    takerFeePaid,
+                    TradeSide.Taker,
+                    TransferType.Fee,
                 );
-            } else {
-                // Maker -> Taker
-                await this._transferSimulator.transferFromAsync(
-                    order.makerAssetData,
-                    order.makerAddress,
-                    takerAddress,
-                    makerAssetFillAmount,
-                    TradeSide.Maker,
-                    TransferType.Trade,
-                );
-                // Taker fee -> fee recipient
-                if (takerFeePaid.isGreaterThan(0)) {
-                    await this._transferSimulator.transferFromAsync(
-                        order.takerFeeAssetData,
-                        takerAddress,
-                        order.feeRecipientAddress,
-                        takerFeePaid,
-                        TradeSide.Taker,
-                        TransferType.Fee,
-                    );
-                }
             }
         } catch (err) {
             throw new Error(FillOrderError.TransferFailed);

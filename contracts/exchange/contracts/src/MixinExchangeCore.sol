@@ -278,119 +278,21 @@ contract MixinExchangeCore is
 
         // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
         // All this logic is equivalent to:
-        // emit Fill(
-        //     order.makerAddress,
-        //     order.feeRecipientAddress,
-        //     takerAddress,
-        //     msg.sender,
-        //     fillResults.makerAssetFilledAmount,
-        //     fillResults.takerAssetFilledAmount,
-        //     fillResults.makerFeePaid,
-        //     fillResults.takerFeePaid,
-        //     orderHash,
-        //     order.makerAssetData,
-        //     order.takerAssetData,
-        //     order.makerFeeAssetData,
-        //     order.takerFeeAssetData
-        // );
-
-        // First we need to ABI encode the (10) non-indexed event arguments
-        // into `logData`. The memory layout of the contents of `logData` will look like:
-        // | Offset                 | Length  | Contents                       |
-        // |------------------------|---------|------------------------------- |
-        // | 0                      | 32      | takerAddress                   |
-        // | 32                     | 32      | senderAddress                  |
-        // | 64                     | 32      | makerAssetFilledAmount         |
-        // | 96                     | 32      | takerAssetFilledAmount         |
-        // | 128                    | 32      | makerFeePaid                   |
-        // | 160                    | 32      | takerFeePaid                   |
-        // | 192                    | 32      | offset to makerAssetData       |
-        // | 224                    | 32      | offset to takerAssetData       |
-        // | 256                    | 32      | offset to makerFeeAssetData    |
-        // | 288                    | 32      | offset to takerFeeAssetData    |
-        // | 320                    | 32      | makerAssetData length          |
-        // | 352                    | C1      | makerAssetData contents        |
-        // | 352 + C1               | 32      | takerAssetData length          |
-        // | 384 + C1               | C2      | takerAssetData contents        |
-        // | 384 + C1 + C2          | 32      | makerFeeAssetData length       |
-        // | 416 + C1 + C2          | C3      | makerFeeAssetData contents     |
-        // | 416 + C1 + C2          | 32      | takerFeeAssetData length       |
-        // | 448 + C1 + C2 + C3     | C4      | takerFeeAssetData contents     |
-        // |-------------------------------------------------------------------|
-        // | Total Length: 448 + C1 + C2 + C3                                  |
-        bytes memory logData = new bytes(
-            448
-            + order.makerAssetData.length
-            + order.takerAssetData.length
-            + order.makerFeeAssetData.length
-            + order.takerFeeAssetData.length
+        emit Fill(
+            order.makerAddress,
+            order.feeRecipientAddress,
+            order.makerAssetData,
+            order.takerAssetData,
+            order.makerFeeAssetData,
+            order.takerFeeAssetData,
+            fillResults.makerAssetFilledAmount,
+            fillResults.takerAssetFilledAmount,
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid,
+            takerAddress,
+            msg.sender,
+            orderHash
         );
-        uint256 argOffset = 0;
-        // takerAddress
-        logData.writeUint256(argOffset, uint256(takerAddress));
-        argOffset += 32;
-        // senderAddress
-        logData.writeUint256(argOffset, uint256(msg.sender));
-        argOffset += 32;
-        // makerAssetFilledAmount
-        logData.writeUint256(argOffset, fillResults.makerAssetFilledAmount);
-        argOffset += 32;
-        // takerAssetFilledAmount
-        logData.writeUint256(argOffset, fillResults.takerAssetFilledAmount);
-        argOffset += 32;
-        // makerFeePaid
-        logData.writeUint256(argOffset, fillResults.makerFeePaid);
-        argOffset += 32;
-        // takerFeePaid
-        logData.writeUint256(argOffset, fillResults.takerFeePaid);
-        argOffset += 32;
-
-        // The last 4 arguments are `bytes` types, so we need to build and track
-        // their calldata payloads.
-        // 320 is the offset to the end of all the argument values (10 * 32),
-        // and where we'll start writing payloads.
-        uint256 dataOffset = 320;
-        // makerAssetData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.makerAssetData);
-        argOffset += 32;
-        dataOffset += 32 + order.makerAssetData.length;
-        // takerAssetData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.takerAssetData);
-        argOffset += 32;
-        dataOffset += 32 + order.takerAssetData.length;
-        // makerFeeAssetData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.makerFeeAssetData);
-        argOffset += 32;
-        dataOffset += 32 + order.makerFeeAssetData.length;
-        // takerFeeAssetData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.takerFeeAssetData);
-
-        // We could save even more stack space here if we're willing to
-        // embed these values/offsets.
-        bytes32 eventSelector = EVENT_FILL_SELECTOR;
-        address makerAddress = order.makerAddress;
-        address feeRecipient = order.feeRecipientAddress;
-
-        // Need to dip into assembly because the high-level log4() won't
-        // accept a `bytes` payload for `logData`.
-        assembly {
-            log4(
-                // The ABI-encoded non-indexed args.
-                add(logData, 32),
-                // Length of the above.
-                mload(logData),
-                // The bytes32 signature of this event (keccak('Fill(...)'))
-                eventSelector,
-                // The 3 indexed parameters, in order.
-                makerAddress,
-                feeRecipient,
-                orderHash
-            )
-        }
     }
 
     /// @dev Updates state with results of cancelling an order.
@@ -611,28 +513,15 @@ contract MixinExchangeCore is
     )
         private
     {
-        if (
-            order.makerAddress == order.feeRecipientAddress &&
-            order.makerFeeAssetData.equals(order.takerAssetData)
-        ) {
-            // Maker is fee recipient and the maker fee asset is the same as the taker asset.
-            // We can transfer the taker asset and maker fees in one go.
-            _dispatchTransferFrom(
-                orderHash,
-                order.takerAssetData,
-                takerAddress,
-                order.makerAddress,
-                _safeAdd(fillResults.takerAssetFilledAmount, fillResults.makerFeePaid)
-            );
-        } else {
-            // Transfer taker -> maker
-            _dispatchTransferFrom(
-                orderHash,
-                order.takerAssetData,
-                takerAddress,
-                order.makerAddress,
-                fillResults.takerAssetFilledAmount
-            );
+        // Transfer taker -> maker
+        _dispatchTransferFrom(
+            orderHash,
+            order.takerAssetData,
+            takerAddress,
+            order.makerAddress,
+            fillResults.takerAssetFilledAmount
+        );
+        if (order.makerAddress != order.feeRecipientAddress) {
             // Transfer maker fee -> feeRecipient
             _dispatchTransferFrom(
                 orderHash,
@@ -642,28 +531,15 @@ contract MixinExchangeCore is
                 fillResults.makerFeePaid
             );
         }
-        if (
-            takerAddress == order.feeRecipientAddress &&
-            order.takerFeeAssetData.equals(order.makerAssetData)
-        ) {
-            // Taker is fee recipient and the taker fee asset is the same as the maker asset.
-            // We can transfer the maker asset and taker fees in one go.
-            _dispatchTransferFrom(
-                orderHash,
-                order.makerAssetData,
-                order.makerAddress,
-                takerAddress,
-                _safeAdd(fillResults.makerAssetFilledAmount, fillResults.takerFeePaid)
-            );
-        } else {
-            // Transfer maker -> taker
-            _dispatchTransferFrom(
-                orderHash,
-                order.makerAssetData,
-                order.makerAddress,
-                takerAddress,
-                fillResults.makerAssetFilledAmount
-            );
+        // Transfer maker -> taker
+        _dispatchTransferFrom(
+            orderHash,
+            order.makerAssetData,
+            order.makerAddress,
+            takerAddress,
+            fillResults.makerAssetFilledAmount
+        );
+        if (takerAddress != order.feeRecipientAddress) {
             // Transfer taker fee -> feeRecipient
             _dispatchTransferFrom(
                 orderHash,

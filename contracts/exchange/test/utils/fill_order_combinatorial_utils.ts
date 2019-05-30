@@ -227,6 +227,8 @@ export class FillOrderCombinatorialUtils {
         ];
         const feeRecipientScenarios = [
             FeeRecipientAddressScenario.EthUserAddress,
+            FeeRecipientAddressScenario.MakerAddress,
+            FeeRecipientAddressScenario.TakerAddress,
             // FeeRecipientAddressScenario.BurnAddress,
         ];
         const makerAssetAmountScenario = [
