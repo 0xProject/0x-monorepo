@@ -267,14 +267,16 @@ function simulateMatchOrders(
         orders.rightOrder.makerAssetData,
         matchResults,
     );
-    // Left maker fees
-    transferAsset(
-        orders.leftOrder.makerAddress,
-        orders.leftOrder.feeRecipientAddress,
-        transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
-        orders.leftOrder.makerFeeAssetData,
-        matchResults,
-    );
+    if (orders.leftOrder.makerAddress !== orders.leftOrder.feeRecipientAddress) {
+        // Left maker fees
+        transferAsset(
+            orders.leftOrder.makerAddress,
+            orders.leftOrder.feeRecipientAddress,
+            transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
+            orders.leftOrder.makerFeeAssetData,
+            matchResults,
+        );
+    }
     // Left maker asset -> right maker
     transferAsset(
         orders.leftOrder.makerAddress,
@@ -283,14 +285,16 @@ function simulateMatchOrders(
         orders.leftOrder.makerAssetData,
         matchResults,
     );
-    // Right maker fees
-    transferAsset(
-        orders.rightOrder.makerAddress,
-        orders.rightOrder.feeRecipientAddress,
-        transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
-        orders.rightOrder.makerFeeAssetData,
-        matchResults,
-    );
+    if (orders.rightOrder.makerAddress !== orders.rightOrder.feeRecipientAddress) {
+        // Right maker fees
+        transferAsset(
+            orders.rightOrder.makerAddress,
+            orders.rightOrder.feeRecipientAddress,
+            transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
+            orders.rightOrder.makerFeeAssetData,
+            matchResults,
+        );
+    }
     // Left taker profit
     transferAsset(
         orders.leftOrder.makerAddress,
