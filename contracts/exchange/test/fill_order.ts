@@ -121,6 +121,52 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
+        it('should transfer the correct amounts maker == feeRecipient', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    feeRecipientScenario: FeeRecipientAddressScenario.MakerAddress,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should transfer the correct amounts maker == feeRecipient and makerFeeAsset == takerAsset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    feeRecipientScenario: FeeRecipientAddressScenario.MakerAddress,
+                    makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should transfer the correct amounts taker == feeRecipient', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    feeRecipientScenario: FeeRecipientAddressScenario.TakerAddress,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
+        it('should transfer the correct amounts taker == feeRecipient and takerFeeAsset == makerAsset', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    feeRecipientScenario: FeeRecipientAddressScenario.TakerAddress,
+                    takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+        });
+
         it('should fill remaining value if takerAssetFillAmount > remaining takerAssetAmount', async () => {
             const fillScenario = {
                 ...defaultFillScenario,

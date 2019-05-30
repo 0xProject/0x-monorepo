@@ -101,6 +101,12 @@ export class OrderFactoryFromScenario {
             case FeeRecipientAddressScenario.EthUserAddress:
                 feeRecipientAddress = this._userAddresses[4];
                 break;
+            case FeeRecipientAddressScenario.MakerAddress:
+                feeRecipientAddress = makerAddress;
+                break;
+            case FeeRecipientAddressScenario.TakerAddress:
+                feeRecipientAddress = takerAddress;
+                break;
             default:
                 throw errorUtils.spawnSwitchErr('FeeRecipientAddressScenario', orderScenario.feeRecipientScenario);
         }
