@@ -952,12 +952,12 @@ export class ERC721TokenContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`ERC721Token successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ERC721TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new ERC721TokenContract(abi, bytecode, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('ERC721Token', abi, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('ERC721Token', abi, bytecode, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

@@ -30,6 +30,7 @@ import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';
  */
 export class ERC721TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = ERC721Token.compilerOutput.abi;
+    public bytecode: string = ERC721Token.compilerOutput.evm.bytecode.object;
     private readonly _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private readonly _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
@@ -459,6 +460,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         }
         const contractInstance = new ERC721TokenContract(
             this.abi,
+            this.bytecode,
             normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

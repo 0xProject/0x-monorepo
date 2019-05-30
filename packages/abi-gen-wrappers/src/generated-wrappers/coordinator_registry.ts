@@ -237,12 +237,12 @@ export class CoordinatorRegistryContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`CoordinatorRegistry successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new CoordinatorRegistryContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new CoordinatorRegistryContract(abi, bytecode, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('CoordinatorRegistry', abi, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('CoordinatorRegistry', abi, bytecode, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

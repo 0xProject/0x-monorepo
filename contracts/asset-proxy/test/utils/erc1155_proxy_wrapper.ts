@@ -38,6 +38,7 @@ export class ERC1155ProxyWrapper {
         this._dummyTokenWrappers = [];
         this._assetProxyInterface = new IAssetProxyContract(
             artifacts.IAssetProxy.compilerOutput.abi,
+            artifacts.IAssetProxy.compilerOutput.evm.bytecode.object,
             constants.NULL_ADDRESS,
             provider,
         );

@@ -145,6 +145,7 @@ describe('LibAssetData', () => {
         return web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC20TokenContract(
                 erc20Artifacts.IERC20Token.compilerOutput.abi,
+                erc20Artifacts.IERC20Token.compilerOutput.evm.bytecode.object,
                 erc20TokenAddress,
                 provider,
             ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
@@ -156,6 +157,7 @@ describe('LibAssetData', () => {
         return web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC721TokenContract(
                 erc721Artifacts.IERC721Token.compilerOutput.abi,
+                erc721Artifacts.IERC721Token.compilerOutput.evm.bytecode.object,
                 erc721TokenAddress,
                 provider,
             ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
@@ -312,6 +314,7 @@ describe('LibAssetData', () => {
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC721TokenContract(
                 erc721Artifacts.IERC721Token.compilerOutput.abi,
+                erc721Artifacts.IERC721Token.compilerOutput.evm.bytecode.object,
                 erc721TokenAddress,
                 provider,
             ).setApprovalForAll.sendTransactionAsync(anotherApprovedSpenderAddress, true, {
@@ -332,6 +335,7 @@ describe('LibAssetData', () => {
         await web3Wrapper.awaitTransactionSuccessAsync(
             await new IERC1155MintableContract(
                 erc1155Artifacts.IERC1155Mintable.compilerOutput.abi,
+                erc1155Artifacts.IERC1155Mintable.compilerOutput.evm.bytecode.object,
                 erc1155MintableAddress,
                 provider,
             ).setApprovalForAll.sendTransactionAsync(approvedSpenderAddress, true, { from: tokenOwnerAddress }),

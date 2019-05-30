@@ -3,7 +3,7 @@ import { ERC20Token } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
+import { ContractAbi, EvmOutput, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { methodOptsSchema } from '../schemas/method_opts_schema';
@@ -30,6 +30,7 @@ import { ERC20ProxyWrapper } from './erc20_proxy_wrapper';
  */
 export class ERC20TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = ERC20Token.compilerOutput.abi;
+    public bytecode: string = ERC20Token.compilerOutput.evm.bytecode.object;
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private readonly _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
     private readonly _erc20ProxyWrapper: ERC20ProxyWrapper;
@@ -432,6 +433,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         }
         const contractInstance = new ERC20TokenContract(
             this.abi,
+            this.bytecode,
             normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

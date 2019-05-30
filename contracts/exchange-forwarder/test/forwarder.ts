@@ -89,7 +89,7 @@ describe(ContractName.Forwarder, () => {
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
         wethContract = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, provider, txDefaults);
-        weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
+        weth = new DummyERC20TokenContract(wethContract.abi, wethContract.bytecode, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
         wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
@@ -135,7 +135,12 @@ describe(ContractName.Forwarder, () => {
             zrxAssetData,
             wethAssetData,
         );
-        forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
+        forwarderContract = new ForwarderContract(
+            forwarderInstance.abi,
+            forwarderInstance.bytecode,
+            forwarderInstance.address,
+            provider,
+        );
         forwarderWrapper = new ForwarderWrapper(forwarderContract, provider);
         const zrxDepositAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18);
         await web3Wrapper.awaitTransactionSuccessAsync(

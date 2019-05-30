@@ -3,7 +3,7 @@ import { WETH9 } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
+import { ContractAbi, EvmOutput, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues, TransactionOpts } from '../types';
@@ -19,6 +19,7 @@ import { ERC20TokenWrapper } from './erc20_token_wrapper';
  */
 export class EtherTokenWrapper extends ContractWrapper {
     public abi: ContractAbi = WETH9.compilerOutput.abi;
+    public bytecode: string = WETH9.compilerOutput.evm.bytecode.object;
     private readonly _etherTokenContractsByAddress: {
         [address: string]: WETH9Contract;
     } = {};
@@ -200,6 +201,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         }
         const contractInstance = new WETH9Contract(
             this.abi,
+            this.bytecode,
             etherTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

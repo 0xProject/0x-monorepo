@@ -121,6 +121,7 @@ export class FillScenarios {
         );
         const exchangeInstance = new ExchangeContract(
             artifacts.Exchange.compilerOutput.abi,
+            artifacts.Exchange.compilerOutput.evm.bytecode.object,
             signedOrder.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -196,6 +197,7 @@ export class FillScenarios {
     ): Promise<void> {
         const erc721Token = new DummyERC721TokenContract(
             artifacts.DummyERC721Token.compilerOutput.abi,
+            artifacts.DummyERC721Token.compilerOutput.evm.bytecode.object,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -212,6 +214,7 @@ export class FillScenarios {
     ): Promise<void> {
         const erc721Token = new DummyERC721TokenContract(
             artifacts.DummyERC721Token.compilerOutput.abi,
+            artifacts.DummyERC721Token.compilerOutput.evm.bytecode.object,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -242,6 +245,7 @@ export class FillScenarios {
     private async _increaseERC20BalanceAsync(tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         const erc20Token = new DummyERC20TokenContract(
             artifacts.DummyERC20Token.compilerOutput.abi,
+            artifacts.DummyERC20Token.compilerOutput.evm.bytecode.object,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -258,6 +262,7 @@ export class FillScenarios {
     ): Promise<void> {
         const erc20Token = new DummyERC20TokenContract(
             artifacts.DummyERC20Token.compilerOutput.abi,
+            artifacts.DummyERC20Token.compilerOutput.evm.bytecode.object,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
