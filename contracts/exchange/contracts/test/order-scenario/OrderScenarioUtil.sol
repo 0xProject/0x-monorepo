@@ -30,6 +30,7 @@ contract OrderScenarioUtil is
     address public exchangeAddress,
     address public erc20EighteenToken,
     address public erc20FiveToken,
+    address public zrxToken,
     address public erc1155Token,
     address public erc721Token,
     mapping(address=>OrderScenarioWallet) public wallets;
@@ -38,6 +39,7 @@ contract OrderScenarioUtil is
         address _exchangeAddress,
         address _erc20EighteenToken,
         address _erc20FiveToken,
+        address _zrxToken,
         address _erc1155Token,
         address _erc721Token,
     )
@@ -46,6 +48,7 @@ contract OrderScenarioUtil is
         exchangeAddress = _exchangeAddress;
         erc20EighteenToken = _erc20EighteenToken;
         erc20FiveToken = _erc20FiveToken;
+        zrxToken = _zrxToken;
         erc1155Token = _erc1155Token;
         erc721Token = _erc721Token;
     }
@@ -121,8 +124,30 @@ contract OrderScenarioUtil is
         }
     }
 
+    /// @@dev Deploys new wallets and immediately funds them.
+    /// @param walletCount Number of wallets to deploy.
+    /// @param assetTypes Array of arrays of asset types for each wallet.
+    /// @param balances  Array of arrays of balance/allowances for each asset type of each wallets.
+    /// @return walletAddresses Addresses of each wallet deployed.
+    function createAndFundWallets(
+        uint256 numWallets,
+        AssetType[][] memory assetTypes,
+        AssetBalanceAndAllowance[][] memory balances
+    )
+        public
+        returns (address[] memory walletAddresses)
+    {
+        walletAddresses = createWallets(numWallets);
+        fundWallets(
+            walletAddresses,
+            assetTypes,
+            balances
+        );
+    }
+
     /// @@dev Deploys new, empty wallets.
     /// @param walletCount Number of wallets to deploy.
+    /// @return walletAddresses Addresses of each wallet deployed.
     function createWallets(uint256 numWallets)
         external
         returns (address[] memory walletAddresses)
@@ -143,11 +168,11 @@ contract OrderScenarioUtil is
     /// @param assetTypes Array of arrays of asset types for each wallet.
     /// @param balances  Array of arrays of balance/allowances for each asset type of each wallets.
     function fundWallets(
-        address[] walletAddresses,
-        AssetType[][] assetTypes,
-        AssetBalanceAndAllowance[][] balances,
+        address[] memory walletAddresses,
+        AssetType[][] memory assetTypes,
+        AssetBalanceAndAllowance[][] memory balances,
     )
-        external
+        public
         returns (void)
     {
         uint256 numWallets = walletAddresses.length;
@@ -158,8 +183,8 @@ contract OrderScenarioUtil is
         );
         for (uint2556 i = 0; i != numWallets; i++) {
             address walletAddress = walletAddresses[i];
-            address walletAssetTypes = assetTypes[i];
-            address walletBalances = balances[i];
+            AssetType[] memory walletAssetTypes = assetTypes[i];
+            AssetBalanceAndAllowance[] memory walletBalances = balances[i];
             uint256 numWalletAssetTypes = walletAssetTypes.length;
             require(
                 numWalletAssetTypes == walletBalances.length,
@@ -171,5 +196,36 @@ contract OrderScenarioUtil is
                 _setAssetFunds(walletAddress, assetType, asssetBalance);
             }
         }
+    }
+
+    /// @dev Create multiple orders scenarios.
+    ///      This will deploy and fund unique makers and takers, forge
+    ///      legitimate orders, and optionally fill or cancel them.
+    /// @param orderTraits Desired properties for each order to create.
+    /// @param makerBalances Balances/allowances to initialze each order's maker with.
+    ///                      One per order.
+    /// @param takerBalances Balances/allowances to initialize each order's takers with.
+    ///                      Each order can have 0 to 8 takers.
+    /// @param cancelOrders Whether to immediately cancel the order. One per order.
+    /// @param initialTakerAssetFillAmounts How much to immediately fill the order
+    ///                                     One per order.
+    /// @return orders The generated orders.
+    /// @return orderHashes The hashes of each generated order.
+    /// @return takerAddresses The taker wallets deployed for each order.
+    function createScenarios(
+        OrderTraits[] memory orderTraits,
+        TraderBalancesAndAllowances[] memory makerBalances,
+        TraderBalancesAndAllowances[][] memory takerBalances,
+        bool[] memory cancelOrders,
+        uint256[] initialTakerAssetFillAmounts
+    )
+        public
+        returns (
+            Order[] memory orders,
+            bytes32[] memory orderHashes,
+            address[][] memory takerAddresses
+        )
+    {
+        // TODO
     }
 }
