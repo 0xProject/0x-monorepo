@@ -47,7 +47,6 @@ import { ERC721TokenWrapper } from './erc721_token_wrapper';
  */
 export class ExchangeWrapper extends ContractWrapper {
     public abi: ContractAbi = Exchange.compilerOutput.abi;
-    public bytecode: string = Exchange.compilerOutput.evm.bytecode.object;
     public address: string;
     public zrxTokenAddress: string;
     private _exchangeContractIfExists?: ExchangeContract;
@@ -1215,7 +1214,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const assetProxyAddress = await exchangeInstance.assetProxies.callAsync(makerAssetDataProxyId);
         const assetProxy = new IAssetProxyContract(
             IAssetProxy.compilerOutput.abi,
-            IAssetProxy.compilerOutput.evm.bytecode.object,
             assetProxyAddress,
             this._web3Wrapper.getProvider(),
         );
@@ -1288,7 +1286,6 @@ export class ExchangeWrapper extends ContractWrapper {
         }
         const contractInstance = new ExchangeContract(
             this.abi,
-            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

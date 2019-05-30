@@ -15,7 +15,6 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class ERC20ProxyWrapper extends ContractWrapper {
     public abi: ContractAbi = ERC20Proxy.compilerOutput.abi;
-    public bytecode: string = ERC20Proxy.compilerOutput.evm.bytecode.object;
     public address: string;
     private _erc20ProxyContractIfExists?: ERC20ProxyContract;
     /**
@@ -68,7 +67,6 @@ export class ERC20ProxyWrapper extends ContractWrapper {
         }
         const contractInstance = new ERC20ProxyContract(
             this.abi,
-            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

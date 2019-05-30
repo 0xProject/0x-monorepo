@@ -20,7 +20,6 @@ import { ContractWrapper } from './contract_wrapper';
 
 export class DutchAuctionWrapper extends ContractWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
-    public bytecode: string = DutchAuction.compilerOutput.evm.bytecode.output;
     public address: string;
     private _dutchAuctionContractIfExists?: DutchAuctionContract;
     /**
@@ -173,7 +172,6 @@ export class DutchAuctionWrapper extends ContractWrapper {
         }
         const contractInstance = new DutchAuctionContract(
             this.abi,
-            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

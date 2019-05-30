@@ -70,21 +70,18 @@ export class CoordinatorWrapper extends ContractWrapper {
 
         this._contractInstance = new CoordinatorContract(
             this.abi,
-            Coordinator.compilerOutput.evm.bytecode.object,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         this._registryInstance = new CoordinatorRegistryContract(
             CoordinatorRegistry.compilerOutput.abi,
-            CoordinatorRegistry.compilerOutput.evm.bytecode.object,
             this.registryAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         this._exchangeInstance = new ExchangeContract(
             Exchange.compilerOutput.abi,
-            Exchange.compilerOutput.evm.bytecode.object,
             this.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

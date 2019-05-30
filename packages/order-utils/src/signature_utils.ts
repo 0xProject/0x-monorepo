@@ -113,7 +113,6 @@ export const signatureUtils = {
         const addresses = getContractAddressesForNetworkOrThrow(networkId);
         const exchangeContract = new ExchangeContract(
             artifacts.Exchange.compilerOutput.abi,
-            artifacts.Exchange.compilerOutput.evm.bytecode.object,
             addresses.exchange,
             provider,
         );
@@ -140,12 +139,7 @@ export const signatureUtils = {
         assert.isETHAddressHex('signerAddress', signerAddress);
         // tslint:disable-next-line:custom-no-magic-numbers
         const signatureWithoutType = signature.slice(0, -2);
-        const walletContract = new IWalletContract(
-            artifacts.IWallet.compilerOutput.abi,
-            artifacts.IWallet.compilerOutput.evm.bytecode.object,
-            signerAddress,
-            provider,
-        );
+        const walletContract = new IWalletContract(artifacts.IWallet.compilerOutput.abi, signerAddress, provider);
         const isValid = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
         return isValid;
     },
@@ -168,12 +162,7 @@ export const signatureUtils = {
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
         const validatorSignature = parseValidatorSignature(signature);
-        const exchangeContract = new ExchangeContract(
-            artifacts.Exchange.compilerOutput.abi,
-            artifacts.Exchange.compilerOutput.evm.bytecode.object,
-            signerAddress,
-            provider,
-        );
+        const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
         const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
             signerAddress,
             validatorSignature.validatorAddress,
@@ -186,7 +175,6 @@ export const signatureUtils = {
 
         const validatorContract = new IValidatorContract(
             artifacts.IValidator.compilerOutput.abi,
-            artifacts.IValidator.compilerOutput.evm.bytecode.object,
             signerAddress,
             provider,
         );

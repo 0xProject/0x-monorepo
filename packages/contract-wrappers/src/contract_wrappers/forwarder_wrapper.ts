@@ -24,7 +24,6 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class ForwarderWrapper extends ContractWrapper {
     public abi: ContractAbi = Forwarder.compilerOutput.abi;
-    public bytecode: string = Forwarder.compilerOutput.evm.bytecode.object;
     public address: string;
     public zrxTokenAddress: string;
     public etherTokenAddress: string;
@@ -243,7 +242,6 @@ export class ForwarderWrapper extends ContractWrapper {
         }
         const contractInstance = new ForwarderContract(
             this.abi,
-            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

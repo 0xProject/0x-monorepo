@@ -2050,7 +2050,7 @@ _secondsTimeLocked
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`AssetProxyOwner successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new AssetProxyOwnerContract(abi, bytecode, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new AssetProxyOwnerContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_owners,
 _assetProxyContracts,
 _required,
@@ -2058,8 +2058,8 @@ _secondsTimeLocked
 ];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('AssetProxyOwner', abi, bytecode, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('AssetProxyOwner', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

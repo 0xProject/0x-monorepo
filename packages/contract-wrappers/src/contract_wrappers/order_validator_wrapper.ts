@@ -4,7 +4,7 @@ import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { ContractAbi, EvmOutput } from 'ethereum-types';
+import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { BalanceAndAllowance, OrderAndTraderInfo, TraderInfo } from '../types';
@@ -18,7 +18,6 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class OrderValidatorWrapper extends ContractWrapper {
     public abi: ContractAbi = OrderValidator.compilerOutput.abi;
-    public bytecode: string = OrderValidator.compilerOutput.evm.bytecode.object;
     public address: string;
     private _orderValidatorContractIfExists?: OrderValidatorContract;
     /**
@@ -176,7 +175,6 @@ export class OrderValidatorWrapper extends ContractWrapper {
         }
         const contractInstance = new OrderValidatorContract(
             this.abi,
-            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
