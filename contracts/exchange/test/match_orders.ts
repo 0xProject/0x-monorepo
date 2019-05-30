@@ -967,7 +967,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('should transfer the correct amounts if taker is also the left order maker', async () => {
+        it('should transfer the correct amounts if taker == leftMaker', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1002,7 +1002,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('should transfer the correct amounts if taker is also the right order maker', async () => {
+        it('should transfer the correct amounts if taker == rightMaker', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1037,7 +1037,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('should transfer the correct amounts if taker is also the left fee recipient', async () => {
+        it('should transfer the correct amounts if taker == leftFeeRecipient', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1072,7 +1072,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('should transfer the correct amounts if taker is also the right fee recipient', async () => {
+        it('should transfer the correct amounts if taker == rightFeeRecipient', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1107,7 +1107,79 @@ describe('matchOrders', () => {
             );
         });
 
-        it('should transfer the correct amounts if left maker is the left fee recipient and right maker is the right fee recipient', async () => {
+        it('should transfer the correct amounts if leftMaker == leftFeeRecipient && rightMaker == rightFeeRecipient', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                feeRecipientAddress: makerAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                feeRecipientAddress: makerAddressRight,
+            });
+            // Match orders
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(3, 18),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('should transfer the correct amounts if leftMaker == leftFeeRecipient && leftMakerFeeAsset == leftTakerAsset', async () => {
+            // Create orders to match
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+            });
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                makerFeeAssetData: signedOrderRight.makerAssetData,
+                feeRecipientAddress: makerAddressLeft,
+            });
+            // Match orders
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(3, 18),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightMakerFeeAsset == rightTakerAsset', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1116,6 +1188,46 @@ describe('matchOrders', () => {
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                makerFeeAssetData: signedOrderLeft.makerAssetData,
+                feeRecipientAddress: makerAddressRight,
+            });
+            // Match orders
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(3, 18),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightTakerAsset == rightMakerFeeAsset && leftMaker == leftFeeRecipient && leftTakerAsset == leftMakerFeeAsset', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                feeRecipientAddress: makerAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                makerFeeAssetData: signedOrderLeft.makerAssetData,
+                feeRecipientAddress: makerAddressRight,
             });
             // Match orders
             const expectedTransferAmounts = {
