@@ -60,7 +60,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev Fills the input order.
-    ///      Returns false if the transaction would otherwise revert.
+    ///      Returns a null FillResults instance if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
@@ -102,12 +102,11 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder.
+    /// @dev Executes multiple calls of fillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
@@ -115,26 +114,25 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
+        fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = _fillOrder(
+            fillResults[i] = _fillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            _addFillResults(totalFillResults, singleFillResults);
         }
-        return totalFillResults;
+        return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrKill.
+    /// @dev Executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
@@ -142,48 +140,46 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
+        fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = _fillOrKillOrder(
+            fillResults[i] = _fillOrKillOrder(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            _addFillResults(totalFillResults, singleFillResults);
         }
-        return totalFillResults;
+        return fillResults;
     }
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    ///         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory totalFillResults)
+        returns (FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
+        fillResults = new FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            fillResults[i] = fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
             );
-            _addFillResults(totalFillResults, singleFillResults);
         }
-        return totalFillResults;
+        return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+    /// @dev Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been created by makers.
@@ -195,19 +191,20 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being sold by taker is the same for each order.
-            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            // The `takerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = _fillOrder(
@@ -217,18 +214,17 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
+            if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -239,19 +235,20 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being sold by taker is the same for each order.
-            // Rather than passing this in as calldata, we use the takerAssetData from the first order in all later orders.
+            // The `takerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
@@ -261,17 +258,17 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
+            if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+    /// @dev Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -283,19 +280,20 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being bought by taker is the same for each order.
-            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            // The `makerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
@@ -313,18 +311,17 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
+            if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -335,19 +332,20 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory totalFillResults)
+        returns (FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // We assume that asset being bought by taker is the same for each order.
-            // Rather than passing this in as calldata, we copy the makerAssetData from the first order onto all later orders.
+            // The `makerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
@@ -365,19 +363,20 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            _addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
+            if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return fillResults;
     }
 
     /// @dev After calling, the order can not be filled anymore.
-    /// @return True if the order was cancelled successfully.
+    //       Returns false if the cancelOrder call would otherwise revert.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+    /// @return True if the order was cancelled successfully.
     function cancelOrderNoThrow(LibOrder.Order memory order)
         public
         returns (bool didCancel)
@@ -387,7 +386,7 @@ contract MixinWrapperFunctions is
         return didCancel;
     }
 
-    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @dev Executes multiple calls of cancelOrder.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
@@ -399,7 +398,7 @@ contract MixinWrapperFunctions is
         }
     }
 
-    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @dev Executes multiple calls of canccelOrderNoThrow.
     /// @param orders Array of order specifications.
     /// @return Bool array containing results of each individual cancellation.
     function batchCancelOrdersNoThrow(LibOrder.Order[] memory orders)

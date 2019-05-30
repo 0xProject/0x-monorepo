@@ -55,41 +55,41 @@ contract IWrapperFunctions {
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
@@ -102,7 +102,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
     ///      Returns false if the transaction would otherwise revert.
@@ -116,7 +116,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
@@ -129,7 +129,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
     ///      Returns false if the transaction would otherwise revert.
@@ -143,7 +143,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of order specifications.
