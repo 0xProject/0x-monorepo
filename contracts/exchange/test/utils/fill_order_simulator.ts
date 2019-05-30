@@ -81,7 +81,7 @@ export class FillOrderSimulator {
                 TransferType.Trade,
             );
             // Maker fee -> fee recipient
-            if (makerFeePaid.isGreaterThan(0)) {
+            if (order.makerAddress !== order.feeRecipientAddress) {
                 await this._transferSimulator.transferFromAsync(
                     order.makerFeeAssetData,
                     order.makerAddress,
@@ -101,7 +101,7 @@ export class FillOrderSimulator {
                 TransferType.Trade,
             );
             // Taker fee -> fee recipient
-            if (takerFeePaid.isGreaterThan(0)) {
+            if (takerAddress !== order.feeRecipientAddress) {
                 await this._transferSimulator.transferFromAsync(
                     order.takerFeeAssetData,
                     takerAddress,
