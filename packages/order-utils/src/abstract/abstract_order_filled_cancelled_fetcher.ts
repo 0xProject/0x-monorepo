@@ -19,5 +19,4 @@ export abstract class AbstractOrderFilledCancelledFetcher {
      * @return Whether or not the order is cancelled
      */
     public abstract async isOrderCancelledAsync(signedOrder: SignedOrder): Promise<boolean>;
-    public abstract getZRXAssetData(): string;
 }

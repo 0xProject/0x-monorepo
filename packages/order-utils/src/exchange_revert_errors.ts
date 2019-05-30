@@ -31,7 +31,7 @@ export enum TransactionErrorCode {
 
 export class SignatureError extends RevertError {
     constructor(error?: SignatureErrorCode, hash?: string, signer?: string, signature?: string) {
-        super('SignatureError(uint8 error, bytes32 hash, address signer, bytes signature)', {
+        super('SignatureError', 'SignatureError(uint8 error, bytes32 hash, address signer, bytes signature)', {
             error,
             hash,
             signer,
@@ -42,81 +42,97 @@ export class SignatureError extends RevertError {
 
 export class SignatureValidatorError extends RevertError {
     constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
-        super('SignatureValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)', {
-            hash,
-            signer,
-            signature,
-            errorData,
-        });
+        super(
+            'SignatureValidatorError',
+            'SignatureValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)',
+            {
+                hash,
+                signer,
+                signature,
+                errorData,
+            },
+        );
     }
 }
 
 export class SignatureWalletError extends RevertError {
     constructor(hash?: string, wallet?: string, signature?: string, errorData?: string) {
-        super('SignatureWalletError(bytes32 hash, address wallet, bytes signature, bytes errorData)', {
-            hash,
-            wallet,
-            signature,
-            errorData,
-        });
+        super(
+            'SignatureWalletError',
+            'SignatureWalletError(bytes32 hash, address wallet, bytes signature, bytes errorData)',
+            {
+                hash,
+                wallet,
+                signature,
+                errorData,
+            },
+        );
     }
 }
 
 export class SignatureOrderValidatorError extends RevertError {
     constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
-        super('SignatureOrderValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)', {
-            hash,
-            signer,
-            signature,
-            errorData,
-        });
+        super(
+            'SignatureOrderValidatorError',
+            'SignatureOrderValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)',
+            {
+                hash,
+                signer,
+                signature,
+                errorData,
+            },
+        );
     }
 }
 
 export class SignatureWalletOrderValidatorError extends RevertError {
     constructor(hash?: string, wallet?: string, signature?: string, errorData?: string) {
-        super('SignatureWalletOrderValidatorError(bytes32 hash, address wallet, bytes signature, bytes errorData)', {
-            hash,
-            wallet,
-            signature,
-            errorData,
-        });
+        super(
+            'SignatureWalletOrderValidatorError',
+            'SignatureWalletOrderValidatorError(bytes32 hash, address wallet, bytes signature, bytes errorData)',
+            {
+                hash,
+                wallet,
+                signature,
+                errorData,
+            },
+        );
     }
 }
 
 export class OrderStatusError extends RevertError {
     constructor(orderHash?: string, status?: OrderStatus) {
-        super('OrderStatusError(bytes32 orderHash, uint8 status)', { orderHash, status });
+        super('OrderStatusError', 'OrderStatusError(bytes32 orderHash, uint8 status)', { orderHash, status });
     }
 }
 
 export class InvalidSenderError extends RevertError {
     constructor(orderHash?: string, sender?: string) {
-        super('InvalidSenderError(bytes32 orderHash, address sender)', { orderHash, sender });
+        super('InvalidSenderError', 'InvalidSenderError(bytes32 orderHash, address sender)', { orderHash, sender });
     }
 }
 
 export class InvalidTakerError extends RevertError {
     constructor(orderHash?: string, taker?: string) {
-        super('InvalidTakerError(bytes32 orderHash, address taker)', { orderHash, taker });
+        super('InvalidTakerError', 'InvalidTakerError(bytes32 orderHash, address taker)', { orderHash, taker });
     }
 }
 
 export class InvalidMakerError extends RevertError {
     constructor(orderHash?: string, maker?: string) {
-        super('InvalidMakerError(bytes32 orderHash, address maker)', { orderHash, maker });
+        super('InvalidMakerError', 'InvalidMakerError(bytes32 orderHash, address maker)', { orderHash, maker });
     }
 }
 
 export class FillError extends RevertError {
     constructor(error?: FillErrorCode, orderHash?: string) {
-        super('FillError(uint8 error, bytes32 orderHash)', { error, orderHash });
+        super('FillError', 'FillError(uint8 error, bytes32 orderHash)', { error, orderHash });
     }
 }
 
 export class OrderEpochError extends RevertError {
     constructor(maker?: string, sender?: string, currentEpoch?: BigNumber | number | string) {
-        super('OrderEpochError(address maker, address sender, uint256 currentEpoch)', {
+        super('OrderEpochError', 'OrderEpochError(address maker, address sender, uint256 currentEpoch)', {
             maker,
             sender,
             currentEpoch,
@@ -126,13 +142,13 @@ export class OrderEpochError extends RevertError {
 
 export class AssetProxyExistsError extends RevertError {
     constructor(proxy?: string) {
-        super('AssetProxyExistsError(address proxy)', { proxy });
+        super('AssetProxyExistsError', 'AssetProxyExistsError(address proxy)', { proxy });
     }
 }
 
 export class AssetProxyDispatchError extends RevertError {
     constructor(error?: AssetProxyDispatchErrorCode, orderHash?: string, assetData?: string) {
-        super('AssetProxyDispatchError(uint8 error, bytes32 orderHash, bytes assetData)', {
+        super('AssetProxyDispatchError', 'AssetProxyDispatchError(uint8 error, bytes32 orderHash, bytes assetData)', {
             error,
             orderHash,
             assetData,
@@ -142,45 +158,59 @@ export class AssetProxyDispatchError extends RevertError {
 
 export class AssetProxyTransferError extends RevertError {
     constructor(orderHash?: string, assetData?: string, errorData?: string) {
-        super('AssetProxyTransferError(bytes32 orderHash, bytes assetData, bytes errorData)', {
-            orderHash,
-            assetData,
-            errorData,
-        });
+        super(
+            'AssetProxyTransferError',
+            'AssetProxyTransferError(bytes32 orderHash, bytes assetData, bytes errorData)',
+            {
+                orderHash,
+                assetData,
+                errorData,
+            },
+        );
     }
 }
 
 export class NegativeSpreadError extends RevertError {
     constructor(leftOrderHash?: string, rightOrderHash?: string) {
-        super('NegativeSpreadError(bytes32 leftOrderHash, bytes32 rightOrderHash)', { leftOrderHash, rightOrderHash });
+        super('NegativeSpreadError', 'NegativeSpreadError(bytes32 leftOrderHash, bytes32 rightOrderHash)', {
+            leftOrderHash,
+            rightOrderHash,
+        });
     }
 }
 
 export class TransactionError extends RevertError {
     constructor(error?: TransactionErrorCode, transactionHash?: string) {
-        super('TransactionError(uint8 error, bytes32 transactionHash)', { error, transactionHash });
+        super('TransactionError', 'TransactionError(uint8 error, bytes32 transactionHash)', { error, transactionHash });
     }
 }
 
 export class TransactionSignatureError extends RevertError {
     constructor(transactionHash?: string, signer?: string, signature?: string) {
-        super('TransactionSignatureError(bytes32 transactionHash, address signer, bytes signature)', {
-            transactionHash,
-            signer,
-            signature,
-        });
+        super(
+            'TransactionSignatureError',
+            'TransactionSignatureError(bytes32 transactionHash, address signer, bytes signature)',
+            {
+                transactionHash,
+                signer,
+                signature,
+            },
+        );
     }
 }
 
 export class TransactionExecutionError extends RevertError {
     constructor(transactionHash?: string, errorData?: string) {
-        super('TransactionExecutionError(bytes32 transactionHash, bytes errorData)', { transactionHash, errorData });
+        super('TransactionExecutionError', 'TransactionExecutionError(bytes32 transactionHash, bytes errorData)', {
+            transactionHash,
+            errorData,
+        });
     }
 }
 
 export class IncompleteFillError extends RevertError {
     constructor(orderHash?: string) {
-        super('IncompleteFillError(bytes32 orderHash)', { orderHash });
+        super('IncompleteFillError', 'IncompleteFillError(bytes32 orderHash)', { orderHash });
     }
 }
 

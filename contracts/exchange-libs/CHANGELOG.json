@@ -37,6 +37,18 @@
             {
                 "note": "Reorder some revert error parameters for consistency",
                 "pr": 1790
+            },
+            {
+                "note": "Add new `Order` fields for arbitrary fee tokens (ZEIP-28).",
+                "pr": 1819
+            },
+            {
+                "note": "Remove `LibAbiEncoder` and `LibConstants`.",
+                "pr": 1819
+            },
+            {
+                "note": "Add `generate-exchange-selectors` package script.",
+                "pr": 1819
             }
         ]
     },

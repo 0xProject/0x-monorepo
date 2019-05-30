@@ -20,10 +20,10 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "./mixins/MExchangeCore.sol";
 import "./mixins/MWrapperFunctions.sol";
 import "./mixins/MExchangeRichErrors.sol";
@@ -31,9 +31,9 @@ import "./mixins/MExchangeRichErrors.sol";
 
 contract MixinWrapperFunctions is
     ReentrancyGuard,
+    LibExchangeSelectors,
     LibMath,
     LibFillResults,
-    LibExchangeSelectors,
     MExchangeCore,
     MWrapperFunctions,
     MExchangeRichErrors
@@ -376,7 +376,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev After calling, the order can not be filled anymore.
-    /// @return True if the order was cancelled successfully. 
+    /// @return True if the order was cancelled successfully.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
     function cancelOrderNoThrow(LibOrder.Order memory order)
         public

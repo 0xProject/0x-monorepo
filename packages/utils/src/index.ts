@@ -15,7 +15,9 @@ export import AbiEncoder = require('./abi_encoder');
 export * from './types';
 export { generatePseudoRandom256BitNumber } from './random';
 export {
-    decodeRevertError,
+    decodeBytesAsRevertError,
+    decodeThrownErrorAsRevertError,
+    coerceThrownErrorAsRevertError,
     registerRevertErrorType,
     RevertError,
     StringRevertError,

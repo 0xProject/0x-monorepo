@@ -22,8 +22,13 @@ public {{this.tsName}} = {
                 {{> params inputs=inputs}}
             ),
         );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+        try {
+            return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        } catch (err) {
+            // Try to decode ganache transaction revert Errors.
+            BaseContract._throwIfThrownErrorIsRevertError(err);
+            throw err;
+        }
     },
     awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
@@ -53,11 +58,17 @@ public {{this.tsName}} = {
             txHashPromise,
             (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                 // When the transaction hash resolves, wait for it to be mined.
-                return self._web3Wrapper.awaitTransactionSuccessAsync(
-                    await txHashPromise,
-                    pollingIntervalMs,
-                    timeoutMs,
-                );
+                try {
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                } catch (err) {
+                    // Try to decode ganache transaction revert Errors.
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
             })(),
         );
     },
@@ -75,8 +86,13 @@ public {{this.tsName}} = {
             },
             self._web3Wrapper.getContractDefaults(),
         );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+        try {
+            return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        } catch (err) {
+            // Try to decode ganache transaction revert Errors.
+            BaseContract._throwIfThrownErrorIsRevertError(err);
+            throw err;
+        }
     },
     getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}

@@ -35,6 +35,8 @@ const emptyOrder: Order = {
     takerAssetAmount: new BigNumber(0),
     makerAssetData: '0x',
     takerAssetData: '0x',
+    makerFeeAssetData: '0x',
+    takerFeeAssetData: '0x',
     salt: new BigNumber(0),
     feeRecipientAddress: constants.NULL_ADDRESS,
     expirationTimeSeconds: new BigNumber(0),

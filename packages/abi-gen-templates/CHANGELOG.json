@@ -5,6 +5,14 @@
             {
                 "note": "add `awaitTransactionSuccessAsync()` to `tx.handlebars`",
                 "pr": 1797
+            },
+            {
+                "note": "Update `callAsync` to automatically transform Errors into RevertErrors, if possible.",
+                "pr": 1819
+            },
+            {
+                "note": "Update transaction methods to automatically transform Errors into RevertErrors, if possible (only works on ganache).",
+                "pr": 1819
             }
         ]
     },

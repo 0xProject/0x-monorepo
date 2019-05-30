@@ -21,6 +21,10 @@
             {
                 "note": "Inherit `OrderStatus` from `@0x/types`",
                 "pr": 1761
+            },
+            {
+                "note": "Update types for arbitrary fee tokens",
+                "pr": 1819
             }
         ]
     },

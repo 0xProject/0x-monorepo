@@ -1,4 +1,12 @@
-import { AbiEncoder, abiUtils, BigNumber, RevertError } from '@0x/utils';
+import {
+    AbiEncoder,
+    abiUtils,
+    BigNumber,
+    decodeBytesAsRevertError,
+    decodeThrownErrorAsRevertError,
+    RevertError,
+    StringRevertError,
+} from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -100,16 +108,31 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
-    protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
+    protected static _throwIfCallResultIsRevertError(rawCallResult: string): void {
         // Try to decode the call result as a revert error.
         let revert: RevertError;
         try {
-            revert = RevertError.decode(rawCallResult);
+            revert = decodeBytesAsRevertError(rawCallResult);
         } catch (err) {
             // Can't decode it as a revert error, so assume it didn't revert.
             return;
         }
         throw revert;
+    }
+    protected static _throwIfThrownErrorIsRevertError(error: Error): void {
+        // Try to decode a thrown error.
+        let revertError: RevertError;
+        try {
+            revertError = decodeThrownErrorAsRevertError(error);
+            // Re-cast StringRevertErrors as plain Errors for backwards-compatibility.
+            if (revertError instanceof StringRevertError) {
+                throw new Error(revertError.values.message as string);
+            }
+        } catch (err) {
+            // Can't decode it.
+            return;
+        }
+        throw revertError;
     }
     // Throws if the given arguments cannot be safely/correctly encoded based on
     // the given inputAbi. An argument may not be considered safely encodeable

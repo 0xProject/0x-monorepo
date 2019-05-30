@@ -25,6 +25,14 @@
             {
                 "note": "Reorder parameters of some `RevertError` types to match smart contracts.",
                 "pr": 1790
+            },
+            {
+                "note": "Use arbitrary fee tokens instead of ZRX (ZEIP-28) for tools needed by contracts packages.",
+                "pr": 1819
+            },
+            {
+                "note": "Update `RevertError` types for new base constructor",
+                "pr": 1819
             }
         ]
     },

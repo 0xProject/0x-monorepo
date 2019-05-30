@@ -20,7 +20,8 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -33,7 +34,7 @@ import "./mixins/MExchangeRichErrors.sol";
 
 contract MixinExchangeCore is
     ReentrancyGuard,
-    LibConstants,
+    LibExchangeSelectors,
     LibMath,
     LibOrder,
     LibFillResults,
@@ -43,6 +44,8 @@ contract MixinExchangeCore is
     MTransactions,
     MExchangeRichErrors
 {
+    using LibBytes for bytes;
+
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -273,19 +276,22 @@ contract MixinExchangeCore is
         // Update state
         filled[orderHash] = _safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
 
-        // Log order
+        // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
+        // All this logic is equivalent to:
         emit Fill(
             order.makerAddress,
             order.feeRecipientAddress,
-            takerAddress,
-            msg.sender,
+            order.makerAssetData,
+            order.takerAssetData,
+            order.makerFeeAssetData,
+            order.takerFeeAssetData,
             fillResults.makerAssetFilledAmount,
             fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid,
-            orderHash,
-            order.makerAssetData,
-            order.takerAssetData
+            takerAddress,
+            msg.sender,
+            orderHash
         );
     }
 
@@ -507,14 +513,7 @@ contract MixinExchangeCore is
     )
         private
     {
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
-        _dispatchTransferFrom(
-            orderHash,
-            order.makerAssetData,
-            order.makerAddress,
-            takerAddress,
-            fillResults.makerAssetFilledAmount
-        );
+        // Transfer taker -> maker
         _dispatchTransferFrom(
             orderHash,
             order.takerAssetData,
@@ -522,19 +521,33 @@ contract MixinExchangeCore is
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
+        if (order.makerAddress != order.feeRecipientAddress) {
+            // Transfer maker fee -> feeRecipient
+            _dispatchTransferFrom(
+                orderHash,
+                order.makerFeeAssetData,
+                order.makerAddress,
+                order.feeRecipientAddress,
+                fillResults.makerFeePaid
+            );
+        }
+        // Transfer maker -> taker
         _dispatchTransferFrom(
             orderHash,
-            zrxAssetData,
+            order.makerAssetData,
             order.makerAddress,
-            order.feeRecipientAddress,
-            fillResults.makerFeePaid
-        );
-        _dispatchTransferFrom(
-            orderHash,
-            zrxAssetData,
             takerAddress,
-            order.feeRecipientAddress,
-            fillResults.takerFeePaid
+            fillResults.makerAssetFilledAmount
         );
+        if (takerAddress != order.feeRecipientAddress) {
+            // Transfer taker fee -> feeRecipient
+            _dispatchTransferFrom(
+                orderHash,
+                order.takerFeeAssetData,
+                takerAddress,
+                order.feeRecipientAddress,
+                fillResults.takerFeePaid
+            );
+        }
     }
 }

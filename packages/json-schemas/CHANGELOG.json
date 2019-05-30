@@ -9,6 +9,10 @@
             {
                 "note": "Add required field `domain` to `order` and `zeroExTransaction` schemas",
                 "pr": 1742
+            },
+            {
+                "note": "Add `makerAssetData` and `takerAssetData` to `Order` schemas",
+                "pr": 1819
             }
         ]
     },
