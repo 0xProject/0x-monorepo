@@ -175,8 +175,8 @@ describe('Exchange transactions', () => {
                 const executionLogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction)).to.equal(
-                    executionLogArgs.transactionHash,
+                expect(executionLogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction),
                 );
             });
             it('should revert if the transaction is expired', async () => {
@@ -686,15 +686,15 @@ describe('Exchange transactions', () => {
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
-                    execution1LogArgs.transactionHash,
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
-                    execution2LogArgs.transactionHash,
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
                 );
 
                 const fillLogs = transactionReceipt.logs.filter(
@@ -752,15 +752,15 @@ describe('Exchange transactions', () => {
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
-                    execution1LogArgs.transactionHash,
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
-                    execution2LogArgs.transactionHash,
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
                 );
 
                 const fillLogs = transactionReceipt.logs.filter(
@@ -817,15 +817,15 @@ describe('Exchange transactions', () => {
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
-                    execution1LogArgs.transactionHash,
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
-                    execution2LogArgs.transactionHash,
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
                 );
 
                 const fillLogs = transactionReceipt.logs.filter(
@@ -911,15 +911,15 @@ describe('Exchange transactions', () => {
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction1)).to.equal(
-                    execution1LogArgs.transactionHash,
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
                 >).args;
-                expect(transactionHashUtils.getTransactionHashHex(transaction2)).to.equal(
-                    execution2LogArgs.transactionHash,
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
                 );
 
                 let fillLogIndex: number = 0;
