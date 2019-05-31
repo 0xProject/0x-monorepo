@@ -152,6 +152,15 @@ export class StakingWrapper {
         totalStake: BigNumber,
         alphaDenominator: BigNumber
     ) {
+        const txReceipt = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaDenominator
+        );
+
         const output = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
             totalRewards,
             ownerFees,
