@@ -25,6 +25,7 @@ export interface OrderProviderResponse {
 export interface SignedOrderWithRemainingFillableMakerAssetAmount extends SignedOrder {
     remainingFillableMakerAssetAmount?: BigNumber;
 }
+
 /**
  * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
  * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
@@ -32,6 +33,7 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
     getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
+    getAvailableTakerAssetDatasAsync: (makerAssetData: string) => Promise<string[]>;
 }
 
 /**
@@ -44,13 +46,15 @@ export interface OrderProvider {
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
 export interface BuyQuote {
-    assetData: string;
-    assetBuyAmount: BigNumber;
+    takerAssetData: string;
+    makerAssetData: string;
+    makerAssetBuyAmount: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
-    feePercentage?: number;
     bestCaseQuoteInfo: BuyQuoteInfo;
     worstCaseQuoteInfo: BuyQuoteInfo;
+    toAddress: string; // exchange address, coordinator address
+    isUsingCoordinator: boolean;
 }
 
 /**
@@ -59,18 +63,16 @@ export interface BuyQuote {
  * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface BuyQuoteInfo {
-    assetEthAmount: BigNumber;
-    feeEthAmount: BigNumber;
-    totalEthAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    feeTakerTokenAmount: BigNumber;
+    totalTakerTokenAmount: BigNumber;
 }
 
 /**
- * feePercentage: The affiliate fee percentage. Defaults to 0.
  * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  */
 export interface BuyQuoteRequestOpts {
-    feePercentage: number;
     shouldForceOrderRefresh: boolean;
     slippagePercentage: number;
 }
@@ -137,6 +139,6 @@ export interface OrdersAndFillableAmounts {
  * Represents available liquidity for a given assetData
  */
 export interface LiquidityForAssetData {
-    tokensAvailableInBaseUnits: BigNumber;
-    ethValueAvailableInWei: BigNumber;
+    makerTokensAvailableInBaseUnits: BigNumber;
+    takerTokensAvailableInBaseUnits: BigNumber;
 }

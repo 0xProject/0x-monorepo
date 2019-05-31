@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Convenience package for discovering and buying assets with Ether.",
+    "description": "Convenience package for discovering and buying assets for both on chain and off chain needs.",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {

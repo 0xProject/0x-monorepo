@@ -6,20 +6,24 @@ import { BuyQuote, BuyQuoteInfo, OrderProvider, OrderProviderRequest } from '../
 export const assert = {
     ...sharedAssert,
     isValidBuyQuote(variableName: string, buyQuote: BuyQuote): void {
-        sharedAssert.isHexString(`${variableName}.assetData`, buyQuote.assetData);
+        sharedAssert.isHexString(`${variableName}.takerAssetData`, buyQuote.takerAssetData);
+        sharedAssert.isHexString(`${variableName}.makerAssetData`, buyQuote.makerAssetData);
         sharedAssert.doesConformToSchema(`${variableName}.orders`, buyQuote.orders, schemas.signedOrdersSchema);
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, buyQuote.feeOrders, schemas.signedOrdersSchema);
         assert.isValidBuyQuoteInfo(`${variableName}.bestCaseQuoteInfo`, buyQuote.bestCaseQuoteInfo);
         assert.isValidBuyQuoteInfo(`${variableName}.worstCaseQuoteInfo`, buyQuote.worstCaseQuoteInfo);
-        sharedAssert.isBigNumber(`${variableName}.assetBuyAmount`, buyQuote.assetBuyAmount);
-        if (buyQuote.feePercentage !== undefined) {
-            sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
-        }
+        sharedAssert.isBigNumber(`${variableName}.makerAssetBuyAmount`, buyQuote.makerAssetBuyAmount);
+        assert.isETHAddressHex(`${variableName}.toAddress`, buyQuote.toAddress);
+        assert.isBoolean(`${variableName}.isUsingCoordinator`, buyQuote.isUsingCoordinator);
+        // TODO(dave4506) Remove once forwarder features are reimplemented
+        // if (buyQuote.feePercentage !== undefined) {
+        //     sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
+        // }
     },
     isValidBuyQuoteInfo(variableName: string, buyQuoteInfo: BuyQuoteInfo): void {
-        sharedAssert.isBigNumber(`${variableName}.assetEthAmount`, buyQuoteInfo.assetEthAmount);
-        sharedAssert.isBigNumber(`${variableName}.feeEthAmount`, buyQuoteInfo.feeEthAmount);
-        sharedAssert.isBigNumber(`${variableName}.totalEthAmount`, buyQuoteInfo.totalEthAmount);
+        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, buyQuoteInfo.takerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, buyQuoteInfo.feeTakerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, buyQuoteInfo.totalTakerTokenAmount);
     },
     isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);
