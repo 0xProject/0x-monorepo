@@ -111,4 +111,32 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
             }
         });
     }
+    /**
+     * Given a maker asset data string, return all availabled paired taker asset data strings.
+     * @param   makerAssetData   A string representing the maker asset data.
+     * @return  An array of asset data strings that can be used to purchased makerAssetData.
+     */
+    public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
+        // Return a maximum of 1000 asset datas
+        const maxPerPage = 1000;
+        const requestOpts = { networkId: this.networkId, perPage: maxPerPage };
+        const assetPairsRequest = { assetDataA: makerAssetData };
+        const fullRequest = {
+            ...requestOpts,
+            ...assetPairsRequest,
+        };
+        let response: AssetPairsResponse;
+        try {
+            response = await this._sraClient.getAssetPairsAsync(fullRequest);
+        } catch (err) {
+            throw new Error(AssetBuyerError.StandardRelayerApiError);
+        }
+        return _.map(response.records, item => {
+            if (item.assetDataA.assetData === makerAssetData) {
+                return item.assetDataB.assetData;
+            } else {
+                return item.assetDataA.assetData;
+            }
+        });
+    }
 }

@@ -12,25 +12,25 @@ export const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAm
                 throw new Error(`No corresponding fillableMakerAssetAmounts at index ${curIndex}`);
             }
 
-            const tokensAvailableForCurrentOrder = availableMakerAssetAmount;
-            const ethValueAvailableForCurrentOrder = orderCalculationUtils.getTakerFillAmount(
+            const makerTokensAvailableForCurrentOrder = availableMakerAssetAmount;
+            const takerTokensAvailableForCurrentOrder = orderCalculationUtils.getTakerFillAmount(
                 order,
-                availableMakerAssetAmount,
+                makerTokensAvailableForCurrentOrder,
             );
             return {
-                tokensAvailableInBaseUnits: acc.tokensAvailableInBaseUnits.plus(tokensAvailableForCurrentOrder),
-                ethValueAvailableInWei: acc.ethValueAvailableInWei.plus(ethValueAvailableForCurrentOrder),
+                makerTokensAvailableInBaseUnits: acc.makerTokensAvailableInBaseUnits.plus(makerTokensAvailableForCurrentOrder),
+                takerTokensAvailableInBaseUnits: acc.takerTokensAvailableInBaseUnits.plus(takerTokensAvailableForCurrentOrder),
             };
         },
         {
-            tokensAvailableInBaseUnits: new BigNumber(0),
-            ethValueAvailableInWei: new BigNumber(0),
+            makerTokensAvailableInBaseUnits: new BigNumber(0),
+            takerTokensAvailableInBaseUnits: new BigNumber(0),
         },
     );
 
     // Turn into regular numbers
     return {
-        tokensAvailableInBaseUnits: liquidityInBigNumbers.tokensAvailableInBaseUnits,
-        ethValueAvailableInWei: liquidityInBigNumbers.ethValueAvailableInWei,
+        makerTokensAvailableInBaseUnits: liquidityInBigNumbers.makerTokensAvailableInBaseUnits,
+        takerTokensAvailableInBaseUnits: liquidityInBigNumbers.takerTokensAvailableInBaseUnits,
     };
 };
