@@ -27,16 +27,35 @@ library LibMath {
     function _nthRoot(uint256 base, uint256 n) internal pure returns (uint256 root) {
         assembly {
             ///// Implements Newton's Approximation, derived from Newton's nth Root Algorithm /////
-            // See https://en.wikipedia.org/wiki/Nth_root#nth_root_algorithm
+            ///// See https://en.wikipedia.org/wiki/Nth_root#nth_root_algorithm
+
             // 1. Find greatest power-of-2 <= `value`
-            let m := 0
-            for {let v := base}
-                gt(v, 0)
-                {v := shr(1, v)}
+            let nearestPowerOf2 := 0x80000000000000000000000000000000
+            let m := 128
+            for {let p := 64}
+                gt(p, 0)
+                { p := div(p, 2) }
             {
-                m := add(m, 1)
+                switch gt(nearestPowerOf2, base)
+                case 0 {
+                    switch lt(nearestPowerOf2, base)
+                    case 0 {
+                        p := 0
+                    }
+                    case 1 {
+                        nearestPowerOf2 := shl(p, nearestPowerOf2)
+                        m := add(m, p)
+                    }
+                }
+                case 1 {
+                    nearestPowerOf2 := shr(p, nearestPowerOf2)
+                    m := sub(m, p)
+                }
             }
-            m := sub(m, 1)
+            if gt(nearestPowerOf2, base) {
+                nearestPowerOf2 := shr(1, nearestPowerOf2)
+                m := sub(m, 1)
+            }
 
             // 2. Find greatest power-of-2 that, when raised to the power of `n`,
             //    is <= `value`
@@ -47,6 +66,7 @@ library LibMath {
 
             // 4. Run Newton's Approximation to approximate the root
             root := add(x, div(y, mul(n, exp(2, mul(div(m, n), sub(n, 1))))))
+
 
             /**
              * Note 1:
@@ -69,6 +89,7 @@ library LibMath {
              *   }
              */
 
+            // ganache core workaround (issue #430)
             function exp2(b,p) -> z {
                 z := b
                 for {p := sub(p, 1)}
@@ -85,12 +106,8 @@ library LibMath {
                 and(lt(i, 20), gt(delta, 0))
                 {i := add(i,1)}
             {
-                let lhsDenominator :=
-                exp2(
-                    root,
-                    sub(n, 1)
-                )
-
+                // compute lhs
+                let lhsDenominator := exp2(root, sub(n, 1))
                 let lhs := div(base, lhsDenominator)
 
                 // check for overlow
@@ -108,6 +125,7 @@ library LibMath {
             }
         }
     }
+
     function _nthRootFixedPoint(
         uint256 base,
         uint256 n,
