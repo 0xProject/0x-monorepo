@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.5.2",
+        "changes": [
+            {
+                "note": "Added 'deployedBytecode' to artifacts",
+                "pr": 1842
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "1.5.1",
         "changes": [
