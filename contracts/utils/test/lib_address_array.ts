@@ -35,7 +35,7 @@ describe('LibAddressArray', () => {
     });
 
     describe('append', () => {
-        it('should append to empty array', async () => {
+        it.only('should append to empty array', async () => {
             const addr = addressUtils.generatePseudoRandomAddress();
             const result = await lib.publicAppend.callAsync([], addr);
             const expected = [addr];

@@ -32,6 +32,7 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class CoordinatorWrapper extends ContractWrapper {
     public abi: ContractAbi = Coordinator.compilerOutput.abi;
+    public bytecode: string = Coordinator.compilerOutput.evm.deployedBytecode.object;
     public networkId: number;
     public address: string;
     public exchangeAddress: string;
@@ -70,18 +71,21 @@ export class CoordinatorWrapper extends ContractWrapper {
 
         this._contractInstance = new CoordinatorContract(
             this.abi,
+            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         this._registryInstance = new CoordinatorRegistryContract(
             CoordinatorRegistry.compilerOutput.abi,
+            CoordinatorRegistry.compilerOutput.evm.deployedBytecode.object,
             this.registryAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         this._exchangeInstance = new ExchangeContract(
             Exchange.compilerOutput.abi,
+            Exchange.compilerOutput.evm.deployedBytecode.object,
             this.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

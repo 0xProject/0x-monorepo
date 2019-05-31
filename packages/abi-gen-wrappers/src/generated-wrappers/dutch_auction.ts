@@ -10,6 +10,7 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
+    EvmOutput,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -17,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import { SimpleContractArtifact, SimpleEvmOutput } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -311,13 +312,13 @@ export class DutchAuctionContract extends BaseContract {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        const bytecode = artifact.compilerOutput.evm.bytecode.object;
+        const evm = artifact.compilerOutput.evm;
         const abi = artifact.compilerOutput.abi;
-        return DutchAuctionContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange
+        return DutchAuctionContract.deployAsync(evm, abi, provider, txDefaults, _exchange
 );
     }
     public static async deployAsync(
-        bytecode: string,
+        evm: EvmOutput | SimpleEvmOutput,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -340,7 +341,7 @@ export class DutchAuctionContract extends BaseContract {
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange
+        const txData = deployInfo.encode(evm.bytecode.object, [_exchange
 ]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -352,13 +353,13 @@ export class DutchAuctionContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DutchAuction successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new DutchAuctionContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new DutchAuctionContract(abi, evm.deployedBytecode.object, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_exchange
 ];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('DutchAuction', abi, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('DutchAuction', abi, bytecode, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

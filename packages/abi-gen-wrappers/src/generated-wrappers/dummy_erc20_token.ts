@@ -10,6 +10,7 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
+    EvmOutput,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -17,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import { SimpleContractArtifact, SimpleEvmOutput } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -1088,16 +1089,16 @@ export class DummyERC20TokenContract extends BaseContract {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        const bytecode = artifact.compilerOutput.evm.bytecode.object;
+        const evm = artifact.compilerOutput.evm;
         const abi = artifact.compilerOutput.abi;
-        return DummyERC20TokenContract.deployAsync(bytecode, abi, provider, txDefaults, _name,
+        return DummyERC20TokenContract.deployAsync(evm, abi, provider, txDefaults, _name,
 _symbol,
 _decimals,
 _totalSupply
 );
     }
     public static async deployAsync(
-        bytecode: string,
+        evm: EvmOutput | SimpleEvmOutput,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -1129,7 +1130,7 @@ _totalSupply
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_name,
+        const txData = deployInfo.encode(evm.bytecode.object, [_name,
 _symbol,
 _decimals,
 _totalSupply
@@ -1144,7 +1145,7 @@ _totalSupply
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DummyERC20Token successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new DummyERC20TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new DummyERC20TokenContract(abi, evm.deployedBytecode.object, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_name,
 _symbol,
 _decimals,
@@ -1152,8 +1153,8 @@ _totalSupply
 ];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('DummyERC20Token', abi, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('DummyERC20Token', abi, bytecode, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

@@ -10,6 +10,7 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
+    EvmOutput,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -17,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import { SimpleContractArtifact, SimpleEvmOutput } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -82,12 +83,12 @@ export class IWalletContract extends BaseContract {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        const bytecode = artifact.compilerOutput.evm.bytecode.object;
+        const evm = artifact.compilerOutput.evm;
         const abi = artifact.compilerOutput.abi;
-        return IWalletContract.deployAsync(bytecode, abi, provider, txDefaults, );
+        return IWalletContract.deployAsync(evm, abi, provider, txDefaults, );
     }
     public static async deployAsync(
-        bytecode: string,
+        evm: EvmOutput | SimpleEvmOutput,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -107,7 +108,7 @@ export class IWalletContract extends BaseContract {
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, []);
+        const txData = deployInfo.encode(evm.bytecode.object, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
@@ -118,12 +119,12 @@ export class IWalletContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`IWallet successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IWalletContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new IWalletContract(abi, evm.deployedBytecode.object, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('IWallet', abi, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('IWallet', abi, bytecode, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

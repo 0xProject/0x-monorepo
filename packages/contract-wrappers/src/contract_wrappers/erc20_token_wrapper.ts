@@ -30,6 +30,7 @@ import { ERC20ProxyWrapper } from './erc20_proxy_wrapper';
  */
 export class ERC20TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = ERC20Token.compilerOutput.abi;
+    public bytecode: string = ERC20Token.compilerOutput.evm.deployedBytecode.object;
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private readonly _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
     private readonly _erc20ProxyWrapper: ERC20ProxyWrapper;
@@ -432,6 +433,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         }
         const contractInstance = new ERC20TokenContract(
             this.abi,
+            this.bytecode,
             normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

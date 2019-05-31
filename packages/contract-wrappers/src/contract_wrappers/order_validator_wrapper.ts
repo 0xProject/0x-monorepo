@@ -18,6 +18,7 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class OrderValidatorWrapper extends ContractWrapper {
     public abi: ContractAbi = OrderValidator.compilerOutput.abi;
+    public bytecode: string = OrderValidator.compilerOutput.evm.deployedBytecode.object;
     public address: string;
     private _orderValidatorContractIfExists?: OrderValidatorContract;
     /**
@@ -175,6 +176,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
         }
         const contractInstance = new OrderValidatorContract(
             this.abi,
+            this.bytecode,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

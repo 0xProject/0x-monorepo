@@ -19,6 +19,7 @@ import { ERC20TokenWrapper } from './erc20_token_wrapper';
  */
 export class EtherTokenWrapper extends ContractWrapper {
     public abi: ContractAbi = WETH9.compilerOutput.abi;
+    public bytecode: string = WETH9.compilerOutput.evm.deployedBytecode.object;
     private readonly _etherTokenContractsByAddress: {
         [address: string]: WETH9Contract;
     } = {};
@@ -200,6 +201,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         }
         const contractInstance = new WETH9Contract(
             this.abi,
+            this.bytecode,
             etherTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

@@ -46,11 +46,13 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const assetProxyInterface = new IAssetProxyContract(
     artifacts.IAssetProxy.compilerOutput.abi,
+    artifacts.IAssetProxy.compilerOutput.evm.deployedBytecode.object,
     constants.NULL_ADDRESS,
     provider,
 );
 const assetDataInterface = new IAssetDataContract(
     artifacts.IAssetData.compilerOutput.abi,
+    artifacts.IAssetData.compilerOutput.evm.deployedBytecode.object,
     constants.NULL_ADDRESS,
     provider,
 );

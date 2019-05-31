@@ -164,6 +164,7 @@ describe('CoordinatorWrapper', () => {
         // setup coordinator registry
         coordinatorRegistryInstance = new CoordinatorRegistryContract(
             CoordinatorRegistry.compilerOutput.abi,
+            CoordinatorRegistry.compilerOutput.evm.deployedBytecode.object,
             contractAddresses.coordinatorRegistry,
             provider,
         );
