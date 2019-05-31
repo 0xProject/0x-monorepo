@@ -18,8 +18,9 @@
         }
     },
     "contracts": [
-        "src/MixinStake.sol",
         "src/Staking.sol",
+        "src/StakingProxy.sol",
+        "src/core/MixinStake.sol",
         "src/libs/LibZrxToken.sol",
         "src/vaults/MixinVaultCore.sol",
         "src/vaults/ZrxVault.sol",
