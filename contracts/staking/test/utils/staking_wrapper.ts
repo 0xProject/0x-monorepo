@@ -93,7 +93,7 @@ export class StakingWrapper {
             txDefaults,
         );
     }
-    private async _executeTransaction(calldata: string, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+    private async _executeTransactionAsync(calldata: string, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txData = {
             from,
             to: this.getStakingProxyContract().address,
@@ -105,20 +105,33 @@ export class StakingWrapper {
         );
         return txReceipt;
     }
+    private async _callAsync(calldata: string, from: string): Promise<any> {
+        const txData = {
+            from,
+            to: this.getStakingProxyContract().address,
+            data: calldata,
+            gas: 3000000
+        }
+        const returnValue = await this._web3Wrapper.callAsync(txData);
+        return returnValue;
+    }
     public async stake(holder: string, amount: BigNumber): Promise<BigNumber> {
-        const calldata = await this.getStakingContract().stake.getABIEncodedTransactionData(amount);
-        const txReceipt = await this._executeTransaction(calldata, holder);
+        const calldata = this.getStakingContract().stake.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, holder);
         const stakeMintedLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[1]);
         const stakeMinted = (stakeMintedLog as any).args.amount;
         return stakeMinted;
     }
     public async unstake(holder: string, amount: BigNumber): Promise<BigNumber> {
-        const stakeBurned = await this.getStakingContract().unstake.callAsync(amount, {from: holder});
-        await this.getStakingContract().unstake.awaitTransactionSuccessAsync(amount, {from: holder});
+        const calldata = this.getStakingContract().unstake.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, holder);
+        const stakeBurnedLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[1]);
+        const stakeBurned = (stakeBurnedLog as any).args.amount;
         return stakeBurned;
     }
     public async getStakeBalance(holder: string): Promise<BigNumber> {
-        const balance = await this.getStakingContract().getStakeBalance.callAsync(holder);
+        const calldata = this.getStakingContract().getStakeBalance.getABIEncodedTransactionData(holder); 
+        const balance = await this._callAsync(calldata, holder);
         return balance;
     }
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
