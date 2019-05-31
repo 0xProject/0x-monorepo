@@ -8,7 +8,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
-import { artifacts, StakingContract, ZrxVaultContract, LibMathTestContract } from '../../src';
+import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, LibMathTestContract } from '../../src';
 
 const expect = chai.expect;
 
@@ -20,6 +20,7 @@ export class StakingWrapper {
     private readonly _erc20ProxyContract: ERC20ProxyContract;
     private readonly _zrxTokenContract: DummyERC20TokenContract;
     private _stakingContractIfExists?: StakingContract;
+    private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
     private _libMathTestContractIfExists?: LibMathTestContract;
 
@@ -34,6 +35,10 @@ export class StakingWrapper {
     public getStakingContract(): StakingContract {
         this._validateDeployedOrThrow();
         return this._stakingContractIfExists as StakingContract;
+    }
+    public getStakingProxyContract(): StakingProxyContract {
+        this._validateDeployedOrThrow();
+        return this._stakingProxyContractIfExists as StakingProxyContract;
     }
     public getZrxVaultContract(): ZrxVaultContract {
         this._validateDeployedOrThrow();
@@ -60,11 +65,27 @@ export class StakingWrapper {
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
             artifacts.Staking,
             this._provider,
-            txDefaults,
-            (this._zrxVaultContractIfExists as ZrxVaultContract).address
+            txDefaults
         );
-        // set staking contract in zrx vault
-        await (this._zrxVaultContractIfExists as ZrxVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync((this._stakingContractIfExists as StakingContract).address);
+        // deploy staking proxy
+        this._stakingProxyContractIfExists = await StakingProxyContract.deployFrom0xArtifactAsync(
+            artifacts.StakingProxy,
+            this._provider,
+            txDefaults,
+            (this._stakingContractIfExists as StakingContract).address
+        );
+        // set staking proxy contract in zrx vault
+        await (this._zrxVaultContractIfExists as ZrxVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync((this._stakingProxyContractIfExists as StakingProxyContract).address);
+        // set zrx vault in staking contract
+        const setZrxVaultCalldata = await (this._stakingContractIfExists as StakingContract).setZrxVault.getABIEncodedTransactionData((this._zrxVaultContractIfExists as ZrxVaultContract).address);
+        const setZrxVaultTxData = {
+            from: this._ownerAddres,
+            to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
+            data: setZrxVaultCalldata
+        }
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+             await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
+        );
         // deploy libmath test
         this._libMathTestContractIfExists = await LibMathTestContract.deployFrom0xArtifactAsync(
             artifacts.LibMathTest,
@@ -72,9 +93,23 @@ export class StakingWrapper {
             txDefaults,
         );
     }
+    private async _executeTransaction(calldata: string, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const txData = {
+            from,
+            to: this.getStakingProxyContract().address,
+            data: calldata,
+            gas: 3000000
+        }
+        const txReceipt = await this._web3Wrapper.awaitTransactionSuccessAsync(
+            await this._web3Wrapper.sendTransactionAsync(txData)
+        );
+        return txReceipt;
+    }
     public async stake(holder: string, amount: BigNumber): Promise<BigNumber> {
-        const stakeMinted = await this.getStakingContract().stake.callAsync(amount, {from: holder});
-        await this.getStakingContract().stake.awaitTransactionSuccessAsync(amount, {from: holder});
+        const calldata = await this.getStakingContract().stake.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransaction(calldata, holder);
+        const stakeMintedLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[1]);
+        const stakeMinted = (stakeMintedLog as any).args.amount;
         return stakeMinted;
     }
     public async unstake(holder: string, amount: BigNumber): Promise<BigNumber> {
@@ -197,11 +232,7 @@ export class StakingWrapper {
     }
     private _validateDeployedOrThrow() {
         if (this._stakingContractIfExists === undefined) {
-            throw new Error('Staking contract not deployed. Call `deployStakingContracts`');
-        } else if (this._zrxVaultContractIfExists === undefined) {
-            throw new Error('ZRX Vault contract not deployed. Call `deployStakingContracts`');
-        } else if (this._libMathTestContractIfExists === undefined) {
-            throw new Error('LibMathTest contract not deployed. Call `deployStakingContracts`');
+            throw new Error('Staking contracts are not deployed. Call `deployStakingContracts`');
         }
     }
 }
